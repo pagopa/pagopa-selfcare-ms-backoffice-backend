@@ -1,9 +1,7 @@
 package it.pagopa.selfcare.pagopa.web.config;
 
 import com.fasterxml.classmate.TypeResolver;
-import it.pagopa.selfcare.commons.web.model.Problem;
-import it.pagopa.selfcare.commons.web.swagger.EmailAnnotationSwaggerPluginConfig;
-import it.pagopa.selfcare.commons.web.swagger.ServerSwaggerConfig;
+import it.pagopa.selfcare.pagopa.web.model.Problem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -134,16 +132,5 @@ class SwaggerConfig {
         return Collections.singletonList(new SecurityReference(AUTH_SCHEMA_NAME, authorizationScopes));
     }
 
-
-    @Bean
-    public EmailAnnotationSwaggerPluginConfig emailAnnotationPlugin() {
-        return new EmailAnnotationSwaggerPluginConfig();
-    }
-
-
-    @Bean
-    public ServerSwaggerConfig serverSwaggerConfiguration() {
-        return new ServerSwaggerConfig();
-    }
 
 }
