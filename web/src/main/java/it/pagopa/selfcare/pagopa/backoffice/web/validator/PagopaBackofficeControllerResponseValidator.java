@@ -9,13 +9,13 @@ import javax.validation.Validator;
 
 @Aspect
 @Component
-public class NameControllerResponseValidator  {//TODO change Name
+public class PagopaBackofficeControllerResponseValidator {
 
     @Autowired
-    public NameControllerResponseValidator(Validator validator) {
+    public PagopaBackofficeControllerResponseValidator(Validator validator) {
     }
 
-    @Pointcut("execution(* it.pagopa.selfcare.pagopa.web.controller.*.*(..))")
+    @Pointcut("execution(* it.pagopa.selfcare.pagopa.backoffice.web.controller.*.*(..))")
     public void controllersPointcut() {
         // Do nothing because is a pointcut
     }
