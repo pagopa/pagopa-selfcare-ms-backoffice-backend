@@ -11,17 +11,15 @@ import com.azure.resourcemanager.apimanagement.models.Confirmation;
 import com.azure.resourcemanager.apimanagement.models.SubscriptionContract;
 import com.azure.resourcemanager.apimanagement.models.SubscriptionKeysContract;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiManagerConnector;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.CreateSubscriptionDto;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.CreateInstitutionSubscription;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.UserSubscription;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.internal.Function;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@Profile("AzureAPIManagement")
 public class AzureApimClient implements ApiManagerConnector {
 
     private final ApiManagementManager manager;
@@ -30,7 +28,7 @@ public class AzureApimClient implements ApiManagerConnector {
     private final String sid;
     private final String subscriptionId;
 
-    AzureApimClient(@Value("${azure.resource-manager.api-manager.service-name}")String serviceName,
+    public AzureApimClient(@Value("${azure.resource-manager.api-manager.service-name}")String serviceName,
                     @Value("${azure.resource-manager.api-manager.resource-group}")String resourceGroupName,
                     @Value("${azure.resource-manager.api-manager.subscription-id}")String subscriptionId,
                     @Value("${azure.resource-manager.api-manager.sid}")String sid) {
@@ -57,7 +55,7 @@ public class AzureApimClient implements ApiManagerConnector {
 
 
     @Override
-    public void createSubscription(String userId, CreateSubscriptionDto dto) {
+    public void createSubscription(String userId, CreateInstitutionSubscription dto) {
         manager
                 .users()
                 .define(userId)
@@ -76,7 +74,7 @@ public class AzureApimClient implements ApiManagerConnector {
         final Response<SubscriptionContract> response = manager.userSubscriptions().getWithResponse(resourceGroupName, serviceName, userId, sid, Context.NONE);
         Response<SubscriptionKeysContract> subscriptionKeysContractResponse = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, sid, Context.NONE);
         UserSubscription subscription = null;
-        if (response.getValue()!=null && subscriptionKeysContractResponse.getValue() != null){
+        if (response.getValue()!= null && subscriptionKeysContractResponse.getValue() != null){
              subscription = SUBSCRIPTION_CONTRACT_TO_USER_SUBSCRIPTION_FUNCTION.apply(response);
              subscription.setPrimaryKey(subscriptionKeysContractResponse.getValue().primaryKey());
              subscription.setSecondaryKey(subscriptionKeysContractResponse.getValue().secondaryKey());
