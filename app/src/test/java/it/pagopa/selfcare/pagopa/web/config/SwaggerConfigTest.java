@@ -1,11 +1,9 @@
 package it.pagopa.selfcare.pagopa.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.core.NameService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -32,9 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ComponentScan(basePackages = "it.pagopa.selfcare.pagopa.web.controller")
 @TestPropertySource(locations = "classpath:config/application.yml")
 class SwaggerConfigTest {
-
-    @MockBean
-    private NameService nameService;//TODO change Name
 
     @Autowired
     WebApplicationContext context;

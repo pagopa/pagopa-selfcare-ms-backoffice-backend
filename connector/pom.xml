@@ -18,6 +18,6 @@
         </dependency>
     </dependencies>
     <modules>
-        <module>azure-apim</module>
+        <module>azure-apimanager</module>
     </modules>
 </project>
