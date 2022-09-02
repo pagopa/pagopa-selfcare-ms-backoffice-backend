@@ -19,5 +19,6 @@
     </dependencies>
     <modules>
         <module>azure-apimanager</module>
+        <module>rest</module>
     </modules>
 </project>
