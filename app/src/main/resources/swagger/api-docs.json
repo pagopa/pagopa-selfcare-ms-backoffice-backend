@@ -10,16 +10,16 @@
     "description" : "Inferred Url"
   } ],
   "tags" : [ {
-    "name" : "api-management",
-    "description" : "Api management operations"
+    "name" : "institution",
+    "description" : "Institution Controller"
   } ],
   "paths" : {
-    "/api-management/subscriptions/{institutionId}" : {
+    "/institutions/{institutionId}/api-keys" : {
       "get" : {
-        "tags" : [ "api-management" ],
-        "summary" : "getUserSubscriptionKeys",
+        "tags" : [ "institution" ],
+        "summary" : "getInstitutionApiKeys",
         "description" : "Retrieve an institution's primary and secondary keys",
-        "operationId" : "getUserSubscriptionKeysUsingGET",
+        "operationId" : "getInstitutionApiKeysUsingGET",
         "parameters" : [ {
           "name" : "institutionId",
           "in" : "path",
@@ -36,7 +36,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/UserSubscriptionResource"
+                  "$ref" : "#/components/schemas/ApiKeysResource"
                 }
               }
             }
@@ -85,89 +85,23 @@
         "security" : [ {
           "bearerAuth" : [ "global" ]
         } ]
-      },
-      "post" : {
-        "tags" : [ "api-management" ],
-        "summary" : "createUserSubscription",
-        "description" : "Creates a new subscription for a given Institution",
-        "operationId" : "createUserSubscriptionUsingPOST",
-        "parameters" : [ {
-          "name" : "institutionId",
-          "in" : "path",
-          "description" : "Institution's unique internal identifier",
-          "required" : true,
-          "style" : "simple",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/CreateInstitutionSubscriptionDto"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "201" : {
-            "description" : "Created"
-          },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "bearerAuth" : [ "global" ]
-        } ]
       }
     }
   },
   "components" : {
     "schemas" : {
-      "CreateInstitutionSubscriptionDto" : {
-        "title" : "CreateInstitutionSubscriptionDto",
+      "ApiKeysResource" : {
+        "title" : "ApiKeysResource",
+        "required" : [ "primaryKey", "secondaryKey" ],
         "type" : "object",
         "properties" : {
-          "description" : {
+          "primaryKey" : {
             "type" : "string",
-            "description" : "Institution's name"
+            "description" : "Institution's primary Api Key"
           },
-          "email" : {
+          "secondaryKey" : {
             "type" : "string",
-            "description" : "Institution's email"
-          },
-          "externalId" : {
-            "type" : "string",
-            "description" : "Institution's unique external identifier"
+            "description" : "Institution's secondary Api Key"
           }
         }
       },
@@ -222,29 +156,6 @@
           }
         },
         "description" : "A \"problem detail\" as a way to carry machine-readable details of errors (https://datatracker.ietf.org/doc/html/rfc7807)"
-      },
-      "UserSubscriptionResource" : {
-        "title" : "UserSubscriptionResource",
-        "required" : [ "id", "name", "primaryKey", "secondaryKey" ],
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string",
-            "description" : "Institution's unique internal identifier"
-          },
-          "name" : {
-            "type" : "string",
-            "description" : "Institution's name"
-          },
-          "primaryKey" : {
-            "type" : "string",
-            "description" : "Institution's unique internal identifier"
-          },
-          "secondaryKey" : {
-            "type" : "string",
-            "description" : "Institution's unique internal identifier"
-          }
-        }
       }
     },
     "securitySchemes" : {

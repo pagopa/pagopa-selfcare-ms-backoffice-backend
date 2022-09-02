@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class AzureApimClient implements ApiManagerConnector {
+public class AzureApiManagerClient implements ApiManagerConnector {
 
     private final ApiManagementManager manager;
     private final String serviceName;
@@ -28,10 +28,10 @@ public class AzureApimClient implements ApiManagerConnector {
     private final String sid;
     private final String subscriptionId;
 
-    public AzureApimClient(@Value("${azure.resource-manager.api-manager.service-name}")String serviceName,
-                    @Value("${azure.resource-manager.api-manager.resource-group}")String resourceGroupName,
-                    @Value("${azure.resource-manager.api-manager.subscription-id}")String subscriptionId,
-                    @Value("${azure.resource-manager.api-manager.sid}")String sid) {
+    public AzureApiManagerClient(@Value("${azure.resource-manager.api-manager.service-name}")String serviceName,
+                                 @Value("${azure.resource-manager.api-manager.resource-group}")String resourceGroupName,
+                                 @Value("${azure.resource-manager.api-manager.subscription-id}")String subscriptionId,
+                                 @Value("${azure.resource-manager.api-manager.sid}")String sid) {
         AzureProfile profile = new AzureProfile(AzureEnvironment.AZURE);
         TokenCredential credential = new DefaultAzureCredentialBuilder()
                 .authorityHost(profile.getEnvironment().getActiveDirectoryEndpoint())
@@ -62,7 +62,7 @@ public class AzureApimClient implements ApiManagerConnector {
                 .withExistingService(resourceGroupName, serviceName)
                 .withEmail(dto.getEmail())
                 .withFirstName(dto.getDescription())
-                .withLastName(dto.getExternalId())
+                .withLastName(dto.getExternalId())//TODO cosa metterci?
                 .withConfirmation(Confirmation.SIGNUP)
                 .create();
     }

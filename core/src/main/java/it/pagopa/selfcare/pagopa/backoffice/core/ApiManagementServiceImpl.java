@@ -2,7 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiManagerConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.CreateSubscriptionDto;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.CreateInstitutionSubscription;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.UserSubscription;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +21,13 @@ public class ApiManagementServiceImpl implements ApiManagementService {
 
 
     @Override
-    public void createUserSubscription(String userId, CreateSubscriptionDto dto) {
+    public void createUserSubscription(String userId, CreateInstitutionSubscription subscription) {
+        log.trace("createUserSubscription start");
+        log.debug("createUserSubscription userId = {}, subscription = {}", userId, subscription);
         try {
-            apiManagerConnector.createSubscription(userId, dto);
+            apiManagerConnector.createSubscription(userId, subscription);
         } catch (RuntimeException e) {
+            
         }
     }
 

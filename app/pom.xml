@@ -15,6 +15,11 @@
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-ms-backoffice-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>it.pagopa.selfcare.pagopa</groupId>
+            <artifactId>pagopa-selfcare-connector-azure-apim</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
