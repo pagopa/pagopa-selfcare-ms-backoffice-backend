@@ -7,11 +7,9 @@ import com.azure.core.management.profile.AzureProfile;
 import com.azure.core.util.Context;
 import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.apimanagement.ApiManagementManager;
-import com.azure.resourcemanager.apimanagement.models.Confirmation;
-import com.azure.resourcemanager.apimanagement.models.SubscriptionContract;
-import com.azure.resourcemanager.apimanagement.models.SubscriptionKeysContract;
+import com.azure.resourcemanager.apimanagement.models.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiManagerConnector;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.CreateInstitutionSubscription;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.UserSubscription;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,10 +26,10 @@ public class AzureApiManagerClient implements ApiManagerConnector {
     private final String sid;
     private final String subscriptionId;
 
-    public AzureApiManagerClient(@Value("${azure.resource-manager.api-manager.service-name}")String serviceName,
-                                 @Value("${azure.resource-manager.api-manager.resource-group}")String resourceGroupName,
-                                 @Value("${azure.resource-manager.api-manager.subscription-id}")String subscriptionId,
-                                 @Value("${azure.resource-manager.api-manager.sid}")String sid) {
+    public AzureApiManagerClient(@Value("${azure.resource-manager.api-manager.service-name}") String serviceName,
+                                 @Value("${azure.resource-manager.api-manager.resource-group}") String resourceGroupName,
+                                 @Value("${azure.resource-manager.api-manager.subscription-id}") String subscriptionId,
+                                 @Value("${azure.resource-manager.api-manager.sid}") String sid) {
         AzureProfile profile = new AzureProfile(AzureEnvironment.AZURE);
         TokenCredential credential = new DefaultAzureCredentialBuilder()
                 .authorityHost(profile.getEnvironment().getActiveDirectoryEndpoint())
@@ -39,32 +37,47 @@ public class AzureApiManagerClient implements ApiManagerConnector {
         this.manager = ApiManagementManager
                 .authenticate(credential, profile);
         this.serviceName = serviceName;
-        this.resourceGroupName=resourceGroupName;
+        this.resourceGroupName = resourceGroupName;
         this.sid = sid;
         this.subscriptionId = subscriptionId;
-                
+
     }
-    
-    private static final Function<Response<SubscriptionContract>, UserSubscription> SUBSCRIPTION_CONTRACT_TO_USER_SUBSCRIPTION_FUNCTION = subscriptionContract -> {
+
+    private static final Function<SubscriptionContract, UserSubscription> SUBSCRIPTION_CONTRACT_TO_USER_SUBSCRIPTION_FUNCTION = subscriptionContract -> {
         UserSubscription subscription = new UserSubscription();
-        subscription.setId(subscriptionContract.getValue().id());  
-        subscription.setPrimaryKey(subscriptionContract.getValue().primaryKey());
+        subscription.setId(subscriptionContract.id());
+        subscription.setName(subscriptionContract.name());
         return subscription;
     };
-    
 
 
     @Override
-    public void createSubscription(String userId, CreateInstitutionSubscription dto) {
-        manager
+    public void createInstitution(String userId, CreateInstitutionApiKeyDto dto) {
+        UserContract userContract = manager
                 .users()
                 .define(userId)
                 .withExistingService(resourceGroupName, serviceName)
                 .withEmail(dto.getEmail())
-                .withFirstName(dto.getDescription())
-                .withLastName(dto.getExternalId())//TODO cosa metterci?
+                .withFirstName(dto.getFiscalCode())
+                .withLastName(dto.getDescription())//TODO cosa metterci?
                 .withConfirmation(Confirmation.SIGNUP)
                 .create();
+    }
+
+    @Override
+    public UserSubscription createInstitutionSubscription(String institutionId, String institutionName) {
+        SubscriptionContract contract = manager.subscriptions().createOrUpdate(resourceGroupName,
+                serviceName,
+                sid,
+                new SubscriptionCreateParameters()
+                        .withOwnerId(String.format("users/%s", institutionId))
+                        .withDisplayName(institutionName)
+                        .withScope("/apis")
+        );
+        
+        UserSubscription subscription = SUBSCRIPTION_CONTRACT_TO_USER_SUBSCRIPTION_FUNCTION.apply(contract);
+        getApiKeys(subscription);
+        return subscription;
     }
 
     @Override
@@ -72,14 +85,21 @@ public class AzureApiManagerClient implements ApiManagerConnector {
         log.trace("getUser start");
         log.debug("getUser serviceName = {}, resourceGroup = {}, userId = {}", serviceName, resourceGroupName, userId);
         final Response<SubscriptionContract> response = manager.userSubscriptions().getWithResponse(resourceGroupName, serviceName, userId, sid, Context.NONE);
-        Response<SubscriptionKeysContract> subscriptionKeysContractResponse = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, sid, Context.NONE);
         UserSubscription subscription = null;
-        if (response.getValue()!= null && subscriptionKeysContractResponse.getValue() != null){
-             subscription = SUBSCRIPTION_CONTRACT_TO_USER_SUBSCRIPTION_FUNCTION.apply(response);
-             subscription.setPrimaryKey(subscriptionKeysContractResponse.getValue().primaryKey());
-             subscription.setSecondaryKey(subscriptionKeysContractResponse.getValue().secondaryKey());
+        if (response.getValue() != null) {
+            subscription = SUBSCRIPTION_CONTRACT_TO_USER_SUBSCRIPTION_FUNCTION.apply(response.getValue());
+            getApiKeys(subscription);
         }
         log.debug("getUser result = {}", subscription);
+        return subscription;
+    }
+
+    private UserSubscription getApiKeys(UserSubscription subscription) {
+        Response<SubscriptionKeysContract> subscriptionKeysContractResponse = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, sid, Context.NONE);
+        if (subscriptionKeysContractResponse.getValue() != null) {
+            subscription.setPrimaryKey(subscriptionKeysContractResponse.getValue().primaryKey());
+            subscription.setSecondaryKey(subscriptionKeysContractResponse.getValue().secondaryKey());
+        }
         return subscription;
     }
 }
