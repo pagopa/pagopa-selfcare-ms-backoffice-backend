@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.handler;
 
 import feign.FeignException;
+import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.Problem;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ProblemMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -92,6 +93,14 @@ public class RestExceptionsHandler {
             log.error(UNHANDLED_EXCEPTION, e);
         }
         return ProblemMapper.toResponseEntity(new Problem(httpStatus, "An error occurred during a downstream service request"));
+    }
+
+    @ExceptionHandler({
+            ResourceNotFoundException.class,
+    })
+    ResponseEntity<Problem> handleNotFoundException(Exception e) {
+        log.warn(e.toString());
+        return ProblemMapper.toResponseEntity(new Problem(NOT_FOUND, e.getMessage()));
     }
 
 }
