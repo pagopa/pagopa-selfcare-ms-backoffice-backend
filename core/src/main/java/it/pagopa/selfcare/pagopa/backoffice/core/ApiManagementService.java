@@ -1,10 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.UserSubscription;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.InstitutionApiKeys;
 
 public interface ApiManagementService {
     
-    UserSubscription createInstitutionKeys(String institutionId);
+    InstitutionApiKeys createInstitutionKeys(String institutionId);
     
-    UserSubscription getInstitutionApiKeys(String userId) ;
+    InstitutionApiKeys getInstitutionApiKeys(String userId) ;
 }
