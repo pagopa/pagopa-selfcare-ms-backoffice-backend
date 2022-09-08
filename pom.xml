@@ -14,20 +14,28 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>pagopa-selfcare-ms-backoffice</name>
     <description>Microservice to manage PagoPA Backoffice</description>
-    
+
     <properties>
         <java.version>11</java.version>
         <spring-cloud.version>2020.0.4</spring-cloud.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <bom_version_to_target>1.2.4</bom_version_to_target>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-sdk-bom</artifactId>
+                <version>${bom_version_to_target}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -74,7 +82,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
+
     <dependencies>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
