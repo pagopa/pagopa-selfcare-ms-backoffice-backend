@@ -3,7 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.UserSubscription;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ApiManagerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.subscriptions.ApiKeysResource;
@@ -32,18 +32,17 @@ public class InstitutionController {
     public ApiKeysResource getInstitutionApiKeys(
             @ApiParam("${swagger.model.institution.id}")
             @PathVariable("institutionId") String institutionId) {
-        UserSubscription userSubscription = apiManagementService.getInstitutionApiKeys(institutionId);
-        return ApiManagerMapper.toSubscriptionResource(userSubscription);
+        InstitutionApiKeys userSubscription = apiManagementService.getInstitutionApiKeys(institutionId);
+        return ApiManagerMapper.toApiKeysResource(userSubscription);
     }
 
-    //TODO this process has to be done in the lower layers automatically if the subscription doesn't exists, need to integrate with external api service to retrieve the 
     @PostMapping("/{institutionId}/api-keys")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.institution.createInstitutionApiKeys}")
     public ApiKeysResource createInstitutionApiKeys(@ApiParam("${swagger.model.institution.id}")
-                                                    @PathVariable("institutionId")String institutionId
-                                                    ){
-        UserSubscription userSubscription = apiManagementService.createInstitutionKeys(institutionId);
-        return ApiManagerMapper.toSubscriptionResource(userSubscription);
+                                                    @PathVariable("institutionId") String institutionId) {
+        InstitutionApiKeys userSubscription = apiManagementService.createInstitutionKeys(institutionId);
+        return ApiManagerMapper.toApiKeysResource(userSubscription);
     }
+
 }
