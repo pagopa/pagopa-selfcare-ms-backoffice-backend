@@ -12,5 +12,7 @@ public interface ApiManagerConnector {
     InstitutionApiKeys getInstitutionApiKeys(String userId);
     
     void regeneratePrimaryKey(String institutionId);
+
+    void regenerateSecondaryKey(String institutionId);
     
 }

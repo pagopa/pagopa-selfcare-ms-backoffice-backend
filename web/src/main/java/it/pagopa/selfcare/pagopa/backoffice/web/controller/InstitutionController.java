@@ -67,4 +67,15 @@ public class InstitutionController {
         log.trace("regeneratePrimaryKey end");
     }
 
+    @PostMapping("/{institutionId}/api-keys/secondary/regenerate")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "", notes = "${swagger.api.institution.regenerateSecondaryKey}")
+    public void regenerateSecondaryKey(@ApiParam("${swagger.model.institution.id}")
+                                     @PathVariable("institutionId")String institutionId){
+        log.trace("regenerateSecondaryKey start");
+        log.debug("regenerateSecondaryKey institutionId = {}", institutionId);
+        apiManagementService.regenerateSecondaryKey(institutionId);
+        log.trace("regenerateSecondaryKey end");
+    }
+
 }

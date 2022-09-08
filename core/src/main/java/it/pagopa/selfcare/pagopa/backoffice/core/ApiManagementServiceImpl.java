@@ -19,7 +19,7 @@ public class ApiManagementServiceImpl implements ApiManagementService {
     private final ExternalApiConnector externalApiConnector;
 
     @Autowired
-    public ApiManagementServiceImpl(ApiManagerConnector apiManagerConnector, 
+    public ApiManagementServiceImpl(ApiManagerConnector apiManagerConnector,
                                     ExternalApiConnector externalApiConnector) {
         this.apiManagerConnector = apiManagerConnector;
         this.externalApiConnector = externalApiConnector;
@@ -33,14 +33,14 @@ public class ApiManagementServiceImpl implements ApiManagementService {
         InstitutionApiKeys apiKeys = null;
         Institution institution = externalApiConnector.getInstitution(institutionId);
         try {
-            apiKeys = apiManagerConnector.createInstitutionSubscription(institutionId,institution.getDescription());
+            apiKeys = apiManagerConnector.createInstitutionSubscription(institutionId, institution.getDescription());
         } catch (RuntimeException e) {
             CreateInstitutionApiKeyDto dto = new CreateInstitutionApiKeyDto();
             dto.setDescription(institution.getDescription());
             dto.setFiscalCode(institution.getTaxCode());
             dto.setEmail(institution.getDigitalAddress());
             apiManagerConnector.createInstitution(institutionId, dto);
-            apiKeys = apiManagerConnector.createInstitutionSubscription(institutionId,institution.getDescription());
+            apiKeys = apiManagerConnector.createInstitutionSubscription(institutionId, institution.getDescription());
         }
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitutionKeys result = {}", apiKeys);
         log.trace("createInstitutionKeys end");
@@ -52,11 +52,7 @@ public class ApiManagementServiceImpl implements ApiManagementService {
         log.trace("getInstitutionApiKeys start");
         log.debug("getInstitutionApiKeys userId = {}", institutionId);
         InstitutionApiKeys apiKeys = null;
-        try {
-            apiKeys = apiManagerConnector.getInstitutionApiKeys(institutionId);
-        } catch (RuntimeException e) {
-            throw new ResourceNotFoundException(String.format("No subscription found for %s userId", institutionId));
-        }
+        apiKeys = apiManagerConnector.getInstitutionApiKeys(institutionId);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getInstitutionApiKeys result = {}", apiKeys);
         log.trace("getInstitutionApiKeys end");
         return apiKeys;
@@ -68,6 +64,14 @@ public class ApiManagementServiceImpl implements ApiManagementService {
         log.debug("regeneratePrimaryKey userId = {}", institutionId);
         apiManagerConnector.regeneratePrimaryKey(institutionId);
         log.trace("regeneratePrimaryKey end");
+    }
+
+    @Override
+    public void regenerateSecondaryKey(String institutionId) {
+        log.trace("regenerateSecondaryKey start");
+        log.debug("regenerateSecondaryKey userId = {}", institutionId);
+        apiManagerConnector.regenerateSecondaryKey(institutionId);
+        log.trace("regenerateSecondaryKey end");
     }
 
 }

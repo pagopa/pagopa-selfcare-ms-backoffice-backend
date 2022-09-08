@@ -96,6 +96,14 @@ public class AzureApiManagerClient implements ApiManagerConnector {
         log.trace("regeneratePrimaryKey end");
     }
 
+    @Override
+    public void regenerateSecondaryKey(String institutionId) {
+        log.trace("regenerateSecondaryKey start");
+        log.debug("regenerateSecondaryKey institutionId = {}", institutionId);
+        manager.subscriptions().regenerateSecondaryKey(resourceGroupName, serviceName, institutionId);
+        log.trace("regenerateSecondaryKey end");
+    }
+
 
     private InstitutionApiKeys getApiKeys(String institutionId) {
         log.trace("getApiKeys start");

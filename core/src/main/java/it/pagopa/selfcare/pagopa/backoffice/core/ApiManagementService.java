@@ -9,4 +9,6 @@ public interface ApiManagementService {
     InstitutionApiKeys getInstitutionApiKeys(String institutionId) ;
     
     void regeneratePrimaryKey(String institutionId);
+    
+    void regenerateSecondaryKey(String institutionId);
 }
