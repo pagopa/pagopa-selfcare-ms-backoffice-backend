@@ -6,5 +6,7 @@ public interface ApiManagementService {
     
     InstitutionApiKeys createInstitutionKeys(String institutionId);
     
-    InstitutionApiKeys getInstitutionApiKeys(String userId) ;
+    InstitutionApiKeys getInstitutionApiKeys(String institutionId) ;
+    
+    void regeneratePrimaryKey(String institutionId);
 }

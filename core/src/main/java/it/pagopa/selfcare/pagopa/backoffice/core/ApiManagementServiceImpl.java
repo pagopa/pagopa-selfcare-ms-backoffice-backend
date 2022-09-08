@@ -48,18 +48,26 @@ public class ApiManagementServiceImpl implements ApiManagementService {
     }
 
     @Override
-    public InstitutionApiKeys getInstitutionApiKeys(String userId) throws ResourceNotFoundException {
+    public InstitutionApiKeys getInstitutionApiKeys(String institutionId) throws ResourceNotFoundException {
         log.trace("getInstitutionApiKeys start");
-        log.debug("getInstitutionApiKeys userId = {}", userId);
+        log.debug("getInstitutionApiKeys userId = {}", institutionId);
         InstitutionApiKeys apiKeys = null;
         try {
-            apiKeys = apiManagerConnector.getInstitutionApiKeys(userId);
+            apiKeys = apiManagerConnector.getInstitutionApiKeys(institutionId);
         } catch (RuntimeException e) {
-            throw new ResourceNotFoundException(String.format("No subscription found for %s userId", userId));
+            throw new ResourceNotFoundException(String.format("No subscription found for %s userId", institutionId));
         }
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getInstitutionApiKeys result = {}", apiKeys);
         log.trace("getInstitutionApiKeys end");
         return apiKeys;
+    }
+
+    @Override
+    public void regeneratePrimaryKey(String institutionId) {
+        log.trace("regeneratePrimaryKey start");
+        log.debug("regeneratePrimaryKey userId = {}", institutionId);
+        apiManagerConnector.regeneratePrimaryKey(institutionId);
+        log.trace("regeneratePrimaryKey end");
     }
 
 }

@@ -55,5 +55,16 @@ public class InstitutionController {
         log.trace("createInstitutionApiKeys end");
         return apiKeysResource;
     }
+    
+    @PostMapping("/{institutionId}/api-keys/primary/regenerate")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "", notes = "${swagger.api.institution.regeneratePrimaryKey}")
+    public void regeneratePrimaryKey(@ApiParam("${swagger.model.institution.id}")
+                                     @PathVariable("institutionId")String institutionId){
+        log.trace("regeneratePrimaryKey start");
+        log.debug("regeneratePrimaryKey institutionId = {}", institutionId);
+        apiManagementService.regeneratePrimaryKey(institutionId);
+        log.trace("regeneratePrimaryKey end");
+    }
 
 }
