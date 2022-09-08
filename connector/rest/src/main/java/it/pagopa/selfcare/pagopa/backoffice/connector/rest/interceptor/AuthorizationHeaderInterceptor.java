@@ -19,7 +19,7 @@ public class AuthorizationHeaderInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate template) {
-        template.header("x-selfcare-uid", "pippo");
+        template.header("x-selfcare-uid", "user");
         template.header("Ocp-Apim-Subscription-Key", externalApiSubscriptionKey);
     }
 }
