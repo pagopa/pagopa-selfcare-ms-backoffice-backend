@@ -14,5 +14,5 @@ public interface ExternalApiRestClient extends ExternalApiConnector {
     @GetMapping(value = "${rest-client.external-api.getInstitution.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     Institution getInstitution(@PathVariable(value = "id") String id);
-    
+
 }
