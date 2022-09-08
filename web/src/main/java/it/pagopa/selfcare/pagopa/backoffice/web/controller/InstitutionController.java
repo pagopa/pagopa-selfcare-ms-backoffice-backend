@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ApiManagerMapper;
@@ -32,8 +33,13 @@ public class InstitutionController {
     public ApiKeysResource getInstitutionApiKeys(
             @ApiParam("${swagger.model.institution.id}")
             @PathVariable("institutionId") String institutionId) {
-        InstitutionApiKeys userSubscription = apiManagementService.getInstitutionApiKeys(institutionId);
-        return ApiManagerMapper.toApiKeysResource(userSubscription);
+        log.trace("getInstitutionApiKeys start");
+        log.debug("getInstitutionApiKeys institutionId = {}", institutionId);
+        InstitutionApiKeys institutionApiKeys = apiManagementService.getInstitutionApiKeys(institutionId);
+        ApiKeysResource apiKeysResource = ApiManagerMapper.toApiKeysResource(institutionApiKeys);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getInstitutionApiKeys result = {}", apiKeysResource);
+        log.trace("getInstitutionApiKeys end");
+        return apiKeysResource;
     }
 
     @PostMapping("/{institutionId}/api-keys")
@@ -41,8 +47,13 @@ public class InstitutionController {
     @ApiOperation(value = "", notes = "${swagger.api.institution.createInstitutionApiKeys}")
     public ApiKeysResource createInstitutionApiKeys(@ApiParam("${swagger.model.institution.id}")
                                                     @PathVariable("institutionId") String institutionId) {
-        InstitutionApiKeys userSubscription = apiManagementService.createInstitutionKeys(institutionId);
-        return ApiManagerMapper.toApiKeysResource(userSubscription);
+        log.trace("createInstitutionApiKeys start");
+        log.debug("createInstitutionApiKeys institutionId = {}", institutionId);
+        InstitutionApiKeys institutionKeys = apiManagementService.createInstitutionKeys(institutionId);
+        ApiKeysResource apiKeysResource = ApiManagerMapper.toApiKeysResource(institutionKeys);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitutionApiKeys result = {}", apiKeysResource);
+        log.trace("createInstitutionApiKeys end");
+        return apiKeysResource;
     }
 
 }

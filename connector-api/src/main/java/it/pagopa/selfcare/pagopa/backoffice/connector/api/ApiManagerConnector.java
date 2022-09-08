@@ -9,6 +9,6 @@ public interface ApiManagerConnector {
     
     InstitutionApiKeys createInstitutionSubscription(String institutionId, String institutionName);
 
-    InstitutionApiKeys getUserSubscription(String userId);
+    InstitutionApiKeys getInstitutionApiKeys(String userId);
     
 }

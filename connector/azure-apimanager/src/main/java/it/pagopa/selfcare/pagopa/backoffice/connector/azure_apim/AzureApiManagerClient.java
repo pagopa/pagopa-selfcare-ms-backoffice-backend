@@ -9,6 +9,7 @@ import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.apimanagement.ApiManagementManager;
 import com.azure.resourcemanager.apimanagement.models.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiManagerConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.InstitutionApiKeys;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,8 @@ public class AzureApiManagerClient implements ApiManagerConnector {
 
     @Override
     public void createInstitution(String userId, CreateInstitutionApiKeyDto dto) {
+        log.trace("createInstitution start");
+        log.debug("createInstitution userId = {}, dto = {}", userId, dto);
         UserContract userContract = manager
                 .users()
                 .define(userId)
@@ -53,10 +56,14 @@ public class AzureApiManagerClient implements ApiManagerConnector {
                 .withLastName(dto.getDescription())
                 .withConfirmation(Confirmation.SIGNUP)
                 .create();
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitution userContract = {}}", userContract);
+        log.trace("createInstitution end");
     }
 
     @Override
     public InstitutionApiKeys createInstitutionSubscription(String institutionId, String institutionName) {
+        log.trace("createInstitutionSubscription start");
+        System.out.printf("createInstitutionSubscription institutionId = {}, institutionName = {}", institutionId, institutionName);
         SubscriptionContract contract = manager.subscriptions().createOrUpdate(resourceGroupName,
                 serviceName,
                 institutionId,
@@ -67,37 +74,33 @@ public class AzureApiManagerClient implements ApiManagerConnector {
         );
 
         InstitutionApiKeys apiKeys = getApiKeys(institutionId);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER,"createInstitutionSubscription apiKeys = {}", apiKeys);
+        log.trace("createInstitutionSubscription end");
         return apiKeys;
     }
 
     @Override
-    public InstitutionApiKeys getUserSubscription(String institutionId) {
-        log.trace("getUser start");
-        log.debug("getUser serviceName = {}, resourceGroup = {}, institutionId = {}", serviceName, resourceGroupName, institutionId);
+    public InstitutionApiKeys getInstitutionApiKeys(String institutionId) {
+        log.trace("getInstitutionApiKeys start");
+        log.debug("getInstitutionApiKeys serviceName = {}, resourceGroup = {}, institutionId = {}", serviceName, resourceGroupName, institutionId);
         InstitutionApiKeys subscription = getApiKeys(institutionId);
-        log.debug("getUser result = {}", subscription);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER,"getUser result = {}", subscription);
         return subscription;
-    }
-
-    @Override
-    public void regeneratePrimaryKey(String institutionId) {
-        manager.subscriptions().regeneratePrimaryKey(resourceGroupName, serviceName, institutionId);
-    }
-
-    @Override
-    public void regenerateSecondaryKey(String institutionId) {
-        manager.subscriptions().regenerateSecondaryKey(resourceGroupName, serviceName, institutionId);
     }
 
 
     private InstitutionApiKeys getApiKeys(String institutionId) {
+        log.trace("getApiKeys start");
+        log.debug("getApiKeys institutionId = {}", institutionId);
         InstitutionApiKeys apiKeys = null;
-        Response<SubscriptionKeysContract> subscriptionKeysContractResponse = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, institutionId, Context.NONE);
-        if (subscriptionKeysContractResponse.getValue() != null) {
+        Response<SubscriptionKeysContract> response = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, institutionId, Context.NONE);
+        if (response.getValue() != null) {
             apiKeys = new InstitutionApiKeys();
-            apiKeys.setPrimaryKey(subscriptionKeysContractResponse.getValue().primaryKey());
-            apiKeys.setSecondaryKey(subscriptionKeysContractResponse.getValue().secondaryKey());
+            apiKeys.setPrimaryKey(response.getValue().primaryKey());
+            apiKeys.setSecondaryKey(response.getValue().secondaryKey());
         }
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getApiKeys response = {}", response);
+        log.trace("getApiKeys end");
         return apiKeys;
     }
 }
