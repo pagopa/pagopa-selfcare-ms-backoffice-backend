@@ -24,39 +24,49 @@ parameters:
       - buildNumber
       - skip
     default: skip
+  - name: "FORCE_REPLACE_DOCKER_IMAGE"
+    displayName: "Force the existing docker image to be replaced"
+    type: boolean
+    default: False
+    values:
+      - False
+      - True
   - name: TEST
     displayName: Run tests
     type: boolean
     default: false
 
 variables:
-  ${{ if eq(parameters['ENV'], 'dev') }}:
-    dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
-    kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
-    poolImage: 'pagopa-dev-linux'
-  ${{ if eq(parameters['ENV'], 'uat') }}:
-    dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
-    kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
-    poolImage: 'pagopa-uat-linux'
-  ${{ if eq(parameters['ENV'], 'prod') }}:
-    dockerRegistryServiceConnection: $(PROD_CONTAINER_REGISTRY_SERVICE_CONN)
-    kubernetesServiceConnection: '$(PROD_KUBERNETES_SERVICE_CONN)'
-    poolImage: 'pagopa-prod-linux'
-  ${{ if eq(variables['Build.SourceBranchName'], 'merge') }}:
-    SOURCE_BRANCH: "main" # force to main branch
-  ${{ if ne(variables['Build.SourceBranchName'], 'merge') }}:
-    SOURCE_BRANCH: ${{ variables['Build.SourceBranchName'] }}
-
-  # general variables
-  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-  MAVEN_OPTS: "-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)"
-  title: ""
-  sha: ""
-  tag: ""
-
-  # Image Repository Name
   imageRepository: '$(IMAGE_REPOSITORY_NAME)'
   nameSpace: '$(K8S_NAMESPACE)'
+
+  ${{ if eq(parameters['ENV'], 'dev') }}:
+    dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
+    dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
+    kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
+    poolImage: 'pagopa-dev-linux'
+    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
+    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
+  ${{ if eq(parameters['ENV'], 'uat') }}:
+    dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
+    dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
+    kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
+    poolImage: 'pagopa-uat-linux'
+    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
+    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
+  ${{ if eq(parameters['ENV'], 'prod') }}:
+    dockerRegistryServiceConnection: $(PROD_CONTAINER_REGISTRY_SERVICE_CONN)
+    dockerRegistryFqdn: $(PROD_CONTAINER_NAMESPACE)
+    kubernetesServiceConnection: '$(PROD_KUBERNETES_SERVICE_CONN)'
+    poolImage: 'pagopa-prod-linux'
+    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_PROD)"
+    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_PROD)"
+
+  ${{ if eq(variables['Build.SourceBranchName'], 'merge') }}:
+    sourceBranch: "main" # force to main branch
+  ${{ if ne(variables['Build.SourceBranchName'], 'merge') }}:
+    sourceBranch: ${{ variables['Build.SourceBranchName'] }}
+
 
 
 resources:
@@ -64,16 +74,16 @@ resources:
     - repository: pagopaCommons
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: refs/tags/v2.1.0
+      ref: refs/tags/v2.10.1
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
 
   # Create a release on GitHub
-  - stage: release_service
+  - stage: Release
     condition: ne('${{ parameters.SEMVER }}', 'skip')
     jobs:
-      - job: releaseService
+      - job: make_release
         steps:
           - checkout: self
             clean: true
@@ -81,202 +91,72 @@ stages:
 
           - template: templates/maven-github-release/template.yaml@pagopaCommons
             parameters:
-              release_branch: $(SOURCE_BRANCH)
+              release_branch: $(sourceBranch)
               gitEmail: $(GIT_EMAIL)
               gitUsername: $(GIT_USERNAME)
               gitHubConnection: $(GITHUB_CONNECTION)
-              ${{ if eq(parameters.SEMVER, 'skip') }}:
-                semver: 'buildNumber'
               ${{ if ne(parameters.SEMVER, 'skip') }}:
                 semver: '${{ parameters.SEMVER }}'
 
-  # Deploy on Azure ACR
-  - stage: 'Build'
-    displayName: 'Build_and_Publish_to_${{ parameters.ENV }}'
-    condition: not(failed('releaseService'))
+          - template: templates/maven-github-current-version/template.yaml@pagopaCommons
+
+  # Build and Push Docker Image
+  - stage: Build
+    dependsOn: Release
+    variables:
+      next_version: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
+      current_version: $[ stageDependencies.Release.make_release.outputs['current_version.value'] ]
+      current_version_branch: $[ stageDependencies.Release.branch_version.outputs['current_version.value'] ]
+      current_version_tag: $[ stageDependencies.Release.tag_version.outputs['current_version.value'] ]
     jobs:
-      - job: deployJava
+      - job: "build"
         steps:
-          - task: Bash@3
-            displayName: Check Version and Branch
-            inputs:
-              targetType: 'inline'
-              script: |
-                version=$(mvn -f pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
-                branch="$(Build.SourceBranch)"
-                if [[ "$branch" != "refs/heads/main" && ! "$branch" =~ "refs/tags/.*" && "${{ parameters.ENV }}" == "prod" ]]; then
-                   echo "Deploy branch $branch is not allowed."
-                   exit 1
-                fi
-              failOnStderr: true
-
-          - task: Cache@2
-            inputs:
-              key: 'maven | "$(Agent.OS)" | pom.xml'
-              restoreKeys: |
-                maven | "$(Agent.OS)"
-                maven
-              path: $(MAVEN_CACHE_FOLDER)
-            displayName: Cache Maven local repo
-
-          - task: Maven@3
-            inputs:
-              mavenPomFile: 'pom.xml'
-              mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
-              javaHomeOption: 'JDKVersion'
-              jdkVersionOption: '1.11'
-              jdkArchitectureOption: 'x64'
-              publishJUnitResults: true
-              testResultsFiles: '**/surefire-reports/TEST-*.xml'
-              goals: 'package'
-              sonarQubeRunAnalysis: false
-
-          - task: Bash@3
-            displayName: Get POM version
-            name: getpomversion
-            inputs:
-              targetType: 'inline'
-              script: |
-                version=$(mvn -f pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
-                echo "##vso[task.setvariable variable=outputpomversion;isOutput=true]$version"
-              failOnStderr: true
-
-          - task: Docker@2
-            displayName: Build and push an image to container registry
-            inputs:
-              containerRegistry: '$(dockerRegistryServiceConnection)'
-              repository: '$(imageRepository)'
-              command: 'buildAndPush'
-              tags: |
-                $(Build.BuildId)
-                latest
-                $(getpomversion.outputpomversion)
+          - template: templates/deploy-release-decision/template.yaml@pagopaCommons
+            parameters:
+              NEXT_VERSION: $(next_version)
+              CURRENT_VERSION: $(current_version)
+              CURRENT_VERSION_BRANCH: $(current_version_branch)
+              CURRENT_VERSION_TAG: $(current_version_tag)
+              BUILD_SOURCE_VERSION: $(Build.SourceVersion)
+              BUILD_SOURCE_BRANCH_NAME: $(Build.SourceBranchName)
+          - template: templates/docker-release/template.yaml@pagopaCommons
+            parameters:
+              CONTAINER_REGISTRY_SERVICE_CONN: $(dockerRegistryServiceConnection)
+              CONTAINER_REGISTRY_FQDN: $(dockerRegistryFqdn)
+              DOCKER_IMAGE_NAME: $(imageRepository)
+              DOCKER_IMAGE_TAG: $(deploy_version_decision.value)
+              FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
 
 
   # Deploy on K8s with Helm
-  - stage: 'Serving_helm'
-    displayName: 'Serving_Helm'
-    dependsOn: Build
-    condition: or(succeeded(), ne('${{ parameters.SEMVER }}', 'skip') )
+  - stage: "Deploy"
+    dependsOn: "Build"
+    variables:
+      deploy_version: $[ stageDependencies.Build.build.outputs['deploy_version_decision.value'] ]
     jobs:
-      - job: Serving_helm
-        displayName: Serving_helm
-        steps:
-          - task: PublishPipelineArtifact@1
-            displayName: 'Publish Artifact manifests'
-            condition: succeeded()
-            inputs:
-              targetPath: '$(Build.Repository.LocalPath)/helm'
-              artifact: 'helm'
-              publishLocation: 'pipeline'
-  - stage: 'Deploy'
-    displayName: 'Deploy_to_${{ parameters.ENV }}'
-    dependsOn: "Serving_helm"
-    condition: or(succeeded(), ne('${{ parameters.SEMVER }}', 'skip') )
-    pool:
-      name: $(poolImage)
-    jobs:
-      - deployment: 'Deploy_to_${{ parameters.ENV }}'
-        displayName: 'Deploy_to_${{ parameters.ENV }}'
-        environment: '${{ parameters.ENV }}'
+      - deployment: "deploy"
+        pool:
+          name: $(poolImage)
+        environment: ${{ parameters['ENV'] }}
         strategy:
           runOnce:
             deploy:
               steps:
-                - download: none
-                - task: DownloadPipelineArtifact@2
-                  inputs:
-                    buildType: 'current'
-                    artifactName: 'helm'
-                    targetPath: '$(Pipeline.Workspace)/helm'
-                - task: Bash@3
-                  name: helm_dependency_build
-                  displayName: Helm dependency build
-                  inputs:
-                    workingDirectory: '$(Pipeline.Workspace)/helm'
-                    targetType: 'inline'
-                    script: |
-                      helm repo add pagopa-microservice https://pagopa.github.io/aks-microservice-chart-blueprint
-                      helm dep build
-                    failOnStderr: true
-                - task: HelmDeploy@0
-                  displayName: Helm upgrade
-                  inputs:
-                    kubernetesServiceEndpoint: ${{ variables.kubernetesServiceConnection }}
-                    namespace: '$(nameSpace)'
-                    command: upgrade
-                    chartType: filepath
-                    chartPath: $(Pipeline.Workspace)/helm
-                    chartName: $(imageRepository)
-                    releaseName: $(imageRepository)
-                    valueFile: "$(Pipeline.Workspace)/helm/values-${{ parameters.ENV }}.yaml"
-                    install: true
-                    waitForExecution: true
-                    arguments: "--timeout 5m0s"
-  # Run test
-  - stage: test
-    # run this stage only if 'test' is enabled
-    condition: and(not(failed('deployJava')), eq('${{ parameters.TEST }}', 'true'))
-    jobs:
-      # is needed to wait for startup of application
-      - job: waitStartup
-        pool: Server
-        steps:
-          - task: Delay@1
-            inputs:
-              delayForMinutes: '10'
+                - checkout: self
+                  displayName: "Checkout"
 
-#      - job: integrationTests
-#        dependsOn: waitStartup
-#        steps:
-#          - script: |
-#              git checkout $(SOURCE_BRANCH)
-#              cd integration-test
-#              yarn install
-#              yarn test
-#            displayName: 'integration test'
-#
-#          - task: PublishTestResults@2
-#            condition: always()
-#            inputs:
-#              testResultsFormat: 'JUnit'
-#              testResultsFiles: '**/*-TEST.xml'
-#              searchFolder: '$(System.DefaultWorkingDirectory)'
+                - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
+                  parameters:
+                    DEPLOY_VERSION: $(deploy_version)
 
-#      - job: deployUAT
-#        dependsOn: integrationTests
-#        variables:
-#          version: $[ stageDependencies.deploy.deployJava.outputs['dockerTag.version'] ]
-#        steps:
-#          - task: Maven@3
-#            inputs:
-#              mavenPomFile: 'pom.xml'
-#              publishJUnitResults: false
-#              javaHomeOption: 'JDKVersion'
-#              jdkVersionOption: '1.11'
-#              mavenVersionOption: 'Default'
-#              mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
-#              mavenAuthenticateFeed: false
-#              effectivePomSkip: false
-#              sonarQubeRunAnalysis: false
-#
-#          - task: Docker@2
-#            displayName: Build and push an image to UAT container registry
-#            inputs:
-#              containerRegistry: '$(UAT_CONTAINER_REGISTRY)'
-#              repository: '$(IMAGE_REPOSITORY)'
-#              command: 'buildAndPush'
-#              tags: |
-#                $(Build.BuildId)
-#                latest
-#                $(version)
-#
-#          - task: AzureRMWebAppDeployment@4
-#            displayName: Azure App Service Deploy in UAT
-#            inputs:
-#              appType: webAppContainer
-#              ConnectedServiceName: '$(UAT_AZURE_SUBSCRIPTION)'
-#              WebAppName: '$(UAT_WEB_APP_NAME)'
-#              DockerNamespace: '$(UAT_CONTAINER_NAMESPACE)'
-#              DockerRepository: '$(UAT_AZURE_SUBSCRIPTION)'
-#              DockerImageTag: '$(Build.BuildId)'
+                - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                  parameters:
+                    DO_DEPLOY: true
+                    ENV: ${{ parameters['ENV'] }}
+                    KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
+                    NAMESPACE: $(nameSpace)
+                    APP_NAME: $(imageRepository)
+                    VALUE_FILE: "helm/values-${{ parameters['ENV'] }}.yaml"
+                    DEPLOY_VERSION: $(deploy_version)
+                    APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
+                    APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
