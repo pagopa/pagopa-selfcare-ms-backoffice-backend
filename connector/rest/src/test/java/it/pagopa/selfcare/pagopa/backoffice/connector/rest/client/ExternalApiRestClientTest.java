@@ -98,6 +98,7 @@ class ExternalApiRestClientTest {
 
     @Autowired
     private ExternalApiRestClient restClient;
+    
     private static final Map<TestCase, String> testCase2instIdMap = new EnumMap<>(TestCase.class) {{
         put(TestCase.FULLY_VALUED, "institutionId1");
         put(TestCase.FULLY_NULL, "institutionId2");

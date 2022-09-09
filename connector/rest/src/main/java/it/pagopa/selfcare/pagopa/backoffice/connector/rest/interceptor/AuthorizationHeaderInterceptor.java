@@ -9,13 +9,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class AuthorizationHeaderInterceptor implements RequestInterceptor {
-
-    private final String externalApiSubscriptionKey;
-
-    public AuthorizationHeaderInterceptor(@Value("${authorization.external-api.subscriptionKey}")
-                                                  String externalApiSubscriptionKey) {
-        this.externalApiSubscriptionKey = externalApiSubscriptionKey;
-    }
+    @Value("${authorization.external-api.subscriptionKey}")
+    private String externalApiSubscriptionKey;
 
     @Override
     public void apply(RequestTemplate template) {
