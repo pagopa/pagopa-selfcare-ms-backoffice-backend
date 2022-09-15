@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.function.Function;
+
 @Slf4j
 @Service
 public class AzureApiManagerClient implements ApiManagerConnector {
@@ -42,22 +44,34 @@ public class AzureApiManagerClient implements ApiManagerConnector {
 
     }
 
-
+    private final static Function<UserContract, it.pagopa.selfcare.pagopa.backoffice.connector.model.UserContract> AZURE_USER_CONTRACT_TO_PAGOPA_USER_CONTRACT = userContract -> {
+        it.pagopa.selfcare.pagopa.backoffice.connector.model.UserContract contract = new it.pagopa.selfcare.pagopa.backoffice.connector.model.UserContract();
+        contract.setId(userContract.id());
+        contract.setEmail(userContract.email());
+        contract.setName(userContract.lastName());
+        contract.setFullName(userContract.name());
+        contract.setTaxCode(userContract.firstName());
+        return contract;
+    };
+    
+    
     @Override
-    public void createInstitution(String userId, CreateInstitutionApiKeyDto dto) {
+    public it.pagopa.selfcare.pagopa.backoffice.connector.model.UserContract createInstitution(String institutionId, CreateInstitutionApiKeyDto dto) {
         log.trace("createInstitution start");
-        log.debug("createInstitution userId = {}, dto = {}", userId, dto);
+        log.debug("createInstitution userId = {}, dto = {}", institutionId, dto);
         UserContract userContract = manager
                 .users()
-                .define(userId)
+                .define(institutionId)
                 .withExistingService(resourceGroupName, serviceName)
                 .withEmail(dto.getEmail())
                 .withFirstName(dto.getFiscalCode())
                 .withLastName(dto.getDescription())
                 .withConfirmation(Confirmation.SIGNUP)
                 .create();
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitution userContract = {}}", userContract);
+        it.pagopa.selfcare.pagopa.backoffice.connector.model.UserContract contract = AZURE_USER_CONTRACT_TO_PAGOPA_USER_CONTRACT.apply(userContract);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitution userContract = {}", userContract);
         log.trace("createInstitution end");
+        return contract;
     }
 
     @Override
