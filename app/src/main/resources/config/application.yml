@@ -1,6 +1,5 @@
-#TODO change name
 server:
-  port: ${APP_SERVER_PORT:8080}
+  port: ${PAGOPA_BACKOFFICE_SERVER_PORT:8080}
 
 spring:
   application:
@@ -8,7 +7,6 @@ spring:
     version: "@project.version@"
   profiles:
     include:
-      # TO enable specific-language documentations
       - swaggerEN
 
 info:
@@ -21,4 +19,4 @@ info:
 
 logging:
   level:
-    it.pagopa.selfcare.pagopa: ${APP_LOG_LEVEL:DEBUG}
+    it.pagopa.selfcare.pagopa: ${PAGOPA_BACKOFFICE_LOG_LEVEL:DEBUG}

@@ -13,7 +13,9 @@
     <dependencies>
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
-            <artifactId>pagopa-selfcare-ms-backoffice-core</artifactId>
+            <artifactId>pagopa-selfcare-ms-backoffice-connector-api</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
@@ -31,10 +33,6 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
         </dependency>
     </dependencies>
 
