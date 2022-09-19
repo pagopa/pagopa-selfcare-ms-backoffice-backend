@@ -1,18 +1,23 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
+import com.azure.core.annotation.QueryParam;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.institutions.InstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ApiManagerMapper;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.products.ProductsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.subscriptions.ApiKeysResource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -76,6 +81,30 @@ public class InstitutionController {
         log.debug("regenerateSecondaryKey institutionId = {}", institutionId);
         apiManagementService.regenerateSecondaryKey(institutionId);
         log.trace("regenerateSecondaryKey end");
+    }
+    
+    @GetMapping("")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutions}")
+    public List<InstitutionResource> getInstitutions(@QueryParam("productId")String productId){
+        
+        return null;
+    }
+    
+    @GetMapping("/{institutionId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitution}")
+    public InstitutionResource getInstitution(@ApiParam("${swagger.model.institution.id}")
+                                              @PathVariable("institutionId")String institutionId){
+        return null;
+    }
+    
+    @GetMapping("/{institutionId}/products")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutionProducts}")
+    public List<ProductsResource> getInstitutionProducts(@ApiParam("${swagger.model.institution.id}")
+                                                         @PathVariable("institutionId")String institutionId){
+        return null;
     }
 
 }
