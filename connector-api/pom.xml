@@ -10,6 +10,23 @@
 
     <artifactId>pagopa-selfcare-ms-backoffice-connector-api</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-json-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-jackson</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-core-management</artifactId>
+        </dependency>
+    </dependencies>
+    
     <build>
         <plugins>
             <plugin>
