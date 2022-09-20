@@ -11,8 +11,8 @@ import com.azure.resourcemanager.apimanagement.models.SubscriptionCreateParamete
 import com.azure.resourcemanager.apimanagement.models.UserContract;
 import it.pagopa.selfcare.pagopa.backoffice.connector.azure_apim.model.DummyKeyContract;
 import it.pagopa.selfcare.pagopa.backoffice.connector.azure_apim.model.DummyUserContract;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.CreateInstitutionApiKeyDto;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.CreateInstitutionApiKeyDto;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.Answers;

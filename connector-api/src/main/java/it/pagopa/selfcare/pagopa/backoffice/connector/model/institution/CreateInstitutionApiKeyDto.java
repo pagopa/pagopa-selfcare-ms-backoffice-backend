@@ -1,4 +1,4 @@
-package it.pagopa.selfcare.pagopa.backoffice.connector.model;
+package it.pagopa.selfcare.pagopa.backoffice.connector.model.institution;
 
 import lombok.Data;
 

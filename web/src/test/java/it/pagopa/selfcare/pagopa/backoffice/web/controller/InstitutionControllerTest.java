@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.AzureManagementExceptionHandler;

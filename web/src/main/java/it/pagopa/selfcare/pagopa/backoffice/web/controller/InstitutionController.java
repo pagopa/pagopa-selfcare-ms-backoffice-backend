@@ -5,7 +5,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.institutions.InstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ApiManagerMapper;
