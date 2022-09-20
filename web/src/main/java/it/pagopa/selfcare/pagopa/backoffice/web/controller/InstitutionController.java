@@ -5,10 +5,14 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
+import it.pagopa.selfcare.pagopa.backoffice.core.ExternalApiService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.institutions.InstitutionDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.institutions.InstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ApiManagerMapper;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.InstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.products.ProductsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.subscriptions.ApiKeysResource;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +30,12 @@ import java.util.List;
 public class InstitutionController {
 
     private final ApiManagementService apiManagementService;
+    private final ExternalApiService externalApiService;
 
     @Autowired
-    public InstitutionController(ApiManagementService apiManagementService) {
+    public InstitutionController(ApiManagementService apiManagementService, ExternalApiService externalApiService) {
         this.apiManagementService = apiManagementService;
+        this.externalApiService = externalApiService;
     }
 
     @GetMapping("/{institutionId}/api-keys")
@@ -94,9 +100,15 @@ public class InstitutionController {
     @GetMapping("/{institutionId}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitution}")
-    public InstitutionResource getInstitution(@ApiParam("${swagger.model.institution.id}")
+    public InstitutionDetailResource getInstitution(@ApiParam("${swagger.model.institution.id}")
                                               @PathVariable("institutionId")String institutionId){
-        return null;
+        log.trace("getInstitution start");
+        log.debug("getInstitution institutionId = {}", institutionId);
+        Institution institution = externalApiService.getInstitution(institutionId);
+        InstitutionDetailResource resource = InstitutionMapper.toResource(institution);
+        log.debug("getInstitution result = {}", resource);
+        log.trace("getInstitution end");
+        return resource;
     }
     
     @GetMapping("/{institutionId}/products")

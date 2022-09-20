@@ -5,4 +5,5 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institut
 public interface ExternalApiConnector {
     
     Institution getInstitution(String institutionId);
+    
 }
