@@ -7,6 +7,8 @@ import java.util.Collection;
 public interface ExternalApiService {
     
     InstitutionInfo getInstitution(String institutionId);
+    
     Collection<InstitutionInfo> getInstitutions(String productId);
+    
     
 }

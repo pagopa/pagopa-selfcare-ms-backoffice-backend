@@ -11,6 +11,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Attribute;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.product.Product;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.RestTestUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.config.ExternalApiRestClientConfigTest;
 import lombok.SneakyThrows;
@@ -31,12 +33,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import java.lang.reflect.Field;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
+
 @ContextConfiguration(initializers = ExternalApiRestClientTest.RandomPortInitializer.class,
         classes = {
                 ExternalApiRestClientTest.Config.class,
@@ -98,13 +98,12 @@ class ExternalApiRestClientTest {
 
     @Autowired
     private ExternalApiRestClient restClient;
-    
+
     private static final Map<TestCase, String> testCase2instIdMap = new EnumMap<>(TestCase.class) {{
         put(TestCase.FULLY_VALUED, "institutionId1");
         put(TestCase.FULLY_NULL, "institutionId2");
         put(TestCase.EMPTY_RESULT, "institutionId3");
     }};
-
 
 
     @Test
@@ -126,6 +125,7 @@ class ExternalApiRestClientTest {
         String id = testCase2instIdMap.get(TestCase.FULLY_NULL);
         // when
         Institution response = restClient.getInstitution(id);
+        //then
         assertNotNull(response);
         assertNull(response.getAddress());
         assertNull(response.getDescription());
@@ -135,16 +135,69 @@ class ExternalApiRestClientTest {
         assertNull(response.getTaxCode());
         assertNull(response.getZipCode());
     }
-    
-    private void checkNotNullFields(Institution model){
-        Field[] fields = model.getClass().getFields();
-        for (Field field: fields){
-            assertNotNull(field);
-        }
+
+    @Test
+    void getInstitutions_fullyValued() {
+        //given
+        String productId = "productId";
+        //when
+        List<InstitutionInfo> institutions = restClient.getInstitutions(productId);
+        //then
+        assertNotNull(institutions);
+        assertFalse(institutions.isEmpty());
+        assertEquals(1, institutions.size());
+        checkNotNullFields(institutions.get(0));
     }
-    private void checkNotNullFieldsAttributes(Attribute model){
+
+    @Test
+    void getInstitutions_fullyNull() {
+        //given
+        String productId = "productId1";
+        //when
+        List<InstitutionInfo> institutions = restClient.getInstitutions(productId);
+        //then
+        assertNotNull(institutions);
+        assertFalse(institutions.isEmpty());
+        assertNotNull(institutions.get(0));
+    }
+
+    @Test
+    void getInstitutions_fullyEmpty() {
+        //given
+        String productId = "productId2";
+        //when
+        List<InstitutionInfo> institutionInfos = restClient.getInstitutions(productId);
+        //then
+        assertNotNull(institutionInfos);
+        assertTrue(institutionInfos.isEmpty());
+
+    }
+    
+    @Test
+    void getInstitutionUserProducts_fullyValued(){
+        //given
+        String institutionId = "institutionId1";
+        //when
+        List<Product> products = restClient.getInstitutionUserProducts(institutionId);
+        //then
+        assertNotNull(products);
+        assertFalse(products.isEmpty());
+        checkNotNullFields(products.get(0));
+    }
+
+    private void checkNotNullFields(Object o, String... excludedFields) {
+        Set<String> excludedFieldsSet = new HashSet<>(Arrays.asList(excludedFields));
+        org.springframework.util.ReflectionUtils.doWithFields(o.getClass(),
+                f -> {
+                    f.setAccessible(true);
+                    assertNotNull(f.get(o), "The field " + f.getName() + " of the input object of type " + o.getClass() + " is null!");
+                },
+                f -> !excludedFieldsSet.contains(f.getName()));
+    }
+
+    private void checkNotNullFieldsAttributes(Attribute model) {
         Field[] fields = model.getClass().getFields();
-        for (Field field: fields){
+        for (Field field : fields) {
             assertNotNull(field);
         }
     }
