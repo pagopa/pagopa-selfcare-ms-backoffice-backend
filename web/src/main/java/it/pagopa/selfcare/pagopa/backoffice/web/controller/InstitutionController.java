@@ -1,12 +1,12 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
-import com.azure.core.annotation.QueryParam;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ExternalApiService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.institutions.InstitutionDetailResource;
@@ -21,7 +21,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -92,9 +94,16 @@ public class InstitutionController {
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutions}")
-    public List<InstitutionResource> getInstitutions(@QueryParam("productId")String productId){
-        
-        return null;
+    public List<InstitutionResource> getInstitutions(@RequestParam("productId")String productId){
+
+        log.trace("getInstitutions start");
+        log.debug("getInstitutions productId = {}", productId);
+        Collection<InstitutionInfo> institutions = externalApiService.getInstitutions(productId);
+        List<InstitutionResource> resources = institutions.stream()
+                .map(InstitutionMapper::toResource).collect(Collectors.toList());
+        log.debug("getInstitutions result = {}", resources);
+        log.trace("getInstitutions end");
+        return resources;
     }
     
     @GetMapping("/{institutionId}")

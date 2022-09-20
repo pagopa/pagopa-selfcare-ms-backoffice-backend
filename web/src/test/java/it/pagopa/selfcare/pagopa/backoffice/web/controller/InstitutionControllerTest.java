@@ -1,7 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Attribute;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ExternalApiService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -16,6 +19,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.hamcrest.Matchers.notNullValue;
@@ -120,5 +125,72 @@ class InstitutionControllerTest {
         verify(apiManagementServiceMock, times(1))
                 .regenerateSecondaryKey(institutionId);
         verifyNoMoreInteractions(apiManagementServiceMock);
+    }
+    
+    @Test
+    void getInstitution() throws Exception {
+        //given
+        String institutionId = "institutionId";
+        Institution institutionMock = mockInstance(new Institution());
+        Attribute attributeMock = mockInstance(new Attribute());
+        institutionMock.setAttributes(List.of(attributeMock));
+        when(externalApiServiceMock.getInstitution(anyString()))
+                .thenReturn(institutionMock);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL+"/{institutionId}", institutionId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", notNullValue()))
+                .andExpect(jsonPath("$.externalId", notNullValue()))
+                .andExpect(jsonPath("$.originId", notNullValue()))
+                .andExpect(jsonPath("$.description", notNullValue()))
+                .andExpect(jsonPath("$.digitalAddress", notNullValue()))
+                .andExpect(jsonPath("$.address", notNullValue()))
+                .andExpect(jsonPath("$.zipCode", notNullValue()))
+                .andExpect(jsonPath("$.taxCode", notNullValue()))
+                .andExpect(jsonPath("$.origin", notNullValue()))
+                .andExpect(jsonPath("$.institutionType", notNullValue()))
+                .andExpect(jsonPath("$.attributes", notNullValue()))
+                .andExpect(jsonPath("$.attributes[0].code", notNullValue()))
+                .andExpect(jsonPath("$.attributes[0].description", notNullValue()))
+                .andExpect(jsonPath("$.attributes[0].origin", notNullValue()));
+        //then
+        verify(externalApiServiceMock, times(1))
+                .getInstitution(institutionId);
+        verifyNoMoreInteractions(externalApiServiceMock);
+    }
+    
+    @Test
+    void getInstitutions() throws Exception {
+        //given
+        String productId = "productId";
+        InstitutionInfo institutionInfoMock =  mockInstance(new InstitutionInfo());
+        institutionInfoMock.setUserProductRoles(List.of("userProductRole"));
+        when(externalApiServiceMock.getInstitutions(anyString()))
+                .thenReturn(List.of(institutionInfoMock));
+        //when
+         mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL)
+                        .queryParam("productId", productId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..id", notNullValue()))
+                .andExpect(jsonPath("$..externalId", notNullValue()))
+                .andExpect(jsonPath("$..originId", notNullValue()))
+                .andExpect(jsonPath("$..name", notNullValue()))
+                .andExpect(jsonPath("$..mailAddress", notNullValue()))
+                .andExpect(jsonPath("$..address", notNullValue()))
+                .andExpect(jsonPath("$..zipCode", notNullValue()))
+                .andExpect(jsonPath("$..taxCode", notNullValue()))
+                .andExpect(jsonPath("$..origin", notNullValue()))
+                .andExpect(jsonPath("$..institutionType", notNullValue()))
+                .andExpect(jsonPath("$..userRole", notNullValue()))
+                .andExpect(jsonPath("$..userProductRoles[0]", notNullValue()));
+        //then
+        verify(externalApiServiceMock, times(1))
+                .getInstitutions(productId);
+        verifyNoMoreInteractions(externalApiServiceMock);
+        
     }
 }
