@@ -159,6 +159,7 @@ class ExternalApiRestClientTest {
         assertNotNull(institutions);
         assertFalse(institutions.isEmpty());
         assertNotNull(institutions.get(0));
+        checkNullFields(institutions.get(0));
     }
 
     @Test
@@ -176,13 +177,37 @@ class ExternalApiRestClientTest {
     @Test
     void getInstitutionUserProducts_fullyValued(){
         //given
-        String institutionId = "institutionId1";
+        String institutionId = testCase2instIdMap.get(TestCase.FULLY_VALUED);
         //when
         List<Product> products = restClient.getInstitutionUserProducts(institutionId);
         //then
         assertNotNull(products);
         assertFalse(products.isEmpty());
         checkNotNullFields(products.get(0));
+    }
+    
+    @Test
+    void getInstitutionUserProducts_fullyNull(){
+        //given
+        String institutionId = testCase2instIdMap.get(TestCase.FULLY_NULL);
+        //when
+        List<Product> products = restClient.getInstitutionUserProducts(institutionId);
+        //then
+        assertNotNull(products);
+        assertFalse(products.isEmpty());
+        assertNotNull(products.get(0));
+        checkNullFields(products.get(0));
+    }
+    
+    @Test
+    void getInstitutionUserProducts_fullyEmpty(){
+        //given
+        String institutionId = testCase2instIdMap.get(TestCase.EMPTY_RESULT);
+        //when
+        List<Product> products = restClient.getInstitutionUserProducts(institutionId);
+        //then
+        assertNotNull(products);
+        assertTrue(products.isEmpty());
     }
 
     private void checkNotNullFields(Object o, String... excludedFields) {
@@ -193,6 +218,14 @@ class ExternalApiRestClientTest {
                     assertNotNull(f.get(o), "The field " + f.getName() + " of the input object of type " + o.getClass() + " is null!");
                 },
                 f -> !excludedFieldsSet.contains(f.getName()));
+    }
+    
+    private void checkNullFields(Object o){
+        org.springframework.util.ReflectionUtils.doWithFields(o.getClass(),
+                f -> {
+                    f.setAccessible(true);
+                    assertNull(f.get(o), "The field " + f.getName() + " of the input object of type " + o.getClass() + " is null!");
+                });
     }
 
     private void checkNotNullFieldsAttributes(Attribute model) {
