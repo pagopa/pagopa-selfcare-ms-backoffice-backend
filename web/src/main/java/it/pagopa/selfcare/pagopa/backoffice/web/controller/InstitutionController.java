@@ -7,12 +7,14 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.product.Product;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ExternalApiService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.institutions.InstitutionDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.institutions.InstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ApiManagerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.InstitutionMapper;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ProductMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.products.ProductsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.subscriptions.ApiKeysResource;
 import lombok.extern.slf4j.Slf4j;
@@ -100,7 +102,8 @@ public class InstitutionController {
         log.debug("getInstitutions productId = {}", productId);
         Collection<InstitutionInfo> institutions = externalApiService.getInstitutions(productId);
         List<InstitutionResource> resources = institutions.stream()
-                .map(InstitutionMapper::toResource).collect(Collectors.toList());
+                .map(InstitutionMapper::toResource)
+                .collect(Collectors.toList());
         log.debug("getInstitutions result = {}", resources);
         log.trace("getInstitutions end");
         return resources;
@@ -125,7 +128,15 @@ public class InstitutionController {
     @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutionProducts}")
     public List<ProductsResource> getInstitutionProducts(@ApiParam("${swagger.model.institution.id}")
                                                          @PathVariable("institutionId")String institutionId){
-        return null;
+        log.trace("getInstitutionProducts start");
+        log.debug("getInstitutionProducts institutionId = {}", institutionId);
+        List<Product> products = externalApiService.getInstitutionUserProducts(institutionId);
+        List<ProductsResource> resource = products.stream()
+                .map(ProductMapper::toResource)
+                .collect(Collectors.toList());
+        log.debug("getInstitutionProducts result = {}", resource);
+        log.trace("getInstitutionProducts end");
+        return resource;
     }
 
 }

@@ -2,8 +2,10 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.product.Product;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface ExternalApiService {
     
@@ -11,6 +13,6 @@ public interface ExternalApiService {
     
     Collection<InstitutionInfo> getInstitutions(String productId);
     
-    
+    List<Product> getInstitutionUserProducts(String institutionId);
     
 }

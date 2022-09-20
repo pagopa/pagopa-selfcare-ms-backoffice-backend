@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Attribut
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.product.Product;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ExternalApiService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -191,6 +192,28 @@ class InstitutionControllerTest {
         verify(externalApiServiceMock, times(1))
                 .getInstitutions(productId);
         verifyNoMoreInteractions(externalApiServiceMock);
-        
+    }
+    
+    @Test
+    void getInstitutionUserProducts() throws Exception {
+        //given
+        String institutionId = "institutionId";
+        Product productMock = mockInstance(new Product());
+        when(externalApiServiceMock.getInstitutionUserProducts(anyString()))
+                .thenReturn(List.of(productMock));
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL+"/{institutionId}/products", institutionId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..id", notNullValue()))
+                .andExpect(jsonPath("$..title", notNullValue()))
+                .andExpect(jsonPath("$..urlPublic", notNullValue()))
+                .andExpect(jsonPath("$..description", notNullValue()))
+                .andExpect(jsonPath("$..urlBO", notNullValue()));
+        //then
+        verify(externalApiServiceMock, times(1))
+                .getInstitutionUserProducts(institutionId);
+        verifyNoMoreInteractions(externalApiServiceMock);
     }
 }

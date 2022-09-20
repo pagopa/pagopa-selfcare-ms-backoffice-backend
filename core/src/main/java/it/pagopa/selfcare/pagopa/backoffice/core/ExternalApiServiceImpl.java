@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ExternalApiConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.product.Product;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,16 @@ public class ExternalApiServiceImpl implements ExternalApiService{
         return institutions;
     }
 
+    @Override
+    public List<Product> getInstitutionUserProducts(String institutionId) {
+        log.trace("getInstitutionUserProducts start");
+        log.debug("getInstitutionUserProducts institutionId = {}", institutionId);
+        Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
+        List<Product> userProducts = externalApiConnector.getInstitutionUserProducts(institutionId);
+        log.debug("getInstitutionUserProducts result = {}", userProducts);
+        log.trace("getInstitutionUserProducts end");
+        return userProducts;
+    }
 
 
 }

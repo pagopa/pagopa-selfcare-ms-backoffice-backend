@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.ExternalApiConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Attribute;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.product.Product;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -90,9 +91,39 @@ class ExternalApiServiceImplTest {
         //then
         assertNotNull(institutionInfos);
         institutionInfos.forEach(TestUtils::checkNotNullFields);
+        institutionInfos.forEach(institutionInfo1 -> TestUtils.reflectionEqualsByName(institutionInfo, institutionInfo1));
         verify(externalApiConnectorMock, times(1))
                 .getInstitutions(productId);
         verifyNoMoreInteractions(externalApiConnectorMock);
+    }
+    
+    @Test
+    void getInstitutionUserProducts_nullInstitutionId(){
+        //given
+        String institutionId = null;
+        //when
+        Executable executable = () -> externalApiService.getInstitutionUserProducts(institutionId);
+        //then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, executable);
+        assertEquals(AN_INSTITUTION_ID_IS_REQUIRED, e.getMessage());
+        verifyNoInteractions(externalApiConnectorMock);
+    }
+    
+    @Test
+    void getInstitutionUserProducts(){
+        //given
+        String institutionId = "institutionId";
+        Product productMock = mockInstance(new Product());
+        when(externalApiConnectorMock.getInstitutionUserProducts(any()))
+                .thenReturn(List.of(productMock));
+        //when
+        List<Product> products = externalApiService.getInstitutionUserProducts(institutionId);
+        //then
+        assertNotNull(products);
+        products.forEach(TestUtils::checkNotNullFields);
+        products.forEach(product -> TestUtils.reflectionEqualsByName(productMock, product));
+        verify(externalApiConnectorMock, times(1))
+                .getInstitutionUserProducts(institutionId);
     }
 
 }
