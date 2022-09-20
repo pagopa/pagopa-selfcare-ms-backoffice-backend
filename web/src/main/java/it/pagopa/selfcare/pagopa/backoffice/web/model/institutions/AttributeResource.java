@@ -16,7 +16,7 @@ public class AttributeResource {
     @JsonProperty(required = true)
     @NotBlank
     private String code;
-    @ApiModelProperty(value = "${swagger.model.institution.description}", required = true)
+    @ApiModelProperty(value = "${swagger.model.institution.name}", required = true)
     @JsonProperty(required = true)
     @NotBlank
     private String description;

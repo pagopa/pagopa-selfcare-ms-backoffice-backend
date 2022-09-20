@@ -4,6 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.ExternalApiConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -17,6 +18,7 @@ public class ExternalApiServiceImpl implements ExternalApiService{
     private final ExternalApiConnector externalApiConnector;
     
 
+    @Autowired
     public ExternalApiServiceImpl(ExternalApiConnector externalApiConnector) {
         this.externalApiConnector = externalApiConnector;
     }
