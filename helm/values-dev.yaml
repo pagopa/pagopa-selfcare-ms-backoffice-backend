@@ -2,42 +2,32 @@ microservice-chart:
   namespace: "selc"
   nameOverride: ""
   fullnameOverride: ""
-
   deployment:
     create: true
     livenessProbePath: /actuator/health/liveness
     readinessProbePath: /actuator/health/readiness
-
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaselfcaremsbackoffice
-    tag: "latest" #improve
+    tag: "0.0.1-1" #improve
     pullPolicy: Always
     port: 8080
-
-
   ingress:
     host: "weudev.selc.internal.dev.platform.pagopa.it"
     path: "/selc"
     pathType: "ImplementationSpecific"
-
   serviceAccount:
     create: false
     annotations: {}
     name: ""
-
   podAnnotations: {}
-
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
-
   securityContext:
     allowPrivilegeEscalation: false
-
   service:
     type: ClusterIP
     port: 80
-
   resources:
     requests:
       memory: "96Mi"
@@ -45,7 +35,6 @@ microservice-chart:
     limits:
       memory: "300Mi"
       cpu: "300m"
-
   autoscaling:
     minReplica: 1
     maxReplica: 2
@@ -64,20 +53,14 @@ microservice-chart:
           # metricAggregationInterval: "-1:1:0"
           metricAggregationType: Count
           targetValue: "30"
-
   envConfig: {}
-
   envSecret:
     AZURE_CLIENT_SECRET: pagopa-selc-d-azure-client-secret
     AZURE_CLIENT_ID: pagopa-selc-d-azure-client-id
     SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selc-d-apim-external-api-key
-
   keyvault:
     name: "pagopa-d-selc-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-
   nodeSelector: {}
-
   tolerations: []
-
   affinity: {}
