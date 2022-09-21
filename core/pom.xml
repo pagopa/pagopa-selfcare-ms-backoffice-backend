@@ -19,6 +19,7 @@
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-ms-backoffice-connector-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
