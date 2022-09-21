@@ -46,7 +46,7 @@
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
-                <artifactId>pagopa-selfcare-ms-backoffice-connector-api</artifactId>
+                <artifactId>pagopa-selfcare-ms-backoffice-connector</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
