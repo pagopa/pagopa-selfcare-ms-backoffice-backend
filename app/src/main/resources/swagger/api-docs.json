@@ -20,16 +20,6 @@
         "summary" : "getInstitutions",
         "description" : "Retrieves all the onboarded institutions related to the logged user",
         "operationId" : "getInstitutionsUsingGET",
-        "parameters" : [ {
-          "name" : "productId",
-          "in" : "query",
-          "description" : "productId",
-          "required" : true,
-          "style" : "form",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
         "responses" : {
           "200" : {
             "description" : "OK",
