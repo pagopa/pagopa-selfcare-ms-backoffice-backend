@@ -113,7 +113,7 @@ stages:
         steps:
           - template: templates/deploy-release-decision/template.yaml@pagopaCommons
             parameters:
-              NEXT_VERSION: $(next_version)
+              NEXT_VERSION: $(current_version)
               CURRENT_VERSION: $(current_version)
               CURRENT_VERSION_BRANCH: $(current_version_branch)
               CURRENT_VERSION_TAG: $(current_version_tag)
