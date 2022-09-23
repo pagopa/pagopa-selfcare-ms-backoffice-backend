@@ -11,7 +11,7 @@ public interface ExternalApiService {
     
     Institution getInstitution(String institutionId);
     
-    Collection<InstitutionInfo> getInstitutions(String productId);
+    Collection<InstitutionInfo> getInstitutions();
     
     List<Product> getInstitutionUserProducts(String institutionId);
     

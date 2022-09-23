@@ -20,7 +20,6 @@ import java.util.List;
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static it.pagopa.selfcare.pagopa.TestUtils.reflectionEqualsByName;
 import static it.pagopa.selfcare.pagopa.backoffice.core.ExternalApiServiceImpl.AN_INSTITUTION_ID_IS_REQUIRED;
-import static it.pagopa.selfcare.pagopa.backoffice.core.ExternalApiServiceImpl.A_PRODUCT_ID_IS_REQUIRED;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -66,28 +65,17 @@ class ExternalApiServiceImplTest {
         verifyNoMoreInteractions(externalApiConnectorMock);
     }
     
-    @Test
-    void getInstitutions_nullProductId(){
-        //given
-        String productId = null;
-        //when
-        Executable executable = () -> externalApiService.getInstitutions(productId);
-        //then
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, executable);
-        assertEquals(A_PRODUCT_ID_IS_REQUIRED, e.getMessage());
-        verifyNoInteractions(externalApiConnectorMock);
-    }
     
     @Test
     void getInstitutions(){
         //given
-        String productId = "productId";
+        String productId = "prod-pagopa";
         InstitutionInfo institutionInfo = mockInstance(new InstitutionInfo());
         institutionInfo.setUserProductRoles(List.of("productRole"));
         when(externalApiConnectorMock.getInstitutions(any()))
                 .thenReturn(List.of(institutionInfo));
         //when
-        Collection<InstitutionInfo> institutionInfos = externalApiService.getInstitutions(productId);
+        Collection<InstitutionInfo> institutionInfos = externalApiService.getInstitutions();
         //then
         assertNotNull(institutionInfos);
         institutionInfos.forEach(TestUtils::checkNotNullFields);

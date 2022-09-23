@@ -165,15 +165,13 @@ class InstitutionControllerTest {
     @Test
     void getInstitutions() throws Exception {
         //given
-        String productId = "productId";
         InstitutionInfo institutionInfoMock =  mockInstance(new InstitutionInfo());
         institutionInfoMock.setUserProductRoles(List.of("userProductRole"));
-        when(externalApiServiceMock.getInstitutions(anyString()))
+        when(externalApiServiceMock.getInstitutions())
                 .thenReturn(List.of(institutionInfoMock));
         //when
          mvc.perform(MockMvcRequestBuilders
                         .get(BASE_URL)
-                        .queryParam("productId", productId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..id", notNullValue()))
@@ -190,7 +188,7 @@ class InstitutionControllerTest {
                 .andExpect(jsonPath("$..userProductRoles[0]", notNullValue()));
         //then
         verify(externalApiServiceMock, times(1))
-                .getInstitutions(productId);
+                .getInstitutions();
         verifyNoMoreInteractions(externalApiServiceMock);
     }
     

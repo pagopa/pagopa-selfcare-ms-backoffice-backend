@@ -96,11 +96,10 @@ public class InstitutionController {
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutions}")
-    public List<InstitutionResource> getInstitutions(@RequestParam("productId")String productId){
+    public List<InstitutionResource> getInstitutions(){
 
         log.trace("getInstitutions start");
-        log.debug("getInstitutions productId = {}", productId);
-        Collection<InstitutionInfo> institutions = externalApiService.getInstitutions(productId);
+        Collection<InstitutionInfo> institutions = externalApiService.getInstitutions();
         List<InstitutionResource> resources = institutions.stream()
                 .map(InstitutionMapper::toResource)
                 .collect(Collectors.toList());
