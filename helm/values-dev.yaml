@@ -2,19 +2,34 @@ microservice-chart:
   namespace: "selc"
   nameOverride: ""
   fullnameOverride: ""
+  image:
+    repository: pagopadcommonacr.azurecr.io/pagopaselfcaremsbackofficebackend
+    tag: "0.0.4" #improve
+    pullPolicy: Always
+  livenessProbe:
+    httpGet:
+      path: /actuator/health/liveness
+      port: 8080
+    initialDelaySeconds: 90
+    failureThreshold: 6
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /actuator/health/readiness
+      port: 8080
+    initialDelaySeconds: 90
+    failureThreshold: 6
+    periodSeconds: 10
   deployment:
     create: true
-    livenessProbePath: /actuator/health/liveness
-    readinessProbePath: /actuator/health/readiness
-  image:
-    repository: pagopadcommonacr.azurecr.io/pagopaselfcaremsbackoffice
-    tag: "0.0.2" #improve
-    pullPolicy: Always
-    port: 8080
+  service:
+    create: true
+    type: ClusterIP
+    port: 8080 #80
   ingress:
+    create: true
     host: "weudev.selc.internal.dev.platform.pagopa.it"
-    path: "/selc"
-    pathType: "ImplementationSpecific"
+    path: "/selc/(.*)"
   serviceAccount:
     create: false
     annotations: {}
@@ -25,35 +40,27 @@ microservice-chart:
       type: RuntimeDefault
   securityContext:
     allowPrivilegeEscalation: false
-  service:
-    type: ClusterIP
-    port: 80
   resources:
     requests:
-      memory: "96Mi"
-      cpu: "40m"
+      memory: "512Mi"
+      cpu: "0.5"
     limits:
-      memory: "300Mi"
-      cpu: "300m"
+      memory: "768Mi"
+      cpu: "0.5"
   autoscaling:
+    enable: true
     minReplica: 1
     maxReplica: 2
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
     triggers:
-      - type: azure-monitor
+      - type: cpu
         metadata:
-          tenantId: 7788edaf-0346-4068-9d79-c868aed15b3d
-          subscriptionId: bbe47ad4-08b3-4925-94c5-1278e5819b86
-          resourceGroupName: pagopa-d-selc-sec-rg
-          resourceURI: Microsoft.KeyVault/vaults/pagopa-d-selc-kv
-          metricName: ServiceApiHit
-          # metricNamespace: Microsoft.KeyVault/vaults
-          # metricFilter: namespace eq 'default'
-          # metricAggregationInterval: "-1:1:0"
-          metricAggregationType: Count
-          targetValue: "30"
-  envConfig: {}
+          # Required
+          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
+          value: "70"
+  envConfig:
+    WEBSITE_SITE_NAME: 'pagopaselfcaremsbackofficebackend'
   envSecret:
     AZURE_CLIENT_SECRET: pagopa-selc-d-azure-client-secret
     AZURE_CLIENT_ID: pagopa-selc-d-azure-client-id
