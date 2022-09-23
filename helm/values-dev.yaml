@@ -3,7 +3,7 @@ microservice-chart:
   nameOverride: ""
   fullnameOverride: ""
   image:
-    repository: pagopadcommonacr.azurecr.io/pagopaselfcaremsbackoffice
+    repository: pagopadcommonacr.azurecr.io/pagopaselfcaremsbackofficebackend
     tag: "0.0.3" #improve
     pullPolicy: Always
   livenessProbe:
@@ -60,7 +60,7 @@ microservice-chart:
           type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
           value: "70"
   envConfig:
-    WEBSITE_SITE_NAME: 'pagopaselfcaremsbackoffice'
+    WEBSITE_SITE_NAME: 'pagopaselfcaremsbackofficebackend'
   envSecret:
     AZURE_CLIENT_SECRET: pagopa-selc-d-azure-client-secret
     AZURE_CLIENT_ID: pagopa-selc-d-azure-client-id
