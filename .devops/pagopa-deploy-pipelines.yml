@@ -45,8 +45,8 @@ variables:
     dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
     kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
     poolImage: 'pagopa-dev-linux'
-    # appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
-    # appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
+    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
+    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
   ${{ if eq(parameters['ENV'], 'uat') }}:
     dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
     dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
@@ -158,5 +158,5 @@ stages:
                     APP_NAME: $(imageRepository)
                     VALUE_FILE: "helm/values-${{ parameters['ENV'] }}.yaml"
                     DEPLOY_VERSION: $(deploy_version)
-                    # APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
-                    # APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
+                    APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
+                    APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
