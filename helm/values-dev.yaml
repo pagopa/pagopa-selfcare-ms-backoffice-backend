@@ -65,6 +65,7 @@ microservice-chart:
     AZURE_CLIENT_SECRET: pagopa-selc-d-azure-client-secret
     AZURE_CLIENT_ID: pagopa-selc-d-azure-client-id
     SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selc-d-apim-external-api-key
+    APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-d-connection-string'
   keyvault:
     name: "pagopa-d-selc-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
