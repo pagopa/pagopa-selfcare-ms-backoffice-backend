@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/external/v1/institutions/institutionId1/products"
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": [
+                  {
+                    "description": "string",
+                    "id": "string",
+                    "title": "string",
+                    "urlBO": "string",
+                    "urlPublic": "string"
+                  }
+                ],
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

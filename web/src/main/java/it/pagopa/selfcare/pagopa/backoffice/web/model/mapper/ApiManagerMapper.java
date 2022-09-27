@@ -1,6 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.subscriptions.ApiKeysResource;
 
 public class ApiManagerMapper {

@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
+import it.pagopa.selfcare.pagopa.backoffice.core.ExternalApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(classes = {
         SwaggerConfig.class,
-        WebConfig.class
+        WebConfig.class,
+        SecurityConfig.class,
+        BaseWebConfig.class
 })
 @EnableOpenApi
 @EnableWebMvc
@@ -36,6 +39,9 @@ class SwaggerConfigTest {
 
     @MockBean
     private ApiManagementService managementService;
+
+    @MockBean
+    private ExternalApiService externalApiService;
 
     @Autowired
     WebApplicationContext context;

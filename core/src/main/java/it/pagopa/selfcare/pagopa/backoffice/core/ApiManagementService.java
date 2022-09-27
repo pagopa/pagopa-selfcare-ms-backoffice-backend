@@ -1,6 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
 
 public interface ApiManagementService {
     

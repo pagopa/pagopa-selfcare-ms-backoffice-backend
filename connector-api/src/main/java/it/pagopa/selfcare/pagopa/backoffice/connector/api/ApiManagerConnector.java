@@ -1,8 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.api;
 
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.CreateInstitutionApiKeyDto;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.UserContract;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.CreateInstitutionApiKeyDto;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
 
 public interface ApiManagerConnector {
 
