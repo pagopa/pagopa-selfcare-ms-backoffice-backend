@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.security;
 
-import it.pagopa.selfcare.pagopa.backoffice.web.config.NoAuthoritiesRetriever;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

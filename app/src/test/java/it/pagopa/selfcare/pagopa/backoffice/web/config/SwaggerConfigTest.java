@@ -27,7 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(classes = {
         SwaggerConfig.class,
-        WebConfig.class
+        WebConfig.class,
+        SecurityConfig.class,
+        BaseWebConfig.class
 })
 @EnableOpenApi
 @EnableWebMvc

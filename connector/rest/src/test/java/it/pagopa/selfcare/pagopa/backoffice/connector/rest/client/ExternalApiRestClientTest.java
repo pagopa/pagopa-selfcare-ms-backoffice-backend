@@ -15,7 +15,10 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institut
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.product.Product;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.RestTestUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.config.ExternalApiRestClientConfigTest;
+import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -27,6 +30,8 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.test.context.TestSecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -104,6 +109,21 @@ class ExternalApiRestClientTest {
         put(TestCase.FULLY_NULL, "institutionId2");
         put(TestCase.EMPTY_RESULT, "institutionId3");
     }};
+    
+    @BeforeEach
+    void beforeEach(){
+        SelfCareUser selfCareUser = SelfCareUser.builder("id")
+                .email("test@example.com")
+                .name("name")
+                .surname("surname")
+                .build();
+        TestSecurityContextHolder.setAuthentication(new TestingAuthenticationToken(selfCareUser, null));
+    }
+    
+    @AfterEach
+    void afterEach(){
+        TestSecurityContextHolder.clearContext();
+    }
 
 
     @Test

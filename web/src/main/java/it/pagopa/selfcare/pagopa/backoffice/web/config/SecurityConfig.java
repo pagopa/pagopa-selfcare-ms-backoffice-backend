@@ -15,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -24,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @PropertySource("classpath:/config/jwt.properties")
 @ComponentScan(basePackages = "it.pagopa.selfcare.pagopa.backoffice.web.security")
 @Import(BaseWebConfig.class)
+@EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] AUTH_WHITELIST = {
@@ -40,7 +42,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtService jwtService;
     private final AuthoritiesRetriever authoritiesRetriever;
     private final ObjectMapper objectMapper;
-
 
     public SecurityConfig(JwtService jwtService, AuthoritiesRetriever authoritiesRetriever, ObjectMapper objectMapper) {
         this.jwtService = jwtService;
