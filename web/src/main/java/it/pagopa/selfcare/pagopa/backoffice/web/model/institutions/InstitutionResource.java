@@ -11,6 +11,7 @@ import java.util.Collection;
 
 @Data
 public class InstitutionResource {
+    
     @ApiModelProperty(value = "${swagger.model.institution.id}", required = true)
     @JsonProperty(required = true)
     @NotBlank
@@ -49,11 +50,6 @@ public class InstitutionResource {
     @NotBlank
     private String mailAddress;
 
-    @ApiModelProperty(value = "${swagger.model.institution.userRole}", required = true)
-    @JsonProperty(required = true)
-    @NotBlank
-    private String userRole;
-
     @ApiModelProperty(value = "${swagger.model.institution.status}", required = true)
     @JsonProperty(required = true)
     @NotBlank
@@ -68,4 +64,5 @@ public class InstitutionResource {
     @JsonProperty(required = true)
     @NotNull
     private Collection<String> userProductRoles;
+    
 }
