@@ -8,7 +8,7 @@ microservice-chart:
     pullPolicy: Always
   livenessProbe:
     httpGet:
-        path: /actuator/health/liveness
+      path: /actuator/health/liveness
       port: 8080
     initialDelaySeconds: 90
     failureThreshold: 6
