@@ -29,7 +29,7 @@ microservice-chart:
   ingress:
     create: true
     host: "weudev.selc.internal.dev.platform.pagopa.it"
-    path: "/selc/v1/(.*)"
+    path: "/selc/pagopa/v1/(.*)"
   serviceAccount:
     create: false
     annotations: {}
