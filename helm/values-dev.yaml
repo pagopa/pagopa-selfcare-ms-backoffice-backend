@@ -64,6 +64,7 @@ microservice-chart:
     EXTERNAL_API_SERVICE_URL: https://api.dev.selfcare.pagopa.it
     AZURE_RESOURCE_GROUP: pagopa-d-api-rg
     AZURE_SERVICE_NAME: pagopa-d-apim
+    ENABLE_CONFIDENTIAL_FILTER: false
   envSecret:
     AZURE_CLIENT_SECRET: pagopa-selc-d-azure-client-secret
     AZURE_CLIENT_ID: pagopa-selc-d-azure-client-id
