@@ -65,7 +65,6 @@ microservice-chart:
     AZURE_RESOURCE_GROUP: pagopa-d-api-rg
     AZURE_SERVICE_NAME: pagopa-d-apim
     ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
-    TEST_EMAIL: 'pectest@pec.pagopa.it'
   envSecret:
     AZURE_CLIENT_SECRET: pagopa-selc-d-azure-client-secret
     AZURE_CLIENT_ID: pagopa-selc-d-azure-client-id
@@ -74,6 +73,7 @@ microservice-chart:
     AZURE_TENANT_ID: pagopa-sel-dev-tenant-id
     AZURE_SUBSCRIPTION_ID: pagopa-sel-d-subscription-id
     JWT_TOKEN_PUBLIC_KEY: pagopa-d-weu-selc-selc-jwt-pub-key
+    TEST_EMAIL: pagopa-d-env-test-email
   keyvault:
     name: "pagopa-d-selc-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
