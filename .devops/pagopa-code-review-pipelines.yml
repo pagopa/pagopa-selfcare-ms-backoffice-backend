@@ -73,21 +73,21 @@ steps:
       mavenAuthenticateFeed: false
       effectivePomSkip: false
       sonarQubeRunAnalysis: false
-    - bash: xmlReportPaths=$(find "$(pwd)" -path '*jacoco.xml' | sed 's/.*/&/' | tr '\n' ','); echo "##vso[task.setvariable variable=xmlReportPaths]$xmlReportPaths"
-      displayName: finding jacoco.xml
-    - task: Maven@3
-      inputs:
-        mavenPomFile: 'pom.xml'
-        goals: 'sonar:sonar'
-        options: '-B -s $(settingsxml.secureFilePath) -Dsonar.coverage.jacoco.xmlReportPaths=$(xmlReportPaths)'
-        publishJUnitResults: false
-        javaHomeOption: 'JDKVersion'
-        mavenVersionOption: 'Default'
-        mavenAuthenticateFeed: false
-        effectivePomSkip: false
-        sonarQubeRunAnalysis: true
-        isJacocoCoverageReportXML: false
-        sqMavenPluginVersionChoice: 'latest'
+  - bash: xmlReportPaths=$(find "$(pwd)" -path '*jacoco.xml' | sed 's/.*/&/' | tr '\n' ','); echo "##vso[task.setvariable variable=xmlReportPaths]$xmlReportPaths"
+    displayName: finding jacoco.xml
+  - task: Maven@3
+    inputs:
+      mavenPomFile: 'pom.xml'
+      goals: 'sonar:sonar'
+      options: '-B -s $(settingsxml.secureFilePath) -Dsonar.coverage.jacoco.xmlReportPaths=$(xmlReportPaths)'
+      publishJUnitResults: false
+      javaHomeOption: 'JDKVersion'
+      mavenVersionOption: 'Default'
+      mavenAuthenticateFeed: false
+      effectivePomSkip: false
+      sonarQubeRunAnalysis: true
+      isJacocoCoverageReportXML: false
+      sqMavenPluginVersionChoice: 'latest'
 
   - task: SonarCloudPublish@1
     displayName: 'Publish SonarCloud results on build summary'
