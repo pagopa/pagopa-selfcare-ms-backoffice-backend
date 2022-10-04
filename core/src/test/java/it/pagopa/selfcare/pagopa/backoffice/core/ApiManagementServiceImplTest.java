@@ -15,15 +15,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementServiceImpl.AN_INSTITUTION_ID_IS_REQUIRED;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith({SpringExtension.class})
+@ExtendWith({SpringExtension.class, SystemStubsExtension.class})
 @ContextConfiguration(classes = {ApiManagementServiceImpl.class})
 class ApiManagementServiceImplTest {
+
+    @SystemStub
+    private EnvironmentVariables environmentVariables;
 
     @Autowired
     private ApiManagementServiceImpl apiManagementService;
@@ -65,6 +71,9 @@ class ApiManagementServiceImplTest {
     void createInstitutionKeys_noSubscriptionFound() {
         //given
         String institutionId = "institutionId";
+        String testEmail = null;
+        ApiManagementService apiManagementServiceTest = new ApiManagementServiceImpl(testEmail, apiManagerConnectorMock, externalApiConnectorMock);
+
         Institution institutionMock = mockInstance(new Institution());
         institutionMock.setId(institutionId);
         InstitutionApiKeys apiKeys = mockInstance(new InstitutionApiKeys());
@@ -74,7 +83,7 @@ class ApiManagementServiceImplTest {
                 .thenThrow(RuntimeException.class)
                 .thenReturn(apiKeys);
         //when
-        InstitutionApiKeys institutionKeys = apiManagementService.createInstitutionKeys(institutionId);
+        InstitutionApiKeys institutionKeys = apiManagementServiceTest.createInstitutionKeys(institutionId);
         //then
         assertNotNull(institutionKeys);
         assertEquals(apiKeys.getPrimaryKey(), institutionKeys.getPrimaryKey());
@@ -90,6 +99,40 @@ class ApiManagementServiceImplTest {
         assertEquals(institutionMock.getDescription(), capturedDto.getDescription());
         assertEquals(institutionMock.getTaxCode(), capturedDto.getFiscalCode());
         assertEquals(institutionMock.getDigitalAddress(), capturedDto.getEmail());
+        verifyNoMoreInteractions(apiManagerConnectorMock, externalApiConnectorMock);
+    }
+    
+    @Test
+    void createInstitutionSubscription_noSubscriptionFoundTestEmail(){
+        //given
+        String testEmail = "testEmail";
+        String institutionId = "institutionId";
+        ApiManagementService apiManagementServiceTest = new ApiManagementServiceImpl(testEmail, apiManagerConnectorMock, externalApiConnectorMock);
+        Institution institutionMock = mockInstance(new Institution());
+        institutionMock.setId(institutionId);
+        InstitutionApiKeys apiKeys = mockInstance(new InstitutionApiKeys());
+        when(externalApiConnectorMock.getInstitution(any()))
+                .thenReturn(institutionMock);
+        when(apiManagerConnectorMock.createInstitutionSubscription(any(), any()))
+                .thenThrow(RuntimeException.class)
+                .thenReturn(apiKeys);
+        //when
+        InstitutionApiKeys institutionKeys = apiManagementServiceTest.createInstitutionKeys(institutionId);
+        //then
+        assertNotNull(institutionKeys);
+        assertEquals(apiKeys.getPrimaryKey(), institutionKeys.getPrimaryKey());
+        assertEquals(apiKeys.getSecondaryKey(), institutionKeys.getSecondaryKey());
+        verify(externalApiConnectorMock, times(1))
+                .getInstitution(institutionId);
+        verify(apiManagerConnectorMock, times(2))
+                .createInstitutionSubscription(institutionId, institutionMock.getDescription());
+        ArgumentCaptor<CreateInstitutionApiKeyDto> institutionDtoArgumentCaptor = ArgumentCaptor.forClass(CreateInstitutionApiKeyDto.class);
+        verify(apiManagerConnectorMock, times(1))
+                .createInstitution(eq(institutionId), institutionDtoArgumentCaptor.capture());
+        CreateInstitutionApiKeyDto capturedDto = institutionDtoArgumentCaptor.getValue();
+        assertEquals(institutionMock.getDescription(), capturedDto.getDescription());
+        assertEquals(institutionMock.getTaxCode(), capturedDto.getFiscalCode());
+        assertEquals(testEmail, capturedDto.getEmail());
         verifyNoMoreInteractions(apiManagerConnectorMock, externalApiConnectorMock);
     }
 
