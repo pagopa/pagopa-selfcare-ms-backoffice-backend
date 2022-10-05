@@ -18,7 +18,7 @@
     <properties>
         <java.version>11</java.version>
         <spring-cloud.version>2020.0.4</spring-cloud.version>
-        <pagopa_parent_pom.version>0.0.17</pagopa_parent_pom.version>
+        <pagopa_parent_pom.version>0.0.18</pagopa_parent_pom.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <bom_version_to_target>1.2.4</bom_version_to_target>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

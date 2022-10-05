@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.validator;
 
+import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.web.exception.ResponseValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -31,7 +32,7 @@ public class PagopaBackofficeControllerResponseValidator {
     @AfterReturning(pointcut = "controllersPointcut()", returning = "result")
     public void validateResponse(JoinPoint joinPoint, Object result) {
         log.trace("[validateResponse] start");
-        log.debug("[validateResponse] inputs: result = {}", result);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "[validateResponse] inputs: result = {}", result);
         if (result != null) {
             if (Collection.class.isAssignableFrom(result.getClass())) {
                 ((Collection<?>) result).forEach(this::validate);
