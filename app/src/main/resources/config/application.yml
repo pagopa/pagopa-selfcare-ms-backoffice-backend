@@ -1,6 +1,6 @@
 server:
   port: ${PAGOPA_BACKOFFICE_SERVER_PORT:8080}
-  shutdown: gracefull
+  shutdown: GRACEFUL
 
 spring:
   application:
