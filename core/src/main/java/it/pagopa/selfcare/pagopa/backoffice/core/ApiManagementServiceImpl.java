@@ -46,7 +46,7 @@ public class ApiManagementServiceImpl implements ApiManagementService {
                 CreateInstitutionApiKeyDto dto = new CreateInstitutionApiKeyDto();
                 dto.setDescription(institution.getDescription());
                 dto.setFiscalCode(institution.getTaxCode());
-                if (testEmail!=null)
+                if (!testEmail.isBlank())
                     dto.setEmail(testEmail);
                 else
                     dto.setEmail(institution.getDigitalAddress());
