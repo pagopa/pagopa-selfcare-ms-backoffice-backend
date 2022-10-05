@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaselfcaremsbackofficebackend
-    tag: "0.0.5" #improve
+    tag: "0.0.21" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -29,7 +29,7 @@ microservice-chart:
   ingress:
     create: true
     host: "weudev.selc.internal.dev.platform.pagopa.it"
-    path: "/selc/(.*)"
+    path: "/selc/pagopa/v1/(.*)"
   serviceAccount:
     create: false
     annotations: {}
@@ -61,10 +61,19 @@ microservice-chart:
           value: "70"
   envConfig:
     WEBSITE_SITE_NAME: 'pagopaselfcaremsbackofficebackend'
+    EXTERNAL_API_SERVICE_URL: https://api.dev.selfcare.pagopa.it
+    AZURE_RESOURCE_GROUP: pagopa-d-api-rg
+    AZURE_SERVICE_NAME: pagopa-d-apim
+    ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
   envSecret:
     AZURE_CLIENT_SECRET: pagopa-selc-d-azure-client-secret
     AZURE_CLIENT_ID: pagopa-selc-d-azure-client-id
     SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selc-d-apim-external-api-key
+    APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-d-connection-string'
+    AZURE_TENANT_ID: pagopa-sel-dev-tenant-id
+    AZURE_SUBSCRIPTION_ID: pagopa-sel-d-subscription-id
+    JWT_TOKEN_PUBLIC_KEY: pagopa-d-weu-selc-selc-jwt-pub-key
+    TEST_EMAIL: pagopa-d-env-test-email
   keyvault:
     name: "pagopa-d-selc-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"

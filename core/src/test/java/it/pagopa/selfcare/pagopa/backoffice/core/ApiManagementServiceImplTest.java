@@ -4,9 +4,9 @@ import com.azure.core.management.exception.ManagementException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiManagerConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ExternalApiConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.CreateInstitutionApiKeyDto;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -15,18 +15,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementServiceImpl.AN_INSTITUTION_ID_IS_REQUIRED;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith({SpringExtension.class})
-@ContextConfiguration(classes = {ApiManagementServiceImpl.class,})
+@ExtendWith({SpringExtension.class, SystemStubsExtension.class})
+@ContextConfiguration(classes = {ApiManagementServiceImpl.class})
 class ApiManagementServiceImplTest {
 
+    @SystemStub
+    private EnvironmentVariables environmentVariables;
+
     @Autowired
-    private ApiManagementServiceImpl apiManagementServiceMock;
+    private ApiManagementServiceImpl apiManagementService;
 
     @MockBean
     private ApiManagerConnector apiManagerConnectorMock;
@@ -39,7 +45,7 @@ class ApiManagementServiceImplTest {
         //given
         String institutionId = null;
         //when
-        Executable executable = () -> apiManagementServiceMock.createInstitutionKeys(institutionId);
+        Executable executable = () -> apiManagementService.createInstitutionKeys(institutionId);
         //then
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, executable);
         assertEquals(AN_INSTITUTION_ID_IS_REQUIRED, e.getMessage());
@@ -51,7 +57,7 @@ class ApiManagementServiceImplTest {
         //given
         String institutionId = "institutionId";
         //when
-        Executable executable = () -> apiManagementServiceMock.createInstitutionKeys(institutionId);
+        Executable executable = () -> apiManagementService.createInstitutionKeys(institutionId);
         //then
         ResourceNotFoundException e = assertThrows(ResourceNotFoundException.class, executable);
         assertEquals(String.format("The institution %s was not found", institutionId), e.getMessage());
@@ -65,6 +71,9 @@ class ApiManagementServiceImplTest {
     void createInstitutionKeys_noSubscriptionFound() {
         //given
         String institutionId = "institutionId";
+        String testEmail = null;
+        ApiManagementService apiManagementServiceTest = new ApiManagementServiceImpl(testEmail, apiManagerConnectorMock, externalApiConnectorMock);
+
         Institution institutionMock = mockInstance(new Institution());
         institutionMock.setId(institutionId);
         InstitutionApiKeys apiKeys = mockInstance(new InstitutionApiKeys());
@@ -74,7 +83,7 @@ class ApiManagementServiceImplTest {
                 .thenThrow(RuntimeException.class)
                 .thenReturn(apiKeys);
         //when
-        InstitutionApiKeys institutionKeys = apiManagementServiceMock.createInstitutionKeys(institutionId);
+        InstitutionApiKeys institutionKeys = apiManagementServiceTest.createInstitutionKeys(institutionId);
         //then
         assertNotNull(institutionKeys);
         assertEquals(apiKeys.getPrimaryKey(), institutionKeys.getPrimaryKey());
@@ -92,6 +101,40 @@ class ApiManagementServiceImplTest {
         assertEquals(institutionMock.getDigitalAddress(), capturedDto.getEmail());
         verifyNoMoreInteractions(apiManagerConnectorMock, externalApiConnectorMock);
     }
+    
+    @Test
+    void createInstitutionSubscription_noSubscriptionFoundTestEmail(){
+        //given
+        String testEmail = "testEmail";
+        String institutionId = "institutionId";
+        ApiManagementService apiManagementServiceTest = new ApiManagementServiceImpl(testEmail, apiManagerConnectorMock, externalApiConnectorMock);
+        Institution institutionMock = mockInstance(new Institution());
+        institutionMock.setId(institutionId);
+        InstitutionApiKeys apiKeys = mockInstance(new InstitutionApiKeys());
+        when(externalApiConnectorMock.getInstitution(any()))
+                .thenReturn(institutionMock);
+        when(apiManagerConnectorMock.createInstitutionSubscription(any(), any()))
+                .thenThrow(RuntimeException.class)
+                .thenReturn(apiKeys);
+        //when
+        InstitutionApiKeys institutionKeys = apiManagementServiceTest.createInstitutionKeys(institutionId);
+        //then
+        assertNotNull(institutionKeys);
+        assertEquals(apiKeys.getPrimaryKey(), institutionKeys.getPrimaryKey());
+        assertEquals(apiKeys.getSecondaryKey(), institutionKeys.getSecondaryKey());
+        verify(externalApiConnectorMock, times(1))
+                .getInstitution(institutionId);
+        verify(apiManagerConnectorMock, times(2))
+                .createInstitutionSubscription(institutionId, institutionMock.getDescription());
+        ArgumentCaptor<CreateInstitutionApiKeyDto> institutionDtoArgumentCaptor = ArgumentCaptor.forClass(CreateInstitutionApiKeyDto.class);
+        verify(apiManagerConnectorMock, times(1))
+                .createInstitution(eq(institutionId), institutionDtoArgumentCaptor.capture());
+        CreateInstitutionApiKeyDto capturedDto = institutionDtoArgumentCaptor.getValue();
+        assertEquals(institutionMock.getDescription(), capturedDto.getDescription());
+        assertEquals(institutionMock.getTaxCode(), capturedDto.getFiscalCode());
+        assertEquals(testEmail, capturedDto.getEmail());
+        verifyNoMoreInteractions(apiManagerConnectorMock, externalApiConnectorMock);
+    }
 
     @Test
     void createInstitutionSubscription() {
@@ -105,7 +148,7 @@ class ApiManagementServiceImplTest {
         when(apiManagerConnectorMock.createInstitutionSubscription(any(), any()))
                 .thenReturn(apiKeys);
         //when
-        InstitutionApiKeys institutionKeys = apiManagementServiceMock.createInstitutionKeys(institutionId);
+        InstitutionApiKeys institutionKeys = apiManagementService.createInstitutionKeys(institutionId);
         //then
         assertNotNull(institutionKeys);
         assertEquals(apiKeys.getPrimaryKey(), institutionKeys.getPrimaryKey());
@@ -122,7 +165,7 @@ class ApiManagementServiceImplTest {
         //given
         String institutionId = null;
         //when
-        Executable executable = () -> apiManagementServiceMock.getInstitutionApiKeys(institutionId);
+        Executable executable = () -> apiManagementService.getInstitutionApiKeys(institutionId);
         //then
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, executable);
         assertEquals(AN_INSTITUTION_ID_IS_REQUIRED, e.getMessage());
@@ -137,7 +180,7 @@ class ApiManagementServiceImplTest {
                 .when(apiManagerConnectorMock)
                 .getInstitutionApiKeys(any());
         //when
-        Executable executable = () -> apiManagementServiceMock.getInstitutionApiKeys(institutionId);
+        Executable executable = () -> apiManagementService.getInstitutionApiKeys(institutionId);
         //then
         assertThrows(ManagementException.class, executable);
         verify(apiManagerConnectorMock, times(1))
@@ -154,7 +197,7 @@ class ApiManagementServiceImplTest {
         when(apiManagerConnectorMock.getInstitutionApiKeys(any()))
                 .thenReturn(apiKeys);
         //when
-        InstitutionApiKeys institutionApiKeys = apiManagementServiceMock.getInstitutionApiKeys(institutionId);
+        InstitutionApiKeys institutionApiKeys = apiManagementService.getInstitutionApiKeys(institutionId);
         //then
         assertNotNull(institutionApiKeys);
         assertEquals(apiKeys, institutionApiKeys);
@@ -169,7 +212,7 @@ class ApiManagementServiceImplTest {
         //given
         String institutionId = null;
         //when
-        Executable executable = () -> apiManagementServiceMock.regeneratePrimaryKey(institutionId);
+        Executable executable = () -> apiManagementService.regeneratePrimaryKey(institutionId);
         //then
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, executable);
         assertEquals(AN_INSTITUTION_ID_IS_REQUIRED, e.getMessage());
@@ -181,7 +224,7 @@ class ApiManagementServiceImplTest {
         //given
         String institutionId = "institutionId";
         //when
-        Executable executable = () -> apiManagementServiceMock.regeneratePrimaryKey(institutionId);
+        Executable executable = () -> apiManagementService.regeneratePrimaryKey(institutionId);
         //then
         assertDoesNotThrow(executable);
         verify(apiManagerConnectorMock, times(1))
@@ -195,7 +238,7 @@ class ApiManagementServiceImplTest {
         //given
         String institutionId = null;
         //when
-        Executable executable = () -> apiManagementServiceMock.regenerateSecondaryKey(institutionId);
+        Executable executable = () -> apiManagementService.regenerateSecondaryKey(institutionId);
         //then
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, executable);
         assertEquals(AN_INSTITUTION_ID_IS_REQUIRED, e.getMessage());
@@ -207,7 +250,7 @@ class ApiManagementServiceImplTest {
         //given
         String institutionId = "institutionId";
         //when
-        Executable executable = () -> apiManagementServiceMock.regenerateSecondaryKey(institutionId);
+        Executable executable = () -> apiManagementService.regenerateSecondaryKey(institutionId);
         //then
         assertDoesNotThrow(executable);
         verify(apiManagerConnectorMock, times(1))

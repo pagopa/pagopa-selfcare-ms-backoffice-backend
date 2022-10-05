@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/external/v1/institutions",
+    "queryParameters": {
+          "productId": {
+            "equalTo": "productId1"
+     }
+    }
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": [
+                  {}
+                ],
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

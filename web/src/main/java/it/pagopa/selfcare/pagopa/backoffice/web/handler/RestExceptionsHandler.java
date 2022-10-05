@@ -28,7 +28,7 @@ import static org.springframework.http.HttpStatus.*;
 @RestControllerAdvice
 public class RestExceptionsHandler {
 
-    static final String UNHANDLED_EXCEPTION = "unhandled exception: ";
+    public static final String UNHANDLED_EXCEPTION = "unhandled exception: ";
 
 
     public RestExceptionsHandler() {
