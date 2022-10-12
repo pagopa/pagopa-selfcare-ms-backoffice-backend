@@ -1,5 +1,5 @@
 microservice-chart:
-  namespace: "selc"
+  namespace: "selfcare"
   nameOverride: ""
   fullnameOverride: ""
   image:
@@ -28,8 +28,8 @@ microservice-chart:
     port: 8080 #80
   ingress:
     create: true
-    host: "weudev.selc.internal.dev.platform.pagopa.it"
-    path: "/selc/pagopa/v1/(.*)"
+    host: "weudev.selfcare.internal.dev.platform.pagopa.it"
+    path: "/selfcare/pagopa/v1/(.*)"
   serviceAccount:
     create: false
     annotations: {}
@@ -66,16 +66,16 @@ microservice-chart:
     AZURE_SERVICE_NAME: pagopa-d-apim
     ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
   envSecret:
-    AZURE_CLIENT_SECRET: pagopa-selc-d-azure-client-secret
-    AZURE_CLIENT_ID: pagopa-selc-d-azure-client-id
-    SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selc-d-apim-external-api-key
+    AZURE_CLIENT_SECRET: pagopa-selfcare-d-azure-client-secret
+    AZURE_CLIENT_ID: pagopa-selfcare-d-azure-client-id
+    SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selfcare-d-apim-external-api-key
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-d-connection-string'
-    AZURE_TENANT_ID: pagopa-sel-dev-tenant-id
-    AZURE_SUBSCRIPTION_ID: pagopa-sel-d-subscription-id
-    JWT_TOKEN_PUBLIC_KEY: pagopa-d-weu-selc-selc-jwt-pub-key
+    AZURE_TENANT_ID: pagopa-selfcare-dev-tenant-id
+    AZURE_SUBSCRIPTION_ID: pagopa-selfcare-d-subscription-id
+    JWT_TOKEN_PUBLIC_KEY: pagopa-d-weu-selfcare-jwt-pub-key
     TEST_EMAIL: pagopa-d-env-test-email
   keyvault:
-    name: "pagopa-d-selc-kv"
+    name: "pagopa-d-selfcare-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   nodeSelector: {}
   tolerations: []
