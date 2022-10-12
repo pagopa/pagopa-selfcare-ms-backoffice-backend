@@ -43,28 +43,28 @@
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-connector-azure-apim</artifactId>
-                <version>${pagopa_parent_pom.version}</version>
+                <version>0.0.23</version>
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-ms-backoffice-connector</artifactId>
-                <version>${pagopa_parent_pom.version}</version>
+                <version>0.0.23</version>
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-ms-backoffice-connector-api</artifactId>
-                <version>${pagopa_parent_pom.version}</version>
+                <version>0.0.23</version>
                 <type>test-jar</type>
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-ms-backoffice-core</artifactId>
-                <version>${pagopa_parent_pom.version}</version>
+                <version>0.0.23</version>
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-ms-backoffice-web</artifactId>
-                <version>${pagopa_parent_pom.version}</version>
+                <version>0.0.23</version>
             </dependency>
             <dependency>
                 <groupId>io.springfox</groupId>

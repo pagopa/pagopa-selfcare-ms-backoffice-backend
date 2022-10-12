@@ -14,14 +14,14 @@
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-ms-backoffice-connector-api</artifactId>
-            <version>${pagopa_parent_pom.version}</version>
+            <version>0.0.23</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-ms-backoffice-core</artifactId>
-            <version>${pagopa_parent_pom.version}</version>
+            <version>0.0.23</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
