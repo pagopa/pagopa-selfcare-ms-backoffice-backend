@@ -78,14 +78,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    log.error("{} to resource {}", accessDeniedException.getMessage(), request.getRequestURI());
+                    log.warn("{} to resource {}", accessDeniedException.getMessage(), request.getRequestURI());
                     response.setStatus(HttpStatus.FORBIDDEN.value());
                     response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
                     final Problem problem = new Problem(HttpStatus.FORBIDDEN, accessDeniedException.getMessage());
                     response.getOutputStream().print(objectMapper.writeValueAsString(problem));
                 })
                 .authenticationEntryPoint((request, response, authException) -> {
-                    log.error("{} {}", authException.getMessage(), request.getRequestURI());
+                    log.warn("{} {}", authException.getMessage(), request.getRequestURI());
                     response.addHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer realm=\"selfcare\"");
                     response.setStatus(HttpStatus.UNAUTHORIZED.value());
                     response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
