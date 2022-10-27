@@ -71,7 +71,7 @@ class ApiManagementServiceImplTest {
     void createInstitutionKeys_noSubscriptionFound() {
         //given
         String institutionId = "institutionId";
-        String testEmail = null;
+        String testEmail = "";
         ApiManagementService apiManagementServiceTest = new ApiManagementServiceImpl(testEmail, apiManagerConnectorMock, externalApiConnectorMock);
 
         Institution institutionMock = mockInstance(new Institution());

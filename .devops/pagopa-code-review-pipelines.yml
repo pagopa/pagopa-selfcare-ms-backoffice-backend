@@ -10,19 +10,19 @@ trigger: none
 pool:
   vmImage: 'ubuntu-22.04'
 
-variables:
-  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+#variables:
+#  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+#  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
 
 steps:
-  - task: Cache@2
-    inputs:
-      key: 'maven | "$(Agent.OS)" | pom.xml'
-      restoreKeys: |
-        maven | "$(Agent.OS)"
-        maven
-      path: $(MAVEN_CACHE_FOLDER)
-    displayName: Cache Maven local repo
+#  - task: Cache@2
+#    inputs:
+#      key: 'maven | "$(Agent.OS)" | pom.xml'
+#      restoreKeys: |
+#        maven | "$(Agent.OS)"
+#        maven
+#      path: $(MAVEN_CACHE_FOLDER)
+#    displayName: Cache Maven local repo
 
   - task: SonarCloudPrepare@1
     displayName: 'Prepare SonarCloud analysis configuration'
