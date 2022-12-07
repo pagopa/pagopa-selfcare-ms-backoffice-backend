@@ -28,7 +28,7 @@ microservice-chart:
     port: 8080 #80
   ingress:
     create: true
-    host: "weuprod.selfcare.internal.platform.pagopa.it"
+    host: "weuprod.selfcare.internal.prod.platform.pagopa.it"
     path: "/selfcare/pagopa/v1/(.*)"
   serviceAccount:
     create: false
@@ -61,7 +61,7 @@ microservice-chart:
           value: "70"
   envConfig:
     WEBSITE_SITE_NAME: 'pagopaselfcaremsbackofficebackend'
-    EXTERNAL_API_SERVICE_URL: https://api.dev.selfcare.pagopa.it
+    EXTERNAL_API_SERVICE_URL: https://api.selfcare.pagopa.it
     AZURE_RESOURCE_GROUP: pagopa-p-api-rg
     AZURE_SERVICE_NAME: pagopa-p-apim
     ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
@@ -70,7 +70,7 @@ microservice-chart:
     AZURE_CLIENT_ID: pagopa-selfcare-p-azure-client-id
     SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selfcare-p-apim-external-api-key
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-p-connection-string'
-    AZURE_TENANT_ID: pagopa-selfcare-dev-tenant-id
+    AZURE_TENANT_ID: pagopa-selfcare-prod-tenant-id
     AZURE_SUBSCRIPTION_ID: pagopa-selfcare-p-subscription-id
     JWT_TOKEN_PUBLIC_KEY: pagopa-p-weu-selfcare-jwt-pub-key
     TEST_EMAIL: pagopa-p-env-test-email
