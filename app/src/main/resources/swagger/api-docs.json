@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.27"
+    "version": "0.0.30"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -175,7 +175,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ApiKeysResource"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApiKeysResource"
+                  }
                 }
               }
             }
@@ -246,7 +249,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ApiKeysResource"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApiKeysResource"
+                  }
                 }
               }
             }
@@ -479,17 +485,25 @@
   "components" : {
     "schemas" : {
       "ApiKeysResource" : {
-        "title" : "ApiKeysResource",
-        "required" : [ "primaryKey", "secondaryKey" ],
-        "type" : "object",
-        "properties" : {
-          "primaryKey" : {
-            "type" : "string",
-            "description" : "Institution's primary Api Key"
+        "title": "ApiKeysResource",
+        "required": [
+          "displayName",
+          "primaryKey",
+          "secondaryKey"
+        ],
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "description": "Institution's name Api Key"
           },
-          "secondaryKey" : {
-            "type" : "string",
-            "description" : "Institution's secondary Api Key"
+          "primaryKey": {
+            "type": "string",
+            "description": "Institution's primary Api Key"
+          },
+          "secondaryKey": {
+            "type": "string",
+            "description": "Institution's secondary Api Key"
           }
         }
       },

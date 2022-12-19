@@ -45,13 +45,13 @@ public class InstitutionController {
     @GetMapping("/{institutionId}/api-keys")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutionApiKeys}")
-    public ApiKeysResource getInstitutionApiKeys(
+    public List<ApiKeysResource> getInstitutionApiKeys(
             @ApiParam("${swagger.model.institution.id}")
             @PathVariable("institutionId") String institutionId) {
         log.trace("getInstitutionApiKeys start");
         log.debug("getInstitutionApiKeys institutionId = {}", institutionId);
-        InstitutionApiKeys institutionApiKeys = apiManagementService.getInstitutionApiKeys(institutionId);
-        ApiKeysResource apiKeysResource = ApiManagerMapper.toApiKeysResource(institutionApiKeys);
+        List<InstitutionApiKeys> institutionApiKeysList = apiManagementService.getInstitutionApiKeys(institutionId);
+        List<ApiKeysResource> apiKeysResource = ApiManagerMapper.toApikeysResourceList(institutionApiKeysList);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getInstitutionApiKeys result = {}", apiKeysResource);
         log.trace("getInstitutionApiKeys end");
         return apiKeysResource;
@@ -60,15 +60,16 @@ public class InstitutionController {
     @PostMapping("/{institutionId}/api-keys")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.institution.createInstitutionApiKeys}")
-    public ApiKeysResource createInstitutionApiKeys(@ApiParam("${swagger.model.institution.id}")
-                                                    @PathVariable("institutionId") String institutionId) {
+    public List<ApiKeysResource> createInstitutionApiKeys(@ApiParam("${swagger.model.institution.id}")
+                                                          @PathVariable("institutionId") String institutionId) {
         log.trace("createInstitutionApiKeys start");
         log.debug("createInstitutionApiKeys institutionId = {}", institutionId);
-        InstitutionApiKeys institutionKeys = apiManagementService.createInstitutionKeys(institutionId);
-        ApiKeysResource apiKeysResource = ApiManagerMapper.toApiKeysResource(institutionKeys);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitutionApiKeys result = {}", apiKeysResource);
+//        InstitutionApiKeys institutionKeys = apiManagementService.createInstitutionKeys(institutionId);
+        List<InstitutionApiKeys> institutionKeys = apiManagementService.createInstitutionKeysList(institutionId);
+        List<ApiKeysResource> apiKeysResourceList = ApiManagerMapper.toApikeysResourceList(institutionKeys);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitutionApiKeys result = {}", apiKeysResourceList);
         log.trace("createInstitutionApiKeys end");
-        return apiKeysResource;
+        return apiKeysResourceList;
     }
     
     @PostMapping("/{institutionId}/api-keys/primary/regenerate")

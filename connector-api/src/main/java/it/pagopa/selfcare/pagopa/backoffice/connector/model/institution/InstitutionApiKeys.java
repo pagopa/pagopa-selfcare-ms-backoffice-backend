@@ -7,5 +7,6 @@ public class InstitutionApiKeys {
     
     private String primaryKey;
     private String secondaryKey;
+    private String displayName;
     
 }

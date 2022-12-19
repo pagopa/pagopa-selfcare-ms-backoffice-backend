@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 public class ApiKeysResource {
-    
+
     @ApiModelProperty(value = "${swagger.model.institution.primaryKey}", required = true)
     @JsonProperty(required = true)
     @NotBlank
@@ -17,5 +17,10 @@ public class ApiKeysResource {
     @JsonProperty(required = true)
     @NotBlank
     private String secondaryKey;
-    
+
+    @ApiModelProperty(value = "${swagger.model.institution.displayName}", required = true)
+    @JsonProperty(required = true)
+    @NotBlank
+    private String displayName;
+
 }

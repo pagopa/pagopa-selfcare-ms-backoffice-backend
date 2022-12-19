@@ -35,9 +35,11 @@ class ApiKeysResourceTest {
         HashMap<String, Class<? extends Annotation>> toCheckMap = new HashMap<>();
         toCheckMap.put("primaryKey", NotBlank.class);
         toCheckMap.put("secondaryKey", NotBlank.class);
+        toCheckMap.put("displayName", NotBlank.class);
         ApiKeysResource model = new ApiKeysResource();
         model.setPrimaryKey(null);
         model.setSecondaryKey(null);
+        model.setDisplayName(null);
         //when
         Set<ConstraintViolation<Object>> violations = validator.validate(model);
         // then
