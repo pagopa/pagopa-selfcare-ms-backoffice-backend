@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version": "0.0.30"
+    "version" : "0.0.30"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -175,9 +175,9 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ApiKeysResource"
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ApiKeysResource"
                   }
                 }
               }
@@ -249,9 +249,9 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ApiKeysResource"
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ApiKeysResource"
                   }
                 }
               }
@@ -485,25 +485,25 @@
   "components" : {
     "schemas" : {
       "ApiKeysResource" : {
-        "title": "ApiKeysResource",
-        "required": [
-          "displayName",
-          "primaryKey",
-          "secondaryKey"
-        ],
-        "type": "object",
-        "properties": {
-          "displayName": {
-            "type": "string",
-            "description": "Institution's name Api Key"
+        "title" : "ApiKeysResource",
+        "required" : [ "displayName", "id", "primaryKey", "secondaryKey" ],
+        "type" : "object",
+        "properties" : {
+          "displayName" : {
+            "type" : "string",
+            "description" : "Institution's name Api Key"
           },
-          "primaryKey": {
-            "type": "string",
-            "description": "Institution's primary Api Key"
+          "id" : {
+            "type" : "string",
+            "description" : "Institution's subscription id"
           },
-          "secondaryKey": {
-            "type": "string",
-            "description": "Institution's secondary Api Key"
+          "primaryKey" : {
+            "type" : "string",
+            "description" : "Institution's primary Api Key"
+          },
+          "secondaryKey" : {
+            "type" : "string",
+            "description" : "Institution's secondary Api Key"
           }
         }
       },
