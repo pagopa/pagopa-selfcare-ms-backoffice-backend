@@ -15,6 +15,7 @@ public class ApiManagerMapper {
             resource.setPrimaryKey(model.getPrimaryKey());
             resource.setSecondaryKey(model.getSecondaryKey());
             resource.setDisplayName(model.getDisplayName());
+            resource.setId(model.getId());
         }
         return resource;
     }

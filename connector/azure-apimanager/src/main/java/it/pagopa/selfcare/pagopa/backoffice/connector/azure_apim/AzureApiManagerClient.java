@@ -140,47 +140,6 @@ public class AzureApiManagerClient implements ApiManagerConnector {
     }
 
 
-//    private InstitutionApiKeys getApiKeys(String institutionId) {
-//        log.trace("getApiKeys start");
-//        log.debug("getApiKeys institutionId = {}", institutionId);
-//        InstitutionApiKeys apiKeys = null;
-//        Response<SubscriptionKeysContract> response = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, institutionId, Context.NONE);
-//        if (response.getValue() != null) {
-//            apiKeys = new InstitutionApiKeys();
-//            apiKeys.setPrimaryKey(response.getValue().primaryKey());
-//            apiKeys.setSecondaryKey(response.getValue().secondaryKey());
-//        }
-//        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getApiKeys response = {}", response);
-//        log.trace("getApiKeys end");
-//        return apiKeys;
-//    }
-
-    //    private List<InstitutionApiKeys> getApiSubscriptions(String resourceGroupName, String serviceName,String institutionId) {
-//        log.trace("getApiSubscriptions start");
-//        log.debug("getApiSubscriptions institutionId = {}", institutionId);
-//
-//        PagedIterable<SubscriptionContract> subscriptionContractList = manager.userSubscriptions().list(resourceGroupName,serviceName,institutionId);
-//
-//       log.debug(LogUtils.CONFIDENTIAL_MARKER, "getApiKeys response = {}", subscriptionContractList);
-//        List<InstitutionApiKeys> InstitutionApiKeysList = subscriptionContractList.stream()
-//                .map(contract->{
-//                    InstitutionApiKeys apiKeys  = new InstitutionApiKeys();
-//                    contract.name();
-//                    Response<SubscriptionKeysContract> response =  manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, contract.name(), Context.NONE);
-//                    if (response.getValue() != null) {
-//                        apiKeys = new InstitutionApiKeys();
-//                        apiKeys.setPrimaryKey(response.getValue().primaryKey());
-//                        apiKeys.setSecondaryKey(response.getValue().secondaryKey());
-//                        apiKeys.setDisplayName(contract.displayName());
-//                    }
-//                    return apiKeys;
-//                }).collect(Collectors.toList());
-//
-//
-//        log.trace("getApiSubscriptions end");
-//
-//        return InstitutionApiKeysList;
-//    }
     public List<InstitutionApiKeys> getApiSubscriptions(String institutionId) {
         log.trace("getApiSubscriptions start");
         log.debug("getApiSubscriptions institutionId = {}", institutionId);
@@ -197,6 +156,7 @@ public class AzureApiManagerClient implements ApiManagerConnector {
                         apiKeys.setPrimaryKey(response.getValue().primaryKey());
                         apiKeys.setSecondaryKey(response.getValue().secondaryKey());
                         apiKeys.setDisplayName(contract.displayName());
+                        apiKeys.setId(contract.name());
                     }
                     return apiKeys;
                 }).collect(Collectors.toList());

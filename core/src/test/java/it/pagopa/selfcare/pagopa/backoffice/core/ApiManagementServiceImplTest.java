@@ -56,7 +56,6 @@ class ApiManagementServiceImplTest {
         verifyNoInteractions(apiManagerConnectorMock, externalApiConnectorMock);
     }
 
-
     @Test
     void createInstitutionKeys_institutionNotFound() {
         //given
@@ -72,13 +71,54 @@ class ApiManagementServiceImplTest {
         verifyNoInteractions(apiManagerConnectorMock);
     }
 
-    //    @Test
-//    void createInstitutionKeysList_noSubscriptionFound() {
-//        //given
-//        String institutionId = "institutionId";
-//    }
+
     @Test
-    void createInstitutionKeys_noSubscriptionFound() {
+    void createInstitutionKeys_noSubscriptionFound_dev_Uat() {
+        //given
+        String institutionId = "institutionId";
+        String testEmail = "mail";
+        ApiManagementService apiManagementServiceTest = new ApiManagementServiceImpl(testEmail, apiManagerConnectorMock, externalApiConnectorMock);
+
+        Institution institutionMock = mockInstance(new Institution());
+        institutionMock.setId(institutionId);
+        InstitutionApiKeys apiKeys = mockInstance(new InstitutionApiKeys());
+        List<InstitutionApiKeys> apiKeysList = mockInstance(List.of(apiKeys));
+        when(externalApiConnectorMock.getInstitution(any()))
+                .thenReturn(institutionMock);
+        when(apiManagerConnectorMock.getApiSubscriptions(institutionId))
+                .thenReturn(apiKeysList);
+        Mockito.doThrow(new RuntimeException()).doNothing().when(apiManagerConnectorMock)
+                .createInstitutionSubscription(anyString(), anyString(), anyString(), anyString(), anyString());
+
+        //when
+        List<InstitutionApiKeys> institutionKeysList = apiManagementServiceTest.createInstitutionKeys(institutionId);
+
+        //then
+        assertNotNull(institutionKeysList);
+        assertEquals(apiKeysList.get(0).getPrimaryKey(), institutionKeysList.get(0).getPrimaryKey());
+        assertEquals(apiKeysList.get(0).getSecondaryKey(), institutionKeysList.get(0).getSecondaryKey());
+        assertEquals(apiKeysList.get(0).getDisplayName(), institutionKeysList.get(0).getDisplayName());
+
+        verify(externalApiConnectorMock, times(1))
+                .getInstitution(institutionId);
+        verify(apiManagerConnectorMock, times(2))
+                .createInstitutionSubscription(anyString(), anyString(), anyString(), anyString(), anyString());
+        ArgumentCaptor<CreateInstitutionApiKeyDto> institutionDtoArgumentCaptor = ArgumentCaptor.forClass(CreateInstitutionApiKeyDto.class);
+        verify(apiManagerConnectorMock, times(1))
+                .createInstitution(eq(institutionId), institutionDtoArgumentCaptor.capture());
+
+        verify(apiManagerConnectorMock, times(1))
+                .getApiSubscriptions(eq(institutionId));
+
+        CreateInstitutionApiKeyDto capturedDto = institutionDtoArgumentCaptor.getValue();
+        assertEquals(institutionMock.getDescription(), capturedDto.getDescription());
+        assertEquals(institutionMock.getTaxCode(), capturedDto.getFiscalCode());
+        assertEquals(testEmail, capturedDto.getEmail());
+        verifyNoMoreInteractions(apiManagerConnectorMock, externalApiConnectorMock);
+    }
+
+    @Test
+    void createInstitutionKeys_noSubscriptionFound_prod() {
         //given
         String institutionId = "institutionId";
         String testEmail = "";
@@ -94,21 +134,19 @@ class ApiManagementServiceImplTest {
                 .thenReturn(apiKeysList);
         Mockito.doThrow(new RuntimeException()).doNothing().when(apiManagerConnectorMock)
                 .createInstitutionSubscription(anyString(), anyString(), anyString(), anyString(), anyString());
-//                .thenThrow(RuntimeException.class)
-//                .thenReturn(apiKeysList);
-
 
         //when
-        List<InstitutionApiKeys> institutionKeysList = apiManagementServiceTest.createInstitutionKeysList(institutionId);
+        List<InstitutionApiKeys> institutionKeysList = apiManagementServiceTest.createInstitutionKeys(institutionId);
 
         //then
         assertNotNull(institutionKeysList);
         assertEquals(apiKeysList.get(0).getPrimaryKey(), institutionKeysList.get(0).getPrimaryKey());
         assertEquals(apiKeysList.get(0).getSecondaryKey(), institutionKeysList.get(0).getSecondaryKey());
         assertEquals(apiKeysList.get(0).getDisplayName(), institutionKeysList.get(0).getDisplayName());
-        verify(externalApiConnectorMock, times(3))
+
+        verify(externalApiConnectorMock, times(1))
                 .getInstitution(institutionId);
-        verify(apiManagerConnectorMock, times(4))
+        verify(apiManagerConnectorMock, times(2))
                 .createInstitutionSubscription(anyString(), anyString(), anyString(), anyString(), anyString());
         ArgumentCaptor<CreateInstitutionApiKeyDto> institutionDtoArgumentCaptor = ArgumentCaptor.forClass(CreateInstitutionApiKeyDto.class);
         verify(apiManagerConnectorMock, times(1))
@@ -123,9 +161,68 @@ class ApiManagementServiceImplTest {
         assertEquals(institutionMock.getDigitalAddress(), capturedDto.getEmail());
         verifyNoMoreInteractions(apiManagerConnectorMock, externalApiConnectorMock);
     }
-    
+
     @Test
-    void createInstitutionSubscription_noSubscriptionFoundTestEmail(){
+    void createInstitutionKeys() {
+        //given
+        String institutionId = "institutionId";
+        String testEmail = "";
+        ApiManagementService apiManagementServiceTest = new ApiManagementServiceImpl(testEmail, apiManagerConnectorMock, externalApiConnectorMock);
+
+        Institution institutionMock = mockInstance(new Institution());
+        institutionMock.setId(institutionId);
+        InstitutionApiKeys apiKeys = mockInstance(new InstitutionApiKeys());
+        List<InstitutionApiKeys> apiKeysList = mockInstance(List.of(apiKeys));
+        when(externalApiConnectorMock.getInstitution(any()))
+                .thenReturn(institutionMock);
+        when(apiManagerConnectorMock.getApiSubscriptions(institutionId))
+                .thenReturn(apiKeysList);
+        doNothing().when(apiManagerConnectorMock)
+                .createInstitutionSubscription(anyString(), anyString(), anyString(), anyString(), anyString());
+
+        //when
+        List<InstitutionApiKeys> institutionKeysList = apiManagementServiceTest.createInstitutionKeys(institutionId);
+
+        //then
+        assertNotNull(institutionKeysList);
+        assertEquals(apiKeysList.get(0).getPrimaryKey(), institutionKeysList.get(0).getPrimaryKey());
+        assertEquals(apiKeysList.get(0).getSecondaryKey(), institutionKeysList.get(0).getSecondaryKey());
+        assertEquals(apiKeysList.get(0).getDisplayName(), institutionKeysList.get(0).getDisplayName());
+
+        verify(externalApiConnectorMock, times(1))
+                .getInstitution(institutionId);
+        verify(apiManagerConnectorMock, times(1))
+                .createInstitutionSubscription(anyString(), anyString(), anyString(), anyString(), anyString());
+        ArgumentCaptor<CreateInstitutionApiKeyDto> institutionDtoArgumentCaptor = ArgumentCaptor.forClass(CreateInstitutionApiKeyDto.class);
+        verify(apiManagerConnectorMock, times(1))
+                .getApiSubscriptions(eq(institutionId));
+
+        verifyNoMoreInteractions(apiManagerConnectorMock, externalApiConnectorMock);
+    }
+
+
+    @Test
+    void createInstitutionKeysList2_noSubscriptionFound() {
+        //given
+        String institutionId = "institutionId";
+        String testEmail = "";
+        ApiManagementService apiManagementServiceTest = new ApiManagementServiceImpl(testEmail, apiManagerConnectorMock, externalApiConnectorMock);
+
+        //when
+        Executable executable = () -> apiManagementServiceTest.createInstitutionKeysList(institutionId);
+
+        //then
+        ResourceNotFoundException e = assertThrows(ResourceNotFoundException.class, executable);
+        assertEquals(String.format("The institution %s was not found", institutionId), e.getMessage());
+        verify(externalApiConnectorMock, times(1))
+                .getInstitution(institutionId);
+        verifyNoMoreInteractions(externalApiConnectorMock);
+        verifyNoInteractions(apiManagerConnectorMock);
+
+    }
+
+    @Test
+    void createInstitutionKeysList_noSubscriptionFound_dev_uat() {
         //given
         String testEmail = "testEmail";
         String institutionId = "institutionId";
@@ -135,9 +232,9 @@ class ApiManagementServiceImplTest {
         List<InstitutionApiKeys> apiKeysList = mockInstance(List.of(new InstitutionApiKeys()));
         when(externalApiConnectorMock.getInstitution(any()))
                 .thenReturn(institutionMock);
-        when(apiManagerConnectorMock.createInstitutionSubscription(any(), any()))
-                .thenThrow(RuntimeException.class)
-                .thenReturn(apiKeysList);
+        doThrow(RuntimeException.class).doNothing().when(apiManagerConnectorMock).createInstitutionSubscription(any(), any(), any(), any(), any());
+
+
         when(apiManagerConnectorMock.getApiSubscriptions(anyString()))
                 .thenReturn(apiKeysList);
         //when
@@ -148,45 +245,57 @@ class ApiManagementServiceImplTest {
         assertEquals(apiKeysList.get(0).getSecondaryKey(), institutionKeys.get(0).getSecondaryKey());
         verify(externalApiConnectorMock, times(3))
                 .getInstitution(institutionId);
-        verify(apiManagerConnectorMock, times(3))
+        verify(apiManagerConnectorMock, times(4))
                 .createInstitutionSubscription(anyString(), anyString(), any(), any(), any());
         verify(apiManagerConnectorMock, times(1))
                 .getApiSubscriptions(anyString());
         ArgumentCaptor<CreateInstitutionApiKeyDto> institutionDtoArgumentCaptor = ArgumentCaptor.forClass(CreateInstitutionApiKeyDto.class);
-//        verify(apiManagerConnectorMock, times(1))
-//                .createInstitution(eq(institutionId), institutionDtoArgumentCaptor.capture());
-//        CreateInstitutionApiKeyDto capturedDto = institutionDtoArgumentCaptor.getValue();
-//        assertEquals(institutionMock.getDescription(), capturedDto.getDescription());
-//        assertEquals(institutionMock.getTaxCode(), capturedDto.getFiscalCode());
-//        assertEquals(testEmail, capturedDto.getEmail());
+        verify(apiManagerConnectorMock, times(1))
+                .createInstitution(eq(institutionId), institutionDtoArgumentCaptor.capture());
+        CreateInstitutionApiKeyDto captureDto = institutionDtoArgumentCaptor.getValue();
+        assertNotNull(captureDto);
+        assertEquals(testEmail, captureDto.getEmail());
+        assertEquals(institutionMock.getDescription(), captureDto.getDescription());
+        assertEquals(institutionMock.getTaxCode(), captureDto.getFiscalCode());
         verifyNoMoreInteractions(apiManagerConnectorMock, externalApiConnectorMock);
     }
 
     @Test
-    void createInstitutionSubscription() {
+    void createInstitutionKeysList_noSubscriptionFound_prod() {
         //given
+        String testEmail = "";
         String institutionId = "institutionId";
+        ApiManagementService apiManagementServiceTest = new ApiManagementServiceImpl(testEmail, apiManagerConnectorMock, externalApiConnectorMock);
         Institution institutionMock = mockInstance(new Institution());
         institutionMock.setId(institutionId);
         List<InstitutionApiKeys> apiKeysList = mockInstance(List.of(new InstitutionApiKeys()));
         when(externalApiConnectorMock.getInstitution(any()))
                 .thenReturn(institutionMock);
-        when(apiManagerConnectorMock.createInstitutionSubscription(any(), any()))
-                .thenReturn(apiKeysList);
-        when(apiManagerConnectorMock.getApiSubscriptions(any()))
+        doThrow(RuntimeException.class).doNothing().when(apiManagerConnectorMock).createInstitutionSubscription(any(), any(), any(), any(), any());
+
+
+        when(apiManagerConnectorMock.getApiSubscriptions(anyString()))
                 .thenReturn(apiKeysList);
         //when
-        List<InstitutionApiKeys> institutionKeys = apiManagementService.createInstitutionKeys(institutionId);
+        List<InstitutionApiKeys> institutionKeys = apiManagementServiceTest.createInstitutionKeysList(institutionId);
         //then
         assertNotNull(institutionKeys);
         assertEquals(apiKeysList.get(0).getPrimaryKey(), institutionKeys.get(0).getPrimaryKey());
         assertEquals(apiKeysList.get(0).getSecondaryKey(), institutionKeys.get(0).getSecondaryKey());
-        verify(externalApiConnectorMock, times(1))
+        verify(externalApiConnectorMock, times(3))
                 .getInstitution(institutionId);
+        verify(apiManagerConnectorMock, times(4))
+                .createInstitutionSubscription(anyString(), anyString(), any(), any(), any());
         verify(apiManagerConnectorMock, times(1))
-                .createInstitutionSubscription(anyString(), anyString(), anyString(), anyString(), anyString());
-        verify(apiManagerConnectorMock, times((1)))
                 .getApiSubscriptions(anyString());
+        ArgumentCaptor<CreateInstitutionApiKeyDto> institutionDtoArgumentCaptor = ArgumentCaptor.forClass(CreateInstitutionApiKeyDto.class);
+        verify(apiManagerConnectorMock, times(1))
+                .createInstitution(eq(institutionId), institutionDtoArgumentCaptor.capture());
+        CreateInstitutionApiKeyDto captureDto = institutionDtoArgumentCaptor.getValue();
+        assertNotNull(captureDto);
+        assertEquals(institutionMock.getDigitalAddress(), captureDto.getEmail());
+        assertEquals(institutionMock.getDescription(), captureDto.getDescription());
+        assertEquals(institutionMock.getTaxCode(), captureDto.getFiscalCode());
         verifyNoMoreInteractions(apiManagerConnectorMock, externalApiConnectorMock);
     }
 

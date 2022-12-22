@@ -75,8 +75,8 @@ public class InstitutionController {
     @PostMapping("/{institutionId}/api-keys/primary/regenerate")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "", notes = "${swagger.api.institution.regeneratePrimaryKey}")
-    public void regeneratePrimaryKey(@ApiParam("${swagger.model.institution.id}")
-                                     @PathVariable("institutionId")String institutionId){
+    public void regeneratePrimaryKey(@ApiParam("${swagger.model.institution.subscription.id}")
+                                     @PathVariable("institutionId") String institutionId) {
         log.trace("regeneratePrimaryKey start");
         log.debug("regeneratePrimaryKey institutionId = {}", institutionId);
         apiManagementService.regeneratePrimaryKey(institutionId);
@@ -86,8 +86,8 @@ public class InstitutionController {
     @PostMapping("/{institutionId}/api-keys/secondary/regenerate")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "", notes = "${swagger.api.institution.regenerateSecondaryKey}")
-    public void regenerateSecondaryKey(@ApiParam("${swagger.model.institution.id}")
-                                     @PathVariable("institutionId")String institutionId){
+    public void regenerateSecondaryKey(@ApiParam("${swagger.model.institution.subscription.id}")
+                                       @PathVariable("institutionId") String institutionId) {
         log.trace("regenerateSecondaryKey start");
         log.debug("regenerateSecondaryKey institutionId = {}", institutionId);
         apiManagementService.regenerateSecondaryKey(institutionId);

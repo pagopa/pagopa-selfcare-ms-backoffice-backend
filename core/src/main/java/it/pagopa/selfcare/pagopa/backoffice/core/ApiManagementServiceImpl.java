@@ -23,6 +23,14 @@ public class ApiManagementServiceImpl implements ApiManagementService {
     private final ApiManagerConnector apiManagerConnector;
     private final ExternalApiConnector externalApiConnector;
     private final String testEmail;
+    private static final String SUBSCRIPTION_NODO_AUTH_ID = "nodauth-";
+    private static final String SUBSCRIPTION_NODO_AUTH_DISPLAY = "Nodo Auth";
+    private static final String SUBSCRIPTION_GDP_ID = "gdp-";
+    private static final String SUBSCRIPTION_GPD_DISPLAY = "Gestione Posizione Debitoria";
+    private static final String SUBSCRIPTION_BES_ID = "bes-";
+    private static final String SUBSCRIPTION_BES_DISPLAY = "Biz event service";
+    private static final String SUBSCRIPTION_APIS_ID = "apis-";
+    private static final String SUBSCRIPTION_APIS_DISPLAY = "Apis";
 
     @Autowired
     public ApiManagementServiceImpl(@Value("${institution.subscription.test-email}") String testEmail,
@@ -44,7 +52,7 @@ public class ApiManagementServiceImpl implements ApiManagementService {
         if (institution != null) {
 
             try {
-                apiManagerConnector.createInstitutionSubscription(institutionId, institution.getDescription(), "/apis", "subscriptionApis", "subscriptionName");
+                apiManagerConnector.createInstitutionSubscription(institutionId, institution.getDescription(), "/apis", SUBSCRIPTION_APIS_ID.concat(institutionId), SUBSCRIPTION_APIS_DISPLAY);
 //                apiKeys = apiManagerConnector.createInstitutionSubscription(institutionId, institution.getDescription());
             } catch (RuntimeException e) {
                 CreateInstitutionApiKeyDto dto = new CreateInstitutionApiKeyDto();
@@ -55,7 +63,7 @@ public class ApiManagementServiceImpl implements ApiManagementService {
                 else
                     dto.setEmail(institution.getDigitalAddress());
                 apiManagerConnector.createInstitution(institutionId, dto);
-                apiManagerConnector.createInstitutionSubscription(institutionId, institution.getDescription(), "/apis", "subscriptionApis", "subscriptionName");
+                apiManagerConnector.createInstitutionSubscription(institutionId, institution.getDescription(), "/apis", SUBSCRIPTION_APIS_ID.concat(institutionId), SUBSCRIPTION_APIS_DISPLAY);
 
             }
         } else {
@@ -73,11 +81,11 @@ public class ApiManagementServiceImpl implements ApiManagementService {
         log.debug("createInstitutionKeys for product {}, {} and {}", "nodo-auth", "bizevents", "debt-positions");
         Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
 
-        createInstitutionKeys(institutionId, "/products/nodo-auth", "subscriptionProductNodoAuth", "Nodo Auth");
-        createInstitutionKeys(institutionId, "/products/bizevents", "subscriptionProductGpd", "Gestione Posizione Debitoria");
-        createInstitutionKeys(institutionId, "/products/debt-positions", "subscriptionProductBeS", "Biz event service");
+        createInstitutionKeys(institutionId, "/products/nodo-auth", SUBSCRIPTION_NODO_AUTH_ID.concat(institutionId), SUBSCRIPTION_NODO_AUTH_DISPLAY);
+        createInstitutionKeys(institutionId, "/products/bizevents", SUBSCRIPTION_GDP_ID.concat(institutionId), SUBSCRIPTION_GPD_DISPLAY);
+        createInstitutionKeys(institutionId, "/products/debt-positions", SUBSCRIPTION_BES_ID.concat(institutionId), SUBSCRIPTION_BES_DISPLAY);
         List<InstitutionApiKeys> apiSubscriptionsList = apiManagerConnector.getApiSubscriptions(institutionId);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitutionKeys result = {}", apiSubscriptionsList);/////
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitutionKeys result = {}", apiSubscriptionsList);
         log.trace("createInstitutionKeys end");
         return apiSubscriptionsList;
     }
