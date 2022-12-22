@@ -278,11 +278,11 @@
             }
           },
           "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -317,7 +317,7 @@
             }
           }
         ],
-        "responses" : {
+        "responses": {
           "200": {
             "description": "OK",
             "content": {
@@ -372,9 +372,13 @@
             }
           }
         },
-        "security" : [ {
-          "bearerAuth" : [ "global" ]
-        } ]
+        "security": [
+          {
+            "bearerAuth": [
+              "global"
+            ]
+          }
+        ]
       }
     },
     "/institutions/{subscriptionid}/api-keys/primary/regenerate": {
@@ -397,16 +401,16 @@
             }
           }
         ],
-        "responses" : {
-          "204" : {
-            "description" : "No Content"
+        "responses": {
+          "204": {
+            "description": "No Content"
           },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -422,11 +426,11 @@
             }
           },
           "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -461,7 +465,7 @@
             }
           }
         ],
-        "responses" : {
+        "responses": {
           "204": {
             "description": "No Content"
           },
@@ -475,12 +479,12 @@
               }
             }
           },
-          "401" : {
-            "description" : "Unauthorized",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
