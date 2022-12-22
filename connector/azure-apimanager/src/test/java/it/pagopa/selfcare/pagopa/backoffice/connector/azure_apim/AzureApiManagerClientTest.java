@@ -69,14 +69,14 @@ class AzureApiManagerClientTest {
                 tenantId);
         SubscriptionContract contractMock = mock(SubscriptionContract.class);
         DummyKeyContract keyContract = mockInstance(new DummyKeyContract());
-        // PagedIterable<SubscriptionContract> subscriptionContractList = getPi(1);
         PagedIterable<SubscriptionContract> subscriptionContractListMock = mockInstance(getPi(1));
 
         InstitutionApiKeys apiKeysMock = TestUtils.mockInstance(new InstitutionApiKeys(), "sePrimaryKey", "setSecondaryKey", "setDisplayName");
         apiKeysMock.setPrimaryKey("primaryKey");
         apiKeysMock.setSecondaryKey("secondaryKey");
         apiKeysMock.setDisplayName("displayName");
-        //InstitutionApiKeys apiKeysMock = mockInstance(new InstitutionApiKeys());
+        apiKeysMock.setId("id");
+
         List<InstitutionApiKeys> apiKeysMockList = mockInstance(List.of(apiKeysMock));
         ApiManagementManager managerMock = mock(ApiManagementManager.class);
         AzureApiManagerClient apiManagerClient = mock(AzureApiManagerClient.class);
@@ -92,21 +92,16 @@ class AzureApiManagerClientTest {
                 .thenReturn(userSubscriptionsMock);
         when(managerMock.userSubscriptions().list(any(), any(), any()))
                 .thenReturn(subscriptionContractListMock);
-
-//        when(managerMock.userSubscriptions().list(any(), any(), any()).stream().map())
-//                .thenReturn(subscriptionContractListMock);
-
         when(managerMock.subscriptions().listSecretsWithResponse(any(), any(), any(), any()))
                 .thenReturn(keyContract);
-//        when(apiManagerClient.createInstitutionSubscription(any(), any()))
-//                .thenReturn(apiKeysMockList);
-
         //when
         List<InstitutionApiKeys> apiKeys = managerClient.createInstitutionSubscription(institutionId, institutionName);
         //then
         assertNotNull(apiKeys);
         assertNotNull(apiKeys.get(0).getPrimaryKey());
         assertNotNull(apiKeys.get(0).getSecondaryKey());
+        assertNotNull(apiKeys.get(0).getDisplayName());
+        assertNotNull(apiKeys.get(0).getId());
         assertEquals(keyContract.getValue().primaryKey(), apiKeys.get(0).getPrimaryKey());
         assertEquals(keyContract.getValue().secondaryKey(), apiKeys.get(0).getSecondaryKey());
         verify(managerMock, times(6))
@@ -134,15 +129,15 @@ class AzureApiManagerClientTest {
                 subscriptionId,
                 tenantId);
         SubscriptionContract contractMock = mock(SubscriptionContract.class);
-        //DummyKeyContract keyContract = mockInstance(new DummyKeyContract());
-        // PagedIterable<SubscriptionContract> subscriptionContractList = getPi(1);
+
         PagedIterable<SubscriptionContract> subscriptionContractListMock = mockInstance(getPi(1));
 
         InstitutionApiKeys apiKeysMock = TestUtils.mockInstance(new InstitutionApiKeys(), "sePrimaryKey", "setSecondaryKey", "setDisplayName");
         apiKeysMock.setPrimaryKey("primaryKey");
         apiKeysMock.setSecondaryKey("secondaryKey");
         apiKeysMock.setDisplayName("displayName");
-        //InstitutionApiKeys apiKeysMock = mockInstance(new InstitutionApiKeys());
+        apiKeysMock.setId("id");
+
         List<InstitutionApiKeys> apiKeysMockList = mockInstance(List.of(apiKeysMock));
         ApiManagementManager managerMock = mock(ApiManagementManager.class);
         AzureApiManagerClient apiManagerClient = mock(AzureApiManagerClient.class);
@@ -159,33 +154,13 @@ class AzureApiManagerClientTest {
         when(managerMock.userSubscriptions().list(any(), any(), any()))
                 .thenReturn(subscriptionContractListMock);
 
-//        when(managerMock.userSubscriptions().list(any(), any(), any()).stream().map())
-//                .thenReturn(subscriptionContractListMock);
-
-//        when(managerMock.subscriptions().listSecretsWithResponse(any(), any(), any(), any()))
-//                .thenReturn(keyContract);
-//        when(apiManagerClient.createInstitutionSubscription(any(), any()))
-//                .thenReturn(apiKeysMockList);
-
         //when
         managerClient.createInstitutionSubscription(institutionId, institutionName, scope, subscriptionId, serviceName);
         //then
-//        assertNotNull(apiKeys);
-//        assertNotNull(apiKeys.get(0).getPrimaryKey());
-//        assertNotNull(apiKeys.get(0).getSecondaryKey());
-//        assertEquals(keyContract.getValue().primaryKey(), apiKeys.get(0).getPrimaryKey());
-//        assertEquals(keyContract.getValue().secondaryKey(), apiKeys.get(0).getSecondaryKey());
+
         verify(managerMock, times(2))
                 .subscriptions();
-//        ArgumentCaptor<SubscriptionCreateParameters> parametersArgumentCaptor = ArgumentCaptor.forClass(SubscriptionCreateParameters.class);
-//        verify(subscriptionMock, times(1))
-//                .createOrUpdate(eq(resourceGroup), eq(serviceName), eq(institutionId), parametersArgumentCaptor.capture());
-//        SubscriptionCreateParameters capturedParameters = parametersArgumentCaptor.getValue();
-//        assertEquals(String.format("/users/%s", institutionId), capturedParameters.ownerId());
-//        assertEquals(institutionName, capturedParameters.displayName());
-//        assertEquals("/apis", capturedParameters.scope());
-//        verify(subscriptionMock, times(3))
-//                .listSecretsWithResponse(any(), any(), any(), any());
+
     }
 
 
@@ -262,13 +237,13 @@ class AzureApiManagerClientTest {
 
         final ApiManagementManager managerMock = mock(ApiManagementManager.class);
 
-//        SubscriptionContract contractMock = mock(SubscriptionContract.class);
         mockAzureApiManagement(managerClient, managerMock);
         PagedIterable<SubscriptionContract> subscriptionContractListMock = mockInstance(getPi(1));
         InstitutionApiKeys apiKeysMock = TestUtils.mockInstance(new InstitutionApiKeys(), "sePrimaryKey", "setSecondaryKey", "setDisplayName");
         apiKeysMock.setPrimaryKey("primaryKey");
         apiKeysMock.setSecondaryKey("secondaryKey");
         apiKeysMock.setDisplayName("displayName");
+        apiKeysMock.setId("id");
 
         List<InstitutionApiKeys> apiKeysMockList = mockInstance(List.of(apiKeysMock));
         AzureApiManagerClient apiManagerClient = mock(AzureApiManagerClient.class);
@@ -282,10 +257,7 @@ class AzureApiManagerClientTest {
                 .thenReturn(subscriptionMock);
         when(managerMock.subscriptions().listSecretsWithResponse(any(), any(), any(), any()))
                 .thenReturn(keyContract);
-//        when(managerMock.subscriptions().createOrUpdate(any(),any(),any(),any()))
-//                .thenReturn(contractMock);
-//        when(apiManagerClient.createInstitutionSubscription(any(), any()))
-//                .thenReturn(apiKeysMockList);
+
         //when
         List<InstitutionApiKeys> apiKeys = managerClient.getInstitutionApiKeys(institutionId);
 
@@ -293,6 +265,8 @@ class AzureApiManagerClientTest {
         assertNotNull(apiKeys);
         assertNotNull(apiKeys.get(0).getPrimaryKey());
         assertNotNull(apiKeys.get(0).getSecondaryKey());
+        assertNotNull(apiKeys.get(0).getDisplayName());
+        assertNotNull(apiKeys.get(0).getId());
         assertEquals(keyContract.getValue().primaryKey(), apiKeys.get(0).getPrimaryKey());
         assertEquals(keyContract.getValue().secondaryKey(), apiKeys.get(0).getSecondaryKey());
         verify(managerMock, times(1))
@@ -469,7 +443,6 @@ class AzureApiManagerClientTest {
                 .thenReturn(subscriptionMock);
         when(managerMock.subscriptions().listSecretsWithResponse(any(), any(), any(), any()))
                 .thenReturn(keyContract);
-//        Mockito.when(subscriptionContractList.stream().thenReturn(InstitutionApiKeysList);
 
         //when
         List<InstitutionApiKeys> InstitutionApiKeysListResult = managerClient.getApiSubscriptions(institutionId);

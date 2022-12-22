@@ -64,7 +64,6 @@ public class InstitutionController {
                                                           @PathVariable("institutionId") String institutionId) {
         log.trace("createInstitutionApiKeys start");
         log.debug("createInstitutionApiKeys institutionId = {}", institutionId);
-//        InstitutionApiKeys institutionKeys = apiManagementService.createInstitutionKeys(institutionId);
         List<InstitutionApiKeys> institutionKeys = apiManagementService.createInstitutionKeysList(institutionId);
         List<ApiKeysResource> apiKeysResourceList = ApiManagerMapper.toApikeysResourceList(institutionKeys);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitutionApiKeys result = {}", apiKeysResourceList);

@@ -53,7 +53,6 @@ public class ApiManagementServiceImpl implements ApiManagementService {
 
             try {
                 apiManagerConnector.createInstitutionSubscription(institutionId, institution.getDescription(), "/apis", SUBSCRIPTION_APIS_ID.concat(institutionId), SUBSCRIPTION_APIS_DISPLAY);
-//                apiKeys = apiManagerConnector.createInstitutionSubscription(institutionId, institution.getDescription());
             } catch (RuntimeException e) {
                 CreateInstitutionApiKeyDto dto = new CreateInstitutionApiKeyDto();
                 dto.setDescription(institution.getDescription());
@@ -95,7 +94,6 @@ public class ApiManagementServiceImpl implements ApiManagementService {
         if (institution != null) {
             try {
                 apiManagerConnector.createInstitutionSubscription(institutionId, institution.getDescription(), scope, subscriptionId, subscriptionName);
-//
             } catch (RuntimeException e) {
                 CreateInstitutionApiKeyDto dto = new CreateInstitutionApiKeyDto();
                 dto.setDescription(institution.getDescription());
