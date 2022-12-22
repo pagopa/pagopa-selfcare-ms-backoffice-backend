@@ -297,12 +297,12 @@
       "post" : {
         "tags" : [ "institution" ],
         "summary" : "regeneratePrimaryKey",
-        "description" : "Regenerates the institution's primary key",
+        "description" : "Regenerates the subscription's primary key",
         "operationId" : "regeneratePrimaryKeyUsingPOST",
         "parameters" : [ {
           "name" : "institutionId",
           "in" : "path",
-          "description" : "Institution's unique internal identifier",
+          "description" : "Institution's subscription id",
           "required" : true,
           "style" : "simple",
           "schema" : {
@@ -353,12 +353,12 @@
       "post" : {
         "tags" : [ "institution" ],
         "summary" : "regenerateSecondaryKey",
-        "description" : "Regenerates the institution's secondary key",
+        "description" : "Regenerates the subscription's secondary key",
         "operationId" : "regenerateSecondaryKeyUsingPOST",
         "parameters" : [ {
           "name" : "institutionId",
           "in" : "path",
-          "description" : "Institution's unique internal identifier",
+          "description" : "Institution's subscription id",
           "required" : true,
           "style" : "simple",
           "schema" : {
