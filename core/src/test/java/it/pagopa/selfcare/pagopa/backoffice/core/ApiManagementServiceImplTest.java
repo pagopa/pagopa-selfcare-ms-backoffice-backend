@@ -108,7 +108,7 @@ class ApiManagementServiceImplTest {
                 .createInstitution(eq(institutionId), institutionDtoArgumentCaptor.capture());
 
         verify(apiManagerConnectorMock, times(1))
-                .getApiSubscriptions(eq(institutionId));
+                .getApiSubscriptions(institutionId);
 
         CreateInstitutionApiKeyDto capturedDto = institutionDtoArgumentCaptor.getValue();
         assertEquals(institutionMock.getDescription(), capturedDto.getDescription());
@@ -153,7 +153,7 @@ class ApiManagementServiceImplTest {
                 .createInstitution(eq(institutionId), institutionDtoArgumentCaptor.capture());
 
         verify(apiManagerConnectorMock, times(1))
-                .getApiSubscriptions(eq(institutionId));
+                .getApiSubscriptions(institutionId);
 
         CreateInstitutionApiKeyDto capturedDto = institutionDtoArgumentCaptor.getValue();
         assertEquals(institutionMock.getDescription(), capturedDto.getDescription());
@@ -195,7 +195,7 @@ class ApiManagementServiceImplTest {
                 .createInstitutionSubscription(anyString(), anyString(), anyString(), anyString(), anyString());
         ArgumentCaptor<CreateInstitutionApiKeyDto> institutionDtoArgumentCaptor = ArgumentCaptor.forClass(CreateInstitutionApiKeyDto.class);
         verify(apiManagerConnectorMock, times(1))
-                .getApiSubscriptions(eq(institutionId));
+                .getApiSubscriptions(institutionId);
 
         verifyNoMoreInteractions(apiManagerConnectorMock, externalApiConnectorMock);
     }

@@ -100,7 +100,7 @@ public class AzureApiManagerClient implements ApiManagerConnector {
     public void createInstitutionSubscription(String institutionId, String institutionName, String scope, String subscriptionId, String subscriptionName) {
         log.trace("createInstitutionSubscription start");
         log.debug("createInstitutionSubscription institutionId = {}, institutionName = {}", institutionId, institutionName);
-        SubscriptionContract contract = manager.subscriptions().createOrUpdate(resourceGroupName,
+        manager.subscriptions().createOrUpdate(resourceGroupName,
                 serviceName,
                 subscriptionId,
                 new SubscriptionCreateParameters()
@@ -146,7 +146,7 @@ public class AzureApiManagerClient implements ApiManagerConnector {
         PagedIterable<SubscriptionContract> subscriptionContractList = manager.userSubscriptions().list(resourceGroupName, serviceName, institutionId);
 
 
-        List<InstitutionApiKeys> InstitutionApiKeysList = subscriptionContractList.stream()
+        List<InstitutionApiKeys> institutionApiKeysList = subscriptionContractList.stream()
                 .map(contract -> {
                     InstitutionApiKeys apiKeys = new InstitutionApiKeys();
                     Response<SubscriptionKeysContract> response = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, contract.name(), Context.NONE);
@@ -163,6 +163,6 @@ public class AzureApiManagerClient implements ApiManagerConnector {
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getApiSubscriptions response = {}", subscriptionContractList);
         log.trace("getApiSubscriptions end");
 
-        return InstitutionApiKeysList;
+        return institutionApiKeysList;
     }
 }
