@@ -45,13 +45,13 @@ public class InstitutionController {
     @GetMapping("/{institutionId}/api-keys")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutionApiKeys}")
-    public ApiKeysResource getInstitutionApiKeys(
+    public List<ApiKeysResource> getInstitutionApiKeys(
             @ApiParam("${swagger.model.institution.id}")
             @PathVariable("institutionId") String institutionId) {
         log.trace("getInstitutionApiKeys start");
         log.debug("getInstitutionApiKeys institutionId = {}", institutionId);
-        InstitutionApiKeys institutionApiKeys = apiManagementService.getInstitutionApiKeys(institutionId);
-        ApiKeysResource apiKeysResource = ApiManagerMapper.toApiKeysResource(institutionApiKeys);
+        List<InstitutionApiKeys> institutionApiKeysList = apiManagementService.getInstitutionApiKeys(institutionId);
+        List<ApiKeysResource> apiKeysResource = ApiManagerMapper.toApikeysResourceList(institutionApiKeysList);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getInstitutionApiKeys result = {}", apiKeysResource);
         log.trace("getInstitutionApiKeys end");
         return apiKeysResource;
@@ -60,36 +60,36 @@ public class InstitutionController {
     @PostMapping("/{institutionId}/api-keys")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.institution.createInstitutionApiKeys}")
-    public ApiKeysResource createInstitutionApiKeys(@ApiParam("${swagger.model.institution.id}")
-                                                    @PathVariable("institutionId") String institutionId) {
+    public List<ApiKeysResource> createInstitutionApiKeys(@ApiParam("${swagger.model.institution.id}")
+                                                          @PathVariable("institutionId") String institutionId) {
         log.trace("createInstitutionApiKeys start");
         log.debug("createInstitutionApiKeys institutionId = {}", institutionId);
-        InstitutionApiKeys institutionKeys = apiManagementService.createInstitutionKeys(institutionId);
-        ApiKeysResource apiKeysResource = ApiManagerMapper.toApiKeysResource(institutionKeys);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitutionApiKeys result = {}", apiKeysResource);
+        List<InstitutionApiKeys> institutionKeys = apiManagementService.createInstitutionKeysList(institutionId);
+        List<ApiKeysResource> apiKeysResourceList = ApiManagerMapper.toApikeysResourceList(institutionKeys);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitutionApiKeys result = {}", apiKeysResourceList);
         log.trace("createInstitutionApiKeys end");
-        return apiKeysResource;
+        return apiKeysResourceList;
     }
-    
-    @PostMapping("/{institutionId}/api-keys/primary/regenerate")
+
+    @PostMapping("/{subscriptionid}/api-keys/primary/regenerate")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "", notes = "${swagger.api.institution.regeneratePrimaryKey}")
-    public void regeneratePrimaryKey(@ApiParam("${swagger.model.institution.id}")
-                                     @PathVariable("institutionId")String institutionId){
+    public void regeneratePrimaryKey(@ApiParam("${swagger.model.institution.subscription.id}")
+                                     @PathVariable("subscriptionid") String subscriptionid) {
         log.trace("regeneratePrimaryKey start");
-        log.debug("regeneratePrimaryKey institutionId = {}", institutionId);
-        apiManagementService.regeneratePrimaryKey(institutionId);
+        log.debug("regeneratePrimaryKey institutionId = {}", subscriptionid);
+        apiManagementService.regeneratePrimaryKey(subscriptionid);
         log.trace("regeneratePrimaryKey end");
     }
 
-    @PostMapping("/{institutionId}/api-keys/secondary/regenerate")
+    @PostMapping("/{subscriptionid}/api-keys/secondary/regenerate")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "", notes = "${swagger.api.institution.regenerateSecondaryKey}")
-    public void regenerateSecondaryKey(@ApiParam("${swagger.model.institution.id}")
-                                     @PathVariable("institutionId")String institutionId){
+    public void regenerateSecondaryKey(@ApiParam("${swagger.model.institution.subscription.id}")
+                                       @PathVariable("subscriptionid") String subscriptionid) {
         log.trace("regenerateSecondaryKey start");
-        log.debug("regenerateSecondaryKey institutionId = {}", institutionId);
-        apiManagementService.regenerateSecondaryKey(institutionId);
+        log.debug("regenerateSecondaryKey institutionId = {}", subscriptionid);
+        apiManagementService.regenerateSecondaryKey(subscriptionid);
         log.trace("regenerateSecondaryKey end");
     }
     

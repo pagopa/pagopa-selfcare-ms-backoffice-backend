@@ -5,7 +5,9 @@ import com.azure.core.http.HttpRequest;
 import com.azure.core.http.rest.Response;
 import com.azure.resourcemanager.apimanagement.fluent.models.SubscriptionKeysContractInner;
 import com.azure.resourcemanager.apimanagement.models.SubscriptionKeysContract;
+import lombok.Setter;
 
+@Setter
 public class DummyKeyContract implements Response<SubscriptionKeysContract> {
     @Override
     public int getStatusCode() {

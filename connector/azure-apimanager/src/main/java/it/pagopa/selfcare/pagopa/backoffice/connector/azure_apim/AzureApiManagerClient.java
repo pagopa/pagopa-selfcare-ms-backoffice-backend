@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.azure_apim;
 
 import com.azure.core.credential.TokenCredential;
+import com.azure.core.http.rest.PagedIterable;
 import com.azure.core.http.rest.Response;
 import com.azure.core.management.AzureEnvironment;
 import com.azure.core.management.profile.AzureProfile;
@@ -16,7 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -75,9 +78,9 @@ public class AzureApiManagerClient implements ApiManagerConnector {
     }
 
     @Override
-    public InstitutionApiKeys createInstitutionSubscription(String institutionId, String institutionName) {
+    public List<InstitutionApiKeys> createInstitutionSubscription(String institutionId, String institutionName) {
         log.trace("createInstitutionSubscription start");
-        System.out.printf("createInstitutionSubscription institutionId = {}, institutionName = {}", institutionId, institutionName);
+        log.debug("createInstitutionSubscription institutionId = {}, institutionName = {}", institutionId, institutionName);
         SubscriptionContract contract = manager.subscriptions().createOrUpdate(resourceGroupName,
                 serviceName,
                 institutionId,
@@ -87,20 +90,37 @@ public class AzureApiManagerClient implements ApiManagerConnector {
                         .withScope("/apis")
         );
 
-        InstitutionApiKeys apiKeys = getApiKeys(institutionId);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER,"createInstitutionSubscription apiKeys = {}", apiKeys);
+        List<InstitutionApiKeys> apiKeys = getApiSubscriptions(institutionId);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitutionSubscription apiKeys = {}", apiKeys);
         log.trace("createInstitutionSubscription end");
         return apiKeys;
     }
 
     @Override
-    public InstitutionApiKeys getInstitutionApiKeys(String institutionId) {
+    public void createInstitutionSubscription(String institutionId, String institutionName, String scope, String subscriptionId, String subscriptionName) {
+        log.trace("createInstitutionSubscription start");
+        log.debug("createInstitutionSubscription institutionId = {}, institutionName = {}", institutionId, institutionName);
+        manager.subscriptions().createOrUpdate(resourceGroupName,
+                serviceName,
+                subscriptionId,
+                new SubscriptionCreateParameters()
+                        .withOwnerId(String.format("/users/%s", institutionId))
+                        .withDisplayName(subscriptionName)
+                        .withScope(scope)
+        );
+        log.trace("createInstitutionSubscription end");
+
+    }
+
+    @Override
+    public List<InstitutionApiKeys> getInstitutionApiKeys(String institutionId) {
         log.trace("getInstitutionApiKeys start");
         log.debug("getInstitutionApiKeys serviceName = {}, resourceGroup = {}, institutionId = {}", serviceName, resourceGroupName, institutionId);
-        InstitutionApiKeys subscription = getApiKeys(institutionId);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER,"getUser result = {}", subscription);
-        return subscription;
+        List<InstitutionApiKeys> subscriptions = getApiSubscriptions(institutionId);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getUser result = {}", subscriptions);
+        return subscriptions;
     }
+
 
     @Override
     public void regeneratePrimaryKey(String institutionId) {
@@ -119,18 +139,30 @@ public class AzureApiManagerClient implements ApiManagerConnector {
     }
 
 
-    private InstitutionApiKeys getApiKeys(String institutionId) {
-        log.trace("getApiKeys start");
-        log.debug("getApiKeys institutionId = {}", institutionId);
-        InstitutionApiKeys apiKeys = null;
-        Response<SubscriptionKeysContract> response = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, institutionId, Context.NONE);
-        if (response.getValue() != null) {
-            apiKeys = new InstitutionApiKeys();
-            apiKeys.setPrimaryKey(response.getValue().primaryKey());
-            apiKeys.setSecondaryKey(response.getValue().secondaryKey());
-        }
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getApiKeys response = {}", response);
-        log.trace("getApiKeys end");
-        return apiKeys;
+    public List<InstitutionApiKeys> getApiSubscriptions(String institutionId) {
+        log.trace("getApiSubscriptions start");
+        log.debug("getApiSubscriptions institutionId = {}", institutionId);
+
+        PagedIterable<SubscriptionContract> subscriptionContractList = manager.userSubscriptions().list(resourceGroupName, serviceName, institutionId);
+
+
+        List<InstitutionApiKeys> institutionApiKeysList = subscriptionContractList.stream()
+                .map(contract -> {
+                    InstitutionApiKeys apiKeys = new InstitutionApiKeys();
+                    Response<SubscriptionKeysContract> response = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, contract.name(), Context.NONE);
+                    if (response.getValue() != null) {
+                        apiKeys = new InstitutionApiKeys();
+                        apiKeys.setPrimaryKey(response.getValue().primaryKey());
+                        apiKeys.setSecondaryKey(response.getValue().secondaryKey());
+                        apiKeys.setDisplayName(contract.displayName());
+                        apiKeys.setId(contract.name());
+                    }
+                    return apiKeys;
+                }).collect(Collectors.toList());
+
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getApiSubscriptions response = {}", subscriptionContractList);
+        log.trace("getApiSubscriptions end");
+
+        return institutionApiKeysList;
     }
 }
