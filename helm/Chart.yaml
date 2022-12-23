@@ -2,8 +2,8 @@ apiVersion: v2
 name: pagopa-selfcare-ms-backoffice
 description: Microservice that manage api keys for pagopa product from selfcare
 type: application
-version: 0.0.33
-appVersion: "0.0.33"
+version: 0.0.34
+appVersion: "0.0.34"
 dependencies:
   - name: microservice-chart
     version: 1.21.0
