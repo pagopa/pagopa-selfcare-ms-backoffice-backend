@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaselfcaremsbackofficebackend
-    tag: 0.0.32
+    tag: "0.0.36" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -28,7 +28,7 @@ microservice-chart:
     port: 8080 #80
   ingress:
     create: true
-    host: "weuuat.selfcare.internal.uat.platform.pagopa.it"
+    host: "weuuat.selfcare.internal.platform.pagopa.it"
     path: "/selfcare/pagopa/v1/(.*)"
   serviceAccount:
     create: false
@@ -80,6 +80,3 @@ microservice-chart:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  
-
-

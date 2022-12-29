@@ -56,7 +56,7 @@ class InstitutionControllerTest {
     void getInstitutionApiKeys() throws Exception {
         //given
         String institutionId = "institutionId";
-        InstitutionApiKeys apiKeys = mockInstance(new InstitutionApiKeys());
+        List<InstitutionApiKeys> apiKeys = mockInstance(List.of(new InstitutionApiKeys()));
         when(apiManagementServiceMock.getInstitutionApiKeys(anyString()))
                 .thenReturn(apiKeys);
         //when
@@ -64,8 +64,9 @@ class InstitutionControllerTest {
                         .get(BASE_URL + "/{institutionId}/api-keys", institutionId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.primaryKey", notNullValue()))
-                .andExpect(jsonPath("$.secondaryKey", notNullValue()));
+                .andExpect(jsonPath("$[*].primaryKey", notNullValue()))
+                .andExpect(jsonPath("$[*].secondaryKey", notNullValue()))
+                .andExpect(jsonPath("$[*].displayName", notNullValue()));
         //then
         verify(apiManagementServiceMock, times(1))
                 .getInstitutionApiKeys(institutionId);
@@ -76,19 +77,20 @@ class InstitutionControllerTest {
     void createInstitutionApyKeys() throws Exception {
         //given
         String institutionId = "institutionId";
-        InstitutionApiKeys apiKeys = mockInstance(new InstitutionApiKeys());
-        when(apiManagementServiceMock.createInstitutionKeys(anyString()))
+        List<InstitutionApiKeys> apiKeys = mockInstance(List.of(new InstitutionApiKeys()));
+        when(apiManagementServiceMock.createInstitutionKeysList(anyString()))
                 .thenReturn(apiKeys);
         //when
         mvc.perform(MockMvcRequestBuilders
                         .post(BASE_URL + "/{institutionId}/api-keys", institutionId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.primaryKey", notNullValue()))
-                .andExpect(jsonPath("$.secondaryKey", notNullValue()));
+                .andExpect(jsonPath("$[*].primaryKey", notNullValue()))
+                .andExpect(jsonPath("$[*].secondaryKey", notNullValue()))
+                .andExpect(jsonPath("$[*].displayName", notNullValue()));
         //then
         verify(apiManagementServiceMock, times(1))
-                .createInstitutionKeys(institutionId);
+                .createInstitutionKeysList(institutionId);
         verifyNoMoreInteractions(apiManagementServiceMock);
     }
     
