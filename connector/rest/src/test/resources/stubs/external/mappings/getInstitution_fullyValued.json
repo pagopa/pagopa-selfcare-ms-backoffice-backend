@@ -15,7 +15,7 @@
       "zipCode": "20100",
       "taxCode": "string",
       "origin": "IPA",
-      "institutionType": "PA",
+      "institutionType": "PSP",
       "attributes": [
         {
           "origin": "string",
