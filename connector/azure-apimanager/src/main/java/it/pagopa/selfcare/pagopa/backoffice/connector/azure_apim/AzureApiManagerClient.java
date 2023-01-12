@@ -111,16 +111,16 @@ public class AzureApiManagerClient implements ApiManagerConnector {
         log.trace("createInstitutionSubscription end");
     }
 
-    @Override
-    public void deleteSubscription(String institutionId, String subscriptionId) {
-        log.trace("deleteSubscription start");
-        log.debug("deleteSubscription institutionId = {}, subscriptionId = {}", institutionId, subscriptionId);
-        manager.subscriptions().delete(resourceGroupName,
-                serviceName,
-                subscriptionId,"*");
-        log.trace("deleteSubscription end");
-
-    }
+//    @Override
+//    public void deleteSubscription(String institutionId, String subscriptionId) {
+//        log.trace("deleteSubscription start");
+//        log.debug("deleteSubscription institutionId = {}, subscriptionId = {}", institutionId, subscriptionId);
+//        manager.subscriptions().delete(resourceGroupName,
+//                serviceName,
+//                subscriptionId,"*");
+//        log.trace("deleteSubscription end");
+//
+//    }
 
     @Override
     public List<InstitutionApiKeys> getInstitutionApiKeys(String institutionId) {

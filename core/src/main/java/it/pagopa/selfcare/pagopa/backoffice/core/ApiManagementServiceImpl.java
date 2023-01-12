@@ -139,12 +139,12 @@ public class ApiManagementServiceImpl implements ApiManagementService {
         log.trace("regenerateSecondaryKey end");
     }
 
-    @Override
-    public void deleteSubscription(String institutionId, String subscriptionId) {
-        log.trace("deleteSubscription start");
-        log.debug("deleteSubscription institutionId = {}, subscriptionId = {}", institutionId, subscriptionId);
-        Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
-        apiManagerConnector.deleteSubscription(institutionId, subscriptionId);
-        log.trace("deleteSubscription end");
-    }
+//    @Override
+//    public void deleteSubscription(String institutionId, String subscriptionId) {
+//        log.trace("deleteSubscription start");
+//        log.debug("deleteSubscription institutionId = {}, subscriptionId = {}", institutionId, subscriptionId);
+//        Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
+//        apiManagerConnector.deleteSubscription(institutionId, subscriptionId);
+//        log.trace("deleteSubscription end");
+//    }
 }

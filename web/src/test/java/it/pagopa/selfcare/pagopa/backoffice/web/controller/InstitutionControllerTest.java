@@ -80,9 +80,8 @@ class InstitutionControllerTest {
     void createInstitutionApyKeys() throws Exception {
         //given
         String institutionId = "institutionId";
-        String subscriptionId = "NODOAUTH";
+        Subscription subscriptionCode = Subscription.NODOAUTH;
 
-        Subscription subscriptionMock = MockReset.valueOf(Subscription.class, subscriptionId);
 
         List<InstitutionApiKeys> apiKeys = mockInstance(List.of(mockInstance(new InstitutionApiKeys())));
 
@@ -90,7 +89,7 @@ class InstitutionControllerTest {
                 .thenReturn(apiKeys);
         //when
         mvc.perform(MockMvcRequestBuilders
-                        .post(BASE_URL + "/{institutionId}/{subscriptionId}/api-keys", institutionId, subscriptionId)
+                        .post(BASE_URL + "/{institutionId}/api-keys", institutionId).queryParam("subscriptionCode",subscriptionCode.name())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$[*].primaryKey", notNullValue()))
@@ -98,7 +97,7 @@ class InstitutionControllerTest {
                 .andExpect(jsonPath("$[*].displayName", notNullValue()));
         //then
         verify(apiManagementServiceMock, times(1))
-                .createSubscriptionKeys(institutionId, subscriptionMock.getScope(), subscriptionMock.getPrefixId(), subscriptionMock.getDisplayName());
+                .createSubscriptionKeys(institutionId, subscriptionCode.getScope(), subscriptionCode.getPrefixId(), subscriptionCode.getDisplayName());
         verifyNoMoreInteractions(apiManagementServiceMock);
     }
 
@@ -107,11 +106,11 @@ class InstitutionControllerTest {
     void createInstitutionApyKeys_noSubsctiptionFound() throws Exception {
         //given
         String institutionId = "institutionId";
-        String subscriptionId = "subscriptionId";
+        String subscriptionCode = "subscriptionCode";
 
         //when
         MvcResult result = mvc.perform(MockMvcRequestBuilders
-                        .post(BASE_URL + "/{institutionId}/{subscriptionId}/api-keys", institutionId, subscriptionId)
+                        .post(BASE_URL + "/{institutionId}/api-keys", institutionId).queryParam("subscriptionCode",subscriptionCode)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is5xxServerError())
                 .andReturn();

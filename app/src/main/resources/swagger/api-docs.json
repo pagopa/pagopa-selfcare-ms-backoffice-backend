@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version": "0.0.37"
+    "version" : "0.0.37"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -233,28 +233,25 @@
         "summary" : "createInstitutionApiKeys",
         "description" : "Creates a new subscription for a given Institution and returns its primary and secondary keys",
         "operationId" : "createInstitutionApiKeysUsingPOST",
-        "parameters" : [
-          {
-            "name": "institutionId",
-            "in": "path",
-            "description": "Institution's unique internal identifier",
-            "required": true,
-            "style": "simple",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "subscriptionCode",
-            "in": "query",
-            "description": "subscription's unique internal identifier",
-            "required": true,
-            "style": "form",
-            "schema": {
-              "type": "string"
-            }
+        "parameters" : [ {
+          "name" : "institutionId",
+          "in" : "path",
+          "description" : "Institution's unique internal identifier",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
           }
-        ],
+        }, {
+          "name" : "subscriptionCode",
+          "in" : "query",
+          "description" : "subscription's unique internal identifier",
+          "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
         "responses" : {
           "201" : {
             "description" : "Created",
@@ -290,91 +287,7 @@
             }
           },
           "500" : {
-            "description": "Internal Server Error",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": [
-              "global"
-            ]
-          }
-        ]
-      }
-    },
-    "/institutions/{institutionId}/products": {
-      "get": {
-        "tags": [
-          "institution"
-        ],
-        "summary": "getInstitutionProducts",
-        "description": "retrieve all active products for given institution and logged user",
-        "operationId": "getInstitutionProductsUsingGET",
-        "parameters": [
-          {
-            "name": "institutionId",
-            "in": "path",
-            "description": "Institution's unique internal identifier",
-            "required": true,
-            "style": "simple",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProductsResource"
-                  }
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
+            "description" : "Internal Server Error",
             "content" : {
               "application/problem+json" : {
                 "schema" : {
@@ -384,45 +297,113 @@
             }
           }
         },
-        "security": [
-          {
-            "bearerAuth": [
-              "global"
-            ]
-          }
-        ]
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
       }
     },
-    "/institutions/{subscriptionid}/api-keys/primary/regenerate": {
-      "post": {
-        "tags": [
-          "institution"
-        ],
-        "summary": "regeneratePrimaryKey",
-        "description": "Regenerates the subscription's primary key",
-        "operationId": "regeneratePrimaryKeyUsingPOST",
-        "parameters": [
-          {
-            "name": "subscriptionid",
-            "in": "path",
-            "description": "Institution's subscription id",
-            "required": true,
-            "style": "simple",
-            "schema": {
-              "type": "string"
+    "/institutions/{institutionId}/products" : {
+      "get" : {
+        "tags" : [ "institution" ],
+        "summary" : "getInstitutionProducts",
+        "description" : "retrieve all active products for given institution and logged user",
+        "operationId" : "getInstitutionProductsUsingGET",
+        "parameters" : [ {
+          "name" : "institutionId",
+          "in" : "path",
+          "description" : "Institution's unique internal identifier",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ProductsResource"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
             }
           }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/institutions/{subscriptionid}/api-keys/primary/regenerate" : {
+      "post" : {
+        "tags" : [ "institution" ],
+        "summary" : "regeneratePrimaryKey",
+        "description" : "Regenerates the subscription's primary key",
+        "operationId" : "regeneratePrimaryKeyUsingPOST",
+        "parameters" : [ {
+          "name" : "subscriptionid",
+          "in" : "path",
+          "description" : "Institution's subscription id",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
           },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
                 }
               }
             }
@@ -438,65 +419,57 @@
             }
           },
           "500" : {
-            "description": "Internal Server Error",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
                 }
               }
             }
           }
         },
-        "security": [
-          {
-            "bearerAuth": [
-              "global"
-            ]
-          }
-        ]
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
       }
     },
-    "/institutions/{subscriptionid}/api-keys/secondary/regenerate": {
-      "post": {
-        "tags": [
-          "institution"
-        ],
-        "summary": "regenerateSecondaryKey",
-        "description": "Regenerates the subscription's secondary key",
-        "operationId": "regenerateSecondaryKeyUsingPOST",
-        "parameters": [
-          {
-            "name": "subscriptionid",
-            "in": "path",
-            "description": "Institution's subscription id",
-            "required": true,
-            "style": "simple",
-            "schema": {
-              "type": "string"
-            }
+    "/institutions/{subscriptionid}/api-keys/secondary/regenerate" : {
+      "post" : {
+        "tags" : [ "institution" ],
+        "summary" : "regenerateSecondaryKey",
+        "description" : "Regenerates the subscription's secondary key",
+        "operationId" : "regenerateSecondaryKeyUsingPOST",
+        "parameters" : [ {
+          "name" : "subscriptionid",
+          "in" : "path",
+          "description" : "Institution's subscription id",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
           },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
                 }
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
                 }
               }
             }

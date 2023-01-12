@@ -16,5 +16,5 @@ public interface ApiManagementService {
 
     void regenerateSecondaryKey(String institutionId);
 
-    void deleteSubscription(String institutionId, String subscriptionId);
+//    void deleteSubscription(String institutionId, String subscriptionId);
 }
