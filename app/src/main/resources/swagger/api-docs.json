@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.30"
+    "version": "0.0.37"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -233,16 +233,28 @@
         "summary" : "createInstitutionApiKeys",
         "description" : "Creates a new subscription for a given Institution and returns its primary and secondary keys",
         "operationId" : "createInstitutionApiKeysUsingPOST",
-        "parameters" : [ {
-          "name" : "institutionId",
-          "in" : "path",
-          "description" : "Institution's unique internal identifier",
-          "required" : true,
-          "style" : "simple",
-          "schema" : {
-            "type" : "string"
+        "parameters" : [
+          {
+            "name": "institutionId",
+            "in": "path",
+            "description": "Institution's unique internal identifier",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "subscriptionCode",
+            "in": "query",
+            "description": "subscription's unique internal identifier",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
           }
-        } ],
+        ],
         "responses" : {
           "201" : {
             "description" : "Created",
@@ -331,8 +343,8 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "400" : {
+            "description" : "Bad Request",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -363,10 +375,10 @@
           },
           "500": {
             "description": "Internal Server Error",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
                 }
               }
             }

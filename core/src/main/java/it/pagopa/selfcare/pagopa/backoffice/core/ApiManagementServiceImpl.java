@@ -75,22 +75,19 @@ public class ApiManagementServiceImpl implements ApiManagementService {
     }
 
     @Override
-    public List<InstitutionApiKeys> createInstitutionKeysList(String institutionId) {
-        log.trace("createInstitutionKeysList start");
-        log.debug("createInstitutionKeysList for product {}, {} and {}", "nodo-auth", "bizevents", "debt-positions");
+    public List<InstitutionApiKeys> createSubscriptionKeys(String institutionId, String scope, String subscriptionId, String subScriptionDisplay) {
+        log.trace("createSubscriptionKeys start");
+        log.debug("createSubscriptionKeys for scope {}", scope);
         Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
-
-        createInstitutionKeys(institutionId, "/products/nodo-auth", SUBSCRIPTION_NODO_AUTH_ID.concat(institutionId), SUBSCRIPTION_NODO_AUTH_DISPLAY);
-        createInstitutionKeys(institutionId, "/products/bizevents", SUBSCRIPTION_GDP_ID.concat(institutionId), SUBSCRIPTION_GPD_DISPLAY);
-        createInstitutionKeys(institutionId, "/products/debt-positions", SUBSCRIPTION_BES_ID.concat(institutionId), SUBSCRIPTION_BES_DISPLAY);
+        createSubscription(institutionId, scope, subscriptionId.concat(institutionId), subScriptionDisplay);
         List<InstitutionApiKeys> apiSubscriptionsList = apiManagerConnector.getApiSubscriptions(institutionId);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitutionKeysList result = {}", apiSubscriptionsList);
-        log.trace("createInstitutionKeysList end");
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createSubscriptionKeys result = {}", apiSubscriptionsList);
+        log.trace("createSubscriptionKeys end");
         return apiSubscriptionsList;
     }
 
-    private void createInstitutionKeys(String institutionId, String scope, String subscriptionId, String subscriptionName) {
-        log.trace("createInstitutionKeys start");
+    private void createSubscription(String institutionId, String scope, String subscriptionId, String subscriptionName) {
+        log.trace("createSubscription start");
         Institution institution = externalApiConnector.getInstitution(institutionId);
         if (institution != null) {
             try {
@@ -105,7 +102,7 @@ public class ApiManagementServiceImpl implements ApiManagementService {
                     dto.setEmail(institution.getDigitalAddress());
                 apiManagerConnector.createInstitution(institutionId, dto);
                 apiManagerConnector.createInstitutionSubscription(institutionId, institution.getDescription(), scope, subscriptionId, subscriptionName);
-                log.trace("createInstitutionKeys end");
+                log.trace("createSubscription end");
             }
         } else {
             throw new ResourceNotFoundException(String.format("The institution %s was not found", institutionId));
@@ -140,5 +137,14 @@ public class ApiManagementServiceImpl implements ApiManagementService {
         Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
         apiManagerConnector.regenerateSecondaryKey(institutionId);
         log.trace("regenerateSecondaryKey end");
+    }
+
+    @Override
+    public void deleteSubscription(String institutionId, String subscriptionId) {
+        log.trace("deleteSubscription start");
+        log.debug("deleteSubscription institutionId = {}, subscriptionId = {}", institutionId, subscriptionId);
+        Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
+        apiManagerConnector.deleteSubscription(institutionId, subscriptionId);
+        log.trace("deleteSubscription end");
     }
 }
