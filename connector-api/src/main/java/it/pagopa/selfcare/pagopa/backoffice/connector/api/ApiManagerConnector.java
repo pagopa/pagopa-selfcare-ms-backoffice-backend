@@ -22,5 +22,4 @@ public interface ApiManagerConnector {
 
     List<InstitutionApiKeys> getApiSubscriptions(String institutionId);
 
-//    void deleteSubscription(String institutionId, String subscriptionId);
-}
+ }

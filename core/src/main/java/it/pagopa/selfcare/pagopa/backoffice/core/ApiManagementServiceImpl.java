@@ -23,12 +23,6 @@ public class ApiManagementServiceImpl implements ApiManagementService {
     private final ApiManagerConnector apiManagerConnector;
     private final ExternalApiConnector externalApiConnector;
     private final String testEmail;
-    private static final String SUBSCRIPTION_NODO_AUTH_ID = "nodauth-";
-    private static final String SUBSCRIPTION_NODO_AUTH_DISPLAY = "Nodo Auth";
-    private static final String SUBSCRIPTION_GDP_ID = "gdp-";
-    private static final String SUBSCRIPTION_GPD_DISPLAY = "Gestione Posizione Debitoria";
-    private static final String SUBSCRIPTION_BES_ID = "bes-";
-    private static final String SUBSCRIPTION_BES_DISPLAY = "Biz event service";
     private static final String SUBSCRIPTION_APIS_ID = "apis-";
     private static final String SUBSCRIPTION_APIS_DISPLAY = "Apis";
 
@@ -138,13 +132,4 @@ public class ApiManagementServiceImpl implements ApiManagementService {
         apiManagerConnector.regenerateSecondaryKey(institutionId);
         log.trace("regenerateSecondaryKey end");
     }
-
-//    @Override
-//    public void deleteSubscription(String institutionId, String subscriptionId) {
-//        log.trace("deleteSubscription start");
-//        log.debug("deleteSubscription institutionId = {}, subscriptionId = {}", institutionId, subscriptionId);
-//        Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
-//        apiManagerConnector.deleteSubscription(institutionId, subscriptionId);
-//        log.trace("deleteSubscription end");
-//    }
 }

@@ -34,7 +34,7 @@ public class AzureApiManagerClient implements ApiManagerConnector {
                                  @Value("${azure.resource-manager.api-manager.resource-group}") String resourceGroupName,
                                  @Value("${azure.resource-manager.api-manager.subscription-id}") String subscriptionId,
                                  @Value("${azure.resource-manager.api-manager.tenant-id}") String tenantId
-                                 ) {
+    ) {
         this.serviceName = serviceName;
         this.resourceGroupName = resourceGroupName;
 
@@ -56,8 +56,8 @@ public class AzureApiManagerClient implements ApiManagerConnector {
         contract.setTaxCode(userContract.firstName());
         return contract;
     };
-    
-    
+
+
     @Override
     public it.pagopa.selfcare.pagopa.backoffice.connector.model.UserContract createInstitution(String institutionId, CreateInstitutionApiKeyDto dto) {
         log.trace("createInstitution start");
@@ -110,17 +110,6 @@ public class AzureApiManagerClient implements ApiManagerConnector {
         );
         log.trace("createInstitutionSubscription end");
     }
-
-//    @Override
-//    public void deleteSubscription(String institutionId, String subscriptionId) {
-//        log.trace("deleteSubscription start");
-//        log.debug("deleteSubscription institutionId = {}, subscriptionId = {}", institutionId, subscriptionId);
-//        manager.subscriptions().delete(resourceGroupName,
-//                serviceName,
-//                subscriptionId,"*");
-//        log.trace("deleteSubscription end");
-//
-//    }
 
     @Override
     public List<InstitutionApiKeys> getInstitutionApiKeys(String institutionId) {

@@ -57,24 +57,6 @@ public class InstitutionController {
         log.trace("getInstitutionApiKeys end");
         return apiKeysResource;
     }
-//TODO
-//    @DeleteMapping("/{institutionId}/{subscriptionid}/api-keys")
-//    @ResponseStatus(HttpStatus.OK)
-//    @ApiOperation(value = "", notes = "${swagger.api.subscription.delete}")
-//    public List<ApiKeysResource> deleteSubscription(
-//            @ApiParam("${swagger.model.institution.id}")
-//            @PathVariable("institutionId") String institutionId,
-//            @ApiParam("${swagger.model.subscription.id}")
-//            @PathVariable("subscriptionid") String subscriptionid) {
-//        log.trace("deleteSubscription start");
-//        log.debug("deleteSubscription institutionId = {}, subscriptionid = {}", institutionId, subscriptionid);
-//        apiManagementService.deleteSubscription(institutionId,subscriptionid);
-//        List<InstitutionApiKeys> institutionApiKeysList = apiManagementService.getInstitutionApiKeys(institutionId);
-//        List<ApiKeysResource> apiKeysResource = ApiManagerMapper.toApikeysResourceList(institutionApiKeysList);
-//        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getInstitutionApiKeys result = {}", apiKeysResource);
-//        log.trace("deleteSubscription end");
-//        return apiKeysResource;
-//    }
 
     @PostMapping("/{institutionId}/api-keys")
     @ResponseStatus(HttpStatus.CREATED)
