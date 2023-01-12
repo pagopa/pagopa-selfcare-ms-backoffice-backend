@@ -597,7 +597,7 @@
           "institutionType" : {
             "type" : "string",
             "description" : "Institution's type",
-            "enum" : [ "GSP", "PA", "PT", "SCP" ]
+            "enum" : [ "GSP", "PA", "PSP", "PT", "SCP" ]
           },
           "origin" : {
             "type" : "string",
@@ -641,7 +641,7 @@
           "institutionType" : {
             "type" : "string",
             "description" : "Institution's type",
-            "enum" : [ "GSP", "PA", "PT", "SCP" ]
+            "enum" : [ "GSP", "PA", "PSP", "PT", "SCP" ]
           },
           "mailAddress" : {
             "type" : "string",
