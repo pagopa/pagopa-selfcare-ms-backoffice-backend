@@ -11,14 +11,17 @@ import it.pagopa.selfcare.pagopa.backoffice.core.ExternalApiService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.AzureManagementExceptionHandler;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.subscriptions.Subscription;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockReset;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
@@ -45,7 +48,7 @@ class InstitutionControllerTest {
 
     @MockBean
     private ApiManagementService apiManagementServiceMock;
-    
+
     @MockBean
     private ExternalApiService externalApiServiceMock;
 
@@ -77,12 +80,16 @@ class InstitutionControllerTest {
     void createInstitutionApyKeys() throws Exception {
         //given
         String institutionId = "institutionId";
-        List<InstitutionApiKeys> apiKeys = mockInstance(List.of(new InstitutionApiKeys()));
-        when(apiManagementServiceMock.createInstitutionKeysList(anyString()))
+        Subscription subscriptionCode = Subscription.NODOAUTH;
+
+
+        List<InstitutionApiKeys> apiKeys = mockInstance(List.of(mockInstance(new InstitutionApiKeys())));
+
+        when(apiManagementServiceMock.createSubscriptionKeys(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(apiKeys);
         //when
         mvc.perform(MockMvcRequestBuilders
-                        .post(BASE_URL + "/{institutionId}/api-keys", institutionId)
+                        .post(BASE_URL + "/{institutionId}/api-keys", institutionId).queryParam("subscriptionCode",subscriptionCode.name())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$[*].primaryKey", notNullValue()))
@@ -90,10 +97,29 @@ class InstitutionControllerTest {
                 .andExpect(jsonPath("$[*].displayName", notNullValue()));
         //then
         verify(apiManagementServiceMock, times(1))
-                .createInstitutionKeysList(institutionId);
+                .createSubscriptionKeys(institutionId, subscriptionCode.getScope(), subscriptionCode.getPrefixId(), subscriptionCode.getDisplayName());
         verifyNoMoreInteractions(apiManagementServiceMock);
     }
-    
+
+
+    @Test
+    void createInstitutionApyKeys_noSubsctiptionFound() throws Exception {
+        //given
+        String institutionId = "institutionId";
+        String subscriptionCode = "subscriptionCode";
+
+        //when
+        MvcResult result = mvc.perform(MockMvcRequestBuilders
+                        .post(BASE_URL + "/{institutionId}/api-keys", institutionId).queryParam("subscriptionCode",subscriptionCode)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is5xxServerError())
+                .andReturn();
+
+
+        //then
+        verifyNoMoreInteractions(apiManagementServiceMock);
+    }
+
     @Test
     void regeneratePrimaryKey() throws Exception {
         // given
@@ -111,7 +137,7 @@ class InstitutionControllerTest {
                 .regeneratePrimaryKey(institutionId);
         verifyNoMoreInteractions(apiManagementServiceMock);
     }
-    
+
     @Test
     void regenerateSecondaryKey() throws Exception {
         // given
@@ -129,7 +155,7 @@ class InstitutionControllerTest {
                 .regenerateSecondaryKey(institutionId);
         verifyNoMoreInteractions(apiManagementServiceMock);
     }
-    
+
     @Test
     void getInstitution() throws Exception {
         //given
@@ -141,7 +167,7 @@ class InstitutionControllerTest {
                 .thenReturn(institutionMock);
         //when
         mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL+"/{institutionId}", institutionId)
+                        .get(BASE_URL + "/{institutionId}", institutionId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", notNullValue()))
@@ -163,16 +189,16 @@ class InstitutionControllerTest {
                 .getInstitution(institutionId);
         verifyNoMoreInteractions(externalApiServiceMock);
     }
-    
+
     @Test
     void getInstitutions() throws Exception {
         //given
-        InstitutionInfo institutionInfoMock =  mockInstance(new InstitutionInfo());
+        InstitutionInfo institutionInfoMock = mockInstance(new InstitutionInfo());
         institutionInfoMock.setUserProductRoles(List.of("userProductRole"));
         when(externalApiServiceMock.getInstitutions())
                 .thenReturn(List.of(institutionInfoMock));
         //when
-         mvc.perform(MockMvcRequestBuilders
+        mvc.perform(MockMvcRequestBuilders
                         .get(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -193,7 +219,7 @@ class InstitutionControllerTest {
                 .getInstitutions();
         verifyNoMoreInteractions(externalApiServiceMock);
     }
-    
+
     @Test
     void getInstitutionUserProducts() throws Exception {
         //given
@@ -203,7 +229,7 @@ class InstitutionControllerTest {
                 .thenReturn(List.of(productMock));
         //when
         mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL+"/{institutionId}/products", institutionId)
+                        .get(BASE_URL + "/{institutionId}/products", institutionId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..id", notNullValue()))
