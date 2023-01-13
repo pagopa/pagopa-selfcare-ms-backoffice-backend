@@ -2,9 +2,9 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.subscriptions;
 
 public enum Subscription {
 
-    NODOAUTH("/products/nodo-auth", "node_auth", "nodauth-"),
-    GPD("/products/debt-positions", "debt_positions", "gdp-"),
-    BIZ("/products/bizevents", "bizevents", "bes-");
+    NODOAUTH("/products/nodo-auth", "Connessione con nodo", "nodauth-"),
+    GPD("/products/debt-positions", "Posizioni debitorie", "gdp-"),
+    BIZ("/products/bizevents", "Evento di pagamento", "bes-");
 
     private final String scope;
     private final String displayName;
