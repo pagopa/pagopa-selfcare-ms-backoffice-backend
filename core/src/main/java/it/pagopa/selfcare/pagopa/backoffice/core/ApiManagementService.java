@@ -16,5 +16,4 @@ public interface ApiManagementService {
 
     void regenerateSecondaryKey(String institutionId);
 
-
 }

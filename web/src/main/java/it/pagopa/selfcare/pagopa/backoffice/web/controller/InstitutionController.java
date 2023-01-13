@@ -102,7 +102,6 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutions}")
     public List<InstitutionResource> getInstitutions() {
-
         log.trace("getInstitutions start");
         Collection<InstitutionInfo> institutions = externalApiService.getInstitutions();
         List<InstitutionResource> resources = institutions.stream()
@@ -142,5 +141,4 @@ public class InstitutionController {
         log.trace("getInstitutionProducts end");
         return resource;
     }
-
 }

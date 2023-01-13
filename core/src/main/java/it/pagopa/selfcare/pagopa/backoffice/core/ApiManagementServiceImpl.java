@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-
 import java.util.List;
 
 @Slf4j
@@ -34,7 +33,6 @@ public class ApiManagementServiceImpl implements ApiManagementService {
         this.apiManagerConnector = apiManagerConnector;
         this.externalApiConnector = externalApiConnector;
     }
-
 
     @Override
     public List<InstitutionApiKeys> createInstitutionKeys(String institutionId) {
