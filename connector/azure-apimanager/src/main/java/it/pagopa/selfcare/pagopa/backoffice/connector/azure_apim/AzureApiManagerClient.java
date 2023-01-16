@@ -4,6 +4,7 @@ import com.azure.core.credential.TokenCredential;
 import com.azure.core.http.rest.PagedIterable;
 import com.azure.core.http.rest.Response;
 import com.azure.core.management.AzureEnvironment;
+import com.azure.core.management.exception.ManagementException;
 import com.azure.core.management.profile.AzureProfile;
 import com.azure.core.util.Context;
 import com.azure.identity.DefaultAzureCredentialBuilder;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -143,22 +145,24 @@ public class AzureApiManagerClient implements ApiManagerConnector {
         log.debug("getApiSubscriptions institutionId = {}", institutionId);
 
         PagedIterable<SubscriptionContract> subscriptionContractList = manager.userSubscriptions().list(resourceGroupName, serviceName, institutionId);
-
-
-        List<InstitutionApiKeys> institutionApiKeysList = subscriptionContractList.stream()
-                .map(contract -> {
-                    InstitutionApiKeys apiKeys = new InstitutionApiKeys();
-                    Response<SubscriptionKeysContract> response = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, contract.name(), Context.NONE);
-                    if (response.getValue() != null) {
-                        apiKeys = new InstitutionApiKeys();
-                        apiKeys.setPrimaryKey(response.getValue().primaryKey());
-                        apiKeys.setSecondaryKey(response.getValue().secondaryKey());
-                        apiKeys.setDisplayName(contract.displayName());
-                        apiKeys.setId(contract.name());
-                    }
-                    return apiKeys;
-                }).collect(Collectors.toList());
-
+        List<InstitutionApiKeys> institutionApiKeysList =null;
+        try {
+           institutionApiKeysList = subscriptionContractList.stream()
+                    .map(contract -> {
+                        InstitutionApiKeys apiKeys = new InstitutionApiKeys();
+                        Response<SubscriptionKeysContract> response = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, contract.name(), Context.NONE);
+                        if (response.getValue() != null) {
+                            apiKeys = new InstitutionApiKeys();
+                            apiKeys.setPrimaryKey(response.getValue().primaryKey());
+                            apiKeys.setSecondaryKey(response.getValue().secondaryKey());
+                            apiKeys.setDisplayName(contract.displayName());
+                            apiKeys.setId(contract.name());
+                        }
+                        return apiKeys;
+                    }).collect(Collectors.toList());
+        }catch (ManagementException e){
+            institutionApiKeysList = new ArrayList<>();
+        }
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getApiSubscriptions response = {}", subscriptionContractList);
         log.trace("getApiSubscriptions end");
 

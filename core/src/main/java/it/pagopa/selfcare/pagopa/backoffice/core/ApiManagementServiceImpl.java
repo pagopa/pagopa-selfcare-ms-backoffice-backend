@@ -50,7 +50,7 @@ public class ApiManagementServiceImpl implements ApiManagementService {
                 dto.setDescription(institution.getDescription());
                 dto.setFiscalCode(institution.getTaxCode());
                 if (!testEmail.isBlank())
-                    dto.setEmail(testEmail);
+                    dto.setEmail(institution+testEmail);
                 else
                     dto.setEmail(institution.getDigitalAddress());
                 apiManagerConnector.createInstitution(institutionId, dto);
@@ -89,7 +89,7 @@ public class ApiManagementServiceImpl implements ApiManagementService {
                 dto.setDescription(institution.getDescription());
                 dto.setFiscalCode(institution.getTaxCode());
                 if (!testEmail.isBlank())
-                    dto.setEmail(testEmail);
+                    dto.setEmail(institutionId+testEmail);
                 else
                     dto.setEmail(institution.getDigitalAddress());
                 apiManagerConnector.createInstitution(institutionId, dto);
