@@ -113,7 +113,7 @@ class ApiManagementServiceImplTest {
         CreateInstitutionApiKeyDto capturedDto = institutionDtoArgumentCaptor.getValue();
         assertEquals(institutionMock.getDescription(), capturedDto.getDescription());
         assertEquals(institutionMock.getTaxCode(), capturedDto.getFiscalCode());
-        assertEquals(testEmail, capturedDto.getEmail());
+        assertEquals(institutionId.concat(testEmail), capturedDto.getEmail());
         verifyNoMoreInteractions(apiManagerConnectorMock, externalApiConnectorMock);
     }
 
@@ -261,7 +261,7 @@ class ApiManagementServiceImplTest {
                 .createInstitution(eq(institutionId), institutionDtoArgumentCaptor.capture());
         CreateInstitutionApiKeyDto captureDto = institutionDtoArgumentCaptor.getValue();
         assertNotNull(captureDto);
-        assertEquals(testEmail, captureDto.getEmail());
+        assertEquals(institutionId.concat(testEmail), captureDto.getEmail());
         assertEquals(institutionMock.getDescription(), captureDto.getDescription());
         assertEquals(institutionMock.getTaxCode(), captureDto.getFiscalCode());
         verifyNoMoreInteractions(apiManagerConnectorMock, externalApiConnectorMock);
