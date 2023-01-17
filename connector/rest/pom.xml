@@ -5,7 +5,7 @@
     <parent>
         <artifactId>pagopa-selfcare-ms-backoffice-connector</artifactId>
         <groupId>it.pagopa.selfcare.pagopa</groupId>
-        <version>0.0.36</version>
+        <version>0.0.45</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -35,4 +35,5 @@
             <artifactId>feign-httpclient</artifactId>
         </dependency>
     </dependencies>
+
 </project>
