@@ -144,10 +144,12 @@ public class AzureApiManagerClient implements ApiManagerConnector {
         log.trace("getApiSubscriptions start");
         log.debug("getApiSubscriptions institutionId = {}", institutionId);
 
-        PagedIterable<SubscriptionContract> subscriptionContractList = manager.userSubscriptions().list(resourceGroupName, serviceName, institutionId);
+        PagedIterable<SubscriptionContract> subscriptionContractList = null;
         List<InstitutionApiKeys> institutionApiKeysList =null;
         try {
-           institutionApiKeysList = subscriptionContractList.stream()
+            subscriptionContractList = manager.userSubscriptions().list(resourceGroupName, serviceName, institutionId);
+
+            institutionApiKeysList = subscriptionContractList.stream()
                     .map(contract -> {
                         InstitutionApiKeys apiKeys = new InstitutionApiKeys();
                         Response<SubscriptionKeysContract> response = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, contract.name(), Context.NONE);
