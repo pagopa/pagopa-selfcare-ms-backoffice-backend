@@ -4,7 +4,7 @@
     <parent>
         <artifactId>pagopa-selfcare-ms-backoffice</artifactId>
         <groupId>it.pagopa.selfcare.pagopa</groupId>
-        <version>0.0.56</version>
+        <version>0.0.57</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -14,12 +14,12 @@
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-ms-backoffice-connector-api</artifactId>
-            <version>0.0.56</version>
+            <version>0.0.57</version>
         </dependency>
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-ms-backoffice-connector-api</artifactId>
-            <version>0.0.56</version>
+            <version>0.0.57</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
