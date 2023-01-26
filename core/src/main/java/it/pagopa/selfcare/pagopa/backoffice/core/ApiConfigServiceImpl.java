@@ -21,7 +21,6 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     @Override
     public Channels getChannels(Integer limit, Integer page, String code, String sort, String xRequestId) {
         log.trace("getChannels start");
-        final String productId = "prod-pagopa";
         Channels channels = apiConfigConnector.getChannels(limit, page, code, sort, xRequestId);
         log.debug("getChannels result = {}", channels);
         log.trace("getChannels end");

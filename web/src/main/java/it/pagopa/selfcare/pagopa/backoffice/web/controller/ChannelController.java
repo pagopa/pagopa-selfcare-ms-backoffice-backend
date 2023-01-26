@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.Channels.ChannelsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

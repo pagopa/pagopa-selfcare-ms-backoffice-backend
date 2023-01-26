@@ -1,8 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.channels;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.Channels.ChannelResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.Channels.ChannelsResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

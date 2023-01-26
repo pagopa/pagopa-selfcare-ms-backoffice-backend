@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.*;
                 "logging.level.it.pagopa.selfcare.pagopa.connector.rest=DEBUG",
                 "spring.application.name=pagopa-selfcare-connector-rest"
         })
-public class ApiConfigRestClientTest {
+class ApiConfigRestClientTest {
 
 
     public static class Config {

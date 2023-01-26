@@ -2,8 +2,8 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.Channels.ChannelResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.Channels.ChannelsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelsResource;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import static it.pagopa.selfcare.pagopa.TestUtils.reflectionEqualsByName;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class ChannelMapperTest {
+class ChannelMapperTest {
 
     @Test
     void toChannelResource_null() {

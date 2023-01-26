@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         RestExceptionsHandler.class,
         WebTestConfig.class,
 })
-public class ChannelControllerTest {
+class ChannelControllerTest {
 
     private static final String BASE_URL = "/channels";
 

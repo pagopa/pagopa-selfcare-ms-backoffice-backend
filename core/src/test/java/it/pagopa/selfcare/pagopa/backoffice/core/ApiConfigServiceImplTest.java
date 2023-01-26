@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = ApiConfigServiceImpl.class)
-public class ApiConfigServiceImplTest {
+class ApiConfigServiceImplTest {
 
     @Autowired
     private ApiConfigServiceImpl apiConfigService;

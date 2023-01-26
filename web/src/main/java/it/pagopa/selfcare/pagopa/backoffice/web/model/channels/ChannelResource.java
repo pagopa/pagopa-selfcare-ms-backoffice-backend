@@ -1,4 +1,4 @@
-package it.pagopa.selfcare.pagopa.backoffice.web.model.Channels;
+package it.pagopa.selfcare.pagopa.backoffice.web.model.channels;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
