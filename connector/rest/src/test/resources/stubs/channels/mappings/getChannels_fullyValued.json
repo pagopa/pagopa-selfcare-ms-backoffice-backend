@@ -1,0 +1,41 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/apiconfig/auth/api/v1/channels",
+    "queryParameters": {
+      "page": {
+        "equalTo": "2"
+      },
+      "code": {
+        "equalTo": "code1"
+      },
+      "ordering": {
+        "equalTo": "DESC"
+      },
+      "limit": {
+        "equalTo": "16"
+      }
+    }
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": {
+      "channels": [
+        {
+          "broker_description": "broker_description",
+          "channel_code": "223344556677889900",
+          "enabled": true
+        }
+      ],
+      "page_info": {
+        "items_found": 1,
+        "limit": 1,
+        "page": 1,
+        "total_pages": 1
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
