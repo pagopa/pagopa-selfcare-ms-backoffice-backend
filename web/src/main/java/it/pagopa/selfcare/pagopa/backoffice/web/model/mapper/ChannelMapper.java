@@ -10,6 +10,8 @@ import java.util.List;
 
 public class ChannelMapper {
 
+    private ChannelMapper(){}
+
     public static ChannelResource toResource(Channel model) {
         ChannelResource resource = null;
         if (model != null) {
