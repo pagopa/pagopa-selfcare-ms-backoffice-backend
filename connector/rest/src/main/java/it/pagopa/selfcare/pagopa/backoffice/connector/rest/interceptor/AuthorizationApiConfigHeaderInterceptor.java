@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class AuthorizationHeaderInterceptor implements RequestInterceptor {
-    @Value("${authorization.external-api.subscriptionKey}")
-    private String externalApiSubscriptionKey;
+public class AuthorizationApiConfigHeaderInterceptor implements RequestInterceptor {
+    @Value("${authorization.api-config.subscriptionKey}")
+    private String apiConfigSubscriptionKey;
 
     @Override
     public void apply(RequestTemplate template) {
@@ -21,6 +21,6 @@ public class AuthorizationHeaderInterceptor implements RequestInterceptor {
         SelfCareUser user = (SelfCareUser) auth.getPrincipal();
         template.header("x-selfcare-uid", user.getId());
         template.removeHeader("Ocp-Apim-Subscription-Key")
-                .header("Ocp-Apim-Subscription-Key", externalApiSubscriptionKey);
+                .header("Ocp-Apim-Subscription-Key", apiConfigSubscriptionKey);
     }
 }
