@@ -4,5 +4,4 @@ import org.springframework.context.annotation.Import;
 
 @Import(ExternalApiRestClientConfig.class)
 public class ExternalApiRestClientConfigTest {
-
 }
