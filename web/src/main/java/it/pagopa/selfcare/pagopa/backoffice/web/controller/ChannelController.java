@@ -40,7 +40,7 @@ public class ChannelController {
                                         @ApiParam("${swagger.request.id}")
                                         @RequestHeader(name = "X-Request-Id", required = false) String xRequestId) {
         log.trace("getchannels start");
-        log.debug("getchannels code filter = {}", code != null ? code : "");
+        log.debug("getchannels code filter = {}", code);
         Channels channels = apiConfigService.getChannels(limit, page, code, sort, xRequestId);
         ChannelsResource resource = ChannelMapper.toResource(channels);
         log.debug("getchannels result = {}", resource);
