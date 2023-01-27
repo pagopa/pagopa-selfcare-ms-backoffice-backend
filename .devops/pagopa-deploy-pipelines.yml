@@ -52,15 +52,15 @@ variables:
     dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
     kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
     poolImage: 'pagopa-uat-linux'
-    # appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
-    # appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
+    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
+    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
   ${{ if eq(parameters['ENV'], 'prod') }}:
     dockerRegistryServiceConnection: $(PROD_CONTAINER_REGISTRY_SERVICE_CONN)
     dockerRegistryFqdn: $(PROD_CONTAINER_NAMESPACE)
     kubernetesServiceConnection: '$(PROD_KUBERNETES_SERVICE_CONN)'
     poolImage: 'pagopa-prod-linux'
-    # appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_PROD)"
-    # appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_PROD)"
+    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_PROD)"
+    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_PROD)"
 
   ${{ if eq(variables['Build.SourceBranchName'], 'merge') }}:
     sourceBranch: "main" # force to main branch
@@ -81,7 +81,7 @@ stages:
 
   # Create a release on GitHub
   - stage: Release
-    condition: ne('${{ parameters.SEMVER }}', 'skip')
+    # condition: ne('${{ parameters.SEMVER }}', 'skip')
     jobs:
       - job: make_release
         steps:
@@ -97,6 +97,8 @@ stages:
               gitHubConnection: $(GITHUB_CONNECTION)
               ${{ if ne(parameters.SEMVER, 'skip') }}:
                 semver: '${{ parameters.SEMVER }}'
+              ${{ if eq(parameters.SEMVER, 'skip') }}:
+                semver: 'buildNumber'
 
           - template: templates/maven-github-current-version/template.yaml@pagopaCommons
 
