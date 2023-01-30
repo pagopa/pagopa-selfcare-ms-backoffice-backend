@@ -10,10 +10,13 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.institutions.InstitutionRe
 import java.util.stream.Collectors;
 
 public class InstitutionMapper {
-    
-    public static InstitutionDetailResource toResource(Institution model){
+
+    private InstitutionMapper() {
+    }
+
+    public static InstitutionDetailResource toResource(Institution model) {
         InstitutionDetailResource resource = null;
-        if (model != null){
+        if (model != null) {
             resource = new InstitutionDetailResource();
             resource.setId(model.getId());
             resource.setDescription(model.getDescription());

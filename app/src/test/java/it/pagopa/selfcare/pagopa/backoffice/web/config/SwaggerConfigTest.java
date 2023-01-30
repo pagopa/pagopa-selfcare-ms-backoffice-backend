@@ -1,8 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ExternalApiService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +23,8 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -35,7 +39,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @EnableWebMvc
 @ComponentScan(basePackages = "it.pagopa.selfcare.pagopa.backoffice.web.controller")
 @TestPropertySource(locations = "classpath:config/application.yml")
+@Slf4j
 class SwaggerConfigTest {
+
+    @MockBean
+    private ApiConfigService apiConfigService;
 
     @MockBean
     private ApiManagementService managementService;
@@ -58,6 +66,7 @@ class SwaggerConfigTest {
                     assertNotNull(result);
                     assertNotNull(result.getResponse());
                     final String content = result.getResponse().getContentAsString();
+                    checkPlaceholders(content);
                     assertFalse(content.isBlank());
                     assertFalse(content.contains("${"), "Generated swagger contains placeholders");
                     Object swagger = objectMapper.readValue(result.getResponse().getContentAsString(), Object.class);
@@ -66,5 +75,13 @@ class SwaggerConfigTest {
                     Files.createDirectories(basePath);
                     Files.write(basePath.resolve("api-docs.json"), formatted.getBytes());
                 });
+    }
+
+    private static void checkPlaceholders(String content) {
+        Pattern pattern = Pattern.compile("\\$\\{(.*?)\\}");
+        Matcher matcher = pattern.matcher(content);
+        while (matcher.find()) {
+            log.error("\033[31m An error occurred with placeholder: {}", matcher.group(1));
+        }
     }
 }
