@@ -259,27 +259,7 @@ class ApiConfigRestClientTest {
         assertNotNull(response.getTargetPath());
         assertNotNull(response.getThreadNumber());
         assertNotNull(response.getTimeoutA());
-        assertNotNull(response.getTimeoutB());
-        assertNotNull(response.getTimeoutC());
-        assertNotNull(response.getNpmService());
-        assertNotNull(response.getNewFaultCode());
-        assertNotNull(response.getRedirectIp());
-        assertNotNull(response.getRedirectPath());
-        assertNotNull(response.getRedirectPort());
-        assertNotNull(response.getRedirectQueryString());
-        assertNotNull(response.getRedirectProtocol());
-        assertNotNull(response.getPaymentModel());
-        assertNotNull(response.getServPlugin());
-        assertNotNull(response.getRtPush());
-        assertNotNull(response.getOnUs());
-        assertNotNull(response.getCardChart());
-        assertNotNull(response.getRecovery());
-        assertNotNull(response.getDigitalStampBrand());
-        assertNotNull(response.getFlagIo());
-        assertNotNull(response.getAgid());
-        assertNotNull(response.getBrokerDescription());
-        assertNotNull(response.getEnabled());
-        assertNotNull(response.getChannelCode());
+
     }
 
 

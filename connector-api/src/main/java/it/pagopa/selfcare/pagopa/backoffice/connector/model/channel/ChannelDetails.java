@@ -144,11 +144,5 @@ public class ChannelDetails extends  Channel{
     @JsonProperty("agid")
     @NotNull
     private Boolean agid;
-//
-//
-//    @JsonIgnore
-//    private IntermediariPsp fkIntermediarioPsp;
-//
-//    @JsonIgnore
-//    private WfespPluginConf fkWfespPluginConf;
+
 }

@@ -55,7 +55,7 @@ public class ChannelController {
     }
 
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.channels.createChannel}")
     public ChannelDetailsResource createChannel(@RequestBody @NotNull ChannelDetailsDto channelDetailsDto,
                                                 @ApiParam("${swagger.request.id}")
