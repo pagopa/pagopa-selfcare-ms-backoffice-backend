@@ -23,7 +23,7 @@
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-connector-rest</artifactId>
-            <version>0.0.46</version>
+            <version>0.0.57</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>

@@ -1,7 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channel;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelsResource;
 import org.junit.jupiter.api.Test;
@@ -57,5 +60,47 @@ class ChannelMapperTest {
         //then
         assertNotNull(resource);
         reflectionEqualsByName(model, resource);
+    }
+
+    @Test
+    void toChannelDetailsResource() {
+        //given
+        ChannelDetails model = mockInstance(new ChannelDetails());
+        //when
+        ChannelDetailsResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNotNull(resource);
+        reflectionEqualsByName(model, resource);
+    }
+
+    @Test
+    void toChannelDetailsResource_null() {
+        //given
+        ChannelDetails models = null;
+        //when
+        ChannelDetailsResource resources = ChannelMapper.toResource(models);
+        //then
+        assertNull(resources);
+    }
+
+    @Test
+    void fromChannelDetailsDto() {
+        //given
+        ChannelDetailsDto dto = mockInstance(new ChannelDetailsDto());
+        //when
+        ChannelDetails model = ChannelMapper.fromChannelDetailsDto(dto);
+        //then
+        assertNotNull(model);
+        reflectionEqualsByName(dto, model);
+    }
+
+    @Test
+    void fromChannelDetailsDto_null() {
+        //given
+        ChannelDetailsDto dto =  null;
+        //when
+        ChannelDetails model =  ChannelMapper.fromChannelDetailsDto(dto);
+        //then
+        assertNull(model);
     }
 }

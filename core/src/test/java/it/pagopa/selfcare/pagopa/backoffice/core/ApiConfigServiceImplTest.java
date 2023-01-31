@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,5 +64,23 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
+    @Test
+    void createChannel() {
+        //given
 
+        final String xRequestId = "xRequestId";
+        ChannelDetails channelDetailsMock = mock(ChannelDetails.class);
+
+        when(apiConfigConnectorMock.createChannel(any(),any()))
+                .thenReturn(channelDetailsMock);
+        //when
+        ChannelDetails channelDetailsRes = apiConfigService.createChannel(channelDetailsMock, xRequestId);
+        //then
+        assertNotNull(channelDetailsRes);
+        assertEquals(channelDetailsRes, channelDetailsMock);
+        reflectionEqualsByName(channelDetailsRes, channelDetailsMock);
+        verify(apiConfigConnectorMock, times(1))
+                .createChannel(channelDetailsMock,xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
 }

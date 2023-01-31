@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class Channel {
     @JsonProperty("channel_code")
-    private String channelCode;
+    protected String channelCode;
     @JsonProperty("enabled")
-    private Boolean enabled;
+    protected Boolean enabled;
     @JsonProperty("broker_description")
-    private String brokerDescription;
+    protected String brokerDescription;
 }
