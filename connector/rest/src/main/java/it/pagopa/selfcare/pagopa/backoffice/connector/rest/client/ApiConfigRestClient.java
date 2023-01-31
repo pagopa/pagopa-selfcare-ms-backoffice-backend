@@ -1,13 +1,13 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.NotNull;
 
 @FeignClient(name = "${rest-client.api-config.serviceCode}", url = "${rest-client.api-config.base-url}")
 public interface ApiConfigRestClient extends ApiConfigConnector {
@@ -20,5 +20,9 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                          @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort,
                          @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
+    @PostMapping(value = "${rest-client.api-config.createChannel.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    ChannelDetails createChannel(@RequestBody @NotNull ChannelDetails detailsDto,
+                                 @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
 }

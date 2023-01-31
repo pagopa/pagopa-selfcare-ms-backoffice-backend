@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 public class ApiConfigServiceImpl implements ApiConfigService {
 
     private final ApiConfigConnector apiConfigConnector;
-
 
     @Autowired
     public ApiConfigServiceImpl(ApiConfigConnector apiConfigConnector) {
@@ -26,4 +26,13 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.trace("getChannels end");
         return channels;
     }
+    @Override
+    public ChannelDetails createChannel(ChannelDetails channelDetails, String xRequestId) {
+        log.trace("createChannel start");
+        ChannelDetails response = apiConfigConnector.createChannel(channelDetails, xRequestId);
+        log.debug("createChannel result = {}", response);
+        log.trace("createChannel end");
+        return response;
+    }
+
 }

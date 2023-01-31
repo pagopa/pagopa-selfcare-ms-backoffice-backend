@@ -9,8 +9,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channel;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.RestTestUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.config.ApiConfigRestClientConfigTest;
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
@@ -38,6 +37,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ContextConfiguration(initializers = ApiConfigRestClientTest.RandomPortInitializer.class,
@@ -104,6 +104,50 @@ class ApiConfigRestClientTest {
     @Autowired
     private ApiConfigRestClient restClient;
 
+    private static final Map<TestCase, Map<String, Object>> testCase3ChannelDto = new EnumMap(TestCase.class) {{
+        ChannelDetails channelDetails = new ChannelDetails();
+        channelDetails.setPassword("password");
+        channelDetails.setNewPassword("newPassword");
+        channelDetails.setProtocol(Protocol.HTTP);
+        channelDetails.setIp("127.0.0.1");
+        channelDetails.setPort(Long.parseLong("8080"));
+        channelDetails.setService("service");
+        channelDetails.setBrokerPspCode("psp");
+        channelDetails.setProxyEnabled(true);
+        channelDetails.setProxyHost("127.0.0.1");
+        channelDetails.setProxyPort(Long.parseLong("8090"));
+        channelDetails.setProxyUsername("username");
+        channelDetails.setProxyPassword("setProxyPassword");
+        channelDetails.setTargetHost("setTargetHost");
+        channelDetails.setTargetPort(Long.parseLong("8888"));
+        channelDetails.setTargetPath("setTargetPath");
+        channelDetails.setThreadNumber(Long.parseLong("1"));
+        channelDetails.setTimeoutA(Long.parseLong("1"));
+        channelDetails.setTimeoutB(Long.parseLong("2"));
+        channelDetails.setTimeoutC(Long.parseLong("3"));
+        channelDetails.setNpmService("setNpmService");
+        channelDetails.setNewFaultCode(false);
+        channelDetails.setRedirectIp("127.0.0.3");
+        channelDetails.setRedirectPath("setRedirectPath");
+        channelDetails.setRedirectPort(Long.parseLong("8989"));
+        channelDetails.setRedirectQueryString("/setRedirectQueryString");
+        channelDetails.setRedirectProtocol(Protocol.HTTP);
+        channelDetails.setPaymentModel(PaymentModel.IMMEDIATE);
+        channelDetails.setServPlugin("setServPlugin");
+        channelDetails.setRtPush(true);
+        channelDetails.setOnUs(true);
+        channelDetails.setCardChart(true);
+        channelDetails.setRecovery(true);
+        channelDetails.setDigitalStampBrand(true);
+        channelDetails.setFlagIo(true);
+        channelDetails.setAgid(true);
+        channelDetails.setBrokerDescription("setBrokerDescription");
+        channelDetails.setEnabled(true);
+        channelDetails.setChannelCode("setChannelCode");
+        put(TestCase.FULLY_VALUED, channelDetails);
+
+    }};
+
     private static final Map<TestCase, Map<String, Object>> testCase2instIdMap = new EnumMap<>(TestCase.class) {{
         put(TestCase.FULLY_VALUED, new HashMap<String, Object>() {{
             put("page", 2);
@@ -155,8 +199,6 @@ class ApiConfigRestClientTest {
         assertNull(response.getChannelList());
         assertNull(response.getPageInfo());
 
-        // response.getChannelList().forEach(this::checkNotNullFieldsAttributes);
-
     }
 
     @Test
@@ -179,6 +221,7 @@ class ApiConfigRestClientTest {
         assertEquals(1, response.getChannelList().size());
         checkNotNullFields(response.getChannelList().get(0));
         Channel channel = response.getChannelList().get(0);
+        response.getChannelList().forEach(this::checkNotNullFieldsAttributes);
         assertNotNull(channel.getChannelCode());
         assertNotNull(channel.getEnabled());
         assertNotNull(channel.getBrokerDescription());
@@ -188,6 +231,57 @@ class ApiConfigRestClientTest {
         assertNotNull(response.getPageInfo().getTotalPages());
         assertNotNull(response.getPageInfo().getItemsFound());
     }
+
+    @Test
+    void createChannel_fullyValued() {
+        // given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        ChannelDetails channelDetails = (ChannelDetails) testCase3ChannelDto.get(testCase);
+        String requestId = UUID.randomUUID().toString();
+        // when
+        ChannelDetails response = restClient.createChannel(channelDetails, requestId);
+
+        //then
+        assertNotNull(response.getPassword());
+        assertNotNull(response.getNewPassword());
+        assertNotNull(response.getProtocol());
+        assertNotNull(response.getIp());
+        assertNotNull(response.getPort());
+        assertNotNull(response.getService());
+        assertNotNull(response.getBrokerPspCode());
+        assertNotNull(response.getProxyEnabled());
+        assertNotNull(response.getProxyHost());
+        assertNotNull(response.getProxyPort());
+        assertNotNull(response.getProxyUsername());
+        assertNotNull(response.getProxyPassword());
+        assertNotNull(response.getTargetHost());
+        assertNotNull(response.getTargetPort());
+        assertNotNull(response.getTargetPath());
+        assertNotNull(response.getThreadNumber());
+        assertNotNull(response.getTimeoutA());
+        assertNotNull(response.getTimeoutB());
+        assertNotNull(response.getTimeoutC());
+        assertNotNull(response.getNpmService());
+        assertNotNull(response.getNewFaultCode());
+        assertNotNull(response.getRedirectIp());
+        assertNotNull(response.getRedirectPath());
+        assertNotNull(response.getRedirectPort());
+        assertNotNull(response.getRedirectQueryString());
+        assertNotNull(response.getRedirectProtocol());
+        assertNotNull(response.getPaymentModel());
+        assertNotNull(response.getServPlugin());
+        assertNotNull(response.getRtPush());
+        assertNotNull(response.getOnUs());
+        assertNotNull(response.getCardChart());
+        assertNotNull(response.getRecovery());
+        assertNotNull(response.getDigitalStampBrand());
+        assertNotNull(response.getFlagIo());
+        assertNotNull(response.getAgid());
+        assertNotNull(response.getBrokerDescription());
+        assertNotNull(response.getEnabled());
+        assertNotNull(response.getChannelCode());
+    }
+
 
     private void checkNotNullFields(Object o, String... excludedFields) {
         Set<String> excludedFieldsSet = new HashSet<>(Arrays.asList(excludedFields));

@@ -1,6 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.channels;
 
-import it.pagopa.selfcare.pagopa.backoffice.web.model.institutions.InstitutionResource;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +8,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
@@ -20,7 +21,8 @@ import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ChannelResourceTest {
+class ChannelsDetailsResourceTest {
+
     private Validator validator;
 
 
@@ -34,20 +36,33 @@ class ChannelResourceTest {
     void validateNullFields() {
         //given
         HashMap<String, Class<? extends Annotation>> toCheckMap = new HashMap<>();
-        toCheckMap.put("id", NotBlank.class);
-        toCheckMap.put("externalId", NotBlank.class);
-        toCheckMap.put("originId", NotBlank.class);
-        toCheckMap.put("origin", NotBlank.class);
-        toCheckMap.put("name", NotBlank.class);
-        toCheckMap.put("fiscalCode", NotBlank.class);
-        toCheckMap.put("mailAddress", NotBlank.class);
-        toCheckMap.put("userRole", NotBlank.class);
-        toCheckMap.put("status", NotBlank.class);
-        toCheckMap.put("address", NotBlank.class);
-        toCheckMap.put("userProductRoles", NotNull.class);
+        toCheckMap.put("password", NotBlank.class);
+        toCheckMap.put("protocol", NotNull.class);
+        toCheckMap.put("port", NotNull.class);
+        toCheckMap.put("brokerPspCode", NotBlank.class);
+        toCheckMap.put("proxyPort", Min.class);
+        toCheckMap.put("proxyPassword", NotNull.class);
+        toCheckMap.put("threadNumber", NotNull.class);
+        toCheckMap.put("timeoutA", NotNull.class);
+        toCheckMap.put("timeoutB", NotNull.class);
+        toCheckMap.put("timeoutC", NotNull.class);
+        toCheckMap.put("redirectPort", Min.class);
+        toCheckMap.put("channelList", NotNull.class);
+        toCheckMap.put("agid", NotNull.class);
+        toCheckMap.put("onUs", NotNull.class);
+        toCheckMap.put("recovery", NotNull.class);
+        toCheckMap.put("rtPush", NotNull.class);
+        toCheckMap.put("cardChart", NotNull.class);
+        toCheckMap.put("digitalStampBrand", NotNull.class);
+        toCheckMap.put("paymentModel", NotNull.class);
+        toCheckMap.put("channelCode", NotBlank.class);
+        toCheckMap.put("flagIo", NotBlank.class);
+        toCheckMap.put("servPlugin", NotBlank.class);
+        toCheckMap.put("redirectProtocol", NotNull.class);
+        toCheckMap.put("redirectQueryString", NotBlank.class);
 
-        InstitutionResource model = new InstitutionResource();
-        model.setUserProductRoles(null);
+        ChannelDetailsResource model = new ChannelDetailsResource();
+
         //when
         Set<ConstraintViolation<Object>> violations = validator.validate(model);
         // then
@@ -64,11 +79,11 @@ class ChannelResourceTest {
     @Test
     void validateNotNullFields() {
         // given
-        InstitutionResource institutionResource = mockInstance(new InstitutionResource());
-        institutionResource.setUserProductRoles(Set.of("string"));
+        ChannelDetailsResource channelDetailsResource = mockInstance(new ChannelDetailsResource());
 
         // when
-        Set<ConstraintViolation<Object>> violations = validator.validate(institutionResource);
+        Set<ConstraintViolation<Object>> violations = validator.validate(channelDetailsResource);
+
         // then
         assertTrue(violations.isEmpty());
     }

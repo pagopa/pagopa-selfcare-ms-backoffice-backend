@@ -3,8 +3,12 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.NotNull;
 
 @Slf4j
 @RestController
@@ -43,8 +49,25 @@ public class ChannelController {
         log.debug("getchannels code filter = {}", code);
         Channels channels = apiConfigService.getChannels(limit, page, code, sort, xRequestId);
         ChannelsResource resource = ChannelMapper.toResource(channels);
-        log.debug("getchannels result = {}", resource);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getchannels result = {}", resource);
         log.trace("getchannels end");
+        return resource;
+    }
+
+    @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.createChannel}")
+    public ChannelDetailsResource createChannel(@RequestBody @NotNull ChannelDetailsDto channelDetailsDto,
+                                                @ApiParam("${swagger.request.id}")
+                                                @RequestHeader(name = "X-Request-Id", required = false) String xRequestId) {
+        log.trace("createChannel start");
+        log.debug("createChannel code channelDetailsDto = {}", channelDetailsDto);
+
+        ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
+        ChannelDetails response = apiConfigService.createChannel(channelDetails,xRequestId);
+        ChannelDetailsResource resource = ChannelMapper.toResource(response);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createChannel result = {}", resource);
+        log.trace("createChannel end");
         return resource;
     }
 }
