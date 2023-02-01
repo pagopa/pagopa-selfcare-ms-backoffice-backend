@@ -70,7 +70,7 @@ microservice-chart:
     AZURE_CLIENT_SECRET: pagopa-selfcare-d-azure-client-secret
     AZURE_CLIENT_ID: pagopa-selfcare-d-azure-client-id
     SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selfcare-d-apim-external-api-key
-    SELFCARE_APIM_API_CONFIG_API_KEY_PAGOPA: pagopa-d-apim-api-config-key
+    PAGOPA_APIM_API_CONFIG_API_KEY_PAGOPA: pagopa-d-apim-api-config-key
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-d-connection-string'
     AZURE_TENANT_ID: pagopa-selfcare-dev-tenant-id
     AZURE_SUBSCRIPTION_ID: pagopa-selfcare-d-subscription-id
