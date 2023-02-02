@@ -146,9 +146,9 @@ public class ChannelMapper {
         if (model != null) {
             resource = new PspChannelsResource();
             List<PspChannel> channels = model.getChannelsList();
-            channels.forEach(pspChannel->{
-                channelResourceList.add(toResource(pspChannel));
-            });
+            channels.forEach(pspChannel->
+                channelResourceList.add(toResource(pspChannel))
+            );
             resource.setChannelsList(channelResourceList);
         }
         return  resource;
