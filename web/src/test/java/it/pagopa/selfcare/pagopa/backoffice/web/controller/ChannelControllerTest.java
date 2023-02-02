@@ -19,6 +19,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
@@ -173,7 +174,38 @@ class ChannelControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .createChannel(channelDetails,xRequestId);
+                .createChannel(channelDetails, xRequestId);
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
+
+    @Test
+    void getPspChannels() throws Exception {
+        //given
+
+        String pspCode = "pspCode";
+        String xRequestId = "1";
+
+        PspChannel pspChannel = mockInstance(new PspChannel(),"setPaymentTypeList");
+        pspChannel.setPaymentTypeList(List.of("paymentType"));
+
+        PspChannels pspChannels = mockInstance(new PspChannels(), "setchannelList");
+        pspChannels.setChannelsList(List.of(pspChannel));
+
+        when(apiConfigServiceMock.getPspChannels(anyString(), anyString()))
+                .thenReturn(pspChannels);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/{pdpcode}", pspCode)
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.channels[*].enabled", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.channels[*].channel_code", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.channels[*].payment_types", everyItem(notNullValue())));
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getPspChannels(pspCode, xRequestId);
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
 }

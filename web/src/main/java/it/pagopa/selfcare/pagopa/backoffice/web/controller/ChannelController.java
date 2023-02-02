@@ -6,10 +6,12 @@ import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PspChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,10 +66,26 @@ public class ChannelController {
         log.debug("createChannel code channelDetailsDto = {}", channelDetailsDto);
 
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
-        ChannelDetails response = apiConfigService.createChannel(channelDetails,xRequestId);
+        ChannelDetails response = apiConfigService.createChannel(channelDetails, xRequestId);
         ChannelDetailsResource resource = ChannelMapper.toResource(response);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createChannel result = {}", resource);
         log.trace("createChannel end");
+        return resource;
+    }
+
+    @GetMapping(value = "/{pspcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public PspChannelsResource getPspChannels(@ApiParam("${swagger.request.pspCode}")
+                                              @PathVariable("pspcode") String pspCode,
+                                              @ApiParam("${swagger.request.id}")
+                                              @RequestHeader(name = "X-Request-Id", required = false) String xRequestId
+    ) {
+        log.trace("getPspChannels start");
+        log.debug("getPspChannels pspcode = {}", pspCode);
+        PspChannels pspChannels = apiConfigService.getPspChannels(pspCode, xRequestId);
+        PspChannelsResource resource = ChannelMapper.toResource(pspChannels);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getPspChannels result = {}", resource);
+        log.trace("getPspChannels end");
         return resource;
     }
 }
