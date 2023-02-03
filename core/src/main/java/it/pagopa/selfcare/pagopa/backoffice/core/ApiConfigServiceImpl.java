@@ -46,5 +46,14 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return response;
     }
 
+    @Override
+    public ChannelDetails getChannelDetails(String channelCode, String xRequestId) {
+        log.trace("getChannelDetails start");
+        ChannelDetails response = apiConfigConnector.getChannelDetails(channelCode, xRequestId);
+        log.debug("getChannelDetails result = {}", response);
+        log.trace("getChannelDetails end");
+        return response;
+    }
+
 
 }

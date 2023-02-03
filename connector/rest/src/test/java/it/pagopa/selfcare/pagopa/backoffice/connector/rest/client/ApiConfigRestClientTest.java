@@ -109,6 +109,11 @@ class ApiConfigRestClientTest {
         put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "pspCode2");
     }};
 
+    private static final Map<ApiConfigRestClientTest.TestCase, String> testCaseChannelCodeMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
+        put(ApiConfigRestClientTest.TestCase.FULLY_VALUED, "channelcode1");
+        put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "channelcode2");
+    }};
+
     private static final Map<TestCase, Map<String, Object>> testCase3ChannelDto = new EnumMap(TestCase.class) {{
         ChannelDetails channelDetails = new ChannelDetails();
         channelDetails.setPassword("password");
@@ -252,7 +257,7 @@ class ApiConfigRestClientTest {
         assertNotNull(response.getChannelsList().get(0).getEnabled());
     }
     @Test
-    void getPspChannelsChannels_fullyEmpty() {
+    void getPspChannels_fullyEmpty() {
         // given
         TestCase testCase = TestCase.EMPTY_RESULT;
         String pspCode = testCasePspCodeMap.get(testCase);
@@ -262,6 +267,46 @@ class ApiConfigRestClientTest {
         assertNotNull(response);
         assertNotNull(response.getChannelsList());
         assertTrue(response.getChannelsList().isEmpty());
+
+    }
+
+    @Test
+    void getChannelDetails_fullyValued() {
+        // given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        String pspCode = testCaseChannelCodeMap.get(testCase);
+        String xRequestId = "1";
+        // when
+        ChannelDetails response = restClient.getChannelDetails(pspCode, xRequestId);
+        assertNotNull(response);
+        assertNotNull(response.getPassword());
+        assertNotNull(response.getNewPassword());
+        assertNotNull(response.getProtocol());
+        assertNotNull(response.getIp());
+        assertNotNull(response.getPort());
+        assertNotNull(response.getService());
+        assertNotNull(response.getBrokerPspCode());
+        assertNotNull(response.getProxyEnabled());
+        assertNotNull(response.getProxyHost());
+        assertNotNull(response.getProxyPort());
+        assertNotNull(response.getProxyUsername());
+        assertNotNull(response.getProxyPassword());
+        assertNotNull(response.getTargetHost());
+        assertNotNull(response.getTargetPort());
+        assertNotNull(response.getTargetPath());
+        assertNotNull(response.getThreadNumber());
+        assertNotNull(response.getTimeoutA());
+    }
+    @Test
+    void getChannelDetails_fullyEmpty() {
+        // given
+        TestCase testCase = TestCase.EMPTY_RESULT;
+        String pspCode = testCaseChannelCodeMap.get(testCase);
+        String xRequestId = "1";
+        // when
+        ChannelDetails response = restClient.getChannelDetails(pspCode, xRequestId);
+        assertNotNull(response);
+
 
 
     }

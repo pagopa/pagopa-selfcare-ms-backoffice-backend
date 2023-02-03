@@ -10,4 +10,5 @@ public interface ApiConfigConnector {
 
     ChannelDetails createChannel(ChannelDetails channelDetails, String xRequestId);
     PspChannels getPspChannels(String pspCode, String xRequestId);
+    ChannelDetails getChannelDetails(String channelCode, String xRequestId);
 }

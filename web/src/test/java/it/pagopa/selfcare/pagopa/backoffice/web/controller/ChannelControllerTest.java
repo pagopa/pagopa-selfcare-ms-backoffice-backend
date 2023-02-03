@@ -91,6 +91,52 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
+    @Test
+    void getChannelDetails() throws Exception {
+        //given
+
+        String channelcode = "channelcode";
+        String xRequestId = "1";
+
+        ChannelDetails channelDetails = mockInstance(new ChannelDetails());
+
+        when(apiConfigServiceMock.getChannelDetails(anyString(), anyString()))
+                .thenReturn(channelDetails);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/details/{channelcode}", channelcode)
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+
+                .andExpect(jsonPath("$.password", is(channelDetails.getPassword())))
+                .andExpect(jsonPath("$.new_password", is(channelDetails.getNewPassword())))
+                .andExpect(jsonPath("$.protocol", is(channelDetails.getProtocol().name())))
+                .andExpect(jsonPath("$.ip", is(channelDetails.getIp())))
+                .andExpect(jsonPath("$.port", notNullValue()))
+                .andExpect(jsonPath("$.service", is(channelDetails.getService())))
+                .andExpect(jsonPath("$.broker_psp_code", is(channelDetails.getBrokerPspCode())))
+                .andExpect(jsonPath("$.proxy_enabled", is(channelDetails.getProxyEnabled())))
+                .andExpect(jsonPath("$.proxy_host", is(channelDetails.getProxyHost())))
+                .andExpect(jsonPath("$.proxy_port", notNullValue()))
+                .andExpect(jsonPath("$.proxy_username", is(channelDetails.getProxyUsername())))
+                .andExpect(jsonPath("$.target_host", is(channelDetails.getTargetHost())))
+                .andExpect(jsonPath("$.target_port", notNullValue()))
+                .andExpect(jsonPath("$.target_path", is(channelDetails.getTargetPath())))
+                .andExpect(jsonPath("$.thread_number", notNullValue()))
+                .andExpect(jsonPath("$.timeout_a", notNullValue()))
+                .andExpect(jsonPath("$.timeout_b", notNullValue()))
+                .andExpect(jsonPath("$.timeout_c", notNullValue()))
+                .andExpect(jsonPath("$.npm_service", is(channelDetails.getNpmService())))
+                .andExpect(jsonPath("$.new_fault_code", is(channelDetails.getNewFaultCode())))
+                .andExpect(jsonPath("$.redirect_ip", is(channelDetails.getRedirectIp())))
+                .andExpect(jsonPath("$.redirect_path", is(channelDetails.getRedirectPath())));
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getChannelDetails(channelcode, xRequestId);
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
 
     @Test
     void createChannel(@Value("classpath:stubs/channelDto.json") Resource dto) throws Exception {
@@ -185,7 +231,7 @@ class ChannelControllerTest {
         String pspCode = "pspCode";
         String xRequestId = "1";
 
-        PspChannel pspChannel = mockInstance(new PspChannel(),"setPaymentTypeList");
+        PspChannel pspChannel = mockInstance(new PspChannel(), "setPaymentTypeList");
         pspChannel.setPaymentTypeList(List.of("paymentType"));
 
         PspChannels pspChannels = mockInstance(new PspChannels(), "setchannelList");

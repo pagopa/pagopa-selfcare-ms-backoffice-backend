@@ -88,4 +88,20 @@ public class ChannelController {
         log.trace("getPspChannels end");
         return resource;
     }
+
+    @GetMapping(value = "/details/{channelcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public ChannelDetailsResource getChannelDetails(@ApiParam("${swagger.request.channelcode}")
+                                              @PathVariable("channelcode") String channelcode,
+                                              @ApiParam("${swagger.request.id}")
+                                              @RequestHeader(name = "X-Request-Id", required = false) String xRequestId
+    ) {
+        log.trace("getChannelDetails start");
+        log.debug("getChannelDetails channelcode = {}", channelcode);
+        ChannelDetails channelDetails = apiConfigService.getChannelDetails(channelcode, xRequestId);
+        ChannelDetailsResource resource = ChannelMapper.toResource(channelDetails);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelDetails result = {}", resource);
+        log.trace("getChannelDetails end");
+        return resource;
+    }
 }

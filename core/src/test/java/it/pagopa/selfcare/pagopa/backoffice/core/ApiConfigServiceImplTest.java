@@ -105,5 +105,26 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
+    @Test
+    void GetChannelDetails() {
+        //given
+
+        final String channelCode = "channelCode";
+        final String xRequestId = "xRequestId";
+        ChannelDetails channelDetailsMock = mock(ChannelDetails.class);
+
+        when(apiConfigConnectorMock.getChannelDetails(any(),any()))
+                .thenReturn(channelDetailsMock);
+        //when
+        ChannelDetails channelDetailsRes = apiConfigService.getChannelDetails(channelCode, xRequestId);
+        //then
+        assertNotNull(channelDetailsRes);
+        assertEquals(channelDetailsRes, channelDetailsMock);
+        reflectionEqualsByName(channelDetailsRes, channelDetailsMock);
+        verify(apiConfigConnectorMock, times(1))
+                .getChannelDetails(channelCode,xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
 
 }
