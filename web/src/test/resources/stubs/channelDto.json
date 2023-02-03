@@ -36,5 +36,6 @@
   "agid": true,
   "broker_description": "setBrokerDescription",
   "enabled": true,
-  "channel_code": "setChannelCode"
+  "channel_code": "setChannelCode",
+  "paymentTypeList": ["paymentType"]
 }
