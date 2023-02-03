@@ -8,6 +8,9 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Protocol;
 import lombok.Data;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
 
 @Data
 public class ChannelDetailsDto {
@@ -167,4 +170,7 @@ public class ChannelDetailsDto {
     @ApiModelProperty(value = "${swagger.model.channel.details.agid}")
     private Boolean agid;
 
+    @JsonProperty("payment_types")
+    @ApiModelProperty(value = "${swagger.model.PspChannelPaymentTypesResource.list}")
+    private List<String> paymentTypeList;
 }
