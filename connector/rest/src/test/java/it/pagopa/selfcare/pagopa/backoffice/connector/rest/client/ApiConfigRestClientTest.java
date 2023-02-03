@@ -174,6 +174,11 @@ class ApiConfigRestClientTest {
         }});
     }};
 
+    private static final Map<TestCase, String> testCasePspChannelPaymentTypesMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
+        put(ApiConfigRestClientTest.TestCase.FULLY_VALUED, "channelcode1");
+         put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "channelcode2");
+    }};
+
     @BeforeEach
     void beforeEach() {
         SelfCareUser selfCareUser = SelfCareUser.builder("id")
@@ -297,6 +302,41 @@ class ApiConfigRestClientTest {
 
     }
 
+    @Test
+    void createChannelPaymentType_fullyValued() {
+        // given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        String channelCode =   testCasePspChannelPaymentTypesMap.get(testCase);
+        PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
+        pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
+        String requestId = UUID.randomUUID().toString();
+        // when
+        PspChannelPaymentTypes response = restClient.createChannelPaymentType(pspChannelPaymentTypes,channelCode, requestId);
+
+        //then
+        assertNotNull(response);
+        assertFalse(response.getPaymentTypeList().isEmpty());
+
+
+    }
+
+    @Test
+    void createChannelPaymentType_fullyEmpty() {
+        // given
+        TestCase testCase = TestCase.EMPTY_RESULT;
+        String channelCode =   testCasePspChannelPaymentTypesMap.get(testCase);
+        PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
+        pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
+        String requestId = UUID.randomUUID().toString();
+        // when
+        PspChannelPaymentTypes response = restClient.createChannelPaymentType(pspChannelPaymentTypes,channelCode, requestId);
+
+        //then
+        assertNotNull(response);
+        assertTrue(response.getPaymentTypeList().isEmpty());
+
+
+    }
 
     private void checkNotNullFields(Object o, String... excludedFields) {
         Set<String> excludedFieldsSet = new HashSet<>(Arrays.asList(excludedFields));
@@ -322,5 +362,4 @@ class ApiConfigRestClientTest {
             assertNotNull(field);
         }
     }
-
 }

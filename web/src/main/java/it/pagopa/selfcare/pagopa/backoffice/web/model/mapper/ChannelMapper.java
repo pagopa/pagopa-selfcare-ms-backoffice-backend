@@ -1,6 +1,11 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channel;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
+
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 
 import java.util.ArrayList;
@@ -36,11 +41,10 @@ public class ChannelMapper {
         return resource;
     }
 
-    public static ChannelDetailsResource toResource(ChannelDetails model) {
+    public static ChannelDetailsResource toResource(ChannelDetails model, PspChannelPaymentTypes listModel) {
         ChannelDetailsResource resource = null;
         if (model != null) {
             resource = new ChannelDetailsResource();
-
             resource.setPassword(model.getPassword());
             resource.setNewPassword(model.getNewPassword());
             resource.setProtocol(model.getProtocol());
@@ -79,6 +83,7 @@ public class ChannelMapper {
             resource.setBrokerDescription(model.getBrokerDescription());
             resource.setEnabled(model.getEnabled());
             resource.setChannelCode(model.getChannelCode());
+            resource.setPaymentTypeList(listModel!=null?listModel.getPaymentTypeList():new ArrayList<>());
         }
         return resource;
     }
@@ -129,6 +134,7 @@ public class ChannelMapper {
         return resource;
     }
 
+
     public static PspChannelResource toResource(PspChannel model){
         PspChannelResource resource = null;
         if (model != null) {
@@ -152,6 +158,16 @@ public class ChannelMapper {
             resource.setChannelsList(channelResourceList);
         }
         return  resource;
+    }
+
+
+    public static PspChannelPaymentTypesResource toResource(PspChannelPaymentTypes model) {
+        PspChannelPaymentTypesResource resource = null;
+        if (model != null) {
+            resource = new PspChannelPaymentTypesResource();
+            resource.setPaymentTypeList(model.getPaymentTypeList());
+        }
+        return resource;
     }
 
 }

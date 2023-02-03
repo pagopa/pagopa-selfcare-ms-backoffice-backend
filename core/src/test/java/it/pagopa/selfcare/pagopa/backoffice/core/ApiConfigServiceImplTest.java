@@ -4,12 +4,16 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.reflectionEqualsByName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -105,5 +109,24 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
+    @Test
+    void createChannelPaymentType() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String channelCode = "channelCode";
 
+        PspChannelPaymentTypes pspChannelPaymentTypesMock = mock(PspChannelPaymentTypes.class);
+        pspChannelPaymentTypesMock.setPaymentTypeList(List.of("paymentType"));
+        when(apiConfigConnectorMock.createChannelPaymentType(any(),anyString(),anyString()))
+                .thenReturn(pspChannelPaymentTypesMock);
+        //when
+        PspChannelPaymentTypes pspChannelPaymentTypesRes = apiConfigService.createChannelPaymentType(pspChannelPaymentTypesMock,channelCode, xRequestId);
+        //then
+        assertNotNull(pspChannelPaymentTypesRes);
+        assertEquals(pspChannelPaymentTypesRes, pspChannelPaymentTypesMock);
+        reflectionEqualsByName(pspChannelPaymentTypesRes, pspChannelPaymentTypesMock);
+        verify(apiConfigConnectorMock, times(1))
+                .createChannelPaymentType(pspChannelPaymentTypesMock,channelCode,xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
 }
