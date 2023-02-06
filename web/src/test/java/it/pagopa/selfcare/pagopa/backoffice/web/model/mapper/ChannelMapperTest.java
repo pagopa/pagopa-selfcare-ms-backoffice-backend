@@ -3,10 +3,8 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelsResource;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -66,8 +64,9 @@ class ChannelMapperTest {
     void toChannelDetailsResource() {
         //given
         ChannelDetails model = mockInstance(new ChannelDetails());
+        PspChannelPaymentTypes model2 = mockInstance(new PspChannelPaymentTypes());
         //when
-        ChannelDetailsResource resource = ChannelMapper.toResource(model);
+        ChannelDetailsResource resource = ChannelMapper.toResource(model,model2);
         //then
         assertNotNull(resource);
         reflectionEqualsByName(model, resource);
@@ -77,8 +76,9 @@ class ChannelMapperTest {
     void toChannelDetailsResource_null() {
         //given
         ChannelDetails models = null;
+        PspChannelPaymentTypes model2 = null;
         //when
-        ChannelDetailsResource resources = ChannelMapper.toResource(models);
+        ChannelDetailsResource resources = ChannelMapper.toResource(models,model2);
         //then
         assertNull(resources);
     }
@@ -102,5 +102,26 @@ class ChannelMapperTest {
         ChannelDetails model =  ChannelMapper.fromChannelDetailsDto(dto);
         //then
         assertNull(model);
+    }
+
+    @Test
+    void toPspChannelPaymentTypesResource() {
+        //given
+        PspChannelPaymentTypes model = mockInstance(new PspChannelPaymentTypes());
+        //when
+        PspChannelPaymentTypesResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNotNull(resource);
+        reflectionEqualsByName(model, resource);
+    }
+
+    @Test
+    void toPspChannelPaymentTypesResource_null() {
+        //given
+        PspChannelPaymentTypes models = null;
+        //when
+        PspChannelPaymentTypesResource resources = ChannelMapper.toResource(models);
+        //then
+        assertNull(resources);
     }
 }

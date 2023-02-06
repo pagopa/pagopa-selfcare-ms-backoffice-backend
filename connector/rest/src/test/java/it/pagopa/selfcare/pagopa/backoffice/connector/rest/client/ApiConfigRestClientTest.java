@@ -84,7 +84,6 @@ class ApiConfigRestClientTest {
         }
     }
 
-
     private enum TestCase {
         FULLY_VALUED,
         FULLY_NULL,
@@ -179,6 +178,11 @@ class ApiConfigRestClientTest {
         }});
     }};
 
+    private static final Map<TestCase, String> testCasePspChannelPaymentTypesMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
+        put(ApiConfigRestClientTest.TestCase.FULLY_VALUED, "channelcode1");
+        put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "channelcode2");
+    }};
+
     @BeforeEach
     void beforeEach() {
         SelfCareUser selfCareUser = SelfCareUser.builder("id")
@@ -208,7 +212,6 @@ class ApiConfigRestClientTest {
         assertNotNull(response);
         assertNull(response.getChannelList());
         assertNull(response.getPageInfo());
-
     }
 
     @Test
@@ -256,6 +259,7 @@ class ApiConfigRestClientTest {
         assertNotNull(response.getChannelsList().get(0).getChannelCode());
         assertNotNull(response.getChannelsList().get(0).getEnabled());
     }
+
     @Test
     void getPspChannels_fullyEmpty() {
         // given
@@ -267,7 +271,6 @@ class ApiConfigRestClientTest {
         assertNotNull(response);
         assertNotNull(response.getChannelsList());
         assertTrue(response.getChannelsList().isEmpty());
-
     }
 
     @Test
@@ -297,6 +300,7 @@ class ApiConfigRestClientTest {
         assertNotNull(response.getThreadNumber());
         assertNotNull(response.getTimeoutA());
     }
+
     @Test
     void getChannelDetails_fullyEmpty() {
         // given
@@ -306,9 +310,6 @@ class ApiConfigRestClientTest {
         // when
         ChannelDetails response = restClient.getChannelDetails(pspCode, xRequestId);
         assertNotNull(response);
-
-
-
     }
 
 
@@ -342,6 +343,41 @@ class ApiConfigRestClientTest {
 
     }
 
+    @Test
+    void createChannelPaymentType_fullyValued() {
+        // given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        String channelCode = testCasePspChannelPaymentTypesMap.get(testCase);
+        PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
+        pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
+        String requestId = UUID.randomUUID().toString();
+        // when
+        PspChannelPaymentTypes response = restClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode, requestId);
+
+        //then
+        assertNotNull(response);
+        assertFalse(response.getPaymentTypeList().isEmpty());
+
+
+    }
+
+    @Test
+    void createChannelPaymentType_fullyEmpty() {
+        // given
+        TestCase testCase = TestCase.EMPTY_RESULT;
+        String channelCode = testCasePspChannelPaymentTypesMap.get(testCase);
+        PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
+        pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
+        String requestId = UUID.randomUUID().toString();
+        // when
+        PspChannelPaymentTypes response = restClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode, requestId);
+
+        //then
+        assertNotNull(response);
+        assertTrue(response.getPaymentTypeList().isEmpty());
+
+
+    }
 
     private void checkNotNullFields(Object o, String... excludedFields) {
         Set<String> excludedFieldsSet = new HashSet<>(Arrays.asList(excludedFields));
@@ -367,5 +403,4 @@ class ApiConfigRestClientTest {
             assertNotNull(field);
         }
     }
-
 }

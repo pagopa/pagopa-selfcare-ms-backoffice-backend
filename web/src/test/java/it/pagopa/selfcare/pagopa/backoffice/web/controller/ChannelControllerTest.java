@@ -6,7 +6,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,12 +18,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -142,7 +141,8 @@ class ChannelControllerTest {
     void createChannel(@Value("classpath:stubs/channelDto.json") Resource dto) throws Exception {
         //given
         String xRequestId = "1";
-
+        String channelCode = "setChannelCode";
+        PspChannelPaymentTypes pspChannelPaymentTypes = mockInstance(new PspChannelPaymentTypes());
         ChannelDetails channelDetails = mockInstance(new ChannelDetails());
         channelDetails.setPassword("password");
         channelDetails.setNewPassword("newPassword");
@@ -186,6 +186,9 @@ class ChannelControllerTest {
         when(apiConfigServiceMock.createChannel(any(), anyString()))
                 .thenReturn(channelDetails);
 
+        when(apiConfigServiceMock.createChannelPaymentType(any(), anyString(), anyString()))
+                .thenReturn(pspChannelPaymentTypes);
+
         //when
         mvc.perform(MockMvcRequestBuilders
                         .post(BASE_URL)
@@ -221,17 +224,52 @@ class ChannelControllerTest {
         //then
         verify(apiConfigServiceMock, times(1))
                 .createChannel(channelDetails, xRequestId);
+
+        verify(apiConfigServiceMock, times(1))
+                .createChannelPaymentType(pspChannelPaymentTypes,channelCode, xRequestId);
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
+
     @Test
+    void createChannelPaymentType() throws Exception {
+        //given
+        String xRequestId = "1";
+        String channelCode = "channelCode";
+        PspChannelPaymentTypes pspChannelPaymentTypes = mockInstance(new PspChannelPaymentTypes());
+        pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
+
+        PspChannelPaymentTypes dto = mockInstance(new PspChannelPaymentTypes());
+        pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
+
+        when(apiConfigServiceMock.createChannelPaymentType(any(), anyString(), anyString()))
+                .thenReturn(pspChannelPaymentTypes);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .post(BASE_URL + "/{channelcode}/paymenttypes", channelCode)
+                        .content(objectMapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.payment_types", notNullValue()))
+                .andExpect(jsonPath("$.payment_types[0]", notNullValue()));
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .createChannelPaymentType(any(), anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+ @Test
     void getPspChannels() throws Exception {
         //given
 
         String pspCode = "pspCode";
         String xRequestId = "1";
 
-        PspChannel pspChannel = mockInstance(new PspChannel(), "setPaymentTypeList");
+        PspChannel pspChannel = mockInstance(new PspChannel(),"setPaymentTypeList");
         pspChannel.setPaymentTypeList(List.of("paymentType"));
 
         PspChannels pspChannels = mockInstance(new PspChannels(), "setchannelList");

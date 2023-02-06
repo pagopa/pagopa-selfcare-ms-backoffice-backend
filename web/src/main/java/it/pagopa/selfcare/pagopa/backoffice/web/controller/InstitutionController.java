@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping(value = "/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
-@Api(tags = "institution")
+//@Api(tags = "institution")
 public class InstitutionController {
 
     private final ApiManagementService apiManagementService;
@@ -42,103 +42,103 @@ public class InstitutionController {
         this.apiManagementService = apiManagementService;
         this.externalApiService = externalApiService;
     }
-
-    @GetMapping("/{institutionId}/api-keys")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutionApiKeys}")
-    public List<ApiKeysResource> getInstitutionApiKeys(
-            @ApiParam("${swagger.model.institution.id}")
-            @PathVariable("institutionId") String institutionId) {
-        log.trace("getInstitutionApiKeys start");
-        log.debug("getInstitutionApiKeys institutionId = {}", institutionId);
-        List<InstitutionApiKeys> institutionApiKeysList = apiManagementService.getInstitutionApiKeys(institutionId);
-        List<ApiKeysResource> apiKeysResource = ApiManagerMapper.toApikeysResourceList(institutionApiKeysList);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getInstitutionApiKeys result = {}", apiKeysResource);
-        log.trace("getInstitutionApiKeys end");
-        return apiKeysResource;
-    }
-
-    @PostMapping("/{institutionId}/api-keys")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "", notes = "${swagger.api.institution.createInstitutionApiKeys}")
-    public List<ApiKeysResource> createInstitutionApiKeys(@ApiParam("${swagger.model.institution.id}")
-                                                          @PathVariable("institutionId") String institutionId,
-                                                          @ApiParam("${swagger.model.subscription.code}")
-                                                          @RequestParam("subscriptionCode") String subscriptionCode
-    ) {
-        log.trace("createInstitutionApiKeys start");
-        log.debug("createInstitutionApiKeys institutionId = {}", institutionId);
-        Subscription subscriptionEnum = Subscription.valueOf(subscriptionCode);
-        List<InstitutionApiKeys> institutionKeys = apiManagementService.createSubscriptionKeys(institutionId, subscriptionEnum.getScope(), subscriptionEnum.getPrefixId(), subscriptionEnum.getDisplayName());
-        List<ApiKeysResource> apiKeysResourceList = ApiManagerMapper.toApikeysResourceList(institutionKeys);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitutionApiKeys result = {}", apiKeysResourceList);
-        log.trace("createInstitutionApiKeys end");
-        return apiKeysResourceList;
-    }
-
-    @PostMapping("/{subscriptionid}/api-keys/primary/regenerate")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "", notes = "${swagger.api.institution.regeneratePrimaryKey}")
-    public void regeneratePrimaryKey(@ApiParam("${swagger.model.subscription.id}")
-                                     @PathVariable("subscriptionid") String subscriptionid) {
-        log.trace("regeneratePrimaryKey start");
-        log.debug("regeneratePrimaryKey institutionId = {}", subscriptionid);
-        apiManagementService.regeneratePrimaryKey(subscriptionid);
-        log.trace("regeneratePrimaryKey end");
-    }
-
-    @PostMapping("/{subscriptionid}/api-keys/secondary/regenerate")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "", notes = "${swagger.api.institution.regenerateSecondaryKey}")
-    public void regenerateSecondaryKey(@ApiParam("${swagger.model.subscription.id}")
-                                       @PathVariable("subscriptionid") String subscriptionid) {
-        log.trace("regenerateSecondaryKey start");
-        log.debug("regenerateSecondaryKey institutionId = {}", subscriptionid);
-        apiManagementService.regenerateSecondaryKey(subscriptionid);
-        log.trace("regenerateSecondaryKey end");
-    }
-
-    @GetMapping("")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutions}")
-    public List<InstitutionResource> getInstitutions() {
-        log.trace("getInstitutions start");
-        Collection<InstitutionInfo> institutions = externalApiService.getInstitutions();
-        List<InstitutionResource> resources = institutions.stream()
-                .map(InstitutionMapper::toResource)
-                .collect(Collectors.toList());
-        log.debug("getInstitutions result = {}", resources);
-        log.trace("getInstitutions end");
-        return resources;
-    }
-
-    @GetMapping("/{institutionId}")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitution}")
-    public InstitutionDetailResource getInstitution(@ApiParam("${swagger.model.institution.id}")
-                                                    @PathVariable("institutionId") String institutionId) {
-        log.trace("getInstitution start");
-        log.debug("getInstitution institutionId = {}", institutionId);
-        Institution institution = externalApiService.getInstitution(institutionId);
-        InstitutionDetailResource resource = InstitutionMapper.toResource(institution);
-        log.debug("getInstitution result = {}", resource);
-        log.trace("getInstitution end");
-        return resource;
-    }
-
-    @GetMapping("/{institutionId}/products")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutionProducts}")
-    public List<ProductsResource> getInstitutionProducts(@ApiParam("${swagger.model.institution.id}")
-                                                         @PathVariable("institutionId") String institutionId) {
-        log.trace("getInstitutionProducts start");
-        log.debug("getInstitutionProducts institutionId = {}", institutionId);
-        List<Product> products = externalApiService.getInstitutionUserProducts(institutionId);
-        List<ProductsResource> resource = products.stream()
-                .map(ProductMapper::toResource)
-                .collect(Collectors.toList());
-        log.debug("getInstitutionProducts result = {}", resource);
-        log.trace("getInstitutionProducts end");
-        return resource;
-    }
+//
+//    @GetMapping("/{institutionId}/api-keys")
+//    @ResponseStatus(HttpStatus.OK)
+//    @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutionApiKeys}")
+//    public List<ApiKeysResource> getInstitutionApiKeys(
+//            @ApiParam("${swagger.model.institution.id}")
+//            @PathVariable("institutionId") String institutionId) {
+//        log.trace("getInstitutionApiKeys start");
+//        log.debug("getInstitutionApiKeys institutionId = {}", institutionId);
+//        List<InstitutionApiKeys> institutionApiKeysList = apiManagementService.getInstitutionApiKeys(institutionId);
+//        List<ApiKeysResource> apiKeysResource = ApiManagerMapper.toApikeysResourceList(institutionApiKeysList);
+//        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getInstitutionApiKeys result = {}", apiKeysResource);
+//        log.trace("getInstitutionApiKeys end");
+//        return apiKeysResource;
+//    }
+//
+//    @PostMapping("/{institutionId}/api-keys")
+//    @ResponseStatus(HttpStatus.CREATED)
+//    @ApiOperation(value = "", notes = "${swagger.api.institution.createInstitutionApiKeys}")
+//    public List<ApiKeysResource> createInstitutionApiKeys(@ApiParam("${swagger.model.institution.id}")
+//                                                          @PathVariable("institutionId") String institutionId,
+//                                                          @ApiParam("${swagger.model.subscription.code}")
+//                                                          @RequestParam("subscriptionCode") String subscriptionCode
+//    ) {
+//        log.trace("createInstitutionApiKeys start");
+//        log.debug("createInstitutionApiKeys institutionId = {}", institutionId);
+//        Subscription subscriptionEnum = Subscription.valueOf(subscriptionCode);
+//        List<InstitutionApiKeys> institutionKeys = apiManagementService.createSubscriptionKeys(institutionId, subscriptionEnum.getScope(), subscriptionEnum.getPrefixId(), subscriptionEnum.getDisplayName());
+//        List<ApiKeysResource> apiKeysResourceList = ApiManagerMapper.toApikeysResourceList(institutionKeys);
+//        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitutionApiKeys result = {}", apiKeysResourceList);
+//        log.trace("createInstitutionApiKeys end");
+//        return apiKeysResourceList;
+//    }
+//
+//    @PostMapping("/{subscriptionid}/api-keys/primary/regenerate")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    @ApiOperation(value = "", notes = "${swagger.api.institution.regeneratePrimaryKey}")
+//    public void regeneratePrimaryKey(@ApiParam("${swagger.model.subscription.id}")
+//                                     @PathVariable("subscriptionid") String subscriptionid) {
+//        log.trace("regeneratePrimaryKey start");
+//        log.debug("regeneratePrimaryKey institutionId = {}", subscriptionid);
+//        apiManagementService.regeneratePrimaryKey(subscriptionid);
+//        log.trace("regeneratePrimaryKey end");
+//    }
+//
+//    @PostMapping("/{subscriptionid}/api-keys/secondary/regenerate")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    @ApiOperation(value = "", notes = "${swagger.api.institution.regenerateSecondaryKey}")
+//    public void regenerateSecondaryKey(@ApiParam("${swagger.model.subscription.id}")
+//                                       @PathVariable("subscriptionid") String subscriptionid) {
+//        log.trace("regenerateSecondaryKey start");
+//        log.debug("regenerateSecondaryKey institutionId = {}", subscriptionid);
+//        apiManagementService.regenerateSecondaryKey(subscriptionid);
+//        log.trace("regenerateSecondaryKey end");
+//    }
+//
+//    @GetMapping("")
+//    @ResponseStatus(HttpStatus.OK)
+//    @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutions}")
+//    public List<InstitutionResource> getInstitutions() {
+//        log.trace("getInstitutions start");
+//        Collection<InstitutionInfo> institutions = externalApiService.getInstitutions();
+//        List<InstitutionResource> resources = institutions.stream()
+//                .map(InstitutionMapper::toResource)
+//                .collect(Collectors.toList());
+//        log.debug("getInstitutions result = {}", resources);
+//        log.trace("getInstitutions end");
+//        return resources;
+//    }
+//
+//    @GetMapping("/{institutionId}")
+//    @ResponseStatus(HttpStatus.OK)
+//    @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitution}")
+//    public InstitutionDetailResource getInstitution(@ApiParam("${swagger.model.institution.id}")
+//                                                    @PathVariable("institutionId") String institutionId) {
+//        log.trace("getInstitution start");
+//        log.debug("getInstitution institutionId = {}", institutionId);
+//        Institution institution = externalApiService.getInstitution(institutionId);
+//        InstitutionDetailResource resource = InstitutionMapper.toResource(institution);
+//        log.debug("getInstitution result = {}", resource);
+//        log.trace("getInstitution end");
+//        return resource;
+//    }
+//
+//    @GetMapping("/{institutionId}/products")
+//    @ResponseStatus(HttpStatus.OK)
+//    @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutionProducts}")
+//    public List<ProductsResource> getInstitutionProducts(@ApiParam("${swagger.model.institution.id}")
+//                                                         @PathVariable("institutionId") String institutionId) {
+//        log.trace("getInstitutionProducts start");
+//        log.debug("getInstitutionProducts institutionId = {}", institutionId);
+//        List<Product> products = externalApiService.getInstitutionUserProducts(institutionId);
+//        List<ProductsResource> resource = products.stream()
+//                .map(ProductMapper::toResource)
+//                .collect(Collectors.toList());
+//        log.debug("getInstitutionProducts result = {}", resource);
+//        log.trace("getInstitutionProducts end");
+//        return resource;
+//    }
 }
