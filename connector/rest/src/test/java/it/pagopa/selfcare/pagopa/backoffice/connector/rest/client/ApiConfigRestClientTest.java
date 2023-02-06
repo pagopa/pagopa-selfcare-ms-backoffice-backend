@@ -379,6 +379,18 @@ class ApiConfigRestClientTest {
 
     }
 
+    @Test
+    void getPaymentTypes_fullyValued() {
+        // given
+        String requestId = UUID.randomUUID().toString();
+        // when
+        PaymentTypes response = restClient.getPaymentTypes(requestId);
+
+        //then
+        assertNotNull(response);
+        assertFalse(response.getPaymentTypeList().isEmpty());
+    }
+
     private void checkNotNullFields(Object o, String... excludedFields) {
         Set<String> excludedFieldsSet = new HashSet<>(Arrays.asList(excludedFields));
         org.springframework.util.ReflectionUtils.doWithFields(o.getClass(),

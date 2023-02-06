@@ -1,10 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -42,4 +39,8 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     PspChannelPaymentTypes createChannelPaymentType(@RequestBody PspChannelPaymentTypes pspChannelPaymentTypes,
                                                     @PathVariable("channelcode") String channelCode,
                                                     @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
+    @GetMapping(value = "${rest-client.api-config.getPaymentTypes.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    PaymentTypes getPaymentTypes(@RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 }

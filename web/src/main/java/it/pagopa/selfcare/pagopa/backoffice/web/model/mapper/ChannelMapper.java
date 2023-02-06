@@ -82,7 +82,7 @@ public class ChannelMapper {
             resource.setBrokerDescription(model.getBrokerDescription());
             resource.setEnabled(model.getEnabled());
             resource.setChannelCode(model.getChannelCode());
-            resource.setPaymentTypeList(listModel!=null?listModel.getPaymentTypeList():new ArrayList<>());
+            resource.setPaymentTypeList(listModel != null ? listModel.getPaymentTypeList() : new ArrayList<>());
         }
         return resource;
     }
@@ -179,7 +179,29 @@ public class ChannelMapper {
         return resource;
     }
 
-    public static PspChannelResource toResource(PspChannel model){
+    public static PaymentTypesResource toResource(PaymentTypes model) {
+        PaymentTypesResource resource = null;
+        List<PaymentTypeResource> paymentTypeResourceList = new ArrayList<>();
+        if (model != null) {
+            resource = new PaymentTypesResource();
+            List<PaymentType> paymentTypeList = model.getPaymentTypeList();
+            if (paymentTypeList != null) {
+                for (PaymentType paymentType : paymentTypeList) {
+                    PaymentTypeResource paymentTypeResource = new PaymentTypeResource();
+                    paymentTypeResource.setDescription(paymentType.getDescription());
+                    paymentTypeResource.setPaymentTypeCode(paymentType.getPaymentTypeCode());
+
+                    paymentTypeResourceList.add(paymentTypeResource);
+
+                }
+                resource.setPaymentTypeList(paymentTypeResourceList);
+            }
+
+        }
+        return resource;
+    }
+
+    public static PspChannelResource toResource(PspChannel model) {
         PspChannelResource resource = null;
         if (model != null) {
             resource = new PspChannelResource();
@@ -187,21 +209,21 @@ public class ChannelMapper {
             resource.setEnabled(model.getEnabled());
             resource.setPaymentTypeList(model.getPaymentTypeList());
         }
-        return  resource;
+        return resource;
     }
 
-    public static PspChannelsResource toResource(PspChannels model){
+    public static PspChannelsResource toResource(PspChannels model) {
         List<PspChannelResource> channelResourceList = new ArrayList<>();
         PspChannelsResource resource = null;
         if (model != null) {
             resource = new PspChannelsResource();
             List<PspChannel> channels = model.getChannelsList();
-            channels.forEach(pspChannel->
-                channelResourceList.add(toResource(pspChannel))
+            channels.forEach(pspChannel ->
+                    channelResourceList.add(toResource(pspChannel))
             );
             resource.setChannelsList(channelResourceList);
         }
-        return  resource;
+        return resource;
     }
 
     public static PspChannelPaymentTypesResource toResource(PspChannelPaymentTypes model) {

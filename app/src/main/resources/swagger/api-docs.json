@@ -15,6 +15,9 @@
   }, {
     "name" : "institution",
     "description" : "Institution operations"
+  }, {
+    "name" : "institution-controller",
+    "description" : "Institution Controller"
   } ],
   "paths" : {
     "/channels" : {
@@ -172,6 +175,69 @@
           },
           "401" : {
             "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/channels/configuration/paymenttypes" : {
+      "get" : {
+        "tags" : [ "channels" ],
+        "summary" : "getPaymentTypes",
+        "description" : "Get list of payment type",
+        "operationId" : "getPaymentTypesUsingGET",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentTypesResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
             "content" : {
               "application/problem+json" : {
                 "schema" : {
@@ -427,10 +493,528 @@
           "bearerAuth" : [ "global" ]
         } ]
       }
+    },
+    "/institutions" : {
+      "get" : {
+        "tags" : [ "institution-controller" ],
+        "summary" : "getInstitutions",
+        "description" : "Retrieves all the onboarded institutions related to the logged user",
+        "operationId" : "getInstitutionsUsingGET",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/InstitutionResource"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/institutions/{institutionId}" : {
+      "get" : {
+        "tags" : [ "institution-controller" ],
+        "summary" : "getInstitution",
+        "description" : "Retrieves an institution's details",
+        "operationId" : "getInstitutionUsingGET",
+        "parameters" : [ {
+          "name" : "institutionId",
+          "in" : "path",
+          "description" : "Institution's unique internal identifier",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InstitutionDetailResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/institutions/{institutionId}/api-keys" : {
+      "get" : {
+        "tags" : [ "institution-controller" ],
+        "summary" : "getInstitutionApiKeys",
+        "description" : "Retrieve an institution's primary and secondary keys",
+        "operationId" : "getInstitutionApiKeysUsingGET",
+        "parameters" : [ {
+          "name" : "institutionId",
+          "in" : "path",
+          "description" : "Institution's unique internal identifier",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ApiKeysResource"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "institution-controller" ],
+        "summary" : "createInstitutionApiKeys",
+        "description" : "Creates a new subscription for a given Institution and returns its primary and secondary keys",
+        "operationId" : "createInstitutionApiKeysUsingPOST",
+        "parameters" : [ {
+          "name" : "institutionId",
+          "in" : "path",
+          "description" : "Institution's unique internal identifier",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "subscriptionCode",
+          "in" : "query",
+          "description" : "subscription's unique internal identifier",
+          "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ApiKeysResource"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/institutions/{institutionId}/products" : {
+      "get" : {
+        "tags" : [ "institution-controller" ],
+        "summary" : "getInstitutionProducts",
+        "description" : "retrieve all active products for given institution and logged user",
+        "operationId" : "getInstitutionProductsUsingGET",
+        "parameters" : [ {
+          "name" : "institutionId",
+          "in" : "path",
+          "description" : "Institution's unique internal identifier",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ProductsResource"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/institutions/{subscriptionid}/api-keys/primary/regenerate" : {
+      "post" : {
+        "tags" : [ "institution-controller" ],
+        "summary" : "regeneratePrimaryKey",
+        "description" : "Regenerates the subscription's primary key",
+        "operationId" : "regeneratePrimaryKeyUsingPOST",
+        "parameters" : [ {
+          "name" : "subscriptionid",
+          "in" : "path",
+          "description" : "Institution's subscription id",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/institutions/{subscriptionid}/api-keys/secondary/regenerate" : {
+      "post" : {
+        "tags" : [ "institution-controller" ],
+        "summary" : "regenerateSecondaryKey",
+        "description" : "Regenerates the subscription's secondary key",
+        "operationId" : "regenerateSecondaryKeyUsingPOST",
+        "parameters" : [ {
+          "name" : "subscriptionid",
+          "in" : "path",
+          "description" : "Institution's subscription id",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
     }
   },
   "components" : {
     "schemas" : {
+      "ApiKeysResource" : {
+        "title" : "ApiKeysResource",
+        "required" : [ "displayName", "id", "primaryKey", "secondaryKey" ],
+        "type" : "object",
+        "properties" : {
+          "displayName" : {
+            "type" : "string",
+            "description" : "Institution's name Api Key"
+          },
+          "id" : {
+            "type" : "string",
+            "description" : "Institution's subscription id"
+          },
+          "primaryKey" : {
+            "type" : "string",
+            "description" : "Institution's primary Api Key"
+          },
+          "secondaryKey" : {
+            "type" : "string",
+            "description" : "Institution's secondary Api Key"
+          }
+        }
+      },
+      "AttributeResource" : {
+        "title" : "AttributeResource",
+        "required" : [ "code", "description", "origin" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "string",
+            "description" : "Institution's code"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "Institution's name"
+          },
+          "origin" : {
+            "type" : "string",
+            "description" : "Institution data origin"
+          }
+        }
+      },
       "ChannelDetailsDto" : {
         "title" : "ChannelDetailsDto",
         "type" : "object",
@@ -834,6 +1418,116 @@
           }
         }
       },
+      "InstitutionDetailResource" : {
+        "title" : "InstitutionDetailResource",
+        "required" : [ "address", "attributes", "description", "digitalAddress", "externalId", "id", "institutionType", "origin", "originId", "taxCode", "zipCode" ],
+        "type" : "object",
+        "properties" : {
+          "address" : {
+            "type" : "string",
+            "description" : "Institution's physical address"
+          },
+          "attributes" : {
+            "type" : "array",
+            "description" : "Institution's attributes",
+            "items" : {
+              "$ref" : "#/components/schemas/AttributeResource"
+            }
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "Institution's name"
+          },
+          "digitalAddress" : {
+            "type" : "string",
+            "description" : "Institution's digitalAddress"
+          },
+          "externalId" : {
+            "type" : "string",
+            "description" : "Institution's unique external identifier"
+          },
+          "id" : {
+            "type" : "string",
+            "description" : "Institution's unique internal identifier"
+          },
+          "institutionType" : {
+            "type" : "string",
+            "description" : "Institution's type",
+            "enum" : [ "GSP", "PA", "PSP", "PT", "SCP" ]
+          },
+          "origin" : {
+            "type" : "string",
+            "description" : "Institution data origin"
+          },
+          "originId" : {
+            "type" : "string",
+            "description" : "Institution's details origin Id"
+          },
+          "taxCode" : {
+            "type" : "string",
+            "description" : "Institution's taxCode"
+          },
+          "zipCode" : {
+            "type" : "string",
+            "description" : "Institution's zipCode"
+          }
+        }
+      },
+      "InstitutionResource" : {
+        "title" : "InstitutionResource",
+        "required" : [ "address", "externalId", "fiscalCode", "id", "mailAddress", "name", "origin", "originId", "status", "userProductRoles" ],
+        "type" : "object",
+        "properties" : {
+          "address" : {
+            "type" : "string",
+            "description" : "Institution's physical address"
+          },
+          "externalId" : {
+            "type" : "string",
+            "description" : "Institution's unique external identifier"
+          },
+          "fiscalCode" : {
+            "type" : "string",
+            "description" : "Institution's taxCode"
+          },
+          "id" : {
+            "type" : "string",
+            "description" : "Institution's unique internal identifier"
+          },
+          "institutionType" : {
+            "type" : "string",
+            "description" : "Institution's type",
+            "enum" : [ "GSP", "PA", "PSP", "PT", "SCP" ]
+          },
+          "mailAddress" : {
+            "type" : "string",
+            "description" : "Institution's digitalAddress"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Institution's name"
+          },
+          "origin" : {
+            "type" : "string",
+            "description" : "Institution data origin"
+          },
+          "originId" : {
+            "type" : "string",
+            "description" : "Institution's details origin Id"
+          },
+          "status" : {
+            "type" : "string",
+            "description" : "Institution onboarding status"
+          },
+          "userProductRoles" : {
+            "type" : "array",
+            "description" : "Logged user's roles on product",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
       "InvalidParam" : {
         "title" : "InvalidParam",
         "required" : [ "name", "reason" ],
@@ -868,6 +1562,35 @@
           "total_pages" : {
             "type" : "integer",
             "format" : "int32"
+          }
+        }
+      },
+      "PaymentTypeResource" : {
+        "title" : "PaymentTypeResource",
+        "required" : [ "description", "payment_type" ],
+        "type" : "object",
+        "properties" : {
+          "description" : {
+            "type" : "string",
+            "description" : "Description of the payment type"
+          },
+          "payment_type" : {
+            "type" : "string",
+            "description" : "Code of payment type"
+          }
+        }
+      },
+      "PaymentTypesResource" : {
+        "title" : "PaymentTypesResource",
+        "required" : [ "payment_types" ],
+        "type" : "object",
+        "properties" : {
+          "payment_types" : {
+            "type" : "array",
+            "description" : "List of payment types",
+            "items" : {
+              "$ref" : "#/components/schemas/PaymentTypeResource"
+            }
           }
         }
       },
@@ -907,6 +1630,33 @@
           }
         },
         "description" : "A \"problem detail\" as a way to carry machine-readable details of errors (https://datatracker.ietf.org/doc/html/rfc7807)"
+      },
+      "ProductsResource" : {
+        "title" : "ProductsResource",
+        "required" : [ "description", "id", "title", "urlBO" ],
+        "type" : "object",
+        "properties" : {
+          "description" : {
+            "type" : "string",
+            "description" : "Product's description"
+          },
+          "id" : {
+            "type" : "string",
+            "description" : "Product's unique identifier"
+          },
+          "title" : {
+            "type" : "string",
+            "description" : "Product's title"
+          },
+          "urlBO" : {
+            "type" : "string",
+            "description" : "URL that redirects to the back-office section, where is possible to manage the product"
+          },
+          "urlPublic" : {
+            "type" : "string",
+            "description" : "URL that redirects to the public information webpage of the product"
+          }
+        }
       },
       "PspChannelPaymentTypes" : {
         "title" : "PspChannelPaymentTypes",
