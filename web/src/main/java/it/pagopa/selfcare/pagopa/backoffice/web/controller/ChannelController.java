@@ -132,20 +132,6 @@ public class ChannelController {
         log.trace("createChannelPaymentType end");
         return resource;
     }
-
-    @GetMapping(value = "configuration/paymenttypes", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "", notes = "${swagger.api.channels.getPaymentTypes}")
-    public PspChannelPaymentTypes getPaymentTypes(){
-        log.trace("getPaymentTypes start");
-
-        log.debug("getPaymentTypes code getPaymentTypes");
-        PspChannelPaymentTypes response = apiConfigService.createChannelPaymentType(pspChannelPaymentTypes, channelCode, uuid);
-        PspChannelPaymentTypesResource resource = ChannelMapper.toResource(response);
-
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getPaymentTypes result = {}", resource);
-        log.trace("getPaymentTypes end");
-        return null;
-    }
+    
 }
 
