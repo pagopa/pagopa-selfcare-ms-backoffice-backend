@@ -104,6 +104,11 @@ class ApiConfigRestClientTest {
     @Autowired
     private ApiConfigRestClient restClient;
 
+    private static final Map<ApiConfigRestClientTest.TestCase, String> testCasePspCodeMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
+        put(ApiConfigRestClientTest.TestCase.FULLY_VALUED, "pspCode1");
+        put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "pspCode2");
+    }};
+
     private static final Map<TestCase, Map<String, Object>> testCase3ChannelDto = new EnumMap(TestCase.class) {{
         ChannelDetails channelDetails = new ChannelDetails();
         channelDetails.setPassword("password");
@@ -236,6 +241,36 @@ class ApiConfigRestClientTest {
         assertNotNull(response.getPageInfo().getTotalPages());
         assertNotNull(response.getPageInfo().getItemsFound());
     }
+
+    @Test
+    void getPspChannels_fullyValued() {
+        // given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        String pspCode = testCasePspCodeMap.get(testCase);
+        String xRequestId = "1";
+        // when
+        PspChannels response = restClient.getPspChannels(pspCode, xRequestId);
+        assertNotNull(response);
+        assertNotNull(response.getChannelsList());
+        assertNotNull(response.getChannelsList().get(0));
+        assertNotNull(response.getChannelsList().get(0).getChannelCode());
+        assertNotNull(response.getChannelsList().get(0).getEnabled());
+    }
+    @Test
+    void getPspChannelsChannels_fullyEmpty() {
+        // given
+        TestCase testCase = TestCase.EMPTY_RESULT;
+        String pspCode = testCasePspCodeMap.get(testCase);
+        String xRequestId = "1";
+        // when
+        PspChannels response = restClient.getPspChannels(pspCode, xRequestId);
+        assertNotNull(response);
+        assertNotNull(response.getChannelsList());
+        assertTrue(response.getChannelsList().isEmpty());
+
+
+    }
+
 
     @Test
     void createChannel_fullyValued() {

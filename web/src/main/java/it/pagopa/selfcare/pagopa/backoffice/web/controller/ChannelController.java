@@ -6,11 +6,14 @@ import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
+
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PspChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PspChannelPaymentTypesResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +70,7 @@ public class ChannelController {
         log.trace("createChannel start");
         log.debug("createChannel code channelDetailsDto = {}", channelDetailsDto);
 
-        PspChannelPaymentTypes pspChannelPaymentTypes =  new PspChannelPaymentTypes();
+        PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
         List<String> paymentTypeList = channelDetailsDto.getPaymentTypeList();
         String channelCode = channelDetailsDto.getChannelCode();
         pspChannelPaymentTypes.setPaymentTypeList(paymentTypeList);
@@ -75,27 +78,45 @@ public class ChannelController {
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         ChannelDetails response = apiConfigService.createChannel(channelDetails, xRequestId);
 
-        PspChannelPaymentTypes ptResponse = apiConfigService.createChannelPaymentType(pspChannelPaymentTypes,channelCode,xRequestId);
+        PspChannelPaymentTypes ptResponse = apiConfigService.createChannelPaymentType(pspChannelPaymentTypes, channelCode, xRequestId);
+        ChannelDetailsResource resource = ChannelMapper.toResource(response, ptResponse);
 
-        ChannelDetailsResource resource = ChannelMapper.toResource(response,ptResponse);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createChannel result = {}", resource);
         log.trace("createChannel end");
         return resource;
     }
 
+    @GetMapping(value = "/{pspcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public PspChannelsResource getPspChannels(@ApiParam("${swagger.request.pspCode}")
+                                              @PathVariable("pspcode") String pspCode,
+                                              @ApiParam("${swagger.request.id}")
+                                              @RequestHeader(name = "X-Request-Id", required = false) String xRequestId
+    ) {
+        log.trace("getPspChannels start");
+        log.debug("getPspChannels pspcode = {}", pspCode);
+        PspChannels pspChannels = apiConfigService.getPspChannels(pspCode, xRequestId);
+        PspChannelsResource resource = ChannelMapper.toResource(pspChannels);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getPspChannels result = {}", resource);
+        log.trace("getPspChannels end");
+        return resource;
+    }
+
+
     @PostMapping(value = "/{channelcode}/paymenttypes", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.channels.createChannelPaymentType}")
     public PspChannelPaymentTypesResource createChannelPaymentType(@ApiParam("${swagger.model.channel.channelCode}") @PathVariable("channelcode") String channelCode,
-                                                           @ApiParam("${swagger.model.PspChannelPaymentTypesResource.list}")
-                                                           @RequestBody PspChannelPaymentTypes pspChannelPaymentTypes) {
+                                                                   @ApiParam("${swagger.model.PspChannelPaymentTypesResource.list}")
+                                                                   @RequestBody PspChannelPaymentTypes pspChannelPaymentTypes) {
         log.trace("createChannelPaymentType start");
         String uuid = UUID.randomUUID().toString();
         log.debug("createChannelPaymentType code pspChannelPaymentTypes = {}, uuid {}", pspChannelPaymentTypes, uuid);
-        PspChannelPaymentTypes response = apiConfigService.createChannelPaymentType(pspChannelPaymentTypes,channelCode,uuid);
+        PspChannelPaymentTypes response = apiConfigService.createChannelPaymentType(pspChannelPaymentTypes, channelCode, uuid);
         PspChannelPaymentTypesResource resource = ChannelMapper.toResource(response);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createChannelPaymentType result = {}", resource);
         log.trace("createChannelPaymentType end");
         return resource;
     }
 }
+

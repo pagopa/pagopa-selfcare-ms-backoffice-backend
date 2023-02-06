@@ -1,9 +1,11 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
+
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 
 import java.util.ArrayList;
@@ -132,6 +134,33 @@ public class ChannelMapper {
         return resource;
     }
 
+
+    public static PspChannelResource toResource(PspChannel model){
+        PspChannelResource resource = null;
+        if (model != null) {
+            resource = new PspChannelResource();
+            resource.setChannelCode(model.getChannelCode());
+            resource.setEnabled(model.getEnabled());
+            resource.setPaymentTypeList(model.getPaymentTypeList());
+        }
+        return  resource;
+    }
+
+    public static PspChannelsResource toResource(PspChannels model){
+        List<PspChannelResource> channelResourceList = new ArrayList<>();
+        PspChannelsResource resource = null;
+        if (model != null) {
+            resource = new PspChannelsResource();
+            List<PspChannel> channels = model.getChannelsList();
+            channels.forEach(pspChannel->
+                channelResourceList.add(toResource(pspChannel))
+            );
+            resource.setChannelsList(channelResourceList);
+        }
+        return  resource;
+    }
+
+
     public static PspChannelPaymentTypesResource toResource(PspChannelPaymentTypes model) {
         PspChannelPaymentTypesResource resource = null;
         if (model != null) {
@@ -140,4 +169,5 @@ public class ChannelMapper {
         }
         return resource;
     }
+
 }

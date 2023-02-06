@@ -3,7 +3,9 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.trace("getChannels end");
         return channels;
     }
+
     @Override
     public ChannelDetails createChannel(ChannelDetails channelDetails, String xRequestId) {
         log.trace("createChannel start");
@@ -37,6 +40,14 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
+    public PspChannels getPspChannels(String pspCode, String xRequestId) {
+        log.trace("getPspChannels start");
+        PspChannels response = apiConfigConnector.getPspChannels(pspCode, xRequestId);
+        log.debug("getPspChannels result = {}", response);
+        log.trace("getPspChannels end");
+        return response;
+    }
+
     public PspChannelPaymentTypes createChannelPaymentType(PspChannelPaymentTypes pspChannelPaymentTypes, String channelCode, String xRequestId) {
         log.trace("createChannelPaymentType start");
         PspChannelPaymentTypes response = apiConfigConnector.createChannelPaymentType(pspChannelPaymentTypes,channelCode, xRequestId);
