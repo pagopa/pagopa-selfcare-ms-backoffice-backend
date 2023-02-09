@@ -20,7 +20,7 @@ public class ChannelDetailsDto {
     protected String channelCode;
 
     @JsonProperty("enabled")
-    protected Boolean enabled;
+    protected Boolean enabled=true;
 
     @JsonProperty("broker_description")
     @ApiModelProperty(value = "${swagger.model.broker.description}")
@@ -36,7 +36,7 @@ public class ChannelDetailsDto {
 
     @JsonProperty("protocol")
     @ApiModelProperty(value = "${swagger.model.channel.details.protocol}")
-    private Protocol protocol;
+    private Protocol protocol=Protocol.HTTPS;
 
     @JsonProperty("ip")
     @ApiModelProperty(value = "${swagger.model.channel.details.ip}")
@@ -44,7 +44,7 @@ public class ChannelDetailsDto {
 
     @JsonProperty("port")
     @ApiModelProperty(value = "${swagger.model.channel.details.port}")
-    private Long port;
+    private Long port=443l;
 
     @JsonProperty("service")
     @ApiModelProperty(value = "${swagger.model.channel.details.service}")
@@ -89,7 +89,7 @@ public class ChannelDetailsDto {
 
     @JsonProperty("thread_number")
     @ApiModelProperty(value = "${swagger.model.channel.details.threadNumber}")
-    private Long threadNumber;
+    private Long threadNumber=2l;
 
 
     @JsonProperty("timeout_a")
@@ -136,7 +136,7 @@ public class ChannelDetailsDto {
 
     @JsonProperty("payment_model")
     @ApiModelProperty(value = "${swagger.model.channel.details.paymentModel}")
-    private PaymentModel paymentModel;
+    private PaymentModel paymentModel=PaymentModel.ACTIVATED_AT_PSP;
 
     @JsonProperty("serv_plugin")
     @ApiModelProperty(value = "${swagger.model.channel.details.servPlugin}")
@@ -144,23 +144,23 @@ public class ChannelDetailsDto {
 
     @JsonProperty("rt_push")
     @ApiModelProperty(value = "${swagger.model.channel.details.rtPush}")
-    private Boolean rtPush;
+    private Boolean rtPush=true;
 
     @JsonProperty("on_us")
     @ApiModelProperty(value = "${swagger.model.channel.details.onUs}")
-    private Boolean onUs;
+    private Boolean onUs=true;
 
     @JsonProperty("card_chart")
     @ApiModelProperty(value = "${swagger.model.channel.details.cardChart}")
-    private Boolean cardChart;
+    private Boolean cardChart=false;
 
     @JsonProperty("recovery")
     @ApiModelProperty(value = "${swagger.model.channel.details.recovery}")
-    private Boolean recovery;
+    private Boolean recovery=true;
 
     @JsonProperty("digital_stamp_brand")
     @ApiModelProperty(value = "${swagger.model.channel.details.digitalStampBrand}")
-    private Boolean digitalStampBrand;
+    private Boolean digitalStampBrand=false;
 
     @JsonProperty("flag_io")
     @ApiModelProperty(value = "${swagger.model.channel.details.flagIo}")
@@ -168,7 +168,7 @@ public class ChannelDetailsDto {
 
     @JsonProperty("agid")
     @ApiModelProperty(value = "${swagger.model.channel.details.agid}")
-    private Boolean agid;
+    private Boolean agid=true;
 
     @JsonProperty("payment_types")
     @ApiModelProperty(value = "${swagger.model.PspChannelPaymentTypesResource.list}")
