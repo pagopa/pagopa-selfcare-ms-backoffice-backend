@@ -321,4 +321,24 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
+    @Test
+    void deleteChannel() throws Exception {
+        //given
+
+        String channelCode = "channelCode";
+        String xRequestId = "1";
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .delete(BASE_URL + "/{channelcode}", channelCode)
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .deleteChannel(anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
 }

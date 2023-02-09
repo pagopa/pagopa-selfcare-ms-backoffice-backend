@@ -129,7 +129,7 @@ public class ChannelController {
     @GetMapping(value = "configuration/paymenttypes", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getPaymentTypes}")
-    public PaymentTypesResource getPaymentTypes(){
+    public PaymentTypesResource getPaymentTypes() {
         log.trace("getPaymentTypes start");
 
         log.debug("getPaymentTypes code getPaymentTypes");
@@ -140,6 +140,34 @@ public class ChannelController {
 
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getPaymentTypes result = {}", resource);
         log.trace("getPaymentTypes end");
+        return resource;
+    }
+
+    @DeleteMapping(value = "/{channelcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteChannel(@ApiParam("${swagger.request.channelcode}")
+                              @PathVariable("channelcode") String channelcode) {
+        log.trace("deleteChannel start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("deleteChannel channelcode = {}, uuid = {}", channelcode, uuid);
+        apiConfigService.deleteChannel(channelcode, uuid);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "deleteChannel with channelcode = {}", channelcode);
+        log.trace("getChannelDetails end");
+    }
+
+    @DeleteMapping(value = "/{channelcode}/paymenttypes/{paymenttypecode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public PspChannelPaymentTypesResource deleteChannelPaymentType(@ApiParam("${swagger.request.channelcode}")
+                                                                   @PathVariable("channelcode") String channelcode,
+                                                                   @ApiParam("${swagger.request.paymentTypeCode")
+                                                                   @PathVariable("paymenttypecode") String pspCode) {
+        log.trace("deleteChannelPaymentType start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("deleteChannelPaymentType paymentTypeCode = {}, channelcode = {}, uuid = {}", pspCode, channelcode, uuid);
+        PspChannelPaymentTypes response = apiConfigService.deleteChannelPaymentType(channelcode,pspCode,uuid);
+        PspChannelPaymentTypesResource resource = ChannelMapper.toResource(response);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "deleteChannelPaymentType paymentTypeCode = {}, channelcode = {}", pspCode, channelcode);
+        log.trace("deleteChannelPaymentType end");
         return resource;
     }
 }

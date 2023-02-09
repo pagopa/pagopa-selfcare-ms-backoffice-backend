@@ -7,7 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -71,7 +71,6 @@ class ApiConfigServiceImplTest {
     @Test
     void getPspChannel() {
         //given
-
         final String pspcode = "pspcode";
         final String xRequestId = "xRequestId";
         PspChannels pspChannels = mock(PspChannels.class);
@@ -91,7 +90,6 @@ class ApiConfigServiceImplTest {
     @Test
     void createChannel() {
         //given
-
         final String xRequestId = "xRequestId";
         ChannelDetails channelDetailsMock = mock(ChannelDetails.class);
 
@@ -146,6 +144,46 @@ class ApiConfigServiceImplTest {
         reflectionEqualsByName(pspChannelPaymentTypesRes, pspChannelPaymentTypesMock);
         verify(apiConfigConnectorMock, times(1))
                 .createChannelPaymentType(pspChannelPaymentTypesMock,channelCode,xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void deleteChannel() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String channelCode = "channelCode";
+
+        doNothing().when(apiConfigConnectorMock).deleteChannel(anyString(),anyString());
+
+        //when
+        apiConfigService.deleteChannel(channelCode, xRequestId);
+        //then
+
+        verify(apiConfigConnectorMock, times(1))
+                .deleteChannel(channelCode,xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void deleteChannelPaymentType() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String channelCode = "channelCode";
+        final String pspCode = "pspCode";
+
+        PspChannelPaymentTypes pspChannelPaymentTypesMock = mock(PspChannelPaymentTypes.class);
+
+        when(apiConfigConnectorMock.deleteChannelPaymentType(anyString(),anyString(),anyString()))
+                .thenReturn(pspChannelPaymentTypesMock);
+        //when
+        PspChannelPaymentTypes response =apiConfigConnectorMock.deleteChannelPaymentType(channelCode,pspCode, xRequestId);
+        //then
+        assertNotNull(response);
+        assertEquals(response, pspChannelPaymentTypesMock);
+        reflectionEqualsByName(response, pspChannelPaymentTypesMock);
+
+        verify(apiConfigConnectorMock, times(1))
+                .deleteChannelPaymentType(channelCode,pspCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 }

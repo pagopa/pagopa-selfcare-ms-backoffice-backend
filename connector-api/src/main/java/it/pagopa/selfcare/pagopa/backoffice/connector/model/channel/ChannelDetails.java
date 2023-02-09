@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 public class ChannelDetails extends  Channel{
 
 
-    @JsonProperty("password")
+    @JsonProperty(value = "password")
     private String password;
 
     @JsonProperty("new_password")

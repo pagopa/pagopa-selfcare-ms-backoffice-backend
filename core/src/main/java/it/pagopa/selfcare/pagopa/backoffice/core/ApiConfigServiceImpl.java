@@ -55,7 +55,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
 
     public PspChannelPaymentTypes createChannelPaymentType(PspChannelPaymentTypes pspChannelPaymentTypes, String channelCode, String xRequestId) {
         log.trace("createChannelPaymentType start");
-        PspChannelPaymentTypes response = apiConfigConnector.createChannelPaymentType(pspChannelPaymentTypes,channelCode, xRequestId);
+        PspChannelPaymentTypes response = apiConfigConnector.createChannelPaymentType(pspChannelPaymentTypes, channelCode, xRequestId);
         log.debug("createChannelPaymentType result = {}", response);
         log.trace("createChannelPaymentType end");
         return response;
@@ -67,6 +67,23 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         PaymentTypes response = apiConfigConnector.getPaymentTypes(xRequestId);
         log.debug("getPaymentTypes result = {}", response);
         log.trace("getPaymentTypes end");
+        return response;
+    }
+
+    @Override
+    public void deleteChannel(String channelCode, String xRequestId) {
+        log.trace("deleteChannel start");
+        apiConfigConnector.deleteChannel(channelCode, xRequestId);
+        log.debug("deleteChannel with channelCode = {}", channelCode);
+        log.trace("deleteChannel end");
+    }
+
+    @Override
+    public PspChannelPaymentTypes deleteChannelPaymentType(String channelCode, String pspCode, String xRequestId) {
+        log.trace("deleteChannelPaymentType start");
+        PspChannelPaymentTypes response = apiConfigConnector.deleteChannelPaymentType(channelCode, pspCode, xRequestId);
+        log.debug("deleteChannelPaymentType, channelCode = {}, pspCode = {}", channelCode,pspCode);
+        log.trace("deleteChannelPaymentType end");
         return response;
     }
 

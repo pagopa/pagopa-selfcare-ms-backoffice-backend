@@ -113,6 +113,13 @@ class ApiConfigRestClientTest {
         put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "channelcode2");
     }};
 
+    private static final Map<ApiConfigRestClientTest.TestCase, HashMap<String,String>> testCaseChannelCodeMPspCodeMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
+        put(ApiConfigRestClientTest.TestCase.FULLY_VALUED, new HashMap<String, String>() {{
+            put("channelCode", "channelcode1");
+            put("pspCode", "pspcode1");
+        }});
+    }};
+
     private static final Map<TestCase, Map<String, Object>> testCase3ChannelDto = new EnumMap(TestCase.class) {{
         ChannelDetails channelDetails = new ChannelDetails();
         channelDetails.setPassword("password");
@@ -390,6 +397,23 @@ class ApiConfigRestClientTest {
         assertNotNull(response);
         assertFalse(response.getPaymentTypeList().isEmpty());
     }
+
+    @Test
+    void deleteChannelPaymentType_fullyValued() {
+        // given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        String requestId = UUID.randomUUID().toString();
+        String channelCode = testCaseChannelCodeMPspCodeMap.get(testCase).get("channelCode");
+        String pspCode = testCaseChannelCodeMPspCodeMap.get(testCase).get("pspCode");
+        // when
+        PspChannelPaymentTypes response = restClient.deleteChannelPaymentType(channelCode, pspCode, requestId);
+
+        //then
+        assertNotNull(response);
+
+    }
+
+
 
     private void checkNotNullFields(Object o, String... excludedFields) {
         Set<String> excludedFieldsSet = new HashSet<>(Arrays.asList(excludedFields));
