@@ -109,7 +109,7 @@ class ApiConfigRestClientTest {
         put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "pspCode2");
     }};
 
-    private static final Map<TestCase, Map<String, Object>> testCase3ChannelDto = new EnumMap(TestCase.class) {{
+    private static final Map<TestCase, Map<String, Object>> testCaseChannelDtoMap = new EnumMap(TestCase.class) {{
         ChannelDetails channelDetails = new ChannelDetails();
         channelDetails.setPassword("password");
         channelDetails.setNewPassword("newPassword");
@@ -149,11 +149,12 @@ class ApiConfigRestClientTest {
         channelDetails.setBrokerDescription("setBrokerDescription");
         channelDetails.setEnabled(true);
         channelDetails.setChannelCode("setChannelCode");
+        channelDetails.setPrimitiveVersion("1");
         put(TestCase.FULLY_VALUED, channelDetails);
 
     }};
 
-    private static final Map<TestCase, Map<String, Object>> testCase2instIdMap = new EnumMap<>(TestCase.class) {{
+    private static final Map<TestCase, Map<String, Object>> testCaseChannelParamMap = new EnumMap<>(TestCase.class) {{
         put(TestCase.FULLY_VALUED, new HashMap<String, Object>() {{
             put("page", 2);
             put("limit", 16);
@@ -198,10 +199,10 @@ class ApiConfigRestClientTest {
     void getChannels_fullyNull() {
         // given
         TestCase testCase = TestCase.FULLY_NULL;
-        Integer page = (Integer) testCase2instIdMap.get(testCase).get("page");
-        Integer limit = (Integer) testCase2instIdMap.get(testCase).get("limit");
-        String code = (String) testCase2instIdMap.get(testCase).get("code");
-        String ordering = (String) testCase2instIdMap.get(testCase).get("ordering");
+        Integer page = (Integer) testCaseChannelParamMap.get(testCase).get("page");
+        Integer limit = (Integer) testCaseChannelParamMap.get(testCase).get("limit");
+        String code = (String) testCaseChannelParamMap.get(testCase).get("code");
+        String ordering = (String) testCaseChannelParamMap.get(testCase).get("ordering");
         String xRequestId = "1";
         // when
         Channels response = restClient.getChannels(limit, page, code, ordering, xRequestId);
@@ -215,11 +216,11 @@ class ApiConfigRestClientTest {
     void getChannels_fullyValued() {
         // given
         TestCase testCase = TestCase.FULLY_VALUED;
-        Integer page = (Integer) testCase2instIdMap.get(testCase).get("page");
-        Integer limit = (Integer) testCase2instIdMap.get(testCase).get("limit");
-        String sortBy = (String) testCase2instIdMap.get(testCase).get("sortBy");
-        String code = (String) testCase2instIdMap.get(testCase).get("code");
-        String ordering = (String) testCase2instIdMap.get(testCase).get("ordering");
+        Integer page = (Integer) testCaseChannelParamMap.get(testCase).get("page");
+        Integer limit = (Integer) testCaseChannelParamMap.get(testCase).get("limit");
+        String sortBy = (String) testCaseChannelParamMap.get(testCase).get("sortBy");
+        String code = (String) testCaseChannelParamMap.get(testCase).get("code");
+        String ordering = (String) testCaseChannelParamMap.get(testCase).get("ordering");
         String requestId = UUID.randomUUID().toString();
         // when
         Channels response = restClient.getChannels(limit, page, code, ordering, requestId);
@@ -276,7 +277,7 @@ class ApiConfigRestClientTest {
     void createChannel_fullyValued() {
         // given
         TestCase testCase = TestCase.FULLY_VALUED;
-        ChannelDetails channelDetails = (ChannelDetails) testCase3ChannelDto.get(testCase);
+        ChannelDetails channelDetails = (ChannelDetails) testCaseChannelDtoMap.get(testCase);
         String requestId = UUID.randomUUID().toString();
         // when
         ChannelDetails response = restClient.createChannel(channelDetails, requestId);
@@ -302,6 +303,35 @@ class ApiConfigRestClientTest {
 
     }
 
+    @Test
+    void updateChannel_fullyValued() {
+        // given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        ChannelDetails channelDetails = (ChannelDetails) testCaseChannelDtoMap.get(testCase);
+        String channelCode = (String) testCaseChannelParamMap.get(testCase).get("code");
+        String requestId = UUID.randomUUID().toString();
+        // when
+        ChannelDetails response = restClient.updateChannel(channelDetails,channelCode, requestId);
+
+        //then
+        assertNotNull(response.getPassword());
+        assertNotNull(response.getNewPassword());
+        assertNotNull(response.getProtocol());
+        assertNotNull(response.getIp());
+        assertNotNull(response.getPort());
+        assertNotNull(response.getService());
+        assertNotNull(response.getBrokerPspCode());
+        assertNotNull(response.getProxyEnabled());
+        assertNotNull(response.getProxyHost());
+        assertNotNull(response.getProxyPort());
+        assertNotNull(response.getProxyUsername());
+        assertNotNull(response.getProxyPassword());
+        assertNotNull(response.getTargetHost());
+        assertNotNull(response.getTargetPort());
+        assertNotNull(response.getTargetPath());
+        assertNotNull(response.getThreadNumber());
+        assertNotNull(response.getTimeoutA());
+    }
     @Test
     void createChannelPaymentType_fullyValued() {
         // given

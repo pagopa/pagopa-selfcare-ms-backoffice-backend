@@ -1,13 +1,11 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,14 +17,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.util.ArrayList;
+import java.io.InputStream;
 import java.util.List;
-
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -93,52 +89,14 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
-
     @Test
     void createChannel(@Value("classpath:stubs/channelDto.json") Resource dto) throws Exception {
         //given
         String xRequestId = "1";
         String channelCode = "setChannelCode";
         PspChannelPaymentTypes pspChannelPaymentTypes = mockInstance(new PspChannelPaymentTypes());
-        ChannelDetails channelDetails = mockInstance(new ChannelDetails());
-        channelDetails.setPassword("password");
-        channelDetails.setNewPassword("newPassword");
-        channelDetails.setProtocol(Protocol.HTTP);
-        channelDetails.setIp("127.0.0.1");
-        channelDetails.setPort(Long.parseLong("8080"));
-        channelDetails.setService("service");
-        channelDetails.setBrokerPspCode("psp");
-        channelDetails.setProxyEnabled(true);
-        channelDetails.setProxyHost("127.0.0.1");
-        channelDetails.setProxyPort(Long.parseLong("8090"));
-        channelDetails.setProxyUsername("username");
-        channelDetails.setProxyPassword("setProxyPassword");
-        channelDetails.setTargetHost("setTargetHost");
-        channelDetails.setTargetPort(Long.parseLong("8888"));
-        channelDetails.setTargetPath("setTargetPath");
-        channelDetails.setThreadNumber(Long.parseLong("1"));
-        channelDetails.setTimeoutA(Long.parseLong("1"));
-        channelDetails.setTimeoutB(Long.parseLong("2"));
-        channelDetails.setTimeoutC(Long.parseLong("3"));
-        channelDetails.setNpmService("setNpmService");
-        channelDetails.setNewFaultCode(false);
-        channelDetails.setRedirectIp("127.0.0.3");
-        channelDetails.setRedirectPath("setRedirectPath");
-        channelDetails.setRedirectPort(Long.parseLong("8989"));
-        channelDetails.setRedirectQueryString("/setRedirectQueryString");
-        channelDetails.setRedirectProtocol(Protocol.HTTP);
-        channelDetails.setPaymentModel(PaymentModel.IMMEDIATE);
-        channelDetails.setServPlugin("setServPlugin");
-        channelDetails.setRtPush(true);
-        channelDetails.setOnUs(true);
-        channelDetails.setCardChart(true);
-        channelDetails.setRecovery(true);
-        channelDetails.setDigitalStampBrand(true);
-        channelDetails.setFlagIo(true);
-        channelDetails.setAgid(true);
-        channelDetails.setBrokerDescription("setBrokerDescription");
-        channelDetails.setEnabled(true);
-        channelDetails.setChannelCode("setChannelCode");
+        InputStream is = dto.getInputStream();
+        ChannelDetails channelDetails = objectMapper.readValue(is,ChannelDetails.class);
 
         when(apiConfigServiceMock.createChannel(any(), anyString()))
                 .thenReturn(channelDetails);
@@ -187,6 +145,56 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
+    @Test
+    void updateChannel(@Value("classpath:stubs/channelDto.json") Resource dto) throws Exception {
+        //given
+        String xRequestId = "1";
+        String channelCode = "setChannelCode";
+        InputStream is = dto.getInputStream();
+        ChannelDetails channelDetails = objectMapper.readValue(is,ChannelDetails.class);
+
+        when(apiConfigServiceMock.updateChannel(any(), anyString(),anyString()))
+                .thenReturn(channelDetails);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .put(BASE_URL + "/{channelcode}",channelCode)
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .header("X-Request-Id", String.valueOf(xRequestId)))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.password", is(channelDetails.getPassword())))
+                .andExpect(jsonPath("$.new_password", is(channelDetails.getNewPassword())))
+                .andExpect(jsonPath("$.protocol", is(channelDetails.getProtocol().name())))
+                .andExpect(jsonPath("$.ip", is(channelDetails.getIp())))
+                .andExpect(jsonPath("$.port", notNullValue()))
+                .andExpect(jsonPath("$.service", is(channelDetails.getService())))
+                .andExpect(jsonPath("$.broker_psp_code", is(channelDetails.getBrokerPspCode())))
+                .andExpect(jsonPath("$.proxy_enabled", is(channelDetails.getProxyEnabled())))
+                .andExpect(jsonPath("$.proxy_host", is(channelDetails.getProxyHost())))
+                .andExpect(jsonPath("$.proxy_port", notNullValue()))
+                .andExpect(jsonPath("$.proxy_username", is(channelDetails.getProxyUsername())))
+                .andExpect(jsonPath("$.target_host", is(channelDetails.getTargetHost())))
+                .andExpect(jsonPath("$.target_port", notNullValue()))
+                .andExpect(jsonPath("$.target_path", is(channelDetails.getTargetPath())))
+                .andExpect(jsonPath("$.thread_number", notNullValue()))
+                .andExpect(jsonPath("$.timeout_a", notNullValue()))
+                .andExpect(jsonPath("$.timeout_b", notNullValue()))
+                .andExpect(jsonPath("$.timeout_c", notNullValue()))
+                .andExpect(jsonPath("$.npm_service", is(channelDetails.getNpmService())))
+                .andExpect(jsonPath("$.new_fault_code", is(channelDetails.getNewFaultCode())))
+                .andExpect(jsonPath("$.redirect_ip", is(channelDetails.getRedirectIp())))
+                .andExpect(jsonPath("$.redirect_path", is(channelDetails.getRedirectPath())));
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .updateChannel(any(),anyString(), anyString());
+
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
 
     @Test
     void createChannelPaymentType() throws Exception {

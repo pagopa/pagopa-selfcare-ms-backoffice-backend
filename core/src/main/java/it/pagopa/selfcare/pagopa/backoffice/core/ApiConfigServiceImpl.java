@@ -40,6 +40,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
+    public ChannelDetails updateChannel(ChannelDetails channelDetails, String channelCode, String xRequestId) {
+        log.trace("updateChannel start");
+        ChannelDetails response = apiConfigConnector.updateChannel(channelDetails,channelCode, xRequestId);
+        log.debug("updateChannel result = {}", response);
+        log.trace("updateChannel end");
+        return response;
+    }
+
+    @Override
     public PspChannels getPspChannels(String pspCode, String xRequestId) {
         log.trace("getPspChannels start");
         PspChannels response = apiConfigConnector.getPspChannels(pspCode, xRequestId);

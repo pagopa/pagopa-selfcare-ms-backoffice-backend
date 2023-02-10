@@ -27,6 +27,12 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     ChannelDetails createChannel(@RequestBody @NotNull ChannelDetails detailsDto,
                                  @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
+    @PutMapping(value = "${rest-client.api-config.updateChannel.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    ChannelDetails updateChannel(@RequestBody ChannelDetails channelDetails,
+                                 @PathVariable("channelcode") String channelCode,
+                                 @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
     @GetMapping(value = "${rest-client.api-config.getPspChannels.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     PspChannels getPspChannels(@PathVariable("pspcode") String pspCode,
