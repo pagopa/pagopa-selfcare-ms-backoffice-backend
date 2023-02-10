@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PspChannelPaymentTypesResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -303,7 +304,6 @@ class ChannelControllerTest {
         PaymentType paymentType = mockInstance(new PaymentType());
         paymentTypes.setPaymentTypeList(List.of(paymentType));
 
-
         when(apiConfigServiceMock.getPaymentTypes(anyString()))
                 .thenReturn(paymentTypes);
         //when
@@ -324,7 +324,6 @@ class ChannelControllerTest {
     @Test
     void deleteChannel() throws Exception {
         //given
-
         String channelCode = "channelCode";
         String xRequestId = "1";
 
@@ -341,4 +340,28 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
+    @Test
+    void deleteChannelPaymentType() throws Exception {
+        //given
+        String channelCode = "channelCode";
+        String xRequestId = "1";
+        String paymentTypeCode = "paymentTypeCode";
+        PspChannelPaymentTypes pspChannelPaymentTypesResource = mockInstance(new PspChannelPaymentTypes(),"setPaymentTypeList");
+        pspChannelPaymentTypesResource.setPaymentTypeList(List.of(paymentTypeCode));
+        when(apiConfigServiceMock.deleteChannelPaymentType(anyString(),anyString(),anyString()))
+                .thenReturn(pspChannelPaymentTypesResource);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .delete(BASE_URL + "/{channelcode}/paymenttypes/{paymenttypecode}", channelCode,paymentTypeCode)
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.payment_types[*].description", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.payment_types[*].payment_type", everyItem(notNullValue())));
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .deleteChannelPaymentType(anyString(),eq(paymentTypeCode), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
 }

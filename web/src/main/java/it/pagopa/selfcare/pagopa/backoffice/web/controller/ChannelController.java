@@ -159,14 +159,14 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     public PspChannelPaymentTypesResource deleteChannelPaymentType(@ApiParam("${swagger.request.channelcode}")
                                                                    @PathVariable("channelcode") String channelcode,
-                                                                   @ApiParam("${swagger.request.paymentTypeCode")
-                                                                   @PathVariable("paymenttypecode") String pspCode) {
+                                                                   @ApiParam("${swagger.request.paymentTypeCode}")
+                                                                   @PathVariable("paymenttypecode") String paymentTypeCode) {
         log.trace("deleteChannelPaymentType start");
         String uuid = UUID.randomUUID().toString();
-        log.debug("deleteChannelPaymentType paymentTypeCode = {}, channelcode = {}, uuid = {}", pspCode, channelcode, uuid);
-        PspChannelPaymentTypes response = apiConfigService.deleteChannelPaymentType(channelcode,pspCode,uuid);
+        log.debug("deleteChannelPaymentType paymentTypeCode = {}, channelcode = {}, uuid = {}", paymentTypeCode, channelcode, uuid);
+        PspChannelPaymentTypes response = apiConfigService.deleteChannelPaymentType(channelcode,paymentTypeCode,uuid);
         PspChannelPaymentTypesResource resource = ChannelMapper.toResource(response);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "deleteChannelPaymentType paymentTypeCode = {}, channelcode = {}", pspCode, channelcode);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "deleteChannelPaymentType paymentTypeCode = {}, channelcode = {}", paymentTypeCode, channelcode);
         log.trace("deleteChannelPaymentType end");
         return resource;
     }

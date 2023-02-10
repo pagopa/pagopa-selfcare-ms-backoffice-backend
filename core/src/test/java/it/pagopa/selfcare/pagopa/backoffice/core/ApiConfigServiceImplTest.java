@@ -127,6 +127,7 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
+    @Test
     void createChannelPaymentType() {
         //given
         final String xRequestId = "xRequestId";
