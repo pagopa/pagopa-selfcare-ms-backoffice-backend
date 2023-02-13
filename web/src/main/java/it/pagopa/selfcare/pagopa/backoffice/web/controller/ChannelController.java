@@ -8,7 +8,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetai
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
-
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsResource;
@@ -102,6 +101,21 @@ public class ChannelController {
         return resource;
     }
 
+    @GetMapping(value = "/details/{channelcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public ChannelDetailsResource getChannelDetails(@ApiParam("${swagger.request.channelcode}")
+                                                    @PathVariable("channelcode") String channelcode,
+                                                    @ApiParam("${swagger.request.id}")
+                                                    @RequestHeader(name = "X-Request-Id", required = false) String xRequestId
+    ) {
+        log.trace("getChannelDetails start");
+        log.debug("getChannelDetails channelcode = {}", channelcode);
+        ChannelDetails channelDetails = apiConfigService.getChannelDetails(channelcode, xRequestId);
+        ChannelDetailsResource resource = ChannelMapper.toResource(channelDetails);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelDetails result = {}", resource);
+        log.trace("getChannelDetails end");
+        return resource;
+    }
 
     @PostMapping(value = "/{channelcode}/paymenttypes", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
@@ -118,5 +132,6 @@ public class ChannelController {
         log.trace("createChannelPaymentType end");
         return resource;
     }
+    
 }
 

@@ -11,6 +11,6 @@ public interface ApiConfigService {
 
     ChannelDetails createChannel(ChannelDetails channelDetails, String xRequestId);
     PspChannels getPspChannels(String pspCode, String xRequestId);
-
+    ChannelDetails getChannelDetails(String channelCode, String xRequestId);
     PspChannelPaymentTypes createChannelPaymentType(PspChannelPaymentTypes pspChannelPaymentTypes, String channelCode, String xRequestId);
 }

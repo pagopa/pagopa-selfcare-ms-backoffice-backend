@@ -5,7 +5,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetai
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +44,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         PspChannels response = apiConfigConnector.getPspChannels(pspCode, xRequestId);
         log.debug("getPspChannels result = {}", response);
         log.trace("getPspChannels end");
+        return response;
+    }
+
+    @Override
+    public ChannelDetails getChannelDetails(String channelCode, String xRequestId) {
+        log.trace("getChannelDetails start");
+        ChannelDetails response = apiConfigConnector.getChannelDetails(channelCode, xRequestId);
+        log.debug("getChannelDetails result = {}", response);
+        log.trace("getChannelDetails end");
         return response;
     }
 

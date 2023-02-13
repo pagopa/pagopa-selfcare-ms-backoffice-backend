@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.61"
+    "version" : "0.0.75-1"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -196,15 +196,15 @@
         } ]
       }
     },
-    "/channels/{pspcode}" : {
+    "/channels/details/{channelcode}" : {
       "get" : {
         "tags" : [ "channels" ],
-        "summary" : "getPspChannels",
-        "operationId" : "getPspChannelsUsingGET",
+        "summary" : "getChannelDetails",
+        "operationId" : "getChannelDetailsUsingGET",
         "parameters" : [ {
-          "name" : "pspcode",
+          "name" : "channelcode",
           "in" : "path",
-          "description" : "Code of the payment service provider",
+          "description" : "Code of the payment channel",
           "required" : true,
           "style" : "simple",
           "schema" : {
@@ -225,7 +225,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/PspChannelsResource"
+                  "$ref" : "#/components/schemas/ChannelDetailsResource"
                 }
               }
             }
@@ -324,6 +324,86 @@
           },
           "401" : {
             "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/channels/{pspcode}" : {
+      "get" : {
+        "tags" : [ "channels" ],
+        "summary" : "getPspChannels",
+        "operationId" : "getPspChannelsUsingGET",
+        "parameters" : [ {
+          "name" : "pspcode",
+          "in" : "path",
+          "description" : "Code of the payment service provider",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "X-Request-Id",
+          "in" : "header",
+          "description" : "internal request trace id",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PspChannelsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
             "content" : {
               "application/problem+json" : {
                 "schema" : {
@@ -1483,6 +1563,32 @@
           }
         }
       },
+      "PspChannelPaymentTypes" : {
+        "title" : "PspChannelPaymentTypes",
+        "type" : "object",
+        "properties" : {
+          "payment_types" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "PspChannelPaymentTypesResource" : {
+        "title" : "PspChannelPaymentTypesResource",
+        "required" : [ "payment_types" ],
+        "type" : "object",
+        "properties" : {
+          "payment_types" : {
+            "type" : "array",
+            "description" : "List of payment types",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
       "PspChannelResource" : {
         "title" : "PspChannelResource",
         "required" : [ "channel_code", "enabled", "payment_types" ],
@@ -1490,7 +1596,7 @@
         "properties" : {
           "channel_code" : {
             "type" : "string",
-            "description" : "Channel codes"
+            "description" : "Channel's unique identifier"
           },
           "enabled" : {
             "type" : "boolean",
@@ -1500,12 +1606,6 @@
           "payment_types" : {
             "type" : "array",
             "description" : "List of payment types",
-      "PspChannelPaymentTypes" : {
-        "title" : "PspChannelPaymentTypes",
-        "type" : "object",
-        "properties" : {
-          "payment_types" : {
-            "type" : "array",
             "items" : {
               "type" : "string"
             }
@@ -1522,16 +1622,6 @@
             "description" : "Channel list",
             "items" : {
               "$ref" : "#/components/schemas/PspChannelResource"
-      "PspChannelPaymentTypesResource" : {
-        "title" : "PspChannelPaymentTypesResource",
-        "required" : [ "payment_types" ],
-        "type" : "object",
-        "properties" : {
-          "payment_types" : {
-            "type" : "array",
-            "description" : "List of payment types",
-            "items" : {
-              "type" : "string"
             }
           }
         }

@@ -5,7 +5,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetai
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,6 +109,26 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
+    void GetChannelDetails() {
+        //given
+
+        final String channelCode = "channelCode";
+        final String xRequestId = "xRequestId";
+        ChannelDetails channelDetailsMock = mock(ChannelDetails.class);
+
+        when(apiConfigConnectorMock.getChannelDetails(any(),any()))
+                .thenReturn(channelDetailsMock);
+        //when
+        ChannelDetails channelDetailsRes = apiConfigService.getChannelDetails(channelCode, xRequestId);
+        //then
+        assertNotNull(channelDetailsRes);
+        assertEquals(channelDetailsRes, channelDetailsMock);
+        reflectionEqualsByName(channelDetailsRes, channelDetailsMock);
+        verify(apiConfigConnectorMock, times(1))
+                .getChannelDetails(channelCode,xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
     void createChannelPaymentType() {
         //given
         final String xRequestId = "xRequestId";

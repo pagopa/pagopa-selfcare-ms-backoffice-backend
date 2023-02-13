@@ -32,6 +32,11 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     PspChannels getPspChannels(@PathVariable("pspcode") String pspCode,
                                @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
+    @GetMapping(value = "${rest-client.api-config.getChannelDetails.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    ChannelDetails getChannelDetails(@PathVariable("channelcode") String channelcode,
+                                     @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
     @PostMapping(value = "${rest-client.api-config.createChannelPaymentType.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     PspChannelPaymentTypes createChannelPaymentType(@RequestBody PspChannelPaymentTypes pspChannelPaymentTypes,
