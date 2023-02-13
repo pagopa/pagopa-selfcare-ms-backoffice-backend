@@ -320,5 +320,4 @@ class ChannelControllerTest {
                 .getPaymentTypes(anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
-
 }
