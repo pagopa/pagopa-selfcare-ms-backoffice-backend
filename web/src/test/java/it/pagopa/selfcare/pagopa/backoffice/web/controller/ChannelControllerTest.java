@@ -292,4 +292,32 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
+    @Test
+    void getPaymentTypes() throws Exception {
+        //given
+
+        String pspCode = "pspCode";
+        String xRequestId = "1";
+
+        PaymentTypes paymentTypes = mockInstance(new PaymentTypes(),"setPaymentTypeList");
+        PaymentType paymentType = mockInstance(new PaymentType());
+        paymentTypes.setPaymentTypeList(List.of(paymentType));
+
+
+        when(apiConfigServiceMock.getPaymentTypes(anyString()))
+                .thenReturn(paymentTypes);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/configuration/paymenttypes")
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.payment_types[*].description", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.payment_types[*].payment_type", everyItem(notNullValue())));
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getPaymentTypes(anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
 }

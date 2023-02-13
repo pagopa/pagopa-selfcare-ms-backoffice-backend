@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.75-1"
+    "version" : "0.0.76"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -15,6 +15,9 @@
   }, {
     "name" : "institution",
     "description" : "Institution operations"
+  }, {
+    "name" : "institution-controller",
+    "description" : "Institution Controller"
   } ],
   "paths" : {
     "/channels" : {
@@ -172,6 +175,69 @@
           },
           "401" : {
             "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/channels/configuration/paymenttypes" : {
+      "get" : {
+        "tags" : [ "channels" ],
+        "summary" : "getPaymentTypes",
+        "description" : "Get list of payment type",
+        "operationId" : "getPaymentTypesUsingGET",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentTypesResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
             "content" : {
               "application/problem+json" : {
                 "schema" : {
@@ -430,7 +496,7 @@
     },
     "/institutions" : {
       "get" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "getInstitutions",
         "description" : "Retrieves all the onboarded institutions related to the logged user",
         "operationId" : "getInstitutionsUsingGET",
@@ -496,7 +562,7 @@
     },
     "/institutions/{institutionId}" : {
       "get" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "getInstitution",
         "description" : "Retrieves an institution's details",
         "operationId" : "getInstitutionUsingGET",
@@ -569,7 +635,7 @@
     },
     "/institutions/{institutionId}/api-keys" : {
       "get" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "getInstitutionApiKeys",
         "description" : "Retrieve an institution's primary and secondary keys",
         "operationId" : "getInstitutionApiKeysUsingGET",
@@ -643,7 +709,7 @@
         } ]
       },
       "post" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "createInstitutionApiKeys",
         "description" : "Creates a new subscription for a given Institution and returns its primary and secondary keys",
         "operationId" : "createInstitutionApiKeysUsingPOST",
@@ -718,7 +784,7 @@
     },
     "/institutions/{institutionId}/products" : {
       "get" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "getInstitutionProducts",
         "description" : "retrieve all active products for given institution and logged user",
         "operationId" : "getInstitutionProductsUsingGET",
@@ -794,7 +860,7 @@
     },
     "/institutions/{subscriptionid}/api-keys/primary/regenerate" : {
       "post" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "regeneratePrimaryKey",
         "description" : "Regenerates the subscription's primary key",
         "operationId" : "regeneratePrimaryKeyUsingPOST",
@@ -850,7 +916,7 @@
     },
     "/institutions/{subscriptionid}/api-keys/secondary/regenerate" : {
       "post" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "regenerateSecondaryKey",
         "description" : "Regenerates the subscription's secondary key",
         "operationId" : "regenerateSecondaryKeyUsingPOST",
@@ -1496,6 +1562,35 @@
           "total_pages" : {
             "type" : "integer",
             "format" : "int32"
+          }
+        }
+      },
+      "PaymentTypeResource" : {
+        "title" : "PaymentTypeResource",
+        "required" : [ "description", "payment_type" ],
+        "type" : "object",
+        "properties" : {
+          "description" : {
+            "type" : "string",
+            "description" : "Description of the payment type"
+          },
+          "payment_type" : {
+            "type" : "string",
+            "description" : "Code of payment type"
+          }
+        }
+      },
+      "PaymentTypesResource" : {
+        "title" : "PaymentTypesResource",
+        "required" : [ "payment_types" ],
+        "type" : "object",
+        "properties" : {
+          "payment_types" : {
+            "type" : "array",
+            "description" : "List of payment types",
+            "items" : {
+              "$ref" : "#/components/schemas/PaymentTypeResource"
+            }
           }
         }
       },

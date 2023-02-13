@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
@@ -61,6 +62,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         PspChannelPaymentTypes response = apiConfigConnector.createChannelPaymentType(pspChannelPaymentTypes,channelCode, xRequestId);
         log.debug("createChannelPaymentType result = {}", response);
         log.trace("createChannelPaymentType end");
+        return response;
+    }
+
+    @Override
+    public PaymentTypes getPaymentTypes(String xRequestId) {
+        log.trace("getPaymentTypes start");
+        PaymentTypes response = apiConfigConnector.getPaymentTypes(xRequestId);
+        log.debug("getPaymentTypes result = {}", response);
+        log.trace("getPaymentTypes end");
         return response;
     }
 

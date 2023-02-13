@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/apiconfig/auth/api/v1/configuration/paymenttypes"
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": {
+      "payment_types": [
+        {
+          "description": "Addebito diretto",
+          "payment_type": "AD"
+        }
+      ]
+},
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
