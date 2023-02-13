@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PaymentTypesResourceTest {
+class PaymentTypesResourceTest {
     private Validator validator;
 
 
