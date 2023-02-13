@@ -1,10 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,7 +106,7 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
-    void GetChannelDetails() {
+    void getChannelDetails() {
         //given
 
         final String channelCode = "channelCode";
@@ -129,6 +126,7 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
+    @Test
     void createChannelPaymentType() {
         //given
         final String xRequestId = "xRequestId";
@@ -146,6 +144,26 @@ class ApiConfigServiceImplTest {
         reflectionEqualsByName(pspChannelPaymentTypesRes, pspChannelPaymentTypesMock);
         verify(apiConfigConnectorMock, times(1))
                 .createChannelPaymentType(pspChannelPaymentTypesMock,channelCode,xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void getPaymentTypes(){
+        //given
+        final String xRequestId = "xRequestId";
+
+        PaymentTypes paymentTypes = mock(PaymentTypes.class);
+        when(apiConfigConnectorMock.getPaymentTypes(anyString()))
+                .thenReturn(paymentTypes);
+
+        //when
+        PaymentTypes paymentTypesResp = apiConfigService.getPaymentTypes(xRequestId);
+        //then
+        assertNotNull(paymentTypesResp);
+        assertEquals(paymentTypesResp, paymentTypes);
+
+        verify(apiConfigConnectorMock, times(1))
+                .getPaymentTypes(anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 }
