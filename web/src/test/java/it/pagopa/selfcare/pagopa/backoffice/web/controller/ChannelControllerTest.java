@@ -17,11 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-<<<<<<< HEAD
 import java.io.InputStream;
-=======
-
->>>>>>> temp
 import java.util.List;
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.hamcrest.Matchers.*;
@@ -93,12 +89,9 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
-<<<<<<< HEAD
-=======
     @Test
     void getChannelDetails() throws Exception {
         //given
-
         String channelcode = "channelcode";
         String xRequestId = "1";
 
@@ -142,7 +135,7 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
->>>>>>> temp
+
     @Test
     void createChannel(@Value("classpath:stubs/channelDto.json") Resource dto) throws Exception {
         //given

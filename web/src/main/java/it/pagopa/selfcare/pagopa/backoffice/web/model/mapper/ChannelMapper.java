@@ -83,7 +83,7 @@ public class ChannelMapper {
             resource.setEnabled(model.getEnabled());
             resource.setChannelCode(model.getChannelCode());
             resource.setPrimitiveVersion(model.getPrimitiveVersion());
-            resource.setPaymentTypeList(listModel!=null?listModel.getPaymentTypeList():new ArrayList<>());
+            resource.setPaymentTypeList(listModel != null ? listModel.getPaymentTypeList() : new ArrayList<>());
         }
         return resource;
     }

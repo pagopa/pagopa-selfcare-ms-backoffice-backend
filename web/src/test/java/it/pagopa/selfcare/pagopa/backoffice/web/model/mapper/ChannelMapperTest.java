@@ -1,9 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channel;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +32,28 @@ class ChannelMapperTest {
         ChannelResource resource = ChannelMapper.toResource(model);
         //then
         assertNotNull(resource);
+        reflectionEqualsByName(model, resource);
+    }
+
+    @Test
+    void toPaymentTypesResource() {
+        //given
+        PaymentTypes model = mockInstance(new PaymentTypes());
+        //when
+        PaymentTypesResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNotNull(resource);
+        reflectionEqualsByName(model, resource);
+    }
+
+    @Test
+    void toPaymentTypesResource_null() {
+        //given
+        PaymentTypes model = null;
+        //when
+        PaymentTypesResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNull(resource);
         reflectionEqualsByName(model, resource);
     }
 

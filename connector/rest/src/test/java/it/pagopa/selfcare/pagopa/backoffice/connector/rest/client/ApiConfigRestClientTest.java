@@ -415,7 +415,6 @@ class ApiConfigRestClientTest {
         String requestId = UUID.randomUUID().toString();
         // when
         PaymentTypes response = restClient.getPaymentTypes(requestId);
-
         //then
         assertNotNull(response);
         assertFalse(response.getPaymentTypeList().isEmpty());
@@ -426,7 +425,7 @@ class ApiConfigRestClientTest {
         // given
         String requestId = UUID.randomUUID().toString();
         TestCase testCase = TestCase.FULLY_VALUED;
-        String channelCode = testCaseChannelCodeMap.get(testCase);
+        String channelCode  = testCaseChannelCodeMap.get(testCase);
         // when
         PspChannelPaymentTypes response = restClient.getChannelPaymentTypes(channelCode, requestId);
         //then
