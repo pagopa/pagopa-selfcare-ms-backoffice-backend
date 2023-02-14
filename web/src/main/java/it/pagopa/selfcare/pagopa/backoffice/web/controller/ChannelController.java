@@ -4,17 +4,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
-
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelsResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PspChannelsResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PspChannelPaymentTypesResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +98,21 @@ public class ChannelController {
         return resource;
     }
 
+    @GetMapping(value = "/details/{channelcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public ChannelDetailsResource getChannelDetails(@ApiParam("${swagger.request.channelcode}")
+                                                    @PathVariable("channelcode") String channelcode,
+                                                    @ApiParam("${swagger.request.id}")
+                                                    @RequestHeader(name = "X-Request-Id", required = false) String xRequestId
+    ) {
+        log.trace("getChannelDetails start");
+        log.debug("getChannelDetails channelcode = {}", channelcode);
+        ChannelDetails channelDetails = apiConfigService.getChannelDetails(channelcode, xRequestId);
+        ChannelDetailsResource resource = ChannelMapper.toResource(channelDetails);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelDetails result = {}", resource);
+        log.trace("getChannelDetails end");
+        return resource;
+    }
 
     @PostMapping(value = "/{channelcode}/paymenttypes", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
@@ -135,13 +146,62 @@ public class ChannelController {
 //        pspChannelPaymentTypes.setPaymentTypeList(paymentTypeList);
 
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
-        ChannelDetails response = apiConfigService.updateChannel(channelDetails,channelCode,uuid);
+        ChannelDetails response = apiConfigService.updateChannel(channelDetails, channelCode, uuid);
 
-       // PspChannelPaymentTypes ptResponse = apiConfigService.createChannelPaymentType(pspChannelPaymentTypes, channelCode, xRequestId);
+        // PspChannelPaymentTypes ptResponse = apiConfigService.createChannelPaymentType(pspChannelPaymentTypes, channelCode, xRequestId);
         ChannelDetailsResource resource = ChannelMapper.toResource(response, null);
 
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "updateChannel result = {}", resource);
         log.trace("updateChannel end");
+        return resource;
+    }
+
+    @GetMapping(value = "configuration/paymenttypes", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getPaymentTypes}")
+    public PaymentTypesResource getPaymentTypes() {
+        log.trace("getPaymentTypes start");
+
+        log.debug("getPaymentTypes code getPaymentTypes");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("getPaymentTypes uuid {}", uuid);
+        PaymentTypes response = apiConfigService.getPaymentTypes(uuid);
+        PaymentTypesResource resource = ChannelMapper.toResource(response);
+
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getPaymentTypes result = {}", resource);
+        log.trace("getPaymentTypes end");
+        return resource;
+    }
+
+    @DeleteMapping(value = "/{channelcode}/{paymenttypecode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.deleteChannelPaymentType}")
+    public void deleteChannelPaymentType(@ApiParam("${swagger.model.channel.channelCode}") @PathVariable("channelcode") String channelCode,
+                                         @ApiParam("${swagger.request.paymentTypeCode}")
+                                         @PathVariable("paymenttypecode") String paymentTypeCode) {
+        log.trace("deleteChannelPaymentType start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("deleteChannelPaymentType code paymentTypeCode = {}, channel = {}, uuid {}", paymentTypeCode, channelCode, uuid);
+        apiConfigService.deleteChannelPaymentType(channelCode, paymentTypeCode, uuid);
+        log.trace("deleteChannelPaymentType end");
+
+    }
+
+    @GetMapping(value = "paymenttypes/{channelcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getChannelPaymentTypes}")
+    public PspChannelPaymentTypesResource getChannelPaymentTypes(@ApiParam("${swagger.model.channel.channelCode}")
+                                                                 @PathVariable("channelcode") String channelCode) {
+        log.trace("getChannelPaymentTypes start");
+
+        String uuid = UUID.randomUUID().toString();
+        log.debug("getChannelPaymentTypes channelCode = {}, uuid {}", channelCode, uuid);
+        PspChannelPaymentTypes response = apiConfigService.getChannelPaymentTypes(channelCode, uuid);
+        PspChannelPaymentTypesResource resource = ChannelMapper.toResource(response);
+
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelPaymentTypes result = {}", resource);
+        log.trace("getChannelPaymentTypes end");
+
         return resource;
     }
 }

@@ -17,7 +17,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+<<<<<<< HEAD
 import java.io.InputStream;
+=======
+
+>>>>>>> temp
 import java.util.List;
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.hamcrest.Matchers.*;
@@ -89,6 +93,56 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
+<<<<<<< HEAD
+=======
+    @Test
+    void getChannelDetails() throws Exception {
+        //given
+
+        String channelcode = "channelcode";
+        String xRequestId = "1";
+
+        ChannelDetails channelDetails = mockInstance(new ChannelDetails());
+
+        when(apiConfigServiceMock.getChannelDetails(anyString(), anyString()))
+                .thenReturn(channelDetails);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/details/{channelcode}", channelcode)
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+
+                .andExpect(jsonPath("$.password", is(channelDetails.getPassword())))
+                .andExpect(jsonPath("$.new_password", is(channelDetails.getNewPassword())))
+                .andExpect(jsonPath("$.protocol", is(channelDetails.getProtocol().name())))
+                .andExpect(jsonPath("$.ip", is(channelDetails.getIp())))
+                .andExpect(jsonPath("$.port", notNullValue()))
+                .andExpect(jsonPath("$.service", is(channelDetails.getService())))
+                .andExpect(jsonPath("$.broker_psp_code", is(channelDetails.getBrokerPspCode())))
+                .andExpect(jsonPath("$.proxy_enabled", is(channelDetails.getProxyEnabled())))
+                .andExpect(jsonPath("$.proxy_host", is(channelDetails.getProxyHost())))
+                .andExpect(jsonPath("$.proxy_port", notNullValue()))
+                .andExpect(jsonPath("$.proxy_username", is(channelDetails.getProxyUsername())))
+                .andExpect(jsonPath("$.target_host", is(channelDetails.getTargetHost())))
+                .andExpect(jsonPath("$.target_port", notNullValue()))
+                .andExpect(jsonPath("$.target_path", is(channelDetails.getTargetPath())))
+                .andExpect(jsonPath("$.thread_number", notNullValue()))
+                .andExpect(jsonPath("$.timeout_a", notNullValue()))
+                .andExpect(jsonPath("$.timeout_b", notNullValue()))
+                .andExpect(jsonPath("$.timeout_c", notNullValue()))
+                .andExpect(jsonPath("$.npm_service", is(channelDetails.getNpmService())))
+                .andExpect(jsonPath("$.new_fault_code", is(channelDetails.getNewFaultCode())))
+                .andExpect(jsonPath("$.redirect_ip", is(channelDetails.getRedirectIp())))
+                .andExpect(jsonPath("$.redirect_path", is(channelDetails.getRedirectPath())));
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getChannelDetails(channelcode, xRequestId);
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+>>>>>>> temp
     @Test
     void createChannel(@Value("classpath:stubs/channelDto.json") Resource dto) throws Exception {
         //given
@@ -254,6 +308,84 @@ class ChannelControllerTest {
         //then
         verify(apiConfigServiceMock, times(1))
                 .getPspChannels(pspCode, xRequestId);
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getPaymentTypes() throws Exception {
+        //given
+
+        String pspCode = "pspCode";
+        String xRequestId = "1";
+
+        PaymentTypes paymentTypes = mockInstance(new PaymentTypes(),"setPaymentTypeList");
+        PaymentType paymentType = mockInstance(new PaymentType());
+        paymentTypes.setPaymentTypeList(List.of(paymentType));
+
+
+        when(apiConfigServiceMock.getPaymentTypes(anyString()))
+                .thenReturn(paymentTypes);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/configuration/paymenttypes")
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.payment_types[*].description", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.payment_types[*].payment_type", everyItem(notNullValue())));
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getPaymentTypes(anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getChannelPaymentTypes() throws Exception {
+        //given
+
+        String channelCode = "channelCode";
+        String xRequestId = "1";
+
+        PspChannelPaymentTypes pspChannelPaymentTypes = mockInstance(new PspChannelPaymentTypes(),"setPaymentTypeList");
+        pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
+
+        when(apiConfigServiceMock.getChannelPaymentTypes(anyString(),anyString()))
+                .thenReturn(pspChannelPaymentTypes);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/paymenttypes/{channelcode}",channelCode)
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.payment_types[*]", everyItem(notNullValue())));
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getChannelPaymentTypes(anyString(),anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void deleteChannelPaymentType() throws Exception {
+        //given
+
+        String channelCode = "channelCode";
+        String xRequestId = "1";
+        String paymentTypeCode = "paymenttypecode";
+
+        doNothing().when(apiConfigServiceMock).deleteChannelPaymentType(anyString(),anyString(),anyString());
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .delete(BASE_URL + "/{channelcode}/{paymenttypecode}",channelCode, paymentTypeCode)
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .deleteChannelPaymentType(anyString(),anyString(),anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }

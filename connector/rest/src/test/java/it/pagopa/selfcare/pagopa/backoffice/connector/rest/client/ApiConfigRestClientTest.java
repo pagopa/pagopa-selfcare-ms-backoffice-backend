@@ -84,7 +84,6 @@ class ApiConfigRestClientTest {
         }
     }
 
-
     private enum TestCase {
         FULLY_VALUED,
         FULLY_NULL,
@@ -107,6 +106,12 @@ class ApiConfigRestClientTest {
     private static final Map<ApiConfigRestClientTest.TestCase, String> testCasePspCodeMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
         put(ApiConfigRestClientTest.TestCase.FULLY_VALUED, "pspCode1");
         put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "pspCode2");
+    }};
+
+
+    private static final Map<ApiConfigRestClientTest.TestCase, String> testCaseChannelCodeMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
+        put(ApiConfigRestClientTest.TestCase.FULLY_VALUED, "channelcode1");
+        put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "channelcode2");
     }};
 
     private static final Map<TestCase, Map<String, Object>> testCaseChannelDtoMap = new EnumMap(TestCase.class) {{
@@ -177,7 +182,7 @@ class ApiConfigRestClientTest {
 
     private static final Map<TestCase, String> testCasePspChannelPaymentTypesMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
         put(ApiConfigRestClientTest.TestCase.FULLY_VALUED, "channelcode1");
-         put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "channelcode2");
+        put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "channelcode2");
     }};
 
     @BeforeEach
@@ -209,7 +214,6 @@ class ApiConfigRestClientTest {
         assertNotNull(response);
         assertNull(response.getChannelList());
         assertNull(response.getPageInfo());
-
     }
 
     @Test
@@ -257,8 +261,9 @@ class ApiConfigRestClientTest {
         assertNotNull(response.getChannelsList().get(0).getChannelCode());
         assertNotNull(response.getChannelsList().get(0).getEnabled());
     }
+
     @Test
-    void getPspChannelsChannels_fullyEmpty() {
+    void getPspChannels_fullyEmpty() {
         // given
         TestCase testCase = TestCase.EMPTY_RESULT;
         String pspCode = testCasePspCodeMap.get(testCase);
@@ -268,8 +273,45 @@ class ApiConfigRestClientTest {
         assertNotNull(response);
         assertNotNull(response.getChannelsList());
         assertTrue(response.getChannelsList().isEmpty());
+    }
 
+    @Test
+    void getChannelDetails_fullyValued() {
+        // given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        String pspCode = testCaseChannelCodeMap.get(testCase);
+        String xRequestId = "1";
+        // when
+        ChannelDetails response = restClient.getChannelDetails(pspCode, xRequestId);
+        assertNotNull(response);
+        assertNotNull(response.getPassword());
+        assertNotNull(response.getNewPassword());
+        assertNotNull(response.getProtocol());
+        assertNotNull(response.getIp());
+        assertNotNull(response.getPort());
+        assertNotNull(response.getService());
+        assertNotNull(response.getBrokerPspCode());
+        assertNotNull(response.getProxyEnabled());
+        assertNotNull(response.getProxyHost());
+        assertNotNull(response.getProxyPort());
+        assertNotNull(response.getProxyUsername());
+        assertNotNull(response.getProxyPassword());
+        assertNotNull(response.getTargetHost());
+        assertNotNull(response.getTargetPort());
+        assertNotNull(response.getTargetPath());
+        assertNotNull(response.getThreadNumber());
+        assertNotNull(response.getTimeoutA());
+    }
 
+    @Test
+    void getChannelDetails_fullyEmpty() {
+        // given
+        TestCase testCase = TestCase.EMPTY_RESULT;
+        String pspCode = testCaseChannelCodeMap.get(testCase);
+        String xRequestId = "1";
+        // when
+        ChannelDetails response = restClient.getChannelDetails(pspCode, xRequestId);
+        assertNotNull(response);
     }
 
 
@@ -311,7 +353,7 @@ class ApiConfigRestClientTest {
         String channelCode = (String) testCaseChannelParamMap.get(testCase).get("code");
         String requestId = UUID.randomUUID().toString();
         // when
-        ChannelDetails response = restClient.updateChannel(channelDetails,channelCode, requestId);
+        ChannelDetails response = restClient.updateChannel(channelDetails, channelCode, requestId);
 
         //then
         assertNotNull(response.getPassword());
@@ -332,21 +374,21 @@ class ApiConfigRestClientTest {
         assertNotNull(response.getThreadNumber());
         assertNotNull(response.getTimeoutA());
     }
+
     @Test
     void createChannelPaymentType_fullyValued() {
         // given
         TestCase testCase = TestCase.FULLY_VALUED;
-        String channelCode =   testCasePspChannelPaymentTypesMap.get(testCase);
+        String channelCode = testCasePspChannelPaymentTypesMap.get(testCase);
         PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
         pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
         String requestId = UUID.randomUUID().toString();
         // when
-        PspChannelPaymentTypes response = restClient.createChannelPaymentType(pspChannelPaymentTypes,channelCode, requestId);
+        PspChannelPaymentTypes response = restClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode, requestId);
 
         //then
         assertNotNull(response);
         assertFalse(response.getPaymentTypeList().isEmpty());
-
 
     }
 
@@ -354,18 +396,42 @@ class ApiConfigRestClientTest {
     void createChannelPaymentType_fullyEmpty() {
         // given
         TestCase testCase = TestCase.EMPTY_RESULT;
-        String channelCode =   testCasePspChannelPaymentTypesMap.get(testCase);
+        String channelCode = testCasePspChannelPaymentTypesMap.get(testCase);
         PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
         pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
         String requestId = UUID.randomUUID().toString();
         // when
-        PspChannelPaymentTypes response = restClient.createChannelPaymentType(pspChannelPaymentTypes,channelCode, requestId);
+        PspChannelPaymentTypes response = restClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode, requestId);
 
         //then
         assertNotNull(response);
         assertTrue(response.getPaymentTypeList().isEmpty());
 
+    }
 
+    @Test
+    void getPaymentTypes_fullyValued() {
+        // given
+        String requestId = UUID.randomUUID().toString();
+        // when
+        PaymentTypes response = restClient.getPaymentTypes(requestId);
+
+        //then
+        assertNotNull(response);
+        assertFalse(response.getPaymentTypeList().isEmpty());
+    }
+
+    @Test
+    void getChannelPaymentTypes_fullyValued() {
+        // given
+        String requestId = UUID.randomUUID().toString();
+        TestCase testCase = TestCase.FULLY_VALUED;
+        String channelCode = testCaseChannelCodeMap.get(testCase);
+        // when
+        PspChannelPaymentTypes response = restClient.getChannelPaymentTypes(channelCode, requestId);
+        //then
+        assertNotNull(response);
+        assertFalse(response.getPaymentTypeList().isEmpty());
     }
 
     private void checkNotNullFields(Object o, String... excludedFields) {
