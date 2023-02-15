@@ -140,15 +140,9 @@ public class ChannelController {
         String uuid = UUID.randomUUID().toString();
         log.debug("updateChannel code channelDetailsDto = {} , uuid {}", channelDetailsDto, uuid);
 
-//        PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
-//        List<String> paymentTypeList = channelDetailsDto.getPaymentTypeList();
-
-//        pspChannelPaymentTypes.setPaymentTypeList(paymentTypeList);
-
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         ChannelDetails response = apiConfigService.updateChannel(channelDetails, channelCode, uuid);
 
-        // PspChannelPaymentTypes ptResponse = apiConfigService.createChannelPaymentType(pspChannelPaymentTypes, channelCode, xRequestId);
         ChannelDetailsResource resource = ChannelMapper.toResource(response, null);
 
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "updateChannel result = {}", resource);
