@@ -115,7 +115,7 @@ class ApiConfigRestClientTest {
     }};
 
      private static final Map<TestCase, Map<String, Object>> testCaseChannelDtoMap = new EnumMap(TestCase.class) {{
-         ChannelDetails channelDetails = new ChannelDetails();
+        ChannelDetails channelDetails = new ChannelDetails();
         channelDetails.setPassword("password");
         channelDetails.setNewPassword("newPassword");
         channelDetails.setProtocol(Protocol.HTTP);
@@ -417,6 +417,18 @@ class ApiConfigRestClientTest {
         String channelCode  = testCaseChannelCodeMap.get(testCase);
         // when
         PspChannelPaymentTypes response = restClient.getChannelPaymentTypes(channelCode, requestId);
+        //then
+        assertNotNull(response);
+        assertFalse(response.getPaymentTypeList().isEmpty());
+    }
+
+    @Test
+    void getPaymentTypes_fullyValued() {
+        // given
+        String requestId = UUID.randomUUID().toString();
+        // when
+        PaymentTypes response = restClient.getPaymentTypes(requestId);
+
         //then
         assertNotNull(response);
         assertFalse(response.getPaymentTypeList().isEmpty());

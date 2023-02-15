@@ -151,11 +151,11 @@ public class ChannelController {
     }
 
 
+
     @GetMapping(value = "configuration/paymenttypes", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getPaymentTypes}")
     public PaymentTypesResource getPaymentTypes(){
-
         log.trace("getPaymentTypes start");
 
         log.debug("getPaymentTypes code getPaymentTypes");
@@ -198,5 +198,6 @@ public class ChannelController {
 
         return resource;
     }
+
 }
 

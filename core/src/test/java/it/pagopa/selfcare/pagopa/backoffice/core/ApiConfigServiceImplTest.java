@@ -149,6 +149,8 @@ class ApiConfigServiceImplTest {
     }
 
 
+   
+
     @Test
     void createChannelPaymentType() {
         //given
@@ -190,7 +192,7 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
-    @Test
+  
     void getChannelPaymentTypes() {
         //given
         final String xRequestId = "xRequestId";
@@ -228,4 +230,22 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
+    void getPaymentTypes(){
+        //given
+        final String xRequestId = "xRequestId";
+
+        PaymentTypes paymentTypes = mock(PaymentTypes.class);
+        when(apiConfigConnectorMock.getPaymentTypes(anyString()))
+                .thenReturn(paymentTypes);
+
+        //when
+        PaymentTypes paymentTypesResp = apiConfigService.getPaymentTypes(xRequestId);
+        //then
+        assertNotNull(paymentTypesResp);
+        assertEquals(paymentTypesResp, paymentTypes);
+
+        verify(apiConfigConnectorMock, times(1))
+                .getPaymentTypes(anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
 }

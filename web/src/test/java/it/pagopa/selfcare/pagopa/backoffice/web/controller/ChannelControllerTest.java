@@ -380,4 +380,5 @@ class ChannelControllerTest {
                 .deleteChannelPaymentType(anyString(),anyString(),anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
+
 }

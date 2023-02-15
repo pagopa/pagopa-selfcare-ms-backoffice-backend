@@ -50,6 +50,7 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     @ResponseBody
     PaymentTypes getPaymentTypes(@RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
+
     @GetMapping(value = "${rest-client.api-config.getChannelPaymentTypes.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     PspChannelPaymentTypes getChannelPaymentTypes(@PathVariable("channelcode") String channelCode,
@@ -60,5 +61,6 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     void deleteChannelPaymentType(@PathVariable("channelcode") String channelCode,
                                                     @PathVariable("paymenttypecode") String paymentTypeCode,
                                                     @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
 
 }
