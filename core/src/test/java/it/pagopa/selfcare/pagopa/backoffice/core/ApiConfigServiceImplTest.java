@@ -148,9 +148,6 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
-
-   
-
     @Test
     void createChannelPaymentType() {
         //given
@@ -192,7 +189,8 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
-  
+
+    @Test
     void getChannelPaymentTypes() {
         //given
         final String xRequestId = "xRequestId";
@@ -229,5 +227,7 @@ class ApiConfigServiceImplTest {
                 .deleteChannelPaymentType(anyString(), anyString(), anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
+
+
 
 }
