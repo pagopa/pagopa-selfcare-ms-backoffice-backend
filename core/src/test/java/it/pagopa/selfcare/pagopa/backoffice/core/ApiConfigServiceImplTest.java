@@ -229,5 +229,5 @@ class ApiConfigServiceImplTest {
                 .deleteChannelPaymentType(anyString(), anyString(), anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
-    
+
 }
