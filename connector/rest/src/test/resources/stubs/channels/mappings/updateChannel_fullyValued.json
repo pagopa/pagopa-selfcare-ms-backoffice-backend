@@ -1,4 +1,11 @@
 {
+  "request": {
+    "method": "PUT",
+    "urlPath": "/apiconfig/auth/api/v1/channels/code1"
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": {
   "password": "password",
   "new_password": "newPassword",
   "protocol": "HTTP",
@@ -37,6 +44,11 @@
   "broker_description": "setBrokerDescription",
   "enabled": true,
   "channel_code": "setChannelCode",
-  "paymentTypeList": ["paymentType"],
-  "primitive_version": "1"
+      "primitive_version": "1"
+
+},
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
 }

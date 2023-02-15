@@ -176,4 +176,8 @@ public class ChannelDetailsResource extends ChannelResource {
     @ApiModelProperty(value = "${swagger.model.PspChannelPaymentTypesResource.list}")
     private List<String> paymentTypeList;
 
+    @JsonProperty("primitive_version")
+    @ApiModelProperty(value = "${swagger.model.channel.details.primitiveVersion}")
+    private String primitiveVersion;
+
 }
