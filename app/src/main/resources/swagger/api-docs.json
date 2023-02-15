@@ -1381,7 +1381,7 @@
           },
           "target_path" : {
             "type" : "string",
-            "description" : "target path's "
+            "description" : "target path's"
           },
           "target_port" : {
             "type" : "integer",
@@ -1569,7 +1569,7 @@
           },
           "target_path" : {
             "type" : "string",
-            "description" : "target path's "
+            "description" : "target path's"
           },
           "target_port" : {
             "type" : "integer",

@@ -113,6 +113,7 @@ class ApiConfigServiceImplTest {
         final String xRequestId = "xRequestId";
         ChannelDetails channelDetailsMock = mock(ChannelDetails.class);
 
+
         when(apiConfigConnectorMock.getChannelDetails(any(), any()))
                 .thenReturn(channelDetailsMock);
         //when
@@ -123,6 +124,7 @@ class ApiConfigServiceImplTest {
         reflectionEqualsByName(channelDetailsRes, channelDetailsMock);
         verify(apiConfigConnectorMock, times(1))
                 .getChannelDetails(channelCode, xRequestId);
+
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
@@ -133,16 +135,16 @@ class ApiConfigServiceImplTest {
         ChannelDetails channelDetailsMock = mock(ChannelDetails.class);
         String channelCode = "channelCode";
 
-        when(apiConfigConnectorMock.updateChannel(any(),anyString(),anyString()))
+        when(apiConfigConnectorMock.updateChannel(any(), anyString(), anyString()))
                 .thenReturn(channelDetailsMock);
         //when
-        ChannelDetails channelDetailsRes = apiConfigService.updateChannel(channelDetailsMock,channelCode, xRequestId);
+        ChannelDetails channelDetailsRes = apiConfigService.updateChannel(channelDetailsMock, channelCode, xRequestId);
         //then
         assertNotNull(channelDetailsRes);
         assertEquals(channelDetailsRes, channelDetailsMock);
         reflectionEqualsByName(channelDetailsRes, channelDetailsMock);
         verify(apiConfigConnectorMock, times(1))
-                .updateChannel(channelDetailsMock,channelCode,xRequestId);
+                .updateChannel(channelDetailsMock, channelCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
@@ -208,6 +210,7 @@ class ApiConfigServiceImplTest {
                 .getChannelPaymentTypes(anyString(), anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
+
     @Test
     void deleteChannelPaymentType() {
         //given
@@ -221,7 +224,8 @@ class ApiConfigServiceImplTest {
         apiConfigService.deleteChannelPaymentType(channelCode, paymentType, xRequestId);
         //then
         verify(apiConfigConnectorMock, times(1))
-                .deleteChannelPaymentType(anyString(), anyString(),anyString());
+                .deleteChannelPaymentType(anyString(), anyString(), anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
+
 }

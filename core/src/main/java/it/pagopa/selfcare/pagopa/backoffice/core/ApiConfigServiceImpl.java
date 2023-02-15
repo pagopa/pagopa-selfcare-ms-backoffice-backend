@@ -82,6 +82,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.trace("getPaymentTypes end");
         return response;
     }
+
     @Override
     public void deleteChannelPaymentType(String channelCode, String paymenTtypeCode, String xRequestId) {
         log.trace("deletePaymentTypes start");

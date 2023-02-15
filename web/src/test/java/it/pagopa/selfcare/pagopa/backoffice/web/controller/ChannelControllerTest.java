@@ -135,7 +135,6 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
-
     @Test
     void createChannel(@Value("classpath:stubs/channelDto.json") Resource dto) throws Exception {
         //given
