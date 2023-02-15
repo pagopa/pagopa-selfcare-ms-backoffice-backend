@@ -434,7 +434,7 @@ class ApiConfigRestClientTest {
         assertFalse(response.getPaymentTypeList().isEmpty());
     }
 
-   
+
 
     private void checkNotNullFields(Object o, String... excludedFields) {
         Set<String> excludedFieldsSet = new HashSet<>(Arrays.asList(excludedFields));
