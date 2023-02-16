@@ -69,5 +69,4 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     void deletePaymentServiceProvidersChannels(@PathVariable("channelcode") String channelCode,
                                                @PathVariable("pspcode") String pspCode,
                                                @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
-
 }
