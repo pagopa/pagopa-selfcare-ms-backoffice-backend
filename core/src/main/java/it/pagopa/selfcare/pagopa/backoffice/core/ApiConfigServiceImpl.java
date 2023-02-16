@@ -42,7 +42,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     @Override
     public ChannelDetails updateChannel(ChannelDetails channelDetails, String channelCode, String xRequestId) {
         log.trace("updateChannel start");
-        ChannelDetails response = apiConfigConnector.updateChannel(channelDetails,channelCode, xRequestId);
+        ChannelDetails response = apiConfigConnector.updateChannel(channelDetails, channelCode, xRequestId);
         log.debug("updateChannel result = {}", response);
         log.trace("updateChannel end");
         return response;
@@ -89,6 +89,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         apiConfigConnector.deleteChannelPaymentType(channelCode, paymenTtypeCode, xRequestId);
         log.trace("deletePaymentTypes end");
     }
+
     @Override
     public PspChannelPaymentTypes getChannelPaymentTypes(String channelCode, String xRequestId) {
         log.trace("getChannelPaymentTypes start");
@@ -99,9 +100,9 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
-    public void deletePaymentServiceProvidersChannels(String channelCode, String pspCode, String xRequestId) {
+    public void deletePaymentServiceProvidersChannels(String pspCode, String channelCode, String xRequestId) {
         log.trace("deletePaymentServiceProvidersChannels start");
-        apiConfigConnector.deletePaymentServiceProvidersChannels(channelCode, pspCode, xRequestId);
+        apiConfigConnector.deletePaymentServiceProvidersChannels(pspCode, channelCode, xRequestId);
         log.trace("deletePaymentServiceProvidersChannels end");
     }
 

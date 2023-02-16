@@ -208,7 +208,7 @@ public class ChannelController {
         log.trace("deletePaymentServiceProvidersChannels start");
         String uuid = UUID.randomUUID().toString();
         log.debug("deletePaymentServiceProvidersChannels code pspCode = {}, channel = {}, uuid {}", pspCode, channelCode, uuid);
-        apiConfigService.deletePaymentServiceProvidersChannels(channelCode, pspCode, uuid);
+        apiConfigService.deletePaymentServiceProvidersChannels(pspCode,channelCode, uuid);
         log.trace("deleteChannelPaymentType end");
     }
 

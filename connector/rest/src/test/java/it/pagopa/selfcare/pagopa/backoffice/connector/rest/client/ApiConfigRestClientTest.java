@@ -114,7 +114,7 @@ class ApiConfigRestClientTest {
         put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "channelcode2");
     }};
 
-     private static final Map<TestCase, Map<String, Object>> testCaseChannelDtoMap = new EnumMap(TestCase.class) {{
+    private static final Map<TestCase, Map<String, Object>> testCaseChannelDtoMap = new EnumMap(TestCase.class) {{
         ChannelDetails channelDetails = new ChannelDetails();
         channelDetails.setPassword("password");
         channelDetails.setNewPassword("newPassword");
@@ -414,7 +414,7 @@ class ApiConfigRestClientTest {
         // given
         String requestId = UUID.randomUUID().toString();
         TestCase testCase = TestCase.FULLY_VALUED;
-        String channelCode  = testCaseChannelCodeMap.get(testCase);
+        String channelCode = testCaseChannelCodeMap.get(testCase);
         // when
         PspChannelPaymentTypes response = restClient.getChannelPaymentTypes(channelCode, requestId);
         //then
@@ -433,7 +433,6 @@ class ApiConfigRestClientTest {
         assertNotNull(response);
         assertFalse(response.getPaymentTypeList().isEmpty());
     }
-
 
 
     private void checkNotNullFields(Object o, String... excludedFields) {
