@@ -105,5 +105,11 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.trace("deletePaymentServiceProvidersChannels end");
     }
 
-
+    @Override
+    public void deleteChannel(String channelCode, String xRequestId) {
+        log.trace("deleteChannel start");
+        apiConfigConnector.deleteChannel(channelCode, xRequestId);
+        log.debug("deleteChannel with channelCode = {}", channelCode);
+        log.trace("deleteChannel end");
+    }
 }

@@ -243,4 +243,21 @@ class ApiConfigServiceImplTest {
                 .deletePaymentServiceProvidersChannels(anyString(), anyString(), anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
+
+    @Test
+    void deleteChannel() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String channelCode = "channelCode";
+
+        doNothing().when(apiConfigConnectorMock).deleteChannel(anyString(),anyString());
+
+        //when
+        apiConfigService.deleteChannel(channelCode, xRequestId);
+        //then
+
+        verify(apiConfigConnectorMock, times(1))
+                .deleteChannel(channelCode,xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
 }
