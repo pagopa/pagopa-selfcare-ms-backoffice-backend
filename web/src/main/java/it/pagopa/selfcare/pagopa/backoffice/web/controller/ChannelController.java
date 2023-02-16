@@ -170,6 +170,7 @@ public class ChannelController {
 
     @DeleteMapping(value = "/{channelcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.deleteChannel}")
     public void deleteChannel(@ApiParam("${swagger.request.channelcode}")
                               @PathVariable("channelcode") String channelcode) {
         log.trace("deleteChannel start");
