@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.70"
+    "version" : "0.0.78"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -15,6 +15,9 @@
   }, {
     "name" : "institution",
     "description" : "Institution operations"
+  }, {
+    "name" : "institution-controller",
+    "description" : "Institution Controller"
   } ],
   "paths" : {
     "/channels" : {
@@ -339,7 +342,150 @@
         } ]
       }
     },
+    "/channels/paymenttypes/{channelcode}" : {
+      "get" : {
+        "tags" : [ "channels" ],
+        "summary" : "getChannelPaymentTypes",
+        "description" : "Get list of payment type of a channel",
+        "operationId" : "getChannelPaymentTypesUsingGET",
+        "parameters" : [ {
+          "name" : "channelcode",
+          "in" : "path",
+          "description" : "Channel's unique identifier",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PspChannelPaymentTypesResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/channels/{channelcode}" : {
+      "put" : {
+        "tags" : [ "channels" ],
+        "summary" : "updateChannel",
+        "description" : "Create a channel",
+        "operationId" : "updateChannelUsingPUT",
+        "parameters" : [ {
+          "name" : "channelcode",
+          "in" : "path",
+          "description" : "Channel's unique identifier",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ChannelDetailsDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ChannelDetailsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      },
       "delete" : {
         "tags" : [ "channels" ],
         "summary" : "deleteChannel",
@@ -470,11 +616,12 @@
       "delete" : {
         "tags" : [ "channels" ],
         "summary" : "deleteChannelPaymentType",
+        "description" : "delete payment type of a channel",
         "operationId" : "deleteChannelPaymentTypeUsingDELETE",
         "parameters" : [ {
           "name" : "channelcode",
           "in" : "path",
-          "description" : "Code of the payment channel",
+          "description" : "Channel's unique identifier",
           "required" : true,
           "style" : "simple",
           "schema" : {
@@ -483,7 +630,7 @@
         }, {
           "name" : "paymenttypecode",
           "in" : "path",
-          "description" : "code of payment type",
+          "description" : "Code of the payment type",
           "required" : true,
           "style" : "simple",
           "schema" : {
@@ -492,14 +639,7 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/PspChannelPaymentTypesResource"
-                }
-              }
-            }
+            "description" : "OK"
           },
           "400" : {
             "description" : "Bad Request",
@@ -619,7 +759,7 @@
     },
     "/institutions" : {
       "get" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "getInstitutions",
         "description" : "Retrieves all the onboarded institutions related to the logged user",
         "operationId" : "getInstitutionsUsingGET",
@@ -685,7 +825,7 @@
     },
     "/institutions/{institutionId}" : {
       "get" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "getInstitution",
         "description" : "Retrieves an institution's details",
         "operationId" : "getInstitutionUsingGET",
@@ -758,7 +898,7 @@
     },
     "/institutions/{institutionId}/api-keys" : {
       "get" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "getInstitutionApiKeys",
         "description" : "Retrieve an institution's primary and secondary keys",
         "operationId" : "getInstitutionApiKeysUsingGET",
@@ -832,7 +972,7 @@
         } ]
       },
       "post" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "createInstitutionApiKeys",
         "description" : "Creates a new subscription for a given Institution and returns its primary and secondary keys",
         "operationId" : "createInstitutionApiKeysUsingPOST",
@@ -907,7 +1047,7 @@
     },
     "/institutions/{institutionId}/products" : {
       "get" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "getInstitutionProducts",
         "description" : "retrieve all active products for given institution and logged user",
         "operationId" : "getInstitutionProductsUsingGET",
@@ -983,7 +1123,7 @@
     },
     "/institutions/{subscriptionid}/api-keys/primary/regenerate" : {
       "post" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "regeneratePrimaryKey",
         "description" : "Regenerates the subscription's primary key",
         "operationId" : "regeneratePrimaryKeyUsingPOST",
@@ -1039,7 +1179,7 @@
     },
     "/institutions/{subscriptionid}/api-keys/secondary/regenerate" : {
       "post" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "regenerateSecondaryKey",
         "description" : "Regenerates the subscription's secondary key",
         "operationId" : "regenerateSecondaryKeyUsingPOST",
@@ -1220,6 +1360,10 @@
             "description" : "channel's port",
             "format" : "int64"
           },
+          "primitive_version" : {
+            "type" : "string",
+            "description" : "primitive version"
+          },
           "protocol" : {
             "type" : "string",
             "description" : "channel's protocol",
@@ -1293,7 +1437,7 @@
           },
           "target_path" : {
             "type" : "string",
-            "description" : "target path's "
+            "description" : "target path's"
           },
           "target_port" : {
             "type" : "integer",
@@ -1404,6 +1548,10 @@
             "description" : "channel's port",
             "format" : "int64"
           },
+          "primitive_version" : {
+            "type" : "string",
+            "description" : "primitive version"
+          },
           "protocol" : {
             "type" : "string",
             "description" : "channel's protocol",
@@ -1477,7 +1625,7 @@
           },
           "target_path" : {
             "type" : "string",
-            "description" : "target path's "
+            "description" : "target path's"
           },
           "target_port" : {
             "type" : "integer",

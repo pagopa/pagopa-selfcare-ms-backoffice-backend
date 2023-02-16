@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaselfcaremsbackofficebackend
-    tag: "0.0.70" #improve
+    tag: "0.0.78" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -67,8 +67,8 @@ microservice-chart:
     AZURE_SERVICE_NAME: pagopa-d-apim
     ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
   envSecret:
-    AZURE_CLIENT_SECRET: pagopa-selfcare-d-azure-client-secret
-    AZURE_CLIENT_ID: pagopa-selfcare-d-azure-client-id
+    AZURE_CLIENT_SECRET: pagopa-d-selfcare-client-secret
+    AZURE_CLIENT_ID: pagopa-d-selfcare-client-id
     SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selfcare-d-apim-external-api-key
     PAGOPA_APIM_API_CONFIG_API_KEY_PAGOPA: pagopa-d-apim-api-config-key
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-d-connection-string'

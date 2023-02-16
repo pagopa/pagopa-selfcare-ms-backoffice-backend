@@ -173,4 +173,8 @@ public class ChannelDetailsDto {
     @JsonProperty("payment_types")
     @ApiModelProperty(value = "${swagger.model.PspChannelPaymentTypesResource.list}")
     private List<String> paymentTypeList;
+
+    @JsonProperty("primitive_version")
+    @ApiModelProperty(value = "${swagger.model.channel.details.primitiveVersion}")
+    private String primitiveVersion;
 }

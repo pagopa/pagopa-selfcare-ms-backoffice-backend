@@ -24,6 +24,12 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     ChannelDetails createChannel(@RequestBody @NotNull ChannelDetails detailsDto,
                                  @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
+    @PutMapping(value = "${rest-client.api-config.updateChannel.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    ChannelDetails updateChannel(@RequestBody ChannelDetails channelDetails,
+                                 @PathVariable("channelcode") String channelCode,
+                                 @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
     @GetMapping(value = "${rest-client.api-config.getPspChannels.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     PspChannels getPspChannels(@PathVariable("pspcode") String pspCode,
@@ -47,7 +53,21 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     @DeleteMapping(value = "${rest-client.api-config.deleteChannel.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     void deleteChannel(@PathVariable("channelcode") String channelCode,  @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
+    @GetMapping(value = "${rest-client.api-config.getChannelPaymentTypes.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    PspChannelPaymentTypes getChannelPaymentTypes(@PathVariable("channelcode") String channelCode,
+                                                  @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
     @DeleteMapping(value = "${rest-client.api-config.deleteChannelPaymentType.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    PspChannelPaymentTypes deleteChannelPaymentType(@PathVariable("channelcode") String channelCode,@PathVariable("paymenttypecode") String paymentTypeCode,@RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+    void deleteChannelPaymentType(@PathVariable("channelcode") String channelCode,
+                                  @PathVariable("paymenttypecode") String paymentTypeCode,
+                                  @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
+    @DeleteMapping(value = "${rest-client.api-config.deletePaymentServiceProvidersChannels.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    void deletePaymentServiceProvidersChannels(@PathVariable("channelcode") String channelCode,
+                                               @PathVariable("pspcode") String pspCode,
+                                               @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
 }

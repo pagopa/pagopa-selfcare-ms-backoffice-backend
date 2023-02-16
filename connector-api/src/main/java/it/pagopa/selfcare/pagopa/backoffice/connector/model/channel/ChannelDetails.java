@@ -145,4 +145,7 @@ public class ChannelDetails extends  Channel{
     @NotNull
     private Boolean agid;
 
+    @JsonProperty("primitive_version")
+    private String primitiveVersion;
+
 }

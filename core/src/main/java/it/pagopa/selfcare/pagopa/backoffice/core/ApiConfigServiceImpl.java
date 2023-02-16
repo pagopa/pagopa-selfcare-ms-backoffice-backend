@@ -2,6 +2,10 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +36,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         ChannelDetails response = apiConfigConnector.createChannel(channelDetails, xRequestId);
         log.debug("createChannel result = {}", response);
         log.trace("createChannel end");
+        return response;
+    }
+
+    @Override
+    public ChannelDetails updateChannel(ChannelDetails channelDetails, String channelCode, String xRequestId) {
+        log.trace("updateChannel start");
+        ChannelDetails response = apiConfigConnector.updateChannel(channelDetails,channelCode, xRequestId);
+        log.debug("updateChannel result = {}", response);
+        log.trace("updateChannel end");
         return response;
     }
 
@@ -78,13 +91,25 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.trace("deleteChannel end");
     }
 
+    public void deleteChannelPaymentType(String channelCode, String paymenTtypeCode, String xRequestId) {
+        log.trace("deletePaymentTypes start");
+        apiConfigConnector.deleteChannelPaymentType(channelCode, paymenTtypeCode, xRequestId);
+        log.trace("deletePaymentTypes end");
+    }
     @Override
-    public PspChannelPaymentTypes deleteChannelPaymentType(String channelCode, String paymentTypeCode, String xRequestId) {
-        log.trace("deleteChannelPaymentType start");
-        PspChannelPaymentTypes response = apiConfigConnector.deleteChannelPaymentType(channelCode, paymentTypeCode, xRequestId);
-        log.debug("deleteChannelPaymentType, channelCode = {}, pspCode = {}", channelCode,paymentTypeCode);
-        log.trace("deleteChannelPaymentType end");
+    public PspChannelPaymentTypes getChannelPaymentTypes(String channelCode, String xRequestId) {
+        log.trace("getChannelPaymentTypes start");
+        PspChannelPaymentTypes response = apiConfigConnector.getChannelPaymentTypes(channelCode, xRequestId);
+        log.debug("getChannelPaymentTypes result = {}", response);
+        log.trace("getChannelPaymentTypes end");
         return response;
+    }
+
+    @Override
+    public void deletePaymentServiceProvidersChannels(String channelCode, String pspCode, String xRequestId) {
+        log.trace("deletePaymentServiceProvidersChannels start");
+        apiConfigConnector.deletePaymentServiceProvidersChannels(channelCode, pspCode, xRequestId);
+        log.trace("deletePaymentServiceProvidersChannels end");
     }
 
 }

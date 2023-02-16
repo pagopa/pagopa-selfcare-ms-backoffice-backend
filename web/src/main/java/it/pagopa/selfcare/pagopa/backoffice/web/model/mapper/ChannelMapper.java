@@ -82,6 +82,7 @@ public class ChannelMapper {
             resource.setBrokerDescription(model.getBrokerDescription());
             resource.setEnabled(model.getEnabled());
             resource.setChannelCode(model.getChannelCode());
+            resource.setPrimitiveVersion(model.getPrimitiveVersion());
             resource.setPaymentTypeList(listModel != null ? listModel.getPaymentTypeList() : new ArrayList<>());
         }
         return resource;
@@ -175,6 +176,7 @@ public class ChannelMapper {
             resource.setBrokerDescription(model.getBrokerDescription());
             resource.setEnabled(model.getEnabled());
             resource.setChannelCode(model.getChannelCode());
+            resource.setPrimitiveVersion(model.getPrimitiveVersion());
         }
         return resource;
     }
