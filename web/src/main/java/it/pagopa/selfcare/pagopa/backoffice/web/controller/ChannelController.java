@@ -208,9 +208,21 @@ public class ChannelController {
         log.trace("deletePaymentServiceProvidersChannels start");
         String uuid = UUID.randomUUID().toString();
         log.debug("deletePaymentServiceProvidersChannels code pspCode = {}, channel = {}, uuid {}", pspCode, channelCode, uuid);
-        apiConfigService.deletePaymentServiceProvidersChannels(channelCode, pspCode, uuid);
+        apiConfigService.deletePaymentServiceProvidersChannels(pspCode,channelCode, uuid);
         log.trace("deleteChannelPaymentType end");
     }
 
+    @DeleteMapping(value = "/{channelcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.deleteChannel}")
+    public void deleteChannel(@ApiParam("${swagger.request.channelcode}")
+                              @PathVariable("channelcode") String channelcode) {
+        log.trace("deleteChannel start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("deleteChannel channelcode = {}, uuid = {}", channelcode, uuid);
+        apiConfigService.deleteChannel(channelcode, uuid);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "deleteChannel with channelcode = {}", channelcode);
+        log.trace("getChannelDetails end");
+    }
 }
 
