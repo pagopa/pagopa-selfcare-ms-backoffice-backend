@@ -151,11 +151,10 @@ public class ChannelController {
     }
 
 
-
     @GetMapping(value = "configuration/paymenttypes", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getPaymentTypes}")
-    public PaymentTypesResource getPaymentTypes(){
+    public PaymentTypesResource getPaymentTypes() {
         log.trace("getPaymentTypes start");
 
         log.debug("getPaymentTypes code getPaymentTypes");
@@ -197,6 +196,20 @@ public class ChannelController {
         log.trace("getChannelPaymentTypes end");
 
         return resource;
+    }
+
+    @DeleteMapping(value = "paymenttypes/{channelcode}/{pspcode}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.deletePaymentServiceProvidersChannels}")
+    public void deletePaymentServiceProvidersChannels(@ApiParam("${swagger.model.channel.channelCode}")
+                                                      @PathVariable("channelcode") String channelCode,
+                                                      @ApiParam("${swagger.request.pspCode}")
+                                                      @PathVariable("pspcode") String pspCode) {
+        log.trace("deletePaymentServiceProvidersChannels start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("deletePaymentServiceProvidersChannels code pspCode = {}, channel = {}, uuid {}", pspCode, channelCode, uuid);
+        apiConfigService.deletePaymentServiceProvidersChannels(channelCode, pspCode, uuid);
+        log.trace("deleteChannelPaymentType end");
     }
 
 }

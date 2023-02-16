@@ -381,4 +381,26 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
+    @Test
+    void deletePaymentServiceProvidersChannels() throws Exception {
+        //given
+        String channelCode = "channelCode";
+        String xRequestId = "1";
+        String pspCode = "pspCode";
+
+        doNothing().when(apiConfigServiceMock).deletePaymentServiceProvidersChannels(anyString(),anyString(),anyString());
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .delete(BASE_URL + "/paymenttypes/{channelcode}/{pspcode}",channelCode, pspCode)
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .deletePaymentServiceProvidersChannels(anyString(),anyString(),anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
 }
