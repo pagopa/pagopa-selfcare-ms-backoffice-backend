@@ -6,7 +6,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPa
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
 
 public interface ApiConfigConnector {
-
     Channels getChannels(Integer limit, Integer page, String code, String sort, String xRequestId);
     ChannelDetails createChannel(ChannelDetails channelDetails, String xRequestId);
     ChannelDetails updateChannel(ChannelDetails channelDetails,String channelCode, String xRequestId);
@@ -18,5 +17,4 @@ public interface ApiConfigConnector {
     void deleteChannelPaymentType(String channelCode, String paymentTypeCode, String xRequestId);
     PspChannelPaymentTypes getChannelPaymentTypes(String channelCode, String xRequestId);
     void deletePaymentServiceProvidersChannels(String channelCode,String pspCode,String xRequestId);
-
 }
