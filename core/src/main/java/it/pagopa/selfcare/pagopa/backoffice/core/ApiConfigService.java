@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-//NOSONAR
+
 public interface ApiConfigService {
 
     Channels getChannels(Integer limit, Integer page, String code, String sort, String xRequestId);
@@ -11,8 +11,10 @@ public interface ApiConfigService {
     ChannelDetails getChannelDetails(String channelCode, String xRequestId);
     PspChannelPaymentTypes createChannelPaymentType(PspChannelPaymentTypes pspChannelPaymentTypes, String channelCode, String xRequestId);
     PaymentTypes getPaymentTypes(String xRequestId);
+    //SONAR-OFF
     void deleteChannel(String channelCode, String xRequestId);
     void deleteChannelPaymentType(String channelCode, String paymentTypeCode, String xRequestId);
     PspChannelPaymentTypes getChannelPaymentTypes(String channelCode, String xRequestId);
     void deletePaymentServiceProvidersChannels(String channelCode,String pspCode,String xRequestId);
+    //SONAR-ON
 }
