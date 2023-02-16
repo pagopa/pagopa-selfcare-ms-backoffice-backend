@@ -59,8 +59,13 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     @DeleteMapping(value = "${rest-client.api-config.deletePaymentType.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     void deleteChannelPaymentType(@PathVariable("channelcode") String channelCode,
-                                                    @PathVariable("paymenttypecode") String paymentTypeCode,
-                                                    @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+                                  @PathVariable("paymenttypecode") String paymentTypeCode,
+                                  @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
+    @DeleteMapping(value = "${rest-client.api-config.deletePaymentServiceProvidersChannels.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    void deletePaymentServiceProvidersChannels(@PathVariable("channelcode") String channelCode,
+                                               @PathVariable("pspcode") String pspCode,
+                                               @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
 }

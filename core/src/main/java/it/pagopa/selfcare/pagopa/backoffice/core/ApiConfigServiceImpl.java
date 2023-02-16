@@ -98,4 +98,12 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return response;
     }
 
+    @Override
+    public void deletePaymentServiceProvidersChannels(String channelCode, String pspCode, String xRequestId) {
+        log.trace("deletePaymentServiceProvidersChannels start");
+        apiConfigConnector.deletePaymentServiceProvidersChannels(channelCode, pspCode, xRequestId);
+        log.trace("deletePaymentServiceProvidersChannels end");
+    }
+
+
 }
