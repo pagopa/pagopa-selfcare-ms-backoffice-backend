@@ -9,8 +9,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.validation.constraints.Max;
 import java.util.List;
 
+import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static it.pagopa.selfcare.pagopa.TestUtils.reflectionEqualsByName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -258,6 +260,30 @@ class ApiConfigServiceImplTest {
 
         verify(apiConfigConnectorMock, times(1))
                 .deleteChannel(channelCode,xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void deleteAllChannelPaymentTypes() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String channelCode = "channelCode";
+
+        PspChannelPaymentTypes pspChannelPaymentTypes = mockInstance(new PspChannelPaymentTypes(),"setPaymentTypeList");
+        pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType1","paymentType2"));
+        when(apiConfigConnectorMock.getChannelPaymentTypes(anyString(), anyString()))
+                .thenReturn(pspChannelPaymentTypes);
+
+        doNothing().when(apiConfigConnectorMock).deleteChannelPaymentType(anyString(),anyString(),anyString());
+
+        //when
+        apiConfigService.deleteAllChannelPaymentTypes(channelCode, xRequestId);
+        //then
+
+        verify(apiConfigConnectorMock, times(1))
+                .getChannelPaymentTypes(channelCode,xRequestId);
+        verify(apiConfigConnectorMock, times(2))
+                .deleteChannelPaymentType(anyString(),anyString(),anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 }

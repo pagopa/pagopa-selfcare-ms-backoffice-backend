@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
 public class ApiConfigServiceImpl implements ApiConfigService {
@@ -112,5 +114,16 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         apiConfigConnector.deleteChannel(channelCode, xRequestId);
         log.debug("deleteChannel with channelCode = {}", channelCode);
         log.trace("deleteChannel end");
+    }
+
+    @Override
+    public void deleteAllChannelPaymentTypes(String channelCode, String xRequestId) {
+        log.trace("deleteChannelPaymentTypeList start");
+        PspChannelPaymentTypes paymentTypes = apiConfigConnector.getChannelPaymentTypes(channelCode,xRequestId);
+        List<String> paymentTypeList = paymentTypes.getPaymentTypeList();
+        paymentTypeList.forEach(paymentType->{
+            apiConfigConnector.deleteChannelPaymentType(channelCode, paymentType, xRequestId);
+        });
+        log.trace("deleteChannelPaymentTypeList end");
     }
 }

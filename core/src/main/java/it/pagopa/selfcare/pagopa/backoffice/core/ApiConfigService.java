@@ -2,6 +2,8 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 
+import java.util.List;
+
 public interface ApiConfigService {
 
     Channels getChannels(Integer limit, Integer page, String code, String sort, String xRequestId);
@@ -25,4 +27,6 @@ public interface ApiConfigService {
     void deletePaymentServiceProvidersChannels(String pspCode, String channelCode, String xRequestId);
 
     void deleteChannel(String channelCode, String xRequestId);
+
+    void deleteAllChannelPaymentTypes(String channelCode, String xRequestId);
 }

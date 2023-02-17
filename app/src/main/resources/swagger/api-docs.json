@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.77-1"
+    "version" : "0.0.78"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -15,9 +15,6 @@
   }, {
     "name" : "institution",
     "description" : "Institution operations"
-  }, {
-    "name" : "institution-controller",
-    "description" : "Institution Controller"
   } ],
   "paths" : {
     "/channels" : {
@@ -485,6 +482,60 @@
         "security" : [ {
           "bearerAuth" : [ "global" ]
         } ]
+      },
+      "delete" : {
+        "tags" : [ "channels" ],
+        "summary" : "deleteChannel",
+        "description" : "delete channel",
+        "operationId" : "deleteChannelUsingDELETE",
+        "parameters" : [ {
+          "name" : "channelcode",
+          "in" : "path",
+          "description" : "Code of the payment channel",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
       }
     },
     "/channels/{channelcode}/paymenttypes" : {
@@ -706,7 +757,7 @@
     },
     "/institutions" : {
       "get" : {
-        "tags" : [ "institution-controller" ],
+        "tags" : [ "institution" ],
         "summary" : "getInstitutions",
         "description" : "Retrieves all the onboarded institutions related to the logged user",
         "operationId" : "getInstitutionsUsingGET",
@@ -772,7 +823,7 @@
     },
     "/institutions/{institutionId}" : {
       "get" : {
-        "tags" : [ "institution-controller" ],
+        "tags" : [ "institution" ],
         "summary" : "getInstitution",
         "description" : "Retrieves an institution's details",
         "operationId" : "getInstitutionUsingGET",
@@ -845,7 +896,7 @@
     },
     "/institutions/{institutionId}/api-keys" : {
       "get" : {
-        "tags" : [ "institution-controller" ],
+        "tags" : [ "institution" ],
         "summary" : "getInstitutionApiKeys",
         "description" : "Retrieve an institution's primary and secondary keys",
         "operationId" : "getInstitutionApiKeysUsingGET",
@@ -919,7 +970,7 @@
         } ]
       },
       "post" : {
-        "tags" : [ "institution-controller" ],
+        "tags" : [ "institution" ],
         "summary" : "createInstitutionApiKeys",
         "description" : "Creates a new subscription for a given Institution and returns its primary and secondary keys",
         "operationId" : "createInstitutionApiKeysUsingPOST",
@@ -994,7 +1045,7 @@
     },
     "/institutions/{institutionId}/products" : {
       "get" : {
-        "tags" : [ "institution-controller" ],
+        "tags" : [ "institution" ],
         "summary" : "getInstitutionProducts",
         "description" : "retrieve all active products for given institution and logged user",
         "operationId" : "getInstitutionProductsUsingGET",
@@ -1070,7 +1121,7 @@
     },
     "/institutions/{subscriptionid}/api-keys/primary/regenerate" : {
       "post" : {
-        "tags" : [ "institution-controller" ],
+        "tags" : [ "institution" ],
         "summary" : "regeneratePrimaryKey",
         "description" : "Regenerates the subscription's primary key",
         "operationId" : "regeneratePrimaryKeyUsingPOST",
@@ -1126,7 +1177,7 @@
     },
     "/institutions/{subscriptionid}/api-keys/secondary/regenerate" : {
       "post" : {
-        "tags" : [ "institution-controller" ],
+        "tags" : [ "institution" ],
         "summary" : "regenerateSecondaryKey",
         "description" : "Regenerates the subscription's secondary key",
         "operationId" : "regenerateSecondaryKeyUsingPOST",
