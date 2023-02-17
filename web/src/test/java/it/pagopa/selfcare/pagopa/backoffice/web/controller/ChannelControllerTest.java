@@ -421,6 +421,6 @@ class ChannelControllerTest {
                 .deleteChannel(anyString(), anyString());
         verify(apiConfigServiceMock, times(1))
                 .deleteAllChannelPaymentTypes(anyString(), anyString());
-    }
 
+    }
 }

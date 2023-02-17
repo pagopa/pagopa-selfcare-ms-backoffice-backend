@@ -116,6 +116,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.trace("deleteChannel end");
     }
 
+
     @Override
     public void deleteAllChannelPaymentTypes(String channelCode, String xRequestId) {
         log.trace("deleteChannelPaymentTypeList start");
@@ -124,4 +125,5 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         paymentTypeList.forEach(paymentType->apiConfigConnector.deleteChannelPaymentType(channelCode, paymentType, xRequestId));
         log.trace("deleteChannelPaymentTypeList end");
     }
+
 }

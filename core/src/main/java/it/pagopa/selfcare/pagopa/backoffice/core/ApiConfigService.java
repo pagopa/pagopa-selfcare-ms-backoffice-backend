@@ -27,6 +27,7 @@ public interface ApiConfigService {
     void deletePaymentServiceProvidersChannels(String pspCode, String channelCode, String xRequestId);
 
     void deleteChannel(String channelCode, String xRequestId);
-
+    
     void deleteAllChannelPaymentTypes(String channelCode, String xRequestId);
+
 }
