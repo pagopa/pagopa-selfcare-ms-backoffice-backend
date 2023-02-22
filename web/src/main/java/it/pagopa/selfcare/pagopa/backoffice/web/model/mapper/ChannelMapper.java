@@ -236,4 +236,31 @@ public class ChannelMapper {
         }
         return resource;
     }
+
+    public static PaymentServiceProviderResource toResource(PaymentServiceProvider model) {
+        PaymentServiceProviderResource resource = null;
+        if (model != null) {
+            resource = new PaymentServiceProviderResource();
+            resource.setEnabled(model.getEnabled());
+            resource.setBusinessName(model.getBusinessName());
+            resource.setPspCode(model.getPspCode());
+        }
+        return resource;
+    }
+
+    public static PaymentServiceProvidersResource toResource(PaymentServiceProviders model) {
+        PaymentServiceProvidersResource resource = null;
+        List<PaymentServiceProviderResource> paymentServiceProviderResourceList = new ArrayList<>();
+        if (model != null) {
+            resource = new PaymentServiceProvidersResource();
+            resource.setPageInfo(model.getPageInfo());
+            if (model.getPaymentServiceProviderList() != null) {
+                model.getPaymentServiceProviderList().forEach(i -> paymentServiceProviderResourceList.add(toResource(i)));
+            }
+            resource.setPageInfo(model.getPageInfo());
+            resource.setPaymentServiceProviderList(paymentServiceProviderResourceList);
+
+        }
+        return resource;
+    }
 }

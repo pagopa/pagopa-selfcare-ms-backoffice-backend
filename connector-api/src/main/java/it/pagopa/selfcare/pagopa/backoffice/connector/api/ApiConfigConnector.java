@@ -19,4 +19,5 @@ public interface ApiConfigConnector {
     PaymentTypes getPaymentTypes(String xRequestId);
     void deletePaymentServiceProvidersChannels(String pspCode,String channelCode,String xRequestId);
     void deleteChannel(String channelCode, String xRequestId);
+    PaymentServiceProviders getPspBrokerPsp(Integer limit,Integer page,String brokerPspCode,String uuid);
 }
