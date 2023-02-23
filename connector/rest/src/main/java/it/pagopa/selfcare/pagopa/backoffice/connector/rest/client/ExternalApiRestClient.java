@@ -22,7 +22,7 @@ public interface ExternalApiRestClient extends ExternalApiConnector {
     
     @GetMapping(value = "${rest-client.external-api.getInstitutions.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    List<InstitutionInfo> getInstitutions(@RequestParam(value = "productId")String productId);
+    List<InstitutionInfo> getInstitutions(@RequestParam(value = "userIdForAuth")String userIdForAuth);
     
     @GetMapping(value = "${rest-client.external-api.getInstitutionUserProducts.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody

@@ -3,7 +3,7 @@
     "method": "GET",
     "urlPath": "/external/v1/institutions",
     "queryParameters": {
-          "productId": {
+          "userIdForAuth": {
             "equalTo": "productId2"
      }
     }

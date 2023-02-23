@@ -10,7 +10,7 @@ public interface ExternalApiConnector {
     
     Institution getInstitution(String institutionId);
     
-    List<InstitutionInfo> getInstitutions(String productId);
+    List<InstitutionInfo> getInstitutions(String userIdForAuth);
     
     List<Product> getInstitutionUserProducts(String institutionId);
     

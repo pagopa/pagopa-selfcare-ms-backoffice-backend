@@ -38,10 +38,9 @@ public class ExternalApiServiceImpl implements ExternalApiService{
     }
 
     @Override
-    public Collection<InstitutionInfo> getInstitutions() {
+    public Collection<InstitutionInfo> getInstitutions(String userIdForAuth) {
         log.trace("getInstitutions start");
-        final String productId = "prod-pagopa";
-        List<InstitutionInfo> institutions = externalApiConnector.getInstitutions(productId);
+        List<InstitutionInfo> institutions = externalApiConnector.getInstitutions(userIdForAuth);
         log.debug("getInstitutions result = {}", institutions);
         log.trace("getInstitutions end");
         return institutions;

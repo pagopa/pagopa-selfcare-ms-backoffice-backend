@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockReset;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -196,11 +195,7 @@ class InstitutionControllerTest {
         InstitutionInfo institutionInfoMock = mockInstance(new InstitutionInfo());
         institutionInfoMock.setUserProductRoles(List.of("userProductRole"));
 
-//        institutionInfoMock.getDataProtectionOfficer().setEmail("dpoEmail@example.com");
-//        institutionInfoMock.getDataProtectionOfficer().setPec("dpoPec@example.com");
-//        institutionInfoMock.getSupportContact().setSupportEmail("spportEmail@example.com");
-
-        when(externalApiServiceMock.getInstitutions())
+        when(externalApiServiceMock.getInstitutions(anyString()))
                 .thenReturn(List.of(institutionInfoMock));
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -221,7 +216,7 @@ class InstitutionControllerTest {
                 .andExpect(jsonPath("$..userProductRoles[0]", notNullValue()));
         //then
         verify(externalApiServiceMock, times(1))
-                .getInstitutions();
+                .getInstitutions(anyString());
         verifyNoMoreInteractions(externalApiServiceMock);
     }
 
