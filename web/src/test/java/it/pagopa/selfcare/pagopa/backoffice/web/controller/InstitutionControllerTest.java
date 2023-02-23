@@ -195,6 +195,11 @@ class InstitutionControllerTest {
         //given
         InstitutionInfo institutionInfoMock = mockInstance(new InstitutionInfo());
         institutionInfoMock.setUserProductRoles(List.of("userProductRole"));
+
+//        institutionInfoMock.getDataProtectionOfficer().setEmail("dpoEmail@example.com");
+//        institutionInfoMock.getDataProtectionOfficer().setPec("dpoPec@example.com");
+//        institutionInfoMock.getSupportContact().setSupportEmail("spportEmail@example.com");
+
         when(externalApiServiceMock.getInstitutions())
                 .thenReturn(List.of(institutionInfoMock));
         //when
