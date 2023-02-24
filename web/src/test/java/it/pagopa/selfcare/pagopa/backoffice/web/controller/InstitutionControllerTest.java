@@ -308,13 +308,23 @@ class InstitutionControllerTest {
     @Test
     void getInstitutionUserProducts() throws Exception {
         //given
-        String institutionType = "institutionType";
+        String institutionId = "institutionId";
+        String userId ="userId";
         Product productMock = mockInstance(new Product());
-        when(externalApiServiceMock.getInstitutionUserProducts(anyString()))
+
+        Authentication auth = mock(Authentication.class);
+        SelfCareUser user = mockInstance(new SelfCareUser("1"));
+        when(auth.getPrincipal()).thenReturn(user);
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(externalApiServiceMock.getInstitutionUserProducts(anyString(),anyString()))
                 .thenReturn(List.of(productMock));
         //when
         mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL + "/{institutionType}/products", institutionType)
+                        .get(BASE_URL + "/{institutionId}/products", institutionId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..id", notNullValue()))
@@ -324,7 +334,61 @@ class InstitutionControllerTest {
                 .andExpect(jsonPath("$..urlBO", notNullValue()));
         //then
         verify(externalApiServiceMock, times(1))
-                .getInstitutionUserProducts(institutionType);
+                .getInstitutionUserProducts(anyString(),anyString());
         verifyNoMoreInteractions(externalApiServiceMock);
     }
+
+    @Test
+    void getInstitutionUserProducts_AuthenticationNull() throws Exception {
+        //given
+        String institutionId = "institutionId";
+        String userId ="userId";
+        Product productMock = mockInstance(new Product());
+
+        when(externalApiServiceMock.getInstitutionUserProducts(anyString(),anyString()))
+                .thenReturn(List.of(productMock));
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/{institutionId}/products", institutionId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..id", notNullValue()))
+                .andExpect(jsonPath("$..title", notNullValue()))
+                .andExpect(jsonPath("$..urlPublic", notNullValue()))
+                .andExpect(jsonPath("$..description", notNullValue()))
+                .andExpect(jsonPath("$..urlBO", notNullValue()));
+        //then
+        verify(externalApiServiceMock, times(1))
+                .getInstitutionUserProducts(anyString(),anyString());
+        verifyNoMoreInteractions(externalApiServiceMock);
+    }
+
+    @Test
+    void getInstitutionUserProducts_UserNotSelfCareInstance() throws Exception {
+        //given
+        String institutionId = "institutionId";
+        String userId ="userId";
+        Product productMock = mockInstance(new Product());
+
+        Authentication auth = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+
+        when(externalApiServiceMock.getInstitutionUserProducts(anyString(),anyString()))
+                .thenReturn(List.of(productMock));
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/{institutionId}/products", institutionId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..id", notNullValue()))
+                .andExpect(jsonPath("$..title", notNullValue()))
+                .andExpect(jsonPath("$..urlPublic", notNullValue()))
+                .andExpect(jsonPath("$..description", notNullValue()))
+                .andExpect(jsonPath("$..urlBO", notNullValue()));
+        //then
+        verify(externalApiServiceMock, times(1))
+                .getInstitutionUserProducts(anyString(),anyString());
+        verifyNoMoreInteractions(externalApiServiceMock);
+    }
+
 }

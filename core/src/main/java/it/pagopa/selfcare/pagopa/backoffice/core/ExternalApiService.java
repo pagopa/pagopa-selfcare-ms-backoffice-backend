@@ -13,6 +13,6 @@ public interface ExternalApiService {
 
     Collection<InstitutionInfo> getInstitutions(String userIdForAuth);
     
-    List<Product> getInstitutionUserProducts(String institutionType);
+    List<Product> getInstitutionUserProducts(String institutionId,String userIdForAuth);
     
 }

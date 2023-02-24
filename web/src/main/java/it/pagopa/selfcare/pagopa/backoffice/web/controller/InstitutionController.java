@@ -137,14 +137,22 @@ public class InstitutionController {
         return resource;
     }
 
-    @GetMapping("/{institutionType}/products")
+    @GetMapping("/{institutionId}/products")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutionProducts}")
     public List<ProductsResource> getInstitutionProducts(@ApiParam("${swagger.model.institution.id}")
-                                                         @PathVariable("institutionType") String institutionType) {
+                                                         @PathVariable("institutionId") String institutionId) {
         log.trace("getInstitutionProducts start");
-        log.debug("getInstitutionProducts institutionType = {}", institutionType);
-        List<Product> products = externalApiService.getInstitutionUserProducts(institutionType);
+        log.debug("getInstitutionProducts institutionId = {}", institutionId);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userIdForAuth = "";
+        if (authentication != null && authentication.getPrincipal() instanceof SelfCareUser) {
+            SelfCareUser user = (SelfCareUser) authentication.getPrincipal();
+            userIdForAuth = user.getId();
+        }
+
+        List<Product> products = externalApiService.getInstitutionUserProducts(institutionId,userIdForAuth);
         List<ProductsResource> resource = products.stream()
                 .map(ProductMapper::toResource)
                 .collect(Collectors.toList());

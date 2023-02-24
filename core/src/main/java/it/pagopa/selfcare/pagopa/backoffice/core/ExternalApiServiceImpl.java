@@ -17,7 +17,6 @@ import java.util.List;
 public class ExternalApiServiceImpl implements ExternalApiService{
 
     protected static final String AN_INSTITUTION_ID_IS_REQUIRED = "An institutionId is required";
-    protected static final String AN_INSTITUTION_TYPE_IS_REQUIRED = "An institutionType is required";
     protected static final String A_PRODUCT_ID_IS_REQUIRED = "A productId is required";
     private final ExternalApiConnector externalApiConnector;
     
@@ -48,11 +47,11 @@ public class ExternalApiServiceImpl implements ExternalApiService{
     }
 
     @Override
-    public List<Product> getInstitutionUserProducts(String institutionType) {
+    public List<Product> getInstitutionUserProducts(String institutionId,String userIdForAuth) {
         log.trace("getInstitutionUserProducts start");
-        log.debug("getInstitutionUserProducts institutionType = {}", institutionType);
-        Assert.hasText(institutionType, AN_INSTITUTION_ID_IS_REQUIRED);
-        List<Product> userProducts = externalApiConnector.getInstitutionUserProducts(institutionType);
+        log.debug("getInstitutionUserProducts institutionId = {}", institutionId);
+        Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
+        List<Product> userProducts = externalApiConnector.getInstitutionUserProducts(institutionId,userIdForAuth);
         log.debug("getInstitutionUserProducts result = {}", userProducts);
         log.trace("getInstitutionUserProducts end");
         return userProducts;

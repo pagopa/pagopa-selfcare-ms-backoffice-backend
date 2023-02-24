@@ -12,6 +12,6 @@ public interface ExternalApiConnector {
     
     List<InstitutionInfo> getInstitutions(String userIdForAuth);
     
-    List<Product> getInstitutionUserProducts(String institutionType);
+    List<Product> getInstitutionUserProducts(String institutionId,String userId);
     
 }

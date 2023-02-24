@@ -26,6 +26,8 @@ public interface ExternalApiRestClient extends ExternalApiConnector {
     
     @GetMapping(value = "${rest-client.external-api.getInstitutionUserProducts.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    List<Product> getInstitutionUserProducts(@PathVariable(value = "institutionId")String institutionType);
+    List<Product> getInstitutionUserProducts(@PathVariable(value = "institutionId")String institutionId,@RequestParam(value = "userId")String userId);
+
+
 
 }
