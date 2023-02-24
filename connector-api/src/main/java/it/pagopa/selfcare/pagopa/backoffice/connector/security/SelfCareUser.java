@@ -14,7 +14,7 @@ public class SelfCareUser implements AuthenticatedPrincipal {
     private String surname;
     private String userName;
 
-    private SelfCareUser(String id) {
+    public SelfCareUser(String id) {
         this.id = id;
     }
 
