@@ -196,19 +196,18 @@ class InstitutionControllerTest {
 
 
     @Test
-    @WithMockUser(username = "user1", password = "user1", authorities = {
-            "ROLE_ADMIN" })
     void getInstitutions() throws Exception {
         //given
         InstitutionInfo institutionInfoMock = mockInstance(new InstitutionInfo());
         institutionInfoMock.setUserProductRoles(List.of("userProductRole"));
 
-//        Authentication authentication = mock(Authentication.class);
-//        SecurityContextHolder securityContextHolder = mock(SecurityContextHolder.class);
-//        when(securityContextHolder.getContext().getAuthentication()).thenReturn(authentication);
-//        SelfCareUser user = mock(SelfCareUser.class);
-//
-//        when(authentication.getPrincipal()).thenReturn(user);
+        Authentication auth = mock(Authentication.class);
+        SelfCareUser user = mockInstance(new SelfCareUser("1"));
+        when(auth.getPrincipal()).thenReturn(user);
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(securityContext);
 
         when(externalApiServiceMock.getInstitutions(anyString()))
                 .thenReturn(List.of(institutionInfoMock));
