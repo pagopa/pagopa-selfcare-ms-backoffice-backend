@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -193,16 +194,21 @@ class InstitutionControllerTest {
         verifyNoMoreInteractions(externalApiServiceMock);
     }
 
+
     @Test
+    @WithMockUser(username = "user1", password = "user1", authorities = {
+            "ROLE_ADMIN" })
     void getInstitutions() throws Exception {
         //given
         InstitutionInfo institutionInfoMock = mockInstance(new InstitutionInfo());
         institutionInfoMock.setUserProductRoles(List.of("userProductRole"));
 
-        Authentication authentication = mock(Authentication.class);
-        SelfCareUser user = mock(SelfCareUser.class);
-
-        when(authentication.getPrincipal()).thenReturn(user);
+//        Authentication authentication = mock(Authentication.class);
+//        SecurityContextHolder securityContextHolder = mock(SecurityContextHolder.class);
+//        when(securityContextHolder.getContext().getAuthentication()).thenReturn(authentication);
+//        SelfCareUser user = mock(SelfCareUser.class);
+//
+//        when(authentication.getPrincipal()).thenReturn(user);
 
         when(externalApiServiceMock.getInstitutions(anyString()))
                 .thenReturn(List.of(institutionInfoMock));

@@ -109,7 +109,7 @@ public class InstitutionController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userIdForAuth = "";
-        if (authentication != null && authentication.getPrincipal() instanceof SelfCareUser) {
+        if (authentication != null) {
             SelfCareUser user = (SelfCareUser) authentication.getPrincipal();
             userIdForAuth = user.getId();
         }
