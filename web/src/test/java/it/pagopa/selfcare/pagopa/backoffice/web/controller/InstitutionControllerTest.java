@@ -373,6 +373,10 @@ class InstitutionControllerTest {
         Authentication auth = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
 
+
+        when(securityContext.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(securityContext);
+
         when(externalApiServiceMock.getInstitutionUserProducts(anyString(),anyString()))
                 .thenReturn(List.of(productMock));
         //when
