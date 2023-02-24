@@ -64,8 +64,18 @@ class InstitutionResourceTest {
     void validateNotNullFields() {
         // given
         InstitutionResource institutionResource = mockInstance(new InstitutionResource());
+        AssistanceContactsResource assistanceContactsResource = mockInstance(new AssistanceContactsResource());
+        CompanyInformationsResource companyInformations = mockInstance(new CompanyInformationsResource());
+        PspDataResource pspDataResource = mockInstance(new PspDataResource());
+        DpoDataResource dpoDataResource = mockInstance(new DpoDataResource());
+        dpoDataResource.setPec("pec@test.com");
+        dpoDataResource.setEmail("email@test.com");
         institutionResource.setUserProductRoles(Set.of("string"));
-
+        institutionResource.setAssistanceContacts(assistanceContactsResource);
+        institutionResource.setCompanyInformations(companyInformations);
+        institutionResource.setDpoData(dpoDataResource);
+        institutionResource.setPspData(pspDataResource);
+        institutionResource.setMailAddress("test@test.com");
         // when
         Set<ConstraintViolation<Object>> violations = validator.validate(institutionResource);
         // then
