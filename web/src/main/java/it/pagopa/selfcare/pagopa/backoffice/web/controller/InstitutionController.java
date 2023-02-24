@@ -137,7 +137,7 @@ public class InstitutionController {
         return resource;
     }
 
-    @GetMapping("/{institutionId}/products")
+    @GetMapping("/{institutionType}/products")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutionProducts}")
     public List<ProductsResource> getInstitutionProducts(@ApiParam("${swagger.model.institution.id}")

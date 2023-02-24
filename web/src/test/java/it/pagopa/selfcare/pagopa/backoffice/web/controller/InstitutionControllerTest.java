@@ -308,13 +308,13 @@ class InstitutionControllerTest {
     @Test
     void getInstitutionUserProducts() throws Exception {
         //given
-        String institutionId = "institutionId";
+        String institutionType = "institutionType";
         Product productMock = mockInstance(new Product());
         when(externalApiServiceMock.getInstitutionUserProducts(anyString()))
                 .thenReturn(List.of(productMock));
         //when
         mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL + "/{institutionId}/products", institutionId)
+                        .get(BASE_URL + "/{institutionType}/products", institutionType)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..id", notNullValue()))
@@ -324,7 +324,7 @@ class InstitutionControllerTest {
                 .andExpect(jsonPath("$..urlBO", notNullValue()));
         //then
         verify(externalApiServiceMock, times(1))
-                .getInstitutionUserProducts(institutionId);
+                .getInstitutionUserProducts(institutionType);
         verifyNoMoreInteractions(externalApiServiceMock);
     }
 }
