@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institut
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.product.Product;
+import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ExternalApiService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -18,6 +19,9 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -194,6 +198,11 @@ class InstitutionControllerTest {
         //given
         InstitutionInfo institutionInfoMock = mockInstance(new InstitutionInfo());
         institutionInfoMock.setUserProductRoles(List.of("userProductRole"));
+
+        Authentication authentication = mock(Authentication.class);
+        SelfCareUser user = mock(SelfCareUser.class);
+
+        when(authentication.getPrincipal()).thenReturn(user);
 
         when(externalApiServiceMock.getInstitutions(anyString()))
                 .thenReturn(List.of(institutionInfoMock));
