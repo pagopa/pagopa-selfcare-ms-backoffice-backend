@@ -141,10 +141,10 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutionProducts}")
     public List<ProductsResource> getInstitutionProducts(@ApiParam("${swagger.model.institution.id}")
-                                                         @PathVariable("institutionId") String institutionId) {
+                                                         @PathVariable("institutionType") String institutionType) {
         log.trace("getInstitutionProducts start");
-        log.debug("getInstitutionProducts institutionId = {}", institutionId);
-        List<Product> products = externalApiService.getInstitutionUserProducts(institutionId);
+        log.debug("getInstitutionProducts institutionType = {}", institutionType);
+        List<Product> products = externalApiService.getInstitutionUserProducts(institutionType);
         List<ProductsResource> resource = products.stream()
                 .map(ProductMapper::toResource)
                 .collect(Collectors.toList());

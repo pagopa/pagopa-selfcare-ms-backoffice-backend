@@ -234,6 +234,77 @@ class InstitutionControllerTest {
         verifyNoMoreInteractions(externalApiServiceMock);
     }
 
+
+    @Test
+    void getInstitutions_AuthenticationNull() throws Exception {
+        //given
+        InstitutionInfo institutionInfoMock = mockInstance(new InstitutionInfo());
+        institutionInfoMock.setUserProductRoles(List.of("userProductRole"));
+
+        when(externalApiServiceMock.getInstitutions(anyString()))
+                .thenReturn(List.of(institutionInfoMock));
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..id", notNullValue()))
+                .andExpect(jsonPath("$..externalId", notNullValue()))
+                .andExpect(jsonPath("$..originId", notNullValue()))
+                .andExpect(jsonPath("$..name", notNullValue()))
+                .andExpect(jsonPath("$..mailAddress", notNullValue()))
+                .andExpect(jsonPath("$..address", notNullValue()))
+                .andExpect(jsonPath("$..zipCode", notNullValue()))
+                .andExpect(jsonPath("$..taxCode", notNullValue()))
+                .andExpect(jsonPath("$..origin", notNullValue()))
+                .andExpect(jsonPath("$..institutionType", notNullValue()))
+                .andExpect(jsonPath("$..userRole", notNullValue()))
+                .andExpect(jsonPath("$..userProductRoles[0]", notNullValue()));
+        //then
+        verify(externalApiServiceMock, times(1))
+                .getInstitutions(anyString());
+        verifyNoMoreInteractions(externalApiServiceMock);
+    }
+
+    @Test
+    void getInstitutions_UserNotSelfCareInstance() throws Exception {
+        //given
+        InstitutionInfo institutionInfoMock = mockInstance(new InstitutionInfo());
+        institutionInfoMock.setUserProductRoles(List.of("userProductRole"));
+
+        Authentication auth = mock(Authentication.class);
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(externalApiServiceMock.getInstitutions(anyString()))
+                .thenReturn(List.of(institutionInfoMock));
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..id", notNullValue()))
+                .andExpect(jsonPath("$..externalId", notNullValue()))
+                .andExpect(jsonPath("$..originId", notNullValue()))
+                .andExpect(jsonPath("$..name", notNullValue()))
+                .andExpect(jsonPath("$..mailAddress", notNullValue()))
+                .andExpect(jsonPath("$..address", notNullValue()))
+                .andExpect(jsonPath("$..zipCode", notNullValue()))
+                .andExpect(jsonPath("$..taxCode", notNullValue()))
+                .andExpect(jsonPath("$..origin", notNullValue()))
+                .andExpect(jsonPath("$..institutionType", notNullValue()))
+                .andExpect(jsonPath("$..userRole", notNullValue()))
+                .andExpect(jsonPath("$..userProductRoles[0]", notNullValue()));
+        //then
+        verify(externalApiServiceMock, times(1))
+                .getInstitutions(anyString());
+        verifyNoMoreInteractions(externalApiServiceMock);
+    }
+
+
+
     @Test
     void getInstitutionUserProducts() throws Exception {
         //given
