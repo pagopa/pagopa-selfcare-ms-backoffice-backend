@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionType;
 import lombok.Data;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
@@ -64,5 +65,21 @@ public class InstitutionResource {
     @JsonProperty(required = true)
     @NotNull
     private Collection<String> userProductRoles;
-    
+
+    @ApiModelProperty(value = "${swagger.institution.model.recipientCode}")
+    private String recipientCode;
+
+    @ApiModelProperty(value = "${swagger.institution.model.companyInformations}")
+    private CompanyInformationsResource companyInformations;
+
+    @ApiModelProperty(value = "${swagger.institution.model.assistance}")
+    private AssistanceContactsResource assistanceContacts;
+
+    @ApiModelProperty(value = "${swagger.institution.model.pspData}")
+    @Valid
+    private PspDataResource pspData;
+
+    @ApiModelProperty(value = "${swagger.institution.model.pspData.dpoData}")
+    @Valid
+    private DpoDataResource dpoData;
 }
