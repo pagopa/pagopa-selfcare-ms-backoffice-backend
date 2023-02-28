@@ -283,4 +283,28 @@ class ApiConfigServiceImplTest {
                 .deleteChannel(channelCode,xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
+
+    @Test
+    void getPspBrokerPsp() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String brokerPspCode = "brokerPspCode";
+        final Integer limit = 1;
+        final Integer page = 1;
+
+        PaymentServiceProviders modelMock = mock(PaymentServiceProviders.class);
+        when(apiConfigConnectorMock.getPspBrokerPsp(anyInt(),anyInt(),anyString(),anyString()))
+                .thenReturn(modelMock);
+
+        //when
+        PaymentServiceProviders response = apiConfigService.getPspBrokerPsp(limit,page,brokerPspCode,xRequestId);
+        //then
+        assertNotNull(response);
+        assertEquals(response, modelMock);
+
+        verify(apiConfigConnectorMock, times(1))
+                .getPspBrokerPsp(anyInt(),anyInt(),anyString(),anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
 }

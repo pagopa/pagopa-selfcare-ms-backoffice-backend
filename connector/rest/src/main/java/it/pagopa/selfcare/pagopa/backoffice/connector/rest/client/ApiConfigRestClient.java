@@ -76,4 +76,11 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     @DeleteMapping(value = "${rest-client.api-config.deleteChannel.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     void deleteChannel(@PathVariable("channelcode") String channelCode, @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
+    @GetMapping(value = "${rest-client.api-config.getPspBrokerPsp.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    PaymentServiceProviders getPspBrokerPsp(@RequestParam(required = false, defaultValue = "50") Integer limit,
+                                            @RequestParam Integer page,
+                                            @PathVariable("brokerpspcode") String brokerPspCode,
+                                            @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 }

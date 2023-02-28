@@ -122,4 +122,13 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.debug("deleteChannel with channelCode = {}", channelCode);
         log.trace("deleteChannel end");
     }
+
+    @Override
+    public PaymentServiceProviders getPspBrokerPsp(Integer limit, Integer page, String brokerPspCode, String uuid) {
+        log.trace("getPspBrokerPsp start");
+        PaymentServiceProviders response = apiConfigConnector.getPspBrokerPsp(limit, page, brokerPspCode, uuid);
+        log.debug("getPspBrokerPsp result = {}", response);
+        log.trace("getPspBrokerPsp end");
+        return response;
+    }
 }

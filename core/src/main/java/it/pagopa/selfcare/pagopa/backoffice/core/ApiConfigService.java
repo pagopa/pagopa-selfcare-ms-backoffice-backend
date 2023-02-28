@@ -27,4 +27,5 @@ public interface ApiConfigService {
     PspChannelPaymentTypes updatePaymentServiceProvidersChannels(String pspCode, String channelCode,PspChannelPaymentTypes pspChannelPaymentTypes, String xRequestId);
 
     void deleteChannel(String channelCode, String xRequestId);
+    PaymentServiceProviders getPspBrokerPsp(Integer limit,Integer page, String brokerPspCode,String uuid);
 }

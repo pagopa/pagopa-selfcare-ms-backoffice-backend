@@ -114,6 +114,11 @@ class ApiConfigRestClientTest {
         put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "channelcode2");
     }};
 
+    private static final Map<ApiConfigRestClientTest.TestCase, String> testCaseBrokerPspCodeMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
+        put(ApiConfigRestClientTest.TestCase.FULLY_VALUED, "brokerpspcode1");
+        put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "brokerpspcode2");
+    }};
+
     private static final Map<TestCase, Map<String, Object>> testCaseChannelDtoMap = new EnumMap(TestCase.class) {{
         ChannelDetails channelDetails = new ChannelDetails();
         channelDetails.setPassword("password");
@@ -420,6 +425,34 @@ class ApiConfigRestClientTest {
         //then
         assertNotNull(response);
         assertFalse(response.getPaymentTypeList().isEmpty());
+    }
+
+    @Test
+    void getPspBrokerPsp_fullyValued() {
+        // given
+        String requestId = UUID.randomUUID().toString();
+        TestCase testCase = TestCase.FULLY_VALUED;
+        String brokerPspCode = testCaseBrokerPspCodeMap.get(testCase);
+        // when
+
+        PaymentServiceProviders response = restClient.getPspBrokerPsp(1,1,brokerPspCode, requestId);
+        //then
+        assertNotNull(response);
+        assertFalse(response.getPaymentServiceProviderList().isEmpty());
+    }
+
+    @Test
+    void getPspBrokerPsp_EmptyValued() {
+        // given
+        String requestId = UUID.randomUUID().toString();
+        TestCase testCase = TestCase.EMPTY_RESULT;
+        String brokerPspCode = testCaseBrokerPspCodeMap.get(testCase);
+        // when
+
+        PaymentServiceProviders response = restClient.getPspBrokerPsp(1,1,brokerPspCode, requestId);
+        //then
+        assertNotNull(response);
+        assertTrue(response.getPaymentServiceProviderList().isEmpty());
     }
 
     @Test

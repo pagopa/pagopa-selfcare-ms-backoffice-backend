@@ -85,7 +85,7 @@ class ChannelMapperTest {
         ChannelDetails model = mockInstance(new ChannelDetails());
         PspChannelPaymentTypes model2 = mockInstance(new PspChannelPaymentTypes());
         //when
-        ChannelDetailsResource resource = ChannelMapper.toResource(model,model2);
+        ChannelDetailsResource resource = ChannelMapper.toResource(model, model2);
         //then
         assertNotNull(resource);
         reflectionEqualsByName(model, resource);
@@ -97,7 +97,7 @@ class ChannelMapperTest {
         ChannelDetails models = null;
         PspChannelPaymentTypes model2 = null;
         //when
-        ChannelDetailsResource resources = ChannelMapper.toResource(models,model2);
+        ChannelDetailsResource resources = ChannelMapper.toResource(models, model2);
         //then
         assertNull(resources);
     }
@@ -116,9 +116,9 @@ class ChannelMapperTest {
     @Test
     void fromChannelDetailsDto_null() {
         //given
-        ChannelDetailsDto dto =  null;
+        ChannelDetailsDto dto = null;
         //when
-        ChannelDetails model =  ChannelMapper.fromChannelDetailsDto(dto);
+        ChannelDetails model = ChannelMapper.fromChannelDetailsDto(dto);
         //then
         assertNull(model);
     }
@@ -142,5 +142,49 @@ class ChannelMapperTest {
         PspChannelPaymentTypesResource resources = ChannelMapper.toResource(models);
         //then
         assertNull(resources);
+    }
+
+    @Test
+    void toPaymentServiceProviders() {
+        //given
+        PaymentServiceProviders model = mockInstance(new PaymentServiceProviders());
+        PaymentServiceProvider paymentServiceProvider = mockInstance(new PaymentServiceProvider());
+        model.setPaymentServiceProviderList(List.of(paymentServiceProvider));
+        //when
+        PaymentServiceProvidersResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNotNull(resource);
+        reflectionEqualsByName(model, resource);
+    }
+
+    @Test
+    void toPaymentServiceProviders_null() {
+        //given
+        PaymentServiceProviders models = null;
+        //when
+        PaymentServiceProvidersResource resources = ChannelMapper.toResource(models);
+        //then
+        assertNull(resources);
+    }
+
+    @Test
+    void toPaymentServiceProvider() {
+        //given
+        PaymentServiceProvider model = mockInstance(new PaymentServiceProvider());
+        //when
+        PaymentServiceProviderResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNotNull(resource);
+        reflectionEqualsByName(model, resource);
+    }
+
+    @Test
+    void toPaymentServiceProvider_null() {
+        //given
+        PaymentServiceProvider model = null;
+        //when
+        PaymentServiceProviderResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNull(resource);
     }
 }

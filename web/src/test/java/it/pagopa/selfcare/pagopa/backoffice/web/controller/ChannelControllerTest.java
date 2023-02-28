@@ -17,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.util.SerializationUtils;
 
 import java.io.InputStream;
 import java.util.List;
@@ -99,9 +98,14 @@ class ChannelControllerTest {
         String xRequestId = "1";
 
         ChannelDetails channelDetails = mockInstance(new ChannelDetails());
+        PspChannelPaymentTypes paymentTypes = mockInstance(new PspChannelPaymentTypes());
+        paymentTypes.setPaymentTypeList(List.of("paymentType"));
 
         when(apiConfigServiceMock.getChannelDetails(anyString(), anyString()))
                 .thenReturn(channelDetails);
+
+        when(apiConfigServiceMock.getChannelPaymentTypes(anyString(), anyString()))
+                .thenReturn(paymentTypes);
         //when
         mvc.perform(MockMvcRequestBuilders
                         .get(BASE_URL + "/details/{channelcode}", channelcode)
@@ -135,7 +139,10 @@ class ChannelControllerTest {
         //then
         verify(apiConfigServiceMock, times(1))
                 .getChannelDetails(channelcode, xRequestId);
+        verify(apiConfigServiceMock, times(1))
+                .getChannelPaymentTypes(channelcode, xRequestId);
         verifyNoMoreInteractions(apiConfigServiceMock);
+
     }
 
     @Test
@@ -424,6 +431,38 @@ class ChannelControllerTest {
                 .deleteChannel(anyString(), anyString());
     }
 
+    @Test
+    void getPspBrokerPsp() throws Exception {
+        //given
+
+        String brokerPspCode = "brokerpspcode";
+        String xRequestId = "1";
+        String limit = "1";
+        String page = "1";
+
+        PaymentServiceProviders paymentServiceProviders = mockInstance(new PaymentServiceProviders(), "setPaymentServiceProviderList");
+        PaymentServiceProvider paymentServiceProvider = mockInstance(new PaymentServiceProvider());
+        paymentServiceProviders.setPaymentServiceProviderList(List.of(paymentServiceProvider));
+
+
+        when(apiConfigServiceMock.getPspBrokerPsp(anyInt(), anyInt(), anyString(), anyString()))
+                .thenReturn(paymentServiceProviders);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/{brokerpspcode}/paymentserviceproviders", brokerPspCode)
+                        .param("page", "1")
+                        .param("limit", "1")
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page_info", notNullValue()))
+                .andExpect(jsonPath("$.payment_service_providers[*].payment_type", everyItem(notNullValue())));
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getPspBrokerPsp(anyInt(), anyInt(), anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
 
     @Test
     void updatePaymentServiceProvidersChannels(@Value("classpath:stubs/pspChannelPaymentTypesDto.json") Resource dto) throws Exception {
