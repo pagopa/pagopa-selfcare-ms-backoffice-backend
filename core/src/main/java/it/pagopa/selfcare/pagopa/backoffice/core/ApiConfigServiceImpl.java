@@ -107,6 +107,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
+    public PspChannelPaymentTypes updatePaymentServiceProvidersChannels(String pspCode, String channelCode,PspChannelPaymentTypes pspChannelPaymentTypes, String xRequestId) {
+        log.trace("updatePaymentServiceProvidersChannels start");
+        PspChannelPaymentTypes response = apiConfigConnector.updatePaymentServiceProvidersChannels(pspCode, channelCode,pspChannelPaymentTypes, xRequestId);
+        log.debug("updatePaymentServiceProvidersChannels result = {}", response);
+        log.trace("updatePaymentServiceProvidersChannels end");
+        return response;
+    }
+
+    @Override
     public void deleteChannel(String channelCode, String xRequestId) {
         log.trace("deleteChannel start");
         apiConfigConnector.deleteChannel(channelCode, xRequestId);
