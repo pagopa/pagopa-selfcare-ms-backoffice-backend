@@ -176,5 +176,5 @@ public class ChannelDetailsDto {
 
     @JsonProperty("primitive_version")
     @ApiModelProperty(value = "${swagger.model.channel.details.primitiveVersion}")
-    private String primitiveVersion;
+    private String primitiveVersion="1";
 }

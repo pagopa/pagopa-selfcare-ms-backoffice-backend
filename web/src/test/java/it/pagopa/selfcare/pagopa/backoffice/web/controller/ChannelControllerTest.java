@@ -394,7 +394,7 @@ class ChannelControllerTest {
 
         //when
         mvc.perform(MockMvcRequestBuilders
-                        .delete(BASE_URL + "/paymenttypes/{channelcode}/{pspcode}", channelCode, pspCode)
+                        .delete(BASE_URL + "/psp/{channelcode}/{pspcode}", channelCode, pspCode)
                         .header("X-Request-Id", String.valueOf(xRequestId))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
@@ -456,4 +456,32 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
+    @Test
+    void updatePaymentServiceProvidersChannels(@Value("classpath:stubs/pspChannelPaymentTypesDto.json") Resource dto) throws Exception {
+        //given
+        final String channelCode = "channelCode";
+        final String pspCode = "pspCode";
+        final String xRequestId = "1";
+
+
+        InputStream is = dto.getInputStream();
+        PspChannelPaymentTypes pspChannelPaymentTypes = objectMapper.readValue(is, PspChannelPaymentTypes.class);
+        when(apiConfigServiceMock.updatePaymentServiceProvidersChannels(anyString(), anyString(), any(), anyString()))
+                .thenReturn(pspChannelPaymentTypes);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .put(BASE_URL + "/psp/{channelcode}/{pspcode}", channelCode, pspCode)
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(dto.getInputStream().readAllBytes()))
+
+
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.payment_types[*]", everyItem(notNullValue())));
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .updatePaymentServiceProvidersChannels(anyString(), anyString(), any(), anyString());
+
+    }
 }
