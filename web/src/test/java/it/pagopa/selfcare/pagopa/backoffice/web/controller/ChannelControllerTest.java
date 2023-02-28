@@ -98,9 +98,14 @@ class ChannelControllerTest {
         String xRequestId = "1";
 
         ChannelDetails channelDetails = mockInstance(new ChannelDetails());
+        PspChannelPaymentTypes paymentTypes = mockInstance(new PspChannelPaymentTypes());
+        paymentTypes.setPaymentTypeList(List.of("paymentType"));
 
         when(apiConfigServiceMock.getChannelDetails(anyString(), anyString()))
                 .thenReturn(channelDetails);
+
+        when(apiConfigServiceMock.getChannelPaymentTypes(anyString(), anyString()))
+                .thenReturn(paymentTypes);
         //when
         mvc.perform(MockMvcRequestBuilders
                         .get(BASE_URL + "/details/{channelcode}", channelcode)
@@ -134,7 +139,10 @@ class ChannelControllerTest {
         //then
         verify(apiConfigServiceMock, times(1))
                 .getChannelDetails(channelcode, xRequestId);
+        verify(apiConfigServiceMock, times(1))
+                .getChannelPaymentTypes(channelcode, xRequestId);
         verifyNoMoreInteractions(apiConfigServiceMock);
+
     }
 
     @Test

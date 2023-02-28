@@ -108,7 +108,11 @@ public class ChannelController {
         log.trace("getChannelDetails start");
         log.debug("getChannelDetails channelcode = {}", channelcode);
         ChannelDetails channelDetails = apiConfigService.getChannelDetails(channelcode, xRequestId);
-        ChannelDetailsResource resource = ChannelMapper.toResource(channelDetails);
+//        ChannelDetailsResource response = ChannelMapper.toResource(channelDetails);
+
+        PspChannelPaymentTypes ptResponse = apiConfigService.getChannelPaymentTypes(channelcode,xRequestId);
+        ChannelDetailsResource resource = ChannelMapper.toResource(channelDetails, ptResponse);
+
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelDetails result = {}", resource);
         log.trace("getChannelDetails end");
         return resource;
@@ -241,7 +245,7 @@ public class ChannelController {
         log.debug("deleteChannel channelcode = {}, uuid = {}", channelcode, uuid);
         apiConfigService.deleteChannel(channelcode, uuid);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "deleteChannel with channelcode = {}", channelcode);
-        log.trace("getChannelDetails end");
+        log.trace("deleteChannel end");
     }
 
     @GetMapping(value = "/{brokerpspcode}/paymentserviceproviders", produces = {MediaType.APPLICATION_JSON_VALUE})
