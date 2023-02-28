@@ -108,7 +108,6 @@ public class ChannelController {
         log.trace("getChannelDetails start");
         log.debug("getChannelDetails channelcode = {}", channelcode);
         ChannelDetails channelDetails = apiConfigService.getChannelDetails(channelcode, xRequestId);
-//        ChannelDetailsResource response = ChannelMapper.toResource(channelDetails);
 
         PspChannelPaymentTypes ptResponse = apiConfigService.getChannelPaymentTypes(channelcode,xRequestId);
         ChannelDetailsResource resource = ChannelMapper.toResource(channelDetails, ptResponse);
