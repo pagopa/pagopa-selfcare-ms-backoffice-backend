@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
+import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static it.pagopa.selfcare.pagopa.TestUtils.reflectionEqualsByName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -241,6 +242,28 @@ class ApiConfigServiceImplTest {
         //then
         verify(apiConfigConnectorMock, times(1))
                 .deletePaymentServiceProvidersChannels(anyString(), anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void updatePaymentServiceProvidersChannels(){
+        final String xRequestId = "xRequestId";
+        final String pspCode = "pspCode";
+        final String channelCode = "channelCode";
+
+        PspChannelPaymentTypes pspChannelPaymentTypesMock = mockInstance(new PspChannelPaymentTypes());
+        pspChannelPaymentTypesMock.setPaymentTypeList(List.of("paymentType"));
+
+        when(apiConfigConnectorMock.updatePaymentServiceProvidersChannels(anyString(), anyString(),any(), anyString()))
+                .thenReturn(pspChannelPaymentTypesMock);
+        //when
+        PspChannelPaymentTypes response = apiConfigService.updatePaymentServiceProvidersChannels(pspCode,channelCode,pspChannelPaymentTypesMock, xRequestId);
+        //then
+        assertNotNull(response);
+        assertEquals(pspChannelPaymentTypesMock, response);
+        reflectionEqualsByName(pspChannelPaymentTypesMock, response);
+        verify(apiConfigConnectorMock, times(1))
+                .updatePaymentServiceProvidersChannels(anyString(), anyString(),any(), anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 

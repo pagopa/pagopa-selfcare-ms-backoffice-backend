@@ -18,5 +18,6 @@ public interface ApiConfigConnector {
     PspChannelPaymentTypes createChannelPaymentType(PspChannelPaymentTypes pspChannelPaymentTypes, String channelCode, String xRequestId);
     PaymentTypes getPaymentTypes(String xRequestId);
     void deletePaymentServiceProvidersChannels(String pspCode,String channelCode,String xRequestId);
+    PspChannelPaymentTypes updatePaymentServiceProvidersChannels(String pspCode,String channelCode,PspChannelPaymentTypes pspChannelPaymentTypes, String xRequestId);
     void deleteChannel(String channelCode, String xRequestId);
 }
