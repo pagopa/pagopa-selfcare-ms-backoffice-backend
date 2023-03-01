@@ -77,6 +77,15 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     @ResponseBody
     void deleteChannel(@PathVariable("channelcode") String channelCode, @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
+    @GetMapping(value = "${rest-client.api-config.getStations.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    Stations getStations(@RequestParam(required = false, defaultValue = "50") Integer limit,
+                         @RequestParam(required = true) Integer page,
+                         @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort,
+                         @RequestParam(name = "brokerCode", required = false)String brokerCode,
+                         @RequestParam(name = "creditorInstitutionCode", required = false)String creditorInstitutionCode,
+                         @RequestParam(required = false) String code,
+                         @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
     @GetMapping(value = "${rest-client.api-config.getPspBrokerPsp.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     PaymentServiceProviders getPspBrokerPsp(@RequestParam(required = false, defaultValue = "50") Integer limit,

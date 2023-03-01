@@ -44,7 +44,7 @@ public class ChannelController {
                                         @RequestParam(required = true) Integer page,
                                         @ApiParam("${swagger.model.channel.filter}")
                                         @RequestParam(required = false) String code,
-                                        @ApiParam("${swagger.model.channel.sort.order}")
+                                        @ApiParam("${swagger.model.sort.order}")
                                         @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort,
                                         @ApiParam("${swagger.request.id}")
                                         @RequestHeader(name = "X-Request-Id", required = false) String xRequestId) {
