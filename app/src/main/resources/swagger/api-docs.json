@@ -15,6 +15,9 @@
   }, {
     "name" : "institution",
     "description" : "Institution operations"
+  }, {
+    "name" : "stations",
+    "description" : "Api config stations operations"
   } ],
   "paths" : {
     "/channels" : {
@@ -1467,6 +1470,117 @@
           "bearerAuth" : [ "global" ]
         } ]
       }
+    },
+    "/stations" : {
+      "get" : {
+        "tags" : [ "stations" ],
+        "summary" : "getStations",
+        "description" : "Get paginated list of stations",
+        "operationId" : "getStationsUsingGET",
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of elements on one page. Default = 50",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number. Page value starts from 0",
+          "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "stationCode",
+          "in" : "query",
+          "description" : "Station's unique identifier",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "creditorInstitutionCode",
+          "in" : "query",
+          "description" : "Creditor institution associated to given station",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "ordering",
+          "in" : "query",
+          "description" : "Sort Direction ordering",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StationsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
     }
   },
   "components" : {
@@ -2353,6 +2467,55 @@
             "type" : "boolean",
             "description" : "PSP's Vat Number group",
             "example" : false
+          }
+        }
+      },
+      "StationResource" : {
+        "title" : "StationResource",
+        "required" : [ "stationId", "stationStatus" ],
+        "type" : "object",
+        "properties" : {
+          "activationDate" : {
+            "type" : "string",
+            "description" : "Station's activation date",
+            "format" : "date-time"
+          },
+          "createdAt" : {
+            "type" : "string",
+            "description" : "Station created on",
+            "format" : "date-time"
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "description" : "Station's last modified date",
+            "format" : "date-time"
+          },
+          "stationId" : {
+            "type" : "string",
+            "description" : "Station's unique identifier"
+          },
+          "stationStatus" : {
+            "type" : "string",
+            "description" : "Station's status",
+            "enum" : [ "ACTIVE", "ON_REVISION", "TO_BE_CORRECTED" ]
+          }
+        }
+      },
+      "StationsResource" : {
+        "title" : "StationsResource",
+        "required" : [ "page_info", "stationsList" ],
+        "type" : "object",
+        "properties" : {
+          "page_info" : {
+            "description" : "info pageable",
+            "$ref" : "#/components/schemas/PageInfo"
+          },
+          "stationsList" : {
+            "type" : "array",
+            "description" : "List of ec stations",
+            "items" : {
+              "$ref" : "#/components/schemas/StationResource"
+            }
           }
         }
       }

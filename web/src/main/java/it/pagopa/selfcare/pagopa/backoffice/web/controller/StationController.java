@@ -35,7 +35,7 @@ public class StationController {
                                             @RequestParam(required = false) String stationCode,
                                         @ApiParam("${swagger.model.stations.ecCode}")
                                             @RequestParam(required = false) String creditorInstitutionCode,
-                                        @ApiParam("${swagger.model.stations.sort.order}")
+                                        @ApiParam("${swagger.model.sort.order}")
                                             @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort){
 
         return null;
