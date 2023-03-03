@@ -12,11 +12,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+
+import java.io.File;
+import java.io.FileWriter;
 
 import java.io.InputStream;
 import java.util.List;
@@ -490,6 +495,33 @@ class ChannelControllerTest {
         //then
         verify(apiConfigServiceMock, times(1))
                 .updatePaymentServiceProvidersChannels(anyString(), anyString(), any(), anyString());
+
+    }
+
+    @Test
+    void getChannelsCSV() throws Exception {
+
+        File file = File.createTempFile("channels", ".csv");
+        FileWriter writer = new FileWriter(file);
+        writer.write("id,name\n1,channel1\n2,channel2\n");
+        writer.close();
+
+        String xRequestId = "1";
+
+        Resource resource = mockInstance(new FileSystemResource(file));
+        when(apiConfigServiceMock.getChannelsCSV(anyString()))
+                .thenReturn(resource);
+
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/csv")
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.TEXT_PLAIN_VALUE))
+                .andExpect(status().isOk());
+
+        verify(apiConfigServiceMock, times(1))
+                .getChannelsCSV(anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
 
     }
 }

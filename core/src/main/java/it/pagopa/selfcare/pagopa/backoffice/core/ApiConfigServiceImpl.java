@@ -8,6 +8,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -129,6 +130,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         PaymentServiceProviders response = apiConfigConnector.getPspBrokerPsp(limit, page, brokerPspCode, uuid);
         log.debug("getPspBrokerPsp result = {}", response);
         log.trace("getPspBrokerPsp end");
+        return response;
+    }
+
+    @Override
+    public Resource getChannelsCSV(String uuid) {
+        log.trace("getChannelsCSV start");
+        Resource response = apiConfigConnector.getChannelsCSV(uuid);
+        log.debug("getChannelsCSV result = {}", response);
+        log.trace("getChannelsCSV end");
         return response;
     }
 }
