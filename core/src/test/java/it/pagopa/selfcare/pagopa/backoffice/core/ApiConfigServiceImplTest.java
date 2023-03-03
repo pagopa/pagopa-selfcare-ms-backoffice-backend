@@ -312,6 +312,7 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
+    @Test
     void getChannelsCSV() throws IOException {
         //given
         final String xRequestId = "xRequestId";
@@ -335,4 +336,5 @@ class ApiConfigServiceImplTest {
                 .getChannelsCSV(anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
+
 }
