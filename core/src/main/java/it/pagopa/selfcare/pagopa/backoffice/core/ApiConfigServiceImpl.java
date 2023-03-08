@@ -131,4 +131,13 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.trace("getPspBrokerPsp end");
         return response;
     }
+
+    @Override
+    public ChannelPspList getChannelPaymentServiceProviders(Integer limit, Integer page, String channelCode, String uuid) {
+        log.trace("getChannelPaymentServiceProviders start");
+        ChannelPspList response = apiConfigConnector.getChannelPaymentServiceProviders(limit, page, channelCode, uuid);
+        log.debug("getChannelPaymentServiceProviders result = {}", response);
+        log.trace("getChannelPaymentServiceProviders end");
+        return response;
+    }
 }

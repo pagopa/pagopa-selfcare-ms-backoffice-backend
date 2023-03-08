@@ -13,8 +13,7 @@ import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static it.pagopa.selfcare.pagopa.TestUtils.reflectionEqualsByName;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -304,6 +303,32 @@ class ApiConfigServiceImplTest {
 
         verify(apiConfigConnectorMock, times(1))
                 .getPspBrokerPsp(anyInt(),anyInt(),anyString(),anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void getChannelPaymentServiceProviders() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String channelCode = "channelCode";
+        final Integer limit = 1;
+        final Integer page = 1;
+
+        ChannelPspList channelPspListMock = mockInstance(new ChannelPspList());
+        ChannelPsp channelPsp = mock(ChannelPsp.class);
+        channelPspListMock.setPsp(List.of(channelPsp));
+        when(apiConfigConnectorMock.getChannelPaymentServiceProviders(anyInt(),anyInt(),anyString(),anyString()))
+                .thenReturn(channelPspListMock);
+
+        //when
+        ChannelPspList response = apiConfigService.getChannelPaymentServiceProviders(limit,page,channelCode,xRequestId);
+        //then
+        assertNotNull(response);
+        assertFalse(response.getPsp().isEmpty());
+        assertEquals(response, channelPspListMock);
+
+        verify(apiConfigConnectorMock, times(1))
+                .getChannelPaymentServiceProviders(anyInt(),anyInt(),anyString(),anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 

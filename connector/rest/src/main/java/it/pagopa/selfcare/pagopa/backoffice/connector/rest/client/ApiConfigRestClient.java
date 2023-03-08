@@ -83,4 +83,11 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                                             @RequestParam Integer page,
                                             @PathVariable("brokerpspcode") String brokerPspCode,
                                             @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
+    @GetMapping(value = "${rest-client.api-config.getChannelPaymentServiceProviders.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    ChannelPspList getChannelPaymentServiceProviders(@RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                     @RequestParam Integer page,
+                                                     @PathVariable("channelcode") String channelcode,
+                                                     @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 }
