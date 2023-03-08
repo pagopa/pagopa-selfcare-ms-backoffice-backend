@@ -61,6 +61,18 @@ class SwaggerConfig {
                                                     qualifiedModelNameBuilder.namespace(Problem.class.getPackageName())
                                                             .name(Problem.class.getSimpleName()))))))
             .build();
+
+    private static final Response CONFLICT_RESPONSE = new ResponseBuilder()
+            .code(String.valueOf(HttpStatus.CONFLICT.value()))
+            .description(HttpStatus.CONFLICT.getReasonPhrase())
+            .representation(MediaType.APPLICATION_PROBLEM_JSON).apply(repBuilder ->
+                    repBuilder.model(modelSpecBuilder ->
+                            modelSpecBuilder.referenceModel(refModelSpecBuilder ->
+                                    refModelSpecBuilder.key(modelKeyBuilder ->
+                                            modelKeyBuilder.qualifiedModelName(qualifiedModelNameBuilder ->
+                                                    qualifiedModelNameBuilder.namespace(Problem.class.getPackageName())
+                                                            .name(Problem.class.getSimpleName()))))))
+            .build();
     private static final Response NOT_FOUND_RESPONSE = new ResponseBuilder()
             .code(String.valueOf(HttpStatus.NOT_FOUND.value()))
             .description(HttpStatus.NOT_FOUND.getReasonPhrase())
@@ -111,7 +123,7 @@ class SwaggerConfig {
                 .globalResponses(HttpMethod.GET, List.of(INTERNAL_SERVER_ERROR_RESPONSE, UNAUTHORIZED_RESPONSE, BAD_REQUEST_RESPONSE, NOT_FOUND_RESPONSE))
                 .globalResponses(HttpMethod.DELETE, List.of(INTERNAL_SERVER_ERROR_RESPONSE, UNAUTHORIZED_RESPONSE, BAD_REQUEST_RESPONSE))
                 .globalResponses(HttpMethod.POST, List.of(INTERNAL_SERVER_ERROR_RESPONSE, UNAUTHORIZED_RESPONSE, BAD_REQUEST_RESPONSE))
-                .globalResponses(HttpMethod.PUT, List.of(INTERNAL_SERVER_ERROR_RESPONSE, UNAUTHORIZED_RESPONSE, BAD_REQUEST_RESPONSE))
+                .globalResponses(HttpMethod.PUT, List.of(INTERNAL_SERVER_ERROR_RESPONSE, UNAUTHORIZED_RESPONSE, BAD_REQUEST_RESPONSE,CONFLICT_RESPONSE))
                 .globalResponses(HttpMethod.PATCH, List.of(INTERNAL_SERVER_ERROR_RESPONSE, UNAUTHORIZED_RESPONSE, BAD_REQUEST_RESPONSE))
                 .additionalModels(typeResolver.resolve(Problem.class))
                 .securityContexts(Collections.singletonList(SecurityContext.builder()
