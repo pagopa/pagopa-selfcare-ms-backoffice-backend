@@ -10,6 +10,8 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.RestTestUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.config.ApiConfigRestClientConfigTest;
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
@@ -37,7 +39,6 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import java.lang.reflect.Field;
 import java.util.*;
 
-import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ContextConfiguration(initializers = ApiConfigRestClientTest.RandomPortInitializer.class,
@@ -117,6 +118,11 @@ class ApiConfigRestClientTest {
     private static final Map<ApiConfigRestClientTest.TestCase, String> testCaseBrokerPspCodeMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
         put(ApiConfigRestClientTest.TestCase.FULLY_VALUED, "brokerpspcode1");
         put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "brokerpspcode2");
+    }};
+
+    private static final Map<ApiConfigRestClientTest.TestCase, String> testCaseStationCodeMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
+        put(TestCase.FULLY_VALUED, "stationCode1");
+        put(TestCase.EMPTY_RESULT, "stationCode2");
     }};
 
     private static final Map<TestCase, Map<String, Object>> testCaseChannelDtoMap = new EnumMap(TestCase.class) {{
@@ -435,7 +441,7 @@ class ApiConfigRestClientTest {
         String brokerPspCode = testCaseBrokerPspCodeMap.get(testCase);
         // when
 
-        PaymentServiceProviders response = restClient.getPspBrokerPsp(1,1,brokerPspCode, requestId);
+        PaymentServiceProviders response = restClient.getPspBrokerPsp(1, 1, brokerPspCode, requestId);
         //then
         assertNotNull(response);
         assertFalse(response.getPaymentServiceProviderList().isEmpty());
@@ -449,7 +455,7 @@ class ApiConfigRestClientTest {
         String brokerPspCode = testCaseBrokerPspCodeMap.get(testCase);
         // when
 
-        PaymentServiceProviders response = restClient.getPspBrokerPsp(1,1,brokerPspCode, requestId);
+        PaymentServiceProviders response = restClient.getPspBrokerPsp(1, 1, brokerPspCode, requestId);
         //then
         assertNotNull(response);
         assertTrue(response.getPaymentServiceProviderList().isEmpty());
@@ -468,31 +474,94 @@ class ApiConfigRestClientTest {
     }
 
     @Test
-    void getChannelPaymentServiceProviders_EmptyValued(){
+    void getChannelPaymentServiceProviders_EmptyValued() {
         // given
         String requestId = UUID.randomUUID().toString();
         TestCase testCase = TestCase.EMPTY_RESULT;
         String channelCode = testCaseChannelCodeMap.get(testCase);
 
         // when
-        ChannelPspList response = restClient.getChannelPaymentServiceProviders(1,0,channelCode,requestId);
+        ChannelPspList response = restClient.getChannelPaymentServiceProviders(1, 0, channelCode, requestId);
 
         //then
         assertNotNull(response);
         assertTrue(response.getPsp().isEmpty());
     }
+
     @Test
-    void getChannelPaymentServiceProviders_fullyValued(){
+    void getChannelPaymentServiceProviders_fullyValued() {
         // given
         String requestId = UUID.randomUUID().toString();
         TestCase testCase = TestCase.FULLY_VALUED;
         String channelCode = testCaseChannelCodeMap.get(testCase);
         // when
-        ChannelPspList response = restClient.getChannelPaymentServiceProviders(1,0,channelCode,requestId);
+        ChannelPspList response = restClient.getChannelPaymentServiceProviders(1, 0, channelCode, requestId);
 
         //then
         assertNotNull(response);
         assertFalse(response.getPsp().isEmpty());
+    }
+
+    @Test
+    void getStations_fullyNull() {
+        //given
+        TestCase testCase = TestCase.FULLY_NULL;
+        Integer page = (Integer) testCaseChannelParamMap.get(testCase).get("page");
+        Integer limit = (Integer) testCaseChannelParamMap.get(testCase).get("limit");
+        String code = (String) testCaseChannelParamMap.get(testCase).get("code");
+        String ordering = (String) testCaseChannelParamMap.get(testCase).get("ordering");
+        String brokerCode = null;
+        String creditorInstitutionCode = null;
+        String xRequestId = "1";
+        //when
+        Stations stations = restClient.getStations(limit, page, ordering, brokerCode, creditorInstitutionCode, code, xRequestId);
+        //then
+        assertNotNull(stations);
+        assertNull(stations.getStationsList());
+        assertNull(stations.getPageInfo());
+    }
+
+    @Test
+    void getStations_fullyValued() {
+        //given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        Integer page = (Integer) testCaseChannelParamMap.get(testCase).get("page");
+        Integer limit = (Integer) testCaseChannelParamMap.get(testCase).get("limit");
+        String sortBy = (String) testCaseChannelParamMap.get(testCase).get("sortBy");
+        String code = (String) testCaseChannelParamMap.get(testCase).get("code");
+        String ordering = (String) testCaseChannelParamMap.get(testCase).get("ordering");
+        String creditorInstitutionCode = "creditorInstitutionCode";
+        String brokerCode = null;
+        String xRequestId = UUID.randomUUID().toString();
+        //when
+        Stations stations = restClient.getStations(limit, page, ordering, brokerCode, creditorInstitutionCode, code, xRequestId);
+        //then
+        assertNotNull(stations);
+        assertFalse(stations.getStationsList().isEmpty());
+        assertNotNull(stations.getStationsList().get(0));
+        assertNotNull(stations.getPageInfo());
+    }
+
+    @Test
+    void getStation_fullyNull() {
+        //given
+        TestCase testCase = TestCase.EMPTY_RESULT;
+        String stationCode = testCaseStationCodeMap.get(testCase);
+        String xRequestId = UUID.randomUUID().toString();
+        //when
+        StationDetail stationDetail = restClient.getStation(stationCode, xRequestId);
+        //then
+        assertNotNull(stationDetail);
+    }
+
+    @Test
+    void getStation_fullyValued() {
+        //given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        String stationCode = testCaseStationCodeMap.get(testCase);
+        String xRequestId = UUID.randomUUID().toString();
+        //when
+        StationDetail stationDetail = restClient.getStation(stationCode, xRequestId);
     }
 
 
