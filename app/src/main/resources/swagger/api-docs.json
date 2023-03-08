@@ -1,9 +1,9 @@
 {
   "openapi" : "3.0.3",
   "info" : {
-    "title" : "pagopa-selfcare-ms-backoffice",
+    "title" : "@project.parent.artifactId@",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.82"
+    "version" : "@project.version@"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -156,6 +156,68 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ChannelDetailsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/channels/brokerspsp" : {
+      "post" : {
+        "tags" : [ "channels" ],
+        "summary" : "createBrokerPsp",
+        "description" : "Create a PSP broker",
+        "operationId" : "createBrokerPspUsingPOST",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BrokerPspDetailsDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BrokerPspDetailsResource"
                 }
               }
             }
@@ -1705,6 +1767,42 @@
           "origin" : {
             "type" : "string",
             "description" : "Institution data origin"
+          }
+        }
+      },
+      "BrokerPspDetailsDto" : {
+        "title" : "BrokerPspDetailsDto",
+        "type" : "object",
+        "properties" : {
+          "broker_psp_code" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "extended_fault_bean" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "BrokerPspDetailsResource" : {
+        "title" : "BrokerPspDetailsResource",
+        "type" : "object",
+        "properties" : {
+          "broker_psp_code" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "extended_fault_bean" : {
+            "type" : "boolean"
           }
         }
       },

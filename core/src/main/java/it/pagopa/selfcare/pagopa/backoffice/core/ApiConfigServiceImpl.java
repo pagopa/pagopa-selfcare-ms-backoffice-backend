@@ -149,4 +149,13 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.trace("getChannelPaymentServiceProviders end");
         return response;
     }
+
+    @Override
+    public BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails, String xRequestId) {
+        log.trace("createBrokerPsp start");
+        BrokerPspDetails response = apiConfigConnector.createBrokerPsp(brokerPspDetails, xRequestId);
+        log.debug("createBrokerPsp result = {}", response);
+        log.trace("createBrokerPsp end");
+        return response;
+    }
 }

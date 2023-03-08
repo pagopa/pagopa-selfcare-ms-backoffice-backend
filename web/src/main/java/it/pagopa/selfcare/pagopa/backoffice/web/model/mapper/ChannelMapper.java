@@ -294,4 +294,31 @@ public class ChannelMapper {
         }
         return resource;
     }
+
+    public static BrokerPspDetailsResource toResource(BrokerPspDetails model) {
+        BrokerPspDetailsResource resource = null;
+        if (model != null) {
+            resource = new BrokerPspDetailsResource();
+
+            resource.setDescription(model.getDescription());
+            resource.setEnabled(model.getEnabled());
+            resource.setBrokerPspCode(model.getBrokerPspCode());
+            resource.setExtendedFaultBean(model.getExtendedFaultBean());
+        }
+        return resource;
+    }
+
+    public static BrokerPspDetails fromBrokerPspDetailsDto(BrokerPspDetailsDto dto) {
+        BrokerPspDetails model = null;
+        if (model != null) {
+            model = new BrokerPspDetails();
+
+
+            model.setDescription(dto.getDescription());
+            model.setEnabled(dto.getEnabled());
+            model.setBrokerPspCode(dto.getBrokerPspCode());
+            model.setExtendedFaultBean(dto.getExtendedFaultBean());
+        }
+        return model;
+    }
 }
