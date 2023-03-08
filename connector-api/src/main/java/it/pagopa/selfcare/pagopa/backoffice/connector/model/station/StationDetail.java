@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Protocol;
 import lombok.Data;
 
-import javax.validation.constraints.Min;
-
 @Data
 public class StationDetail extends Station {
     @JsonProperty("ip")
@@ -81,7 +79,6 @@ public class StationDetail extends Station {
     @JsonProperty("timeout_a")
     private Long timeoutA = 15L;
 
-    @Min(0)
     @JsonProperty("timeout_b")
     private Long timeoutB = 30L;
 

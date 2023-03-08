@@ -33,7 +33,7 @@ public class StationResource {
     @ApiModelProperty("${swagger.model.station.associatedCreditorInstitutions}")
 //    @JsonProperty(required = true)
 //    @NotBlank
-    private Integer associatedCreditorInstitutions = 0;
+    private Integer associatedCreditorInstitutions;
     @ApiModelProperty("${swagger.model.station.activationDate}")
     private Instant activationDate;
     @ApiModelProperty("${swagger.model.station.createdAt}")

@@ -33,6 +33,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setActivationDate(model.getActivationDate());
         stationDetailResource.setCreatedAt(model.getCreatedAt());
         stationDetailResource.setModifiedAt(model.getModifiedAt());
+        stationDetailResource.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
         stationDetailResource.setIp(model.getIp());
         stationDetailResource.setNewPassword(model.getNewPassword());
         stationDetailResource.setPassword(model.getPassword());
@@ -103,6 +104,7 @@ public class StationMapperImpl implements StationMapper {
         stationResource.setActivationDate(model.getActivationDate());
         stationResource.setCreatedAt(model.getCreatedAt());
         stationResource.setModifiedAt(model.getModifiedAt());
+        stationResource.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
 
         return stationResource;
     }

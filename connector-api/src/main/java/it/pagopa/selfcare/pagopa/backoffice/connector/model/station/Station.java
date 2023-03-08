@@ -19,7 +19,7 @@ public class Station {
     @JsonProperty("version")
     private Long version;
     private StationStatus stationStatus = StationStatus.ACTIVE;
-    private Integer associatedCreditorInstitutions;
+    private Integer associatedCreditorInstitutions = 0;
     private Instant activationDate = Instant.now();
     private Instant createdAt = Instant.now(); //FIXME when these fields will be available from apiConfig
     private Instant modifiedAt = Instant.now(); //FIXME
