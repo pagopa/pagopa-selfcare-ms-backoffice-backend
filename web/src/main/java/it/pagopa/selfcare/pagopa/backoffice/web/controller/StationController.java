@@ -3,19 +3,29 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Slf4j
 @RestController
 @RequestMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "stations")
 public class StationController {
+
+    private StationMapper mapper = Mappers.getMapper(StationMapper.class);
     private final ApiConfigService apiConfigService;
 
     @Autowired
@@ -28,17 +38,38 @@ public class StationController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getStations}")
     public StationsResource getStations(@ApiParam("${swagger.pageable.number}")
-                                            @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                        @RequestParam(required = false, defaultValue = "50") Integer limit,
                                         @ApiParam("${swagger.pageable.start}")
-                                            @RequestParam(required = true) Integer page,
+                                        @RequestParam(required = true) Integer page,
                                         @ApiParam("${swagger.model.station.id}")
-                                            @RequestParam(required = false) String stationCode,
+                                        @RequestParam(required = false) String stationCode,
                                         @ApiParam("${swagger.model.stations.ecCode}")
-                                            @RequestParam(required = false) String creditorInstitutionCode,
+                                        @RequestParam(required = false) String creditorInstitutionCode,
                                         @ApiParam("${swagger.model.sort.order}")
-                                            @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort){
+                                        @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort) {
+        log.trace("StationController getStations start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("StationController getStations ecCode = {}, stationCode = {}, X-Request-Id = {}", creditorInstitutionCode, stationCode, uuid);
+        Stations stations = apiConfigService.getStations(limit, page, sort, creditorInstitutionCode, stationCode, uuid);
+        StationsResource resource = mapper.toResource(stations);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "StationController result = {}", resource);
+        log.trace("StationController getStations end");
+        return resource;
+    }
 
-        return null;
+    @GetMapping("/details/{stationId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.getStation}")
+    public StationDetailResource getStation(@ApiParam("${swagger.model.station.id}")
+                                            @PathVariable("stationId") String stationCode) {
+        log.trace("getStation start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("getStation stationCode = {}, X-Request-Id = {}", stationCode, uuid);
+        StationDetail stationDetail = apiConfigService.getStation(stationCode, uuid);
+        StationDetailResource resource = mapper.toResource(stationDetail);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStation result = {}", resource);
+        log.trace("getStation end");
+        return resource;
     }
 
 }

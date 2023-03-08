@@ -15,18 +15,30 @@ public class StationResource {
     @ApiModelProperty(value = "${swagger.model.station.id}", required = true)
     @JsonProperty(required = true)
     @NotBlank
-    private String stationId;
+    private String stationCode;
+    @ApiModelProperty(value = "${swagger.model.station.enabled}", required = true)
+    @JsonProperty(required = true)
+    private Boolean enabled;
 
-    @ApiModelProperty(value = "${swagger.model.station.status}", required = true)
+    @ApiModelProperty(value = "${swagger.model.station.brokerDescription}")
+    private String brokerDescription;
+    @ApiModelProperty("${swagger.model.station.version}")
     @JsonProperty(required = true)
     @NotNull
+    private Long version;
+    @ApiModelProperty(value = "${swagger.model.station.status}", required = true)
+//    @JsonProperty(required = true)
+//    @NotNull
     private StationStatus stationStatus;
-    @ApiModelProperty("${swagger.model.station.createdAt}")
-    private Instant createdAt;
+    @ApiModelProperty("${swagger.model.station.associatedCreditorInstitutions}")
+//    @JsonProperty(required = true)
+//    @NotBlank
+    private Integer associatedCreditorInstitutions = 0;
     @ApiModelProperty("${swagger.model.station.activationDate}")
     private Instant activationDate;
+    @ApiModelProperty("${swagger.model.station.createdAt}")
+    private Instant createdAt;
     @ApiModelProperty("${swagger.model.station.modifiedAt}")
     private Instant modifiedAt;
-
 
 }

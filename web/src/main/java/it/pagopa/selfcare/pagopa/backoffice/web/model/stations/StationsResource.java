@@ -13,6 +13,6 @@ public class StationsResource {
     @JsonProperty(required = true)
     private List<StationResource> stationsList;
     @ApiModelProperty(value = "${swagger.model.pageinfo}", required = true)
-    @JsonProperty(value = "page_info", required = true)
+    @JsonProperty(required = true)
     private PageInfo pageInfo;
 }

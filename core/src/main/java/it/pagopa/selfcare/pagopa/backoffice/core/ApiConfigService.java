@@ -1,6 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 
 public interface ApiConfigService {
 
@@ -24,8 +26,13 @@ public interface ApiConfigService {
 
     void deletePaymentServiceProvidersChannels(String pspCode, String channelCode, String xRequestId);
 
-    PspChannelPaymentTypes updatePaymentServiceProvidersChannels(String pspCode, String channelCode,PspChannelPaymentTypes pspChannelPaymentTypes, String xRequestId);
+    PspChannelPaymentTypes updatePaymentServiceProvidersChannels(String pspCode, String channelCode, PspChannelPaymentTypes pspChannelPaymentTypes, String xRequestId);
 
     void deleteChannel(String channelCode, String xRequestId);
-    PaymentServiceProviders getPspBrokerPsp(Integer limit,Integer page, String brokerPspCode,String uuid);
+
+    PaymentServiceProviders getPspBrokerPsp(Integer limit, Integer page, String brokerPspCode, String uuid);
+
+    Stations getStations(Integer limit, Integer page, String sort, String ecCode, String stationCode, String xRequestId);
+
+    StationDetail getStation(String stationCode, String xRequestId);
 }

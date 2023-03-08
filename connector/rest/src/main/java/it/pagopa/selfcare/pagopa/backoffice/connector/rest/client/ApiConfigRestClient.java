@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -79,13 +80,19 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     void deleteChannel(@PathVariable("channelcode") String channelCode, @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
     @GetMapping(value = "${rest-client.api-config.getStations.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
     Stations getStations(@RequestParam(required = false, defaultValue = "50") Integer limit,
                          @RequestParam(required = true) Integer page,
                          @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort,
-                         @RequestParam(name = "brokerCode", required = false)String brokerCode,
-                         @RequestParam(name = "creditorInstitutionCode", required = false)String creditorInstitutionCode,
+                         @RequestParam(name = "brokerCode", required = false) String brokerCode,
+                         @RequestParam(name = "creditorInstitutionCode", required = false) String creditorInstitutionCode,
                          @RequestParam(required = false) String code,
                          @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
+    @GetMapping(value = "${rest-client.api-config.getStation.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    StationDetail getStation(@PathVariable("stationcode") String stationCode,
+                             @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
     @GetMapping(value = "${rest-client.api-config.getPspBrokerPsp.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
