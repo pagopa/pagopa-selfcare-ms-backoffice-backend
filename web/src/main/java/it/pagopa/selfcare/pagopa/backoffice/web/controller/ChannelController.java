@@ -217,7 +217,7 @@ public class ChannelController {
         log.trace("updatePaymentServiceProvidersChannels start");
         String uuid = UUID.randomUUID().toString();
         log.debug("updatePaymentServiceProvidersChannels code pspCode = {}, channel = {}, pspChannelPaymentTypes = {}, uuid {}", pspCode, channelCode, pspChannelPaymentTypes, uuid);
-        PspChannelPaymentTypes response = apiConfigService.updatePaymentServiceProvidersChannels(pspCode, channelCode,pspChannelPaymentTypes, uuid);
+        PspChannelPaymentTypes response = apiConfigService.updatePaymentServiceProvidersChannels(pspCode, channelCode, pspChannelPaymentTypes, uuid);
         PspChannelPaymentTypesResource resource = ChannelMapper.toResource(response);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "updatePaymentServiceProvidersChannels result = {}", resource);
         log.trace("updatePaymentServiceProvidersChannels end");
@@ -241,21 +241,42 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getPspBrokerPsp}")
     public PaymentServiceProvidersResource getPspBrokerPsp(@ApiParam("${swagger.request.limit}")
-                                                    @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                                    @ApiParam("${swagger.request.page}")
-                                                    @RequestParam Integer page,
-                                                    @ApiParam("${swagger.request.brokerpspcode}")
-                                                    @PathVariable("brokerpspcode") String brokerPspCode) {
+                                                           @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                           @ApiParam("${swagger.request.page}")
+                                                           @RequestParam Integer page,
+                                                           @ApiParam("${swagger.request.brokerpspcode}")
+                                                           @PathVariable("brokerpspcode") String brokerPspCode) {
         log.trace("getPspBrokerPsp start");
         String uuid = UUID.randomUUID().toString();
-        log.debug("getPspBrokerPsp brokerPspCode = {} page = {} limit = {}, uuid {}",brokerPspCode,page, limit, uuid);
-        PaymentServiceProviders response = apiConfigService.getPspBrokerPsp(limit,page,brokerPspCode, uuid);
+        log.debug("getPspBrokerPsp brokerPspCode = {} page = {} limit = {}, uuid {}", brokerPspCode, page, limit, uuid);
+        PaymentServiceProviders response = apiConfigService.getPspBrokerPsp(limit, page, brokerPspCode, uuid);
         PaymentServiceProvidersResource resource = ChannelMapper.toResource(response);
 
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getPspBrokerPsp result = {}", resource);
         log.trace("getPspBrokerPsp end");
 
         return resource;
-     }
+    }
+
+    @GetMapping(value = "/{channelcode}/psp", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getChannelPaymentServiceProviders}")
+    public ChannelPspListResource getChannelPaymentServiceProviders(@ApiParam("${swagger.pageable.number}")
+                                                            @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                            @ApiParam("${swagger.pageable.start}")
+                                                            @RequestParam(required = true) Integer page,
+                                                            @ApiParam("${swagger.request.channelcode}")
+                                                            @PathVariable("channelcode") String channelCode) {
+        log.trace("getChannelPaymentServiceProviders start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("getChannelPaymentServiceProviders channelCode = {} page = {} limit = {}, uuid {}", channelCode, page, limit, uuid);
+        ChannelPspList response = apiConfigService.getChannelPaymentServiceProviders(limit, page, channelCode, uuid);
+        ChannelPspListResource resource = ChannelMapper.toResource(response);
+
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelPaymentServiceProviders result = {}", resource);
+        log.trace("getChannelPaymentServiceProviders end");
+
+        return resource;
+    }
 }
 

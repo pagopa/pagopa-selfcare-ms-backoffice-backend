@@ -489,4 +489,32 @@ class ChannelControllerTest {
                 .updatePaymentServiceProvidersChannels(anyString(), anyString(), any(), anyString());
 
     }
+
+    @Test
+    void getChannelPaymentServiceProviders() throws Exception {
+        final String channelCode = "channelCode";
+        final String xRequestId = "1";
+
+
+        ChannelPspList pspChannelPaymentTypes = mockInstance(new ChannelPspList());
+        ChannelPsp channelPsp = mockInstance(new ChannelPsp());
+        pspChannelPaymentTypes.setPsp(List.of(channelPsp));
+
+
+        when(apiConfigServiceMock.getChannelPaymentServiceProviders(anyInt(), anyInt(), anyString(), anyString()))
+                .thenReturn(pspChannelPaymentTypes);
+
+        mvc.perform(MockMvcRequestBuilders
+                .get(BASE_URL + "/{channelcode}/psp", channelCode)
+                .header("X-Request-Id", String.valueOf(xRequestId))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("page", "1")
+                .param("limit", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.payment_service_providers[*]", everyItem(notNullValue())));
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getChannelPaymentServiceProviders(anyInt(), anyInt(), anyString(), anyString());
+
+    }
 }

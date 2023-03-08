@@ -34,4 +34,6 @@ public interface ApiConfigConnector {
     Stations getStations(Integer limit, Integer page, String sort, String brokerCode, String ecCode, String stationCode, String xRequestId);
 
     StationDetail getStation(String stationCode, String xRequestId);
+
+    ChannelPspList getChannelPaymentServiceProviders(Integer limit,Integer page, String channelCode,String uuid);
 }

@@ -467,6 +467,34 @@ class ApiConfigRestClientTest {
         assertFalse(response.getPaymentTypeList().isEmpty());
     }
 
+    @Test
+    void getChannelPaymentServiceProviders_EmptyValued(){
+        // given
+        String requestId = UUID.randomUUID().toString();
+        TestCase testCase = TestCase.EMPTY_RESULT;
+        String channelCode = testCaseChannelCodeMap.get(testCase);
+
+        // when
+        ChannelPspList response = restClient.getChannelPaymentServiceProviders(1,0,channelCode,requestId);
+
+        //then
+        assertNotNull(response);
+        assertTrue(response.getPsp().isEmpty());
+    }
+    @Test
+    void getChannelPaymentServiceProviders_fullyValued(){
+        // given
+        String requestId = UUID.randomUUID().toString();
+        TestCase testCase = TestCase.FULLY_VALUED;
+        String channelCode = testCaseChannelCodeMap.get(testCase);
+        // when
+        ChannelPspList response = restClient.getChannelPaymentServiceProviders(1,0,channelCode,requestId);
+
+        //then
+        assertNotNull(response);
+        assertFalse(response.getPsp().isEmpty());
+    }
+
 
     private void checkNotNullFields(Object o, String... excludedFields) {
         Set<String> excludedFieldsSet = new HashSet<>(Arrays.asList(excludedFields));

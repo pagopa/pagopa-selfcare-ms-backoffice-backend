@@ -263,4 +263,35 @@ public class ChannelMapper {
         }
         return resource;
     }
+
+    public static ChannelPspResource toResource(ChannelPsp model) {
+        ChannelPspResource resource = null;
+        List<String> list = new ArrayList<>();
+        if (model != null) {
+            resource = new ChannelPspResource();
+            if (model.getPaymentTypeList() != null) {
+                model.getPaymentTypeList().forEach(i -> list.add(i));
+            }
+            resource.setEnabled(model.getEnabled());
+            resource.setBusinessName(model.getBusinessName());
+            resource.setPspCode(model.getPspCode());
+            resource.setPaymentTypeList(list);
+        }
+        return resource;
+    }
+
+    public static ChannelPspListResource toResource(ChannelPspList model) {
+        ChannelPspListResource resource = null;
+        List<ChannelPspResource> list = new ArrayList<>();
+        if (model != null) {
+            resource = new ChannelPspListResource();
+            if (model.getPsp() != null) {
+                model.getPsp().forEach(i -> list.add(toResource(i)));
+            }
+            resource.setPageInfo(model.getPageInfo());
+            resource.setPsp(list);
+
+        }
+        return resource;
+    }
 }

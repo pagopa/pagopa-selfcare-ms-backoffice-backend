@@ -4,6 +4,8 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -146,6 +148,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.debug("getChannel stationCode = {}, xRequestId = {}", stationCode, xRequestId);
         StationDetail response = apiConfigConnector.getStation(stationCode, xRequestId);
         log.debug("getChannels result = {}", response);
+        return response;
+    }
+
+    @Override
+    public ChannelPspList getChannelPaymentServiceProviders(Integer limit, Integer page, String channelCode, String uuid) {
+        log.trace("getChannelPaymentServiceProviders start");
+        ChannelPspList response = apiConfigConnector.getChannelPaymentServiceProviders(limit, page, channelCode, uuid);
+        log.debug("getChannelPaymentServiceProviders result = {}", response);
+        log.trace("getChannelPaymentServiceProviders end");
         return response;
     }
 }
