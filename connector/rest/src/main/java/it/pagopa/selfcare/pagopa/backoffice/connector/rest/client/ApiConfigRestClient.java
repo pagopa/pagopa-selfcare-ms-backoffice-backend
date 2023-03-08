@@ -84,6 +84,7 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                                             @RequestParam Integer page,
                                             @PathVariable("brokerpspcode") String brokerPspCode,
                                             @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
     @GetMapping(value ="${rest-client.api-config.getChannelsCSV.path}", produces = {MediaType.TEXT_PLAIN_VALUE,MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     Resource getChannelsCSV(String uuid);

@@ -336,5 +336,4 @@ class ApiConfigServiceImplTest {
                 .getChannelsCSV(anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
-
 }

@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
+import com.azure.core.http.HttpHeader;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -15,7 +16,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -266,6 +266,8 @@ public class ChannelController {
 
         return resource;
      }
+
+
     @GetMapping(value = "/csv",produces = {MediaType.TEXT_PLAIN_VALUE,MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getChannelsCSV}")
