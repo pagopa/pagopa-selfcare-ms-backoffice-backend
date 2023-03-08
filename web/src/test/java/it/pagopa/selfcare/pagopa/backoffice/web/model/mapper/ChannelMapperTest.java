@@ -4,6 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
@@ -184,6 +185,52 @@ class ChannelMapperTest {
         PaymentServiceProvider model = null;
         //when
         PaymentServiceProviderResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNull(resource);
+    }
+
+    @Test
+    void toChannelPspList() {
+        //given
+        ChannelPspList model = mockInstance(new ChannelPspList());
+        ChannelPsp model2 = mockInstance(new ChannelPsp());
+        model.setPsp(List.of(model2));
+        //when
+        ChannelPspListResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNotNull(resource);
+        reflectionEqualsByName(model, resource);
+    }
+
+    @Test
+    void toChannelPspList_null() {
+        //given
+        ChannelPspList model = null;
+        //when
+        ChannelPspListResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNull(resource);
+    }
+
+    @Test
+    void toChannelPsp() {
+        //given
+        ChannelPsp model = mockInstance(new ChannelPsp());
+        model.setPspCode("pspcode");
+        model.setPaymentTypeList(new ArrayList<>());
+        //when
+        ChannelPspResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNotNull(resource);
+        reflectionEqualsByName(model, resource);
+    }
+
+    @Test
+    void toChannelPsp_null() {
+        //given
+        ChannelPsp model = null;
+        //when
+        ChannelPspResource resource = ChannelMapper.toResource(model);
         //then
         assertNull(resource);
     }

@@ -545,6 +545,16 @@
               }
             }
           },
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "500" : {
             "description" : "Internal Server Error",
             "content" : {
@@ -773,6 +783,16 @@
               }
             }
           },
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "500" : {
             "description" : "Internal Server Error",
             "content" : {
@@ -891,6 +911,99 @@
           },
           "401" : {
             "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/channels/{channelcode}/psp" : {
+      "get" : {
+        "tags" : [ "channels" ],
+        "summary" : "getChannelPaymentServiceProviders",
+        "description" : "Get paginated list of PSPs associated with the channel",
+        "operationId" : "getChannelPaymentServiceProvidersUsingGET",
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of elements on one page. Default = 50",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number. Page value starts from 0",
+          "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "channelcode",
+          "in" : "path",
+          "description" : "Code of the payment channel",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ChannelPspListResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
             "content" : {
               "application/problem+json" : {
                 "schema" : {
@@ -1968,6 +2081,49 @@
             "type" : "integer",
             "description" : "timeout C",
             "format" : "int64"
+          }
+        }
+      },
+      "ChannelPspListResource" : {
+        "title" : "ChannelPspListResource",
+        "type" : "object",
+        "properties" : {
+          "page_info" : {
+            "description" : "info pageable",
+            "$ref" : "#/components/schemas/PageInfo"
+          },
+          "payment_service_providers" : {
+            "type" : "array",
+            "description" : "enabled",
+            "items" : {
+              "$ref" : "#/components/schemas/ChannelPspResource"
+            }
+          }
+        }
+      },
+      "ChannelPspResource" : {
+        "title" : "ChannelPspResource",
+        "type" : "object",
+        "properties" : {
+          "business_name" : {
+            "type" : "string",
+            "description" : "business name of the payment service provider"
+          },
+          "enabled" : {
+            "type" : "boolean",
+            "description" : "enabled",
+            "example" : false
+          },
+          "payment_types" : {
+            "type" : "array",
+            "description" : "List of payment types",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "psp_code" : {
+            "type" : "string",
+            "description" : "Code of the payment service provider"
           }
         }
       },

@@ -32,4 +32,5 @@ public interface ApiConfigService {
     PaymentServiceProviders getPspBrokerPsp(Integer limit,Integer page, String brokerPspCode,String uuid);
 
     Resource getChannelsCSV(String uuid);
+    ChannelPspList getChannelPaymentServiceProviders(Integer limit,Integer page, String channelCode,String uuid);
 }

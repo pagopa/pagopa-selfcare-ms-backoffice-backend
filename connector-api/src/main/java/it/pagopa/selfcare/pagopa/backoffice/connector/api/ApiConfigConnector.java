@@ -9,7 +9,6 @@ import org.springframework.core.io.Resource;
 public interface ApiConfigConnector {
 
     Channels getChannels(Integer limit, Integer page, String code, String sort, String xRequestId);
-
     ChannelDetails createChannel(ChannelDetails channelDetails, String xRequestId);
     ChannelDetails updateChannel(ChannelDetails channelDetails,String channelCode, String xRequestId);
     PspChannels getPspChannels(String pspCode, String xRequestId);
@@ -23,4 +22,5 @@ public interface ApiConfigConnector {
     void deleteChannel(String channelCode, String xRequestId);
     PaymentServiceProviders getPspBrokerPsp(Integer limit,Integer page,String brokerPspCode,String uuid);
     Resource getChannelsCSV(String uuid);
+    ChannelPspList getChannelPaymentServiceProviders(Integer limit,Integer page, String channelCode,String uuid);
 }

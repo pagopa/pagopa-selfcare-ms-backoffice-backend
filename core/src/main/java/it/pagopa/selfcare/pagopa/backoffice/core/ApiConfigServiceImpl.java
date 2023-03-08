@@ -108,9 +108,9 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
-    public PspChannelPaymentTypes updatePaymentServiceProvidersChannels(String pspCode, String channelCode,PspChannelPaymentTypes pspChannelPaymentTypes, String xRequestId) {
+    public PspChannelPaymentTypes updatePaymentServiceProvidersChannels(String pspCode, String channelCode, PspChannelPaymentTypes pspChannelPaymentTypes, String xRequestId) {
         log.trace("updatePaymentServiceProvidersChannels start");
-        PspChannelPaymentTypes response = apiConfigConnector.updatePaymentServiceProvidersChannels(pspCode, channelCode,pspChannelPaymentTypes, xRequestId);
+        PspChannelPaymentTypes response = apiConfigConnector.updatePaymentServiceProvidersChannels(pspCode, channelCode, pspChannelPaymentTypes, xRequestId);
         log.debug("updatePaymentServiceProvidersChannels result = {}", response);
         log.trace("updatePaymentServiceProvidersChannels end");
         return response;
@@ -139,6 +139,14 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         Resource response = apiConfigConnector.getChannelsCSV(uuid);
         log.debug("getChannelsCSV result = {}", response);
         log.trace("getChannelsCSV end");
+        return response;
+    }
+
+    public ChannelPspList getChannelPaymentServiceProviders(Integer limit, Integer page, String channelCode, String uuid) {
+        log.trace("getChannelPaymentServiceProviders start");
+        ChannelPspList response = apiConfigConnector.getChannelPaymentServiceProviders(limit, page, channelCode, uuid);
+        log.debug("getChannelPaymentServiceProviders result = {}", response);
+        log.trace("getChannelPaymentServiceProviders end");
         return response;
     }
 }
