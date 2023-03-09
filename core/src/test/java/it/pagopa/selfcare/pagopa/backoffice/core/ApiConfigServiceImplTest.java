@@ -6,9 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
@@ -307,6 +312,29 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
+    void getChannelsCSV() throws IOException {
+        //given
+        final String xRequestId = "xRequestId";
+
+        File file = File.createTempFile("channels", ".csv");
+        FileWriter writer = new FileWriter(file);
+        writer.write("id,name\n1,channel1\n2,channel2\n");
+        writer.close();
+        Resource resource = mockInstance(new FileSystemResource(file));
+
+        when(apiConfigConnectorMock.getChannelsCSV(anyString()))
+                .thenReturn(resource);
+
+        //when
+        Resource resourceResp = apiConfigService.getChannelsCSV(xRequestId);
+        //then
+        assertNotNull(resourceResp);
+        assertEquals(resourceResp, resource);
+
+        verify(apiConfigConnectorMock, times(1))
+                .getChannelsCSV(anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
     void getChannelPaymentServiceProviders() {
         //given
         final String xRequestId = "xRequestId";

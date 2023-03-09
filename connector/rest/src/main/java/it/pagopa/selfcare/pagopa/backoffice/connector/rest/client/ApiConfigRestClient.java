@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -84,6 +85,9 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                                             @PathVariable("brokerpspcode") String brokerPspCode,
                                             @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
+    @GetMapping(value ="${rest-client.api-config.getChannelsCSV.path}", produces = {MediaType.TEXT_PLAIN_VALUE,MediaType.APPLICATION_JSON_VALUE})
+    @ResponseBody
+    Resource getChannelsCSV(String uuid);
     @GetMapping(value = "${rest-client.api-config.getChannelPaymentServiceProviders.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     ChannelPspList getChannelPaymentServiceProviders(@RequestParam(required = false, defaultValue = "50") Integer limit,

@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import org.springframework.core.io.Resource;
 
 public interface ApiConfigService {
 
@@ -27,7 +28,9 @@ public interface ApiConfigService {
     PspChannelPaymentTypes updatePaymentServiceProvidersChannels(String pspCode, String channelCode,PspChannelPaymentTypes pspChannelPaymentTypes, String xRequestId);
 
     void deleteChannel(String channelCode, String xRequestId);
+
     PaymentServiceProviders getPspBrokerPsp(Integer limit,Integer page, String brokerPspCode,String uuid);
 
+    Resource getChannelsCSV(String uuid);
     ChannelPspList getChannelPaymentServiceProviders(Integer limit,Integer page, String channelCode,String uuid);
 }

@@ -259,6 +259,74 @@
         } ]
       }
     },
+    "/channels/csv" : {
+      "get" : {
+        "tags" : [ "channels" ],
+        "summary" : "getChannelsCSV",
+        "description" : "Download the list of channelss as CSV file",
+        "operationId" : "getChannelsCSVUsingGET",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Resource"
+                }
+              },
+              "text/plain" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Resource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/channels/details/{channelcode}" : {
       "get" : {
         "tags" : [ "channels" ],
@@ -2131,6 +2199,10 @@
           }
         }
       },
+      "InputStream" : {
+        "title" : "InputStream",
+        "type" : "object"
+      },
       "InstitutionDetailResource" : {
         "title" : "InstitutionDetailResource",
         "required" : [ "address", "attributes", "description", "digitalAddress", "externalId", "id", "institutionType", "origin", "originId", "taxCode", "zipCode" ],
@@ -2509,6 +2581,39 @@
             "type" : "boolean",
             "description" : "PSP's Vat Number group",
             "example" : false
+          }
+        }
+      },
+      "Resource" : {
+        "title" : "Resource",
+        "type" : "object",
+        "properties" : {
+          "description" : {
+            "type" : "string"
+          },
+          "file" : {
+            "type" : "string",
+            "format" : "binary"
+          },
+          "filename" : {
+            "type" : "string"
+          },
+          "inputStream" : {
+            "$ref" : "#/components/schemas/InputStream"
+          },
+          "open" : {
+            "type" : "boolean"
+          },
+          "readable" : {
+            "type" : "boolean"
+          },
+          "uri" : {
+            "type" : "string",
+            "format" : "uri"
+          },
+          "url" : {
+            "type" : "string",
+            "format" : "url"
           }
         }
       }
