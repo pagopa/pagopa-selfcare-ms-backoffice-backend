@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -68,6 +69,8 @@ class ChannelControllerTest {
         Channel channel = mockInstance(new Channel());
         Channels channels = mockInstance(new Channels(), "setchannelList");
         channels.setChannelList(List.of(channel));
+        PageInfo pageInfo = mockInstance(new PageInfo());
+        channels.setPageInfo(pageInfo);
 
         when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), anyString(), anyString(), anyString()))
                 .thenReturn(channels);
@@ -78,19 +81,15 @@ class ChannelControllerTest {
                         .queryParam("page", String.valueOf(page))
                         .queryParam("code", code)
                         .queryParam("sort", sort)
-                        .header("X-Request-Id", String.valueOf(xRequestId))
-
-
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-
                 .andExpect(jsonPath("$.page_info", notNullValue()))
                 .andExpect(jsonPath("$.channels", notNullValue()))
                 .andExpect(jsonPath("$.channels", not(empty())))
                 .andExpect(jsonPath("$.channels[0].broker_description", notNullValue()));
         //then
         verify(apiConfigServiceMock, times(1))
-                .getChannels(limit, page, code, sort, xRequestId);
+                .getChannels(eq(limit), eq(page), eq(code), eq(sort), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -112,7 +111,6 @@ class ChannelControllerTest {
         //when
         mvc.perform(MockMvcRequestBuilders
                         .get(BASE_URL + "/details/{channelcode}", channelcode)
-                        .header("X-Request-Id", String.valueOf(xRequestId))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
 
@@ -141,9 +139,9 @@ class ChannelControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .getChannelDetails(channelcode, xRequestId);
+                .getChannelDetails(eq(channelcode), anyString());
         verify(apiConfigServiceMock, times(1))
-                .getChannelPaymentTypes(channelcode, xRequestId);
+                .getChannelPaymentTypes(eq(channelcode), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
 
     }
@@ -168,8 +166,7 @@ class ChannelControllerTest {
                         .post(BASE_URL)
                         .content(dto.getInputStream().readAllBytes())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-Request-Id", String.valueOf(xRequestId)))
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.password", is(channelDetails.getPassword())))
@@ -197,10 +194,10 @@ class ChannelControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .createChannel(channelDetails, xRequestId);
+                .createChannel(eq(channelDetails), anyString());
 
         verify(apiConfigServiceMock, times(1))
-                .createChannelPaymentType(pspChannelPaymentTypes, channelCode, xRequestId);
+                .createChannelPaymentType(eq(pspChannelPaymentTypes), eq(channelCode), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -312,7 +309,7 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.channels[*].payment_types", everyItem(notNullValue())));
         //then
         verify(apiConfigServiceMock, times(1))
-                .getPspChannels(pspCode, xRequestId);
+                .getPspChannels(eq(pspCode), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 

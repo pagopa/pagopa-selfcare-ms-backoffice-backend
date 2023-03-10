@@ -1,0 +1,45 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/apiconfig/auth/api/v1/stations",
+    "queryParameters": {
+      "page": {
+        "equalTo": "2"
+      },
+      "code": {
+        "equalTo": "code1"
+      },
+      "ordering": {
+        "equalTo": "DESC"
+      },
+      "limit": {
+        "equalTo": "16"
+      },
+      "creditorInstitutionCode": {
+        "equalTo": "creditorInstitutionCode"
+      }
+    }
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": {
+          "stations": [
+            {
+              "broker_description": "Lorem ipsum dolor sit amet",
+              "enabled": true,
+              "station_code": "1234567890100",
+              "version": 2
+            }
+          ],
+      "page_info": {
+        "items_found": 1,
+        "limit": 1,
+        "page": 1,
+        "total_pages": 1
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

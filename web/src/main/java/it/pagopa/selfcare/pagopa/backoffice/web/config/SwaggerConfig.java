@@ -116,7 +116,8 @@ class SwaggerConfig {
                         .build())
                 .select().apis(RequestHandlerSelectors.basePackage("it.pagopa.selfcare.pagopa.backoffice.web.controller")).build()
                 .tags(new Tag("institution", environment.getProperty("swagger.tag.institution.description")),
-                        new Tag("channels", environment.getProperty("swagger.tag.channels.description")))
+                        new Tag("channels", environment.getProperty("swagger.tag.channels.description")),
+                        new Tag("stations", environment.getProperty("swagger.tag.stations.description")))
                 .directModelSubstitute(LocalTime.class, String.class)
                 .useDefaultResponseMessages(false)
                 .forCodeGeneration(true)
