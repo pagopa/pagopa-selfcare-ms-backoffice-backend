@@ -89,6 +89,7 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     @ResponseBody
     Resource getChannelsCSV(String uuid);
 
+
     @GetMapping(value = "${rest-client.api-config.getChannelPaymentServiceProviders.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     ChannelPspList getChannelPaymentServiceProviders(@RequestParam(required = false, defaultValue = "50") Integer limit,

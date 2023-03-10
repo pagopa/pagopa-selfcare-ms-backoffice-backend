@@ -335,7 +335,7 @@ class ApiConfigServiceImplTest {
                 .getChannelsCSV(anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
-    @Test
+     @Test
     void getChannelPaymentServiceProviders() {
         //given
         final String xRequestId = "xRequestId";

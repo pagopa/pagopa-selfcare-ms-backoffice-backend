@@ -577,10 +577,10 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.description", is(brokerPspDetails.getDescription())))
                 .andExpect(jsonPath("$.enabled", is(brokerPspDetails.getEnabled())))
                 .andExpect(jsonPath("$.extended_fault_bean", is(brokerPspDetails.getExtendedFaultBean())));
-
         //then
         verify(apiConfigServiceMock, times(1))
                 .createBrokerPsp(any(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
+
     }
 }
