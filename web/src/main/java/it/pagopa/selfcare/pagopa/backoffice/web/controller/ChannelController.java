@@ -10,10 +10,13 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
@@ -258,15 +261,31 @@ public class ChannelController {
         return resource;
     }
 
+
+    @GetMapping(value = "/csv", produces = {MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getChannelsCSV}")
+    public Resource getChannelsCSV(HttpServletResponse response) {
+        response.setContentType("text/csv");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"channels.csv\"");
+        log.trace(" getChannelsCSV start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("uuid = {}", uuid);
+        Resource resource = apiConfigService.getChannelsCSV(uuid);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelsCSV result = {}", resource);
+        log.trace("getChannelDetails end");
+        return resource;
+    }
+
     @GetMapping(value = "/{channelcode}/psp", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getChannelPaymentServiceProviders}")
     public ChannelPspListResource getChannelPaymentServiceProviders(@ApiParam("${swagger.pageable.number}")
-                                                            @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                                            @ApiParam("${swagger.pageable.start}")
-                                                            @RequestParam(required = true) Integer page,
-                                                            @ApiParam("${swagger.request.channelcode}")
-                                                            @PathVariable("channelcode") String channelCode) {
+                                                                    @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                                    @ApiParam("${swagger.pageable.start}")
+                                                                    @RequestParam(required = true) Integer page,
+                                                                    @ApiParam("${swagger.request.channelcode}")
+                                                                    @PathVariable("channelcode") String channelCode) {
         log.trace("getChannelPaymentServiceProviders start");
         String uuid = UUID.randomUUID().toString();
         log.debug("getChannelPaymentServiceProviders channelCode = {} page = {} limit = {}, uuid {}", channelCode, page, limit, uuid);
@@ -275,7 +294,26 @@ public class ChannelController {
 
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelPaymentServiceProviders result = {}", resource);
         log.trace("getChannelPaymentServiceProviders end");
+        return resource;
+    }
 
+    @PostMapping(value = "/brokerspsp", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.createBrokerPsp}")
+    public BrokerPspDetailsResource createBrokerPsp(@RequestBody @NotNull BrokerPspDetailsDto brokerPspDetailsDto) {
+        log.trace("createBrokerPsp start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("createBrokerPsp code brokerPspDetailsDto = {}", brokerPspDetailsDto);
+
+
+        BrokerPspDetails brokerPspDetails = ChannelMapper.fromBrokerPspDetailsDto(brokerPspDetailsDto);
+        BrokerPspDetails response = apiConfigService.createBrokerPsp(brokerPspDetails, uuid);
+
+
+        BrokerPspDetailsResource resource = ChannelMapper.toResource(response);
+
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createBrokerPsp result = {}", resource);
+        log.trace("createBrokerPsp end");
         return resource;
     }
 }

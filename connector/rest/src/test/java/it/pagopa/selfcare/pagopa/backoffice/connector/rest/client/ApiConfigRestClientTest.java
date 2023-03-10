@@ -564,6 +564,24 @@ class ApiConfigRestClientTest {
         StationDetail stationDetail = restClient.getStation(stationCode, xRequestId);
     }
 
+    @Test
+    void createBrokerPsp_fullyValued(){
+        // given
+        String requestId = UUID.randomUUID().toString();
+        TestCase testCase = TestCase.FULLY_VALUED;
+        BrokerPspDetails brokerPspDetails = new BrokerPspDetails();
+        brokerPspDetails.setEnabled(true);
+        brokerPspDetails.setDescription("description");
+        brokerPspDetails.setExtendedFaultBean(true);
+        brokerPspDetails.setBrokerPspCode("pspcode1");
+        // when
+        BrokerPspDetails response = restClient.createBrokerPsp(brokerPspDetails,requestId);
+
+        //then
+        assertNotNull(response);
+
+    }
+
 
     private void checkNotNullFields(Object o, String... excludedFields) {
         Set<String> excludedFieldsSet = new HashSet<>(Arrays.asList(excludedFields));

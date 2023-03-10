@@ -13,12 +13,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.util.List;
 
@@ -491,6 +494,32 @@ class ChannelControllerTest {
     }
 
     @Test
+    void getChannelsCSV() throws Exception {
+
+        File file = File.createTempFile("channels", ".csv");
+        FileWriter writer = new FileWriter(file);
+        writer.write("id,name\n1,channel1\n2,channel2\n");
+        writer.close();
+
+        String xRequestId = "1";
+
+        Resource resource = mockInstance(new FileSystemResource(file));
+        when(apiConfigServiceMock.getChannelsCSV(anyString()))
+                .thenReturn(resource);
+
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/csv")
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.TEXT_PLAIN_VALUE))
+                .andExpect(status().isOk());
+
+        verify(apiConfigServiceMock, times(1))
+                .getChannelsCSV(anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+
+    }
+
     void getChannelPaymentServiceProviders() throws Exception {
         final String channelCode = "channelCode";
         final String xRequestId = "1";
@@ -505,16 +534,50 @@ class ChannelControllerTest {
                 .thenReturn(pspChannelPaymentTypes);
 
         mvc.perform(MockMvcRequestBuilders
-                .get(BASE_URL + "/{channelcode}/psp", channelCode)
-                .header("X-Request-Id", String.valueOf(xRequestId))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .param("page", "1")
-                .param("limit", "1"))
+                        .get(BASE_URL + "/{channelcode}/psp", channelCode)
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .param("page", "1")
+                        .param("limit", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payment_service_providers[*]", everyItem(notNullValue())));
         //then
         verify(apiConfigServiceMock, times(1))
                 .getChannelPaymentServiceProviders(anyInt(), anyInt(), anyString(), anyString());
+
+
+    }
+
+
+    @Test
+    void createBrokerPsp(@Value("classpath:stubs/brokerPspDto.json") Resource dto) throws Exception {
+        //given
+        String xRequestId = "1";
+
+        PspChannelPaymentTypes pspChannelPaymentTypes = mockInstance(new PspChannelPaymentTypes());
+        InputStream is = dto.getInputStream();
+        BrokerPspDetails brokerPspDetails = objectMapper.readValue(is, BrokerPspDetails.class);
+
+        when(apiConfigServiceMock.createBrokerPsp(any(), anyString()))
+                .thenReturn(brokerPspDetails);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .post(BASE_URL + "/brokerspsp")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(APPLICATION_JSON))
+
+                .andExpect(jsonPath("$.broker_psp_code", is(brokerPspDetails.getBrokerPspCode())))
+                .andExpect(jsonPath("$.description", is(brokerPspDetails.getDescription())))
+                .andExpect(jsonPath("$.enabled", is(brokerPspDetails.getEnabled())))
+                .andExpect(jsonPath("$.extended_fault_bean", is(brokerPspDetails.getExtendedFaultBean())));
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .createBrokerPsp(any(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
 
     }
 }

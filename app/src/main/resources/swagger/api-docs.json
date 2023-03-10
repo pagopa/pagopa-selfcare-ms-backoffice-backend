@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.82"
+    "version" : "0.0.83"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -182,6 +182,68 @@
         } ]
       }
     },
+    "/channels/brokerspsp" : {
+      "post" : {
+        "tags" : [ "channels" ],
+        "summary" : "createBrokerPsp",
+        "description" : "Create a PSP broker",
+        "operationId" : "createBrokerPspUsingPOST",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BrokerPspDetailsDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BrokerPspDetailsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/channels/configuration/paymenttypes" : {
       "get" : {
         "tags" : [ "channels" ],
@@ -195,6 +257,74 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/PaymentTypesResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/channels/csv" : {
+      "get" : {
+        "tags" : [ "channels" ],
+        "summary" : "getChannelsCSV",
+        "description" : "Download the list of channelss as CSV file",
+        "operationId" : "getChannelsCSVUsingGET",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Resource"
+                }
+              },
+              "text/plain" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Resource"
                 }
               }
             }
@@ -1794,6 +1924,42 @@
           }
         }
       },
+      "BrokerPspDetailsDto" : {
+        "title" : "BrokerPspDetailsDto",
+        "type" : "object",
+        "properties" : {
+          "broker_psp_code" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "extended_fault_bean" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "BrokerPspDetailsResource" : {
+        "title" : "BrokerPspDetailsResource",
+        "type" : "object",
+        "properties" : {
+          "broker_psp_code" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "extended_fault_bean" : {
+            "type" : "boolean"
+          }
+        }
+      },
       "ChannelDetailsDto" : {
         "title" : "ChannelDetailsDto",
         "type" : "object",
@@ -2284,6 +2450,10 @@
             "description" : "DPO's PEC"
           }
         }
+      },
+      "InputStream" : {
+        "title" : "InputStream",
+        "type" : "object"
       },
       "InstitutionDetailResource" : {
         "title" : "InstitutionDetailResource",
@@ -2934,6 +3104,39 @@
             "items" : {
               "$ref" : "#/components/schemas/StationResource"
             }
+          }
+        }
+      },
+      "Resource" : {
+        "title" : "Resource",
+        "type" : "object",
+        "properties" : {
+          "description" : {
+            "type" : "string"
+          },
+          "file" : {
+            "type" : "string",
+            "format" : "binary"
+          },
+          "filename" : {
+            "type" : "string"
+          },
+          "inputStream" : {
+            "$ref" : "#/components/schemas/InputStream"
+          },
+          "open" : {
+            "type" : "boolean"
+          },
+          "readable" : {
+            "type" : "boolean"
+          },
+          "uri" : {
+            "type" : "string",
+            "format" : "uri"
+          },
+          "url" : {
+            "type" : "string",
+            "format" : "url"
           }
         }
       }
