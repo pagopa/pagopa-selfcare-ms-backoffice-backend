@@ -47,13 +47,13 @@ public class StationController {
                                         @RequestParam(required = false) String creditorInstitutionCode,
                                         @ApiParam("${swagger.model.sort.order}")
                                         @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort) {
-        log.trace("StationController getStations start");
+        log.trace("getStations start");
         String uuid = UUID.randomUUID().toString();
-        log.debug("StationController getStations ecCode = {}, stationCode = {}, X-Request-Id = {}", creditorInstitutionCode, stationCode, uuid);
+        log.debug("getStations ecCode = {}, stationCode = {}, X-Request-Id = {}", creditorInstitutionCode, stationCode, uuid);
         Stations stations = apiConfigService.getStations(limit, page, sort, creditorInstitutionCode, stationCode, uuid);
         StationsResource resource = mapper.toResource(stations);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "StationController result = {}", resource);
-        log.trace("StationController getStations end");
+        log.trace("getStations end");
         return resource;
     }
 

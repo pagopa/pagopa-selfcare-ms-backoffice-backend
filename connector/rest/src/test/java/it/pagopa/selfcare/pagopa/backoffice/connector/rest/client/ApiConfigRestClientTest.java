@@ -491,9 +491,9 @@ class ApiConfigRestClientTest {
     @Test
     void getChannelPaymentServiceProviders_fullyValued() {
         // given
-        String requestId = UUID.randomUUID().toString();
-        TestCase testCase = TestCase.FULLY_VALUED;
-        String channelCode = testCaseChannelCodeMap.get(testCase);
+        final String requestId = UUID.randomUUID().toString();
+        final TestCase testCase = TestCase.FULLY_VALUED;
+        final String channelCode = testCaseChannelCodeMap.get(testCase);
         // when
         ChannelPspList response = restClient.getChannelPaymentServiceProviders(1, 0, channelCode, requestId);
 
@@ -505,14 +505,14 @@ class ApiConfigRestClientTest {
     @Test
     void getStations_fullyNull() {
         //given
-        TestCase testCase = TestCase.FULLY_NULL;
-        Integer page = (Integer) testCaseChannelParamMap.get(testCase).get("page");
-        Integer limit = (Integer) testCaseChannelParamMap.get(testCase).get("limit");
-        String code = (String) testCaseChannelParamMap.get(testCase).get("code");
-        String ordering = (String) testCaseChannelParamMap.get(testCase).get("ordering");
-        String brokerCode = null;
-        String creditorInstitutionCode = null;
-        String xRequestId = "1";
+        final TestCase testCase = TestCase.FULLY_NULL;
+        final Integer page = (Integer) testCaseChannelParamMap.get(testCase).get("page");
+        final Integer limit = (Integer) testCaseChannelParamMap.get(testCase).get("limit");
+        final String code = (String) testCaseChannelParamMap.get(testCase).get("code");
+        final String ordering = (String) testCaseChannelParamMap.get(testCase).get("ordering");
+        final String brokerCode = null;
+        final String creditorInstitutionCode = null;
+        final String xRequestId = "1";
         //when
         Stations stations = restClient.getStations(limit, page, ordering, brokerCode, creditorInstitutionCode, code, xRequestId);
         //then
@@ -524,17 +524,17 @@ class ApiConfigRestClientTest {
     @Test
     void getStations_fullyValued() {
         //given
-        TestCase testCase = TestCase.FULLY_VALUED;
-        Integer page = (Integer) testCaseChannelParamMap.get(testCase).get("page");
-        Integer limit = (Integer) testCaseChannelParamMap.get(testCase).get("limit");
-        String sortBy = (String) testCaseChannelParamMap.get(testCase).get("sortBy");
-        String code = (String) testCaseChannelParamMap.get(testCase).get("code");
-        String ordering = (String) testCaseChannelParamMap.get(testCase).get("ordering");
-        String creditorInstitutionCode = "creditorInstitutionCode";
-        String brokerCode = null;
-        String xRequestId = UUID.randomUUID().toString();
+        final TestCase testCase = TestCase.FULLY_VALUED;
+        final Integer page = (Integer) testCaseChannelParamMap.get(testCase).get("page");
+        final Integer limit = (Integer) testCaseChannelParamMap.get(testCase).get("limit");
+        final String sortBy = (String) testCaseChannelParamMap.get(testCase).get("sortBy");
+        final String code = (String) testCaseChannelParamMap.get(testCase).get("code");
+        final String ordering = (String) testCaseChannelParamMap.get(testCase).get("ordering");
+        final String creditorInstitutionCode = "creditorInstitutionCode";
+        final String brokerCode = null;
+        final String xRequestId = UUID.randomUUID().toString();
         //when
-        Stations stations = restClient.getStations(limit, page, ordering, brokerCode, creditorInstitutionCode, code, xRequestId);
+        final Stations stations = restClient.getStations(limit, page, ordering, brokerCode, creditorInstitutionCode, code, xRequestId);
         //then
         assertNotNull(stations);
         assertFalse(stations.getStationsList().isEmpty());
@@ -546,8 +546,8 @@ class ApiConfigRestClientTest {
     void getStation_fullyNull() {
         //given
         TestCase testCase = TestCase.EMPTY_RESULT;
-        String stationCode = testCaseStationCodeMap.get(testCase);
-        String xRequestId = UUID.randomUUID().toString();
+        final String stationCode = testCaseStationCodeMap.get(testCase);
+        final String xRequestId = UUID.randomUUID().toString();
         //when
         StationDetail stationDetail = restClient.getStation(stationCode, xRequestId);
         //then
@@ -562,6 +562,9 @@ class ApiConfigRestClientTest {
         String xRequestId = UUID.randomUUID().toString();
         //when
         StationDetail stationDetail = restClient.getStation(stationCode, xRequestId);
+        //then
+        assertNotNull(stationDetail);
+        assertNotNull(stationDetail.getBrokerCode());
     }
 
     @Test

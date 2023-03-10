@@ -15,7 +15,7 @@ import java.util.List;
 import static it.pagopa.selfcare.pagopa.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StationMapperImplTest {
+class StationMapperImplTest {
     private StationMapper mapper = Mappers.getMapper(StationMapper.class);
 
     @Test

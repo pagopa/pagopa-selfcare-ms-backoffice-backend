@@ -4,8 +4,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -135,20 +133,20 @@ public class ApiConfigServiceImpl implements ApiConfigService {
 
     @Override
     public Stations getStations(Integer limit, Integer page, String sort, String ecCode, String stationCode, String xRequestId) {
-        log.trace("getChannels start");
-        log.debug("getChannels ecCode = {}, stationCode = {}, xRequestId = {}", ecCode, stationCode, xRequestId);
+        log.trace("getStations start");
+        log.debug("getStations ecCode = {}, stationCode = {}, xRequestId = {}", ecCode, stationCode, xRequestId);
         Stations response = apiConfigConnector.getStations(limit, page, sort, null, ecCode, stationCode, xRequestId);
-        log.debug("getChannels result = {}", response);
-        log.trace("getChannels end");
+        log.debug("getStations result = {}", response);
+        log.trace("getStations end");
         return response;
     }
 
     @Override
     public StationDetail getStation(String stationCode, String xRequestId) {
-        log.trace("getChannel start");
-        log.debug("getChannel stationCode = {}, xRequestId = {}", stationCode, xRequestId);
+        log.trace("getStation start");
+        log.debug("getStation stationCode = {}, xRequestId = {}", stationCode, xRequestId);
         StationDetail response = apiConfigConnector.getStation(stationCode, xRequestId);
-        log.debug("getChannels result = {}", response);
+        log.debug("getStation result = {}", response);
         return response;
     }
 
