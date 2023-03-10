@@ -335,6 +335,7 @@ class ApiConfigServiceImplTest {
                 .getChannelsCSV(anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
+     @Test
     void getChannelPaymentServiceProviders() {
         //given
         final String xRequestId = "xRequestId";
@@ -360,4 +361,18 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
+    @Test
+    void createBrokerPsp(){
+        final String xRequestId = "xRequestId";
+        BrokerPspDetails brokerPspDetails = mockInstance(new BrokerPspDetails());
+
+        when(apiConfigConnectorMock.createBrokerPsp(any(),anyString()))
+                .thenReturn(brokerPspDetails);
+
+        //when
+        BrokerPspDetails response = apiConfigService.createBrokerPsp(brokerPspDetails,xRequestId);
+        assertNotNull(response);
+
+        assertEquals(response, brokerPspDetails);
+    }
 }

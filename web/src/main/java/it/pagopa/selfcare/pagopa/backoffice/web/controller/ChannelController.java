@@ -302,5 +302,25 @@ public class ChannelController {
         log.trace("getChannelPaymentServiceProviders end");
         return resource;
     }
+
+    @PostMapping(value = "/brokerspsp", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.createBrokerPsp}")
+    public BrokerPspDetailsResource createBrokerPsp(@RequestBody @NotNull BrokerPspDetailsDto brokerPspDetailsDto) {
+        log.trace("createBrokerPsp start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("createBrokerPsp code brokerPspDetailsDto = {}", brokerPspDetailsDto);
+
+
+        BrokerPspDetails brokerPspDetails = ChannelMapper.fromBrokerPspDetailsDto(brokerPspDetailsDto);
+        BrokerPspDetails response = apiConfigService.createBrokerPsp(brokerPspDetails, uuid);
+
+
+        BrokerPspDetailsResource resource = ChannelMapper.toResource(response);
+
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createBrokerPsp result = {}", resource);
+        log.trace("createBrokerPsp end");
+        return resource;
+    }
 }
 

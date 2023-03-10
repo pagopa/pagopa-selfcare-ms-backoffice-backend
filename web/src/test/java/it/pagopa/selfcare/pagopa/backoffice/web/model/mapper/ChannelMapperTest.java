@@ -234,4 +234,24 @@ class ChannelMapperTest {
         //then
         assertNull(resource);
     }
+
+
+    @Test
+    void toBrokerPspDetails() {
+        //given
+        BrokerPspDetails model = mockInstance(new BrokerPspDetails());
+        //when
+        BrokerPspDetailsResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNotNull(resource);
+    }
+    @Test
+    void toBrokerPspDetails_null() {
+        //given
+        BrokerPspDetails model = null;
+        //when
+        BrokerPspDetailsResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNull(resource);
+    }
 }

@@ -25,12 +25,16 @@ public interface ApiConfigService {
 
     void deletePaymentServiceProvidersChannels(String pspCode, String channelCode, String xRequestId);
 
-    PspChannelPaymentTypes updatePaymentServiceProvidersChannels(String pspCode, String channelCode,PspChannelPaymentTypes pspChannelPaymentTypes, String xRequestId);
+    PspChannelPaymentTypes updatePaymentServiceProvidersChannels(String pspCode, String channelCode, PspChannelPaymentTypes pspChannelPaymentTypes, String xRequestId);
 
     void deleteChannel(String channelCode, String xRequestId);
 
-    PaymentServiceProviders getPspBrokerPsp(Integer limit,Integer page, String brokerPspCode,String uuid);
+    PaymentServiceProviders getPspBrokerPsp(Integer limit, Integer page, String brokerPspCode, String xRequestId);
 
     Resource getChannelsCSV(String uuid);
-    ChannelPspList getChannelPaymentServiceProviders(Integer limit,Integer page, String channelCode,String uuid);
+
+    ChannelPspList getChannelPaymentServiceProviders(Integer limit, Integer page, String channelCode, String xRequestId);
+
+    BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails, String xRequestId);
+
 }

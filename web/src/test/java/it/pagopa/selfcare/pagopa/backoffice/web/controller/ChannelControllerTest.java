@@ -550,4 +550,37 @@ class ChannelControllerTest {
 
 
     }
+
+
+    @Test
+    void createBrokerPsp(@Value("classpath:stubs/brokerPspDto.json") Resource dto) throws Exception {
+        //given
+        String xRequestId = "1";
+
+        PspChannelPaymentTypes pspChannelPaymentTypes = mockInstance(new PspChannelPaymentTypes());
+        InputStream is = dto.getInputStream();
+        BrokerPspDetails brokerPspDetails = objectMapper.readValue(is, BrokerPspDetails.class);
+
+        when(apiConfigServiceMock.createBrokerPsp(any(), anyString()))
+                .thenReturn(brokerPspDetails);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .post(BASE_URL + "/brokerspsp")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(APPLICATION_JSON))
+
+                .andExpect(jsonPath("$.broker_psp_code", is(brokerPspDetails.getBrokerPspCode())))
+                .andExpect(jsonPath("$.description", is(brokerPspDetails.getDescription())))
+                .andExpect(jsonPath("$.enabled", is(brokerPspDetails.getEnabled())))
+                .andExpect(jsonPath("$.extended_fault_bean", is(brokerPspDetails.getExtendedFaultBean())));
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .createBrokerPsp(any(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+
+    }
 }
