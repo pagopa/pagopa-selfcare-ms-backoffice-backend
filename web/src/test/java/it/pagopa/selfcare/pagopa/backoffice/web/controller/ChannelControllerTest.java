@@ -6,6 +6,8 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PaymentServiceProviderDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -580,6 +582,44 @@ class ChannelControllerTest {
         //then
         verify(apiConfigServiceMock, times(1))
                 .createBrokerPsp(any(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+
+    }
+
+    @Test
+    void createPaymentServiceProvider(@Value("classpath:stubs/paymentServiceProviderDetailsDto.json") Resource dto) throws Exception {
+        //given
+        String xRequestId = "1";
+        InputStream is = dto.getInputStream();
+
+        PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto = objectMapper.readValue(is, PaymentServiceProviderDetailsDto.class);
+
+        PaymentServiceProviderDetails paymentServiceProviderDetails = ChannelMapper.fromPaymentServiceProviderDetailsDto(paymentServiceProviderDetailsDto);
+
+        when(apiConfigServiceMock.createPaymentServiceProvider(any(), anyString()))
+                .thenReturn(paymentServiceProviderDetails);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .post(BASE_URL + "/psp")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(APPLICATION_JSON))
+
+                .andExpect(jsonPath("$.abi", is(paymentServiceProviderDetailsDto.getAbi())))
+                .andExpect(jsonPath("$.bic", is(paymentServiceProviderDetailsDto.getBic())))
+                .andExpect(jsonPath("$.stamp", is(paymentServiceProviderDetailsDto.getStamp())))
+                .andExpect(jsonPath("$.agid_psp", is(paymentServiceProviderDetailsDto.getAgidPsp())))
+                .andExpect(jsonPath("$.vat_number", is(paymentServiceProviderDetailsDto.getVatNumber())))
+                .andExpect(jsonPath("$.transfer", is(paymentServiceProviderDetailsDto.getTransfer())))
+                .andExpect(jsonPath("$.psp_code", is(paymentServiceProviderDetailsDto.getPspCode())))
+                .andExpect(jsonPath("$.business_name", is(paymentServiceProviderDetailsDto.getBusinessName())))
+                .andExpect(jsonPath("$.enabled", is(paymentServiceProviderDetailsDto.getEnabled())));
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .createPaymentServiceProvider(any(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
 
     }

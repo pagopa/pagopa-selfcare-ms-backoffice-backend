@@ -254,4 +254,44 @@ class ChannelMapperTest {
         //then
         assertNull(resource);
     }
+
+    @Test
+    void toPaymentServiceProviderDetails() {
+        //given
+        PaymentServiceProviderDetails model = mockInstance(new PaymentServiceProviderDetails());
+        //when
+        PaymentServiceProviderDetailsResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNotNull(resource);
+    }
+    @Test
+    void toPaymentServiceProviderDetails_null() {
+        //given
+        PaymentServiceProviderDetails model = null;
+        //when
+        PaymentServiceProviderDetailsResource resource = ChannelMapper.toResource(model);
+        //then
+        assertNull(resource);
+    }
+
+    @Test
+    void fromPaymentServiceProviderDetailsDto() {
+        //given
+        PaymentServiceProviderDetailsDto dto = mockInstance(new PaymentServiceProviderDetailsDto());
+        //when
+        PaymentServiceProviderDetails model = ChannelMapper.fromPaymentServiceProviderDetailsDto(dto);
+        //then
+        assertNotNull(model);
+        reflectionEqualsByName(dto, model);
+    }
+
+    @Test
+    void paymentServiceProviderDetailsDto_null() {
+        //given
+        PaymentServiceProviderDetailsDto dto = null;
+        //when
+        PaymentServiceProviderDetails model = ChannelMapper.fromPaymentServiceProviderDetailsDto(dto);
+        //then
+        assertNull(model);
+    }
 }

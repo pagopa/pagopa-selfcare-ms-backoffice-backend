@@ -37,4 +37,6 @@ public interface ApiConfigService {
 
     BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails, String xRequestId);
 
+    PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails, String xRequestId);
+
 }

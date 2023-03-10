@@ -24,5 +24,7 @@ public interface ApiConfigConnector {
     Resource getChannelsCSV(String uuid);
     ChannelPspList getChannelPaymentServiceProviders(Integer limit,Integer page, String channelCode,String uuid);
     BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails, String xRequestId);
+    PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails, String xRequestId);
 
-}
+
+    }
