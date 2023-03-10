@@ -310,7 +310,7 @@ public class ChannelMapper {
 
     public static BrokerPspDetails fromBrokerPspDetailsDto(BrokerPspDetailsDto dto) {
         BrokerPspDetails model = null;
-        if (model != null) {
+        if (dto != null) {
             model = new BrokerPspDetails();
 
 
