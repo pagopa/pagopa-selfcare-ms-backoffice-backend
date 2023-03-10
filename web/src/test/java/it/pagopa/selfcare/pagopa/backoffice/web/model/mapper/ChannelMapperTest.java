@@ -254,7 +254,6 @@ class ChannelMapperTest {
         //then
         assertNull(resource);
     }
-
     @Test
     void toPaymentServiceProviderDetails() {
         //given
@@ -294,4 +293,5 @@ class ChannelMapperTest {
         //then
         assertNull(model);
     }
+
 }

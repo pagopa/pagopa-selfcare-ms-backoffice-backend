@@ -34,7 +34,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <skip>false</skip>
+                    <skip>true</skip>
                     <finalName>${project.parent.artifactId}-${project.parent.version}-FATJAR</finalName>
                     <outputDirectory>../target</outputDirectory>
                     <excludes>
