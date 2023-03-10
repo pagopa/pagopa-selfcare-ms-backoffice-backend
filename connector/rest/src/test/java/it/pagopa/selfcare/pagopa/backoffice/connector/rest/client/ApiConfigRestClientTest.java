@@ -586,6 +586,33 @@ class ApiConfigRestClientTest {
     }
 
 
+    @Test
+    void createPaymentServiceProvider_fullyValued(){
+        // given
+        String requestId = UUID.randomUUID().toString();
+        TestCase testCase = TestCase.FULLY_VALUED;
+        PaymentServiceProviderDetails paymentServiceProviderDetails = new PaymentServiceProviderDetails();
+
+        paymentServiceProviderDetails.setAbi("abi");
+        paymentServiceProviderDetails.setBic("bic");
+        paymentServiceProviderDetails.setTransfer(true);
+        paymentServiceProviderDetails.setStamp(true);
+        paymentServiceProviderDetails.setAgidPsp(true);
+        paymentServiceProviderDetails.setMyBankCode("test");
+        paymentServiceProviderDetails.setPspCode("pspCode");
+        paymentServiceProviderDetails.setEnabled(true);
+        paymentServiceProviderDetails.setVatNumber("1");
+        paymentServiceProviderDetails.setTaxCode("1");
+        paymentServiceProviderDetails.setBusinessName("test");
+        // when
+        PaymentServiceProviderDetails response = restClient.createPaymentServiceProvider(paymentServiceProviderDetails,requestId);
+
+        //then
+        assertNotNull(response);
+
+    }
+
+
     private void checkNotNullFields(Object o, String... excludedFields) {
         Set<String> excludedFieldsSet = new HashSet<>(Arrays.asList(excludedFields));
         org.springframework.util.ReflectionUtils.doWithFields(o.getClass(),

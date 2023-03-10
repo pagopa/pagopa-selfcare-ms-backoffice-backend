@@ -424,4 +424,20 @@ class ApiConfigServiceImplTest {
 
         assertEquals(response, brokerPspDetails);
     }
+
+    @Test
+    void createPaymentServiceProvider(){
+        final String xRequestId = "xRequestId";
+        PaymentServiceProviderDetails paymentServiceProviderDetails = mockInstance(new PaymentServiceProviderDetails());
+
+        when(apiConfigConnectorMock.createPaymentServiceProvider(any(),anyString()))
+                .thenReturn(paymentServiceProviderDetails);
+
+        //when
+        PaymentServiceProviderDetails response = apiConfigService.createPaymentServiceProvider(paymentServiceProviderDetails,xRequestId);
+        assertNotNull(response);
+
+        assertEquals(response, paymentServiceProviderDetails);
+    }
+
 }

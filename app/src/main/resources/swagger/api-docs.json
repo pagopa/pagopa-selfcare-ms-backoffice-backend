@@ -520,6 +520,68 @@
         } ]
       }
     },
+    "/channels/psp" : {
+      "post" : {
+        "tags" : [ "channels" ],
+        "summary" : "createPaymentServiceProvider",
+        "description" : "Create a payment service provider",
+        "operationId" : "createPaymentServiceProviderUsingPOST",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PaymentServiceProviderDetailsDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentServiceProviderDetailsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/channels/psp/{channelcode}/{pspcode}" : {
       "put" : {
         "tags" : [ "channels" ],
@@ -2622,6 +2684,96 @@
           }
         }
       },
+      "PaymentServiceProviderDetailsDto" : {
+        "title" : "PaymentServiceProviderDetailsDto",
+        "type" : "object",
+        "properties" : {
+          "abi" : {
+            "type" : "string"
+          },
+          "agid_psp" : {
+            "type" : "boolean"
+          },
+          "bic" : {
+            "type" : "string"
+          },
+          "business_name" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "my_bank_code" : {
+            "type" : "string"
+          },
+          "psp_code" : {
+            "type" : "string"
+          },
+          "stamp" : {
+            "type" : "boolean"
+          },
+          "tax_code" : {
+            "type" : "string"
+          },
+          "transfer" : {
+            "type" : "boolean"
+          },
+          "vat_number" : {
+            "type" : "string"
+          }
+        }
+      },
+      "PaymentServiceProviderDetailsResource" : {
+        "title" : "PaymentServiceProviderDetailsResource",
+        "required" : [ "abi", "agid_psp", "bic", "my_bank_code", "stamp", "tax_code", "transfer", "vat_number" ],
+        "type" : "object",
+        "properties" : {
+          "abi" : {
+            "type" : "string",
+            "description" : "abi of the payment service provider"
+          },
+          "agid_psp" : {
+            "type" : "boolean",
+            "description" : "agid code of the payment service provider",
+            "example" : false
+          },
+          "bic" : {
+            "type" : "string",
+            "description" : "bic of the payment service provider"
+          },
+          "business_name" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "my_bank_code" : {
+            "type" : "string",
+            "description" : "bank code of the payment service provider"
+          },
+          "psp_code" : {
+            "type" : "string"
+          },
+          "stamp" : {
+            "type" : "boolean",
+            "description" : "stamp of the payment service provider",
+            "example" : false
+          },
+          "tax_code" : {
+            "type" : "string",
+            "description" : "tax code of the payment service provider"
+          },
+          "transfer" : {
+            "type" : "boolean",
+            "description" : "transfer  of the payment service provider",
+            "example" : false
+          },
+          "vat_number" : {
+            "type" : "string",
+            "description" : "of the payment service provider"
+          }
+        }
+      },
       "PaymentServiceProviderResource" : {
         "title" : "PaymentServiceProviderResource",
         "type" : "object",
@@ -2833,6 +2985,39 @@
             "type" : "boolean",
             "description" : "PSP's Vat Number group",
             "example" : false
+          }
+        }
+      },
+      "Resource" : {
+        "title" : "Resource",
+        "type" : "object",
+        "properties" : {
+          "description" : {
+            "type" : "string"
+          },
+          "file" : {
+            "type" : "string",
+            "format" : "binary"
+          },
+          "filename" : {
+            "type" : "string"
+          },
+          "inputStream" : {
+            "$ref" : "#/components/schemas/InputStream"
+          },
+          "open" : {
+            "type" : "boolean"
+          },
+          "readable" : {
+            "type" : "boolean"
+          },
+          "uri" : {
+            "type" : "string",
+            "format" : "uri"
+          },
+          "url" : {
+            "type" : "string",
+            "format" : "url"
           }
         }
       },
@@ -3104,39 +3289,6 @@
             "items" : {
               "$ref" : "#/components/schemas/StationResource"
             }
-          }
-        }
-      },
-      "Resource" : {
-        "title" : "Resource",
-        "type" : "object",
-        "properties" : {
-          "description" : {
-            "type" : "string"
-          },
-          "file" : {
-            "type" : "string",
-            "format" : "binary"
-          },
-          "filename" : {
-            "type" : "string"
-          },
-          "inputStream" : {
-            "$ref" : "#/components/schemas/InputStream"
-          },
-          "open" : {
-            "type" : "boolean"
-          },
-          "readable" : {
-            "type" : "boolean"
-          },
-          "uri" : {
-            "type" : "string",
-            "format" : "uri"
-          },
-          "url" : {
-            "type" : "string",
-            "format" : "url"
           }
         }
       }

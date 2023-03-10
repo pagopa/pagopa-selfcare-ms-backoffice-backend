@@ -321,4 +321,49 @@ public class ChannelMapper {
         }
         return model;
     }
+
+    public static PaymentServiceProviderDetails fromPaymentServiceProviderDetailsDto(PaymentServiceProviderDetailsDto dto) {
+        PaymentServiceProviderDetails model = null;
+        List<PaymentServiceProvider> paymentServiceProviderList = new ArrayList<>();
+        if (dto != null) {
+            model = new PaymentServiceProviderDetails();
+            model.setAbi(dto.getAbi());
+            model.setBic(dto.getBic());
+            model.setStamp(dto.getStamp());
+            model.setTransfer(dto.getTransfer());
+            model.setAgidPsp(dto.getAgidPsp());
+            model.setMyBankCode(dto.getMyBankCode());
+            model.setVatNumber(dto.getVatNumber());
+            model.setMyBankCode(dto.getMyBankCode());
+            model.setPspCode(dto.getPspCode());
+            model.setBusinessName(dto.getBusinessName());
+            model.setEnabled(dto.getEnabled());
+            model.setTaxCode(dto.getTaxCode());
+        }
+        return model;
+    }
+
+    public static PaymentServiceProviderDetailsResource toResource(PaymentServiceProviderDetails model) {
+        PaymentServiceProviderDetailsResource resource = null;
+
+        if (model != null) {
+            resource = new PaymentServiceProviderDetailsResource();
+
+            resource.setAbi(model.getAbi());
+            resource.setBic(model.getBic());
+            resource.setStamp(model.getStamp());
+            resource.setTransfer(model.getTransfer());
+            resource.setAgidPsp(model.getAgidPsp());
+            resource.setMyBankCode(model.getMyBankCode());
+            resource.setVatNumber(model.getVatNumber());
+            resource.setMyBankCode(model.getMyBankCode());
+            resource.setPspCode(model.getPspCode());
+            resource.setBusinessName(model.getBusinessName());
+            resource.setEnabled(model.getEnabled());
+            resource.setTaxCode(model.getTaxCode());
+
+
+        }
+        return resource;
+    }
 }

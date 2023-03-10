@@ -43,6 +43,7 @@ public interface ApiConfigConnector {
     Resource getChannelsCSV(String uuid);
 
     ChannelPspList getChannelPaymentServiceProviders(Integer limit,Integer page, String channelCode,String uuid);
+    PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails, String xRequestId);
 
     BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails, String xRequestId);
 

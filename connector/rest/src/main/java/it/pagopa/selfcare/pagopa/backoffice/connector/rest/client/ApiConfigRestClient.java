@@ -118,4 +118,8 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     @ResponseBody
     BrokerPspDetails createBrokerPsp(@RequestBody BrokerPspDetails brokerPspDetails, @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
+    @PostMapping(value = "${rest-client.api-config.createPaymentServiceProvider.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails, @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
 }

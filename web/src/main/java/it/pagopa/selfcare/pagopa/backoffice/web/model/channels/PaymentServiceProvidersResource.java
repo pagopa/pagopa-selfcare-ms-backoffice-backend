@@ -12,8 +12,8 @@ import java.util.List;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentServiceProvidersResource {
-    @JsonProperty("payment_service_providers")
 
+    @JsonProperty("payment_service_providers")
     @NotNull
     @Valid
     private List<PaymentServiceProviderResource> paymentServiceProviderList = null;

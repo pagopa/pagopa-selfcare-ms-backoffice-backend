@@ -35,12 +35,15 @@ public interface ApiConfigService {
 
     Resource getChannelsCSV(String uuid);
 
-    ChannelPspList getChannelPaymentServiceProviders(Integer limit,Integer page, String channelCode,String uuid);
+    ChannelPspList getChannelPaymentServiceProviders(Integer limit, Integer page, String channelCode, String xRequestId);
+
+    BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails, String xRequestId);
+
+    PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails, String xRequestId);
 
     Stations getStations(Integer limit, Integer page, String sort, String ecCode, String stationCode, String xRequestId);
 
     StationDetail getStation(String stationCode, String xRequestId);
 
-    BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails, String xRequestId);
 
 }
