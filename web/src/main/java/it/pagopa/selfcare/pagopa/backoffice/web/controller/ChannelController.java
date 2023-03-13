@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -324,8 +325,6 @@ public class ChannelController {
         log.trace("createPaymentServiceProvider start");
         String uuid = UUID.randomUUID().toString();
         log.debug("createPaymentServiceProvider code paymentServiceProviderDto = {}", paymentServiceProviderDetailsDto);
-
-
         
         PaymentServiceProviderDetails paymentServiceProviderDetails = ChannelMapper.fromPaymentServiceProviderDetailsDto(paymentServiceProviderDetailsDto);
         PaymentServiceProviderDetails response = apiConfigService.createPaymentServiceProvider(paymentServiceProviderDetails, uuid);
@@ -335,6 +334,29 @@ public class ChannelController {
 
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createPaymentServiceProvider result = {}", resource);
         log.trace("createPaymentServiceProvider end");
+        return resource;
+    }
+
+    @PostMapping(value = "/pspdirect", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.createPaymentServiceProvider}")
+    public PaymentServiceProviderDetailsResource createPSPDirect(@RequestBody @NotNull PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto) {
+        log.trace("createPSPDirect start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("createPSPDirect code paymentServiceProviderDto = {}", paymentServiceProviderDetailsDto);
+
+        Map<String, Object> res = ChannelMapper.fromPaymentServiceProviderDetailsDtoToMap(paymentServiceProviderDetailsDto);
+        BrokerPspDetails brokerPspDetails = (BrokerPspDetails) res.get("broker");
+        PaymentServiceProviderDetails paymentServiceProviderDetails = (PaymentServiceProviderDetails) res.get("psp");
+
+        apiConfigService.createBrokerPsp(brokerPspDetails, uuid);
+        PaymentServiceProviderDetails responsePSP = apiConfigService.createPaymentServiceProvider(paymentServiceProviderDetails, uuid);
+
+
+        PaymentServiceProviderDetailsResource resource = ChannelMapper.toResource(responsePSP);
+
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createPSPDirect result = {}", resource);
+        log.trace("createPSPDirect end");
         return resource;
     }
 }

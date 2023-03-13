@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static it.pagopa.selfcare.pagopa.TestUtils.reflectionEqualsByName;
@@ -285,13 +286,27 @@ class ChannelMapperTest {
     }
 
     @Test
-    void paymentServiceProviderDetailsDto_null() {
+    void frompaymentServiceProviderDetailsDto_null() {
         //given
         PaymentServiceProviderDetailsDto dto = null;
         //when
         PaymentServiceProviderDetails model = ChannelMapper.fromPaymentServiceProviderDetailsDto(dto);
         //then
         assertNull(model);
+    }
+
+    @Test
+    void fromPaymentServiceProviderDetailsDtoToMap() {
+        //given
+        PaymentServiceProviderDetailsDto dto = mockInstance(new PaymentServiceProviderDetailsDto());
+        //when
+        Map<String,Object> res = ChannelMapper.fromPaymentServiceProviderDetailsDtoToMap(dto);
+        BrokerPspDetails brokerPspDetails = (BrokerPspDetails) res.get("broker");
+        PaymentServiceProviderDetails paymentServiceProviderDetails = (PaymentServiceProviderDetails) res.get("psp");
+        //then
+        assertNotNull(brokerPspDetails);
+        assertNotNull(paymentServiceProviderDetails);
+        reflectionEqualsByName(dto, paymentServiceProviderDetails);
     }
 
 }
