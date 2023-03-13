@@ -325,9 +325,7 @@ public class ChannelController {
         log.trace("createPaymentServiceProvider start");
         String uuid = UUID.randomUUID().toString();
         log.debug("createPaymentServiceProvider code paymentServiceProviderDto = {}", paymentServiceProviderDetailsDto);
-
-
-
+        
         PaymentServiceProviderDetails paymentServiceProviderDetails = ChannelMapper.fromPaymentServiceProviderDetailsDto(paymentServiceProviderDetailsDto);
         PaymentServiceProviderDetails response = apiConfigService.createPaymentServiceProvider(paymentServiceProviderDetails, uuid);
 
