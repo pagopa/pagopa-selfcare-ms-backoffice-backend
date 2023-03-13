@@ -326,6 +326,7 @@ public class ChannelController {
         log.debug("createPaymentServiceProvider code paymentServiceProviderDto = {}", paymentServiceProviderDetailsDto);
 
 
+        
         PaymentServiceProviderDetails paymentServiceProviderDetails = ChannelMapper.fromPaymentServiceProviderDetailsDto(paymentServiceProviderDetailsDto);
         PaymentServiceProviderDetails response = apiConfigService.createPaymentServiceProvider(paymentServiceProviderDetails, uuid);
 
