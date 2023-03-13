@@ -8,7 +8,9 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPa
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChannelMapper {
 
@@ -322,9 +324,9 @@ public class ChannelMapper {
         return model;
     }
 
+
     public static PaymentServiceProviderDetails fromPaymentServiceProviderDetailsDto(PaymentServiceProviderDetailsDto dto) {
         PaymentServiceProviderDetails model = null;
-        List<PaymentServiceProvider> paymentServiceProviderList = new ArrayList<>();
         if (dto != null) {
             model = new PaymentServiceProviderDetails();
             model.setAbi(dto.getAbi());
@@ -343,6 +345,37 @@ public class ChannelMapper {
         return model;
     }
 
+    public static Map<String, Object> fromPaymentServiceProviderDetailsDtoToMap(PaymentServiceProviderDetailsDto dto) {
+        PaymentServiceProviderDetails model = null;
+        BrokerPspDetails modelBrokerPsp = null;
+        Map<String,Object> result = new HashMap<>();
+        if (dto != null) {
+            model = new PaymentServiceProviderDetails();
+            modelBrokerPsp = new BrokerPspDetails();
+
+            model.setAbi(dto.getAbi());
+            model.setBic(dto.getBic());
+            model.setStamp(dto.getStamp());
+            model.setTransfer(dto.getTransfer());
+            model.setAgidPsp(dto.getAgidPsp());
+            model.setMyBankCode(dto.getMyBankCode());
+            model.setVatNumber(dto.getVatNumber());
+            model.setMyBankCode(dto.getMyBankCode());
+            model.setPspCode(dto.getPspCode());
+            model.setBusinessName(dto.getBusinessName());
+            model.setEnabled(dto.getEnabled());
+            model.setTaxCode(dto.getTaxCode());
+
+            modelBrokerPsp.setBrokerPspCode(dto.getPspCode());
+            modelBrokerPsp.setEnabled(dto.getEnabled());
+            modelBrokerPsp.setDescription(dto.getBusinessName());
+            modelBrokerPsp.setExtendedFaultBean(true);
+        }
+        result.put("psp",model);
+        result.put("broker",modelBrokerPsp);
+
+        return result;
+    }
     public static PaymentServiceProviderDetailsResource toResource(PaymentServiceProviderDetails model) {
         PaymentServiceProviderDetailsResource resource = null;
 
