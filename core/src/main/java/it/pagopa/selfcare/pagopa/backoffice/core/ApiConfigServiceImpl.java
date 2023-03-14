@@ -173,16 +173,14 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         Collections.sort(codes, comparator.reversed());
         String code = codes.get(0);
 
-
             Matcher matcher = pattern.matcher(code);
             if (matcher.matches()) {
-                String prefix = matcher.group(1); // Extract the code prefix
-                String numberStr = matcher.group(3); // Extract the code number as a string
-                int number =  Integer.parseInt(numberStr) ; // Convert the string to an integer, or use 0 if there's no number in the code
-                number++; // Increment the number
-                newChannelCode = prefix +  String.format("_%0" + numberStr.length() + "d", number); // Reconstruct the code with the incremented number, or use "01" if there's no number in the code
+                String prefix = matcher.group(1);
+                String numberStr = matcher.group(3);
+                int number =  Integer.parseInt(numberStr) ;
+                number++;
+                newChannelCode = prefix +  String.format("_%0" + numberStr.length() + "d", number);
         }
-
         log.debug("generateChannelCode result = {}", newChannelCode);
         return newChannelCode;
     }
