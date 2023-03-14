@@ -361,10 +361,10 @@ public class ChannelController {
         return resource;
     }
 
-    @GetMapping(value = "/{pspcode}/generate", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{pspcode}/generate", produces = {MediaType.TEXT_PLAIN_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getChannelCode}")
-    public ResponseEntity<String> getChannelCode(@ApiParam("${swagger.request.pspCode}")
+    public Object getChannelCode(@ApiParam("${swagger.request.pspCode}")
                                  @PathVariable("pspcode") String pspCode) {
         log.trace("getChannelCode start");
         String xRequestId = UUID.randomUUID().toString();
@@ -372,7 +372,7 @@ public class ChannelController {
         String channelCode = apiConfigService.generateChannelCode(pspCode, xRequestId);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelCode result = {}", channelCode);
         log.trace("getChannelCode end");
-        return ResponseEntity.ok(channelCode);
+        return channelCode;
     }
 }
 
