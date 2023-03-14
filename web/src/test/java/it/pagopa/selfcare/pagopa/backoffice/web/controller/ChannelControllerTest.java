@@ -680,7 +680,7 @@ class ChannelControllerTest {
 
         mvc.perform(MockMvcRequestBuilders
                         .get(BASE_URL + "/{pspcode}/generate",pspCode)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.TEXT_PLAIN_VALUE)
                 )
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().contentType(APPLICATION_JSON))
