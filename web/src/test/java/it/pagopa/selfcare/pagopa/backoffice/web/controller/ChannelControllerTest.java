@@ -523,6 +523,7 @@ class ChannelControllerTest {
 
     }
 
+    @Test
     void getChannelPaymentServiceProviders() throws Exception {
         final String channelCode = "channelCode";
         final String xRequestId = "1";
@@ -668,4 +669,25 @@ class ChannelControllerTest {
 
     }
 
+    @Test
+    void getChannelCode() throws Exception {
+
+        String pspCode = "pspCode";
+        String channelCode = "channelCode";
+
+        when(apiConfigServiceMock.generateChannelCode(any(), anyString()))
+                .thenReturn(channelCode);
+
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/{pspcode}/generate",pspCode)
+                        .contentType(MediaType.TEXT_PLAIN_VALUE)
+                )
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$", is(channelCode)));
+
+        verify(apiConfigServiceMock, times(1))
+                .generateChannelCode(any(), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
 }

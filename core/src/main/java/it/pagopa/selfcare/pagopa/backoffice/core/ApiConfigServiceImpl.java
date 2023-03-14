@@ -9,6 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 public class ApiConfigServiceImpl implements ApiConfigService {
@@ -148,6 +155,34 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         StationDetail response = apiConfigConnector.getStation(stationCode, xRequestId);
         log.debug("getStation result = {}", response);
         return response;
+    }
+
+    @Override
+    public String generateChannelCode(String pspCode, String xRequestId) {
+        log.trace("generateChannelCode start");
+        log.debug("generateChannelCode pspCode = {}", pspCode);
+        PspChannels response = apiConfigConnector.getPspChannels(pspCode, xRequestId);
+        List<PspChannel> codeList = response.getChannelsList();
+        Pattern pattern = Pattern.compile("^(.*?)(_([0-9]+))$"); // String_nn
+        List<String> codes = codeList.stream().map(pspChannel -> pspChannel.getChannelCode())
+                .filter(s -> s.matches("^\\w+_\\d+$")) // String_nn
+                .collect(Collectors.toList());
+        String newChannelCode = pspCode.concat("_").concat("01");
+        if (codes.isEmpty()) return newChannelCode;
+        Comparator<String> comparator = Comparator.comparingInt(s -> Integer.parseInt(s.split("_")[1]));
+        Collections.sort(codes, comparator.reversed());
+        String code = codes.get(0);
+
+            Matcher matcher = pattern.matcher(code);
+            if (matcher.matches()) {
+                String prefix = matcher.group(1);
+                String numberStr = matcher.group(3);
+                int number =  Integer.parseInt(numberStr) ;
+                number++;
+                newChannelCode = prefix +  String.format("_%0" + numberStr.length() + "d", number);
+        }
+        log.debug("generateChannelCode result = {}", newChannelCode);
+        return newChannelCode;
     }
 
     @Override

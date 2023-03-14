@@ -412,6 +412,7 @@ class ApiConfigServiceImplTest {
 
     @Test
     void createBrokerPsp(){
+        //given
         final String xRequestId = "xRequestId";
         BrokerPspDetails brokerPspDetails = mockInstance(new BrokerPspDetails());
 
@@ -427,6 +428,7 @@ class ApiConfigServiceImplTest {
 
     @Test
     void createPaymentServiceProvider(){
+        //given
         final String xRequestId = "xRequestId";
         PaymentServiceProviderDetails paymentServiceProviderDetails = mockInstance(new PaymentServiceProviderDetails());
 
@@ -440,4 +442,49 @@ class ApiConfigServiceImplTest {
         assertEquals(response, paymentServiceProviderDetails);
     }
 
+    @Test
+    void generateChannelCode(){
+        //given
+        final String xRequestId = "xRequestId";
+        final String pspCode = "pspCode";
+
+        PspChannels pspChannels = mockInstance(new PspChannels());
+        PspChannel pspChannel = mockInstance(new PspChannel());
+        pspChannel.setChannelCode("TEST_01");
+
+        pspChannels.setChannelsList(List.of(pspChannel));
+
+        when(apiConfigConnectorMock.getPspChannels(any(),anyString()))
+                .thenReturn(pspChannels);
+
+        //when
+        String response = apiConfigService.generateChannelCode(anyString(),anyString());
+        assertNotNull(response);
+
+        assertEquals(response, "TEST_02");
+    }
+
+    @Test
+    void generateChannelCode_noRegexMatcher(){
+        //given
+        final String xRequestId = "xRequestId";
+        final String pspCode = "TEST";
+
+        PspChannels pspChannels = mockInstance(new PspChannels());
+        PspChannel pspChannel = mockInstance(new PspChannel());
+        pspChannel.setChannelCode("TEST");
+
+        pspChannels.setChannelsList(List.of(pspChannel));
+
+        when(apiConfigConnectorMock.getPspChannels(any(),anyString()))
+                .thenReturn(pspChannels);
+
+        //when
+        String response = apiConfigService.generateChannelCode(pspCode,xRequestId);
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .getPspChannels(anyString(),anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+        assertEquals(response, "TEST_01");
+    }
 }
