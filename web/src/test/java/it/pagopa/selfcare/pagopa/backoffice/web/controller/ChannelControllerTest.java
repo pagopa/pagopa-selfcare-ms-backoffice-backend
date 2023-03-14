@@ -523,6 +523,7 @@ class ChannelControllerTest {
 
     }
 
+    @Test
     void getChannelPaymentServiceProviders() throws Exception {
         final String channelCode = "channelCode";
         final String xRequestId = "1";
