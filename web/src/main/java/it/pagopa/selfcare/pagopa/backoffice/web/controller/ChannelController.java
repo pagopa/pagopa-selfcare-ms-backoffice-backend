@@ -14,6 +14,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -325,7 +326,7 @@ public class ChannelController {
         log.trace("createPaymentServiceProvider start");
         String uuid = UUID.randomUUID().toString();
         log.debug("createPaymentServiceProvider code paymentServiceProviderDto = {}", paymentServiceProviderDetailsDto);
-        
+
         PaymentServiceProviderDetails paymentServiceProviderDetails = ChannelMapper.fromPaymentServiceProviderDetailsDto(paymentServiceProviderDetailsDto);
         PaymentServiceProviderDetails response = apiConfigService.createPaymentServiceProvider(paymentServiceProviderDetails, uuid);
 
@@ -358,6 +359,20 @@ public class ChannelController {
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createPSPDirect result = {}", resource);
         log.trace("createPSPDirect end");
         return resource;
+    }
+
+    @GetMapping(value = "/{pspcode}/generate", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getChannelCode}")
+    public ResponseEntity<String> getChannelCode(@ApiParam("${swagger.request.pspCode}")
+                                 @PathVariable("pspcode") String pspCode) {
+        log.trace("getChannelCode start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getChannelCode pspcode = {}, xRequestId = {}", pspCode, xRequestId);
+        String channelCode = apiConfigService.generateChannelCode(pspCode, xRequestId);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelCode result = {}", channelCode);
+        log.trace("getChannelCode end");
+        return ResponseEntity.ok(channelCode);
     }
 }
 

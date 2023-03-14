@@ -9,6 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 public class ApiConfigServiceImpl implements ApiConfigService {
@@ -148,6 +155,35 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         StationDetail response = apiConfigConnector.getStation(stationCode, xRequestId);
         log.debug("getStation result = {}", response);
         return response;
+    }
+
+    @Override
+    public String generateChannelCode(String pspCode, String xRequestId) {
+        log.trace("generateChannelCode start");
+        log.debug("generateChannelCode pspCode = {}", pspCode);
+        PspChannels response = apiConfigConnector.getPspChannels(pspCode, xRequestId);
+        List<PspChannel> codeList = response.getChannelsList();
+        Pattern pattern = Pattern.compile("^(.*?)(_([0-9]+))$"); // String_nn
+        List<String> codes = codeList.stream().map(pspChannel -> pspChannel.getChannelCode())
+                .filter(s -> s.matches("^\\w+_\\d+$")) // String_nn
+                .collect(Collectors.toList());
+
+        Comparator<String> comparator = Comparator.comparingInt(s -> Integer.parseInt(s.split("_")[1]));
+        Collections.sort(codes, comparator.reversed());
+        String code = codes.get(0);
+        String newChannelCode = pspCode.concat("_").concat("01");
+
+            Matcher matcher = pattern.matcher(code);
+            if (matcher.matches()) {
+                String prefix = matcher.group(1); // Extract the code prefix
+                String numberStr = matcher.group(3); // Extract the code number as a string
+                int number = (numberStr != null) ? Integer.parseInt(numberStr) : 0; // Convert the string to an integer, or use 0 if there's no number in the code
+                number++; // Increment the number
+                newChannelCode = prefix + ((numberStr != null) ? String.format("_%0" + numberStr.length() + "d", number) : "_01"); // Reconstruct the code with the incremented number, or use "01" if there's no number in the code
+        }
+
+        log.debug("generateChannelCode result = {}", newChannelCode);
+        return newChannelCode;
     }
 
     @Override
