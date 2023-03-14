@@ -464,4 +464,27 @@ class ApiConfigServiceImplTest {
         assertEquals(response, "TEST_02");
     }
 
+    @Test
+    void generateChannelCode_noRegexMatcher(){
+        //given
+        final String xRequestId = "xRequestId";
+        final String pspCode = "TEST";
+
+        PspChannels pspChannels = mockInstance(new PspChannels());
+        PspChannel pspChannel = mockInstance(new PspChannel());
+        pspChannel.setChannelCode("TEST");
+
+        pspChannels.setChannelsList(List.of(pspChannel));
+
+        when(apiConfigConnectorMock.getPspChannels(any(),anyString()))
+                .thenReturn(pspChannels);
+
+        //when
+        String response = apiConfigService.generateChannelCode(pspCode,xRequestId);
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .getPspChannels(anyString(),anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+        assertEquals(response, "TEST_01");
+    }
 }

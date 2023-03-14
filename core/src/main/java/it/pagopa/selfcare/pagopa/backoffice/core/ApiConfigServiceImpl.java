@@ -167,19 +167,20 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         List<String> codes = codeList.stream().map(pspChannel -> pspChannel.getChannelCode())
                 .filter(s -> s.matches("^\\w+_\\d+$")) // String_nn
                 .collect(Collectors.toList());
-
+        String newChannelCode = pspCode.concat("_").concat("01");
+        if (codes.isEmpty()) return newChannelCode;
         Comparator<String> comparator = Comparator.comparingInt(s -> Integer.parseInt(s.split("_")[1]));
         Collections.sort(codes, comparator.reversed());
         String code = codes.get(0);
-        String newChannelCode = pspCode.concat("_").concat("01");
+
 
             Matcher matcher = pattern.matcher(code);
             if (matcher.matches()) {
                 String prefix = matcher.group(1); // Extract the code prefix
                 String numberStr = matcher.group(3); // Extract the code number as a string
-                int number = (numberStr != null) ? Integer.parseInt(numberStr) : 0; // Convert the string to an integer, or use 0 if there's no number in the code
+                int number =  Integer.parseInt(numberStr) ; // Convert the string to an integer, or use 0 if there's no number in the code
                 number++; // Increment the number
-                newChannelCode = prefix + ((numberStr != null) ? String.format("_%0" + numberStr.length() + "d", number) : "_01"); // Reconstruct the code with the incremented number, or use "01" if there's no number in the code
+                newChannelCode = prefix +  String.format("_%0" + numberStr.length() + "d", number); // Reconstruct the code with the incremented number, or use "01" if there's no number in the code
         }
 
         log.debug("generateChannelCode result = {}", newChannelCode);
