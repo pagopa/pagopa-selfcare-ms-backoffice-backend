@@ -683,7 +683,6 @@ class ChannelControllerTest {
                         .contentType(MediaType.TEXT_PLAIN_VALUE)
                 )
                 .andExpect(status().is2xxSuccessful())
-//                .andExpect(content().contentType(MediaType.TEXT_PLAIN_VALUE))
                 .andExpect(jsonPath("$", is(channelCode)));
 
         verify(apiConfigServiceMock, times(1))
