@@ -3,8 +3,8 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.subscriptions;
 public enum Subscription {
 
     NODOAUTH("/products/nodo-auth", "Connessione con nodo", "nodauth-"),
-    GPD("/products/debt-positions", "Posizioni debitorie", "gdp-"),
-    BIZ("/products/bizevents", "Evento di pagamento", "bes-");
+    GPD("/products/debt-positions", "Integrazione Asincrona", "gdp-"),
+    BIZ("/products/bizevents", "Recupero Ricevuta", "bes-");
 
     private final String scope;
     private final String displayName;
@@ -27,6 +27,5 @@ public enum Subscription {
         this.displayName = displayName;
         this.prefixId = prefixId;
     }
-
-
+    
 }
