@@ -9,6 +9,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Slf4j
@@ -33,6 +35,13 @@ public class StationController {
         this.apiConfigService = apiConfigService;
     }
 
+    @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.createStation}")
+    public StationDetailResource createStation(@RequestBody @NotNull StationDetailsDto stationDetailsDto) {
+        StationDetailResource resource = null;
+        return resource;
+    }
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
@@ -41,7 +50,7 @@ public class StationController {
                                         @RequestParam(required = false, defaultValue = "50") Integer limit,
                                         @ApiParam("${swagger.pageable.start}")
                                         @RequestParam(required = true) Integer page,
-                                        @ApiParam("${swagger.model.station.id}")
+                                        @ApiParam("${swagger.model.station.code}")
                                         @RequestParam(required = false) String stationCode,
                                         @ApiParam("${swagger.model.stations.ecCode}")
                                         @RequestParam(required = false) String creditorInstitutionCode,
@@ -57,10 +66,10 @@ public class StationController {
         return resource;
     }
 
-    @GetMapping("/details/{stationId}")
+    @GetMapping(value = "/details/{stationId}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getStation}")
-    public StationDetailResource getStation(@ApiParam("${swagger.model.station.id}")
+    public StationDetailResource getStation(@ApiParam("${swagger.model.station.code}")
                                             @PathVariable("stationId") String stationCode) {
         log.trace("getStation start");
         String uuid = UUID.randomUUID().toString();
@@ -71,5 +80,6 @@ public class StationController {
         log.trace("getStation end");
         return resource;
     }
+
 
 }

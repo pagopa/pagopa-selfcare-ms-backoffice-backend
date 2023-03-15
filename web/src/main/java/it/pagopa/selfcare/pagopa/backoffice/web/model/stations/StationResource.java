@@ -12,7 +12,7 @@ import java.time.Instant;
 @Data
 public class StationResource {
 
-    @ApiModelProperty(value = "${swagger.model.station.id}", required = true)
+    @ApiModelProperty(value = "${swagger.model.station.code}", required = true)
     @JsonProperty(required = true)
     @NotBlank
     private String stationCode;
