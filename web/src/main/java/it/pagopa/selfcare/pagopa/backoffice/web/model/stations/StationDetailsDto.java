@@ -27,30 +27,28 @@ public class StationDetailsDto {
     @ApiModelProperty("${swagger.model.station.newPassword}")
     private String newPassword;
     @ApiModelProperty("${swagger.model.station.password}")
-    @JsonProperty(required = true)
-    @NotBlank
     private String password;
     @ApiModelProperty("${swagger.model.station.port}")
     private Long port = 443l;
     @ApiModelProperty("${swagger.model.station.protocol}")
     private Protocol protocol = Protocol.HTTPS;
-    @ApiModelProperty("${swagger.model.station.redirectIp}")
+    @ApiModelProperty(value = "${swagger.model.station.redirectIp}", required = true)
     @JsonProperty(required = true)
     @NotBlank
     private String redirectIp;
-    @ApiModelProperty("${swagger.model.station.redirectPath}")
+    @ApiModelProperty(value = "${swagger.model.station.redirectPath}", required = true)
     @JsonProperty(required = true)
     @NotBlank
     private String redirectPath;
-    @ApiModelProperty("${swagger.model.station.redirectPort}")
+    @ApiModelProperty(value = "${swagger.model.station.redirectPort}", required = true)
     @JsonProperty(required = true)
     @NotNull
     private Long redirectPort;
-    @ApiModelProperty("${swagger.model.station.redirectQueryString}")
+    @ApiModelProperty(value = "${swagger.model.station.redirectQueryString}", required = true)
     @JsonProperty(required = true)
     @NotBlank
     private String redirectQueryString;
-    @ApiModelProperty("${swagger.model.station.redirectProtocol}")
+    @ApiModelProperty(value = "${swagger.model.station.redirectProtocol}", required = true)
     @JsonProperty(required = true)
     @NotNull
     private Protocol redirectProtocol;
@@ -90,19 +88,19 @@ public class StationDetailsDto {
     private Long brokerObjId;
     @ApiModelProperty(value = "${swagger.model.station.rtInstantaneousDispatch}")
     private Boolean rtInstantaneousDispatch;
-    @ApiModelProperty(value = "${swagger.model.station.targetHost}")
+    @ApiModelProperty(value = "${swagger.model.station.targetHost}", required = true)
     @JsonProperty(required = true)
     @NotBlank
     private String targetHost;
-    @ApiModelProperty(value = "${swagger.model.station.targetPort}")
+    @ApiModelProperty(value = "${swagger.model.station.targetPort}", required = true)
     @JsonProperty(required = true)
     @NotNull
     private Long targetPort;
-    @ApiModelProperty(value = "${swagger.model.station.targetPath}")
+    @ApiModelProperty(value = "${swagger.model.station.targetPath}", required = true)
     @JsonProperty(required = true)
     @NotNull
     private String targetPath;
-    @ApiModelProperty("${swagger.model.station.primitiveVersion}")
+    @ApiModelProperty(value = "${swagger.model.station.primitiveVersion}", required = true)
     @JsonProperty(required = true)
     @NotNull
     private Integer primitiveVersion;
