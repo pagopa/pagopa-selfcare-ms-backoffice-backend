@@ -4,6 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
 
@@ -15,4 +16,6 @@ public interface StationMapper {
     StationsResource toResource(Stations model);
 
     StationResource toResource(Station model);
+
+    StationDetail fromDto(StationDetailsDto model);
 }

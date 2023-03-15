@@ -15,7 +15,7 @@ public class StationDetailsDto {
     @JsonProperty(required = true)
     @NotBlank
     private String stationCode;
-    @ApiModelProperty(value = "${swagger.model.station.enabled}", required = true)
+    @ApiModelProperty(value = "${swagger.model.station.enabled}")
     private Boolean enabled = true;
 
     @ApiModelProperty(value = "${swagger.model.station.brokerDescription}")

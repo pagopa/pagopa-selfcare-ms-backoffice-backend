@@ -4,6 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
 
@@ -107,6 +108,54 @@ public class StationMapperImpl implements StationMapper {
         stationResource.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
 
         return stationResource;
+    }
+
+    @Override
+    public StationDetail fromDto(StationDetailsDto model) {
+        if (model == null) {
+            return null;
+        }
+
+        StationDetail stationDetail = new StationDetail();
+
+        stationDetail.setStationCode(model.getStationCode());
+        stationDetail.setEnabled(model.getEnabled());
+        stationDetail.setBrokerDescription(model.getBrokerDescription());
+        stationDetail.setIp(model.getIp());
+        stationDetail.setNewPassword(model.getNewPassword());
+        stationDetail.setPassword(model.getPassword());
+        stationDetail.setPort(model.getPort());
+        stationDetail.setProtocol(model.getProtocol());
+        stationDetail.setRedirectIp(model.getRedirectIp());
+        stationDetail.setRedirectPath(model.getRedirectPath());
+        stationDetail.setRedirectPort(model.getRedirectPort());
+        stationDetail.setRedirectQueryString(model.getRedirectQueryString());
+        stationDetail.setRedirectProtocol(model.getRedirectProtocol());
+        stationDetail.setService(model.getService());
+        stationDetail.setPofService(model.getPofService());
+        stationDetail.setBrokerCode(model.getBrokerCode());
+        stationDetail.setProtocol4Mod(model.getProtocol4Mod());
+        stationDetail.setIp4Mod(model.getIp4Mod());
+        stationDetail.setPort4Mod(model.getPort4Mod());
+        stationDetail.setService4Mod(model.getService4Mod());
+        stationDetail.setProxyEnabled(model.getProxyEnabled());
+        stationDetail.setProxyHost(model.getProxyHost());
+        stationDetail.setProxyPort(model.getProxyPort());
+        stationDetail.setProxyUsername(model.getProxyUsername());
+        stationDetail.setProxyPassword(model.getProxyPassword());
+        stationDetail.setThreadNumber(model.getThreadNumber());
+        stationDetail.setTimeoutA(model.getTimeoutA());
+        stationDetail.setTimeoutB(model.getTimeoutB());
+        stationDetail.setTimeoutC(model.getTimeoutC());
+        stationDetail.setFlagOnline(model.getFlagOnline());
+        stationDetail.setBrokerObjId(model.getBrokerObjId());
+        stationDetail.setRtInstantaneousDispatch(model.getRtInstantaneousDispatch());
+        stationDetail.setTargetHost(model.getTargetHost());
+        stationDetail.setTargetPort(model.getTargetPort());
+        stationDetail.setTargetPath(model.getTargetPath());
+        stationDetail.setPrimitiveVersion(model.getPrimitiveVersion());
+
+        return stationDetail;
     }
 
 }

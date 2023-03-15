@@ -3421,7 +3421,7 @@
       },
       "StationDetailsDto" : {
         "title" : "StationDetailsDto",
-        "required" : [ "enabled", "primitiveVersion", "redirectIp", "redirectPath", "redirectPort", "redirectProtocol", "redirectQueryString", "stationCode", "targetHost", "targetPath", "targetPort" ],
+        "required" : [ "primitiveVersion", "redirectIp", "redirectPath", "redirectPort", "redirectProtocol", "redirectQueryString", "stationCode", "targetHost", "targetPath", "targetPort" ],
         "type" : "object",
         "properties" : {
           "brokerCode" : {

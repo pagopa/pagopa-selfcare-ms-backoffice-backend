@@ -39,6 +39,9 @@ public class StationController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.stations.createStation}")
     public StationDetailResource createStation(@RequestBody @NotNull StationDetailsDto stationDetailsDto) {
+        String xRequestId = UUID.randomUUID().toString();
+        StationDetail stationDetail = mapper.fromDto(stationDetailsDto);
+        StationDetail response = apiConfigService.createStation(stationDetail, xRequestId);
         StationDetailResource resource = null;
         return resource;
     }
@@ -61,6 +64,7 @@ public class StationController {
         log.debug("getStations ecCode = {}, stationCode = {}, X-Request-Id = {}", creditorInstitutionCode, stationCode, uuid);
         Stations stations = apiConfigService.getStations(limit, page, sort, creditorInstitutionCode, stationCode, uuid);
         StationsResource resource = mapper.toResource(stations);
+//        StationsResource resource = null;
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "StationController result = {}", resource);
         log.trace("getStations end");
         return resource;
@@ -76,6 +80,7 @@ public class StationController {
         log.debug("getStation stationCode = {}, X-Request-Id = {}", stationCode, uuid);
         StationDetail stationDetail = apiConfigService.getStation(stationCode, uuid);
         StationDetailResource resource = mapper.toResource(stationDetail);
+//        StationDetailResource resource = null;
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStation result = {}", resource);
         log.trace("getStation end");
         return resource;
