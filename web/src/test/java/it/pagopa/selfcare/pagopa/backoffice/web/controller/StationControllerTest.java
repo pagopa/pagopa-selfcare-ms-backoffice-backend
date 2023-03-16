@@ -3,7 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -84,7 +84,7 @@ class StationControllerTest {
     void getStation() throws Exception {
         //given
         String stationId = "stationId";
-        StationDetail station = mockInstance(new StationDetail());
+        StationDetails station = mockInstance(new StationDetails());
 
         when(apiConfigServiceMock.getStation(anyString(), anyString()))
                 .thenReturn(station);

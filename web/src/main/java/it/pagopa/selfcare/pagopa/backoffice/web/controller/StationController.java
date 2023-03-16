@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
@@ -39,10 +39,14 @@ public class StationController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.stations.createStation}")
     public StationDetailResource createStation(@RequestBody @NotNull StationDetailsDto stationDetailsDto) {
+        log.trace("createStation start");
         String xRequestId = UUID.randomUUID().toString();
-        StationDetail stationDetail = mapper.fromDto(stationDetailsDto);
-        StationDetail response = apiConfigService.createStation(stationDetail, xRequestId);
-        StationDetailResource resource = null;
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createStation dto = {}, xRequestId = {}", stationDetailsDto, xRequestId);
+        StationDetails stationDetails = mapper.fromDto(stationDetailsDto);
+        StationDetails response = apiConfigService.createStation(stationDetails, xRequestId);
+        StationDetailResource resource = mapper.toResource(response);
+        log.debug("createStation result = {}", resource);
+        log.trace("createStation end");
         return resource;
     }
 
@@ -64,7 +68,6 @@ public class StationController {
         log.debug("getStations ecCode = {}, stationCode = {}, X-Request-Id = {}", creditorInstitutionCode, stationCode, uuid);
         Stations stations = apiConfigService.getStations(limit, page, sort, creditorInstitutionCode, stationCode, uuid);
         StationsResource resource = mapper.toResource(stations);
-//        StationsResource resource = null;
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "StationController result = {}", resource);
         log.trace("getStations end");
         return resource;
@@ -78,9 +81,8 @@ public class StationController {
         log.trace("getStation start");
         String uuid = UUID.randomUUID().toString();
         log.debug("getStation stationCode = {}, X-Request-Id = {}", stationCode, uuid);
-        StationDetail stationDetail = apiConfigService.getStation(stationCode, uuid);
-        StationDetailResource resource = mapper.toResource(stationDetail);
-//        StationDetailResource resource = null;
+        StationDetails stationDetails = apiConfigService.getStation(stationCode, uuid);
+        StationDetailResource resource = mapper.toResource(stationDetails);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStation result = {}", resource);
         log.trace("getStation end");
         return resource;

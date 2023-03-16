@@ -5,8 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Protocol;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 @Data
-public class StationDetail extends Station {
+public class StationDetails extends Station {
     @JsonProperty("ip")
     private String ip;
 
@@ -17,9 +20,11 @@ public class StationDetail extends Station {
     private String password;
 
     @JsonProperty("port")
+    @NotNull
     private Long port;
 
     @JsonProperty("protocol")
+    @NotNull
     private Protocol protocol;
 
     @JsonProperty("redirect_ip")
@@ -44,6 +49,7 @@ public class StationDetail extends Station {
     private String pofService;
 
     @JsonProperty("broker_code")
+    @NotBlank
     private String brokerCode;
 
     @JsonProperty("protocol_4mod")
@@ -74,15 +80,19 @@ public class StationDetail extends Station {
     private String proxyPassword;
 
     @JsonProperty("thread_number")
+    @NotNull
     private Long threadNumber;
 
     @JsonProperty("timeout_a")
+    @NotNull
     private Long timeoutA = 15L;
 
     @JsonProperty("timeout_b")
+    @NotNull
     private Long timeoutB = 30L;
 
     @JsonProperty("timeout_c")
+    @NotNull
     private Long timeoutC = 120L;
 
     @JsonProperty("flag_online")

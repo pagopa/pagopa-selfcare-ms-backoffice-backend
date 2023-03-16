@@ -2,7 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.io.Resource;
@@ -92,13 +92,13 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
 
     @GetMapping(value = "${rest-client.api-config.getStation.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    StationDetail getStation(@PathVariable("stationcode") String stationCode,
-                             @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+    StationDetails getStation(@PathVariable("stationcode") String stationCode,
+                              @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
-    @PostMapping(value = "${rest-client.api-config.createStation.path}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "${rest-client.api-config.createStation.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    StationDetail createStation(@RequestBody @NotNull StationDetail stationDetail,
-                                @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+    StationDetails createStation(@RequestBody @NotNull StationDetails stationDetails,
+                                 @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
     @GetMapping(value = "${rest-client.api-config.getPspBrokerPsp.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
