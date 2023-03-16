@@ -12,7 +12,6 @@ import javax.validation.constraints.NotNull;
 public class StationDetails extends Station {
     @JsonProperty("ip")
     private String ip;
-
     @JsonProperty("new_password")
     private String newPassword;
 
