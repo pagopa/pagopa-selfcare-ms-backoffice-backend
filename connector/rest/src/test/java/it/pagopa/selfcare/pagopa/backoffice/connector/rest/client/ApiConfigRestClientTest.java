@@ -285,9 +285,9 @@ class ApiConfigRestClientTest {
 
         //then
         assertNotNull(response);
-        // assertNotNull(response.getPageInfo());
-        //assertNotNull(response.getChannelList());
-        //  assertEquals(1, response.getChannelList().size());
+//        assertNotNull(response.getPageInfo());
+//        assertNotNull(response.getChannelList());
+//        assertEquals(1, response.getChannelList().size());
 //        checkNotNullFields(response.getChannelList().get(0));
 //        Channel channel = response.getChannelList().get(0);
 //        response.getChannelList().forEach(this::checkNotNullFieldsAttributes);
