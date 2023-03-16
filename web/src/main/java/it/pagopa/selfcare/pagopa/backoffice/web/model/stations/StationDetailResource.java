@@ -82,8 +82,8 @@ public class StationDetailResource extends StationResource {
     private String targetPath;
     @ApiModelProperty("${swagger.model.station.primitiveVersion}")
     @JsonProperty(required = true)
-    @NotNull
-    private Integer primitiveVersion;
+    @NotBlank
+    private String primitiveVersion;
     @ApiModelProperty("${swagger.model.station.operatedBy}")
 //    @JsonProperty(required = true)
 //    @NotBlank

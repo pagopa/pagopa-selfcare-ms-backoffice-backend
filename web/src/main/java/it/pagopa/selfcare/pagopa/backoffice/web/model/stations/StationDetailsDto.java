@@ -102,7 +102,7 @@ public class StationDetailsDto {
     private String targetPath;
     @ApiModelProperty(value = "${swagger.model.station.primitiveVersion}", required = true)
     @JsonProperty(required = true)
-    @NotNull
-    private Integer primitiveVersion;
+    @NotBlank
+    private String primitiveVersion;
 
 }

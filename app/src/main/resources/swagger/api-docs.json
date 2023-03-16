@@ -3299,9 +3299,8 @@
             "format" : "int64"
           },
           "primitiveVersion" : {
-            "type" : "integer",
-            "description" : "Station's primitive version",
-            "format" : "int32"
+            "type" : "string",
+            "description" : "Station's primitive version"
           },
           "protocol" : {
             "type" : "string",
@@ -3478,9 +3477,8 @@
             "format" : "int64"
           },
           "primitiveVersion" : {
-            "type" : "integer",
-            "description" : "Station's primitive version",
-            "format" : "int32"
+            "type" : "string",
+            "description" : "Station's primitive version"
           },
           "protocol" : {
             "type" : "string",

@@ -104,6 +104,6 @@ public class StationDetail extends Station {
     private String targetPath;
 
     @JsonProperty("primitive_version")
-    private Integer primitiveVersion;
+    private String primitiveVersion;
     private String operatedBy = "Mock";//FIXME remove after apiConfig provides the fields
 }

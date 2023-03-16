@@ -158,6 +158,11 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
+    public StationDetail createStation(StationDetail stationDetail, String xRequestId) {
+        return null;
+    }
+
+    @Override
     public String generateChannelCode(String pspCode, String xRequestId) {
         log.trace("generateChannelCode start");
         log.debug("generateChannelCode pspCode = {}", pspCode);

@@ -95,6 +95,11 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     StationDetail getStation(@PathVariable("stationcode") String stationCode,
                              @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
+    @PostMapping(value = "${rest-client.api-config.createStation.path}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    StationDetail createStation(@RequestBody @NotNull StationDetail stationDetail,
+                                @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
     @GetMapping(value = "${rest-client.api-config.getPspBrokerPsp.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     PaymentServiceProviders getPspBrokerPsp(@RequestParam(required = false, defaultValue = "50") Integer limit,
