@@ -10,7 +10,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.RestTestUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.config.ApiConfigRestClientConfigTest;
@@ -170,6 +170,49 @@ class ApiConfigRestClientTest {
 
     }};
 
+    private static final Map<TestCase, Map<String, Object>> testCaseStationDetailDtoMap = new EnumMap(TestCase.class) {
+        {
+            StationDetails stationDetails = new StationDetails();
+            stationDetails.setStationCode("station1");
+            stationDetails.setEnabled(true);
+            stationDetails.setBrokerDescription("broker1");
+            stationDetails.setVersion(1L);
+            stationDetails.setIp("127.0.0.1");
+            stationDetails.setNewPassword("newPassword");
+            stationDetails.setPassword("password");
+            stationDetails.setPort(8080L);
+            stationDetails.setProtocol(Protocol.HTTP);
+            stationDetails.setRedirectIp("127.0.0.3");
+            stationDetails.setRedirectPath("redirectPath");
+            stationDetails.setRedirectPort(8989L);
+            stationDetails.setRedirectQueryString("/redirectQueryString");
+            stationDetails.setRedirectProtocol(Protocol.HTTP);
+            stationDetails.setService("service1");
+            stationDetails.setPofService("pofService1");
+            stationDetails.setBrokerCode("brokerCode1");
+            stationDetails.setProtocol4Mod(Protocol.HTTP);
+            stationDetails.setIp4Mod("127.0.0.2");
+            stationDetails.setPort4Mod(9090L);
+            stationDetails.setService4Mod("service4Mod1");
+            stationDetails.setProxyEnabled(true);
+            stationDetails.setProxyHost("127.0.0.1");
+            stationDetails.setProxyPort(8090L);
+            stationDetails.setProxyUsername("proxyUsername");
+            stationDetails.setProxyPassword("proxyPassword");
+            stationDetails.setThreadNumber(1L);
+            stationDetails.setTimeoutA(1L);
+            stationDetails.setTimeoutB(2L);
+            stationDetails.setTimeoutC(3L);
+            stationDetails.setFlagOnline(true);
+            stationDetails.setRtInstantaneousDispatch(true);
+            stationDetails.setTargetHost("targetHost");
+            stationDetails.setTargetPort(8888L);
+            stationDetails.setTargetPath("targetPath");
+            stationDetails.setPrimitiveVersion("1");
+            put(TestCase.FULLY_VALUED, stationDetails);
+        }
+    };
+
     private static final Map<TestCase, Map<String, Object>> testCaseChannelParamMap = new EnumMap<>(TestCase.class) {{
         put(TestCase.FULLY_VALUED, new HashMap<String, Object>() {{
             put("page", 2);
@@ -242,9 +285,9 @@ class ApiConfigRestClientTest {
 
         //then
         assertNotNull(response);
-        // assertNotNull(response.getPageInfo());
-        //assertNotNull(response.getChannelList());
-        //  assertEquals(1, response.getChannelList().size());
+//        assertNotNull(response.getPageInfo());
+//        assertNotNull(response.getChannelList());
+//        assertEquals(1, response.getChannelList().size());
 //        checkNotNullFields(response.getChannelList().get(0));
 //        Channel channel = response.getChannelList().get(0);
 //        response.getChannelList().forEach(this::checkNotNullFieldsAttributes);
@@ -549,9 +592,9 @@ class ApiConfigRestClientTest {
         final String stationCode = testCaseStationCodeMap.get(testCase);
         final String xRequestId = UUID.randomUUID().toString();
         //when
-        StationDetail stationDetail = restClient.getStation(stationCode, xRequestId);
+        StationDetails stationDetails = restClient.getStation(stationCode, xRequestId);
         //then
-        assertNotNull(stationDetail);
+        assertNotNull(stationDetails);
     }
 
     @Test
@@ -561,10 +604,24 @@ class ApiConfigRestClientTest {
         String stationCode = testCaseStationCodeMap.get(testCase);
         String xRequestId = UUID.randomUUID().toString();
         //when
-        StationDetail stationDetail = restClient.getStation(stationCode, xRequestId);
+        StationDetails stationDetails = restClient.getStation(stationCode, xRequestId);
         //then
-        assertNotNull(stationDetail);
-        assertNotNull(stationDetail.getBrokerCode());
+        assertNotNull(stationDetails);
+        assertNotNull(stationDetails.getBrokerCode());
+    }
+
+    @Test
+    void createStation_fullyValued() {
+        //given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        StationDetails stationDetailsDto = (StationDetails) testCaseStationDetailDtoMap.get(testCase);
+        String xRequestId = UUID.randomUUID().toString();
+        //when
+        StationDetails stationDetails = restClient.createStation(stationDetailsDto, xRequestId);
+        //then
+        assertNotNull(stationDetails);
+        checkNotNullFields(stationDetails, "brokerObjId");
+
     }
 
     @Test

@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import org.springframework.core.io.Resource;
 
@@ -43,7 +43,9 @@ public interface ApiConfigService {
 
     Stations getStations(Integer limit, Integer page, String sort, String ecCode, String stationCode, String xRequestId);
 
-    StationDetail getStation(String stationCode, String xRequestId);
+    StationDetails getStation(String stationCode, String xRequestId);
+
+    StationDetails createStation(StationDetails stationDetails, String xRequestId);
 
     String generateChannelCode(String pspCode, String xRequestId);
 

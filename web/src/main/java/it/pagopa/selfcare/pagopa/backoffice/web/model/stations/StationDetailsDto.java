@@ -9,35 +9,53 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class StationDetailResource extends StationResource {
+public class StationDetailsDto {
+
+    @ApiModelProperty(value = "${swagger.model.station.code}", required = true)
+    @JsonProperty(required = true)
+    @NotBlank
+    private String stationCode;
+    @ApiModelProperty(value = "${swagger.model.station.enabled}")
+    private Boolean enabled = true;
+
+    @ApiModelProperty(value = "${swagger.model.station.brokerDescription}")
+    private String brokerDescription;
+    @ApiModelProperty("${swagger.model.station.brokerCode}")
+    private String brokerCode;
     @ApiModelProperty("${swagger.model.station.ip}")
     private String ip;
     @ApiModelProperty("${swagger.model.station.newPassword}")
     private String newPassword;
     @ApiModelProperty("${swagger.model.station.password}")
-    @JsonProperty(required = true)
-    @NotBlank
     private String password;
     @ApiModelProperty("${swagger.model.station.port}")
-    private Long port;
+    private Long port = 443l;
     @ApiModelProperty("${swagger.model.station.protocol}")
-    private Protocol protocol;
-    @ApiModelProperty("${swagger.model.station.redirectIp}")
+    private Protocol protocol = Protocol.HTTPS;
+    @ApiModelProperty(value = "${swagger.model.station.redirectIp}", required = true)
+    @JsonProperty(required = true)
+    @NotBlank
     private String redirectIp;
-    @ApiModelProperty("${swagger.model.station.redirectPath}")
+    @ApiModelProperty(value = "${swagger.model.station.redirectPath}", required = true)
+    @JsonProperty(required = true)
+    @NotBlank
     private String redirectPath;
-    @ApiModelProperty("${swagger.model.station.redirectPort}")
-    private Long redirectPort;
-    @ApiModelProperty("${swagger.model.station.redirectQueryString}")
+    @ApiModelProperty(value = "${swagger.model.station.redirectPort}", required = true)
+    @JsonProperty(required = true)
+    @NotNull
+    private Long redirectPort = 2l;
+    @ApiModelProperty(value = "${swagger.model.station.redirectQueryString}", required = true)
+    @JsonProperty(required = true)
+    @NotBlank
     private String redirectQueryString;
-    @ApiModelProperty("${swagger.model.station.redirectProtocol}")
+    @ApiModelProperty(value = "${swagger.model.station.redirectProtocol}", required = true)
+    @JsonProperty(required = true)
+    @NotNull
     private Protocol redirectProtocol;
     @ApiModelProperty("${swagger.model.station.service}")
     private String service;
     @ApiModelProperty("${swagger.model.station.pofService}")
     private String pofService;
-    @ApiModelProperty("${swagger.model.station.brokerCode}")
-    private String brokerCode;
     @ApiModelProperty("${swagger.model.station.protocol4Mod}")
     private Protocol protocol4Mod;
     @ApiModelProperty("${swagger.model.station.ip4Mod}")
@@ -51,42 +69,40 @@ public class StationDetailResource extends StationResource {
     @ApiModelProperty(value = "${swagger.model.station.proxyHost}")
     private String proxyHost;
     @ApiModelProperty(value = "${swagger.model.station.proxyPort}")
-    private Long proxyPort;
+    private Long proxyPort = 2l;
     @ApiModelProperty(value = "${swagger.model.station.proxyUsername}")
     private String proxyUsername;
     @ApiModelProperty(value = "${swagger.model.station.proxyPassword}")
     private String proxyPassword;
     @ApiModelProperty(value = "${swagger.model.station.threadNumber}")
-    @NotNull
-    private Long threadNumber;
+    private Long threadNumber = 2l;
     @ApiModelProperty(value = "${swagger.model.station.timeoutA}")
-    @NotNull
-    private Long timeoutA;
+    private Long timeoutA = 200l;
     @ApiModelProperty(value = "${swagger.model.station.timeoutB}")
-    @NotNull
-    private Long timeoutB;
+    private Long timeoutB = 500l;
     @ApiModelProperty(value = "${swagger.model.station.timeoutC}")
-    @NotNull
-    private Long timeoutC;
+    private Long timeoutC = 400l;
     @ApiModelProperty(value = "${swagger.model.station.flagOnline}")
     private Boolean flagOnline;
     @ApiModelProperty(value = "${swagger.model.station.brokerObjId}")
     private Long brokerObjId;
     @ApiModelProperty(value = "${swagger.model.station.rtInstantaneousDispatch}")
     private Boolean rtInstantaneousDispatch;
-    @ApiModelProperty(value = "${swagger.model.station.targetHost}")
+    @ApiModelProperty(value = "${swagger.model.station.targetHost}", required = true)
+    @JsonProperty(required = true)
+    @NotBlank
     private String targetHost;
-    @ApiModelProperty(value = "${swagger.model.station.targetPort}")
+    @ApiModelProperty(value = "${swagger.model.station.targetPort}", required = true)
+    @JsonProperty(required = true)
+    @NotNull
     private Long targetPort;
-    @ApiModelProperty(value = "${swagger.model.station.targetPath}")
+    @ApiModelProperty(value = "${swagger.model.station.targetPath}", required = true)
+    @JsonProperty(required = true)
+    @NotNull
     private String targetPath;
-    @ApiModelProperty("${swagger.model.station.primitiveVersion}")
+    @ApiModelProperty(value = "${swagger.model.station.primitiveVersion}", required = true)
     @JsonProperty(required = true)
     @NotBlank
     private String primitiveVersion;
-    @ApiModelProperty("${swagger.model.station.operatedBy}")
-//    @JsonProperty(required = true)
-//    @NotBlank
-    private String operatedBy;
 
 }

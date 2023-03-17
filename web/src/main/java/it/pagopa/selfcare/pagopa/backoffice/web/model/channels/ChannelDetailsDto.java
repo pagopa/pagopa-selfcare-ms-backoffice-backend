@@ -8,7 +8,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Protocol;
 import lombok.Data;
 import lombok.ToString;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
@@ -17,14 +16,14 @@ public class ChannelDetailsDto {
 
     @JsonProperty("channel_code")
     @ApiModelProperty(value = "${swagger.model.channel.code}")
-    protected String channelCode;
+    private String channelCode;
 
     @JsonProperty("enabled")
-    protected Boolean enabled=true;
+    private Boolean enabled = true;
 
     @JsonProperty("broker_description")
     @ApiModelProperty(value = "${swagger.model.broker.description}")
-    protected String brokerDescription;
+    private String brokerDescription;
 
     @JsonProperty("password")
     @ApiModelProperty(value = "${swagger.model.channel.details.password}")
