@@ -620,42 +620,7 @@ class ApiConfigRestClientTest {
         StationDetails stationDetails = restClient.createStation(stationDetailsDto, xRequestId);
         //then
         assertNotNull(stationDetails);
-        assertNotNull(stationDetails.getStationCode());
-        assertNotNull(stationDetails.getEnabled());
-        assertNotNull(stationDetails.getBrokerDescription());
-        assertNotNull(stationDetails.getVersion());
-        assertNotNull(stationDetails.getIp());
-        assertNotNull(stationDetails.getNewPassword());
-        assertNotNull(stationDetails.getPassword());
-        assertNotNull(stationDetails.getPort());
-        assertNotNull(stationDetails.getProtocol());
-        assertNotNull(stationDetails.getRedirectIp());
-        assertNotNull(stationDetails.getRedirectPath());
-        assertNotNull(stationDetails.getRedirectPort());
-        assertNotNull(stationDetails.getRedirectQueryString());
-        assertNotNull(stationDetails.getRedirectProtocol());
-        assertNotNull(stationDetails.getService());
-        assertNotNull(stationDetails.getPofService());
-        assertNotNull(stationDetails.getBrokerCode());
-        assertNotNull(stationDetails.getProtocol4Mod());
-        assertNotNull(stationDetails.getIp4Mod());
-        assertNotNull(stationDetails.getPort4Mod());
-        assertNotNull(stationDetails.getService4Mod());
-        assertNotNull(stationDetails.getProxyEnabled());
-        assertNotNull(stationDetails.getProxyHost());
-        assertNotNull(stationDetails.getProxyPort());
-        assertNotNull(stationDetails.getProxyUsername());
-        assertNotNull(stationDetails.getProxyPassword());
-        assertNotNull(stationDetails.getThreadNumber());
-        assertNotNull(stationDetails.getTimeoutA());
-        assertNotNull(stationDetails.getTimeoutB());
-        assertNotNull(stationDetails.getTimeoutC());
-        assertNotNull(stationDetails.getFlagOnline());
-        assertNotNull(stationDetails.getRtInstantaneousDispatch());
-        assertNotNull(stationDetails.getTargetHost());
-        assertNotNull(stationDetails.getTargetPort());
-        assertNotNull(stationDetails.getTargetPath());
-        assertNotNull(stationDetails.getPrimitiveVersion());
+        checkNotNullFields(stationDetails, "brokerObjId");
 
     }
 

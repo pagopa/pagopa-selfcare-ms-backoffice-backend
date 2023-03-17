@@ -138,7 +138,7 @@ class StationControllerTest {
     }
 
     @Test
-    public void createStationTest(@Value("classpath:stubs/stationsDto.json") Resource dto) throws Exception {
+    void createStationTest(@Value("classpath:stubs/stationsDto.json") Resource dto) throws Exception {
         // Given
         StationDetailsDto stationDetailsDto = objectMapper.readValue(dto.getInputStream(), StationDetailsDto.class);
         StationDetails stationDetails = mapper.fromDto(stationDetailsDto);
