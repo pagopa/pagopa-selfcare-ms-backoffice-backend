@@ -122,6 +122,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetails.setEnabled(model.getEnabled());
         stationDetails.setBrokerDescription(model.getBrokerDescription());
         stationDetails.setIp(model.getIp());
+//        stationDetails.setVersion();
         stationDetails.setNewPassword(model.getNewPassword());
         stationDetails.setPassword(model.getPassword());
         stationDetails.setPort(model.getPort());

@@ -43,7 +43,7 @@ public class StationDetailsDto {
     @ApiModelProperty(value = "${swagger.model.station.redirectPort}", required = true)
     @JsonProperty(required = true)
     @NotNull
-    private Long redirectPort;
+    private Long redirectPort = 2l;
     @ApiModelProperty(value = "${swagger.model.station.redirectQueryString}", required = true)
     @JsonProperty(required = true)
     @NotBlank
@@ -69,7 +69,7 @@ public class StationDetailsDto {
     @ApiModelProperty(value = "${swagger.model.station.proxyHost}")
     private String proxyHost;
     @ApiModelProperty(value = "${swagger.model.station.proxyPort}")
-    private Long proxyPort;
+    private Long proxyPort = 2l;
     @ApiModelProperty(value = "${swagger.model.station.proxyUsername}")
     private String proxyUsername;
     @ApiModelProperty(value = "${swagger.model.station.proxyPassword}")

@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.model.station;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -12,22 +13,28 @@ import java.time.Instant;
 public class Station {
     @JsonProperty("station_code")
     @NotBlank
-    private String stationCode;
+    protected String stationCode;
 
     @JsonProperty("enabled")
     @NotNull
-    private Boolean enabled;
+    protected Boolean enabled;
 
     @JsonProperty("broker_description")
-    private String brokerDescription;
+    protected String brokerDescription;
 
     @JsonProperty("version")
     @NotNull
-    protected Long version;
-    protected StationStatus stationStatus = StationStatus.ACTIVE;
-    protected Integer associatedCreditorInstitutions = 0;
-    protected Instant activationDate = Instant.now();
-    protected Instant createdAt = Instant.now(); //FIXME when these fields will be available from apiConfig
-    protected Instant modifiedAt = Instant.now(); //FIXME remove instantiation after apiConfig has modified their entities
+    protected Long version = 2l;
+
+    @JsonIgnore
+    private StationStatus stationStatus = StationStatus.ACTIVE;
+    @JsonIgnore
+    private Integer associatedCreditorInstitutions = 0;
+    @JsonIgnore
+    private Instant activationDate = Instant.now();
+    @JsonIgnore
+    private Instant createdAt = Instant.now(); //FIXME when these fields will be available from apiConfig
+    @JsonIgnore
+    private Instant modifiedAt = Instant.now(); //FIXME remove instantiation after apiConfig has modified their entities
 
 }
