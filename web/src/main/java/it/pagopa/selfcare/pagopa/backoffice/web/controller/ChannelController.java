@@ -374,5 +374,20 @@ public class ChannelController {
         log.trace("getChannelCode end");
         return channelCode;
     }
+
+    @GetMapping(value = "/psp/{pspcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getPSPDetails}")
+    public PaymentServiceProviderDetailsResource getPSPDetails(@ApiParam("${swagger.request.pspCode}")
+                                 @PathVariable("pspcode") String pspCode) {
+        log.trace("getPSPDetails start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getPSPDetails pspcode = {}, xRequestId = {}", pspCode, xRequestId);
+        PaymentServiceProviderDetails paymentServiceProviderDetails = apiConfigService.getPSPDetails(pspCode, xRequestId);
+        PaymentServiceProviderDetailsResource resource = ChannelMapper.toResource(paymentServiceProviderDetails);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getPSPDetails result = {}", resource);
+        log.trace("getPSPDetails end");
+        return resource;
+    }
 }
 

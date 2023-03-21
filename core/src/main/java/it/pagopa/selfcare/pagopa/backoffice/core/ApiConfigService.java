@@ -51,4 +51,5 @@ public interface ApiConfigService {
 
     String generateStationCode(String ecCode, String xRequestId);
 
+    PaymentServiceProviderDetails getPSPDetails(String pspCode, String xRequestId);
 }

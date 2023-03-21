@@ -680,13 +680,45 @@ class ChannelControllerTest {
 
         mvc.perform(MockMvcRequestBuilders
                         .get(BASE_URL + "/{pspcode}/generate",pspCode)
-                        .contentType(MediaType.TEXT_PLAIN_VALUE)
-                )
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+
+
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$", is(channelCode)));
 
         verify(apiConfigServiceMock, times(1))
                 .generateChannelCode(any(), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+
+    @Test
+    void getPSPDetails() throws Exception {
+        String pspCode = "pspCode";
+        PaymentServiceProviderDetails paymentServiceProviderDetails = mockInstance(new PaymentServiceProviderDetails());
+
+        when(apiConfigServiceMock.getPSPDetails(anyString(), anyString()))
+                .thenReturn(paymentServiceProviderDetails);
+
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/psp/{pspcode}",pspCode)
+                        .contentType(MediaType.TEXT_PLAIN_VALUE))
+                .andExpect(status().is2xxSuccessful())
+
+                .andExpect(jsonPath("$.abi", is(paymentServiceProviderDetails.getAbi())))
+                .andExpect(jsonPath("$.bic", is(paymentServiceProviderDetails.getBic())))
+                .andExpect(jsonPath("$.stamp", is(paymentServiceProviderDetails.getStamp())))
+                .andExpect(jsonPath("$.agid_psp", is(paymentServiceProviderDetails.getAgidPsp())))
+                .andExpect(jsonPath("$.vat_number", is(paymentServiceProviderDetails.getVatNumber())))
+                .andExpect(jsonPath("$.transfer", is(paymentServiceProviderDetails.getTransfer())))
+                .andExpect(jsonPath("$.psp_code", is(paymentServiceProviderDetails.getPspCode())))
+                .andExpect(jsonPath("$.business_name", is(paymentServiceProviderDetails.getBusinessName())))
+                .andExpect(jsonPath("$.enabled", is(paymentServiceProviderDetails.getEnabled())));
+
+
+        verify(apiConfigServiceMock, times(1))
+                .getPSPDetails(any(), anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }

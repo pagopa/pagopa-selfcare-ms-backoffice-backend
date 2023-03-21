@@ -50,4 +50,6 @@ public interface ApiConfigConnector {
 
     CreditorInstitutionStations getEcStations(String ecCode, String xRequestId);
 
+    PaymentServiceProviderDetails getPSPDetails(String pspCode, String xRequestId);
+
 }
