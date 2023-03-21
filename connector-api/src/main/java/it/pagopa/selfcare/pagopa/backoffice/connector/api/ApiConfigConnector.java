@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.api;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import org.springframework.core.io.Resource;
@@ -46,5 +47,7 @@ public interface ApiConfigConnector {
     PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails, String xRequestId);
 
     BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails, String xRequestId);
+
+    CreditorInstitutionStations getEcStations(String ecCode, String xRequestId);
 
 }

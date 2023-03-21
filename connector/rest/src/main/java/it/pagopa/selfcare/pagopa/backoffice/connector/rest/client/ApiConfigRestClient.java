@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -126,5 +127,10 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     @PostMapping(value = "${rest-client.api-config.createPaymentServiceProvider.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails, @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
+
+    @GetMapping(value = "${rest-client.api-config.getCreditorInstitutionStations}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    CreditorInstitutionStations getEcStations(@PathVariable("creditorinstitutioncode") String ecCode, @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
 }

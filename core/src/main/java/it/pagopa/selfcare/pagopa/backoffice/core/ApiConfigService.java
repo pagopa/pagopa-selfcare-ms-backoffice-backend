@@ -49,5 +49,6 @@ public interface ApiConfigService {
 
     String generateChannelCode(String pspCode, String xRequestId);
 
+    String generateStationCode(String ecCode, String xRequestId);
 
 }

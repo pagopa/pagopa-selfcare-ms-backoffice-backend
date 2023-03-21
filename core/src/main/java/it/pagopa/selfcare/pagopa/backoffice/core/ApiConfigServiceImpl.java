@@ -2,6 +2,8 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStation;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import lombok.extern.slf4j.Slf4j;
@@ -9,12 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static it.pagopa.selfcare.pagopa.backoffice.connector.utils.StringUtils.generator;
 
 @Slf4j
 @Service
@@ -174,27 +174,29 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.debug("generateChannelCode pspCode = {}", pspCode);
         PspChannels response = apiConfigConnector.getPspChannels(pspCode, xRequestId);
         List<PspChannel> codeList = response.getChannelsList();
-        Pattern pattern = Pattern.compile("^(.*?)(_([0-9]+))$"); // String_nn
-        List<String> codes = codeList.stream().map(pspChannel -> pspChannel.getChannelCode())
+        List<String> codes = codeList.stream().map(PspChannel::getChannelCode)
                 .filter(s -> s.matches("^\\w+_\\d+$")) // String_nn
                 .collect(Collectors.toList());
-        String newChannelCode = pspCode.concat("_").concat("01");
-        if (codes.isEmpty()) return newChannelCode;
-        Comparator<String> comparator = Comparator.comparingInt(s -> Integer.parseInt(s.split("_")[1]));
-        Collections.sort(codes, comparator.reversed());
-        String code = codes.get(0);
-
-            Matcher matcher = pattern.matcher(code);
-            if (matcher.matches()) {
-                String prefix = matcher.group(1);
-                String numberStr = matcher.group(3);
-                int number =  Integer.parseInt(numberStr) ;
-                number++;
-                newChannelCode = prefix +  String.format("_%0" + numberStr.length() + "d", number);
-        }
+        String newChannelCode = generator(codes, pspCode);
         log.debug("generateChannelCode result = {}", newChannelCode);
+        log.trace("generateChannelCode end");
         return newChannelCode;
     }
+
+    @Override
+    public String generateStationCode(String ecCode, String xRequestId) {
+        log.trace("generateStationCode start");
+        log.debug("generateStation ecCode = {}, xRequestId = {}", ecCode, xRequestId);
+        List<CreditorInstitutionStation> stationsList = apiConfigConnector.getEcStations(ecCode, xRequestId).getStationsList();
+        List<String> codes = stationsList.stream().map(Station::getStationCode)
+                .filter(s -> s.matches("^\\w+_\\d+$"))
+                .collect(Collectors.toList());
+        String newStationCode = generator(codes, ecCode);
+        log.debug("generateStationCode result = {}", newStationCode);
+        log.trace("generateStationCode end");
+        return newStationCode;
+    }
+
 
     @Override
     public Resource getChannelsCSV(String uuid) {

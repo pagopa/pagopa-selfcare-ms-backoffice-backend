@@ -10,6 +10,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.RestTestUtils;
@@ -568,7 +569,7 @@ class ApiConfigRestClientTest {
     void getStations_fullyValued() {
         //given
         final TestCase testCase = TestCase.FULLY_VALUED;
-        final Integer page = (Integer) testCaseChannelParamMap.get(testCase).get("page");
+        final Integer page = 3;
         final Integer limit = (Integer) testCaseChannelParamMap.get(testCase).get("limit");
         final String sortBy = (String) testCaseChannelParamMap.get(testCase).get("sortBy");
         final String code = (String) testCaseChannelParamMap.get(testCase).get("code");
@@ -583,6 +584,31 @@ class ApiConfigRestClientTest {
         assertFalse(stations.getStationsList().isEmpty());
         assertNotNull(stations.getStationsList().get(0));
         assertNotNull(stations.getPageInfo());
+    }
+
+    @Test
+    void getEcStations_fullyValued() {
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = "123";
+        //when
+        CreditorInstitutionStations response = restClient.getEcStations(ecCode, xRequestId);
+        //then
+        assertNotNull(response);
+        assertFalse(response.getStationsList().isEmpty());
+        assertNotNull(response.getStationsList().get(0));
+    }
+
+    @Test
+    void getEcStations_fullyEmpty() {
+        //given
+        String ecCode = "ecCode2";
+        String xRequestId = "123";
+        //when
+        CreditorInstitutionStations response = restClient.getEcStations(ecCode, xRequestId);
+        //then
+        assertNotNull(response);
+        assertNull(response.getStationsList());
     }
 
     @Test
