@@ -2,7 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,11 +149,22 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
-    public StationDetail getStation(String stationCode, String xRequestId) {
+    public StationDetails getStation(String stationCode, String xRequestId) {
         log.trace("getStation start");
         log.debug("getStation stationCode = {}, xRequestId = {}", stationCode, xRequestId);
-        StationDetail response = apiConfigConnector.getStation(stationCode, xRequestId);
+        StationDetails response = apiConfigConnector.getStation(stationCode, xRequestId);
         log.debug("getStation result = {}", response);
+        log.trace("getStation end");
+        return response;
+    }
+
+    @Override
+    public StationDetails createStation(StationDetails stationDetails, String xRequestId) {
+        log.trace("createStation start");
+        log.debug("createStation stationDetail = {}, xRequestId = {}", stationDetails, xRequestId);
+        StationDetails response = apiConfigConnector.createStation(stationDetails, xRequestId);
+        log.debug("createStation result = {}", response);
+        log.trace("createStation end");
         return response;
     }
 

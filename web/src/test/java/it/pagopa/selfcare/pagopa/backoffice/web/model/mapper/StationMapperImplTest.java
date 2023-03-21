@@ -2,7 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationResource;
@@ -49,9 +49,9 @@ class StationMapperImplTest {
     @Test
     void toStationDetailResource() {
         //given
-        StationDetail stationDetail = mockInstance(new StationDetail());
+        StationDetails stationDetails = mockInstance(new StationDetails());
         //when
-        StationDetailResource resource = mapper.toResource(stationDetail);
+        StationDetailResource resource = mapper.toResource(stationDetails);
         //then
         assertNotNull(resource);
         checkNotNullFields(resource);
@@ -60,9 +60,9 @@ class StationMapperImplTest {
     @Test
     void toStationDetailResource_null() {
         //given
-        StationDetail stationDetail = null;
+        StationDetails stationDetails = null;
         //when
-        StationDetailResource resource = mapper.toResource(stationDetail);
+        StationDetailResource resource = mapper.toResource(stationDetails);
         //then
         assertNull(resource);
     }

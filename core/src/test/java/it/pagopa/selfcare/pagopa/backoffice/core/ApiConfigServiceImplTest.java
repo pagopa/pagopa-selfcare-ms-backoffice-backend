@@ -2,7 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -344,20 +344,37 @@ class ApiConfigServiceImplTest {
         //given
         final String stationCode = "stationCode";
         final String xRequestId = "xRequestId";
-        StationDetail stationDetailMock = mock(StationDetail.class);
+        StationDetails stationDetailsMock = mock(StationDetails.class);
         when(apiConfigConnectorMock.getStation(any(), any()))
-                .thenReturn(stationDetailMock);
+                .thenReturn(stationDetailsMock);
 
         //when
-        StationDetail stationDetail = apiConfigService.getStation(stationCode, xRequestId);
+        StationDetails stationDetails = apiConfigService.getStation(stationCode, xRequestId);
 
         //then
-        assertNotNull(stationDetail);
-        assertEquals(stationDetailMock, stationDetail);
-        reflectionEqualsByName(stationDetailMock, stationDetail);
+        assertNotNull(stationDetails);
+        assertEquals(stationDetailsMock, stationDetails);
+        reflectionEqualsByName(stationDetailsMock, stationDetails);
         verify(apiConfigConnectorMock, times(1))
                 .getStation(stationCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void createStation() {
+        //given
+        final String xRequestId = "xRequestId";
+        StationDetails stationDetails = mockInstance(new StationDetails());
+
+        when(apiConfigConnectorMock.createStation(any(), anyString()))
+                .thenReturn(stationDetails);
+        //when
+        StationDetails response = apiConfigService.createStation(stationDetails, xRequestId);
+        //then
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1)).createStation(stationDetails, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+        assertEquals(response, stationDetails);
     }
 
     @Test
@@ -423,9 +440,11 @@ class ApiConfigServiceImplTest {
         //when
         BrokerPspDetails response = apiConfigService.createBrokerPsp(brokerPspDetails, xRequestId);
         assertNotNull(response);
-
+        verify(apiConfigConnectorMock, times(1)).createBrokerPsp(brokerPspDetails, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
         assertEquals(response, brokerPspDetails);
     }
+
 
     @Test
     void createPaymentServiceProvider() {

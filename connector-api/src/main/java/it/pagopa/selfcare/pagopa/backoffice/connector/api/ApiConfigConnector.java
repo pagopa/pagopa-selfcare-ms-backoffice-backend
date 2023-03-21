@@ -1,12 +1,9 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.api;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannels;
-import org.springframework.core.io.Resource;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetail;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import org.springframework.core.io.Resource;
 
 public interface ApiConfigConnector {
 
@@ -38,7 +35,9 @@ public interface ApiConfigConnector {
 
     Stations getStations(Integer limit, Integer page, String sort, String brokerCode, String ecCode, String stationCode, String xRequestId);
 
-    StationDetail getStation(String stationCode, String xRequestId);
+    StationDetails getStation(String stationCode, String xRequestId);
+
+    StationDetails createStation(StationDetails stationDetails, String xRequestId);
 
     Resource getChannelsCSV(String uuid);
 
