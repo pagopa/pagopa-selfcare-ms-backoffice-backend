@@ -107,6 +107,8 @@ class ApiConfigRestClientTest {
     private static final Map<ApiConfigRestClientTest.TestCase, String> testCasePspCodeMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
         put(ApiConfigRestClientTest.TestCase.FULLY_VALUED, "pspCode1");
         put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "pspCode2");
+        put(ApiConfigRestClientTest.TestCase.FULLY_NULL, "pspCode3");
+
     }};
 
 
@@ -568,7 +570,7 @@ class ApiConfigRestClientTest {
     }
 
     @Test
-    void createBrokerPsp_fullyValued(){
+    void createBrokerPsp_fullyValued() {
         // given
         String requestId = UUID.randomUUID().toString();
         TestCase testCase = TestCase.FULLY_VALUED;
@@ -578,7 +580,7 @@ class ApiConfigRestClientTest {
         brokerPspDetails.setExtendedFaultBean(true);
         brokerPspDetails.setBrokerPspCode("pspcode1");
         // when
-        BrokerPspDetails response = restClient.createBrokerPsp(brokerPspDetails,requestId);
+        BrokerPspDetails response = restClient.createBrokerPsp(brokerPspDetails, requestId);
 
         //then
         assertNotNull(response);
@@ -587,7 +589,7 @@ class ApiConfigRestClientTest {
 
 
     @Test
-    void createPaymentServiceProvider_fullyValued(){
+    void createPaymentServiceProvider_fullyValued() {
         // given
         String requestId = UUID.randomUUID().toString();
         TestCase testCase = TestCase.FULLY_VALUED;
@@ -605,13 +607,38 @@ class ApiConfigRestClientTest {
         paymentServiceProviderDetails.setTaxCode("1");
         paymentServiceProviderDetails.setBusinessName("test");
         // when
-        PaymentServiceProviderDetails response = restClient.createPaymentServiceProvider(paymentServiceProviderDetails,requestId);
+        PaymentServiceProviderDetails response = restClient.createPaymentServiceProvider(paymentServiceProviderDetails, requestId);
 
         //then
         assertNotNull(response);
 
     }
 
+    @Test
+    void getPSPDetails_fullyValued() {
+        //given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        String pspCode = testCasePspCodeMap.get(testCase);
+        String xRequestId = UUID.randomUUID().toString();
+        //when
+        PaymentServiceProviderDetails paymentServiceProviderDetails = restClient.getPSPDetails(pspCode, xRequestId);
+        //then
+        assertNotNull(paymentServiceProviderDetails);
+        assertNotNull(paymentServiceProviderDetails.getPspCode());
+    }
+
+    @Test
+    void getPSPDetails_fullyNull() {
+        //given
+        TestCase testCase = TestCase.FULLY_NULL;
+        String pspCode = testCasePspCodeMap.get(testCase);
+        String xRequestId = UUID.randomUUID().toString();
+        //when
+        PaymentServiceProviderDetails paymentServiceProviderDetails = restClient.getPSPDetails(pspCode, xRequestId);
+        //then
+        assertNotNull(paymentServiceProviderDetails);
+        assertNull(paymentServiceProviderDetails.getAbi());
+    }
 
     private void checkNotNullFields(Object o, String... excludedFields) {
         Set<String> excludedFieldsSet = new HashSet<>(Arrays.asList(excludedFields));

@@ -14,7 +14,7 @@ public interface ApiConfigConnector {
 
     ChannelDetails createChannel(ChannelDetails channelDetails, String xRequestId);
 
-    ChannelDetails updateChannel(ChannelDetails channelDetails,String channelCode, String xRequestId);
+    ChannelDetails updateChannel(ChannelDetails channelDetails, String channelCode, String xRequestId);
 
     PspChannels getPspChannels(String pspCode, String xRequestId);
 
@@ -42,9 +42,12 @@ public interface ApiConfigConnector {
 
     Resource getChannelsCSV(String uuid);
 
-    ChannelPspList getChannelPaymentServiceProviders(Integer limit,Integer page, String channelCode,String uuid);
+    ChannelPspList getChannelPaymentServiceProviders(Integer limit, Integer page, String channelCode, String uuid);
+
     PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails, String xRequestId);
 
     BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails, String xRequestId);
+
+    PaymentServiceProviderDetails getPSPDetails(String pspCode, String xRequestId);
 
 }

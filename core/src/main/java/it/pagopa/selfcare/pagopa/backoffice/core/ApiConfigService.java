@@ -47,5 +47,5 @@ public interface ApiConfigService {
 
     String generateChannelCode(String pspCode, String xRequestId);
 
-
+    PaymentServiceProviderDetails getPSPDetails(String pspCode, String xRequestId);
 }

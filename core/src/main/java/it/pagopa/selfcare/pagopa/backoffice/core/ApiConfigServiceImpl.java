@@ -186,6 +186,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
+    public PaymentServiceProviderDetails getPSPDetails(String pspCode, String xRequestId) {
+        log.trace("getPSPDetails start");
+        PaymentServiceProviderDetails response = apiConfigConnector.getPSPDetails(pspCode, xRequestId);
+        log.debug("getPSPDetails result = {}", response);
+        log.trace("getPSPDetails end");
+        return response;
+    }
+
+    @Override
     public Resource getChannelsCSV(String uuid) {
         log.trace("getChannelsCSV start");
         Resource response = apiConfigConnector.getChannelsCSV(uuid);
