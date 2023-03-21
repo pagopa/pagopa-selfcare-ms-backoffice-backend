@@ -2,6 +2,8 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStation;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import org.junit.jupiter.api.Test;
@@ -504,6 +506,55 @@ class ApiConfigServiceImplTest {
         assertNotNull(response);
         verify(apiConfigConnectorMock, times(1))
                 .getPspChannels(anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+        assertEquals(response, "TEST_01");
+    }
+
+    @Test
+    void generateStationCode() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String ecCode = "ecCode";
+
+        CreditorInstitutionStations creditorInstitutionStations = mockInstance(new CreditorInstitutionStations());
+        CreditorInstitutionStation creditorInstitutionStation = mockInstance(new CreditorInstitutionStation());
+        creditorInstitutionStation.setStationCode("TEST_01");
+
+        creditorInstitutionStations.setStationsList(List.of(creditorInstitutionStation));
+
+        when(apiConfigConnectorMock.getEcStations(any(), anyString()))
+                .thenReturn(creditorInstitutionStations);
+
+        //when
+        String response = apiConfigService.generateStationCode(ecCode, xRequestId);
+        //then
+        assertNotNull(response);
+        assertEquals(response, "TEST_02");
+        verify(apiConfigConnectorMock, times(1))
+                .getEcStations(ecCode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void generateStationCode_noRegexMatcher() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String ecCode = "TEST";
+
+        CreditorInstitutionStations creditorInstitutionStations = mockInstance(new CreditorInstitutionStations());
+        CreditorInstitutionStation creditorInstitutionStation = mockInstance(new CreditorInstitutionStation());
+        creditorInstitutionStation.setStationCode("TEST");
+        creditorInstitutionStations.setStationsList(List.of(creditorInstitutionStation));
+
+        when(apiConfigConnectorMock.getEcStations(any(), anyString()))
+                .thenReturn(creditorInstitutionStations);
+
+        //when
+        String response = apiConfigService.generateStationCode(ecCode, xRequestId);
+        //then
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .getEcStations(ecCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
         assertEquals(response, "TEST_01");
     }
