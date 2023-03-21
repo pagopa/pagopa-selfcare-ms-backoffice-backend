@@ -199,6 +199,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     @Override
     public PaymentServiceProviderDetails getPSPDetails(String pspCode, String xRequestId) {
         log.trace("getPSPDetails start");
+        log.debug("getPSPDetails pspCode = {}", pspCode);
         PaymentServiceProviderDetails response = apiConfigConnector.getPSPDetails(pspCode, xRequestId);
         log.debug("getPSPDetails result = {}", response);
         log.trace("getPSPDetails end");
