@@ -483,7 +483,7 @@ class ApiConfigServiceImplTest {
         String response = apiConfigService.generateChannelCode(anyString(), anyString());
         assertNotNull(response);
 
-        assertEquals(response, "TEST_02");
+        assertEquals("TEST_02", response);
     }
 
     @Test
@@ -507,7 +507,7 @@ class ApiConfigServiceImplTest {
         verify(apiConfigConnectorMock, times(1))
                 .getPspChannels(anyString(), anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
-        assertEquals(response, "TEST_01");
+        assertEquals("TEST_01", response);
     }
 
     @Test
@@ -529,7 +529,7 @@ class ApiConfigServiceImplTest {
         String response = apiConfigService.generateStationCode(ecCode, xRequestId);
         //then
         assertNotNull(response);
-        assertEquals(response, "TEST_02");
+        assertEquals("TEST_02", response);
         verify(apiConfigConnectorMock, times(1))
                 .getEcStations(ecCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
@@ -556,7 +556,7 @@ class ApiConfigServiceImplTest {
         verify(apiConfigConnectorMock, times(1))
                 .getEcStations(ecCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
-        assertEquals(response, "TEST_01");
+        assertEquals("TEST_01", response);
     }
 
     @Test
