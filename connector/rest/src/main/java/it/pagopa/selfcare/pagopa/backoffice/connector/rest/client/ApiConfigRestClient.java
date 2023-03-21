@@ -127,4 +127,8 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     @ResponseBody
     PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails, @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
+    @GetMapping(value = "${rest-client.api-config.getPSPDetails.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    PaymentServiceProviderDetails getPSPDetails(@PathVariable("pspcode") String pspCode,
+                                                @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 }

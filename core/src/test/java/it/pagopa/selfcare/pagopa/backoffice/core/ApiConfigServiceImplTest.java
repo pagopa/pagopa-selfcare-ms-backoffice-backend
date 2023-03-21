@@ -507,4 +507,24 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
         assertEquals(response, "TEST_01");
     }
+
+    @Test
+    void getPSPDetails() {
+        //given
+        final String pspCode = "pspCode";
+        final String xRequestId = "xRequestId";
+
+        PaymentServiceProviderDetails paymentServiceProviderDetails = mockInstance(new PaymentServiceProviderDetails());
+
+        when(apiConfigConnectorMock.getPSPDetails(anyString(), anyString()))
+                .thenReturn(paymentServiceProviderDetails);
+        //when
+        PaymentServiceProviderDetails response = apiConfigService.getPSPDetails(pspCode, xRequestId);
+
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .getPSPDetails(anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+        assertEquals(response, paymentServiceProviderDetails);
+    }
 }
