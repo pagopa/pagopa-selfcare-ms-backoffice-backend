@@ -88,5 +88,19 @@ public class StationController {
         return resource;
     }
 
+    @GetMapping(value = "/{ecCode}/generate", produces = {MediaType.TEXT_PLAIN_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.getStationCode}")
+    public Object getStationCode(@ApiParam("${swagger.request.ecCode}")
+                                 @PathVariable("ecCode") String ecCode) {
+        log.trace("getStationCode start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getStationCode ecCode = {}, xRequestId = {}", ecCode, xRequestId);
+        String channelCode = apiConfigService.generateStationCode(ecCode, xRequestId);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationCode result = {}", channelCode);
+        log.trace("getStationCode end");
+        return channelCode;
+    }
+
 
 }
