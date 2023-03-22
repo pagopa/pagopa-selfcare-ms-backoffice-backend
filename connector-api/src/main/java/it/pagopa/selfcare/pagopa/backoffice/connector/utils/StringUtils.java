@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 public class StringUtils {
     public static String validateAndReplace(String str, String replace) {
         String regex = "[a-zA-Z0-9-]+";
-        String res = null;
+        String res = str;
         if (!str.matches(regex)) {
             res = str.replaceAll("[^a-zA-Z0-9- ]", replace);
         }
