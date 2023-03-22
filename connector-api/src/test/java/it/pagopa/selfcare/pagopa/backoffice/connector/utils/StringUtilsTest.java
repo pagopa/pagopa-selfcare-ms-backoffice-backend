@@ -51,5 +51,10 @@ class StringUtilsTest {
         result = StringUtils.generator(codes, retrievedCode);
         assertNotNull(result);
         assertEquals("String_01", result);
+
+        codes = Arrays.asList("test_n");
+        retrievedCode = "test";
+        result = StringUtils.generator(codes, retrievedCode);
+        assertEquals("test_01", result);
     }
 }
