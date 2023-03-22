@@ -186,6 +186,27 @@ class StationControllerTest {
                 .andExpect(jsonPath("$.targetPath", notNullValue()))
                 .andExpect(jsonPath("$.primitiveVersion", notNullValue()));
     }
+
+    @Test
+    void getStationCode() throws Exception {
+        //given
+        String ecCode = "ecCode";
+        String stationCode = "stationCode";
+
+        when(apiConfigServiceMock.generateStationCode(anyString(), any()))
+                .thenReturn(stationCode);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/{ecCode}/generate", ecCode)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$", is(stationCode)));
+        verify(apiConfigServiceMock, times(1))
+                .generateStationCode(eq(ecCode), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
 }
 
 
