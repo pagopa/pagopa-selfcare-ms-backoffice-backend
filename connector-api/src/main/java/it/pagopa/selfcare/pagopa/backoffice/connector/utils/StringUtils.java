@@ -7,17 +7,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringUtils {
-    public static String validateAndReplace(String str, String replace) {
-        String regex = "[a-zA-Z0-9-]+";
-        String res = str;
-        if (!str.matches(regex)) {
-            res = str.replaceAll("[^a-zA-Z0-9- ]", replace);
-        }
-        return res;
+
+    private StringUtils() {
+
     }
 
+    private static final String VALID_REGEX = "[a-zA-Z0-9-]+";
+
+    public static String validateAndReplace(String str, String replace) {
+        if (str.matches(VALID_REGEX)) {
+            return str;
+        }
+        return str.replaceAll("[^a-zA-Z0-9- ]", replace);
+    }
+
+
     public static String generator(List<String> codes, String retrievedCode) {
-        Pattern pattern = Pattern.compile("^(.*?)(_([0-9]+))$"); // String_nn
+        Pattern pattern = Pattern.compile("^(.*?)(_\\d+)$"); // String_nn
         String newCode = retrievedCode.concat("_").concat("01");
         if (codes.isEmpty()) return newCode;
         Comparator<String> comparator = Comparator.comparingInt(s -> Integer.parseInt(s.split("_")[1]));
@@ -27,10 +33,8 @@ public class StringUtils {
         Matcher matcher = pattern.matcher(code);
         if (matcher.matches()) {
             String prefix = matcher.group(1);
-            String numberStr = matcher.group(3);
-            int number = Integer.parseInt(numberStr);
-            number++;
-            newCode = prefix + String.format("_%0" + numberStr.length() + "d", number);
+            int number = Integer.parseInt(matcher.group(2).substring(1)) + 1;
+            newCode = String.format("%s_%02d", prefix, number);
         }
         return newCode;
     }
