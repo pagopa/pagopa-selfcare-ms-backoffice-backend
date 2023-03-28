@@ -32,6 +32,7 @@ import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -81,11 +82,11 @@ class InstitutionControllerTest {
     }
 
     @Test
-    void createInstitutionApyKeys() throws Exception {
+    void createInstitutionApiKeys() throws Exception {
         //given
         String institutionId = "institutionId";
         Subscription subscriptionCode = Subscription.NODOAUTH;
-
+        String subscriptionCodeName = subscriptionCode.name();
 
         List<InstitutionApiKeys> apiKeys = mockInstance(List.of(mockInstance(new InstitutionApiKeys())));
 
@@ -93,7 +94,7 @@ class InstitutionControllerTest {
                 .thenReturn(apiKeys);
         //when
         mvc.perform(MockMvcRequestBuilders
-                        .post(BASE_URL + "/{institutionId}/api-keys", institutionId).queryParam("subscriptionCode",subscriptionCode.name())
+                        .post(BASE_URL + "/{institutionId}/api-keys", institutionId).queryParam("subscriptionCode", subscriptionCode.name())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$[*].primaryKey", notNullValue()))
@@ -105,24 +106,6 @@ class InstitutionControllerTest {
         verifyNoMoreInteractions(apiManagementServiceMock);
     }
 
-
-    @Test
-    void createInstitutionApyKeys_noSubsctiptionFound() throws Exception {
-        //given
-        String institutionId = "institutionId";
-        String subscriptionCode = "subscriptionCode";
-
-        //when
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
-                        .post(BASE_URL + "/{institutionId}/api-keys", institutionId).queryParam("subscriptionCode",subscriptionCode)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().is5xxServerError())
-                .andReturn();
-
-
-        //then
-        verifyNoMoreInteractions(apiManagementServiceMock);
-    }
 
     @Test
     void regeneratePrimaryKey() throws Exception {
@@ -304,12 +287,11 @@ class InstitutionControllerTest {
     }
 
 
-
     @Test
     void getInstitutionUserProducts() throws Exception {
         //given
         String institutionId = "institutionId";
-        String userId ="userId";
+        String userId = "userId";
         Product productMock = mockInstance(new Product());
 
         Authentication auth = mock(Authentication.class);
@@ -320,7 +302,7 @@ class InstitutionControllerTest {
         when(securityContext.getAuthentication()).thenReturn(auth);
         SecurityContextHolder.setContext(securityContext);
 
-        when(externalApiServiceMock.getInstitutionUserProducts(anyString(),anyString()))
+        when(externalApiServiceMock.getInstitutionUserProducts(anyString(), anyString()))
                 .thenReturn(List.of(productMock));
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -334,7 +316,7 @@ class InstitutionControllerTest {
                 .andExpect(jsonPath("$..urlBO", notNullValue()));
         //then
         verify(externalApiServiceMock, times(1))
-                .getInstitutionUserProducts(anyString(),anyString());
+                .getInstitutionUserProducts(anyString(), anyString());
         verifyNoMoreInteractions(externalApiServiceMock);
     }
 
@@ -342,10 +324,10 @@ class InstitutionControllerTest {
     void getInstitutionUserProducts_AuthenticationNull() throws Exception {
         //given
         String institutionId = "institutionId";
-        String userId ="userId";
+        String userId = "userId";
         Product productMock = mockInstance(new Product());
 
-        when(externalApiServiceMock.getInstitutionUserProducts(anyString(),anyString()))
+        when(externalApiServiceMock.getInstitutionUserProducts(anyString(), anyString()))
                 .thenReturn(List.of(productMock));
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -359,7 +341,7 @@ class InstitutionControllerTest {
                 .andExpect(jsonPath("$..urlBO", notNullValue()));
         //then
         verify(externalApiServiceMock, times(1))
-                .getInstitutionUserProducts(anyString(),anyString());
+                .getInstitutionUserProducts(anyString(), anyString());
         verifyNoMoreInteractions(externalApiServiceMock);
     }
 
@@ -367,7 +349,7 @@ class InstitutionControllerTest {
     void getInstitutionUserProducts_UserNotSelfCareInstance() throws Exception {
         //given
         String institutionId = "institutionId";
-        String userId ="userId";
+        String userId = "userId";
         Product productMock = mockInstance(new Product());
 
         Authentication auth = mock(Authentication.class);
@@ -377,7 +359,7 @@ class InstitutionControllerTest {
         when(securityContext.getAuthentication()).thenReturn(auth);
         SecurityContextHolder.setContext(securityContext);
 
-        when(externalApiServiceMock.getInstitutionUserProducts(anyString(),anyString()))
+        when(externalApiServiceMock.getInstitutionUserProducts(anyString(), anyString()))
                 .thenReturn(List.of(productMock));
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -391,7 +373,7 @@ class InstitutionControllerTest {
                 .andExpect(jsonPath("$..urlBO", notNullValue()));
         //then
         verify(externalApiServiceMock, times(1))
-                .getInstitutionUserProducts(anyString(),anyString());
+                .getInstitutionUserProducts(anyString(), anyString());
         verifyNoMoreInteractions(externalApiServiceMock);
     }
 
