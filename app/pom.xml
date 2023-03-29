@@ -4,7 +4,7 @@
     <parent>
         <artifactId>pagopa-selfcare-ms-backoffice</artifactId>
         <groupId>it.pagopa.selfcare.pagopa</groupId>
-        <version>0.0.97</version>
+        <version>0.0.97-1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-connector-rest</artifactId>
-            <version>0.0.97</version>
+            <version>0.0.97-1</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
@@ -34,7 +34,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <skip>true</skip>
+                    <skip>false</skip>
                     <finalName>${project.parent.artifactId}-${project.parent.version}-FATJAR</finalName>
                     <outputDirectory>../target</outputDirectory>
                     <excludes>
