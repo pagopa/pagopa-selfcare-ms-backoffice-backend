@@ -89,7 +89,7 @@ public class StationController {
         return resource;
     }
 
-    @GetMapping(value = "/{ecCode}/generate", produces = {MediaType.TEXT_PLAIN_VALUE})
+    @GetMapping(value = "/{ecCode}/generate", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getStationCode}")
     public StationCodeResource getStationCode(@ApiParam("${swagger.request.ecCode}")
