@@ -2217,7 +2217,7 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
+                  "$ref" : "#/components/schemas/StationCodeResource"
                 }
               }
             }
@@ -3359,6 +3359,17 @@
           "url" : {
             "type" : "string",
             "format" : "url"
+          }
+        }
+      },
+      "StationCodeResource" : {
+        "title" : "StationCodeResource",
+        "required" : [ "stationCode" ],
+        "type" : "object",
+        "properties" : {
+          "stationCode" : {
+            "type" : "string",
+            "description" : "Station's unique identifier"
           }
         }
       },
