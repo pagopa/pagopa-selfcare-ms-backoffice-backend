@@ -91,7 +91,7 @@ public class StationController {
     @GetMapping(value = "/{ecCode}/generate", produces = {MediaType.TEXT_PLAIN_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getStationCode}")
-    public Object getStationCode(@ApiParam("${swagger.request.ecCode}")
+    public String getStationCode(@ApiParam("${swagger.request.ecCode}")
                                  @PathVariable("ecCode") String ecCode) {
         log.trace("getStationCode start");
         String xRequestId = UUID.randomUUID().toString();
