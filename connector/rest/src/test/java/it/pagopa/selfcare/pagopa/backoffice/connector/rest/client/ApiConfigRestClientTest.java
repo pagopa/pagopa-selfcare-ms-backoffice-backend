@@ -9,7 +9,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import it.pagopa.selfcare.pagopa.TestUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
@@ -721,6 +723,19 @@ class ApiConfigRestClientTest {
         //then
         assertNotNull(paymentServiceProviderDetails);
         assertNull(paymentServiceProviderDetails.getAbi());
+    }
+
+    @Test
+    void createCreditorInstitutionStationRelationship(){
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = UUID.randomUUID().toString();
+        CreditorInstitutionStationEdit request = TestUtils.mockInstance(new CreditorInstitutionStationEdit());
+        //when
+        CreditorInstitutionStationEdit response = restClient.createCreditorInstitutionStationRelationship(ecCode, request, xRequestId);
+        //then
+        assertNotNull(response);
+        checkNotNullFields(response);
     }
 
     private void checkNotNullFields(Object o, String... excludedFields) {
