@@ -2,16 +2,19 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -27,6 +30,7 @@ import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
@@ -202,9 +206,35 @@ class StationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.stationCode", is(stationCode)));
+        //then
         verify(apiConfigServiceMock, times(1))
                 .generateStationCode(eq(ecCode), anyString());
 
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void associateStationToCreditorInstitution() throws Exception {
+        //given
+        String ecCode = "ecCode";
+        CreditorInstitutionStationDto station = mockInstance(new CreditorInstitutionStationDto());
+        CreditorInstitutionStationEdit response = mockInstance(new CreditorInstitutionStationEdit());
+
+        when(apiConfigServiceMock.createCreditorInstitutionStationRelation(anyString(), any(), anyString()))
+                .thenReturn(response);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .post(BASE_URL + "/{ecCode}/station", ecCode)
+                        .content(objectMapper.writeValueAsBytes(station))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.stationCode", is(station.getStationCode())));
+        //then
+        ArgumentCaptor<CreditorInstitutionStationEdit> stationArgumentCaptor = ArgumentCaptor.forClass(CreditorInstitutionStationEdit.class);
+        verify(apiConfigServiceMock, times(1))
+                .createCreditorInstitutionStationRelation(eq(ecCode), stationArgumentCaptor.capture(), anyString());
+        CreditorInstitutionStationEdit captured = stationArgumentCaptor.getValue();
+        assertNotNull(captured);
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }
