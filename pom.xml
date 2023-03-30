@@ -48,7 +48,7 @@
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-connector-dao</artifactId>
-                <version>0.0.98</version>
+                <version>0.0.99</version>
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
