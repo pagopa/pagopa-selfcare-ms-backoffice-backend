@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.api;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
@@ -50,6 +51,7 @@ public interface ApiConfigConnector {
 
     CreditorInstitutionStations getEcStations(String ecCode, String xRequestId);
 
-    PaymentServiceProviderDetails getPSPDetails(String pspCode, String xRequestId);
+    CreditorInstitutionStation createCreditorInstitutionStationRelationship(String ecCode, CreditorInstitutionStation station, String xRequestId);
 
+    PaymentServiceProviderDetails getPSPDetails(String pspCode, String xRequestId);
 }

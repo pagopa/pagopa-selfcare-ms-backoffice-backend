@@ -4,9 +4,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationCodeResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailResource;
@@ -19,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
@@ -102,6 +107,23 @@ public class StationController {
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationCode result = {}", stationCode);
         log.trace("getStationCode end");
         return stationCode;
+    }
+
+    @PostMapping(value = "/{ecCode}/station", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.associateStationToCreditorInstitution}")
+    public CreditorInstitutionStationResource associateStationToCreditorInstitution(@ApiParam("${swagger.request.ecCode}")
+                                                                                    @PathVariable("ecCode") String ecCode,
+                                                                                    @RequestBody @Valid CreditorInstitutionStationDto dto) {
+        log.trace("associateStationToCreditorInstitution start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("associateStationToCreditorInstitution ecCode ={}, dto = {}, xRequestId = {}", ecCode, dto, xRequestId);
+        CreditorInstitutionStation station = CreditorInstitutionMapper.fromDto(dto);
+        CreditorInstitutionStation ecStation = apiConfigService.createCreditorInstitutionStationRelation(ecCode, station, xRequestId);
+        CreditorInstitutionStationResource resource = CreditorInstitutionMapper.toResource(ecStation);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "associateStationToCreditorInstitution result = {}", resource);
+        log.trace("associateStationToCreditorInstitution end");
+        return resource;
     }
 
 
