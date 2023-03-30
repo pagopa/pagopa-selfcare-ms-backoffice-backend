@@ -8,6 +8,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetai
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationCodeResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
@@ -88,18 +89,19 @@ public class StationController {
         return resource;
     }
 
-    @GetMapping(value = "/{ecCode}/generate", produces = {MediaType.TEXT_PLAIN_VALUE})
+    @GetMapping(value = "/{ecCode}/generate", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getStationCode}")
-    public Object getStationCode(@ApiParam("${swagger.request.ecCode}")
-                                 @PathVariable("ecCode") String ecCode) {
+    public StationCodeResource getStationCode(@ApiParam("${swagger.request.ecCode}")
+                                              @PathVariable("ecCode") String ecCode) {
         log.trace("getStationCode start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getStationCode ecCode = {}, xRequestId = {}", ecCode, xRequestId);
-        String channelCode = apiConfigService.generateStationCode(ecCode, xRequestId);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationCode result = {}", channelCode);
+        String result = apiConfigService.generateStationCode(ecCode, xRequestId);
+        StationCodeResource stationCode = new StationCodeResource(result);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationCode result = {}", stationCode);
         log.trace("getStationCode end");
-        return channelCode;
+        return stationCode;
     }
 
 
