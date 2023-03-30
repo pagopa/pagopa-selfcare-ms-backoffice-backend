@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 public class AuditionAwareTest {
 
 
+
      @Test
      public void testGetCurrentAuditor_Authentication() {
          // given
