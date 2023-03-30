@@ -13,9 +13,9 @@ public class CreditorInstitutionMapper {
             station.setStationCode(model.getStationCode());
             station.setBroadcast(true);
             station.setMod4(true);
-            station.setSegregationCode(1l);
+//            station.setSegregationCode(1l);//FIXME
             station.setAuxDigit(1l);
-            station.setApplicationCode(1l);
+//            station.setApplicationCode(1l);
         }
         return station;
     }
