@@ -14,7 +14,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -361,15 +360,16 @@ public class ChannelController {
         return resource;
     }
 
-    @GetMapping(value = "/{pspcode}/generate", produces = {MediaType.TEXT_PLAIN_VALUE})
+    @GetMapping(value = "/{pspcode}/generate", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getChannelCode}")
-    public Object getChannelCode(@ApiParam("${swagger.request.pspCode}")
+    public ChannelCodeResource getChannelCode(@ApiParam("${swagger.request.pspCode}")
                                  @PathVariable("pspcode") String pspCode) {
         log.trace("getChannelCode start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getChannelCode pspcode = {}, xRequestId = {}", pspCode, xRequestId);
-        String channelCode = apiConfigService.generateChannelCode(pspCode, xRequestId);
+        String result = apiConfigService.generateChannelCode(pspCode, xRequestId);
+        ChannelCodeResource channelCode = new ChannelCodeResource(result);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelCode result = {}", channelCode);
         log.trace("getChannelCode end");
         return channelCode;

@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.91"
+    "version" : "0.0.98"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -1422,9 +1422,9 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "text/plain" : {
+              "application/json" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/ChannelCodeResource"
                 }
               }
             }
@@ -2215,9 +2215,9 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "text/plain" : {
+              "application/json" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/StationCodeResource"
                 }
               }
             }
@@ -2360,6 +2360,16 @@
           },
           "extended_fault_bean" : {
             "type" : "boolean"
+          }
+        }
+      },
+      "ChannelCodeResource" : {
+        "title" : "ChannelCodeResource",
+        "type" : "object",
+        "properties" : {
+          "channel_code" : {
+            "type" : "string",
+            "description" : "Channel code"
           }
         }
       },
@@ -3359,6 +3369,17 @@
           "url" : {
             "type" : "string",
             "format" : "url"
+          }
+        }
+      },
+      "StationCodeResource" : {
+        "title" : "StationCodeResource",
+        "required" : [ "stationCode" ],
+        "type" : "object",
+        "properties" : {
+          "stationCode" : {
+            "type" : "string",
+            "description" : "Station's unique identifier"
           }
         }
       },
