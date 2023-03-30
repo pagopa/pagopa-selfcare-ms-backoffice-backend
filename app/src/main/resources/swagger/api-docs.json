@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.98"
+    "version" : "0.0.100"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -2267,6 +2267,78 @@
           "bearerAuth" : [ "global" ]
         } ]
       }
+    },
+    "/stations/{ecCode}/station" : {
+      "post" : {
+        "tags" : [ "stations" ],
+        "summary" : "associateStationToCreditorInstitution",
+        "description" : "Creates the relationship between the created station and the creditorInstitution",
+        "operationId" : "associateStationToCreditorInstitutionUsingPOST",
+        "parameters" : [ {
+          "name" : "ecCode",
+          "in" : "path",
+          "description" : "Creditor institution code",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreditorInstitutionStationDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CreditorInstitutionStationResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
     }
   },
   "components" : {
@@ -2842,6 +2914,92 @@
           "shareCapital" : {
             "type" : "string",
             "description" : "Institution's share capital value"
+          }
+        }
+      },
+      "CreditorInstitutionStationDto" : {
+        "title" : "CreditorInstitutionStationDto",
+        "required" : [ "stationCode" ],
+        "type" : "object",
+        "properties" : {
+          "stationCode" : {
+            "type" : "string",
+            "description" : "Station's unique identifier"
+          }
+        }
+      },
+      "CreditorInstitutionStationResource" : {
+        "title" : "CreditorInstitutionStationResource",
+        "required" : [ "enabled", "stationCode", "stationStatus" ],
+        "type" : "object",
+        "properties" : {
+          "activationDate" : {
+            "type" : "string",
+            "description" : "Station's activation date",
+            "format" : "date-time"
+          },
+          "applicationCode" : {
+            "type" : "integer",
+            "description" : "Station's application code",
+            "format" : "int64"
+          },
+          "associatedCreditorInstitutions" : {
+            "type" : "integer",
+            "description" : "Number of station's creditor institutions",
+            "format" : "int32"
+          },
+          "auxDigit" : {
+            "type" : "integer",
+            "description" : "Station's auxiliary digit",
+            "format" : "int64"
+          },
+          "broadcast" : {
+            "type" : "boolean",
+            "description" : "Station's broadcast enabled",
+            "example" : false
+          },
+          "brokerDescription" : {
+            "type" : "string",
+            "description" : "Station broker's description"
+          },
+          "createdAt" : {
+            "type" : "string",
+            "description" : "Station created on",
+            "format" : "date-time"
+          },
+          "enabled" : {
+            "type" : "boolean",
+            "description" : "Station's activation state",
+            "example" : false
+          },
+          "mod4" : {
+            "type" : "boolean",
+            "description" : "Station's mod 4 enabled",
+            "example" : false
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "description" : "Station's last modified date",
+            "format" : "date-time"
+          },
+          "segregationCode" : {
+            "type" : "integer",
+            "description" : "Station's segregation code number",
+            "format" : "int64"
+          },
+          "stationCode" : {
+            "type" : "string",
+            "description" : "Station's unique identifier"
+          },
+          "stationStatus" : {
+            "type" : "string",
+            "description" : "Station's status",
+            "enum" : [ "ACTIVE", "ON_REVISION", "TO_BE_CORRECTED" ]
+          },
+          "version" : {
+            "type" : "integer",
+            "description" : "Station's version",
+            "format" : "int64"
           }
         }
       },
@@ -3423,7 +3581,7 @@
           },
           "flagOnline" : {
             "type" : "boolean",
-            "description" : "Station's online flag ",
+            "description" : "Station's online flag",
             "example" : false
           },
           "ip" : {
@@ -3610,7 +3768,7 @@
           },
           "flagOnline" : {
             "type" : "boolean",
-            "description" : "Station's online flag ",
+            "description" : "Station's online flag",
             "example" : false
           },
           "ip" : {

@@ -2,7 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStation;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
@@ -218,7 +218,7 @@ class StationControllerTest {
         //given
         String ecCode = "ecCode";
         CreditorInstitutionStationDto station = mockInstance(new CreditorInstitutionStationDto());
-        CreditorInstitutionStation response = mockInstance(new CreditorInstitutionStation());
+        CreditorInstitutionStationEdit response = mockInstance(new CreditorInstitutionStationEdit());
 
         when(apiConfigServiceMock.createCreditorInstitutionStationRelation(anyString(), any(), anyString()))
                 .thenReturn(response);
@@ -230,11 +230,12 @@ class StationControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.stationCode", is(station.getStationCode())));
         //then
-        ArgumentCaptor<CreditorInstitutionStation> stationArgumentCaptor = ArgumentCaptor.forClass(CreditorInstitutionStation.class);
+        ArgumentCaptor<CreditorInstitutionStationEdit> stationArgumentCaptor = ArgumentCaptor.forClass(CreditorInstitutionStationEdit.class);
         verify(apiConfigServiceMock, times(1))
                 .createCreditorInstitutionStationRelation(eq(ecCode), stationArgumentCaptor.capture(), anyString());
-        CreditorInstitutionStation captured = stationArgumentCaptor.getValue();
+        CreditorInstitutionStationEdit captured = stationArgumentCaptor.getValue();
         assertNotNull(captured);
+        verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }
 

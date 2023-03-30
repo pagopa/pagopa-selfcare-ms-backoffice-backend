@@ -2,10 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStation;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -209,10 +206,10 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
-    public CreditorInstitutionStation createCreditorInstitutionStationRelation(String ecCode, CreditorInstitutionStation station, String xRequestId) {
+    public CreditorInstitutionStationEdit createCreditorInstitutionStationRelation(String ecCode, CreditorInstitutionStationEdit station, String xRequestId) {
         log.trace("createCreditorInstitutionStationRelation start");
         log.debug("createCreditorInstitutionStationRelation ecCode = {}, station = {}, xRequestId = {}", ecCode, station, xRequestId);
-        CreditorInstitutionStation result = apiConfigConnector.createCreditorInstitutionStationRelationship(ecCode, station, xRequestId);
+        CreditorInstitutionStationEdit result = apiConfigConnector.createCreditorInstitutionStationRelationship(ecCode, station, xRequestId);
         log.debug("createCreditorInstitutionStationRelation result = {}", result);
         log.trace("createCreditorInstitutionStationRelation end");
         return result;

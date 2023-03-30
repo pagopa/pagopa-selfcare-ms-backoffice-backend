@@ -1,37 +1,35 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStation;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationEditResource;
 
 public class CreditorInstitutionMapper {
 
-    public static CreditorInstitutionStation fromDto(CreditorInstitutionStationDto model){
-        CreditorInstitutionStation station = null;
+    public static CreditorInstitutionStationEdit fromDto(CreditorInstitutionStationDto model){
+        CreditorInstitutionStationEdit station = null;
         if (model!= null){
-            station = new CreditorInstitutionStation();
+            station = new CreditorInstitutionStationEdit();
             station.setStationCode(model.getStationCode());
             station.setBroadcast(true);
             station.setMod4(true);
-//            station.setSegregationCode(0l);
+            station.setSegregationCode(1l);
             station.setAuxDigit(1l);
+            station.setApplicationCode(1l);
         }
         return station;
     }
 
-    public static CreditorInstitutionStationResource toResource(CreditorInstitutionStation model){
-        CreditorInstitutionStationResource resource = null;
-        if(model != null){//FIXME add missing fields
-            resource = new CreditorInstitutionStationResource();
+    public static CreditorInstitutionStationEditResource toResource(CreditorInstitutionStationEdit model){
+        CreditorInstitutionStationEditResource resource = null;
+        if(model != null){
+            resource = new CreditorInstitutionStationEditResource();
             resource.setStationCode(model.getStationCode());
             resource.setSegregationCode(model.getSegregationCode());
             resource.setMod4(model.getMod4());
             resource.setApplicationCode(model.getApplicationCode());
             resource.setAuxDigit(model.getAuxDigit());
-            resource.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
-            resource.setEnabled(model.getEnabled());
             resource.setBroadcast(model.getBroadcast());
-            resource.setVersion(model.getVersion());
         }
         return resource;
     }
