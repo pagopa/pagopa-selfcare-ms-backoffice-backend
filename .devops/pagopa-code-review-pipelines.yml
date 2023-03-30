@@ -56,17 +56,17 @@ steps:
   #      codeCoverageClassFilesDirectories: 'app,connector,connector-api,core,web'
   #      codeCoverageSourceDirectories: 'app/src,connectorapp/src,connector-apiapp/src,coreapp/src,webapp/src'
 
-  #  - task: DownloadSecureFile@1
-  #    displayName: 'download settings.xml for Maven'
-  #    name: settingsxml
-  #    inputs:
-  #      secureFile: 'settings-ro.xml'
-  #      retryCount: '2'
+  - task: DownloadSecureFile@1
+    displayName: 'download settings.xml for Maven'
+    name: settingsxml
+    inputs:
+      secureFile: 'settings-ro.xml'
+      retryCount: '2'
   - task: Maven@3
     inputs:
       mavenPomFile: 'pom.xml'
       goals: 'clean org.jacoco:jacoco-maven-plugin:prepare-agent verify org.jacoco:jacoco-maven-plugin:report org.jacoco:jacoco-maven-plugin:report-aggregate '
-      options: '-B'
+      options: '-B -s $(settingsxml.secureFilePath)'
       publishJUnitResults: true
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       javaHomeOption: 'JDKVersion'
@@ -80,7 +80,7 @@ steps:
     inputs:
       mavenPomFile: 'pom.xml'
       goals: 'sonar:sonar'
-      options: '-B -Dsonar.coverage.jacoco.xmlReportPaths=$(xmlReportPaths)'
+      options: '-B -s $(settingsxml.secureFilePath) -Dsonar.coverage.jacoco.xmlReportPaths=$(xmlReportPaths)'
       publishJUnitResults: false
       javaHomeOption: 'JDKVersion'
       mavenVersionOption: 'Default'
@@ -94,3 +94,9 @@ steps:
     displayName: 'Publish SonarCloud results on build summary'
     inputs:
       pollingTimeoutSec: '300'
+
+
+
+
+
+
