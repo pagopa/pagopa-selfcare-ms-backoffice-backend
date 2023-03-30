@@ -1,17 +1,28 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStation;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+
+import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static it.pagopa.selfcare.pagopa.TestUtils.reflectionEqualsByName;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -63,5 +74,508 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
+    @Test
+    void getPspChannel() {
+        //given
 
+        final String pspcode = "pspcode";
+        final String xRequestId = "xRequestId";
+        PspChannels pspChannels = mock(PspChannels.class);
+        when(apiConfigConnectorMock.getPspChannels(any(), any()))
+                .thenReturn(pspChannels);
+        //when
+        PspChannels response = apiConfigService.getPspChannels(pspcode, xRequestId);
+        //then
+        assertNotNull(response);
+        assertEquals(pspChannels, response);
+        reflectionEqualsByName(pspChannels, response);
+        verify(apiConfigConnectorMock, times(1))
+                .getPspChannels(pspcode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void createChannel() {
+        //given
+
+        final String xRequestId = "xRequestId";
+        ChannelDetails channelDetailsMock = mock(ChannelDetails.class);
+
+        when(apiConfigConnectorMock.createChannel(any(), any()))
+                .thenReturn(channelDetailsMock);
+        //when
+        ChannelDetails channelDetailsRes = apiConfigService.createChannel(channelDetailsMock, xRequestId);
+        //then
+        assertNotNull(channelDetailsRes);
+        assertEquals(channelDetailsRes, channelDetailsMock);
+        reflectionEqualsByName(channelDetailsRes, channelDetailsMock);
+        verify(apiConfigConnectorMock, times(1))
+                .createChannel(channelDetailsMock, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void getChannelDetails() {
+        //given
+
+        final String channelCode = "channelCode";
+        final String xRequestId = "xRequestId";
+        ChannelDetails channelDetailsMock = mock(ChannelDetails.class);
+
+
+        when(apiConfigConnectorMock.getChannelDetails(any(), any()))
+                .thenReturn(channelDetailsMock);
+        //when
+        ChannelDetails channelDetailsRes = apiConfigService.getChannelDetails(channelCode, xRequestId);
+        //then
+        assertNotNull(channelDetailsRes);
+        assertEquals(channelDetailsRes, channelDetailsMock);
+        reflectionEqualsByName(channelDetailsRes, channelDetailsMock);
+        verify(apiConfigConnectorMock, times(1))
+                .getChannelDetails(channelCode, xRequestId);
+
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void UpdateChannel() {
+        //given
+        final String xRequestId = "xRequestId";
+        ChannelDetails channelDetailsMock = mock(ChannelDetails.class);
+        String channelCode = "channelCode";
+
+        when(apiConfigConnectorMock.updateChannel(any(), anyString(), anyString()))
+                .thenReturn(channelDetailsMock);
+        //when
+        ChannelDetails channelDetailsRes = apiConfigService.updateChannel(channelDetailsMock, channelCode, xRequestId);
+        //then
+        assertNotNull(channelDetailsRes);
+        assertEquals(channelDetailsRes, channelDetailsMock);
+        reflectionEqualsByName(channelDetailsRes, channelDetailsMock);
+        verify(apiConfigConnectorMock, times(1))
+                .updateChannel(channelDetailsMock, channelCode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void createChannelPaymentType() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String channelCode = "channelCode";
+
+        PspChannelPaymentTypes pspChannelPaymentTypesMock = mock(PspChannelPaymentTypes.class);
+        pspChannelPaymentTypesMock.setPaymentTypeList(List.of("paymentType"));
+        when(apiConfigConnectorMock.createChannelPaymentType(any(), anyString(), anyString()))
+                .thenReturn(pspChannelPaymentTypesMock);
+        //when
+        PspChannelPaymentTypes pspChannelPaymentTypesRes = apiConfigService.createChannelPaymentType(pspChannelPaymentTypesMock, channelCode, xRequestId);
+        //then
+        assertNotNull(pspChannelPaymentTypesRes);
+        assertEquals(pspChannelPaymentTypesRes, pspChannelPaymentTypesMock);
+        reflectionEqualsByName(pspChannelPaymentTypesRes, pspChannelPaymentTypesMock);
+        verify(apiConfigConnectorMock, times(1))
+                .createChannelPaymentType(pspChannelPaymentTypesMock, channelCode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void getPaymentTypes() {
+        //given
+        final String xRequestId = "xRequestId";
+
+        PaymentTypes paymentTypes = mock(PaymentTypes.class);
+        when(apiConfigConnectorMock.getPaymentTypes(anyString()))
+                .thenReturn(paymentTypes);
+
+        //when
+        PaymentTypes paymentTypesResp = apiConfigService.getPaymentTypes(xRequestId);
+        //then
+        assertNotNull(paymentTypesResp);
+        assertEquals(paymentTypesResp, paymentTypes);
+
+        verify(apiConfigConnectorMock, times(1))
+                .getPaymentTypes(anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+
+    @Test
+    void getChannelPaymentTypes() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String channelCode = "channelCode";
+
+        PspChannelPaymentTypes pspChannelPaymentTypes = mock(PspChannelPaymentTypes.class);
+        when(apiConfigConnectorMock.getChannelPaymentTypes(anyString(), anyString()))
+                .thenReturn(pspChannelPaymentTypes);
+
+        //when
+        PspChannelPaymentTypes pspChannelPaymentTypesResp = apiConfigService.getChannelPaymentTypes(channelCode, xRequestId);
+        //then
+        assertNotNull(pspChannelPaymentTypesResp);
+        assertEquals(pspChannelPaymentTypesResp, pspChannelPaymentTypes);
+
+        verify(apiConfigConnectorMock, times(1))
+                .getChannelPaymentTypes(anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void deleteChannelPaymentType() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String channelCode = "channelCode";
+        final String paymentType = "paymentType";
+
+        doNothing().when(apiConfigConnectorMock).deleteChannelPaymentType(anyString(), anyString(), anyString());
+
+        //when
+        apiConfigService.deleteChannelPaymentType(channelCode, paymentType, xRequestId);
+        //then
+        verify(apiConfigConnectorMock, times(1))
+                .deleteChannelPaymentType(anyString(), anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void deletePaymentServiceProvidersChannels() {
+        final String xRequestId = "xRequestId";
+        final String channelCode = "channelCode";
+        final String pspCode = "pspCode";
+
+        doNothing().when(apiConfigConnectorMock).deletePaymentServiceProvidersChannels(anyString(), anyString(), anyString());
+
+        //when
+        apiConfigService.deletePaymentServiceProvidersChannels(channelCode, pspCode, xRequestId);
+        //then
+        verify(apiConfigConnectorMock, times(1))
+                .deletePaymentServiceProvidersChannels(anyString(), anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void updatePaymentServiceProvidersChannels() {
+        final String xRequestId = "xRequestId";
+        final String pspCode = "pspCode";
+        final String channelCode = "channelCode";
+
+        PspChannelPaymentTypes pspChannelPaymentTypesMock = mockInstance(new PspChannelPaymentTypes());
+        pspChannelPaymentTypesMock.setPaymentTypeList(List.of("paymentType"));
+
+        when(apiConfigConnectorMock.updatePaymentServiceProvidersChannels(anyString(), anyString(), any(), anyString()))
+                .thenReturn(pspChannelPaymentTypesMock);
+        //when
+        PspChannelPaymentTypes response = apiConfigService.updatePaymentServiceProvidersChannels(pspCode, channelCode, pspChannelPaymentTypesMock, xRequestId);
+        //then
+        assertNotNull(response);
+        assertEquals(pspChannelPaymentTypesMock, response);
+        reflectionEqualsByName(pspChannelPaymentTypesMock, response);
+        verify(apiConfigConnectorMock, times(1))
+                .updatePaymentServiceProvidersChannels(anyString(), anyString(), any(), anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void deleteChannel() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String channelCode = "channelCode";
+
+        doNothing().when(apiConfigConnectorMock).deleteChannel(anyString(), anyString());
+
+        //when
+        apiConfigService.deleteChannel(channelCode, xRequestId);
+        //then
+
+        verify(apiConfigConnectorMock, times(1))
+                .deleteChannel(channelCode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void getPspBrokerPsp() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String brokerPspCode = "brokerPspCode";
+        final Integer limit = 1;
+        final Integer page = 1;
+
+        PaymentServiceProviders modelMock = mock(PaymentServiceProviders.class);
+        when(apiConfigConnectorMock.getPspBrokerPsp(anyInt(), anyInt(), anyString(), anyString()))
+                .thenReturn(modelMock);
+
+        //when
+        PaymentServiceProviders response = apiConfigService.getPspBrokerPsp(limit, page, brokerPspCode, xRequestId);
+        //then
+        assertNotNull(response);
+        assertEquals(response, modelMock);
+
+        verify(apiConfigConnectorMock, times(1))
+                .getPspBrokerPsp(anyInt(), anyInt(), anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+
+    @Test
+    void getStations() {
+        //given
+        final Integer limit = 1;
+        final Integer page = 1;
+        final String ecCode = "ecCode";
+        final String stationCode = "stationCode";
+        final String sort = "sort";
+        final String xRequestId = "xRequestId";
+        Stations stationsMock = mockInstance(new Stations());
+        when(apiConfigConnectorMock.getStations(any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(stationsMock);
+
+        //when
+        Stations stations = apiConfigService.getStations(limit, page, sort, ecCode, stationCode, xRequestId);
+
+        //then
+        assertNotNull(stations);
+        assertEquals(stationsMock, stations);
+        reflectionEqualsByName(stationsMock, stations);
+        verify(apiConfigConnectorMock, times(1))
+                .getStations(limit, page, sort, null, ecCode, stationCode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void getStation() {
+        //given
+        final String stationCode = "stationCode";
+        final String xRequestId = "xRequestId";
+        StationDetails stationDetailsMock = mock(StationDetails.class);
+        when(apiConfigConnectorMock.getStation(any(), any()))
+                .thenReturn(stationDetailsMock);
+
+        //when
+        StationDetails stationDetails = apiConfigService.getStation(stationCode, xRequestId);
+
+        //then
+        assertNotNull(stationDetails);
+        assertEquals(stationDetailsMock, stationDetails);
+        reflectionEqualsByName(stationDetailsMock, stationDetails);
+        verify(apiConfigConnectorMock, times(1))
+                .getStation(stationCode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void createStation() {
+        //given
+        final String xRequestId = "xRequestId";
+        StationDetails stationDetails = mockInstance(new StationDetails());
+
+        when(apiConfigConnectorMock.createStation(any(), anyString()))
+                .thenReturn(stationDetails);
+        //when
+        StationDetails response = apiConfigService.createStation(stationDetails, xRequestId);
+        //then
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1)).createStation(stationDetails, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+        assertEquals(response, stationDetails);
+    }
+
+    @Test
+    void getChannelsCSV() throws IOException {
+        //given
+        final String xRequestId = "xRequestId";
+
+        File file = File.createTempFile("channels", ".csv");
+        FileWriter writer = new FileWriter(file);
+        writer.write("id,name\n1,channel1\n2,channel2\n");
+        writer.close();
+        Resource resource = mockInstance(new FileSystemResource(file));
+
+        when(apiConfigConnectorMock.getChannelsCSV(anyString()))
+                .thenReturn(resource);
+
+        //when
+        Resource resourceResp = apiConfigService.getChannelsCSV(xRequestId);
+        //then
+        assertNotNull(resourceResp);
+        assertEquals(resourceResp, resource);
+
+        verify(apiConfigConnectorMock, times(1))
+                .getChannelsCSV(anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void getChannelPaymentServiceProviders() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String channelCode = "channelCode";
+        final Integer limit = 1;
+        final Integer page = 1;
+
+        ChannelPspList channelPspListMock = mockInstance(new ChannelPspList());
+        ChannelPsp channelPsp = mock(ChannelPsp.class);
+        channelPspListMock.setPsp(List.of(channelPsp));
+        when(apiConfigConnectorMock.getChannelPaymentServiceProviders(anyInt(), anyInt(), anyString(), anyString()))
+                .thenReturn(channelPspListMock);
+
+        //when
+        ChannelPspList response = apiConfigService.getChannelPaymentServiceProviders(limit, page, channelCode, xRequestId);
+        //then
+        assertNotNull(response);
+        assertFalse(response.getPsp().isEmpty());
+        assertEquals(response, channelPspListMock);
+
+        verify(apiConfigConnectorMock, times(1))
+                .getChannelPaymentServiceProviders(anyInt(), anyInt(), anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void createBrokerPsp() {
+        //given
+        final String xRequestId = "xRequestId";
+        BrokerPspDetails brokerPspDetails = mockInstance(new BrokerPspDetails());
+
+        when(apiConfigConnectorMock.createBrokerPsp(any(), anyString()))
+                .thenReturn(brokerPspDetails);
+
+        //when
+        BrokerPspDetails response = apiConfigService.createBrokerPsp(brokerPspDetails, xRequestId);
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1)).createBrokerPsp(brokerPspDetails, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+        assertEquals(response, brokerPspDetails);
+    }
+
+
+    @Test
+    void createPaymentServiceProvider() {
+        //given
+        final String xRequestId = "xRequestId";
+        PaymentServiceProviderDetails paymentServiceProviderDetails = mockInstance(new PaymentServiceProviderDetails());
+
+        when(apiConfigConnectorMock.createPaymentServiceProvider(any(), anyString()))
+                .thenReturn(paymentServiceProviderDetails);
+
+        //when
+        PaymentServiceProviderDetails response = apiConfigService.createPaymentServiceProvider(paymentServiceProviderDetails, xRequestId);
+        assertNotNull(response);
+
+        assertEquals(response, paymentServiceProviderDetails);
+    }
+
+    @Test
+    void generateChannelCode() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String pspCode = "pspCode";
+
+        PspChannels pspChannels = mockInstance(new PspChannels());
+        PspChannel pspChannel = mockInstance(new PspChannel());
+        pspChannel.setChannelCode("TEST_01");
+
+        pspChannels.setChannelsList(List.of(pspChannel));
+
+        when(apiConfigConnectorMock.getPspChannels(any(), anyString()))
+                .thenReturn(pspChannels);
+
+        //when
+        String response = apiConfigService.generateChannelCode(anyString(), anyString());
+        assertNotNull(response);
+
+        assertEquals("TEST_02", response);
+    }
+
+    @Test
+    void generateChannelCode_noRegexMatcher() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String pspCode = "TEST";
+
+        PspChannels pspChannels = mockInstance(new PspChannels());
+        PspChannel pspChannel = mockInstance(new PspChannel());
+        pspChannel.setChannelCode("TEST");
+
+        pspChannels.setChannelsList(List.of(pspChannel));
+
+        when(apiConfigConnectorMock.getPspChannels(any(), anyString()))
+                .thenReturn(pspChannels);
+
+        //when
+        String response = apiConfigService.generateChannelCode(pspCode, xRequestId);
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .getPspChannels(anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+        assertEquals("TEST_01", response);
+    }
+
+    @Test
+    void generateStationCode() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String ecCode = "ecCode";
+
+        CreditorInstitutionStations creditorInstitutionStations = mockInstance(new CreditorInstitutionStations());
+        CreditorInstitutionStation creditorInstitutionStation = mockInstance(new CreditorInstitutionStation());
+        creditorInstitutionStation.setStationCode("TEST_01");
+
+        creditorInstitutionStations.setStationsList(List.of(creditorInstitutionStation));
+
+        when(apiConfigConnectorMock.getEcStations(any(), anyString()))
+                .thenReturn(creditorInstitutionStations);
+
+        //when
+        String response = apiConfigService.generateStationCode(ecCode, xRequestId);
+        //then
+        assertNotNull(response);
+        assertEquals("TEST_02", response);
+        verify(apiConfigConnectorMock, times(1))
+                .getEcStations(ecCode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void generateStationCode_noRegexMatcher() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String ecCode = "TEST";
+
+        CreditorInstitutionStations creditorInstitutionStations = mockInstance(new CreditorInstitutionStations());
+        CreditorInstitutionStation creditorInstitutionStation = mockInstance(new CreditorInstitutionStation());
+        creditorInstitutionStation.setStationCode("TEST");
+        creditorInstitutionStations.setStationsList(List.of(creditorInstitutionStation));
+
+        when(apiConfigConnectorMock.getEcStations(any(), anyString()))
+                .thenReturn(creditorInstitutionStations);
+
+        //when
+        String response = apiConfigService.generateStationCode(ecCode, xRequestId);
+        //then
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .getEcStations(ecCode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+        assertEquals("TEST_01", response);
+    }
+
+    @Test
+    void getPSPDetails() {
+        //given
+        final String pspCode = "pspCode";
+        final String xRequestId = "xRequestId";
+
+        PaymentServiceProviderDetails paymentServiceProviderDetails = mockInstance(new PaymentServiceProviderDetails());
+
+        when(apiConfigConnectorMock.getPSPDetails(anyString(), anyString()))
+                .thenReturn(paymentServiceProviderDetails);
+        //when
+        PaymentServiceProviderDetails response = apiConfigService.getPSPDetails(pspCode, xRequestId);
+
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .getPSPDetails(anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+        assertEquals(response, paymentServiceProviderDetails);
+    }
 }

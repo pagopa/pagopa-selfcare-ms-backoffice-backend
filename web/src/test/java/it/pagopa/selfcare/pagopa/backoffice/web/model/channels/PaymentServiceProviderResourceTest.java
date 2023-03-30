@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.channels;
 
-import it.pagopa.selfcare.pagopa.backoffice.web.model.institutions.InstitutionResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +19,7 @@ import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ChannelResourceTest {
+class PaymentServiceProviderResourceTest {
     private Validator validator;
 
 
@@ -34,20 +33,10 @@ class ChannelResourceTest {
     void validateNullFields() {
         //given
         HashMap<String, Class<? extends Annotation>> toCheckMap = new HashMap<>();
-        toCheckMap.put("id", NotBlank.class);
-        toCheckMap.put("externalId", NotBlank.class);
-        toCheckMap.put("originId", NotBlank.class);
-        toCheckMap.put("origin", NotBlank.class);
-        toCheckMap.put("name", NotBlank.class);
-        toCheckMap.put("fiscalCode", NotBlank.class);
-        toCheckMap.put("mailAddress", NotBlank.class);
-        toCheckMap.put("userRole", NotBlank.class);
-        toCheckMap.put("status", NotBlank.class);
-        toCheckMap.put("address", NotBlank.class);
-        toCheckMap.put("userProductRoles", NotNull.class);
-
-        InstitutionResource model = new InstitutionResource();
-        model.setUserProductRoles(null);
+        PaymentServiceProviderResource model = new PaymentServiceProviderResource();
+        toCheckMap.put("pspCode", NotBlank.class);
+        toCheckMap.put("businessName", NotNull.class);
+        toCheckMap.put("enabled", NotNull.class);
         //when
         Set<ConstraintViolation<Object>> violations = validator.validate(model);
         // then
@@ -64,13 +53,11 @@ class ChannelResourceTest {
     @Test
     void validateNotNullFields() {
         // given
-        InstitutionResource institutionResource = mockInstance(new InstitutionResource());
-        institutionResource.setUserProductRoles(Set.of("string"));
-
+        PaymentServiceProviderResource paymentServiceProviderResource = mockInstance(new PaymentServiceProviderResource());
         // when
-        Set<ConstraintViolation<Object>> violations = validator.validate(institutionResource);
+        Set<ConstraintViolation<Object>> violations = validator.validate(paymentServiceProviderResource);
         // then
         assertTrue(violations.isEmpty());
     }
-
 }
+
