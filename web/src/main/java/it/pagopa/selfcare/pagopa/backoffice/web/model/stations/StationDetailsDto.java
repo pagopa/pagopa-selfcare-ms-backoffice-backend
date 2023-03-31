@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Protocol;
 import lombok.Data;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -100,9 +102,11 @@ public class StationDetailsDto {
     @JsonProperty(required = true)
     @NotNull
     private String targetPath;
+    @Max(2)
+    @Min(1)
     @ApiModelProperty(value = "${swagger.model.station.primitiveVersion}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
-    private String primitiveVersion;
+    @NotNull
+    private Integer primitiveVersion;
 
 }
