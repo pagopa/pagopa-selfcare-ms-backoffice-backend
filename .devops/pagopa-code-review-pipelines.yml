@@ -15,14 +15,14 @@ pool:
 #  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
 
 steps:
-#  - task: Cache@2
-#    inputs:
-#      key: 'maven | "$(Agent.OS)" | pom.xml'
-#      restoreKeys: |
-#        maven | "$(Agent.OS)"
-#        maven
-#      path: $(MAVEN_CACHE_FOLDER)
-#    displayName: Cache Maven local repo
+  #  - task: Cache@2
+  #    inputs:
+  #      key: 'maven | "$(Agent.OS)" | pom.xml'
+  #      restoreKeys: |
+  #        maven | "$(Agent.OS)"
+  #        maven
+  #      path: $(MAVEN_CACHE_FOLDER)
+  #    displayName: Cache Maven local repo
 
   - task: SonarCloudPrepare@1
     displayName: 'Prepare SonarCloud analysis configuration'
@@ -36,25 +36,25 @@ steps:
         sonar.coverage.exclusions=**/config/*,**/*Mock*,**/model/**,**/entity/*
         sonar.cpd.exclusions=**/model/**,**/entity/*
 
-#  - task: Maven@3
-#    displayName: 'Run Junit Test'
-#    inputs:
-#      mavenPomFile: 'pom.xml'
-#      goals: 'clean verify'
-#      publishJUnitResults: true
-#      testResultsFiles: '**/surefire-reports/TEST-*.xml'
-#      codeCoverageToolOption: 'JaCoCo'
-#      javaHomeOption: 'JDKVersion'
-#      jdkVersionOption: '1.11'
-#      mavenVersionOption: 'Default'
-#      mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
-#      mavenAuthenticateFeed: false
-#      effectivePomSkip: false
-#      sonarQubeRunAnlsalysis: true
-#      isJacocoCoverageReportXML: true
-#      sqMavenPluginVersionChoice: 'latest'
-#      codeCoverageClassFilesDirectories: 'app,connector,connector-api,core,web'
-#      codeCoverageSourceDirectories: 'app/src,connectorapp/src,connector-apiapp/src,coreapp/src,webapp/src'
+  #  - task: Maven@3
+  #    displayName: 'Run Junit Test'
+  #    inputs:
+  #      mavenPomFile: 'pom.xml'
+  #      goals: 'clean verify'
+  #      publishJUnitResults: true
+  #      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+  #      codeCoverageToolOption: 'JaCoCo'
+  #      javaHomeOption: 'JDKVersion'
+  #      jdkVersionOption: '1.11'
+  #      mavenVersionOption: 'Default'
+  #      mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
+  #      mavenAuthenticateFeed: false
+  #      effectivePomSkip: false
+  #      sonarQubeRunAnlsalysis: true
+  #      isJacocoCoverageReportXML: true
+  #      sqMavenPluginVersionChoice: 'latest'
+  #      codeCoverageClassFilesDirectories: 'app,connector,connector-api,core,web'
+  #      codeCoverageSourceDirectories: 'app/src,connectorapp/src,connector-apiapp/src,coreapp/src,webapp/src'
 
   - task: DownloadSecureFile@1
     displayName: 'download settings.xml for Maven'
@@ -94,3 +94,9 @@ steps:
     displayName: 'Publish SonarCloud results on build summary'
     inputs:
       pollingTimeoutSec: '300'
+
+
+
+
+
+

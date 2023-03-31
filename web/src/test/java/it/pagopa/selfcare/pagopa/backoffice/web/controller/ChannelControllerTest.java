@@ -684,7 +684,7 @@ class ChannelControllerTest {
 
 
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$", is(channelCode)));
+                .andExpect(jsonPath("$.channel_code", is(channelCode)));
 
         verify(apiConfigServiceMock, times(1))
                 .generateChannelCode(any(), anyString());

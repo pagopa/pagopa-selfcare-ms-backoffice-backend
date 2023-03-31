@@ -2,10 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStation;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -577,5 +574,23 @@ class ApiConfigServiceImplTest {
                 .getPSPDetails(anyString(), anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
         assertEquals(response, paymentServiceProviderDetails);
+    }
+
+    @Test
+    void createCreditorInstitutionStationRelationship(){
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = "xRequestId";
+        CreditorInstitutionStationEdit station = mockInstance(new CreditorInstitutionStationEdit());
+        CreditorInstitutionStationEdit responseMock = mockInstance(new CreditorInstitutionStationEdit());
+        when(apiConfigConnectorMock.createCreditorInstitutionStationRelationship(anyString(), any(), anyString()))
+                .thenReturn(responseMock);
+        //when
+        CreditorInstitutionStationEdit response = apiConfigService.createCreditorInstitutionStationRelation(ecCode, station, xRequestId);
+        //then
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .createCreditorInstitutionStationRelationship(ecCode, station, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 }
