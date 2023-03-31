@@ -213,7 +213,7 @@ class ApiConfigRestClientTest {
             stationDetails.setTargetHost("targetHost");
             stationDetails.setTargetPort(8888L);
             stationDetails.setTargetPath("targetPath");
-            stationDetails.setPrimitiveVersion("1");
+            stationDetails.setPrimitiveVersion(1);
             put(TestCase.FULLY_VALUED, stationDetails);
         }
     };
