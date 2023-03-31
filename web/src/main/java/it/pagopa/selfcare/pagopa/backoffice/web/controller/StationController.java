@@ -23,7 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
@@ -114,7 +113,7 @@ public class StationController {
     @ApiOperation(value = "", notes = "${swagger.api.stations.associateStationToCreditorInstitution}")
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(@ApiParam("${swagger.request.ecCode}")
                                                                                     @PathVariable("ecCode") String ecCode,
-                                                                                    @RequestBody @Valid CreditorInstitutionStationDto dto) {
+                                                                                    @RequestBody @NotNull CreditorInstitutionStationDto dto) {
         log.trace("associateStationToCreditorInstitution start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("associateStationToCreditorInstitution ecCode ={}, dto = {}, xRequestId = {}", ecCode, dto, xRequestId);
