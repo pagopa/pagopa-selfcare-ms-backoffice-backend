@@ -88,8 +88,8 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     Stations getStations(@RequestParam(required = false, defaultValue = "50") Integer limit,
                          @RequestParam(required = true) Integer page,
                          @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort,
-                         @RequestParam(name = "brokerCode", required = false) String brokerCode,
-                         @RequestParam(name = "creditorInstitutionCode", required = false) String creditorInstitutionCode,
+                         @RequestParam(name = "brokercode", required = false) String brokerCode,
+                         @RequestParam(name = "creditorinstitutioncode", required = false) String creditorInstitutionCode,
                          @RequestParam(required = false) String code,
                          @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
