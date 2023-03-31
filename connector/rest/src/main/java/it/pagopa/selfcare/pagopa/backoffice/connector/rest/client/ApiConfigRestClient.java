@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
@@ -130,7 +131,7 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails, @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
 
-    @GetMapping(value = "${rest-client.api-config.getCreditorInstitutionStations}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "${rest-client.api-config.getCreditorInstitutionStations.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     CreditorInstitutionStations getEcStations(@PathVariable("creditorinstitutioncode") String ecCode, @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
@@ -144,4 +145,7 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     @ResponseBody
     PaymentServiceProviderDetails getPSPDetails(@PathVariable("pspcode") String pspCode,
                                                 @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
+    @PostMapping(value = "${rest-client.api-config.createCreditorInstitution.path}")
+    CreditorInstitutionDetails createCreditorInstitution(@RequestBody CreditorInstitutionDetails request);
 }
