@@ -3033,17 +3033,17 @@
           },
           "pspPayment" : {
             "type" : "boolean",
-            "description" : "Creditor Institution's zip reporting",
+            "description" : "Enables the zipping of the content that goes through fstp",
             "example" : false
           },
           "reportingFtp" : {
             "type" : "boolean",
-            "description" : "Creditor Institution's zip reporting",
+            "description" : "Enables the zipping of the content that goes through fstp",
             "example" : false
           },
           "reportingZip" : {
             "type" : "boolean",
-            "description" : "Creditor Institution's zip reporting",
+            "description" : "Enables the zipping of the content that goes through fstp",
             "example" : false
           }
         }
@@ -3077,12 +3077,12 @@
           },
           "reportingFtp" : {
             "type" : "boolean",
-            "description" : "Creditor Institution's ftp reporting",
+            "description" : "Enables flow towards Creditor Institution in fstp mode",
             "example" : false
           },
           "reportingZip" : {
             "type" : "boolean",
-            "description" : "Creditor Institution's zip reporting",
+            "description" : "Enables the zipping of the content that goes through fstp",
             "example" : false
           }
         }
