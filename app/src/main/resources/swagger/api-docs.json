@@ -307,68 +307,6 @@
         } ]
       }
     },
-    "/channels/create-wrapperChannel" : {
-      "post" : {
-        "tags" : [ "channels" ],
-        "summary" : "createWrapperChannelDetails",
-        "description" : "Create a WrapperChannel on Cosmodb",
-        "operationId" : "createWrapperChannelDetailsUsingPOST",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/ChannelDetailsDto"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "201" : {
-            "description" : "Created",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "bearerAuth" : [ "global" ]
-        } ]
-      }
-    },
     "/channels/csv" : {
       "get" : {
         "tags" : [ "channels" ],
@@ -459,79 +397,6 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ChannelDetailsResource"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "Not Found",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "bearerAuth" : [ "global" ]
-        } ]
-      }
-    },
-    "/channels/get-wrappeEntitie/{code}" : {
-      "get" : {
-        "tags" : [ "channels" ],
-        "summary" : "getWrapperEntities",
-        "description" : "Get wrapperEntities",
-        "operationId" : "getWrapperEntitiesUsingGET",
-        "parameters" : [ {
-          "name" : "code",
-          "in" : "path",
-          "description" : "Channlecode or StationCode",
-          "required" : true,
-          "style" : "simple",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
                 }
               }
             }
@@ -982,150 +847,6 @@
           },
           "401" : {
             "description" : "Unauthorized",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "bearerAuth" : [ "global" ]
-        } ]
-      }
-    },
-    "/channels/update-wrappeChannel" : {
-      "put" : {
-        "tags" : [ "channels" ],
-        "summary" : "updateWrapperChannelDetails",
-        "description" : "Create a WrapperChannel on Cosmodb",
-        "operationId" : "updateWrapperChannelDetailsUsingPUT",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/ChannelDetailsDto"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "409" : {
-            "description" : "Conflict",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "bearerAuth" : [ "global" ]
-        } ]
-      }
-    },
-    "/channels/update-wrappeChannelByOpt" : {
-      "put" : {
-        "tags" : [ "channels" ],
-        "summary" : "updateWrapperChannelDetailsByOpt",
-        "description" : "Create a WrapperChannel on Cosmodb",
-        "operationId" : "updateWrapperChannelDetailsByOptUsingPUT",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/ChannelDetailsDto"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "409" : {
-            "description" : "Conflict",
             "content" : {
               "application/problem+json" : {
                 "schema" : {
@@ -2618,6 +2339,78 @@
           "bearerAuth" : [ "global" ]
         } ]
       }
+    },
+    "/stations/{ecCode}/station" : {
+      "post" : {
+        "tags" : [ "stations" ],
+        "summary" : "associateStationToCreditorInstitution",
+        "description" : "Creates the relationship between the created station and the creditorInstitution",
+        "operationId" : "associateStationToCreditorInstitutionUsingPOST",
+        "parameters" : [ {
+          "name" : "ecCode",
+          "in" : "path",
+          "description" : "Creditor institution code",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreditorInstitutionStationDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CreditorInstitutionStationEditResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
     }
   },
   "components" : {
@@ -3205,6 +2998,53 @@
           }
         }
       },
+      "CreditorInstitutionStationDto" : {
+        "title" : "CreditorInstitutionStationDto",
+        "required" : [ "stationCode" ],
+        "type" : "object",
+        "properties" : {
+          "stationCode" : {
+            "type" : "string",
+            "description" : "Station's unique identifier"
+          }
+        }
+      },
+      "CreditorInstitutionStationEditResource" : {
+        "title" : "CreditorInstitutionStationEditResource",
+        "required" : [ "stationCode" ],
+        "type" : "object",
+        "properties" : {
+          "applicationCode" : {
+            "type" : "integer",
+            "description" : "Station's application code",
+            "format" : "int64"
+          },
+          "auxDigit" : {
+            "type" : "integer",
+            "description" : "Station's auxiliary digit",
+            "format" : "int64"
+          },
+          "broadcast" : {
+            "type" : "boolean",
+            "description" : "Station's broadcast enabled",
+            "example" : false
+          },
+          "mod4" : {
+            "type" : "boolean",
+            "description" : "Station's mod 4 enabled",
+            "example" : false
+          },
+          "segregationCode" : {
+            "type" : "integer",
+            "description" : "Station's segregation code number",
+            "format" : "int64"
+          },
+          "stationCode" : {
+            "type" : "string",
+            "description" : "Station's unique identifier"
+          }
+        }
+      },
       "DpoDataResource" : {
         "title" : "DpoDataResource",
         "required" : [ "address", "email", "pec" ],
@@ -3783,7 +3623,7 @@
           },
           "flagOnline" : {
             "type" : "boolean",
-            "description" : "Station's online flag ",
+            "description" : "Station's online flag",
             "example" : false
           },
           "ip" : {
@@ -3970,7 +3810,7 @@
           },
           "flagOnline" : {
             "type" : "boolean",
-            "description" : "Station's online flag ",
+            "description" : "Station's online flag",
             "example" : false
           },
           "ip" : {

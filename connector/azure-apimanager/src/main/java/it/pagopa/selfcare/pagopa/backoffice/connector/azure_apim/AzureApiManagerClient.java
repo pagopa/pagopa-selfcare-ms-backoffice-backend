@@ -14,6 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiManagerConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.connector.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -70,7 +71,7 @@ public class AzureApiManagerClient implements ApiManagerConnector {
                 .withExistingService(resourceGroupName, serviceName)
                 .withEmail(dto.getEmail())
                 .withFirstName(dto.getFiscalCode())
-                .withLastName(dto.getDescription())
+                .withLastName(StringUtils.validateAndReplace(dto.getDescription(), "-"))
                 .withConfirmation(Confirmation.SIGNUP)
                 .create();
         it.pagopa.selfcare.pagopa.backoffice.connector.model.UserContract contract = AZURE_USER_CONTRACT_TO_PAGOPA_USER_CONTRACT.apply(userContract);

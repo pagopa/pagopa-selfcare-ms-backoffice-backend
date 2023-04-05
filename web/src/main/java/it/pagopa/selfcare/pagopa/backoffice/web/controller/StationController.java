@@ -4,11 +4,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationEditResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationCodeResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailResource;
@@ -125,4 +129,22 @@ public class StationController {
         log.trace("updateWrapperStationDetailsByOpt end");
         return createdWrapperEntities;
     }
+    @PostMapping(value = "/{ecCode}/station", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.associateStationToCreditorInstitution}")
+    public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(@ApiParam("${swagger.request.ecCode}")
+                                                                                    @PathVariable("ecCode") String ecCode,
+                                                                                    @RequestBody @Valid CreditorInstitutionStationDto dto) {
+        log.trace("associateStationToCreditorInstitution start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("associateStationToCreditorInstitution ecCode ={}, dto = {}, xRequestId = {}", ecCode, dto, xRequestId);
+        CreditorInstitutionStationEdit station = CreditorInstitutionMapper.fromDto(dto);
+        CreditorInstitutionStationEdit ecStation = apiConfigService.createCreditorInstitutionStationRelation(ecCode, station, xRequestId);
+        CreditorInstitutionStationEditResource resource = CreditorInstitutionMapper.toResource(ecStation);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "associateStationToCreditorInstitution result = {}", resource);
+        log.trace("associateStationToCreditorInstitution end");
+        return resource;
+    }
+
+
 }
