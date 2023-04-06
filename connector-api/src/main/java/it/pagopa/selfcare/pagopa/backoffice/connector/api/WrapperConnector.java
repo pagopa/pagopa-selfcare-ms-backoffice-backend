@@ -3,9 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.api;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface WrapperConnector {

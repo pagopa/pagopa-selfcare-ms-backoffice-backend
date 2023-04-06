@@ -1,31 +1,20 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.dao;
 
-import com.mongodb.client.result.UpdateResult;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.WrapperConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.WrapperEntity;
-import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceAlreadyExistsException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import java.sql.Wrapper;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -64,12 +53,12 @@ public class WrapperConnectorImpl implements WrapperConnector {
 
     @Override
     public WrapperEntities insert(StationDetails stationDetails, String note, String status) {
-        WrapperEntity<Object> wrapperEntity = new WrapperEntity<Object>(stationDetails);
+        WrapperEntity<Object> wrapperEntity = new WrapperEntity<>(stationDetails);
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
-        WrapperEntities wrapperEntities = new WrapperEntities(wrapperEntity);
+        WrapperEntities<Object> wrapperEntities = new WrapperEntities(wrapperEntity);
         wrapperEntities.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
-        WrapperEntities response = null;
+        WrapperEntities<Object> response = null;
         try {
             response = repository.insert(wrapperEntities);
         } catch (DuplicateKeyException e) {
@@ -85,9 +74,9 @@ public class WrapperConnectorImpl implements WrapperConnector {
         if (opt.isEmpty()) {
             throw new ResourceNotFoundException();
         }
-        WrapperEntities wrapperEntities = (WrapperEntities) opt.get();
+        WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) opt.get();
         wrapperEntities.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
-        WrapperEntity wrapperEntity = new WrapperEntity<>(channelDetails);
+        WrapperEntity<ChannelDetails> wrapperEntity = new WrapperEntity<>(channelDetails);
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
         wrapperEntity.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
@@ -103,9 +92,9 @@ public class WrapperConnectorImpl implements WrapperConnector {
         if (opt.isEmpty()) {
             throw new ResourceNotFoundException();
         }
-        WrapperEntities wrapperEntities = (WrapperEntities) opt.get();
+        WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) opt.get();
         String modifiedByOpt = auditorAware.getCurrentAuditor().orElse(null);
-        wrapperEntities.updateCurrentWrapperEntity(new WrapperEntity(channelDetails), status, note, modifiedByOpt);
+        wrapperEntities.updateCurrentWrapperEntity(new WrapperEntity<>(channelDetails), status, note, modifiedByOpt);
         return repository.save(wrapperEntities);
     }
 
@@ -116,9 +105,9 @@ public class WrapperConnectorImpl implements WrapperConnector {
         if (opt.isEmpty()) {
             throw new ResourceNotFoundException();
         }
-        WrapperEntities wrapperEntities = (WrapperEntities) opt.get();
+        WrapperEntities<StationDetails> wrapperEntities = (WrapperEntities) opt.get();
         String modifiedByOpt = auditorAware.getCurrentAuditor().orElse(null);
-        WrapperEntity wrapperEntity = new WrapperEntity(stationDetails);
+        WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity(stationDetails);
         wrapperEntity.setModifiedByOpt(modifiedByOpt);
         wrapperEntities.updateCurrentWrapperEntity(wrapperEntity, status, note, modifiedByOpt);
         return repository.save(wrapperEntities);
@@ -131,8 +120,8 @@ public class WrapperConnectorImpl implements WrapperConnector {
         if (opt.isEmpty()) {
             throw new ResourceNotFoundException();
         }
-        WrapperEntities wrapperEntities = (WrapperEntities) opt.get();
-        WrapperEntity wrapperEntity = new WrapperEntity<>(stationDetails);
+        WrapperEntities<StationDetails> wrapperEntities = (WrapperEntities) opt.get();
+        WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetails);
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.getEntities().add(wrapperEntity);
@@ -144,31 +133,6 @@ public class WrapperConnectorImpl implements WrapperConnector {
         return repository.findById(id).map(Function.identity());
     }
 
-//    @Override
-//    public WrapperEntitiesOperations save(WrapperEntitiesOperations wrapperEntitiesOperations) {
-//        WrapperEntities wrapperEntities = (WrapperEntities) wrapperEntitiesOperations;
-//        //wrapperEntities.setNew(false);
-//        if (wrapperEntities.getCreatedAt() == null) {
-//            wrapperEntities.setCreatedAt(Instant.now());
-//        }
-//        if (wrapperEntities.getCreatedBy() == null) {
-//            wrapperEntities.setCreatedBy(auditorAware.getCurrentAuditor().orElse(null));
-//        }
-//        return repository.save(wrapperEntities);
-//    }
-//
-//
-//    @Override
-//    public Optional<WrapperEntitiesOperations> findById(String id) {
-//        return repository.findById(id).map(Function.identity());
-//    }
-//
-//    @Override
-//    public boolean existsById(String id) {
-//        return repository.existsById(id);
-//    }
-//
-//
 //    @Override
 //    public List<WrapperEntitiesOperations> findAll() {
 //        return new ArrayList<>(repository.findAll());
