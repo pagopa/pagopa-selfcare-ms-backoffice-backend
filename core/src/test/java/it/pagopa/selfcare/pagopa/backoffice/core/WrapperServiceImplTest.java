@@ -146,4 +146,48 @@ public class WrapperServiceImplTest {
                 .update(stationDetailsMock,note,status);
         verifyNoMoreInteractions(wrapperConnectorMock);
     }
+
+    @Test
+    void updateWrapperChannelDetailsByOpt(){
+        //given
+        String note ="note";
+        String status="TO_CHECK";
+        ChannelDetails channelDetailsMock = mockInstance(new ChannelDetails());
+        DummyWrapperEntity<ChannelDetails> wrapperEntity = new DummyWrapperEntity<>(channelDetailsMock);
+        DummyWrapperEntities<ChannelDetails> wrapperEntities = new DummyWrapperEntities<>(wrapperEntity);
+
+        when(wrapperConnectorMock.updateByOpt((ChannelDetails) any(),anyString(),anyString()))
+                .thenReturn(wrapperEntities);
+        //when
+        WrapperEntitiesOperations response = wrapperService.updateWrapperChannelDetailsByOpt(channelDetailsMock,note,status);
+        //then
+        assertNotNull(response);
+        assertEquals(((DummyWrapperEntity) response.getWrapperEntityOperationsSortedList().get(0)).getEntity(), channelDetailsMock);
+        reflectionEqualsByName(wrapperEntities.getWrapperEntityOperationsSortedList().get(0).getEntity(), channelDetailsMock);
+        verify(wrapperConnectorMock, times(1))
+                .updateByOpt(channelDetailsMock,note,status);
+        verifyNoMoreInteractions(wrapperConnectorMock);
+    }
+
+    @Test
+    void updateWrapperStationDetailsByOpt(){
+        //given
+        String note ="note";
+        String status="TO_CHECK";
+        StationDetails stationDetailsMock = mockInstance(new StationDetails());
+        DummyWrapperEntity<StationDetails> wrapperEntity = new DummyWrapperEntity<>(stationDetailsMock);
+        DummyWrapperEntities<StationDetails> wrapperEntities = new DummyWrapperEntities<>(wrapperEntity);
+
+        when(wrapperConnectorMock.updateByOpt((StationDetails) any(),anyString(),anyString()))
+                .thenReturn(wrapperEntities);
+        //when
+        WrapperEntitiesOperations response = wrapperService.updateWrapperStationDetailsByOpt(stationDetailsMock,note,status);
+        //then
+        assertNotNull(response);
+        assertEquals(((DummyWrapperEntity) response.getWrapperEntityOperationsSortedList().get(0)).getEntity(), stationDetailsMock);
+        reflectionEqualsByName(wrapperEntities.getWrapperEntityOperationsSortedList().get(0).getEntity(), stationDetailsMock);
+        verify(wrapperConnectorMock, times(1))
+                .updateByOpt(stationDetailsMock,note,status);
+        verifyNoMoreInteractions(wrapperConnectorMock);
+    }
 }
