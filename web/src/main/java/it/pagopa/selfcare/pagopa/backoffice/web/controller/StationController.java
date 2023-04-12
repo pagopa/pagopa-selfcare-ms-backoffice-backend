@@ -114,21 +114,7 @@ public class StationController {
         return stationCode;
     }
 
-    @PutMapping(value = "/update-wrapperStationByOpt", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "", notes = "${swagger.api.channels.createWrapperChannelDetails}")
-    public WrapperEntitiesOperations updateWrapperStationDetailsByOpt(@RequestBody
-                                                                      @Valid
-                                                                      StationDetailsDto stationDetailsDto) {
-        log.trace("updateWrapperStationDetailsByOpt start");
-        log.debug("updateWrapperStationDetailsByOpt stationDetailsDto = {}", stationDetailsDto);
-        WrapperEntitiesOperations createdWrapperEntities = wrapperService.
-                updateWrapperStationDetailsByOpt(mapper.
-                        fromDto(stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name());
-        log.debug("updateWrapperStationDetailsByOpt result = {}", createdWrapperEntities);
-        log.trace("updateWrapperStationDetailsByOpt end");
-        return createdWrapperEntities;
-    }
+   
     @PostMapping(value = "/{ecCode}/station", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.stations.associateStationToCreditorInstitution}")
