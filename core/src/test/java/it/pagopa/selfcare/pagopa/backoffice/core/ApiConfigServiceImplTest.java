@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static it.pagopa.selfcare.pagopa.TestUtils.reflectionEqualsByName;
@@ -591,6 +593,23 @@ class ApiConfigServiceImplTest {
         assertNotNull(response);
         verify(apiConfigConnectorMock, times(1))
                 .createCreditorInstitutionStationRelationship(ecCode, station, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void createCreditorInstitution(){
+        //given
+        String xRequestId = UUID.randomUUID().toString();
+        CreditorInstitutionDetails creditorInstitutionDetails = mockInstance(new CreditorInstitutionDetails());
+        when(apiConfigConnectorMock.createCreditorInstitution(any(), anyString()))
+                .thenReturn(creditorInstitutionDetails);
+        //when
+        CreditorInstitutionDetails result = apiConfigService.createCreditorInstitution(creditorInstitutionDetails, xRequestId);
+        //then
+        assertNotNull(result);
+        assertEquals(creditorInstitutionDetails, result);
+        verify(apiConfigConnectorMock, times(1))
+                .createCreditorInstitution(creditorInstitutionDetails, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 }

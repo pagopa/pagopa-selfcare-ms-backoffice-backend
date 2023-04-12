@@ -1,0 +1,49 @@
+package it.pagopa.selfcare.pagopa.backoffice.web.controller;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.NotNull;
+import java.util.UUID;
+
+@Slf4j
+@RestController
+@RequestMapping(value = "/creditor-institutions", produces = MediaType.APPLICATION_JSON_VALUE)
+@Api(tags = "creditor-institutions")
+public class CreditorInstitutionController {
+
+    CreditorInstitutionMapper mapper = Mappers.getMapper(CreditorInstitutionMapper.class);
+    private final ApiConfigService apiConfigService;
+
+    @Autowired
+    public CreditorInstitutionController(ApiConfigService apiConfigService) {
+        this.apiConfigService = apiConfigService;
+    }
+
+    @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.createCreditorInstitution}")
+    public CreditorInstitutionDetailsResource createCreditorInstitution(@RequestBody @NotNull CreditorInstitutionDto dto){
+        log.trace("createCreditorInstitution start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("createCreditorInstitution dto = {}, xRequestId = {}", dto, xRequestId);
+        CreditorInstitutionDetails creditorInstitution = mapper.fromDto(dto);
+        CreditorInstitutionDetails created = apiConfigService.createCreditorInstitution(creditorInstitution, xRequestId);
+        CreditorInstitutionDetailsResource result = mapper.toResource(created);
+        log.debug("createCreditorInstitution result = {}", result);
+        log.trace("createCreditorInstitution end");
+        return result;
+    }
+
+}

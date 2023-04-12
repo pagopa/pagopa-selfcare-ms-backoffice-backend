@@ -23,7 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
@@ -33,7 +32,9 @@ import java.util.UUID;
 @Api(tags = "stations")
 public class StationController {
 
-    private StationMapper mapper = Mappers.getMapper(StationMapper.class);
+    private CreditorInstitutionMapper creditorInstitutionMapper = Mappers.getMapper(CreditorInstitutionMapper.class);
+
+    private StationMapper stationMapper = Mappers.getMapper(StationMapper.class);
     private final ApiConfigService apiConfigService;
 
     @Autowired
@@ -48,9 +49,9 @@ public class StationController {
         log.trace("createStation start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createStation dto = {}, xRequestId = {}", stationDetailsDto, xRequestId);
-        StationDetails stationDetails = mapper.fromDto(stationDetailsDto);
+        StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
         StationDetails response = apiConfigService.createStation(stationDetails, xRequestId);
-        StationDetailResource resource = mapper.toResource(response);
+        StationDetailResource resource = stationMapper.toResource(response);
         log.debug("createStation result = {}", resource);
         log.trace("createStation end");
         return resource;
@@ -73,7 +74,7 @@ public class StationController {
         String uuid = UUID.randomUUID().toString();
         log.debug("getStations ecCode = {}, stationCode = {}, X-Request-Id = {}", creditorInstitutionCode, stationCode, uuid);
         Stations stations = apiConfigService.getStations(limit, page, sort, creditorInstitutionCode, stationCode, uuid);
-        StationsResource resource = mapper.toResource(stations);
+        StationsResource resource = stationMapper.toResource(stations);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "StationController result = {}", resource);
         log.trace("getStations end");
         return resource;
@@ -88,7 +89,7 @@ public class StationController {
         String uuid = UUID.randomUUID().toString();
         log.debug("getStation stationCode = {}, X-Request-Id = {}", stationCode, uuid);
         StationDetails stationDetails = apiConfigService.getStation(stationCode, uuid);
-        StationDetailResource resource = mapper.toResource(stationDetails);
+        StationDetailResource resource = stationMapper.toResource(stationDetails);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStation result = {}", resource);
         log.trace("getStation end");
         return resource;
@@ -114,13 +115,13 @@ public class StationController {
     @ApiOperation(value = "", notes = "${swagger.api.stations.associateStationToCreditorInstitution}")
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(@ApiParam("${swagger.request.ecCode}")
                                                                                     @PathVariable("ecCode") String ecCode,
-                                                                                    @RequestBody @Valid CreditorInstitutionStationDto dto) {
+                                                                                    @RequestBody @NotNull CreditorInstitutionStationDto dto) {
         log.trace("associateStationToCreditorInstitution start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("associateStationToCreditorInstitution ecCode ={}, dto = {}, xRequestId = {}", ecCode, dto, xRequestId);
-        CreditorInstitutionStationEdit station = CreditorInstitutionMapper.fromDto(dto);
+        CreditorInstitutionStationEdit station = creditorInstitutionMapper.fromDto(dto);
         CreditorInstitutionStationEdit ecStation = apiConfigService.createCreditorInstitutionStationRelation(ecCode, station, xRequestId);
-        CreditorInstitutionStationEditResource resource = CreditorInstitutionMapper.toResource(ecStation);
+        CreditorInstitutionStationEditResource resource = creditorInstitutionMapper.toResource(ecStation);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "associateStationToCreditorInstitution result = {}", resource);
         log.trace("associateStationToCreditorInstitution end");
         return resource;
