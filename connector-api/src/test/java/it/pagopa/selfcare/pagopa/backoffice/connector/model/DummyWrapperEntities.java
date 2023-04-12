@@ -37,6 +37,11 @@ public class DummyWrapperEntities<T> implements WrapperEntitiesOperations<T> {
     }
 
     @Override
+    public void sortEntitesByCreatedAt() {
+        this.entities.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt,Comparator.reverseOrder()));
+    }
+
+    @Override
     public void updateCurrentWrapperEntity(WrapperEntityOperations<T> wrapperEntity, String status, String note, String modifiedByOpt) {
         this.entities.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt));
         DummyWrapperEntity<T> wrapper = this.entities.get(0);
