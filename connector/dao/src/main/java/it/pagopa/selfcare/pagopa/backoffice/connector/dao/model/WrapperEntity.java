@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @FieldNameConstants(onlyExplicitlyIncluded = true)
@@ -49,11 +48,5 @@ public class WrapperEntity<T> implements WrapperEntityOperations<T> {
     public void setEntity() {
         this.setEntity(this.entity);
     }
-
-
-//    @Override
-//    public WrapperEntity<T> createWrapperEntity(T entity) {
-//        return new WrapperEntity<T>(entity);
-//    }
 
 }

@@ -5,8 +5,6 @@ import java.util.List;
 
 public interface WrapperEntitiesOperations<T> {
 
-//    WrapperEntitiesOperations createWrapperEntities(WrapperEntityOperations<Object> entity);
-
     void setId(String id);
 
     void setType(WrapperType wrapperType);

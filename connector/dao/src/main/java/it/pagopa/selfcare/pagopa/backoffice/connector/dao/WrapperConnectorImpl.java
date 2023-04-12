@@ -37,7 +37,7 @@ public class WrapperConnectorImpl implements WrapperConnector {
 
     @Override
     public WrapperEntities insert(ChannelDetails channelDetails, String note, String status) {
-        WrapperEntity<Object> wrapperEntity = new WrapperEntity<Object>(channelDetails);
+        WrapperEntity<Object> wrapperEntity = new WrapperEntity<>(channelDetails);
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
         WrapperEntities wrapperEntities = new WrapperEntities(wrapperEntity);
