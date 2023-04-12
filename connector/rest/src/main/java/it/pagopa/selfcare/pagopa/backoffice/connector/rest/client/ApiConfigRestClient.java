@@ -147,5 +147,6 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                                                 @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
     @PostMapping(value = "${rest-client.api-config.createCreditorInstitution.path}")
-    CreditorInstitutionDetails createCreditorInstitution(@RequestBody CreditorInstitutionDetails request);
+    CreditorInstitutionDetails createCreditorInstitution(@RequestBody CreditorInstitutionDetails request,
+                                                         @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
 }
