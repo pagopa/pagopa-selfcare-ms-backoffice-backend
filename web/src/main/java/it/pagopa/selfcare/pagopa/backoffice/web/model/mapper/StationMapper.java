@@ -18,4 +18,5 @@ public interface StationMapper {
     StationResource toResource(Station model);
 
     StationDetails fromDto(StationDetailsDto model);
+
 }

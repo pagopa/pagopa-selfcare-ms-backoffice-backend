@@ -5,7 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Protocol;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Data//FIXME fix after integration with DB
@@ -80,10 +81,12 @@ public class StationDetailResource extends StationResource {
     private Long targetPort;
     @ApiModelProperty(value = "${swagger.model.station.targetPath}")
     private String targetPath;
+    @Max(2)
+    @Min(1)
     @ApiModelProperty("${swagger.model.station.primitiveVersion}")
     @JsonProperty(required = true)
-    @NotBlank
-    private String primitiveVersion;
+    @NotNull
+    private Integer primitiveVersion;
     @ApiModelProperty("${swagger.model.station.operatedBy}")
 //    @JsonProperty(required = true)
 //    @NotBlank
