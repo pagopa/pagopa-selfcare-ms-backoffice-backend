@@ -16,7 +16,6 @@ import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -80,6 +79,11 @@ public class WrapperEntities<T> implements WrapperEntitiesOperations<T>, Persist
         return false;
     }
 
+
+    public void sortEntitesByCreatedAt(){
+        this.entities.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt,Comparator.reverseOrder()));
+    }
+
     @Override
     public List<WrapperEntityOperations<T>> getWrapperEntityOperationsSortedList() {
         List<WrapperEntityOperations<T>> list = new ArrayList<>(this.entities);
@@ -87,6 +91,7 @@ public class WrapperEntities<T> implements WrapperEntitiesOperations<T>, Persist
         return list;
 
     }
+
 
     @Override
     public void updateCurrentWrapperEntity(WrapperEntityOperations<T> wrapperEntity, String status, String note, String modifiedByOpt) {
@@ -97,7 +102,7 @@ public class WrapperEntities<T> implements WrapperEntitiesOperations<T>, Persist
         this.setModifiedAt(Instant.now());
         this.setModifiedByOpt(modifiedByOpt);
         wrapper.setNote(note);
-        wrapper.setModifiedAt(LocalDateTime.now());
+        wrapper.setModifiedAt(Instant.now());
         wrapper.setModifiedByOpt(modifiedByOpt);
         wrapper.setStatus(WrapperStatus.valueOf(status));
     }

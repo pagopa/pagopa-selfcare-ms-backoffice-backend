@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 public interface WrapperEntityOperations<T> {
@@ -8,9 +9,9 @@ public interface WrapperEntityOperations<T> {
 
      void setId(String id);
      void setType(WrapperType type);
-     void setCreatedAt(LocalDateTime createdAt);
+     void setCreatedAt(Instant createdAt);
 
-     void setModifiedAt(LocalDateTime createdAt);
+     void setModifiedAt(Instant createdAt);
      void setNote(String note);
      void setEntity();
 
@@ -22,10 +23,10 @@ public interface WrapperEntityOperations<T> {
      String getNote();
      String getId();
      WrapperType getType();
-     LocalDateTime getCreatedAt();
+     Instant getCreatedAt();
      T getEntity();
 
      String getModifiedBy();
-     LocalDateTime getModifiedAt();
+     Instant getModifiedAt();
      String getModifiedByOpt();
 }

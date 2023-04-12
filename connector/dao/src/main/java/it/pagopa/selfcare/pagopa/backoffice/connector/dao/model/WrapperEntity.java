@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
@@ -17,9 +18,9 @@ public class WrapperEntity<T> implements WrapperEntityOperations<T> {
 
     private String id;
     private WrapperType type;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
-    private LocalDateTime modifiedAt;
+    private Instant modifiedAt;
     private T entity;
 
     private String modifiedBy;
@@ -32,7 +33,7 @@ public class WrapperEntity<T> implements WrapperEntityOperations<T> {
     private WrapperStatus status;
 
     public WrapperEntity(T entity){
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
         if (entity instanceof ChannelDetails) {
             this.id = ((ChannelDetails) entity).getChannelCode();
             this.type = WrapperType.CHANNEL;

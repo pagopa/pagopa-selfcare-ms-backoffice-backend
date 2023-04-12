@@ -48,6 +48,7 @@ public class WrapperServiceImpl implements WrapperService {
         log.trace("findById start");
         log.debug("findById id = {}", id);
         WrapperEntitiesOperations response = wrapperConnector.findById(id).orElseThrow(ResourceNotFoundException::new);
+        response.sortEntitesByCreatedAt();
         log.debug("findById result = {}", response);
         log.trace("findById end");
         return response;

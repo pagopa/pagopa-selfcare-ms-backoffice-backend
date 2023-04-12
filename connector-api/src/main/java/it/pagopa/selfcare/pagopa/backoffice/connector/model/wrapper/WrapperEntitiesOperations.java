@@ -44,5 +44,6 @@ public interface WrapperEntitiesOperations<T> {
 
     List<WrapperEntityOperations<T>> getWrapperEntityOperationsSortedList();
 
+    void sortEntitesByCreatedAt();
     void updateCurrentWrapperEntity(WrapperEntityOperations<T> wrapperEntity,String status, String note,String modifiedByOpt);
 }

@@ -7,16 +7,16 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatu
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 public class DummyWrapperEntity<T> implements WrapperEntityOperations<T> {
 
     private String id;
     private WrapperType type;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
-    private LocalDateTime ModifiedAt;
+    private Instant ModifiedAt;
     private T entity;
 
     private  String note;
@@ -37,7 +37,7 @@ public class DummyWrapperEntity<T> implements WrapperEntityOperations<T> {
     }
 
     public DummyWrapperEntity(T entity){
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
         if (entity instanceof ChannelDetails) {
             this.id = ((ChannelDetails) entity).getChannelCode();
             this.type = WrapperType.CHANNEL;
