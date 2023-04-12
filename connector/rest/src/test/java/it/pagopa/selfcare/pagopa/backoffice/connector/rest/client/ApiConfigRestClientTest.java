@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import it.pagopa.selfcare.pagopa.TestUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
@@ -42,6 +42,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ContextConfiguration(initializers = ApiConfigRestClientTest.RandomPortInitializer.class,
@@ -730,10 +731,21 @@ class ApiConfigRestClientTest {
         //given
         String ecCode = "ecCode";
         String xRequestId = UUID.randomUUID().toString();
-        CreditorInstitutionStationEdit request = TestUtils.mockInstance(new CreditorInstitutionStationEdit());
+        CreditorInstitutionStationEdit request = mockInstance(new CreditorInstitutionStationEdit());
         //when
         CreditorInstitutionStationEdit response = restClient.createCreditorInstitutionStationRelationship(ecCode, request, xRequestId);
         //then
+        assertNotNull(response);
+        checkNotNullFields(response);
+    }
+
+    @Test
+    void createCreditorInstitution(){
+        //given
+        String xRequestId = UUID.randomUUID().toString();
+        CreditorInstitutionDetails request = mockInstance(new CreditorInstitutionDetails());
+        //when
+        CreditorInstitutionDetails response = restClient.createCreditorInstitution(request, xRequestId);
         assertNotNull(response);
         checkNotNullFields(response);
     }

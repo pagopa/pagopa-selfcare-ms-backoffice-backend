@@ -218,7 +218,12 @@ public class ApiConfigServiceImpl implements ApiConfigService {
 
     @Override
     public CreditorInstitutionDetails createCreditorInstitution(CreditorInstitutionDetails dto, String xRequestId) {
-        return null;
+        log.trace("createCreditorInstitution start");
+        log.debug("createCreditorInstitution dto = {}, xRequestId = {}", dto , xRequestId);
+        CreditorInstitutionDetails result = apiConfigConnector.createCreditorInstitution(dto, xRequestId);
+        log.debug("createCreditorInstitution result = {}", result);
+        log.trace("createCreditorInstitution end");
+        return result;
     }
 
     @Override
