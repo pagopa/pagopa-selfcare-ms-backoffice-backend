@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionDetailsResource;
@@ -43,6 +44,21 @@ public class CreditorInstitutionController {
         CreditorInstitutionDetailsResource result = mapper.toResource(created);
         log.debug("createCreditorInstitution result = {}", result);
         log.trace("createCreditorInstitution end");
+        return result;
+    }
+
+    @GetMapping(value = "/{ecCode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.getCreditorInstitutionDetails}")
+    public CreditorInstitutionDetailsResource getCreditorInstitutionDetails(@ApiParam("${swagger.request.ecCode}")
+                                                                                @PathVariable("ecCode")String ecCode){
+        log.trace("getCreditorInstitutionDetails start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getCreditorInstitutionDetails ecCode = {}, xRequestId = {}", ecCode, xRequestId);
+        CreditorInstitutionDetails creditorInstitutionDetails = apiConfigService.getCreditorInstitutionDetails(ecCode, xRequestId);
+        CreditorInstitutionDetailsResource result = mapper.toResource(creditorInstitutionDetails);
+        log.debug("getCreditorInstitutionDetails result = {}", result);
+        log.trace("getCreditorInstitutionDetails end");
         return result;
     }
 

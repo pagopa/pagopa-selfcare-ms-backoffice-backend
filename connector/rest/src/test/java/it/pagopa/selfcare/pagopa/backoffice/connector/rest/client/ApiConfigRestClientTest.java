@@ -115,6 +115,12 @@ class ApiConfigRestClientTest {
 
     }};
 
+    private static final Map<ApiConfigRestClientTest.TestCase, String> testCaseECCodeMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
+       put(TestCase.FULLY_VALUED, "ecCode1");
+       put(TestCase.EMPTY_RESULT, "ecCode2");
+       put(TestCase.FULLY_NULL, "ecCode3");
+    }};
+
 
     private static final Map<ApiConfigRestClientTest.TestCase, String> testCaseChannelCodeMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
         put(ApiConfigRestClientTest.TestCase.FULLY_VALUED, "channelcode1");
@@ -737,6 +743,32 @@ class ApiConfigRestClientTest {
         //then
         assertNotNull(response);
         checkNotNullFields(response);
+    }
+
+    @Test
+    void getCreditorInstitutionDetails_fullyValued(){
+        //given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        String creditorInstitutionCode = testCaseECCodeMap.get(testCase);
+        String xRequestId = UUID.randomUUID().toString();
+        //when
+        CreditorInstitutionDetails response = restClient.getCreditorInstitutionDetails(creditorInstitutionCode, xRequestId);
+        //then
+        assertNotNull(response);
+        checkNotNullFields(response);
+    }
+
+    @Test
+    void getCreditorInstitutionDetails_fullyNull(){
+        //given
+        TestCase testCase = TestCase.FULLY_NULL;
+        String creditorInstitutionCode = testCaseECCodeMap.get(testCase);
+        String xRequestId = UUID.randomUUID().toString();
+        //when
+        CreditorInstitutionDetails response = restClient.getCreditorInstitutionDetails(creditorInstitutionCode, xRequestId);
+        //then
+        assertNotNull(response);
+        checkNullFields(response);
     }
 
     @Test
