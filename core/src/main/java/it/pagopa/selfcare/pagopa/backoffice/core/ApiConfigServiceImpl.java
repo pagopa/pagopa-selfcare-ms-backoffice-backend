@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -212,6 +213,16 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         CreditorInstitutionStationEdit result = apiConfigConnector.createCreditorInstitutionStationRelationship(ecCode, station, xRequestId);
         log.debug("createCreditorInstitutionStationRelation result = {}", result);
         log.trace("createCreditorInstitutionStationRelation end");
+        return result;
+    }
+
+    @Override
+    public CreditorInstitutionDetails createCreditorInstitution(CreditorInstitutionDetails dto, String xRequestId) {
+        log.trace("createCreditorInstitution start");
+        log.debug("createCreditorInstitution dto = {}, xRequestId = {}", dto , xRequestId);
+        CreditorInstitutionDetails result = apiConfigConnector.createCreditorInstitution(dto, xRequestId);
+        log.debug("createCreditorInstitution result = {}", result);
+        log.trace("createCreditorInstitution end");
         return result;
     }
 

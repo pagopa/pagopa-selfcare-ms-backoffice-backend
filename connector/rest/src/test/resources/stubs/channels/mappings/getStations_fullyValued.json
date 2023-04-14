@@ -15,7 +15,7 @@
       "limit": {
         "equalTo": "16"
       },
-      "creditorInstitutionCode": {
+      "creditorinstitutioncode": {
         "equalTo": "creditorInstitutionCode"
       }
     }
