@@ -759,6 +759,19 @@ class ApiConfigRestClientTest {
     }
 
     @Test
+    void getCreditorInstitutionDetails_fullyNull(){
+        //given
+        TestCase testCase = TestCase.FULLY_NULL;
+        String creditorInstitutionCode = testCaseECCodeMap.get(testCase);
+        String xRequestId = UUID.randomUUID().toString();
+        //when
+        CreditorInstitutionDetails response = restClient.getCreditorInstitutionDetails(creditorInstitutionCode, xRequestId);
+        //then
+        assertNotNull(response);
+        checkNullFields(response);
+    }
+
+    @Test
     void createCreditorInstitution(){
         //given
         String xRequestId = UUID.randomUUID().toString();

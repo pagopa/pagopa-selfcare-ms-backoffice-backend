@@ -2,10 +2,12 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.FileSystemResource;
@@ -21,6 +23,7 @@ import java.util.UUID;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static it.pagopa.selfcare.pagopa.TestUtils.reflectionEqualsByName;
+import static it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigServiceImpl.CREDITOR_INSTITUTION_CODE_IS_REQUIRED;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -610,6 +613,39 @@ class ApiConfigServiceImplTest {
         assertEquals(creditorInstitutionDetails, result);
         verify(apiConfigConnectorMock, times(1))
                 .createCreditorInstitution(creditorInstitutionDetails, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void getCreditorInstitutionDetails_nullCode(){
+        //given
+        String ecCode = null;
+        String xRequestId = UUID.randomUUID().toString();
+        //when
+        Executable executable = () -> apiConfigService.getCreditorInstitutionDetails(ecCode, xRequestId);
+        //then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, executable);
+        assertEquals(CREDITOR_INSTITUTION_CODE_IS_REQUIRED, e.getMessage());
+        verifyNoInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void getCreditorInstitutionDetails(){
+        //given
+        String ecCode = "creditorInstitutionCode";
+        String xRequestId = UUID.randomUUID().toString();
+
+        CreditorInstitutionDetails creditorInstitutionDetails = mockInstance(new CreditorInstitutionDetails());
+        CreditorInstitutionAddress address = mockInstance(new CreditorInstitutionAddress());
+        creditorInstitutionDetails.setAddress(address);
+        when(apiConfigConnectorMock.getCreditorInstitutionDetails(anyString(), anyString()))
+                .thenReturn(creditorInstitutionDetails);
+        //when
+        CreditorInstitutionDetails result = apiConfigService.getCreditorInstitutionDetails(ecCode, xRequestId);
+        //then
+        assertSame(creditorInstitutionDetails, result);
+        verify(apiConfigConnectorMock, times(1))
+                .getCreditorInstitutionDetails(ecCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 }

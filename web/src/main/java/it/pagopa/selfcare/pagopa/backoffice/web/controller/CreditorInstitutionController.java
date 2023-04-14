@@ -52,7 +52,14 @@ public class CreditorInstitutionController {
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.getCreditorInstitutionDetails}")
     public CreditorInstitutionDetailsResource getCreditorInstitutionDetails(@ApiParam("${swagger.request.ecCode}")
                                                                                 @PathVariable("ecCode")String ecCode){
-        return null;
+        log.trace("getCreditorInstitutionDetails start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getCreditorInstitutionDetails ecCode = {}, xRequestId = {}", ecCode, xRequestId);
+        CreditorInstitutionDetails creditorInstitutionDetails = apiConfigService.getCreditorInstitutionDetails(ecCode, xRequestId);
+        CreditorInstitutionDetailsResource result = mapper.toResource(creditorInstitutionDetails);
+        log.debug("getCreditorInstitutionDetails result = {}", result);
+        log.trace("getCreditorInstitutionDetails end");
+        return result;
     }
 
 }
