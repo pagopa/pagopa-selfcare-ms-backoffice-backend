@@ -38,5 +38,7 @@
   "enabled": true,
   "channel_code": "setChannelCode",
   "paymentTypeList": ["paymentType"],
-  "primitive_version": "1"
+  "primitive_version": "1",
+  "status": "TO_CHECK",
+  "note": "note"
 }
