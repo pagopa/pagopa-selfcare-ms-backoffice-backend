@@ -7,6 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
@@ -54,6 +55,9 @@ class StationControllerTest {
 
     @MockBean
     private ApiConfigService apiConfigServiceMock;
+
+    @MockBean
+    private WrapperService wrapperService;
 
     @Test
     void getStations() throws Exception {

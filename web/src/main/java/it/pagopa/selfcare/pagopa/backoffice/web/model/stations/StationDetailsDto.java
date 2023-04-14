@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.stations;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Protocol;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import lombok.Data;
 
 import javax.validation.constraints.Max;
@@ -108,5 +109,9 @@ public class StationDetailsDto {
     @JsonProperty(required = true)
     @NotNull
     private Integer primitiveVersion;
+    @ApiModelProperty(value = "${swagger.model.station.note}")
+    private String note;
+    @ApiModelProperty(value = "${swagger.model.station.status}")
+    private WrapperStatus status;
 
 }

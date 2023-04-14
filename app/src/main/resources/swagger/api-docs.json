@@ -2260,6 +2260,78 @@
         } ]
       }
     },
+    "/stations/update-wrapperStationByOpt" : {
+      "put" : {
+        "tags" : [ "stations" ],
+        "summary" : "updateWrapperStationDetailsByOpt",
+        "description" : "Create a WrapperChannel on Cosmodb",
+        "operationId" : "updateWrapperStationDetailsByOptUsingPUT",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/StationDetailsDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/stations/{ecCode}/generate" : {
       "get" : {
         "tags" : [ "stations" ],
@@ -2562,6 +2634,10 @@
             "type" : "string",
             "description" : "channel's new password"
           },
+          "note" : {
+            "type" : "string",
+            "description" : "channel note description by operation team"
+          },
           "npm_service" : {
             "type" : "string",
             "description" : "npm service"
@@ -2662,6 +2738,11 @@
           "service" : {
             "type" : "string",
             "description" : "channel's service"
+          },
+          "status" : {
+            "type" : "string",
+            "description" : "channel's validation status",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
           },
           "target_host" : {
             "type" : "string",
@@ -3942,6 +4023,10 @@
             "type" : "string",
             "description" : "Station's new password"
           },
+          "note" : {
+            "type" : "string",
+            "description" : "station note description by operation team"
+          },
           "password" : {
             "type" : "string",
             "description" : "Station's password"
@@ -4035,6 +4120,11 @@
           "stationCode" : {
             "type" : "string",
             "description" : "Station's unique identifier"
+          },
+          "status" : {
+            "type" : "string",
+            "description" : "Station's status",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
           },
           "targetHost" : {
             "type" : "string",
@@ -4136,6 +4226,86 @@
             "items" : {
               "$ref" : "#/components/schemas/StationResource"
             }
+          }
+        }
+      },
+      "WrapperEntitiesOperations" : {
+        "title" : "WrapperEntitiesOperations",
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "createdBy" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "modifiedBy" : {
+            "type" : "string"
+          },
+          "modifiedByOpt" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "CHANNEL", "STATION" ]
+          },
+          "wrapperEntityOperationsSortedList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/WrapperEntityOperationsOfobject"
+            }
+          }
+        }
+      },
+      "WrapperEntityOperationsOfobject" : {
+        "title" : "WrapperEntityOperationsOfobject",
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "entity" : {
+            "type" : "object"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "modifiedBy" : {
+            "type" : "string"
+          },
+          "modifiedByOpt" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "CHANNEL", "STATION" ]
           }
         }
       }

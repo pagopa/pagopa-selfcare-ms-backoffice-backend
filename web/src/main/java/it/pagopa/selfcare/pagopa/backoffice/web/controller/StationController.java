@@ -7,7 +7,9 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
@@ -37,9 +39,12 @@ public class StationController {
     private StationMapper stationMapper = Mappers.getMapper(StationMapper.class);
     private final ApiConfigService apiConfigService;
 
+    private final WrapperService wrapperService;
+
     @Autowired
-    public StationController(ApiConfigService apiConfigService) {
+    public StationController(ApiConfigService apiConfigService, WrapperService wrapperService) {
         this.apiConfigService = apiConfigService;
+        this.wrapperService = wrapperService;
     }
 
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -110,6 +115,7 @@ public class StationController {
         return stationCode;
     }
 
+   
     @PostMapping(value = "/{ecCode}/station", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.stations.associateStationToCreditorInstitution}")
