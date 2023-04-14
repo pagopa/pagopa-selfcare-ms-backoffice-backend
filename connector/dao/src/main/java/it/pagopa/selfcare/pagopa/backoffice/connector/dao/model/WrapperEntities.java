@@ -30,6 +30,7 @@ public class WrapperEntities<T> implements WrapperEntitiesOperations<T>, Persist
     @Id
     private String id;
 
+    private String brokerCode;
     @FieldNameConstants.Include
     private WrapperType type;
 
@@ -63,9 +64,11 @@ public class WrapperEntities<T> implements WrapperEntitiesOperations<T>, Persist
 
             this.id = ((ChannelDetails) obj).getChannelCode();
             this.type = WrapperType.CHANNEL;
+            this.brokerCode = ((ChannelDetails) obj).getBrokerPspCode();
         } else if (obj instanceof StationDetails) {
             this.id = ((StationDetails) obj).getStationCode();
             this.type = WrapperType.STATION;
+            this.brokerCode = ((StationDetails) obj).getBrokerCode();
         }
         this.status = WrapperStatus.TO_CHECK;
         if (entities == null) {
