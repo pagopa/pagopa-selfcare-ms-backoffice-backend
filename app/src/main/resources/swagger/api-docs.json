@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.111"
+    "version" : "0.0.115"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -1611,6 +1611,86 @@
         "security" : [ {
           "bearerAuth" : [ "global" ]
         } ]
+      },
+      "put" : {
+        "tags" : [ "creditor-institutions" ],
+        "summary" : "updateCreditorInstitutionDetails",
+        "description" : "Service to update specific creditor institution details",
+        "operationId" : "updateCreditorInstitutionDetailsUsingPUT",
+        "parameters" : [ {
+          "name" : "ecCode",
+          "in" : "path",
+          "description" : "Creditor institution code",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UpdateCreditorInstitutionDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CreditorInstitutionDetailsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
       }
     },
     "/institutions" : {
@@ -2309,78 +2389,6 @@
           },
           "404" : {
             "description" : "Not Found",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "bearerAuth" : [ "global" ]
-        } ]
-      }
-    },
-    "/stations/update-wrapperStationByOpt" : {
-      "put" : {
-        "tags" : [ "stations" ],
-        "summary" : "updateWrapperStationDetailsByOpt",
-        "description" : "Create a WrapperChannel on Cosmodb",
-        "operationId" : "updateWrapperStationDetailsByOptUsingPUT",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/StationDetailsDto"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "409" : {
-            "description" : "Conflict",
             "content" : {
               "application/problem+json" : {
                 "schema" : {
@@ -4302,83 +4310,42 @@
           }
         }
       },
-      "WrapperEntitiesOperations" : {
-        "title" : "WrapperEntitiesOperations",
+      "UpdateCreditorInstitutionDto" : {
+        "title" : "UpdateCreditorInstitutionDto",
+        "required" : [ "address", "businessName", "creditorInstitutionCode", "enabled", "pspPayment", "reportingFtp", "reportingZip" ],
         "type" : "object",
         "properties" : {
-          "createdAt" : {
+          "address" : {
+            "description" : "Creditor Institution's address object",
+            "$ref" : "#/components/schemas/CreditorInstitutionAddressDto"
+          },
+          "businessName" : {
             "type" : "string",
-            "format" : "date-time"
+            "description" : "Creditor Institution's business name"
           },
-          "createdBy" : {
-            "type" : "string"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "modifiedAt" : {
+          "creditorInstitutionCode" : {
             "type" : "string",
-            "format" : "date-time"
+            "description" : "Creditor Institution's code(Fiscal Code)"
           },
-          "modifiedBy" : {
-            "type" : "string"
+          "enabled" : {
+            "type" : "boolean",
+            "description" : "Creditor Institution activation state on ApiConfig",
+            "example" : false
           },
-          "modifiedByOpt" : {
-            "type" : "string"
+          "pspPayment" : {
+            "type" : "boolean",
+            "description" : "Creditor Institution's is a psp Payment broker",
+            "example" : false
           },
-          "note" : {
-            "type" : "string"
+          "reportingFtp" : {
+            "type" : "boolean",
+            "description" : "Enables flow towards Creditor Institution in fstp mode",
+            "example" : false
           },
-          "status" : {
-            "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
-          },
-          "type" : {
-            "type" : "string",
-            "enum" : [ "CHANNEL", "STATION" ]
-          },
-          "wrapperEntityOperationsSortedList" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/WrapperEntityOperationsOfobject"
-            }
-          }
-        }
-      },
-      "WrapperEntityOperationsOfobject" : {
-        "title" : "WrapperEntityOperationsOfobject",
-        "type" : "object",
-        "properties" : {
-          "createdAt" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "entity" : {
-            "type" : "object"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "modifiedAt" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "modifiedBy" : {
-            "type" : "string"
-          },
-          "modifiedByOpt" : {
-            "type" : "string"
-          },
-          "note" : {
-            "type" : "string"
-          },
-          "status" : {
-            "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
-          },
-          "type" : {
-            "type" : "string",
-            "enum" : [ "CHANNEL", "STATION" ]
+          "reportingZip" : {
+            "type" : "boolean",
+            "description" : "Enables the zipping of the content that goes through fstp",
+            "example" : false
           }
         }
       }
