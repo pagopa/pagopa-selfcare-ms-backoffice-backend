@@ -58,4 +58,6 @@ public interface ApiConfigService {
     CreditorInstitutionStationEdit createCreditorInstitutionStationRelation(String ecCode, CreditorInstitutionStationEdit station, String xRequestId);
 
     CreditorInstitutionDetails createCreditorInstitution(CreditorInstitutionDetails dto, String xRequestId);
+
+    CreditorInstitutionDetails getCreditorInstitutionDetails(String ecCode, String xRequestId);
 }

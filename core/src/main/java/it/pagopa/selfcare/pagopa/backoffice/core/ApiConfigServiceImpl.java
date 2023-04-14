@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import static it.pagopa.selfcare.pagopa.backoffice.connector.utils.StringUtils.g
 @Service
 public class ApiConfigServiceImpl implements ApiConfigService {
 
+    protected static final String CREDITOR_INSTITUTION_CODE_IS_REQUIRED = "A creditor institution code is required";
     private final ApiConfigConnector apiConfigConnector;
 
     @Autowired
@@ -223,6 +225,17 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         CreditorInstitutionDetails result = apiConfigConnector.createCreditorInstitution(dto, xRequestId);
         log.debug("createCreditorInstitution result = {}", result);
         log.trace("createCreditorInstitution end");
+        return result;
+    }
+
+    @Override
+    public CreditorInstitutionDetails getCreditorInstitutionDetails(String ecCode, String xRequestId) {
+        log.trace("getCreditorInstitutionDetails start");
+        log.debug("getCreditorInstitutionDetails ecCode = {}, xRequestId = {}", ecCode , xRequestId);
+        Assert.hasText(ecCode, CREDITOR_INSTITUTION_CODE_IS_REQUIRED);
+        CreditorInstitutionDetails result = apiConfigConnector.getCreditorInstitutionDetails(ecCode, xRequestId);
+        log.debug("getCreditorInstitutionDetails result = {}", result);
+        log.trace("getCreditorInstitutionDetails end");
         return result;
     }
 

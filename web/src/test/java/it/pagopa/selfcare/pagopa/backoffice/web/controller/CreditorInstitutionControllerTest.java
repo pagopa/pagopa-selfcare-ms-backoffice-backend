@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = {CreditorInstitutionController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
@@ -49,7 +50,6 @@ class CreditorInstitutionControllerTest {
     @Test
     void createCreditorInstitution(@Value("classpath:stubs/creditorInstitutionDetailsDto.json") Resource dto) throws Exception {
         //given
-        String xRequestId = "1";
         InputStream resource = dto.getInputStream();
 
         CreditorInstitutionDto creditorInstitutionDto = objectMapper.readValue(resource, CreditorInstitutionDto.class);
@@ -80,6 +80,36 @@ class CreditorInstitutionControllerTest {
         //then
         verify(apiConfigServiceMock, times(1))
                 .createCreditorInstitution(eq(response), any());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getCreditorInstitutionDetails(@Value("classpath:stubs/creditorInstitutionDetails.json")Resource resource) throws Exception {
+        //given
+        String ecCode = "creditorInstitution1";
+        CreditorInstitutionDetails creditorInstitutionDetails = objectMapper.readValue(resource.getInputStream(), CreditorInstitutionDetails.class);
+        when(apiConfigServiceMock.getCreditorInstitutionDetails(anyString(), anyString()))
+                .thenReturn(creditorInstitutionDetails);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                .get(BASE_URL+ "/" +ecCode)
+                .contentType(APPLICATION_JSON_VALUE)
+                .accept(APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.address.city", is(creditorInstitutionDetails.getAddress().getCity())))
+                .andExpect(jsonPath("$.address.location", is(creditorInstitutionDetails.getAddress().getLocation())))
+                .andExpect(jsonPath("$.address.countryCode", is(creditorInstitutionDetails.getAddress().getCountryCode())))
+                .andExpect(jsonPath("$.address.zipCode", is(creditorInstitutionDetails.getAddress().getZipCode())))
+                .andExpect(jsonPath("$.address.taxDomicile", is(creditorInstitutionDetails.getAddress().getTaxDomicile())))
+                .andExpect(jsonPath("$.enabled", is(creditorInstitutionDetails.getEnabled())))
+                .andExpect(jsonPath("$.pspPayment", is(creditorInstitutionDetails.getPspPayment())))
+                .andExpect(jsonPath("$.creditorInstitutionCode", is(creditorInstitutionDetails.getCreditorInstitutionCode())))
+                .andExpect(jsonPath("$.businessName", is(creditorInstitutionDetails.getBusinessName())))
+                .andExpect(jsonPath("$.reportingFtp", is(creditorInstitutionDetails.getReportingFtp())));
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getCreditorInstitutionDetails(eq(ecCode), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }
