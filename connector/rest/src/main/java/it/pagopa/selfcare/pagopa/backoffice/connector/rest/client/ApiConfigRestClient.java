@@ -153,4 +153,10 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     @GetMapping(value = "${rest-client.api-config.getCreditorInstitutionDetails.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     CreditorInstitutionDetails getCreditorInstitutionDetails(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
                                                              @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+    @PutMapping(value = "${rest-client.api-config.updateCreditorInstitutionDetails.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    CreditorInstitutionDetails updateCreditorInstitutionDetails(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
+                                                                @RequestBody CreditorInstitutionDetails request,
+                                                                @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+
+
 }

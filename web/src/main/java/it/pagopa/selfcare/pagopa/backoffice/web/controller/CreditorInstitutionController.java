@@ -7,6 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.UpdateCreditorInstitutionDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
@@ -59,6 +61,24 @@ public class CreditorInstitutionController {
         CreditorInstitutionDetailsResource result = mapper.toResource(creditorInstitutionDetails);
         log.debug("getCreditorInstitutionDetails result = {}", result);
         log.trace("getCreditorInstitutionDetails end");
+        return result;
+    }
+
+    @PutMapping(value = "/{ecCode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.creditor-institution.updateCreditorInstitutionDetails}")
+    public CreditorInstitutionDetailsResource updateCreditorInstitutionDetails(@ApiParam("${swagger.request.ecCode}")
+                                                     @PathVariable("ecCode") String ecCode,
+                                                 @RequestBody @Valid UpdateCreditorInstitutionDto dto
+                                                 ){
+        log.trace("updateCreditorInstitutionDetails start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("updateCreditorInstitutionDetails dto = {}, xRequestId = {}", dto, xRequestId);
+        CreditorInstitutionDetails creditorInstitution = mapper.fromDto(dto);
+        CreditorInstitutionDetails created = apiConfigService.updateCreditorInstitutionDetails(ecCode, creditorInstitution, xRequestId);
+        CreditorInstitutionDetailsResource result = mapper.toResource(created);
+        log.debug("updateCreditorInstitutionDetails result = {}", result);
+        log.trace("updateCreditorInstitutionDetails end");
         return result;
     }
 

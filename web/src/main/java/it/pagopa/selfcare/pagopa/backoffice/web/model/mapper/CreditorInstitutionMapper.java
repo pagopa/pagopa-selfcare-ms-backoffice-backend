@@ -14,4 +14,6 @@ public interface CreditorInstitutionMapper {
     CreditorInstitutionStationEditResource toResource(CreditorInstitutionStationEdit model);
     CreditorInstitutionAddressResource toResource(CreditorInstitutionAddress creditorInstitutionAddress);
     CreditorInstitutionAddress fromDto(CreditorInstitutionAddressDto creditorInstitutionAddressDto);
+
+    CreditorInstitutionDetails fromDto(UpdateCreditorInstitutionDto dto);
 }
