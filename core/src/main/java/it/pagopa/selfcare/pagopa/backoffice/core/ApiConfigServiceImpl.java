@@ -243,6 +243,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     public CreditorInstitutionDetails updateCreditorInstitutionDetails(String creditorInstitutionCode, CreditorInstitutionDetails request, String xRequestId) {
         log.trace("updateCreditorInstitutionDetails start");
         log.debug("updateCreditorInstitutionDetails creditorInstitutionCode = {}, request = {}, xRequestId = {}", creditorInstitutionCode , request, xRequestId);
+        Assert.hasText(creditorInstitutionCode, CREDITOR_INSTITUTION_CODE_IS_REQUIRED);
         CreditorInstitutionDetails result = apiConfigConnector.updateCreditorInstitutionDetails(creditorInstitutionCode, request, xRequestId);
         log.debug("updateCreditorInstitutionDetails result = {}", result);
         log.trace("updateCreditorInstitutionDetails end");

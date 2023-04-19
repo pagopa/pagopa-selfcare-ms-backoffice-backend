@@ -778,8 +778,23 @@ class ApiConfigRestClientTest {
         CreditorInstitutionDetails request = mockInstance(new CreditorInstitutionDetails());
         //when
         CreditorInstitutionDetails response = restClient.createCreditorInstitution(request, xRequestId);
+        //then
         assertNotNull(response);
         checkNotNullFields(response);
+    }
+
+    @Test
+    void updateCreditorInstitution(){
+        //given
+        String xRequestId = UUID.randomUUID().toString();
+        String ecCode = "ecCode";
+        CreditorInstitutionDetails request = mockInstance(new CreditorInstitutionDetails());
+        //when
+        CreditorInstitutionDetails response = restClient.updateCreditorInstitutionDetails(ecCode, request, xRequestId);
+        //then
+        assertNotNull(response);
+        checkNotNullFields(response);
+
     }
 
     private void checkNotNullFields(Object o, String... excludedFields) {
