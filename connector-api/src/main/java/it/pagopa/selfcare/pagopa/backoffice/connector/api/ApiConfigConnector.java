@@ -57,4 +57,6 @@ public interface ApiConfigConnector {
     PaymentServiceProviderDetails getPSPDetails(String pspCode, String xRequestId);
 
     CreditorInstitutionDetails createCreditorInstitution(CreditorInstitutionDetails request, String xRequestId);
+
+    CreditorInstitutionDetails getCreditorInstitutionDetails(String ecCode, String xRequestId);
 }
