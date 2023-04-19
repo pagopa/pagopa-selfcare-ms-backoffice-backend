@@ -240,6 +240,16 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
+    public CreditorInstitutionDetails updateCreditorInstitutionDetails(String creditorInstitutionCode, CreditorInstitutionDetails request, String xRequestId) {
+        log.trace("updateCreditorInstitutionDetails start");
+        log.debug("updateCreditorInstitutionDetails creditorInstitutionCode = {}, request = {}, xRequestId = {}", creditorInstitutionCode , request, xRequestId);
+        CreditorInstitutionDetails result = apiConfigConnector.updateCreditorInstitutionDetails(creditorInstitutionCode, request, xRequestId);
+        log.debug("updateCreditorInstitutionDetails result = {}", result);
+        log.trace("updateCreditorInstitutionDetails end");
+        return result;
+    }
+
+    @Override
     public Resource getChannelsCSV(String uuid) {
         log.trace("getChannelsCSV start");
         Resource response = apiConfigConnector.getChannelsCSV(uuid);

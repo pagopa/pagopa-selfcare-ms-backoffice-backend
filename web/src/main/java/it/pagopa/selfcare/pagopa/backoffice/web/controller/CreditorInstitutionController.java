@@ -71,8 +71,15 @@ public class CreditorInstitutionController {
                                                      @PathVariable("ecCode") String ecCode,
                                                  @RequestBody @Valid UpdateCreditorInstitutionDto dto
                                                  ){
-        return null;
-
+        log.trace("updateCreditorInstitutionDetails start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("updateCreditorInstitutionDetails dto = {}, xRequestId = {}", dto, xRequestId);
+        CreditorInstitutionDetails creditorInstitution = mapper.fromDto(dto);
+        CreditorInstitutionDetails created = apiConfigService.updateCreditorInstitutionDetails(ecCode, creditorInstitution, xRequestId);
+        CreditorInstitutionDetailsResource result = mapper.toResource(created);
+        log.debug("updateCreditorInstitutionDetails result = {}", result);
+        log.trace("updateCreditorInstitutionDetails end");
+        return result;
     }
 
 }
