@@ -14,7 +14,7 @@ public interface ApiConfigConnector {
 
     ChannelDetails createChannel(ChannelDetails channelDetails, String xRequestId);
 
-    ChannelDetails updateChannel(ChannelDetails channelDetails,String channelCode, String xRequestId);
+    ChannelDetails updateChannel(ChannelDetails channelDetails, String channelCode, String xRequestId);
 
     PspChannels getPspChannels(String pspCode, String xRequestId);
 
@@ -59,4 +59,8 @@ public interface ApiConfigConnector {
     CreditorInstitutionDetails createCreditorInstitution(CreditorInstitutionDetails request, String xRequestId);
 
     CreditorInstitutionDetails getCreditorInstitutionDetails(String ecCode, String xRequestId);
+
+    CreditorInstitutionDetails updateCreditorInstitutionDetails(String creditorInstitutionCode,
+                                                                CreditorInstitutionDetails request,
+                                                                String xRequestId);
 }

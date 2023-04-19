@@ -538,6 +538,36 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
+    void updateCreditorInstitution_nullEcCode() {
+        //given
+        String ecCode = null;
+        String xRequestId = UUID.randomUUID().toString();
+        CreditorInstitutionDetails request = mockInstance(new CreditorInstitutionDetails());
+        //when
+        Executable executable = () -> apiConfigService.updateCreditorInstitutionDetails(ecCode, request, xRequestId);
+        //then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, executable);
+        assertEquals(CREDITOR_INSTITUTION_CODE_IS_REQUIRED, e.getMessage());
+        verifyNoInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void updateCreditorInstitution(){
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = UUID.randomUUID().toString();
+        CreditorInstitutionDetails request = mockInstance(new CreditorInstitutionDetails());
+        when(apiConfigConnectorMock.updateCreditorInstitutionDetails(anyString(), any(), anyString()))
+                .thenReturn(request);
+        //when
+        CreditorInstitutionDetails response = apiConfigService.updateCreditorInstitutionDetails(ecCode, request, xRequestId);
+        //then
+        assertSame( request, response);
+        verify(apiConfigConnectorMock, times(1)).updateCreditorInstitutionDetails(ecCode, request, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
     void generateStationCode_noRegexMatcher() {
         //given
         final String xRequestId = "xRequestId";
