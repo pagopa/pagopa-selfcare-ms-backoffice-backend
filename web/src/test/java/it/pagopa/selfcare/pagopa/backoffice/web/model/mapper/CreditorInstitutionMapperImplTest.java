@@ -124,5 +124,12 @@ class CreditorInstitutionMapperImplTest {
         assertNull(resource);
     }
 
+    @Test
+    void creditorInstitutinUpdate_fromDto()
+    {
+        //given
+        UpdateCreditorInstitutionDto dto = mockInstance(new UpdateCreditorInstitutionDto());
+
+    }
 
 }

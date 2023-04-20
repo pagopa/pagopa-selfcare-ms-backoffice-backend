@@ -108,4 +108,22 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
         return creditorInstitutionAddress;
     }
+
+    @Override
+    public CreditorInstitutionDetails fromDto(UpdateCreditorInstitutionDto dto) {
+        CreditorInstitutionDetails creditorInstitutionDetails = null;
+
+        if (dto != null) {
+            creditorInstitutionDetails = new CreditorInstitutionDetails();
+            creditorInstitutionDetails.setCreditorInstitutionCode(dto.getCreditorInstitutionCode());
+            creditorInstitutionDetails.setEnabled(dto.getEnabled());
+            creditorInstitutionDetails.setBusinessName(dto.getBusinessName());
+            creditorInstitutionDetails.setAddress(fromDto(dto.getAddress()));
+            creditorInstitutionDetails.setPspPayment(dto.getPspPayment());
+            creditorInstitutionDetails.setReportingFtp(dto.getReportingFtp());
+            creditorInstitutionDetails.setReportingZip(dto.getReportingZip());
+        }
+
+        return creditorInstitutionDetails;
+    }
 }
