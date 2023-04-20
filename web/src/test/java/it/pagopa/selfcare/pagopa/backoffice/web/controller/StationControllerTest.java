@@ -9,6 +9,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInst
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -42,8 +43,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = {StationController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 @ContextConfiguration(classes = {
@@ -247,6 +248,41 @@ class StationControllerTest {
         assertNotNull(captured);
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
+    private StationMapper stationMapper = Mappers.getMapper(StationMapper.class);
+    @Test
+    void createWrapperStationDetails(@Value("classpath:stubs/stationsDto.json") Resource dto) throws Exception {
+        //given
+        String note = "note";
+        WrapperStatus status = WrapperStatus.TO_CHECK;
+
+        InputStream is = dto.getInputStream();
+        StationDetailsDto stationDetailsDto = objectMapper.readValue(is, StationDetailsDto.class);
+        StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
+
+        DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
+        DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setEntities(List.of(wrapperEntity));
+
+        when(wrapperServiceMock.createWrapperStationDetails(any(), anyString(), anyString()))
+                .thenReturn(wrapperEntities);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .post(BASE_URL + "/create-wrapperStation")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isCreated())
+
+                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
+                .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
+                .andExpect(jsonPath("$.entities", notNullValue()));
+        //then
+        verify(wrapperServiceMock, times(1))
+                .createWrapperStationDetails(eq(stationDetails), eq(note), eq(status.name()));
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
 
     @Test
     void updateWrapperStationDetails(@Value("classpath:stubs/stationsDto.json") Resource dto) throws Exception {
