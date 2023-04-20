@@ -21,8 +21,13 @@ public interface WrapperEntitiesOperations<T> {
 
     void setCreatedBy(String createdBy);
 
+    void setBrokerCode(String brokerCode);
+
     void setNote(String note);
+
     String getId();
+
+    String getBrokerCode();
 
     WrapperType getType();
 
@@ -43,5 +48,6 @@ public interface WrapperEntitiesOperations<T> {
     List<WrapperEntityOperations<T>> getWrapperEntityOperationsSortedList();
 
     void sortEntitesByCreatedAt();
-    void updateCurrentWrapperEntity(WrapperEntityOperations<T> wrapperEntity,String status, String note,String modifiedByOpt);
+
+    void updateCurrentWrapperEntity(WrapperEntityOperations<T> wrapperEntity, String status, String note, String modifiedByOpt);
 }

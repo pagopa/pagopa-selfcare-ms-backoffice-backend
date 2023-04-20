@@ -179,8 +179,8 @@ public class ChannelDetailsDto {
     private String primitiveVersion = "1";
 
     @ApiModelProperty(value = "${swagger.model.channel.details.note}")
-    private String note;
+    private String note = "";
 
     @ApiModelProperty(value = "${swagger.model.channel.details.status}")
-    private WrapperStatus status;
+    private WrapperStatus status = WrapperStatus.TO_CHECK;
 }

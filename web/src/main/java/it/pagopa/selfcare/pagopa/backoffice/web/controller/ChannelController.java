@@ -5,7 +5,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +35,12 @@ public class ChannelController {
 
     private final ApiConfigService apiConfigService;
 
+    private final WrapperService wrapperService;
+
     @Autowired
-    public ChannelController(ApiConfigService apiConfigService) {
+    public ChannelController(ApiConfigService apiConfigService, WrapperService wrapperService) {
         this.apiConfigService = apiConfigService;
+        this.wrapperService = wrapperService;
     }
 
     @GetMapping("")
@@ -364,7 +372,7 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getChannelCode}")
     public ChannelCodeResource getChannelCode(@ApiParam("${swagger.request.pspCode}")
-                                 @PathVariable("pspcode") String pspCode) {
+                                              @PathVariable("pspcode") String pspCode) {
         log.trace("getChannelCode start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getChannelCode pspcode = {}, xRequestId = {}", pspCode, xRequestId);
@@ -379,7 +387,7 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getPSPDetails}")
     public PaymentServiceProviderDetailsResource getPSPDetails(@ApiParam("${swagger.request.pspCode}")
-                                 @PathVariable("pspcode") String pspCode) {
+                                                               @PathVariable("pspcode") String pspCode) {
         log.trace("getPSPDetails start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getPSPDetails pspcode = {}, xRequestId = {}", pspCode, xRequestId);
@@ -388,6 +396,94 @@ public class ChannelController {
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getPSPDetails result = {}", resource);
         log.trace("getPSPDetails end");
         return resource;
+    }
+
+
+    @PostMapping(value = "/create-wrapperChannel", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.createWrapperChannelDetails}")
+    public WrapperEntitiesOperations createWrapperChannelDetails(@RequestBody
+                                                                 @Valid
+                                                                 ChannelDetailsDto channelDetailsDto) {
+        log.trace("createWrapperChannelDetails start");
+        log.debug("createWrapperChannelDetails channelDetailsDto = {}", channelDetailsDto);
+        WrapperEntitiesOperations createdWrapperEntities = wrapperService.
+                createWrapperChannelDetails(ChannelMapper.
+                        fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
+        log.debug("createWrapperChannelDetails result = {}", createdWrapperEntities);
+        log.trace("createWrapperChannelDetails end");
+        return createdWrapperEntities;
+    }
+
+    @PutMapping(value = "/update-wrapperChannel", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.updateWrapperChannelDetails}")
+    public WrapperEntitiesOperations updateWrapperChannelDetails(@RequestBody
+                                                                 @Valid
+                                                                 ChannelDetailsDto channelDetailsDto) {
+        log.trace("updateWrapperChannelDetails start");
+        log.debug("updateWrapperChannelDetails channelDetailsDto = {}", channelDetailsDto);
+        WrapperEntitiesOperations createdWrapperEntities = wrapperService.
+                updateWrapperChannelDetails(ChannelMapper.
+                        fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
+        log.debug("updateWrapperChannelDetails result = {}", createdWrapperEntities);
+        log.trace("updateWrapperChannelDetails end");
+        return createdWrapperEntities;
+    }
+
+    @GetMapping(value = "/get-wrapperEntities/{code}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getWrapperEntities}")
+    public WrapperEntitiesOperations getWrapperEntities(@ApiParam("${swagger.request.code}") @PathVariable("code") String code) {
+        log.trace("getWrapperEntities start");
+        log.debug("getWrapperEntities cCode = {}", code);
+        WrapperEntitiesOperations result = wrapperService.findById(code);
+        log.debug("getWrapperEntities result = {}", result);
+        log.trace("getWrapperEntities end");
+        return result;
+    }
+
+    @PutMapping(value = "/update-wrapperChannelByOpt", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.updateWrapperChannelDetailsByOpt}")
+    public WrapperEntitiesOperations updateWrapperChannelDetailsByOpt(@RequestBody
+                                                                      @Valid
+                                                                      ChannelDetailsDto channelDetailsDto) {
+        log.trace("updateWrapperChannelDetailsByOpt start");
+        log.debug("updateWrapperChannelDetailsByOpt channelDetailsDto = {}", channelDetailsDto);
+        WrapperEntitiesOperations createdWrapperEntities = wrapperService.
+                updateWrapperChannelDetailsByOpt(ChannelMapper.
+                        fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
+        log.debug("updateWrapperChannelDetailsByOpt result = {}", createdWrapperEntities);
+        log.trace("updateWrapperChannelDetailsByOpt end");
+        return createdWrapperEntities;
+    }
+
+
+    @GetMapping(value = "get-wrapper/{wrapperType}/{wrapperStatus}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getWrapperByTypeAndStatus}")
+    public WrapperEntitiesList getWrapperByTypeAndStatus(@ApiParam("${swagger.request.limit}")
+                                                         @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                         @ApiParam("${swagger.request.page}")
+                                                         @RequestParam Integer page,
+                                                         @ApiParam("${swagger.request.wrapperType}")
+                                                         @PathVariable("wrapperType") WrapperType wrapperType,
+                                                         @ApiParam("${swagger.request.wrapperStatus}")
+                                                         @PathVariable("wrapperStatus") WrapperStatus wrapperStatus,
+                                                         @ApiParam("${swagger.request.brokerCode}")
+                                                         @RequestParam(required = false,value = "brokerCode") String brokerCode,
+                                                         @ApiParam("${swagger.request.idLike}")
+                                                         @RequestParam(required = false,value ="idLike") String idLike) {
+        log.trace("getWrapperByTypeAndStatus start");
+
+        log.debug("getWrapperByTypeAndStatus wrapperType = {} WrapperStatus = {} page = {} limit = {}", wrapperType, wrapperStatus, page, limit);
+        WrapperEntitiesList response = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(wrapperStatus,wrapperType,brokerCode,idLike, page, limit);
+
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getWrapperByTypeAndStatus result = {}", response);
+        log.trace("getWrapperByTypeAndStatus end");
+
+        return response;
     }
 }
 

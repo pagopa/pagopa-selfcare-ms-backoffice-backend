@@ -110,8 +110,8 @@ public class StationDetailsDto {
     @NotNull
     private Integer primitiveVersion;
     @ApiModelProperty(value = "${swagger.model.station.note}")
-    private String note;
+    private String note = "";
     @ApiModelProperty(value = "${swagger.model.station.status}")
-    private WrapperStatus status;
+    private WrapperStatus status = WrapperStatus.TO_CHECK;
 
 }

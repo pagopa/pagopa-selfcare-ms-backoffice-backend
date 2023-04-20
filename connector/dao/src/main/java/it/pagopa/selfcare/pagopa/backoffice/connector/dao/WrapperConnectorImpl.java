@@ -4,17 +4,25 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.WrapperConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.WrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -128,6 +136,49 @@ public class WrapperConnectorImpl implements WrapperConnector {
         return repository.save(wrapperEntities);
     }
 
+//    @Override
+//    public WrapperEntitiesList findByStatusAndTypeAndBrokerCode( WrapperStatus status ,WrapperType wrapperType,String brokerCode, Integer page, Integer size) {
+//        Pageable paging = PageRequest.of(page, size);
+//        Page<WrapperEntitiesOperations> response = repository.findByStatusAndTypeAndBrokerCode(status, wrapperType, brokerCode,paging);
+//        response.getTotalPages();
+//        PageInfo pi = new PageInfo();
+//        pi.setPage(page);
+//        pi.setLimit(size);
+//        pi.setItemsFound(response.getTotalPages());
+//        WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
+//        response.getContent().forEach(WrapperEntitiesOperations::sortEntitesByCreatedAt);
+//        wrapperEntitiesList.setWrapperEntities(response.getContent());
+//        wrapperEntitiesList.setPageInfo(pi);
+//        return wrapperEntitiesList;
+//    }
+
+    @Override
+    public WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus status,WrapperType wrapperType,String brokerCode, String idLike, Integer page, Integer size) {
+        Pageable paging = PageRequest.of(page, size);
+        Page<WrapperEntitiesOperations> response = null;
+        if(brokerCode!=null && idLike!=null){
+            response =  repository.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType,brokerCode, idLike,paging);
+        }else if (brokerCode!=null && idLike==null){
+            response = repository.findByStatusAndTypeAndBrokerCode(status, wrapperType,brokerCode,paging);
+        } else if (brokerCode==null && idLike!=null) {
+            response =   repository.findByStatusAndTypeAndIdLike(status, wrapperType, idLike,paging);
+        } else if (brokerCode==null && idLike==null) {
+            response =  repository.findByStatusAndType(status, wrapperType,paging);
+    }
+
+       
+       
+        PageInfo pi = new PageInfo();
+        pi.setPage(page);
+        pi.setLimit(size);
+        pi.setItemsFound(response.getTotalPages());
+        WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
+        response.getContent().forEach(WrapperEntitiesOperations::sortEntitesByCreatedAt);
+        wrapperEntitiesList.setWrapperEntities(response.getContent());
+        wrapperEntitiesList.setPageInfo(pi);
+        return wrapperEntitiesList;
+    }
+
     @Override
     public Optional<WrapperEntitiesOperations> findById(String id) {
         return repository.findById(id).map(Function.identity());
@@ -140,8 +191,8 @@ public class WrapperConnectorImpl implements WrapperConnector {
 //
 //
 //    @Override
-//        public List<WrapperEntitiesOperations> findByStatus(WrapperStatus status) {
-//            return new ArrayList<WrapperEntitiesOperations>(repository.findByStatus(status));
+//        public Page<WrapperEntitiesOperations> findByStatusAndType(WrapperStatus status, WrapperType wrapperType) {
+//            return repository.findByStatusAndType(status);
 //        }
 //
 //    @Override

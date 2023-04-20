@@ -17,6 +17,8 @@ import java.util.List;
 public class DummyWrapperEntities<T> implements WrapperEntitiesOperations<T> {
 
     private String id;
+
+    private String brokerCode;
     private WrapperType type;
     private WrapperStatus status;
     private Instant modifiedAt;
@@ -38,7 +40,7 @@ public class DummyWrapperEntities<T> implements WrapperEntitiesOperations<T> {
 
     @Override
     public void sortEntitesByCreatedAt() {
-        this.entities.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt,Comparator.reverseOrder()));
+        this.entities.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
     }
 
     @Override
