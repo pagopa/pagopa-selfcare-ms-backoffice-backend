@@ -98,9 +98,9 @@ public class ChannelDetailsResource extends ChannelResource {
     @NotNull
     private Long timeoutC;
 
-    @JsonProperty("npm_service")
-    @ApiModelProperty(value = "${swagger.model.channel.details.npmService}")
-    private String npmService;
+    @JsonProperty("nmp_service")
+    @ApiModelProperty(value = "${swagger.model.channel.details.nmpService}")
+    private String nmpService;
 
     @JsonProperty("new_fault_code")
     @ApiModelProperty(value = "${swagger.model.channel.details.newFaultCode}")

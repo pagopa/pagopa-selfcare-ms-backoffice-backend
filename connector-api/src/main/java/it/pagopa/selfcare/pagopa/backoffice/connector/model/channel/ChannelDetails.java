@@ -86,8 +86,8 @@ public class ChannelDetails extends  Channel{
     @NotNull
     private Long timeoutC;
 
-    @JsonProperty("npm_service")
-    private String npmService;
+    @JsonProperty("nmp_service")
+    private String nmpService;
 
     @JsonProperty("new_fault_code")
     private Boolean newFaultCode;

@@ -158,7 +158,7 @@ class ApiConfigRestClientTest {
         channelDetails.setTimeoutA(Long.parseLong("1"));
         channelDetails.setTimeoutB(Long.parseLong("2"));
         channelDetails.setTimeoutC(Long.parseLong("3"));
-        channelDetails.setNpmService("setNpmService");
+        channelDetails.setNmpService("setNpmService");
         channelDetails.setNewFaultCode(false);
         channelDetails.setRedirectIp("127.0.0.3");
         channelDetails.setRedirectPath("setRedirectPath");
@@ -392,7 +392,7 @@ class ApiConfigRestClientTest {
 
         //then
         assertNotNull(response);
-        checkNotNullFields(response, "npmService");
+        checkNotNullFields(response);
 
     }
 

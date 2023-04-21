@@ -18,7 +18,7 @@
   "timeout_a": 1,
   "timeout_b": 2,
   "timeout_c": 3,
-  "npm_service": "setNpmService",
+  "nmp_service": "setNmpService",
   "new_fault_code": false,
   "redirect_ip": "127.0.0.3",
   "redirect_path": "setRedirectPath",
