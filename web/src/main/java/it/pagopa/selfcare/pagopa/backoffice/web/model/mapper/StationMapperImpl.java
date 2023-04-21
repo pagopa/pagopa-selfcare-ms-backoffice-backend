@@ -30,12 +30,11 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setEnabled(model.getEnabled());
         stationDetailResource.setBrokerDescription(model.getBrokerDescription());
         stationDetailResource.setVersion(model.getVersion());
-        //todo da controllare dove recuoperare i valori
-        /*stationDetailResource.setStationStatus(model.getStationStatus());
+        stationDetailResource.setStationStatus(model.getStationStatus());
         stationDetailResource.setActivationDate(model.getActivationDate());
         stationDetailResource.setCreatedAt(model.getCreatedAt());
         stationDetailResource.setModifiedAt(model.getModifiedAt());
-        stationDetailResource.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());*/
+        stationDetailResource.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
         stationDetailResource.setIp(model.getIp());
         stationDetailResource.setNewPassword(model.getNewPassword());
         stationDetailResource.setPassword(model.getPassword());
@@ -68,7 +67,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setTargetHost(model.getTargetHost());
         stationDetailResource.setTargetPort(model.getTargetPort());
         stationDetailResource.setTargetPath(model.getTargetPath());
-   //     stationDetailResource.setOperatedBy(model.getOperatedBy());
+        stationDetailResource.setOperatedBy(model.getOperatedBy());
         stationDetailResource.setTargetHostPof( model.getTargetHostPof() );
         stationDetailResource.setTargetPortPof( model.getTargetPortPof() );
         stationDetailResource.setTargetPathPof( model.getTargetPathPof() );
@@ -105,11 +104,11 @@ public class StationMapperImpl implements StationMapper {
         stationResource.setEnabled(model.getEnabled());
         stationResource.setBrokerDescription(model.getBrokerDescription());
         stationResource.setVersion(model.getVersion());
-       /* stationResource.setStationStatus(model.getStationStatus());
+        stationResource.setStationStatus(model.getStationStatus());
         stationResource.setActivationDate(model.getActivationDate());
         stationResource.setCreatedAt(model.getCreatedAt());
         stationResource.setModifiedAt(model.getModifiedAt());
-        stationResource.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());*/
+        stationResource.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
 
         return stationResource;
     }

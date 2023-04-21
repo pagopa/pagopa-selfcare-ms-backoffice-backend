@@ -24,6 +24,17 @@ public class Station {
 
     @JsonProperty("version")
     @NotNull
-    protected Long version = 2l;
+    protected Long version;
+
+    @JsonIgnore
+    private StationStatus stationStatus = StationStatus.ACTIVE;
+    @JsonIgnore
+    private Integer associatedCreditorInstitutions = 0;
+    @JsonIgnore
+    private Instant activationDate = Instant.now();
+    @JsonIgnore
+    private Instant createdAt = Instant.now(); //FIXME when these fields will be available from apiConfig
+    @JsonIgnore
+    private Instant modifiedAt = Instant.now(); //FIXME remove instantiation after apiConfig has modified their entities
 
 }

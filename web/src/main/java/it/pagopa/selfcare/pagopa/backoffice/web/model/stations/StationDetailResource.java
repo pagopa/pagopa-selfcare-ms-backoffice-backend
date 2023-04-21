@@ -7,6 +7,7 @@ import lombok.Data;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data//FIXME fix after integration with DB
@@ -16,8 +17,8 @@ public class StationDetailResource extends StationResource {
     @ApiModelProperty("${swagger.model.station.newPassword}")
     private String newPassword;
     @ApiModelProperty("${swagger.model.station.password}")
-//    @JsonProperty(required = true)
-//    @NotBlank
+    @JsonProperty(required = true)
+    @NotBlank
     private String password;
     @ApiModelProperty("${swagger.model.station.port}")
     private Long port;
@@ -58,13 +59,13 @@ public class StationDetailResource extends StationResource {
     @ApiModelProperty(value = "${swagger.model.station.proxyPassword}")
     private String proxyPassword;
     @ApiModelProperty(value = "${swagger.model.station.threadNumber}")
-//    @NotNull
+    @NotNull
     private Long threadNumber;
     @ApiModelProperty(value = "${swagger.model.station.timeoutA}")
     @NotNull
     private Long timeoutA;
     @ApiModelProperty(value = "${swagger.model.station.timeoutB}")
-//    @NotNull
+    @NotNull
     private Long timeoutB;
     @ApiModelProperty(value = "${swagger.model.station.timeoutC}")
     @NotNull
@@ -94,8 +95,8 @@ public class StationDetailResource extends StationResource {
     @NotNull
     private Integer primitiveVersion;
     @ApiModelProperty("${swagger.model.station.operatedBy}")
-//    @JsonProperty(required = true)
-//    @NotBlank
+    @JsonProperty(required = true)
+    @NotBlank
     private String operatedBy;
 
 }

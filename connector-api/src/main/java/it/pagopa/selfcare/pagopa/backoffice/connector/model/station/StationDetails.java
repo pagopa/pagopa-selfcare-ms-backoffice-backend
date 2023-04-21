@@ -84,15 +84,15 @@ public class StationDetails extends Station {
 
     @JsonProperty("timeout_a")
     @NotNull
-    private Long timeoutA = 15L;
+    private Long timeoutA;
 
     @JsonProperty("timeout_b")
     @NotNull
-    private Long timeoutB = 30L;
+    private Long timeoutB;
 
     @JsonProperty("timeout_c")
     @NotNull
-    private Long timeoutC = 120L;
+    private Long timeoutC;
 
     @JsonProperty("flag_online")
     private Boolean flagOnline;
@@ -114,6 +114,8 @@ public class StationDetails extends Station {
 
     @JsonProperty("primitive_version")
     private Integer primitiveVersion;
+
+    private String operatedBy;
 
     @JsonProperty("target_host_pof")
     private String targetHostPof;
