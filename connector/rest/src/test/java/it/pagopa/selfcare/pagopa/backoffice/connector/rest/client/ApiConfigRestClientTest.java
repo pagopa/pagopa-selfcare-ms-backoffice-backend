@@ -391,23 +391,8 @@ class ApiConfigRestClientTest {
         ChannelDetails response = restClient.createChannel(channelDetails, requestId);
 
         //then
-        assertNotNull(response.getPassword());
-        assertNotNull(response.getNewPassword());
-        assertNotNull(response.getProtocol());
-        assertNotNull(response.getIp());
-        assertNotNull(response.getPort());
-        assertNotNull(response.getService());
-        assertNotNull(response.getBrokerPspCode());
-        assertNotNull(response.getProxyEnabled());
-        assertNotNull(response.getProxyHost());
-        assertNotNull(response.getProxyPort());
-        assertNotNull(response.getProxyUsername());
-        assertNotNull(response.getProxyPassword());
-        assertNotNull(response.getTargetHost());
-        assertNotNull(response.getTargetPort());
-        assertNotNull(response.getTargetPath());
-        assertNotNull(response.getThreadNumber());
-        assertNotNull(response.getTimeoutA());
+        assertNotNull(response);
+        checkNotNullFields(response, "npmService");
 
     }
 

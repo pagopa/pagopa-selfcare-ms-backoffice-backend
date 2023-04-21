@@ -115,8 +115,6 @@ public class StationDetails extends Station {
     @JsonProperty("primitive_version")
     private Integer primitiveVersion;
 
-    private String operatedBy;
-
     @JsonProperty("target_host_pof")
     private String targetHostPof;
 

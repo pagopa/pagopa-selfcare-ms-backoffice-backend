@@ -94,9 +94,5 @@ public class StationDetailResource extends StationResource {
     @JsonProperty(required = true)
     @NotNull
     private Integer primitiveVersion;
-    @ApiModelProperty("${swagger.model.station.operatedBy}")
-    @JsonProperty(required = true)
-    @NotBlank
-    private String operatedBy;
 
 }
