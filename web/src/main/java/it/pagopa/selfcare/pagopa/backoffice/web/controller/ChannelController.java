@@ -404,12 +404,12 @@ public class ChannelController {
     @ApiOperation(value = "", notes = "${swagger.api.channels.createWrapperChannelDetails}")
     public WrapperEntitiesOperations createWrapperChannelDetails(@RequestBody
                                                                  @Valid
-                                                                 ChannelDetailsDto channelDetailsDto) {
+                                                                 WrapperChannelDetailsDto wrapperChannelDetailsDto) {
         log.trace("createWrapperChannelDetails start");
-        log.debug("createWrapperChannelDetails channelDetailsDto = {}", channelDetailsDto);
+        log.debug("createWrapperChannelDetails channelDetailsDto = {}", wrapperChannelDetailsDto);
         WrapperEntitiesOperations createdWrapperEntities = wrapperService.
                 createWrapperChannelDetails(ChannelMapper.
-                        fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
+                        fromWrapperChannelDetailsDto(wrapperChannelDetailsDto), wrapperChannelDetailsDto.getNote(), wrapperChannelDetailsDto.getStatus().name());
         log.debug("createWrapperChannelDetails result = {}", createdWrapperEntities);
         log.trace("createWrapperChannelDetails end");
         return createdWrapperEntities;

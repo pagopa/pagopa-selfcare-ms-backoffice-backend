@@ -183,6 +183,25 @@ public class ChannelMapper {
         return resource;
     }
 
+    public static ChannelDetails fromWrapperChannelDetailsDto(WrapperChannelDetailsDto model) {
+        ChannelDetails resource = null;
+        if (model != null) {
+            resource = new ChannelDetails();
+            resource.setBrokerPspCode(model.getBrokerPspCode());
+            resource.setTargetHost(model.getTargetHost());
+            resource.setTargetPort(model.getTargetPort());
+            resource.setTargetPath(model.getTargetPath());
+            resource.setRedirectIp(model.getRedirectIp());
+            resource.setRedirectPath(model.getRedirectPath());
+            resource.setRedirectPort(model.getRedirectPort());
+            resource.setRedirectQueryString(model.getRedirectQueryString());
+            resource.setRedirectProtocol(model.getRedirectProtocol());
+            resource.setBrokerDescription(model.getBrokerDescription());
+            resource.setChannelCode(model.getChannelCode());
+
+        }
+        return resource;
+    }
     public static PaymentTypesResource toResource(PaymentTypes model) {
         PaymentTypesResource resource = null;
         List<PaymentTypeResource> paymentTypeResourceList = new ArrayList<>();

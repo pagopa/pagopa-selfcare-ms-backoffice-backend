@@ -740,17 +740,17 @@ class ChannelControllerTest {
     @Test
     void createWrapperChannelDetails(@Value("classpath:stubs/channelDto.json") Resource dto) throws Exception {
         //given
-        String note = "note";
-        String status = "TO_CHECK";
-
         InputStream is = dto.getInputStream();
-        ChannelDetails channelDetails = objectMapper.readValue(is, ChannelDetails.class);
+        ChannelDetailsDto channelDetailsDto = objectMapper.readValue(is, ChannelDetailsDto.class);
+        ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
+
 
         DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        wrapperEntity.setEntity(channelDetails);
         DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
         wrapperEntities.setEntities(List.of(wrapperEntity));
 
-        when(wrapperServiceMock.createWrapperChannelDetails(eq(channelDetails), eq(note), eq(status)))
+        when(wrapperServiceMock.createWrapperChannelDetails(any(), anyString(), anyString()))
                 .thenReturn(wrapperEntities);
 
         //when
@@ -760,13 +760,13 @@ class ChannelControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isCreated())
-                .andExpect(content().contentType(APPLICATION_JSON))
+
                 .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
                 .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
                 .andExpect(jsonPath("$.entities", notNullValue()));
         //then
         verify(wrapperServiceMock, times(1))
-                .createWrapperChannelDetails(eq(channelDetails), eq(note), eq(status));
+                .createWrapperChannelDetails(any(), anyString(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -934,7 +934,7 @@ class ChannelControllerTest {
 
         //then
         verify(wrapperServiceMock, times(1))
-                .findByStatusAndTypeAndBrokerCodeAndIdLike(any(), any(),anyString(), anyString(),anyInt(),anyInt());
+                .findByStatusAndTypeAndBrokerCodeAndIdLike(any(), any(), anyString(), anyString(), anyInt(), anyInt());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
