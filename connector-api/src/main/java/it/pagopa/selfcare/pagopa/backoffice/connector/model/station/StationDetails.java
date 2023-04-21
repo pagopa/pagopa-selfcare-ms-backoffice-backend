@@ -114,5 +114,14 @@ public class StationDetails extends Station {
 
     @JsonProperty("primitive_version")
     private Integer primitiveVersion;
-    private String operatedBy = "Mock";//FIXME remove after apiConfig provides the fields
+
+    @JsonProperty("target_host_pof")
+    private String targetHostPof;
+
+    @JsonProperty("target_port_pof")
+    private Long targetPortPof;
+
+    @JsonProperty("target_path_pof")
+    private String targetPathPof;
+
 }

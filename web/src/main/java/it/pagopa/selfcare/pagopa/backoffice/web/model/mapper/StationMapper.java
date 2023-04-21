@@ -7,8 +7,9 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailReso
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
+import org.mapstruct.Mapper;
 
-//@Mapper
+@Mapper
 public interface StationMapper {
 
     StationDetailResource toResource(StationDetails model);

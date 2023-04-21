@@ -148,4 +148,13 @@ public class ChannelDetails extends  Channel{
     @JsonProperty("primitive_version")
     private String primitiveVersion;
 
+    @JsonProperty("target_host_nmp")
+    private String targetHostNmp;
+
+    @JsonProperty("target_port_nmp")
+    private String targetPortNmp;
+
+    @JsonProperty("target_path_nmp")
+    private String targetPathNmp;
+
 }
