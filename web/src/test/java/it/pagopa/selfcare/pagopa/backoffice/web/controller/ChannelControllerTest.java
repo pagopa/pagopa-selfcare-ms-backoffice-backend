@@ -168,8 +168,10 @@ class ChannelControllerTest {
         String xRequestId = "1";
         String channelCode = "setChannelCode";
         PspChannelPaymentTypes pspChannelPaymentTypes = mockInstance(new PspChannelPaymentTypes());
+        pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
         InputStream is = dto.getInputStream();
         ChannelDetails channelDetails = objectMapper.readValue(is, ChannelDetails.class);
+
 
         when(apiConfigServiceMock.createChannel(any(), anyString()))
                 .thenReturn(channelDetails);
