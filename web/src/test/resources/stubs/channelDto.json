@@ -37,7 +37,7 @@
   "broker_description": "setBrokerDescription",
   "enabled": true,
   "channel_code": "setChannelCode",
-  "paymentTypeList": ["paymentType"],
+  "payment_types": ["paymentType"],
   "primitive_version": "1",
   "status": "TO_CHECK",
   "note": "note"

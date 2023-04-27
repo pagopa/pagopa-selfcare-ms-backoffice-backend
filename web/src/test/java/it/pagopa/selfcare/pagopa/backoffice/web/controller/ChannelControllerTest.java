@@ -2,12 +2,21 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.api.WrapperConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PaymentServiceProviderDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.WrapperChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +67,11 @@ class ChannelControllerTest {
     @MockBean
     private ApiConfigConnector apiConfigConnectorMock;
 
+    @MockBean
+    private WrapperService wrapperServiceMock;
+
+    @MockBean
+    private WrapperConnector wrapperConnectorMock;
 
     @Test
     void getChannels() throws Exception {
@@ -155,8 +169,10 @@ class ChannelControllerTest {
         String xRequestId = "1";
         String channelCode = "setChannelCode";
         PspChannelPaymentTypes pspChannelPaymentTypes = mockInstance(new PspChannelPaymentTypes());
+        pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
         InputStream is = dto.getInputStream();
         ChannelDetails channelDetails = objectMapper.readValue(is, ChannelDetails.class);
+
 
         when(apiConfigServiceMock.createChannel(any(), anyString()))
                 .thenReturn(channelDetails);
@@ -679,7 +695,7 @@ class ChannelControllerTest {
                 .thenReturn(channelCode);
 
         mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL + "/{pspcode}/generate",pspCode)
+                        .get(BASE_URL + "/{pspcode}/generate", pspCode)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
 
 
@@ -702,7 +718,7 @@ class ChannelControllerTest {
                 .thenReturn(paymentServiceProviderDetails);
 
         mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL + "/psp/{pspcode}",pspCode)
+                        .get(BASE_URL + "/psp/{pspcode}", pspCode)
                         .contentType(MediaType.TEXT_PLAIN_VALUE))
                 .andExpect(status().is2xxSuccessful())
 
@@ -719,6 +735,210 @@ class ChannelControllerTest {
 
         verify(apiConfigServiceMock, times(1))
                 .getPSPDetails(any(), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+
+    @Test
+    void createWrapperChannelDetails(@Value("classpath:stubs/WrapperChannelDto.json") Resource dto) throws Exception {
+        //given
+        InputStream is = dto.getInputStream();
+        WrapperChannelDetailsDto channelDetailsDto = objectMapper.readValue(is, WrapperChannelDetailsDto.class);
+        ChannelDetails channelDetails = ChannelMapper.fromWrapperChannelDetailsDto(channelDetailsDto);
+
+
+
+        DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        wrapperEntity.setEntity(channelDetails);
+        DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setEntities(List.of(wrapperEntity));
+
+        when(wrapperServiceMock.createWrapperChannelDetails(any(), anyString(), anyString()))
+                .thenReturn(wrapperEntities);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .post(BASE_URL + "/create-wrapperChannel")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isCreated())
+
+                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
+                .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
+                .andExpect(jsonPath("$.entities", notNullValue()));
+        //then
+        verify(wrapperServiceMock, times(1))
+                .createWrapperChannelDetails(any(), anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getWrapperEntities_channel() throws Exception {
+        //given
+        String code = "code";
+        ChannelDetails channelDetails = mockInstance(new ChannelDetails());
+        DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setEntities(List.of(wrapperEntity));
+
+        when(wrapperServiceMock.findById(anyString()))
+                .thenReturn(wrapperEntities);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/get-wrapperEntities/{code}", code)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
+                .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
+                .andExpect(jsonPath("$.entities", notNullValue()));
+
+        verify(wrapperServiceMock, times(1))
+                .findById(anyString());
+
+        verifyNoMoreInteractions(wrapperServiceMock);
+    }
+
+    @Test
+    void getWrapperEntities_station() throws Exception {
+        //given
+        String code = "code";
+        StationDetails stationDetails = mockInstance(new StationDetails());
+        DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
+        DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setEntities(List.of(wrapperEntity));
+
+        when(wrapperServiceMock.findById(anyString()))
+                .thenReturn(wrapperEntities);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/get-wrapperEntities/{code}", code)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
+                .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
+                .andExpect(jsonPath("$.entities", notNullValue()));
+
+        verify(wrapperServiceMock, times(1))
+                .findById(anyString());
+
+        verifyNoMoreInteractions(wrapperServiceMock);
+    }
+
+    @Test
+    void updateWrapperChannelDetails(@Value("classpath:stubs/channelDto.json") Resource dto) throws Exception {
+        //given
+        String channelCode = "channelCode";
+        ChannelDetails channelDetails = mockInstance(new ChannelDetails());
+        DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+
+        InputStream is = dto.getInputStream();
+
+        ChannelDetailsDto channelDetailsDto = objectMapper.readValue(is, ChannelDetailsDto.class);
+        ChannelDetails fromChannelDetailsDto = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
+        DummyWrapperEntity<ChannelDetails> wrapperEntityDto = new DummyWrapperEntity<>(fromChannelDetailsDto);
+        wrapperEntities.getEntities().add(wrapperEntityDto);
+        String status = channelDetailsDto.getStatus().name();
+        String note = channelDetailsDto.getNote();
+        when(wrapperServiceMock.updateWrapperChannelDetails(fromChannelDetailsDto, note, status))
+                .thenReturn(wrapperEntities);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .put(BASE_URL + "/update-wrapperChannel")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
+                .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
+                .andExpect(jsonPath("$.entities", notNullValue()));
+        //then
+        verify(wrapperServiceMock, times(1))
+                .updateWrapperChannelDetails(any(), anyString(), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void updateWrapperChannelDetailsByOpt(@Value("classpath:stubs/channelDto.json") Resource dto) throws Exception {
+        //given
+        String channelCode = "channelCode";
+        ChannelDetails channelDetails = mockInstance(new ChannelDetails());
+        DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+
+        InputStream is = dto.getInputStream();
+
+        ChannelDetailsDto channelDetailsDto = objectMapper.readValue(is, ChannelDetailsDto.class);
+        ChannelDetails fromChannelDetailsDto = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
+        DummyWrapperEntity<ChannelDetails> wrapperEntityDto = new DummyWrapperEntity<>(fromChannelDetailsDto);
+        wrapperEntities.getEntities().add(wrapperEntityDto);
+        String status = channelDetailsDto.getStatus().name();
+        String note = channelDetailsDto.getNote();
+        when(wrapperServiceMock.updateWrapperChannelDetailsByOpt(fromChannelDetailsDto, note, status))
+                .thenReturn(wrapperEntities);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .put(BASE_URL + "/update-wrapperChannelByOpt")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
+                .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
+                .andExpect(jsonPath("$.entities", notNullValue()));
+        //then
+        verify(wrapperServiceMock, times(1))
+                .updateWrapperChannelDetailsByOpt(any(), anyString(), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    //@Test
+    void getWrapperByTypeAndStatus() throws Exception {
+        //given
+        WrapperStatus status = WrapperStatus.TO_CHECK;
+        WrapperType wrapperType = WrapperType.CHANNEL;
+        String brokerCode = "brokerCode";
+        String idLike = "idLike";
+        Integer page = 0;
+        Integer size = 50;
+
+        ChannelDetails channelDetails = mockInstance(new ChannelDetails());
+        DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setEntities(List.of(wrapperEntity));
+
+
+        WrapperEntitiesList wrapperEntitiesList = mockInstance(new WrapperEntitiesList());
+        PageInfo pageInfo = mockInstance(new PageInfo());
+        wrapperEntitiesList.setWrapperEntities(List.of(wrapperEntities));
+        wrapperEntitiesList.setPageInfo(pageInfo);
+
+        when(wrapperServiceMock.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, page, size))
+                .thenReturn(wrapperEntitiesList);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/get-wrapper/{wrapperType}/{wrapperStatus}", wrapperType, status)
+
+                        .queryParam("limit", String.valueOf(size))
+                        .queryParam("page", String.valueOf(page))
+                        .queryParam("brokerCode", brokerCode)
+                        .queryParam("idLike", idLike)
+
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.wrapper_entities[0].id", is(wrapperEntitiesList.getWrapperEntities().get(0).getId())))
+                .andExpect(jsonPath("$.page_info.page", is(wrapperEntitiesList.getPageInfo().getPage())));
+
+        //then
+        verify(wrapperServiceMock, times(1))
+                .findByStatusAndTypeAndBrokerCodeAndIdLike(any(), any(), anyString(), anyString(), anyInt(), anyInt());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }

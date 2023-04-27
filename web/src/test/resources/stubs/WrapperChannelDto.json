@@ -1,0 +1,18 @@
+{
+  "broker_psp_code": "psp",
+  "target_host": "setTargetHost",
+  "target_port": 8888,
+  "target_path": "setTargetPath",
+  "redirect_ip": "127.0.0.3",
+  "redirect_path": "setRedirectPath",
+  "redirect_port": 8989,
+  "redirect_query_string": "/setRedirectQueryString",
+  "redirect_protocol": "HTTP",
+  "broker_description": "setBrokerDescription",
+  "channel_code": "setChannelCode",
+  "payment_types": [
+    "paymentType"
+  ],
+  "status": "TO_CHECK",
+  "note": "note"
+}

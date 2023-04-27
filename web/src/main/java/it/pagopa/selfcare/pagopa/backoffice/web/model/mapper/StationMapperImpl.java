@@ -3,10 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.*;
 
 import javax.annotation.processing.Generated;
 import java.util.stream.Collectors;
@@ -157,6 +154,29 @@ public class StationMapperImpl implements StationMapper {
         stationDetails.setTargetPort(model.getTargetPort());
         stationDetails.setTargetPath(model.getTargetPath());
         stationDetails.setPrimitiveVersion(model.getPrimitiveVersion());
+
+        return stationDetails;
+    }
+
+    @Override
+    public StationDetails fromWrapperStationDetailsDto(WrapperStationDetailsDto model) {
+        if ( model == null ) {
+            return null;
+        }
+
+        StationDetails stationDetails = new StationDetails();
+
+        stationDetails.setStationCode( model.getStationCode() );
+        stationDetails.setRedirectIp( model.getRedirectIp() );
+        stationDetails.setRedirectPath( model.getRedirectPath() );
+        stationDetails.setRedirectPort( model.getRedirectPort() );
+        stationDetails.setRedirectQueryString( model.getRedirectQueryString() );
+        stationDetails.setRedirectProtocol( model.getRedirectProtocol() );
+        stationDetails.setBrokerCode( model.getBrokerCode() );
+        stationDetails.setTargetHost( model.getTargetHost() );
+        stationDetails.setTargetPort( model.getTargetPort() );
+        stationDetails.setTargetPath( model.getTargetPath() );
+        stationDetails.setPrimitiveVersion( model.getPrimitiveVersion() );
 
         return stationDetails;
     }

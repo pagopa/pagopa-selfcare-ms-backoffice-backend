@@ -1,18 +1,25 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.WrapperStationDetailsDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
@@ -27,6 +34,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.io.InputStream;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
@@ -36,8 +44,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = {StationController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 @ContextConfiguration(classes = {
@@ -57,7 +65,7 @@ class StationControllerTest {
     private ApiConfigService apiConfigServiceMock;
 
     @MockBean
-    private WrapperService wrapperService;
+    private WrapperService wrapperServiceMock;
 
     @Test
     void getStations() throws Exception {
@@ -239,6 +247,113 @@ class StationControllerTest {
                 .createCreditorInstitutionStationRelation(eq(ecCode), stationArgumentCaptor.capture(), anyString());
         CreditorInstitutionStationEdit captured = stationArgumentCaptor.getValue();
         assertNotNull(captured);
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void createWrapperStationDetails(@Value("classpath:stubs/WrapperStationDto.json") Resource dto) throws Exception {
+        //given
+        String note = "note";
+        WrapperStatus status = WrapperStatus.TO_CHECK;
+
+        InputStream is = dto.getInputStream();
+        WrapperStationDetailsDto wrapperStationDetailsDto = objectMapper.readValue(is, WrapperStationDetailsDto.class);
+        StationDetails stationDetails = mapper.fromWrapperStationDetailsDto(wrapperStationDetailsDto);
+
+
+        DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
+        DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setEntities(List.of(wrapperEntity));
+
+        when(wrapperServiceMock.createWrapperStationDetails(any(), anyString(), anyString()))
+                .thenReturn(wrapperEntities);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .post(BASE_URL + "/create-wrapperStation")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isCreated())
+
+                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
+                .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
+                .andExpect(jsonPath("$.entities", notNullValue()));
+        //then
+        verify(wrapperServiceMock, times(1))
+                .createWrapperStationDetails(eq(stationDetails), eq(note), eq(status.name()));
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+
+    @Test
+    void updateWrapperStationDetails(@Value("classpath:stubs/stationsDto.json") Resource dto) throws Exception {
+        //given
+        StationDetails stationDetails = mockInstance(new StationDetails());
+        DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
+        DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+
+        InputStream is = dto.getInputStream();
+
+        StationDetailsDto stationDetailsDto = objectMapper.readValue(is, StationDetailsDto.class);
+        StationDetails fromStationDetailsDto = mapper.fromDto(stationDetailsDto);
+        DummyWrapperEntity<StationDetails> wrapperEntityDto = new DummyWrapperEntity<>(fromStationDetailsDto);
+        wrapperEntities.getEntities().add(wrapperEntityDto);
+        String status = stationDetailsDto.getStatus().name();
+        String note = stationDetailsDto.getNote();
+        when(wrapperServiceMock.updateWrapperStationDetails(fromStationDetailsDto, note, status))
+                .thenReturn(wrapperEntities);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .put(BASE_URL + "/update-wrapperStation")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
+                .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
+                .andExpect(jsonPath("$.entities", notNullValue()));
+        //then
+        verify(wrapperServiceMock, times(1))
+                .updateWrapperStationDetails(any(), anyString(), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void updateWrapperChannelDetailsByOpt(@Value("classpath:stubs/stationsDto.json") Resource dto) throws Exception {
+        //given
+        String stationCode = "stationCode";
+        StationDetails stationDetails = mockInstance(new StationDetails());
+        DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
+        DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+
+        InputStream is = dto.getInputStream();
+
+        StationDetailsDto stationDetailsDto = objectMapper.readValue(is, StationDetailsDto.class);
+        StationDetails fromStationDetailsDto = mapper.fromDto(stationDetailsDto);
+        DummyWrapperEntity<StationDetails> wrapperEntityDto = new DummyWrapperEntity<>(fromStationDetailsDto);
+        wrapperEntities.getEntities().add(wrapperEntityDto);
+        String status = stationDetailsDto.getStatus().name();
+        String note = stationDetailsDto.getNote();
+        when(wrapperServiceMock.updateWrapperStationDetailsByOpt(fromStationDetailsDto, note, status))
+                .thenReturn(wrapperEntities);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .put(BASE_URL + "/update-wrapperStationByOpt")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
+                .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
+                .andExpect(jsonPath("$.entities", notNullValue()));
+        //then
+        verify(wrapperServiceMock, times(1))
+                .updateWrapperStationDetailsByOpt(any(), anyString(), anyString());
+
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }

@@ -7,7 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailReso
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
-import org.mapstruct.Mapper;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.*;
 
 //@Mapper
 public interface StationMapper {
@@ -19,5 +19,7 @@ public interface StationMapper {
     StationResource toResource(Station model);
 
     StationDetails fromDto(StationDetailsDto model);
+
+    StationDetails fromWrapperStationDetailsDto(WrapperStationDetailsDto model);
 
 }

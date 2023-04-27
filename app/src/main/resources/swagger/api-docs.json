@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.116"
+    "version" : "0.0.117"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -310,6 +310,68 @@
         } ]
       }
     },
+    "/channels/create-wrapperChannel" : {
+      "post" : {
+        "tags" : [ "channels" ],
+        "summary" : "createWrapperChannelDetails",
+        "description" : "Create a WrapperChannel on Cosmodb",
+        "operationId" : "createWrapperChannelDetailsUsingPOST",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/WrapperChannelDetailsDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/channels/csv" : {
       "get" : {
         "tags" : [ "channels" ],
@@ -400,6 +462,79 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ChannelDetailsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/channels/get-wrapperEntities/{code}" : {
+      "get" : {
+        "tags" : [ "channels" ],
+        "summary" : "getWrapperEntities",
+        "description" : "Get wrapperEntities",
+        "operationId" : "getWrapperEntitiesUsingGET",
+        "parameters" : [ {
+          "name" : "code",
+          "in" : "path",
+          "description" : "Channlecode or StationCode",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
                 }
               }
             }
@@ -850,6 +985,150 @@
           },
           "401" : {
             "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/channels/update-wrapperChannel" : {
+      "put" : {
+        "tags" : [ "channels" ],
+        "summary" : "updateWrapperChannelDetails",
+        "description" : "Put a new WrapperChannel entity inside a list of the WrapperEntities object on Cosmodb",
+        "operationId" : "updateWrapperChannelDetailsUsingPUT",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ChannelDetailsDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/channels/update-wrapperChannelByOpt" : {
+      "put" : {
+        "tags" : [ "channels" ],
+        "summary" : "updateWrapperChannelDetailsByOpt",
+        "description" : "Update a WrapperChannel on Cosmodb",
+        "operationId" : "updateWrapperChannelDetailsByOptUsingPUT",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ChannelDetailsDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
             "content" : {
               "application/problem+json" : {
                 "schema" : {
@@ -2340,6 +2619,68 @@
         } ]
       }
     },
+    "/stations/create-wrapperStation" : {
+      "post" : {
+        "tags" : [ "stations" ],
+        "summary" : "createWrapperStationDetails",
+        "description" : "Create a WrapperChannel on Cosmodb",
+        "operationId" : "createWrapperStationDetailsUsingPOST",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/WrapperStationDetailsDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/stations/details/{stationId}" : {
       "get" : {
         "tags" : [ "stations" ],
@@ -2389,6 +2730,150 @@
           },
           "404" : {
             "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/stations/update-wrapperStation" : {
+      "put" : {
+        "tags" : [ "stations" ],
+        "summary" : "updateWrapperStationDetails",
+        "description" : "Update WrapperStationDetails ",
+        "operationId" : "updateWrapperStationDetailsUsingPUT",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/StationDetailsDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/stations/update-wrapperStationByOpt" : {
+      "put" : {
+        "tags" : [ "stations" ],
+        "summary" : "updateWrapperStationDetailsByOpt",
+        "description" : "Update a WrapperStation on Cosmodb",
+        "operationId" : "updateWrapperStationDetailsByOptUsingPUT",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/StationDetailsDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
             "content" : {
               "application/problem+json" : {
                 "schema" : {
@@ -4367,6 +4852,222 @@
             "type" : "boolean",
             "description" : "Enables the zipping of the content that goes through fstp",
             "example" : false
+          }
+        }
+      },
+      "WrapperChannelDetailsDto" : {
+        "title" : "WrapperChannelDetailsDto",
+        "type" : "object",
+        "properties" : {
+          "broker_description" : {
+            "type" : "string",
+            "description" : "Broker description. Read only field"
+          },
+          "broker_psp_code" : {
+            "type" : "string",
+            "description" : "psp code "
+          },
+          "channel_code" : {
+            "type" : "string",
+            "description" : "Channel code"
+          },
+          "note" : {
+            "type" : "string",
+            "description" : "channel note description by operation team"
+          },
+          "payment_types" : {
+            "type" : "array",
+            "description" : "List of payment types",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "redirect_ip" : {
+            "type" : "string",
+            "description" : "redirect ip"
+          },
+          "redirect_path" : {
+            "type" : "string",
+            "description" : "redirect path"
+          },
+          "redirect_port" : {
+            "type" : "integer",
+            "description" : "redirect port",
+            "format" : "int64"
+          },
+          "redirect_protocol" : {
+            "type" : "string",
+            "description" : "redirect protocol",
+            "enum" : [ "HTTP", "HTTPS" ]
+          },
+          "redirect_query_string" : {
+            "type" : "string",
+            "description" : "redirect query string"
+          },
+          "status" : {
+            "type" : "string",
+            "description" : "channel's validation status",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          },
+          "target_host" : {
+            "type" : "string",
+            "description" : "target host"
+          },
+          "target_path" : {
+            "type" : "string",
+            "description" : "target path's"
+          },
+          "target_port" : {
+            "type" : "integer",
+            "description" : "target port",
+            "format" : "int64"
+          }
+        }
+      },
+      "WrapperEntitiesOperations" : {
+        "title" : "WrapperEntitiesOperations",
+        "type" : "object",
+        "properties" : {
+          "brokerCode" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "createdBy" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "modifiedBy" : {
+            "type" : "string"
+          },
+          "modifiedByOpt" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "CHANNEL", "STATION" ]
+          },
+          "wrapperEntityOperationsSortedList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/WrapperEntityOperationsOfobject"
+            }
+          }
+        }
+      },
+      "WrapperEntityOperationsOfobject" : {
+        "title" : "WrapperEntityOperationsOfobject",
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "entity" : {
+            "type" : "object"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "modifiedBy" : {
+            "type" : "string"
+          },
+          "modifiedByOpt" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "CHANNEL", "STATION" ]
+          }
+        }
+      },
+      "WrapperStationDetailsDto" : {
+        "title" : "WrapperStationDetailsDto",
+        "required" : [ "primitiveVersion", "redirectIp", "redirectPath", "redirectPort", "redirectProtocol", "redirectQueryString", "stationCode", "targetHost", "targetPath", "targetPort" ],
+        "type" : "object",
+        "properties" : {
+          "brokerCode" : {
+            "type" : "string",
+            "description" : "Station's broker code"
+          },
+          "note" : {
+            "type" : "string",
+            "description" : "station note description by operation team"
+          },
+          "primitiveVersion" : {
+            "type" : "integer",
+            "description" : "Station's primitive version",
+            "format" : "int32"
+          },
+          "redirectIp" : {
+            "type" : "string",
+            "description" : "Station's redirect Ip"
+          },
+          "redirectPath" : {
+            "type" : "string",
+            "description" : "Station's redirect path"
+          },
+          "redirectPort" : {
+            "type" : "integer",
+            "description" : "Station's redirect port",
+            "format" : "int64"
+          },
+          "redirectProtocol" : {
+            "type" : "string",
+            "description" : "Station's redirect http protocol",
+            "enum" : [ "HTTP", "HTTPS" ]
+          },
+          "redirectQueryString" : {
+            "type" : "string",
+            "description" : "Station's redirect query string"
+          },
+          "stationCode" : {
+            "type" : "string",
+            "description" : "Station's unique identifier"
+          },
+          "status" : {
+            "type" : "string",
+            "description" : "Station's status",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          },
+          "targetHost" : {
+            "type" : "string",
+            "description" : "Station's target host"
+          },
+          "targetPath" : {
+            "type" : "string",
+            "description" : "Station's target path"
+          },
+          "targetPort" : {
+            "type" : "integer",
+            "description" : "Station target's port",
+            "format" : "int64"
           }
         }
       }
