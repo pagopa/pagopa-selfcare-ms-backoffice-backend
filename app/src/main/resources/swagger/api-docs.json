@@ -3200,13 +3200,13 @@
             "type" : "string",
             "description" : "channel's new password"
           },
+          "nmp_service" : {
+            "type" : "string",
+            "description" : "nmp service"
+          },
           "note" : {
             "type" : "string",
             "description" : "channel note description by operation team"
-          },
-          "npm_service" : {
-            "type" : "string",
-            "description" : "npm service"
           },
           "on_us" : {
             "type" : "boolean",
@@ -3397,9 +3397,9 @@
             "type" : "string",
             "description" : "channel's new password"
           },
-          "npm_service" : {
+          "nmp_service" : {
             "type" : "string",
-            "description" : "npm service"
+            "description" : "nmp service"
           },
           "on_us" : {
             "type" : "boolean",
@@ -3502,14 +3502,26 @@
             "type" : "string",
             "description" : "target host"
           },
+          "target_host_nmp" : {
+            "type" : "string",
+            "description" : "target host NMP"
+          },
           "target_path" : {
             "type" : "string",
             "description" : "target path's"
+          },
+          "target_path_nmp" : {
+            "type" : "string",
+            "description" : "target path NMP"
           },
           "target_port" : {
             "type" : "integer",
             "description" : "target port",
             "format" : "int64"
+          },
+          "target_port_nmp" : {
+            "type" : "string",
+            "description" : "target port NMP"
           },
           "thread_number" : {
             "type" : "integer",
@@ -4406,10 +4418,6 @@
             "type" : "string",
             "description" : "Station's new password"
           },
-          "operatedBy" : {
-            "type" : "string",
-            "description" : "Station's operator"
-          },
           "password" : {
             "type" : "string",
             "description" : "Station's password"
@@ -4513,13 +4521,26 @@
             "type" : "string",
             "description" : "Station's target host"
           },
+          "targetHostPof" : {
+            "type" : "string",
+            "description" : "Station's target host POF"
+          },
           "targetPath" : {
             "type" : "string",
             "description" : "Station's target path"
           },
+          "targetPathPof" : {
+            "type" : "string",
+            "description" : "Station's target path POF"
+          },
           "targetPort" : {
             "type" : "integer",
             "description" : "Station target's port",
+            "format" : "int64"
+          },
+          "targetPortPof" : {
+            "type" : "integer",
+            "description" : "Station's target port POF",
             "format" : "int64"
           },
           "threadNumber" : {
@@ -4551,7 +4572,7 @@
       },
       "StationDetailsDto" : {
         "title" : "StationDetailsDto",
-        "required" : [ "primitiveVersion", "redirectIp", "redirectPath", "redirectPort", "redirectProtocol", "redirectQueryString", "stationCode", "targetHost", "targetPath", "targetPort" ],
+        "required" : [ "brokerCode", "primitiveVersion", "redirectIp", "redirectPath", "redirectPort", "redirectProtocol", "redirectQueryString", "stationCode", "targetHost", "targetPath", "targetPort" ],
         "type" : "object",
         "properties" : {
           "brokerCode" : {

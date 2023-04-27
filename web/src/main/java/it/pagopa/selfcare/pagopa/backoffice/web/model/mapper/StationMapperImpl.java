@@ -64,7 +64,9 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setTargetHost(model.getTargetHost());
         stationDetailResource.setTargetPort(model.getTargetPort());
         stationDetailResource.setTargetPath(model.getTargetPath());
-        stationDetailResource.setOperatedBy(model.getOperatedBy());
+        stationDetailResource.setTargetHostPof( model.getTargetHostPof() );
+        stationDetailResource.setTargetPortPof( model.getTargetPortPof() );
+        stationDetailResource.setTargetPathPof( model.getTargetPathPof() );
         stationDetailResource.setPrimitiveVersion(model.getPrimitiveVersion());
 
         return stationDetailResource;
