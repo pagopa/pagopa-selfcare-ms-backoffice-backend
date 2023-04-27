@@ -34,5 +34,7 @@
   "targetHost": "string",
   "targetPort": 0,
   "targetPath": "string",
-  "primitiveVersion": 1
+  "primitiveVersion": 1,
+  "status": "TO_CHECK",
+  "note": "note"
 }
