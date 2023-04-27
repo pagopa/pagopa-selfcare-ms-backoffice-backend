@@ -2745,13 +2745,13 @@
       "post" : {
         "tags" : [ "stations" ],
         "summary" : "createWrapperStationDetails",
-        "description" : "Create WrapperStationDetails",
+        "description" : "Create a WrapperChannel on Cosmodb",
         "operationId" : "createWrapperStationDetailsUsingPOST",
         "requestBody" : {
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/StationDetailsDto"
+                "$ref" : "#/components/schemas/WrapperStationDetailsDto"
               }
             }
           }
@@ -4972,35 +4972,9 @@
             "type" : "string",
             "description" : "Channel code"
           },
-          "flag_io" : {
-            "type" : "boolean",
-            "description" : "flag io",
-            "example" : false
-          },
-          "ip" : {
-            "type" : "string",
-            "description" : "channel's ip"
-          },
-          "new_fault_code" : {
-            "type" : "boolean",
-            "description" : "new fault code",
-            "example" : false
-          },
-          "new_password" : {
-            "type" : "string",
-            "description" : "channel's new password"
-          },
           "note" : {
             "type" : "string",
             "description" : "channel note description by operation team"
-          },
-          "npm_service" : {
-            "type" : "string",
-            "description" : "npm service"
-          },
-          "password" : {
-            "type" : "string",
-            "description" : "channel's password"
           },
           "payment_types" : {
             "type" : "array",
@@ -5008,28 +4982,6 @@
             "items" : {
               "type" : "string"
             }
-          },
-          "proxy_enabled" : {
-            "type" : "boolean",
-            "description" : "proxy Enabled",
-            "example" : false
-          },
-          "proxy_host" : {
-            "type" : "string",
-            "description" : "proxy Host"
-          },
-          "proxy_password" : {
-            "type" : "string",
-            "description" : "proxy Password"
-          },
-          "proxy_port" : {
-            "type" : "integer",
-            "description" : "proxy Port",
-            "format" : "int64"
-          },
-          "proxy_username" : {
-            "type" : "string",
-            "description" : "proxy Username"
           },
           "redirect_ip" : {
             "type" : "string",
@@ -5053,14 +5005,6 @@
             "type" : "string",
             "description" : "redirect query string"
           },
-          "serv_plugin" : {
-            "type" : "string",
-            "description" : "service plugin"
-          },
-          "service" : {
-            "type" : "string",
-            "description" : "channel's service"
-          },
           "status" : {
             "type" : "string",
             "description" : "channel's validation status",
@@ -5077,21 +5021,6 @@
           "target_port" : {
             "type" : "integer",
             "description" : "target port",
-            "format" : "int64"
-          },
-          "timeout_a" : {
-            "type" : "integer",
-            "description" : "timeout A",
-            "format" : "int64"
-          },
-          "timeout_b" : {
-            "type" : "integer",
-            "description" : "timeout B",
-            "format" : "int64"
-          },
-          "timeout_c" : {
-            "type" : "integer",
-            "description" : "timeout C",
             "format" : "int64"
           }
         }
@@ -5191,6 +5120,70 @@
           "type" : {
             "type" : "string",
             "enum" : [ "CHANNEL", "STATION" ]
+          }
+        }
+      },
+      "WrapperStationDetailsDto" : {
+        "title" : "WrapperStationDetailsDto",
+        "required" : [ "primitiveVersion", "redirectIp", "redirectPath", "redirectPort", "redirectProtocol", "redirectQueryString", "stationCode", "targetHost", "targetPath", "targetPort" ],
+        "type" : "object",
+        "properties" : {
+          "brokerCode" : {
+            "type" : "string",
+            "description" : "Station's broker code"
+          },
+          "note" : {
+            "type" : "string",
+            "description" : "station note description by operation team"
+          },
+          "primitiveVersion" : {
+            "type" : "integer",
+            "description" : "Station's primitive version",
+            "format" : "int32"
+          },
+          "redirectIp" : {
+            "type" : "string",
+            "description" : "Station's redirect Ip"
+          },
+          "redirectPath" : {
+            "type" : "string",
+            "description" : "Station's redirect path"
+          },
+          "redirectPort" : {
+            "type" : "integer",
+            "description" : "Station's redirect port",
+            "format" : "int64"
+          },
+          "redirectProtocol" : {
+            "type" : "string",
+            "description" : "Station's redirect http protocol",
+            "enum" : [ "HTTP", "HTTPS" ]
+          },
+          "redirectQueryString" : {
+            "type" : "string",
+            "description" : "Station's redirect query string"
+          },
+          "stationCode" : {
+            "type" : "string",
+            "description" : "Station's unique identifier"
+          },
+          "status" : {
+            "type" : "string",
+            "description" : "Station's status",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          },
+          "targetHost" : {
+            "type" : "string",
+            "description" : "Station's target host"
+          },
+          "targetPath" : {
+            "type" : "string",
+            "description" : "Station's target path"
+          },
+          "targetPort" : {
+            "type" : "integer",
+            "description" : "Station target's port",
+            "format" : "int64"
           }
         }
       }

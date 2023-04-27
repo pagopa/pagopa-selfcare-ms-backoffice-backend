@@ -16,6 +16,7 @@ import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PaymentServiceProviderDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.WrapperChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -740,11 +741,11 @@ class ChannelControllerTest {
 
 
     @Test
-    void createWrapperChannelDetails(@Value("classpath:stubs/channelDto.json") Resource dto) throws Exception {
+    void createWrapperChannelDetails(@Value("classpath:stubs/WrapperChannelDto.json") Resource dto) throws Exception {
         //given
         InputStream is = dto.getInputStream();
-        ChannelDetailsDto channelDetailsDto = objectMapper.readValue(is, ChannelDetailsDto.class);
-        ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
+        WrapperChannelDetailsDto channelDetailsDto = objectMapper.readValue(is, WrapperChannelDetailsDto.class);
+        ChannelDetails channelDetails = ChannelMapper.fromWrapperChannelDetailsDto(channelDetailsDto);
 
 
         DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
