@@ -4,8 +4,11 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.WrapperConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,6 +191,30 @@ public class WrapperServiceImplTest {
         reflectionEqualsByName(wrapperEntities.getWrapperEntityOperationsSortedList().get(0).getEntity(), stationDetailsMock);
         verify(wrapperConnectorMock, times(1))
                 .updateByOpt(stationDetailsMock,note,status);
+        verifyNoMoreInteractions(wrapperConnectorMock);
+    }
+
+    @Test
+    void findByStatusAndTypeAndBrokerCodeAndIdLike(){
+        //given
+        WrapperStatus status = WrapperStatus.TO_CHECK;
+        WrapperType wrapperType = WrapperType.CHANNEL;
+        String brokerCode = "brokerCode";
+        String idLike = "idLike";
+        Integer page = 0;
+        Integer size = 50;
+
+        WrapperEntitiesList wrapperEntitiesList = mockInstance(new WrapperEntitiesList());
+
+        when(wrapperConnectorMock.findByStatusAndTypeAndBrokerCodeAndIdLike(any(),any(),anyString(),anyString(),anyInt(),anyInt()))
+                .thenReturn(wrapperEntitiesList);
+
+        //when
+        WrapperEntitiesList response = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size);
+        //then
+        assertNotNull(response);
+        verify(wrapperConnectorMock, times(1))
+                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size);
         verifyNoMoreInteractions(wrapperConnectorMock);
     }
 }
