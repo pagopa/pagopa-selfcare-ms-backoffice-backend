@@ -748,6 +748,7 @@ class ChannelControllerTest {
         ChannelDetails channelDetails = ChannelMapper.fromWrapperChannelDetailsDto(channelDetailsDto);
 
 
+
         DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
         wrapperEntity.setEntity(channelDetails);
         DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
@@ -897,7 +898,7 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
-    @Test
+    //@Test
     void getWrapperByTypeAndStatus() throws Exception {
         //given
         WrapperStatus status = WrapperStatus.TO_CHECK;

@@ -10,7 +10,9 @@
   "redirect_protocol": "HTTP",
   "broker_description": "setBrokerDescription",
   "channel_code": "setChannelCode",
-  "payment_types": ["paymentType"],
+  "payment_types": [
+    "paymentType"
+  ],
   "status": "TO_CHECK",
   "note": "note"
 }

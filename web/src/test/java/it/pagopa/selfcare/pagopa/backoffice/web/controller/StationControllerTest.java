@@ -260,6 +260,7 @@ class StationControllerTest {
         WrapperStationDetailsDto wrapperStationDetailsDto = objectMapper.readValue(is, WrapperStationDetailsDto.class);
         StationDetails stationDetails = mapper.fromWrapperStationDetailsDto(wrapperStationDetailsDto);
 
+
         DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
         DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
         wrapperEntities.setEntities(List.of(wrapperEntity));
