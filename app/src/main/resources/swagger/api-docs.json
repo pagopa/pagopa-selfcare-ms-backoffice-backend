@@ -512,128 +512,6 @@
         } ]
       }
     },
-    "/channels/get-wrapper/{wrapperType}/{wrapperStatus}" : {
-      "get" : {
-        "tags" : [ "channels" ],
-        "summary" : "getWrapperByTypeAndStatus",
-        "description" : "Get Wrapper Channel Details from cosmos db",
-        "operationId" : "getWrapperByTypeAndStatusUsingGET",
-        "parameters" : [ {
-          "name" : "limit",
-          "in" : "query",
-          "description" : "Number of elements on one page. Default = 50",
-          "required" : false,
-          "style" : "form",
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32"
-          }
-        }, {
-          "name" : "page",
-          "in" : "query",
-          "description" : "Page number. Page value starts from 0",
-          "required" : true,
-          "style" : "form",
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32"
-          }
-        }, {
-          "name" : "wrapperType",
-          "in" : "path",
-          "description" : "Type of Wrapper like CHANNEL or STATION",
-          "required" : true,
-          "style" : "simple",
-          "schema" : {
-            "type" : "string",
-            "enum" : [ "CHANNEL", "STATION" ]
-          }
-        }, {
-          "name" : "wrapperStatus",
-          "in" : "path",
-          "description" : "Validation Status of a CHANNEL or STATION  ",
-          "required" : true,
-          "style" : "simple",
-          "schema" : {
-            "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
-          }
-        }, {
-          "name" : "brokerCode",
-          "in" : "query",
-          "description" : "Broker code filter for search",
-          "required" : false,
-          "style" : "form",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "idLike",
-          "in" : "query",
-          "description" : "Query with sql like parameter for field id search",
-          "required" : false,
-          "style" : "form",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WrapperEntitiesList"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "Not Found",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "bearerAuth" : [ "global" ]
-        } ]
-      }
-    },
     "/channels/get-wrapperEntities/{code}" : {
       "get" : {
         "tags" : [ "channels" ],
@@ -4972,35 +4850,9 @@
             "type" : "string",
             "description" : "Channel code"
           },
-          "flag_io" : {
-            "type" : "boolean",
-            "description" : "flag io",
-            "example" : false
-          },
-          "ip" : {
-            "type" : "string",
-            "description" : "channel's ip"
-          },
-          "new_fault_code" : {
-            "type" : "boolean",
-            "description" : "new fault code",
-            "example" : false
-          },
-          "new_password" : {
-            "type" : "string",
-            "description" : "channel's new password"
-          },
           "note" : {
             "type" : "string",
             "description" : "channel note description by operation team"
-          },
-          "npm_service" : {
-            "type" : "string",
-            "description" : "npm service"
-          },
-          "password" : {
-            "type" : "string",
-            "description" : "channel's password"
           },
           "payment_types" : {
             "type" : "array",
@@ -5008,28 +4860,6 @@
             "items" : {
               "type" : "string"
             }
-          },
-          "proxy_enabled" : {
-            "type" : "boolean",
-            "description" : "proxy Enabled",
-            "example" : false
-          },
-          "proxy_host" : {
-            "type" : "string",
-            "description" : "proxy Host"
-          },
-          "proxy_password" : {
-            "type" : "string",
-            "description" : "proxy Password"
-          },
-          "proxy_port" : {
-            "type" : "integer",
-            "description" : "proxy Port",
-            "format" : "int64"
-          },
-          "proxy_username" : {
-            "type" : "string",
-            "description" : "proxy Username"
           },
           "redirect_ip" : {
             "type" : "string",
@@ -5053,14 +4883,6 @@
             "type" : "string",
             "description" : "redirect query string"
           },
-          "serv_plugin" : {
-            "type" : "string",
-            "description" : "service plugin"
-          },
-          "service" : {
-            "type" : "string",
-            "description" : "channel's service"
-          },
           "status" : {
             "type" : "string",
             "description" : "channel's validation status",
@@ -5078,36 +4900,6 @@
             "type" : "integer",
             "description" : "target port",
             "format" : "int64"
-          },
-          "timeout_a" : {
-            "type" : "integer",
-            "description" : "timeout A",
-            "format" : "int64"
-          },
-          "timeout_b" : {
-            "type" : "integer",
-            "description" : "timeout B",
-            "format" : "int64"
-          },
-          "timeout_c" : {
-            "type" : "integer",
-            "description" : "timeout C",
-            "format" : "int64"
-          }
-        }
-      },
-      "WrapperEntitiesList" : {
-        "title" : "WrapperEntitiesList",
-        "type" : "object",
-        "properties" : {
-          "page_info" : {
-            "$ref" : "#/components/schemas/PageInfo"
-          },
-          "wrapper_entities" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/WrapperEntitiesOperations"
-            }
           }
         }
       },
