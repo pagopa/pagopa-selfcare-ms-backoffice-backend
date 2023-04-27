@@ -98,9 +98,9 @@ public class ChannelDetailsResource extends ChannelResource {
     @NotNull
     private Long timeoutC;
 
-    @JsonProperty("npm_service")
-    @ApiModelProperty(value = "${swagger.model.channel.details.npmService}")
-    private String npmService;
+    @JsonProperty("nmp_service")
+    @ApiModelProperty(value = "${swagger.model.channel.details.nmpService}")
+    private String nmpService;
 
     @JsonProperty("new_fault_code")
     @ApiModelProperty(value = "${swagger.model.channel.details.newFaultCode}")
@@ -179,5 +179,17 @@ public class ChannelDetailsResource extends ChannelResource {
     @JsonProperty("primitive_version")
     @ApiModelProperty(value = "${swagger.model.channel.details.primitiveVersion}")
     private String primitiveVersion;
+
+    @JsonProperty("target_host_nmp")
+    @ApiModelProperty(value = "${swagger.model.channel.details.targetHostNmp}")
+    private String targetHostNmp;
+
+    @JsonProperty("target_port_nmp")
+    @ApiModelProperty(value = "${swagger.model.channel.details.targetPortNmp}")
+    private String targetPortNmp;
+
+    @JsonProperty("target_path_nmp")
+    @ApiModelProperty(value = "${swagger.model.channel.details.targetPathNmp}")
+    private String targetPathNmp;
 
 }

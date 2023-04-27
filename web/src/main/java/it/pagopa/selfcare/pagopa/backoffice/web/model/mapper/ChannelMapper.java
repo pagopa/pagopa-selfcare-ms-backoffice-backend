@@ -65,7 +65,7 @@ public class ChannelMapper {
             resource.setTimeoutA(model.getTimeoutA());
             resource.setTimeoutB(model.getTimeoutB());
             resource.setTimeoutC(model.getTimeoutC());
-            resource.setNpmService(model.getNpmService());
+            resource.setNmpService(model.getNmpService());
             resource.setNewFaultCode(model.getNewFaultCode());
             resource.setRedirectIp(model.getRedirectIp());
             resource.setRedirectPath(model.getRedirectPath());
@@ -85,6 +85,9 @@ public class ChannelMapper {
             resource.setEnabled(model.getEnabled());
             resource.setChannelCode(model.getChannelCode());
             resource.setPrimitiveVersion(model.getPrimitiveVersion());
+            resource.setTargetHostNmp(model.getTargetHostNmp());
+            resource.setTargetPortNmp(model.getTargetPortNmp());
+            resource.setTargetPathNmp(model.getTargetPathNmp());
             resource.setPaymentTypeList(listModel != null ? listModel.getPaymentTypeList() : new ArrayList<>());
         }
         return resource;
@@ -113,7 +116,7 @@ public class ChannelMapper {
             resource.setTimeoutA(model.getTimeoutA());
             resource.setTimeoutB(model.getTimeoutB());
             resource.setTimeoutC(model.getTimeoutC());
-            resource.setNpmService(model.getNpmService());
+            resource.setNmpService(model.getNmpService());
             resource.setNewFaultCode(model.getNewFaultCode());
             resource.setRedirectIp(model.getRedirectIp());
             resource.setRedirectPath(model.getRedirectPath());
@@ -132,6 +135,9 @@ public class ChannelMapper {
             resource.setBrokerDescription(model.getBrokerDescription());
             resource.setEnabled(model.getEnabled());
             resource.setChannelCode(model.getChannelCode());
+            resource.setTargetHostNmp(model.getTargetHostNmp());
+            resource.setTargetPortNmp(model.getTargetPortNmp());
+            resource.setTargetPathNmp(model.getTargetPathNmp());
         }
         return resource;
     }
@@ -159,7 +165,7 @@ public class ChannelMapper {
             resource.setTimeoutA(model.getTimeoutA());
             resource.setTimeoutB(model.getTimeoutB());
             resource.setTimeoutC(model.getTimeoutC());
-            resource.setNpmService(model.getNpmService());
+            resource.setNmpService(model.getNmpService());
             resource.setNewFaultCode(model.getNewFaultCode());
             resource.setRedirectIp(model.getRedirectIp());
             resource.setRedirectPath(model.getRedirectPath());
