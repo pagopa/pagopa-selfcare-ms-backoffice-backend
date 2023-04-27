@@ -19,6 +19,7 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.Credit
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.WrapperStationDetailsDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
@@ -248,16 +249,17 @@ class StationControllerTest {
         assertNotNull(captured);
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
-    private StationMapper stationMapper = Mappers.getMapper(StationMapper.class);
+
     @Test
-    void createWrapperStationDetails(@Value("classpath:stubs/stationsDto.json") Resource dto) throws Exception {
+    void createWrapperStationDetails(@Value("classpath:stubs/WrapperStationDto.json") Resource dto) throws Exception {
         //given
         String note = "note";
         WrapperStatus status = WrapperStatus.TO_CHECK;
 
         InputStream is = dto.getInputStream();
-        StationDetailsDto stationDetailsDto = objectMapper.readValue(is, StationDetailsDto.class);
-        StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
+        WrapperStationDetailsDto wrapperStationDetailsDto = objectMapper.readValue(is, WrapperStationDetailsDto.class);
+        StationDetails stationDetails = mapper.fromWrapperStationDetailsDto(wrapperStationDetailsDto);
+
 
         DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
         DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));

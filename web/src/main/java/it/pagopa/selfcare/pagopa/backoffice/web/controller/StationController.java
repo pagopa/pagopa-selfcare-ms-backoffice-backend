@@ -10,16 +10,11 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationEditResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationCodeResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +59,23 @@ public class StationController {
         log.trace("createStation end");
         return resource;
     }
+
+    @PostMapping(value = "/create-wrapperStation", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.createWrapperStationDetails}")
+    public WrapperEntitiesOperations createWrapperStationDetails(@RequestBody
+                                                                 @Valid
+                                                                 WrapperStationDetailsDto wrapperStationDetailsDto) {
+        log.trace("createWrapperStationDetails start");
+        log.debug("createWrapperStationDetails channelDetailsDto = {}", wrapperStationDetailsDto);
+        WrapperEntitiesOperations createdWrapperEntities = wrapperService.
+                createWrapperStationDetails(stationMapper.
+                        fromWrapperStationDetailsDto(wrapperStationDetailsDto), wrapperStationDetailsDto.getNote(), wrapperStationDetailsDto.getStatus().name());
+        log.debug("createWrapperStationDetails result = {}", createdWrapperEntities);
+        log.trace("createWrapperStationDetails end");
+        return createdWrapperEntities;
+    }
+
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
@@ -134,21 +146,21 @@ public class StationController {
         return createdWrapperEntities;
     }
 
-    @PostMapping(value = "/create-wrapperStation", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "", notes = "${swagger.api.stations.createWrapperStationDetails}")
-    public WrapperEntitiesOperations createWrapperStationDetails(@RequestBody
-                                                                 @Valid
-                                                                     StationDetailsDto stationDetailsDto) {
-        log.trace("createWrapperStationDetails start");
-        log.debug("createWrapperStationDetails stationDetailsDto = {}", stationDetailsDto);
-        WrapperEntitiesOperations createdWrapperEntities = wrapperService.
-                createWrapperStationDetails(stationMapper.
-                        fromDto(stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name());
-        log.debug("createWrapperStationDetails result = {}", createdWrapperEntities);
-        log.trace("createWrapperStationDetails end");
-        return createdWrapperEntities;
-    }
+//    @PostMapping(value = "/create-wrapperStation", consumes = MediaType.APPLICATION_JSON_VALUE)
+//    @ResponseStatus(HttpStatus.CREATED)
+//    @ApiOperation(value = "", notes = "${swagger.api.stations.createWrapperStationDetails}")
+//    public WrapperEntitiesOperations createWrapperStationDetails(@RequestBody
+//                                                                 @Valid
+//                                                                     StationDetailsDto stationDetailsDto) {
+//        log.trace("createWrapperStationDetails start");
+//        log.debug("createWrapperStationDetails stationDetailsDto = {}", stationDetailsDto);
+//        WrapperEntitiesOperations createdWrapperEntities = wrapperService.
+//                createWrapperStationDetails(stationMapper.
+//                        fromDto(stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name());
+//        log.debug("createWrapperStationDetails result = {}", createdWrapperEntities);
+//        log.trace("createWrapperStationDetails end");
+//        return createdWrapperEntities;
+//    }
 
     @PutMapping(value = "/update-wrapperStationByOpt", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)

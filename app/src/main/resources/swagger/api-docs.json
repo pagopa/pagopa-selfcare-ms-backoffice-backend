@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.116"
+    "version" : "0.0.117"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -2623,13 +2623,13 @@
       "post" : {
         "tags" : [ "stations" ],
         "summary" : "createWrapperStationDetails",
-        "description" : "Create WrapperStationDetails",
+        "description" : "Create a WrapperChannel on Cosmodb",
         "operationId" : "createWrapperStationDetailsUsingPOST",
         "requestBody" : {
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/StationDetailsDto"
+                "$ref" : "#/components/schemas/WrapperStationDetailsDto"
               }
             }
           }
@@ -4983,6 +4983,70 @@
           "type" : {
             "type" : "string",
             "enum" : [ "CHANNEL", "STATION" ]
+          }
+        }
+      },
+      "WrapperStationDetailsDto" : {
+        "title" : "WrapperStationDetailsDto",
+        "required" : [ "primitiveVersion", "redirectIp", "redirectPath", "redirectPort", "redirectProtocol", "redirectQueryString", "stationCode", "targetHost", "targetPath", "targetPort" ],
+        "type" : "object",
+        "properties" : {
+          "brokerCode" : {
+            "type" : "string",
+            "description" : "Station's broker code"
+          },
+          "note" : {
+            "type" : "string",
+            "description" : "station note description by operation team"
+          },
+          "primitiveVersion" : {
+            "type" : "integer",
+            "description" : "Station's primitive version",
+            "format" : "int32"
+          },
+          "redirectIp" : {
+            "type" : "string",
+            "description" : "Station's redirect Ip"
+          },
+          "redirectPath" : {
+            "type" : "string",
+            "description" : "Station's redirect path"
+          },
+          "redirectPort" : {
+            "type" : "integer",
+            "description" : "Station's redirect port",
+            "format" : "int64"
+          },
+          "redirectProtocol" : {
+            "type" : "string",
+            "description" : "Station's redirect http protocol",
+            "enum" : [ "HTTP", "HTTPS" ]
+          },
+          "redirectQueryString" : {
+            "type" : "string",
+            "description" : "Station's redirect query string"
+          },
+          "stationCode" : {
+            "type" : "string",
+            "description" : "Station's unique identifier"
+          },
+          "status" : {
+            "type" : "string",
+            "description" : "Station's status",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          },
+          "targetHost" : {
+            "type" : "string",
+            "description" : "Station's target host"
+          },
+          "targetPath" : {
+            "type" : "string",
+            "description" : "Station's target path"
+          },
+          "targetPort" : {
+            "type" : "integer",
+            "description" : "Station target's port",
+            "format" : "int64"
           }
         }
       }
