@@ -5,8 +5,11 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +41,63 @@ public class ChannelMapper {
             }
             resource.setChannelList(channelResourceList);
             resource.setPageInfo(model.getPageInfo());
+        }
+        return resource;
+    }
+
+    public static WrapperChannelDetailsResource toResource(WrapperEntityOperations<ChannelDetails> wrapperModel, PspChannelPaymentTypes listModel) {
+        WrapperChannelDetailsResource resource = null;
+        if (wrapperModel != null) {
+            ChannelDetails model = wrapperModel.getEntity();
+            resource = new WrapperChannelDetailsResource();
+            resource.setPassword(model.getPassword());
+            resource.setNewPassword(model.getNewPassword());
+            resource.setProtocol(model.getProtocol());
+            resource.setIp(model.getIp());
+            resource.setPort(model.getPort());
+            resource.setService(model.getService());
+            resource.setBrokerPspCode(model.getBrokerPspCode());
+            resource.setProxyEnabled(model.getProxyEnabled());
+            resource.setProxyHost(model.getProxyHost());
+            resource.setProxyPort(model.getProxyPort());
+            resource.setProxyUsername(model.getProxyUsername());
+            resource.setProxyPassword(model.getProxyPassword());
+            resource.setTargetHost(model.getTargetHost());
+            resource.setTargetPort(model.getTargetPort());
+            resource.setTargetPath(model.getTargetPath());
+            resource.setThreadNumber(model.getThreadNumber());
+            resource.setTimeoutA(model.getTimeoutA());
+            resource.setTimeoutB(model.getTimeoutB());
+            resource.setTimeoutC(model.getTimeoutC());
+            resource.setNpmService(model.getNpmService());
+            resource.setNewFaultCode(model.getNewFaultCode());
+            resource.setRedirectIp(model.getRedirectIp());
+            resource.setRedirectPath(model.getRedirectPath());
+            resource.setRedirectPort(model.getRedirectPort());
+            resource.setRedirectQueryString(model.getRedirectQueryString());
+            resource.setRedirectProtocol(model.getRedirectProtocol());
+            resource.setPaymentModel(model.getPaymentModel());
+            resource.setServPlugin(model.getServPlugin());
+            resource.setRtPush(model.getRtPush());
+            resource.setOnUs(model.getOnUs());
+            resource.setCardChart(model.getCardChart());
+            resource.setRecovery(model.getRecovery());
+            resource.setDigitalStampBrand(model.getDigitalStampBrand());
+            resource.setFlagIo(model.getFlagIo());
+            resource.setAgid(model.getAgid());
+            resource.setBrokerDescription(model.getBrokerDescription());
+            resource.setEnabled(model.getEnabled());
+            resource.setChannelCode(model.getChannelCode());
+            resource.setPrimitiveVersion(model.getPrimitiveVersion());
+            resource.setPaymentTypeList(listModel != null ? listModel.getPaymentTypeList() : new ArrayList<>());
+
+            resource.setId(wrapperModel.getId());
+            resource.setType(wrapperModel.getType());
+            resource.setCreatedAt(wrapperModel.getCreatedAt());
+            resource.setModifiedAt(wrapperModel.getModifiedAt());
+            resource.setModifiedBy(wrapperModel.getModifiedBy());
+            resource.setModifiedByOpt(wrapperModel.getModifiedByOpt());
+            resource.setNote(wrapperModel.getNote());
         }
         return resource;
     }

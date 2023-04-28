@@ -144,7 +144,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ChannelDetailsResource"
+                  "$ref" : "#/components/schemas/WrapperEntityOperationsOfChannelDetails"
                 }
               }
             }
@@ -2578,7 +2578,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/StationDetailResource"
+                  "$ref" : "#/components/schemas/WrapperEntityOperationsOfStationDetails"
                 }
               }
             }
@@ -2640,7 +2640,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
+                  "$ref" : "#/components/schemas/WrapperEntitiesOperationsOfStationDetails"
                 }
               }
             }
@@ -3145,6 +3145,140 @@
           "channel_code" : {
             "type" : "string",
             "description" : "Channel code"
+          }
+        }
+      },
+      "ChannelDetails" : {
+        "title" : "ChannelDetails",
+        "type" : "object",
+        "properties" : {
+          "agid" : {
+            "type" : "boolean"
+          },
+          "broker_description" : {
+            "type" : "string"
+          },
+          "broker_psp_code" : {
+            "type" : "string"
+          },
+          "card_chart" : {
+            "type" : "boolean"
+          },
+          "channel_code" : {
+            "type" : "string"
+          },
+          "digital_stamp_brand" : {
+            "type" : "boolean"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "flag_io" : {
+            "type" : "boolean"
+          },
+          "ip" : {
+            "type" : "string"
+          },
+          "new_fault_code" : {
+            "type" : "boolean"
+          },
+          "new_password" : {
+            "type" : "string"
+          },
+          "npm_service" : {
+            "type" : "string"
+          },
+          "on_us" : {
+            "type" : "boolean"
+          },
+          "password" : {
+            "type" : "string"
+          },
+          "payment_model" : {
+            "type" : "string",
+            "enum" : [ "ACTIVATED_AT_PSP", "DEFERRED", "IMMEDIATE", "IMMEDIATE_MULTIBENEFICIARY" ]
+          },
+          "port" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "primitive_version" : {
+            "type" : "string"
+          },
+          "protocol" : {
+            "type" : "string",
+            "enum" : [ "HTTP", "HTTPS" ]
+          },
+          "proxy_enabled" : {
+            "type" : "boolean"
+          },
+          "proxy_host" : {
+            "type" : "string"
+          },
+          "proxy_password" : {
+            "type" : "string"
+          },
+          "proxy_port" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "proxy_username" : {
+            "type" : "string"
+          },
+          "recovery" : {
+            "type" : "boolean"
+          },
+          "redirect_ip" : {
+            "type" : "string"
+          },
+          "redirect_path" : {
+            "type" : "string"
+          },
+          "redirect_port" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "redirect_protocol" : {
+            "type" : "string",
+            "enum" : [ "HTTP", "HTTPS" ]
+          },
+          "redirect_query_string" : {
+            "type" : "string"
+          },
+          "rt_push" : {
+            "type" : "boolean"
+          },
+          "serv_plugin" : {
+            "type" : "string"
+          },
+          "service" : {
+            "type" : "string"
+          },
+          "target_host" : {
+            "type" : "string"
+          },
+          "target_path" : {
+            "type" : "string"
+          },
+          "target_port" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "thread_number" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "timeout_a" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "timeout_b" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "timeout_c" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -4549,6 +4683,137 @@
           }
         }
       },
+      "StationDetails" : {
+        "title" : "StationDetails",
+        "type" : "object",
+        "properties" : {
+          "broker_code" : {
+            "type" : "string"
+          },
+          "broker_description" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "flag_online" : {
+            "type" : "boolean"
+          },
+          "invio_rt_istantaneo" : {
+            "type" : "boolean"
+          },
+          "ip" : {
+            "type" : "string"
+          },
+          "ip_4mod" : {
+            "type" : "string"
+          },
+          "new_password" : {
+            "type" : "string"
+          },
+          "operatedBy" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          },
+          "pof_service" : {
+            "type" : "string"
+          },
+          "port" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "port_4mod" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "primitive_version" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "protocol" : {
+            "type" : "string",
+            "enum" : [ "HTTP", "HTTPS" ]
+          },
+          "protocol_4mod" : {
+            "type" : "string",
+            "enum" : [ "HTTP", "HTTPS" ]
+          },
+          "proxy_enabled" : {
+            "type" : "boolean"
+          },
+          "proxy_host" : {
+            "type" : "string"
+          },
+          "proxy_password" : {
+            "type" : "string"
+          },
+          "proxy_port" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "proxy_username" : {
+            "type" : "string"
+          },
+          "redirect_ip" : {
+            "type" : "string"
+          },
+          "redirect_path" : {
+            "type" : "string"
+          },
+          "redirect_port" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "redirect_protocol" : {
+            "type" : "string",
+            "enum" : [ "HTTP", "HTTPS" ]
+          },
+          "redirect_query_string" : {
+            "type" : "string"
+          },
+          "service" : {
+            "type" : "string"
+          },
+          "service_4mod" : {
+            "type" : "string"
+          },
+          "station_code" : {
+            "type" : "string"
+          },
+          "target_host" : {
+            "type" : "string"
+          },
+          "target_path" : {
+            "type" : "string"
+          },
+          "target_port" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "thread_number" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "timeout_a" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "timeout_b" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "timeout_c" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
       "StationDetailsDto" : {
         "title" : "StationDetailsDto",
         "required" : [ "primitiveVersion", "redirectIp", "redirectPath", "redirectPort", "redirectProtocol", "redirectQueryString", "stationCode", "targetHost", "targetPath", "targetPort" ],
@@ -4946,6 +5211,126 @@
             "items" : {
               "$ref" : "#/components/schemas/WrapperEntityOperationsOfobject"
             }
+          }
+        }
+      },
+      "WrapperEntitiesOperationsOfStationDetails" : {
+        "title" : "WrapperEntitiesOperationsOfStationDetails",
+        "type" : "object",
+        "properties" : {
+          "brokerCode" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "createdBy" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "modifiedBy" : {
+            "type" : "string"
+          },
+          "modifiedByOpt" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "CHANNEL", "STATION" ]
+          },
+          "wrapperEntityOperationsSortedList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/WrapperEntityOperationsOfStationDetails"
+            }
+          }
+        }
+      },
+      "WrapperEntityOperationsOfChannelDetails" : {
+        "title" : "WrapperEntityOperationsOfChannelDetails",
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "entity" : {
+            "$ref" : "#/components/schemas/ChannelDetails"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "modifiedBy" : {
+            "type" : "string"
+          },
+          "modifiedByOpt" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "CHANNEL", "STATION" ]
+          }
+        }
+      },
+      "WrapperEntityOperationsOfStationDetails" : {
+        "title" : "WrapperEntityOperationsOfStationDetails",
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "entity" : {
+            "$ref" : "#/components/schemas/StationDetails"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "modifiedBy" : {
+            "type" : "string"
+          },
+          "modifiedByOpt" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "CHANNEL", "STATION" ]
           }
         }
       },

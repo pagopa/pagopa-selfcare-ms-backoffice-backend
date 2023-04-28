@@ -8,6 +8,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInst
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
@@ -48,27 +49,29 @@ public class StationController {
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.stations.createStation}")
-    public StationDetailResource createStation(@RequestBody @NotNull StationDetailsDto stationDetailsDto) {
+    public WrapperEntityOperations<StationDetails> createStation(@RequestBody @NotNull StationDetailsDto stationDetailsDto) {
         log.trace("createStation start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createStation dto = {}, xRequestId = {}", stationDetailsDto, xRequestId);
         StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
-        StationDetails response = apiConfigService.createStation(stationDetails, xRequestId);
-        StationDetailResource resource = stationMapper.toResource(response);
-        log.debug("createStation result = {}", resource);
+        apiConfigService.createStation(stationDetails, xRequestId);
+        log.trace("created station in apiConfig");
+        WrapperEntitiesOperations<StationDetails> response = wrapperService.updateWrapperStationDetailsByOpt(stationDetails, stationDetailsDto.getNote(), stationDetailsDto.getStatus().name());
+        WrapperEntityOperations<StationDetails> result = response.getWrapperEntityOperationsSortedList().get(0);
+        log.debug("createStation result = {}", result);
         log.trace("createStation end");
-        return resource;
+        return result;
     }
 
     @PostMapping(value = "/create-wrapperStation", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.channels.createWrapperStationDetails}")
-    public WrapperEntitiesOperations createWrapperStationDetails(@RequestBody
+    public WrapperEntitiesOperations<StationDetails> createWrapperStationDetails(@RequestBody
                                                                  @Valid
                                                                  WrapperStationDetailsDto wrapperStationDetailsDto) {
         log.trace("createWrapperStationDetails start");
         log.debug("createWrapperStationDetails channelDetailsDto = {}", wrapperStationDetailsDto);
-        WrapperEntitiesOperations createdWrapperEntities = wrapperService.
+        WrapperEntitiesOperations<StationDetails> createdWrapperEntities = wrapperService.
                 createWrapperStationDetails(stationMapper.
                         fromWrapperStationDetailsDto(wrapperStationDetailsDto), wrapperStationDetailsDto.getNote(), wrapperStationDetailsDto.getStatus().name());
         log.debug("createWrapperStationDetails result = {}", createdWrapperEntities);

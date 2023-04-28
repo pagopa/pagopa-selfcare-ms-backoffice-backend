@@ -5,7 +5,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
@@ -67,7 +69,7 @@ public class ChannelController {
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.channels.createChannel}")
-    public ChannelDetailsResource createChannel(@RequestBody @NotNull ChannelDetailsDto channelDetailsDto) {
+    public WrapperChannelDetailsResource createChannel(@RequestBody @NotNull ChannelDetailsDto channelDetailsDto) {
         log.trace("createChannel start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("createChannel code channelDetailsDto = {}, xRequestId = {}", channelDetailsDto, xRequestId);
@@ -78,10 +80,12 @@ public class ChannelController {
         pspChannelPaymentTypes.setPaymentTypeList(paymentTypeList);
 
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
-        ChannelDetails response = apiConfigService.createChannel(channelDetails, xRequestId);
+        apiConfigService.createChannel(channelDetails, xRequestId);
+        log.trace("created channel in apiConfig");
 
+        WrapperEntitiesOperations<ChannelDetails> response = wrapperService.updateWrapperChannelDetailsByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
         PspChannelPaymentTypes ptResponse = apiConfigService.createChannelPaymentType(pspChannelPaymentTypes, channelCode, xRequestId);
-        ChannelDetailsResource resource = ChannelMapper.toResource(response, ptResponse);
+        WrapperChannelDetailsResource resource = ChannelMapper.toResource(response.getWrapperEntityOperationsSortedList().get(0), ptResponse);
 
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createChannel result = {}", resource);
         log.trace("createChannel end");

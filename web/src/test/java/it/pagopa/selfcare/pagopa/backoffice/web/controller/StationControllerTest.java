@@ -160,6 +160,14 @@ class StationControllerTest {
         StationDetails stationDetails = mapper.fromDto(stationDetailsDto);
         when(apiConfigServiceMock.createStation(any(), anyString())).thenReturn(stationDetails);
 
+        DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
+        wrapperEntity.setEntity(stationDetails);
+        DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setEntities(List.of(wrapperEntity));
+
+        when(wrapperServiceMock.updateWrapperStationDetailsByOpt(any(), anyString(), anyString()))
+                .thenReturn(wrapperEntities);
+
         // When
         mvc.perform(MockMvcRequestBuilders.
                         post(BASE_URL)
@@ -167,7 +175,14 @@ class StationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.stationCode", notNullValue()))
+                .andExpect(jsonPath("$.type", notNullValue()))
+                .andExpect(jsonPath("$.modifiedBy", notNullValue()))
+                .andExpect(jsonPath("$.entity", notNullValue()))
+                .andExpect(jsonPath("$.entity.ip", notNullValue()))
+                .andExpect(jsonPath("$.entity.port", notNullValue()))
+                .andExpect(jsonPath("$.entity.protocol", notNullValue()));
+        /*
+                .andExpect(jsonPath("$.entity.stationCode", notNullValue()))
                 .andExpect(jsonPath("$.ip", notNullValue()))
                 .andExpect(jsonPath("$.newPassword", notNullValue()))
                 .andExpect(jsonPath("$.password", notNullValue()))
@@ -201,6 +216,11 @@ class StationControllerTest {
                 .andExpect(jsonPath("$.targetPort", notNullValue()))
                 .andExpect(jsonPath("$.targetPath", notNullValue()))
                 .andExpect(jsonPath("$.primitiveVersion", notNullValue()));
+         */
+
+        //then
+        verify(wrapperServiceMock, times(1))
+                .updateWrapperStationDetailsByOpt(eq(stationDetails), eq(stationDetailsDto.getNote()), eq(stationDetailsDto.getStatus().name()));
     }
 
     @Test
