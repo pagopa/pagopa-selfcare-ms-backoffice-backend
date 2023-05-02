@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
@@ -11,8 +12,11 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntit
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationEditResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.*;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.BufferedInputStream;
 import java.util.UUID;
 
 @Slf4j
@@ -149,22 +154,6 @@ public class StationController {
         return createdWrapperEntities;
     }
 
-//    @PostMapping(value = "/create-wrapperStation", consumes = MediaType.APPLICATION_JSON_VALUE)
-//    @ResponseStatus(HttpStatus.CREATED)
-//    @ApiOperation(value = "", notes = "${swagger.api.stations.createWrapperStationDetails}")
-//    public WrapperEntitiesOperations createWrapperStationDetails(@RequestBody
-//                                                                 @Valid
-//                                                                     StationDetailsDto stationDetailsDto) {
-//        log.trace("createWrapperStationDetails start");
-//        log.debug("createWrapperStationDetails stationDetailsDto = {}", stationDetailsDto);
-//        WrapperEntitiesOperations createdWrapperEntities = wrapperService.
-//                createWrapperStationDetails(stationMapper.
-//                        fromDto(stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name());
-//        log.debug("createWrapperStationDetails result = {}", createdWrapperEntities);
-//        log.trace("createWrapperStationDetails end");
-//        return createdWrapperEntities;
-//    }
-
     @PutMapping(value = "/update-wrapperStationByOpt", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.updateWrapperStationDetailsByOpt}")
@@ -194,6 +183,26 @@ public class StationController {
         CreditorInstitutionStationEditResource resource = creditorInstitutionMapper.toResource(ecStation);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "associateStationToCreditorInstitution result = {}", resource);
         log.trace("associateStationToCreditorInstitution end");
+        return resource;
+    }
+
+    @PutMapping(value = "/{stationcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.updateStation}")
+    public StationDetailResource updateStation(@RequestBody @NotNull StationDetailsDto stationDetailsDto,
+                                                @ApiParam("${swagger.model.station.code}")
+                                                @PathVariable("stationcode") String stationCode) {
+
+        log.trace("updateStation start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("updateStation code stationDetailsDto = {} , uuid {}", stationDetailsDto, uuid);
+        StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
+        StationDetails response = apiConfigService.updateStation(stationCode, stationDetails, uuid);
+        wrapperService.updateWrapperStationDetails(stationDetails, stationDetailsDto.getNote(), stationDetailsDto.getStatus().name());
+        StationDetailResource resource = stationMapper.toResource(response);
+
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "updateStation result = {}", resource);
+        log.trace("updateStation end");
         return resource;
     }
 }

@@ -199,7 +199,7 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.ip", is(channelDetails.getIp())))
                 .andExpect(jsonPath("$.port", notNullValue()))
                 .andExpect(jsonPath("$.type", notNullValue()))
-                //.andExpect(jsonPath("$.modifiedBy", notNullValue()))
+                .andExpect(jsonPath("$.modified_by", notNullValue()))
                 .andExpect(jsonPath("$.protocol", is(channelDetails.getProtocol().name())))
                 .andExpect(jsonPath("$.broker_psp_code", is(channelDetails.getBrokerPspCode())))
                 .andExpect(jsonPath("$.proxy_enabled", is(channelDetails.getProxyEnabled())))
@@ -235,10 +235,18 @@ class ChannelControllerTest {
         String xRequestId = "1";
         String channelCode = "setChannelCode";
         InputStream is = dto.getInputStream();
-        ChannelDetails channelDetails = objectMapper.readValue(is, ChannelDetails.class);
+        ChannelDetailsDto channelDetailsDto = objectMapper.readValue(is, ChannelDetailsDto.class);
+        ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
+
+        DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        wrapperEntity.setEntity(channelDetails);
+        DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setEntities(List.of(wrapperEntity));
 
         when(apiConfigServiceMock.updateChannel(any(), anyString(), anyString()))
                 .thenReturn(channelDetails);
+        when(wrapperServiceMock.updateWrapperChannelDetails(channelDetails,channelDetailsDto.getNote(),channelDetailsDto.getStatus().name()))
+                .thenReturn(wrapperEntities);
 
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -275,7 +283,8 @@ class ChannelControllerTest {
         //then
         verify(apiConfigServiceMock, times(1))
                 .updateChannel(any(), anyString(), anyString());
-
+        verify(wrapperServiceMock, times(1))
+                .updateWrapperChannelDetails(eq(channelDetails), anyString(), anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }

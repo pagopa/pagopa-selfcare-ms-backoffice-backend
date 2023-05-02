@@ -123,11 +123,10 @@ class ChannelMapperTest {
     @Test
     void toWrapperChannelDetailsResource_null() {
         //given
-        ChannelDetails models = null;
-        PspChannelPaymentTypes model2 = null;
+        PspChannelPaymentTypes model = null;
         DummyWrapperEntity<ChannelDetails> wrapperEntity = null;
         //when
-        WrapperChannelDetailsResource resources = ChannelMapper.toResource(wrapperEntity, model2);
+        WrapperChannelDetailsResource resources = ChannelMapper.toResource(wrapperEntity, model);
         //then
         assertNull(resources);
     }

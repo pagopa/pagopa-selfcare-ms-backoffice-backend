@@ -376,6 +376,63 @@ class StationControllerTest {
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
+
+    @Test
+    void updateStation(@Value("classpath:stubs/stationsDto.json") Resource dto) throws Exception {
+        //given
+        String xRequestId = "1";
+        String stationCode = "string";
+        InputStream is = dto.getInputStream();
+        StationDetailsDto stationDetailsDto = objectMapper.readValue(is, StationDetailsDto.class);
+        StationDetails stationDetails = mapper.fromDto(stationDetailsDto);
+        DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
+        DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        DummyWrapperEntity<StationDetails> wrapperEntityDto = new DummyWrapperEntity<>(stationDetails);
+        wrapperEntities.getEntities().add(wrapperEntityDto);
+
+        when(apiConfigServiceMock.updateStation(anyString(), any(), anyString()))
+                .thenReturn(stationDetails);
+        when(wrapperServiceMock.updateWrapperStationDetails(any(), anyString(), anyString()))
+                .thenReturn(wrapperEntities);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .put(BASE_URL + "/{stationcode}", stationCode)
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .header("X-Request-Id", String.valueOf(xRequestId)))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.password", is(stationDetails.getPassword())))
+                .andExpect(jsonPath("$.newPassword", notNullValue()))
+                .andExpect(jsonPath("$.protocol", is(stationDetails.getProtocol().name())))
+                .andExpect(jsonPath("$.ip", is(stationDetails.getIp())))
+                .andExpect(jsonPath("$.port", notNullValue()))
+                .andExpect(jsonPath("$.service", is(stationDetails.getService())))
+                .andExpect(jsonPath("$.proxyEnabled", is(stationDetails.getProxyEnabled())))
+                .andExpect(jsonPath("$.proxyHost", is(stationDetails.getProxyHost())))
+                .andExpect(jsonPath("$.proxyPort", notNullValue()))
+                .andExpect(jsonPath("$.proxyUsername", is(stationDetails.getProxyUsername())))
+                .andExpect(jsonPath("$.targetHost", is(stationDetails.getTargetHost())))
+                .andExpect(jsonPath("$.targetPort", notNullValue()))
+                .andExpect(jsonPath("$.targetPath", is(stationDetails.getTargetPath())))
+                .andExpect(jsonPath("$.threadNumber", notNullValue()))
+                .andExpect(jsonPath("$.timeoutA", notNullValue()))
+                .andExpect(jsonPath("$.timeoutB", notNullValue()))
+                .andExpect(jsonPath("$.timeoutC", notNullValue()))
+                .andExpect(jsonPath("$.redirectIp", is(stationDetails.getRedirectIp())))
+                .andExpect(jsonPath("$.redirectPath", is(stationDetails.getRedirectPath())));
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .updateStation(anyString(), any(), anyString());
+
+        verify(wrapperServiceMock, times(1))
+                .updateWrapperStationDetails(any(), anyString(), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
 }
 
 
