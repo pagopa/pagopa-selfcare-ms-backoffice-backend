@@ -27,12 +27,12 @@ public class StationResource {
     @NotNull
     private Long version;
     @ApiModelProperty(value = "${swagger.model.station.status}", required = true)
-//    @JsonProperty(required = true)
-//    @NotNull
+    @JsonProperty(required = true)
+    @NotNull
     private StationStatus stationStatus;
     @ApiModelProperty("${swagger.model.station.associatedCreditorInstitutions}")
-//    @JsonProperty(required = true)
-//    @NotBlank
+    @JsonProperty(required = true)
+    @NotBlank
     private Integer associatedCreditorInstitutions;
     @ApiModelProperty("${swagger.model.station.activationDate}")
     private Instant activationDate;

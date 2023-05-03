@@ -149,7 +149,7 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.timeout_a", notNullValue()))
                 .andExpect(jsonPath("$.timeout_b", notNullValue()))
                 .andExpect(jsonPath("$.timeout_c", notNullValue()))
-                .andExpect(jsonPath("$.npm_service", is(channelDetails.getNpmService())))
+                .andExpect(jsonPath("$.nmp_service", is(channelDetails.getNmpService())))
                 .andExpect(jsonPath("$.new_fault_code", is(channelDetails.getNewFaultCode())))
                 .andExpect(jsonPath("$.redirect_ip", is(channelDetails.getRedirectIp())))
                 .andExpect(jsonPath("$.redirect_path", is(channelDetails.getRedirectPath())));
@@ -214,7 +214,7 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.timeout_a", notNullValue()))
                 .andExpect(jsonPath("$.timeout_b", notNullValue()))
                 .andExpect(jsonPath("$.timeout_c", notNullValue()))
-                .andExpect(jsonPath("$.npm_service", is(channelDetails.getNpmService())))
+                .andExpect(jsonPath("$.nmp_service", is(channelDetails.getNmpService())))
                 .andExpect(jsonPath("$.new_fault_code", is(channelDetails.getNewFaultCode())))
                 .andExpect(jsonPath("$.redirect_ip", is(channelDetails.getRedirectIp())))
                 .andExpect(jsonPath("$.redirect_path", is(channelDetails.getRedirectPath())));
@@ -275,7 +275,7 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.timeout_a", notNullValue()))
                 .andExpect(jsonPath("$.timeout_b", notNullValue()))
                 .andExpect(jsonPath("$.timeout_c", notNullValue()))
-                .andExpect(jsonPath("$.npm_service", is(channelDetails.getNpmService())))
+                .andExpect(jsonPath("$.nmp_service", is(channelDetails.getNmpService())))
                 .andExpect(jsonPath("$.new_fault_code", is(channelDetails.getNewFaultCode())))
                 .andExpect(jsonPath("$.redirect_ip", is(channelDetails.getRedirectIp())))
                 .andExpect(jsonPath("$.redirect_path", is(channelDetails.getRedirectPath())));

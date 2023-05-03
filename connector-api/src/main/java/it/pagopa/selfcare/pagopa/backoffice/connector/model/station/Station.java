@@ -24,7 +24,7 @@ public class Station {
 
     @JsonProperty("version")
     @NotNull
-    protected Long version = 2l;
+    protected Long version;
 
     @JsonIgnore
     private StationStatus stationStatus = StationStatus.ACTIVE;

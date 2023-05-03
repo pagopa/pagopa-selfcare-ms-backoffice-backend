@@ -19,11 +19,13 @@ public class StationDetailsDto {
     @NotBlank
     private String stationCode;
     @ApiModelProperty(value = "${swagger.model.station.enabled}")
-    private Boolean enabled = true;
+    private Boolean enabled;
 
     @ApiModelProperty(value = "${swagger.model.station.brokerDescription}")
     private String brokerDescription;
-    @ApiModelProperty("${swagger.model.station.brokerCode}")
+    @ApiModelProperty(value = "${swagger.model.station.brokerCode}", required = true )
+    @JsonProperty(required = true)
+    @NotBlank
     private String brokerCode;
     @ApiModelProperty("${swagger.model.station.ip}")
     private String ip;
@@ -32,7 +34,7 @@ public class StationDetailsDto {
     @ApiModelProperty("${swagger.model.station.password}")
     private String password;
     @ApiModelProperty("${swagger.model.station.port}")
-    private Long port = 443l;
+    private Long port;
     @ApiModelProperty("${swagger.model.station.protocol}")
     private Protocol protocol = Protocol.HTTPS;
     @ApiModelProperty(value = "${swagger.model.station.redirectIp}", required = true)
@@ -46,7 +48,7 @@ public class StationDetailsDto {
     @ApiModelProperty(value = "${swagger.model.station.redirectPort}", required = true)
     @JsonProperty(required = true)
     @NotNull
-    private Long redirectPort = 2l;
+    private Long redirectPort;
     @ApiModelProperty(value = "${swagger.model.station.redirectQueryString}", required = true)
     @JsonProperty(required = true)
     @NotBlank
@@ -72,19 +74,19 @@ public class StationDetailsDto {
     @ApiModelProperty(value = "${swagger.model.station.proxyHost}")
     private String proxyHost;
     @ApiModelProperty(value = "${swagger.model.station.proxyPort}")
-    private Long proxyPort = 2l;
+    private Long proxyPort;
     @ApiModelProperty(value = "${swagger.model.station.proxyUsername}")
     private String proxyUsername;
     @ApiModelProperty(value = "${swagger.model.station.proxyPassword}")
     private String proxyPassword;
     @ApiModelProperty(value = "${swagger.model.station.threadNumber}")
-    private Long threadNumber = 2l;
+    private Long threadNumber;
     @ApiModelProperty(value = "${swagger.model.station.timeoutA}")
-    private Long timeoutA = 200l;
+    private Long timeoutA;
     @ApiModelProperty(value = "${swagger.model.station.timeoutB}")
-    private Long timeoutB = 500l;
+    private Long timeoutB;
     @ApiModelProperty(value = "${swagger.model.station.timeoutC}")
-    private Long timeoutC = 400l;
+    private Long timeoutC;
     @ApiModelProperty(value = "${swagger.model.station.flagOnline}")
     private Boolean flagOnline;
     @ApiModelProperty(value = "${swagger.model.station.brokerObjId}")
