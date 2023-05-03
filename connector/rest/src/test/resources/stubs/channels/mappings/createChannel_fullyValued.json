@@ -47,7 +47,10 @@
       "thread_number": 1,
       "timeout_a": 0,
       "timeout_b": 0,
-      "timeout_c": 0
+      "timeout_c": 0,
+      "payment_types": [
+        "PO"
+      ]
     },
     "headers": {
       "Content-Type": "application/json"
