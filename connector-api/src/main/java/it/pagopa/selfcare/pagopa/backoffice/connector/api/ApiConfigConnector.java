@@ -63,4 +63,5 @@ public interface ApiConfigConnector {
     CreditorInstitutionDetails updateCreditorInstitutionDetails(String creditorInstitutionCode,
                                                                 CreditorInstitutionDetails request,
                                                                 String xRequestId);
+    StationDetails updateStation(String stationCode, StationDetails stationDetails, String xRequestId);
 }

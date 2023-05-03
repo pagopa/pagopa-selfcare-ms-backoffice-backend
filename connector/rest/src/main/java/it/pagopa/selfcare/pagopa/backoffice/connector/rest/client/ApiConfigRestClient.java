@@ -159,4 +159,9 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                                                                 @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
 
 
+    @PutMapping(value = "${rest-client.api-config.updateStation.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    StationDetails updateStation(@PathVariable("stationcode") String stationCode,
+                                                                 @RequestBody StationDetails stationDetails,
+                                                                 @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 }
