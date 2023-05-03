@@ -69,7 +69,7 @@ public class ChannelMapper {
             resource.setTimeoutA(model.getTimeoutA());
             resource.setTimeoutB(model.getTimeoutB());
             resource.setTimeoutC(model.getTimeoutC());
-            resource.setNpmService(model.getNpmService());
+            resource.setNmpService(model.getNmpService());
             resource.setNewFaultCode(model.getNewFaultCode());
             resource.setRedirectIp(model.getRedirectIp());
             resource.setRedirectPath(model.getRedirectPath());
