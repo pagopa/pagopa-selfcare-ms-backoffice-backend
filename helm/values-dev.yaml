@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaselfcaremsbackofficebackend
-    tag: "0.0.118" #improve
+    tag: "0.0.119" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
