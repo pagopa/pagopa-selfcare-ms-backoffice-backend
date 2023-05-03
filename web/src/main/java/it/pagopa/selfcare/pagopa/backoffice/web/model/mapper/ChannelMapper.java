@@ -258,6 +258,7 @@ public class ChannelMapper {
             resource.setRedirectProtocol(model.getRedirectProtocol());
             resource.setBrokerDescription(model.getBrokerDescription());
             resource.setChannelCode(model.getChannelCode());
+            resource.setPaymentTypeList(model.getPaymentTypeList());
 
         }
         return resource;
