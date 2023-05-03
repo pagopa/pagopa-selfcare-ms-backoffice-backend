@@ -171,11 +171,19 @@ class ChannelControllerTest {
         PspChannelPaymentTypes pspChannelPaymentTypes = mockInstance(new PspChannelPaymentTypes());
         pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
         InputStream is = dto.getInputStream();
-        ChannelDetails channelDetails = objectMapper.readValue(is, ChannelDetails.class);
+        ChannelDetailsDto channelDetailsDto = objectMapper.readValue(is, ChannelDetailsDto.class);
+        ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
 
+        DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        wrapperEntity.setEntity(channelDetails);
+        DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setEntities(List.of(wrapperEntity));
 
         when(apiConfigServiceMock.createChannel(any(), anyString()))
                 .thenReturn(channelDetails);
+
+        when(wrapperServiceMock.updateWrapperChannelDetailsByOpt(channelDetails,channelDetailsDto.getNote(),channelDetailsDto.getStatus().name()))
+                .thenReturn(wrapperEntities);
 
         when(apiConfigServiceMock.createChannelPaymentType(any(), anyString(), anyString()))
                 .thenReturn(pspChannelPaymentTypes);
@@ -188,15 +196,15 @@ class ChannelControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("$.password", is(channelDetails.getPassword())))
-                .andExpect(jsonPath("$.new_password", is(channelDetails.getNewPassword())))
-                .andExpect(jsonPath("$.protocol", is(channelDetails.getProtocol().name())))
                 .andExpect(jsonPath("$.ip", is(channelDetails.getIp())))
                 .andExpect(jsonPath("$.port", notNullValue()))
-                .andExpect(jsonPath("$.service", is(channelDetails.getService())))
+                .andExpect(jsonPath("$.type", notNullValue()))
+                .andExpect(jsonPath("$.modified_by", notNullValue()))
+                .andExpect(jsonPath("$.protocol", is(channelDetails.getProtocol().name())))
                 .andExpect(jsonPath("$.broker_psp_code", is(channelDetails.getBrokerPspCode())))
                 .andExpect(jsonPath("$.proxy_enabled", is(channelDetails.getProxyEnabled())))
                 .andExpect(jsonPath("$.proxy_host", is(channelDetails.getProxyHost())))
+                .andExpect(jsonPath("$.service", is(channelDetails.getService())))
                 .andExpect(jsonPath("$.proxy_port", notNullValue()))
                 .andExpect(jsonPath("$.proxy_username", is(channelDetails.getProxyUsername())))
                 .andExpect(jsonPath("$.target_host", is(channelDetails.getTargetHost())))
@@ -210,6 +218,7 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.new_fault_code", is(channelDetails.getNewFaultCode())))
                 .andExpect(jsonPath("$.redirect_ip", is(channelDetails.getRedirectIp())))
                 .andExpect(jsonPath("$.redirect_path", is(channelDetails.getRedirectPath())));
+
 
         //then
         verify(apiConfigServiceMock, times(1))
@@ -226,10 +235,18 @@ class ChannelControllerTest {
         String xRequestId = "1";
         String channelCode = "setChannelCode";
         InputStream is = dto.getInputStream();
-        ChannelDetails channelDetails = objectMapper.readValue(is, ChannelDetails.class);
+        ChannelDetailsDto channelDetailsDto = objectMapper.readValue(is, ChannelDetailsDto.class);
+        ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
+
+        DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        wrapperEntity.setEntity(channelDetails);
+        DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setEntities(List.of(wrapperEntity));
 
         when(apiConfigServiceMock.updateChannel(any(), anyString(), anyString()))
                 .thenReturn(channelDetails);
+        when(wrapperServiceMock.updateWrapperChannelDetails(channelDetails,channelDetailsDto.getNote(),channelDetailsDto.getStatus().name()))
+                .thenReturn(wrapperEntities);
 
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -266,7 +283,8 @@ class ChannelControllerTest {
         //then
         verify(apiConfigServiceMock, times(1))
                 .updateChannel(any(), anyString(), anyString());
-
+        verify(wrapperServiceMock, times(1))
+                .updateWrapperChannelDetails(eq(channelDetails), anyString(), anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }

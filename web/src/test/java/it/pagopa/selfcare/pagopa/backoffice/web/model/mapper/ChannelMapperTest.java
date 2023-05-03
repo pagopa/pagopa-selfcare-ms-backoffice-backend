@@ -1,6 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 import org.junit.jupiter.api.Test;
 
@@ -100,6 +102,31 @@ class ChannelMapperTest {
         PspChannelPaymentTypes model2 = null;
         //when
         ChannelDetailsResource resources = ChannelMapper.toResource(models, model2);
+        //then
+        assertNull(resources);
+    }
+
+    @Test
+    void toWrapperChannelDetailsResource() {
+        //given
+        ChannelDetails channelDetails = mockInstance(new ChannelDetails());
+        DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        wrapperEntity.setEntity(channelDetails);
+        PspChannelPaymentTypes model2 = mockInstance(new PspChannelPaymentTypes());
+        //when
+        WrapperChannelDetailsResource resource = ChannelMapper.toResource(wrapperEntity, model2);
+        //then
+        assertNotNull(resource);
+        reflectionEqualsByName(wrapperEntity, resource);
+    }
+
+    @Test
+    void toWrapperChannelDetailsResource_null() {
+        //given
+        PspChannelPaymentTypes model = null;
+        DummyWrapperEntity<ChannelDetails> wrapperEntity = null;
+        //when
+        WrapperChannelDetailsResource resources = ChannelMapper.toResource(wrapperEntity, model);
         //then
         assertNull(resources);
     }

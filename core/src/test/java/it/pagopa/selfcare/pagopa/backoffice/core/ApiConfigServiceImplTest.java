@@ -678,4 +678,24 @@ class ApiConfigServiceImplTest {
                 .getCreditorInstitutionDetails(ecCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
+
+    @Test
+    void updateStation() {
+        //given
+        final String xRequestId = "xRequestId";
+        StationDetails stationDetailsMock = mock(StationDetails.class);
+        String stationCode = "stationCode";
+
+        when(apiConfigConnectorMock.updateStation(anyString(), any(), anyString()))
+                .thenReturn(stationDetailsMock);
+        //when
+        StationDetails stationDetailsRes = apiConfigService.updateStation(stationCode, stationDetailsMock, xRequestId);
+        //then
+        assertNotNull(stationDetailsRes);
+        assertEquals(stationDetailsRes, stationDetailsMock);
+        reflectionEqualsByName(stationDetailsRes, stationDetailsMock);
+        verify(apiConfigConnectorMock, times(1))
+                .updateStation(stationCode, stationDetailsMock, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
 }

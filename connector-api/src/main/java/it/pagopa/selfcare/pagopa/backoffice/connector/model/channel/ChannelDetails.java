@@ -8,6 +8,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 public class ChannelDetails extends  Channel{
@@ -148,6 +149,9 @@ public class ChannelDetails extends  Channel{
     @JsonProperty("primitive_version")
     private String primitiveVersion;
 
+    @JsonProperty("payment_types")
+    private List<String> paymentTypeList;
+
     @JsonProperty("target_host_nmp")
     private String targetHostNmp;
 
@@ -156,5 +160,6 @@ public class ChannelDetails extends  Channel{
 
     @JsonProperty("target_path_nmp")
     private String targetPathNmp;
+
 
 }

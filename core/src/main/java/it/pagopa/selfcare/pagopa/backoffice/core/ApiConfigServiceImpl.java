@@ -251,6 +251,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
+    public StationDetails updateStation(String stationCode, StationDetails stationDetails, String xRequestId) {
+        log.trace("updateStation start");
+        StationDetails response = apiConfigConnector.updateStation(stationCode, stationDetails, xRequestId);
+        log.debug("updateStation result = {}", response);
+        log.trace("updateStation end");
+        return response;
+    }
+
+    @Override
     public Resource getChannelsCSV(String uuid) {
         log.trace("getChannelsCSV start");
         Resource response = apiConfigConnector.getChannelsCSV(uuid);

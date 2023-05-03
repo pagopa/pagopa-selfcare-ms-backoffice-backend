@@ -806,4 +806,33 @@ class ApiConfigRestClientTest {
             assertNotNull(field);
         }
     }
+
+    @Test
+    void updateStation_fullyValued() {
+        // given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        StationDetails stationDetails = (StationDetails) testCaseStationDetailDtoMap.get(testCase);
+        String stationCode = testCaseStationCodeMap.get(testCase);
+        String requestId = UUID.randomUUID().toString();
+        // when
+        StationDetails response = restClient.updateStation(stationCode, stationDetails, requestId);
+
+        //then
+        assertNotNull(response.getPassword());
+        assertNotNull(response.getNewPassword());
+        assertNotNull(response.getProtocol());
+        assertNotNull(response.getIp());
+        assertNotNull(response.getPort());
+        assertNotNull(response.getService());
+        assertNotNull(response.getProxyEnabled());
+        assertNotNull(response.getProxyHost());
+        assertNotNull(response.getProxyPort());
+        assertNotNull(response.getProxyUsername());
+        assertNotNull(response.getProxyPassword());
+        assertNotNull(response.getTargetHost());
+        assertNotNull(response.getTargetPort());
+        assertNotNull(response.getTargetPath());
+        assertNotNull(response.getThreadNumber());
+        assertNotNull(response.getTimeoutA());
+    }
 }
