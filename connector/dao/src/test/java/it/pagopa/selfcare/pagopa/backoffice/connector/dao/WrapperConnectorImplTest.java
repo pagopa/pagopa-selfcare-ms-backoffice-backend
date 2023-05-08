@@ -355,6 +355,7 @@ class WrapperConnectorImplTest {
         String idLike = "idLike";
         Integer page = 0;
         Integer size = 50;
+        String sorting = "DESC";
 
         Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
 
@@ -365,7 +366,7 @@ class WrapperConnectorImplTest {
         // when
         WrapperEntitiesList
                 response =   wrapperConnector
-                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size);
+                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size,sorting);
         // then
         assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))
@@ -382,6 +383,7 @@ class WrapperConnectorImplTest {
         String idLike = "idLike";
         Integer page = 0;
         Integer size = 50;
+        String sorting = "DESC";
 
         Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
 
@@ -392,7 +394,7 @@ class WrapperConnectorImplTest {
         // when
         WrapperEntitiesList
                 response =   wrapperConnector
-                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size);
+                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size,sorting);
         // then
         assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))
@@ -409,6 +411,7 @@ class WrapperConnectorImplTest {
         String idLike = null;
         Integer page = 0;
         Integer size = 50;
+        String sorting = null;
 
         Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
 
@@ -419,7 +422,7 @@ class WrapperConnectorImplTest {
         // when
         WrapperEntitiesList
                 response =   wrapperConnector
-                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size);
+                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size,sorting);
         // then
         assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))
@@ -436,6 +439,7 @@ class WrapperConnectorImplTest {
         String idLike = null;
         Integer page = 0;
         Integer size = 50;
+        String sorting = null;
 
         Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
 
@@ -446,7 +450,7 @@ class WrapperConnectorImplTest {
         // when
         WrapperEntitiesList
                 response =   wrapperConnector
-                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size);
+                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size,sorting);
         // then
         assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))

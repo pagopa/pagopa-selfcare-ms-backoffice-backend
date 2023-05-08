@@ -892,7 +892,7 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
-    //@Test
+   // @Test
     void getWrapperByTypeAndStatus() throws Exception {
         //given
         WrapperStatus status = WrapperStatus.TO_CHECK;
@@ -901,6 +901,7 @@ class ChannelControllerTest {
         String idLike = "idLike";
         Integer page = 0;
         Integer size = 50;
+        String sorting = "DESC";
 
         ChannelDetails channelDetails = mockInstance(new ChannelDetails());
         DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
@@ -913,7 +914,7 @@ class ChannelControllerTest {
         wrapperEntitiesList.setWrapperEntities(List.of(wrapperEntities));
         wrapperEntitiesList.setPageInfo(pageInfo);
 
-        when(wrapperServiceMock.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, page, size))
+        when(wrapperServiceMock.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, page, size,sorting))
                 .thenReturn(wrapperEntitiesList);
 
         //when
@@ -932,7 +933,7 @@ class ChannelControllerTest {
 
         //then
         verify(wrapperServiceMock, times(1))
-                .findByStatusAndTypeAndBrokerCodeAndIdLike(any(), any(), anyString(), anyString(), anyInt(), anyInt());
+                .findByStatusAndTypeAndBrokerCodeAndIdLike(any(), any(), anyString(), anyString(), anyInt(), anyInt(), anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }

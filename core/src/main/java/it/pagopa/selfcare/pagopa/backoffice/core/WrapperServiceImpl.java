@@ -100,11 +100,11 @@ public class WrapperServiceImpl implements WrapperService {
     }
 
     @Override
-    public WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus status, WrapperType wrapperType, String brokerCode, String idLike, Integer page, Integer limit) {
+    public WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus status, WrapperType wrapperType, String brokerCode, String idLike, Integer page, Integer limit, String sorting) {
         log.trace("findByStatusAndType start");
         log.debug("findByStatusAndType status = {}, type = ", status, wrapperType);
         WrapperEntitiesList response;
-        response = wrapperConnector.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, page, limit);
+        response = wrapperConnector.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, page, limit, sorting);
         log.debug("findByStatusAndType result = {}", response);
         log.trace("findByStatusAndType end");
         return response;

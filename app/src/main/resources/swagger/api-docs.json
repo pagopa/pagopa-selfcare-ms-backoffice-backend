@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.118"
+    "version" : "0.0.119"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -462,6 +462,137 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ChannelDetailsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/channels/get-wrapper/{wrapperType}/{wrapperStatus}" : {
+      "get" : {
+        "tags" : [ "channels" ],
+        "summary" : "getWrapperByTypeAndStatus",
+        "description" : "Get Wrapper Channel Details from cosmos db",
+        "operationId" : "getWrapperByTypeAndStatusUsingGET",
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of elements on one page. Default = 50",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number. Page value starts from 0",
+          "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "wrapperType",
+          "in" : "path",
+          "description" : "Type of Wrapper like CHANNEL or STATION",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CHANNEL", "STATION" ]
+          }
+        }, {
+          "name" : "wrapperStatus",
+          "in" : "path",
+          "description" : "Validation Status of a CHANNEL or STATION  ",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          }
+        }, {
+          "name" : "brokerCode",
+          "in" : "query",
+          "description" : "Broker code filter for search",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "idLike",
+          "in" : "query",
+          "description" : "Query with sql like parameter for field id search",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "sorting",
+          "in" : "query",
+          "description" : "Method of sorting",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WrapperEntitiesList"
                 }
               }
             }
@@ -2757,9 +2888,9 @@
     "/stations/get-wrapperEntities/{code}" : {
       "get" : {
         "tags" : [ "stations" ],
-        "summary" : "getWrapperEntities",
+        "summary" : "getWrapperEntitiesStation",
         "description" : "Get wrapper station from mongo DB",
-        "operationId" : "getWrapperEntitiesUsingGET_1",
+        "operationId" : "getWrapperEntitiesStationUsingGET",
         "parameters" : [ {
           "name" : "code",
           "in" : "path",
@@ -4753,9 +4884,6 @@
           "new_password" : {
             "type" : "string"
           },
-          "operatedBy" : {
-            "type" : "string"
-          },
           "password" : {
             "type" : "string"
           },
@@ -5448,6 +5576,21 @@
             "type" : "string",
             "description" : "entities type",
             "enum" : [ "CHANNEL", "STATION" ]
+          }
+        }
+      },
+      "WrapperEntitiesList" : {
+        "title" : "WrapperEntitiesList",
+        "type" : "object",
+        "properties" : {
+          "page_info" : {
+            "$ref" : "#/components/schemas/PageInfo"
+          },
+          "wrapper_entities" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/WrapperEntitiesOperations"
+            }
           }
         }
       },

@@ -14,10 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.domain.AuditorAware;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
@@ -153,20 +150,39 @@ public class WrapperConnectorImpl implements WrapperConnector {
 //    }
 
     @Override
-    public WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus status,WrapperType wrapperType,String brokerCode, String idLike, Integer page, Integer size) {
-        Pageable paging = PageRequest.of(page, size);
-        Page<WrapperEntitiesOperations> response = null;
-        if(brokerCode!=null && idLike!=null){
-            response =  repository.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType,brokerCode, idLike,paging);
-        }else if (brokerCode!=null && idLike==null){
-            response = repository.findByStatusAndTypeAndBrokerCode(status, wrapperType,brokerCode,paging);
-        } else if (brokerCode==null && idLike!=null) {
-            response =   repository.findByStatusAndTypeAndIdLike(status, wrapperType, idLike,paging);
-        } else if (brokerCode==null && idLike==null) {
-            response =  repository.findByStatusAndType(status, wrapperType,paging);
-    }
+    public WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus status, WrapperType wrapperType, String brokerCode, String idLike, Integer page, Integer size, String sorting) {
 
-       
+        Sort sort;
+        if ("DESC".equalsIgnoreCase(sorting)) {
+            sort = Sort.by(Sort.Order.desc("id"));
+        } else {
+            sort = Sort.by(Sort.Order.asc("id"));
+        }
+
+        Pageable paging = PageRequest.of(page, size, sort);
+        Page<WrapperEntitiesOperations> response = null;
+
+        if (status != null) {
+            if (brokerCode != null && idLike != null) {
+                response = repository.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, paging);
+            } else if (brokerCode != null && idLike == null) {
+                response = repository.findByStatusAndTypeAndBrokerCode(status, wrapperType, brokerCode, paging);
+            } else if (brokerCode == null && idLike != null) {
+                response = repository.findByStatusAndTypeAndIdLike(status, wrapperType, idLike, paging);
+            } else if (brokerCode == null && idLike == null) {
+                response = repository.findByStatusAndType(status, wrapperType, paging);
+            }
+        } else {
+            if (brokerCode != null && idLike != null) {
+                response = repository.findByTypeAndBrokerCodeAndIdLike(wrapperType, brokerCode, idLike, paging);
+            } else if (brokerCode != null && idLike == null) {
+                response = repository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
+            } else if (brokerCode == null && idLike != null) {
+                response = repository.findByTypeAndIdLike(wrapperType, idLike, paging);
+            } else if (brokerCode == null && idLike == null) {
+                response = repository.findByType(wrapperType, paging);
+            }
+        }
        
         PageInfo pi = new PageInfo();
         pi.setPage(page);
