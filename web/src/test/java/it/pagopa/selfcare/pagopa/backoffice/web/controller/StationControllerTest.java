@@ -433,6 +433,7 @@ class StationControllerTest {
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
+
     @Test
     void getWrapperEntities_station() throws Exception {
         //given

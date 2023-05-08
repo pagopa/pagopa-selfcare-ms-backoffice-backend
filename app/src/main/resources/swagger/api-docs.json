@@ -4753,6 +4753,9 @@
           "new_password" : {
             "type" : "string"
           },
+          "operatedBy" : {
+            "type" : "string"
+          },
           "password" : {
             "type" : "string"
           },
