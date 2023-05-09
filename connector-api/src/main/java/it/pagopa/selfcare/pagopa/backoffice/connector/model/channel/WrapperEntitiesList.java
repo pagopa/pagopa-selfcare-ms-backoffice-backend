@@ -13,7 +13,7 @@ public class WrapperEntitiesList
 {
     @JsonProperty("wrapper_entities")
     @NotNull
-    private List<WrapperEntitiesOperations> wrapperEntities;
+    private List<WrapperEntitiesOperations<?>> wrapperEntities;
 
     @JsonProperty("page_info")
     @NotNull

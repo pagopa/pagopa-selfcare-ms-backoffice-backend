@@ -5589,7 +5589,7 @@
           "wrapper_entities" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/WrapperEntitiesOperations"
+              "$ref" : "#/components/schemas/WrapperEntitiesOperationsOfobject"
             }
           }
         }
@@ -5682,6 +5682,52 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/WrapperEntityOperationsOfStationDetails"
+            }
+          }
+        }
+      },
+      "WrapperEntitiesOperationsOfobject" : {
+        "title" : "WrapperEntitiesOperationsOfobject",
+        "type" : "object",
+        "properties" : {
+          "brokerCode" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "createdBy" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "modifiedBy" : {
+            "type" : "string"
+          },
+          "modifiedByOpt" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "CHANNEL", "STATION" ]
+          },
+          "wrapperEntityOperationsSortedList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/WrapperEntityOperationsOfobject"
             }
           }
         }

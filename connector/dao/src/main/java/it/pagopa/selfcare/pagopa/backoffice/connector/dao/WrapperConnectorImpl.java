@@ -160,26 +160,26 @@ public class WrapperConnectorImpl implements WrapperConnector {
         }
 
         Pageable paging = PageRequest.of(page, size, sort);
-        Page<WrapperEntitiesOperations> response = null;
+        Page<WrapperEntitiesOperations<?>> response = null;
 
         if (status != null) {
             if (brokerCode != null && idLike != null) {
                 response = repository.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, paging);
-            } else if (brokerCode != null && idLike == null) {
+            } else if (brokerCode != null) {
                 response = repository.findByStatusAndTypeAndBrokerCode(status, wrapperType, brokerCode, paging);
-            } else if (brokerCode == null && idLike != null) {
+            } else if (idLike != null) {
                 response = repository.findByStatusAndTypeAndIdLike(status, wrapperType, idLike, paging);
-            } else if (brokerCode == null && idLike == null) {
+            } else {
                 response = repository.findByStatusAndType(status, wrapperType, paging);
             }
         } else {
             if (brokerCode != null && idLike != null) {
                 response = repository.findByTypeAndBrokerCodeAndIdLike(wrapperType, brokerCode, idLike, paging);
-            } else if (brokerCode != null && idLike == null) {
+            } else if (brokerCode != null) {
                 response = repository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
-            } else if (brokerCode == null && idLike != null) {
+            } else if (idLike != null) {
                 response = repository.findByTypeAndIdLike(wrapperType, idLike, paging);
-            } else if (brokerCode == null && idLike == null) {
+            } else {
                 response = repository.findByType(wrapperType, paging);
             }
         }

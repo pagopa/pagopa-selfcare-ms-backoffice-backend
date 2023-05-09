@@ -357,7 +357,7 @@ class WrapperConnectorImplTest {
         Integer size = 50;
         String sorting = "DESC";
 
-        Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
+        Page<WrapperEntitiesOperations<?>> paginatedMock =  mock(Page.class);
 
         when(repositoryMock
                 .findByStatusAndTypeAndBrokerCodeAndIdLike(any(),any(),anyString(),anyString(),any()))
@@ -385,7 +385,7 @@ class WrapperConnectorImplTest {
         Integer size = 50;
         String sorting = "DESC";
 
-        Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
+        Page<WrapperEntitiesOperations<?>> paginatedMock =  mock(Page.class);
 
         when(repositoryMock
                 .findByTypeAndBrokerCodeAndIdLike(any(),anyString(),anyString(),any()))
@@ -413,7 +413,7 @@ class WrapperConnectorImplTest {
         Integer size = 50;
         String sorting = "DESC";
 
-        Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
+        Page<WrapperEntitiesOperations<?>> paginatedMock =  mock(Page.class);
 
         when(repositoryMock
                 .findByStatusAndTypeAndIdLike(any(),any(),anyString(),any()))
@@ -441,7 +441,7 @@ class WrapperConnectorImplTest {
         Integer size = 50;
         String sorting = "DESC";
 
-        Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
+        Page<WrapperEntitiesOperations<?>> paginatedMock =  mock(Page.class);
 
         when(repositoryMock
                 .findByTypeAndIdLike(any(),anyString(),any()))
@@ -469,7 +469,7 @@ class WrapperConnectorImplTest {
         Integer size = 50;
         String sorting = null;
 
-        Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
+        Page<WrapperEntitiesOperations<?>> paginatedMock =  mock(Page.class);
 
         when(repositoryMock
                 .findByStatusAndTypeAndBrokerCode(any(),any(),anyString(),any()))
@@ -497,7 +497,7 @@ class WrapperConnectorImplTest {
         Integer size = 50;
         String sorting = null;
 
-        Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
+        Page<WrapperEntitiesOperations<?>> paginatedMock =  mock(Page.class);
 
         when(repositoryMock
                 .findByTypeAndBrokerCode(any(),anyString(),any()))
@@ -525,7 +525,7 @@ class WrapperConnectorImplTest {
         Integer size = 50;
         String sorting = null;
 
-        Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
+        Page<WrapperEntitiesOperations<?>> paginatedMock =  mock(Page.class);
 
         when(repositoryMock
                 .findByStatusAndType(any(),any(),any()))
@@ -553,7 +553,7 @@ class WrapperConnectorImplTest {
         Integer size = 50;
         String sorting = null;
 
-        Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
+        Page<WrapperEntitiesOperations<?>> paginatedMock =  mock(Page.class);
 
         when(repositoryMock
                 .findByType(any(),any()))
