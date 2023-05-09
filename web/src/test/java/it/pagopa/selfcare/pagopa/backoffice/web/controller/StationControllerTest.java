@@ -433,6 +433,32 @@ class StationControllerTest {
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
+
+    @Test
+    void getWrapperEntities_station() throws Exception {
+        //given
+        String code = "code";
+        StationDetails stationDetails = mockInstance(new StationDetails());
+        DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
+        DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setEntities(List.of(wrapperEntity));
+
+        when(wrapperServiceMock.findById(anyString()))
+                .thenReturn(wrapperEntities);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/get-wrapperEntities/{code}", code)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
+                .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
+                .andExpect(jsonPath("$.entities", notNullValue()));
+
+        verify(wrapperServiceMock, times(1))
+                .findById(anyString());
+
+        verifyNoMoreInteractions(wrapperServiceMock);
+    }
 }
 
 

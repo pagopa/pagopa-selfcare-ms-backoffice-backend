@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.117"
+    "version" : "0.0.118"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -2754,6 +2754,79 @@
         } ]
       }
     },
+    "/stations/get-wrapperEntities/{code}" : {
+      "get" : {
+        "tags" : [ "stations" ],
+        "summary" : "getWrapperEntities",
+        "description" : "Get wrapper station from mongo DB",
+        "operationId" : "getWrapperEntitiesUsingGET_1",
+        "parameters" : [ {
+          "name" : "code",
+          "in" : "path",
+          "description" : "Channlecode or StationCode",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/stations/update-wrapperStation" : {
       "put" : {
         "tags" : [ "stations" ],
@@ -4754,10 +4827,20 @@
           "target_host" : {
             "type" : "string"
           },
+          "target_host_pof" : {
+            "type" : "string"
+          },
           "target_path" : {
             "type" : "string"
           },
+          "target_path_pof" : {
+            "type" : "string"
+          },
           "target_port" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "target_port_pof" : {
             "type" : "integer",
             "format" : "int64"
           },
@@ -5211,13 +5294,13 @@
             "type" : "string",
             "description" : "channel's new password"
           },
+          "nmp_service" : {
+            "type" : "string",
+            "description" : "nmp service"
+          },
           "note" : {
             "type" : "string",
             "description" : "channel note description by operation team"
-          },
-          "npm_service" : {
-            "type" : "string",
-            "description" : "npm service"
           },
           "on_us" : {
             "type" : "boolean",
@@ -5320,14 +5403,26 @@
             "type" : "string",
             "description" : "target host"
           },
+          "target_host_nmp" : {
+            "type" : "string",
+            "description" : "target host NMP"
+          },
           "target_path" : {
             "type" : "string",
             "description" : "target path's"
+          },
+          "target_path_nmp" : {
+            "type" : "string",
+            "description" : "target path NMP"
           },
           "target_port" : {
             "type" : "integer",
             "description" : "target port",
             "format" : "int64"
+          },
+          "target_port_nmp" : {
+            "type" : "string",
+            "description" : "target port NMP"
           },
           "thread_number" : {
             "type" : "integer",
