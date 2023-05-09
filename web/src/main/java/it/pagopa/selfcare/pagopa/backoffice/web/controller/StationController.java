@@ -205,4 +205,16 @@ public class StationController {
         log.trace("updateStation end");
         return resource;
     }
+
+    @GetMapping(value = "/get-wrapperEntities/{code}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.getWrapperEntities}")
+    public WrapperEntitiesOperations getWrapperEntitiesStation(@ApiParam("${swagger.request.code}") @PathVariable("code") String code) {
+        log.trace("getWrapperEntities start");
+        log.debug("getWrapperEntities cCode = {}", code);
+        WrapperEntitiesOperations result = wrapperService.findById(code);
+        log.debug("getWrapperEntities result = {}", result);
+        log.trace("getWrapperEntities end");
+        return result;
+    }
 }
