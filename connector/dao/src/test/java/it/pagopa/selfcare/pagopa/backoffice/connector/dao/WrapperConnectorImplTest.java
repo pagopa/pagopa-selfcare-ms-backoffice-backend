@@ -375,6 +375,34 @@ class WrapperConnectorImplTest {
     }
 
     @Test
+    void findByStatusAndTypeAndAndBrokerCodeAndIdLike_nullStatus() {
+        // given
+        WrapperStatus status = null;
+        WrapperType wrapperType = WrapperType.CHANNEL;
+        String brokerCode = "brokerCode";
+        String idLike = "idLike";
+        Integer page = 0;
+        Integer size = 50;
+        String sorting = "DESC";
+
+        Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
+
+        when(repositoryMock
+                .findByTypeAndBrokerCodeAndIdLike(any(),anyString(),anyString(),any()))
+                .thenReturn(paginatedMock);
+
+        // when
+        WrapperEntitiesList
+                response =   wrapperConnector
+                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size,sorting);
+        // then
+        assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
+        verify(repositoryMock, times(1))
+                .findByTypeAndBrokerCodeAndIdLike(any(),anyString(),anyString(),any());
+        verifyNoMoreInteractions(repositoryMock);
+    }
+
+    @Test
     void findByStatusAndTypeAndAndBrokerCodeAndIdLike_nullBrokerCode() {
         // given
         WrapperStatus status = WrapperStatus.TO_CHECK;
@@ -399,6 +427,34 @@ class WrapperConnectorImplTest {
         assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))
                 .findByStatusAndTypeAndIdLike(any(),any(),anyString(),any());
+        verifyNoMoreInteractions(repositoryMock);
+    }
+
+    @Test
+    void findByStatusAndTypeAndAndBrokerCodeAndIdLike_nullStatus_nullBrokerCode() {
+        // given
+        WrapperStatus status = null;
+        WrapperType wrapperType = WrapperType.CHANNEL;
+        String brokerCode = null;
+        String idLike = "idLike";
+        Integer page = 0;
+        Integer size = 50;
+        String sorting = "DESC";
+
+        Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
+
+        when(repositoryMock
+                .findByTypeAndIdLike(any(),anyString(),any()))
+                .thenReturn(paginatedMock);
+
+        // when
+        WrapperEntitiesList
+                response =   wrapperConnector
+                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size,sorting);
+        // then
+        assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
+        verify(repositoryMock, times(1))
+                .findByTypeAndIdLike(any(),anyString(),any());
         verifyNoMoreInteractions(repositoryMock);
     }
 
@@ -431,6 +487,34 @@ class WrapperConnectorImplTest {
     }
 
     @Test
+    void findByStatusAndTypeAndAndBrokerCodeAndIdLike_nullStatus_nullIdLike() {
+        // given
+        WrapperStatus status = null;
+        WrapperType wrapperType = WrapperType.CHANNEL;
+        String brokerCode = "brokerCode";
+        String idLike = null;
+        Integer page = 0;
+        Integer size = 50;
+        String sorting = null;
+
+        Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
+
+        when(repositoryMock
+                .findByTypeAndBrokerCode(any(),anyString(),any()))
+                .thenReturn(paginatedMock);
+
+        // when
+        WrapperEntitiesList
+                response =   wrapperConnector
+                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size,sorting);
+        // then
+        assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
+        verify(repositoryMock, times(1))
+                .findByTypeAndBrokerCode(any(),anyString(),any());
+        verifyNoMoreInteractions(repositoryMock);
+    }
+
+    @Test
     void findByStatusAndTypeAndAndBrokerCodeAndIdLike_nullIdLikeAndBrokerCode() {
         // given
         WrapperStatus status = WrapperStatus.TO_CHECK;
@@ -455,6 +539,34 @@ class WrapperConnectorImplTest {
         assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))
                 .findByStatusAndType(any(),any(),any());
+        verifyNoMoreInteractions(repositoryMock);
+    }
+
+    @Test
+    void findByStatusAndTypeAndAndBrokerCodeAndIdLike_nullStatus_nullIdLikeAndBrokerCode() {
+        // given
+        WrapperStatus status = null;
+        WrapperType wrapperType = WrapperType.CHANNEL;
+        String brokerCode = null;
+        String idLike = null;
+        Integer page = 0;
+        Integer size = 50;
+        String sorting = null;
+
+        Page<WrapperEntitiesOperations> paginatedMock =  mock(Page.class);
+
+        when(repositoryMock
+                .findByType(any(),any()))
+                .thenReturn(paginatedMock);
+
+        // when
+        WrapperEntitiesList
+                response =   wrapperConnector
+                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size,sorting);
+        // then
+        assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
+        verify(repositoryMock, times(1))
+                .findByType(any(),any());
         verifyNoMoreInteractions(repositoryMock);
     }
 }
