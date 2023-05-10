@@ -757,6 +757,17 @@ class ApiConfigRestClientTest {
     }
 
     @Test
+    void getWfespPlugins_fullyValued(){
+        //given
+        String xRequestId = UUID.randomUUID().toString();
+        //when
+        WfespPluginConfs response = restClient.getWfespPlugins(xRequestId);
+        //then
+        assertNotNull(response);
+        checkNotNullFields(response);
+    }
+
+    @Test
     void createCreditorInstitution(){
         //given
         String xRequestId = UUID.randomUUID().toString();

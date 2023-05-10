@@ -20,6 +20,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -462,7 +463,18 @@ public class ChannelController {
         return createdWrapperEntities;
     }
 
-
+    @GetMapping(  value = "/wfespplugins",  produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.updateWrapperChannelDetailsByOpt}")
+    public ResponseEntity<WfespPluginConfs> getWfespPlugins() {
+        log.trace("getWfespPlugins start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getWfespPlugins xRequestId = {}", xRequestId);
+        WfespPluginConfs wfespPluginConfs = apiConfigService.getWfespPlugins(xRequestId);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getWfespPlugins result = {}", wfespPluginConfs);
+        log.trace("getWfespPlugins end");
+        return ResponseEntity.ok(wfespPluginConfs);
+    }
 
 //    @GetMapping(value = "get-wrapper/{wrapperType}/{wrapperStatus}", produces = {MediaType.APPLICATION_JSON_VALUE})
 //    @ResponseStatus(HttpStatus.OK)

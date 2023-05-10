@@ -960,4 +960,30 @@ class ChannelControllerTest {
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
+
+    @Test
+    void getWfespPlugins() throws Exception {
+        //given
+        String xRequestId = "1";
+        WfespPluginConfs wfespPluginConfs = mockInstance(new WfespPluginConfs());
+        WfespPluginConf wfespPluginConf = mockInstance(new WfespPluginConf());
+
+        wfespPluginConfs.setWfespPluginConfList(List.of(wfespPluginConf));
+        when(apiConfigServiceMock.getWfespPlugins(anyString())).thenReturn(wfespPluginConfs);
+
+        //when
+        mvc.perform(
+        MockMvcRequestBuilders.get(BASE_URL + "/wfespplugins")
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.wfesp_plugin_confs[*]",  everyItem(notNullValue())))
+                .andExpect(jsonPath("$.wfesp_plugin_confs[*].id_serv_plugin",  everyItem(notNullValue())));
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getWfespPlugins(anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
+
+    }
 }
