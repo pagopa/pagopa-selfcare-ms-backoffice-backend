@@ -89,6 +89,27 @@ public class StationMapperImpl implements StationMapper {
     }
 
     @Override
+    public StationResource toStationsResource(StationDetails model) {
+        if(model == null){
+            return null;
+        }
+
+        StationResource stationResource = new StationResource();
+
+        stationResource.setStationCode(model.getStationCode());
+        stationResource.setEnabled(model.getEnabled());
+        stationResource.setBrokerDescription(model.getBrokerDescription());
+        stationResource.setVersion(model.getVersion());
+        stationResource.setStationStatus(model.getStationStatus());
+        stationResource.setActivationDate(model.getActivationDate());
+        stationResource.setCreatedAt(model.getCreatedAt());
+        stationResource.setModifiedAt(model.getModifiedAt());
+        stationResource.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
+
+        return stationResource;
+    }
+
+    @Override
     public StationResource toResource(Station model) {
         if (model == null) {
             return null;
