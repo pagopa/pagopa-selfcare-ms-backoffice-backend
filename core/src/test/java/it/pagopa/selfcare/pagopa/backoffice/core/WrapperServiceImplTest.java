@@ -203,18 +203,19 @@ public class WrapperServiceImplTest {
         String idLike = "idLike";
         Integer page = 0;
         Integer size = 50;
+        String sorting = "DESC";
 
         WrapperEntitiesList wrapperEntitiesList = mockInstance(new WrapperEntitiesList());
 
-        when(wrapperConnectorMock.findByStatusAndTypeAndBrokerCodeAndIdLike(any(),any(),anyString(),anyString(),anyInt(),anyInt()))
+        when(wrapperConnectorMock.findByStatusAndTypeAndBrokerCodeAndIdLike(any(),any(),anyString(),anyString(),anyInt(),anyInt(),anyString()))
                 .thenReturn(wrapperEntitiesList);
 
         //when
-        WrapperEntitiesList response = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size);
+        WrapperEntitiesList response = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size,sorting);
         //then
         assertNotNull(response);
         verify(wrapperConnectorMock, times(1))
-                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size);
+                .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size,sorting);
         verifyNoMoreInteractions(wrapperConnectorMock);
     }
 }
