@@ -18,7 +18,6 @@ import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -201,10 +200,13 @@ public class WrapperConnectorImpl implements WrapperConnector {
     }
 
     @Override
-    public WrapperEntitiesList findAllStation(Integer page, Integer size) {
+    public WrapperEntitiesList findAllStation() {
 
-        Pageable paging = PageRequest.of(page, size);
-        return (WrapperEntitiesList) repository.findByType(WrapperType.STATION, paging);
+        List<WrapperEntitiesOperations<?>> response = repository.findByType(WrapperType.STATION);
+        WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
+        wrapperEntitiesList.setWrapperEntities(response);
+
+        return wrapperEntitiesList;
     }
 
 //    @Override

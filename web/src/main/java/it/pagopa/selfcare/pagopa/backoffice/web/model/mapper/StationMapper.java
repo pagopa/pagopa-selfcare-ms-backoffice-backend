@@ -11,7 +11,7 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.*;
 import org.mapstruct.Mapper;
 
-@Mapper
+//@Mapper
 public interface StationMapper {
 
     StationDetailResource toResource(StationDetails model);

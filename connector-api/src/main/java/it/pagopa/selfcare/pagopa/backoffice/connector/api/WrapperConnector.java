@@ -27,5 +27,5 @@ public interface WrapperConnector {
 
     Optional<WrapperEntitiesOperations> findById(String id);
 
-    WrapperEntitiesList findAllStation(Integer page, Integer size);
+    WrapperEntitiesList findAllStation();
 }
