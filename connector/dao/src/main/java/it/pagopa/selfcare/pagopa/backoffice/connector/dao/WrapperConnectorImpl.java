@@ -200,6 +200,13 @@ public class WrapperConnectorImpl implements WrapperConnector {
         return repository.findById(id).map(Function.identity());
     }
 
+    @Override
+    public WrapperEntitiesList findAllStation(Integer page, Integer size) {
+
+        Pageable paging = PageRequest.of(page, size);
+        return (WrapperEntitiesList) repository.findByType(WrapperType.STATION, paging);
+    }
+
 //    @Override
 //    public List<WrapperEntitiesOperations> findAll() {
 //        return new ArrayList<>(repository.findAll());

@@ -14,6 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapperImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;

@@ -25,4 +25,6 @@ public interface WrapperService {
     WrapperEntitiesOperations<StationDetails> updateWrapperStationDetails(StationDetails channelDetails,String note,String status);
 
     WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike( WrapperStatus status ,WrapperType wrapperType,String brokerCode, String idLike, Integer page, Integer limit, String sorting);
+
+    WrapperEntitiesList findAllStation(Integer page, Integer size);
 }

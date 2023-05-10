@@ -5,11 +5,15 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
@@ -216,5 +220,32 @@ public class StationController {
         log.debug("getWrapperEntities result = {}", result);
         log.trace("getWrapperEntities end");
         return result;
+    }
+
+    @GetMapping(value = "getAllStation}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getAllStationsMerged}")
+    public StationsResource getAllStationsMerged(@ApiParam("${swagger.request.limit}")
+                                                     @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                     @ApiParam("${swagger.request.page}")
+                                                     @RequestParam Integer page,
+                                                     @ApiParam("${swagger.request.sorting}")
+                                                     @RequestParam(required = false, value = "sorting") String sorting) {
+        log.trace("getAllStationsMerged start");
+        log.debug("getAllStationsMerged page = {} limit = {}", page, limit);
+
+        WrapperEntitiesList mongoList = wrapperService.findAllStation(page, limit);
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getchannels xRequestId = {}", xRequestId);
+        Stations stations = apiConfigService.getStations(limit, page, sorting, null, null, xRequestId);
+
+        StationsResource response = new StationsResource();
+        mongoList.getWrapperEntities().forEach(ent -> response.getStationsList().add(stationMapper.toResource((StationDetails) ent.getWrapperEntityOperationsSortedList())));
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getAllStationsMerged mongo result = {}", response);
+        stations.getStationsList().forEach(sta -> response.getStationsList().add(stationMapper.toResource(sta)));
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getAllStationsMerged mongo+apiConfig result = {}", response);
+        log.trace("getWrapperByTypeAndStatus end");
+
+        return response;
     }
 }
