@@ -23,7 +23,7 @@ public interface WrapperConnector {
 
     WrapperEntitiesOperations<StationDetails> update(StationDetails channelDetails, String note, String status);
 
-    WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus status,WrapperType wrapperType,String brokerCode, String idLike, Integer page, Integer size);
+    WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus status,WrapperType wrapperType,String brokerCode, String idLike, Integer page, Integer size, String sorting);
 
     Optional<WrapperEntitiesOperations> findById(String id);
 
