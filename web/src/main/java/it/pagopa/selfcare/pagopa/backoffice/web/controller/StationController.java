@@ -35,6 +35,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.BufferedInputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -224,30 +225,27 @@ public class StationController {
         return result;
     }
 
-    @GetMapping(value = "getAllStation/{stationcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "getAllStation", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getAllStationsMerged}")
     public StationsResource getAllStationsMerged(@ApiParam("${swagger.request.limit}")
                                                      @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                      @ApiParam("${swagger.model.station.code}")
-                                                     @PathVariable("stationcode") String stationCode,
+                                                     @RequestParam(required = false, value = "stationcode") String stationCode,
                                                      @ApiParam("${swagger.request.page}")
                                                      @RequestParam Integer page,
                                                      @ApiParam("${swagger.request.sorting}")
                                                      @RequestParam(required = false, value = "sorting") String sorting) {
         log.trace("getAllStationsMerged start");
         log.debug("getAllStationsMerged page = {} limit = {}", page, limit);
-
-        WrapperEntitiesList mongoList = wrapperService.findByIdAndType(stationCode, WrapperType.STATION);
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels xRequestId = {}", xRequestId);
         Stations stations = apiConfigService.getStations(limit, page, sorting, null, stationCode, xRequestId);
-
+        WrapperEntitiesList mongoList = wrapperService.findByIdAndType(stationCode, WrapperType.STATION);
+        stations.getStationsList().addAll(stationMapper.fromWrapperEntitiesList(mongoList).getStationsList());
+        Stations stationsSorted = apiConfigService.sortStations(stations, sorting);
         StationsResource response = new StationsResource();
-        List<StationResource> stationResourceList = new ArrayList<>();
-        mongoList.getWrapperEntities().forEach(ent -> stationResourceList.add(stationMapper.toStationsResource((StationDetails) ent.getWrapperEntityOperationsSortedList().get(0).getEntity())));
-        stations.getStationsList().forEach(sta -> stationResourceList.add(stationMapper.toResource(sta)));
-
+        List<StationResource> stationResourceList = new ArrayList<>(stationMapper.toResourceList(stationsSorted));
         response.setStationsList(stationResourceList);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getWrapperByTypeAndStatus result = {}", response);
         log.trace("getWrapperByTypeAndStatus end");

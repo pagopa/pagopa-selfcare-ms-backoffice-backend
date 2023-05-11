@@ -18,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -697,5 +698,27 @@ class ApiConfigServiceImplTest {
         verify(apiConfigConnectorMock, times(1))
                 .updateStation(stationCode, stationDetailsMock, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+    @Test
+    void sortStations_ASC() {
+        //given
+        Stations stations = mock(Stations.class);
+        String sorting = "ASC";
+
+        //when
+        Stations stationsRes = apiConfigService.sortStations(stations, sorting);
+        //then
+        assertNotNull(stationsRes);
+    }
+    @Test
+    void sortStations_DESC() {
+        //given
+        Stations stations = mock(Stations.class);
+        String sorting = "DESC";
+
+        //when
+        Stations stationsRes = apiConfigService.sortStations(stations, sorting);
+        //then
+        assertNotNull(stationsRes);
     }
 }

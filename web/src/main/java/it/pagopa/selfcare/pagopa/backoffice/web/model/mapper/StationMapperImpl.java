@@ -1,11 +1,15 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.*;
 
 import javax.annotation.processing.Generated;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Generated(
@@ -107,6 +111,73 @@ public class StationMapperImpl implements StationMapper {
         stationResource.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
 
         return stationResource;
+    }
+
+    @Override
+    public Station fromStationDetails( StationDetails stationDetails) {
+        if(stationDetails == null){
+            return null;
+        }
+
+        Station station = new Station();
+        station.setStationCode(stationDetails.getStationCode());
+        station.setStationStatus(stationDetails.getStationStatus());
+        station.setEnabled(stationDetails.getEnabled());
+        station.setVersion(stationDetails.getVersion());
+        station.setActivationDate(stationDetails.getActivationDate());
+        station.setBrokerDescription(stationDetails.getBrokerDescription());
+        station.setCreatedAt(stationDetails.getCreatedAt());
+        station.setModifiedAt(stationDetails.getModifiedAt());
+        return station;
+    }
+
+    @Override
+    public Stations fromWrapperEntitiesList(WrapperEntitiesList wrapperEntitiesList) {
+
+        if(wrapperEntitiesList == null || wrapperEntitiesList.getWrapperEntities() == null){
+            return null;
+        }
+
+        Stations stations = new Stations();
+        List<Station> stationList = new ArrayList<>();
+        wrapperEntitiesList.getWrapperEntities().forEach(
+                ent-> stationList.add(fromStationDetails(
+                        (StationDetails) ent.getWrapperEntityOperationsSortedList().get(0).getEntity())));
+
+        stations.setStationsList(stationList);
+        stations.setPageInfo(wrapperEntitiesList.getPageInfo());
+        return stations;
+    }
+
+    @Override
+    public List<StationResource> toResourceList(WrapperEntitiesList wrapperEntitiesList) {
+
+        if(wrapperEntitiesList == null || wrapperEntitiesList.getWrapperEntities() == null){
+            return null;
+        }
+
+        List<StationResource> stationResourceList = new ArrayList<>();
+
+        wrapperEntitiesList.getWrapperEntities()
+                .forEach(ent -> stationResourceList
+                        .add(toStationsResource(
+                                (StationDetails) ent.getWrapperEntityOperationsSortedList().get(0).getEntity())));
+
+        return stationResourceList;
+
+    }
+
+    @Override
+    public List<StationResource> toResourceList(Stations stations) {
+
+        if(stations == null || stations.getStationsList()==null){
+            return null;
+        }
+
+        List<StationResource> stationResourceList = new ArrayList<>();
+
+        stations.getStationsList().forEach(sta -> stationResourceList.add(toResource(sta)));
+        return stationResourceList;
     }
 
     @Override

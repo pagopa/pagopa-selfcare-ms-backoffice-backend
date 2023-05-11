@@ -65,4 +65,6 @@ public interface ApiConfigService {
                                                                 CreditorInstitutionDetails request,
                                                                 String xRequestId);
     StationDetails updateStation(String stationCode, StationDetails stationDetails, String xRequestId);
+
+    Stations sortStations(Stations stations, String sorting);
 }

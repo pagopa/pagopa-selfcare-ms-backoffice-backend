@@ -489,10 +489,11 @@ class StationControllerTest {
 
         //when
         mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL + "/getAllStation/{stationcode}", stationCode)
+                        .get(BASE_URL + "/getAllStation")
 
                         .queryParam("limit", String.valueOf(size))
                         .queryParam("page", String.valueOf(page))
+                        .queryParam("stationcode", stationCode)
 
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
