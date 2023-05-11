@@ -200,9 +200,9 @@ public class WrapperConnectorImpl implements WrapperConnector {
     }
 
     @Override
-    public WrapperEntitiesList findAllStation() {
+    public WrapperEntitiesList findByIdAndType(String id, WrapperType wrapperType) {
 
-        List<WrapperEntitiesOperations<?>> response = repository.findByType(WrapperType.STATION);
+        List<WrapperEntitiesOperations<?>> response = repository.findByIdAndType(id, wrapperType);
         WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
         wrapperEntitiesList.setWrapperEntities(response);
 

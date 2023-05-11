@@ -34,6 +34,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.BufferedInputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -222,11 +224,13 @@ public class StationController {
         return result;
     }
 
-    @GetMapping(value = "getAllStation", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "getAllStation/{stationcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getAllStationsMerged}")
     public StationsResource getAllStationsMerged(@ApiParam("${swagger.request.limit}")
                                                      @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                     @ApiParam("${swagger.model.station.code}")
+                                                     @PathVariable("stationcode") String stationCode,
                                                      @ApiParam("${swagger.request.page}")
                                                      @RequestParam Integer page,
                                                      @ApiParam("${swagger.request.sorting}")
@@ -234,15 +238,17 @@ public class StationController {
         log.trace("getAllStationsMerged start");
         log.debug("getAllStationsMerged page = {} limit = {}", page, limit);
 
-        WrapperEntitiesList mongoList = wrapperService.findAllStation();
+        WrapperEntitiesList mongoList = wrapperService.findByIdAndType(stationCode, WrapperType.STATION);
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels xRequestId = {}", xRequestId);
-        Stations stations = apiConfigService.getStations(limit, page, sorting, null, null, xRequestId);
+        Stations stations = apiConfigService.getStations(limit, page, sorting, null, stationCode, xRequestId);
 
         StationsResource response = new StationsResource();
-        mongoList.getWrapperEntities().forEach(ent -> response.getStationsList().add(stationMapper.toResource((StationDetails) ent.getWrapperEntityOperationsSortedList().get(0).getEntity())));
-        stations.getStationsList().forEach(sta -> response.getStationsList().add(stationMapper.toResource(sta)));
+        List<StationResource> stationResourceList = new ArrayList<>();
+        mongoList.getWrapperEntities().forEach(ent -> stationResourceList.add(stationMapper.toStationsResource((StationDetails) ent.getWrapperEntityOperationsSortedList().get(0).getEntity())));
+        stations.getStationsList().forEach(sta -> stationResourceList.add(stationMapper.toResource(sta)));
 
+        response.setStationsList(stationResourceList);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getWrapperByTypeAndStatus result = {}", response);
         log.trace("getWrapperByTypeAndStatus end");
 
