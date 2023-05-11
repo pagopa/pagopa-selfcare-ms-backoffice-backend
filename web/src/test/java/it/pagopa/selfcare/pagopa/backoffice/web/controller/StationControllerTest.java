@@ -5,11 +5,13 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -35,6 +37,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
@@ -458,6 +461,49 @@ class StationControllerTest {
                 .findById(anyString());
 
         verifyNoMoreInteractions(wrapperServiceMock);
+    }
+
+    @Test
+    void getAllStationsMerged() throws Exception {
+        //given
+        WrapperType wrapperType = WrapperType.STATION;
+        String stationCode = "stationCode";
+        Integer page = 0;
+        Integer size = 50;
+
+        ChannelDetails channelDetails = mockInstance(new ChannelDetails());
+        DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        wrapperEntity.setModifiedAt(Instant.now());
+        DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setModifiedAt(Instant.now());
+        wrapperEntities.setEntities(List.of(wrapperEntity));
+
+
+        WrapperEntitiesList wrapperEntitiesList = mockInstance(new WrapperEntitiesList());
+        PageInfo pageInfo = mockInstance(new PageInfo());
+        wrapperEntitiesList.setWrapperEntities(List.of(wrapperEntities));
+        wrapperEntitiesList.setPageInfo(pageInfo);
+
+        when(wrapperServiceMock.findByIdAndType(stationCode, wrapperType))
+                .thenReturn(wrapperEntitiesList);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/getAllStation/{stationcode}", stationCode)
+
+                        .queryParam("limit", String.valueOf(size))
+                        .queryParam("page", String.valueOf(page))
+
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.wrapper_entities[0].id", is(wrapperEntitiesList.getWrapperEntities().get(0).getId())))
+                .andExpect(jsonPath("$.page_info.page", is(wrapperEntitiesList.getPageInfo().getPage())));
+
+        //then
+        verify(wrapperServiceMock, times(1))
+                .findByIdAndType(anyString(), any());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }
 

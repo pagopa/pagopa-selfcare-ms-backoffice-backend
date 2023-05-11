@@ -18,6 +18,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -202,7 +203,12 @@ public class WrapperConnectorImpl implements WrapperConnector {
     @Override
     public WrapperEntitiesList findByIdAndType(String id, WrapperType wrapperType) {
 
-        List<WrapperEntitiesOperations<?>> response = repository.findByIdAndType(id, wrapperType);
+        List<WrapperEntitiesOperations<?>> response;
+        if(id==null){
+            response = repository.findByType(wrapperType);
+        }else {
+            response = repository.findByIdAndType(id, wrapperType);
+        }
         WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
         wrapperEntitiesList.setWrapperEntities(response);
 

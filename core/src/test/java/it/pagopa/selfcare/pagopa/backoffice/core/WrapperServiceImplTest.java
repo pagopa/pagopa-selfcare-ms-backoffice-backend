@@ -218,4 +218,24 @@ public class WrapperServiceImplTest {
                 .findByStatusAndTypeAndBrokerCodeAndIdLike(status,wrapperType,brokerCode,idLike,page,size,sorting);
         verifyNoMoreInteractions(wrapperConnectorMock);
     }
+
+    @Test
+    void findByIdAndType(){
+        //given
+        WrapperType wrapperType = WrapperType.STATION;
+        String stationCode = "stationCode";
+
+        WrapperEntitiesList wrapperEntitiesList = mockInstance(new WrapperEntitiesList());
+
+        when(wrapperConnectorMock.findByIdAndType(anyString(),any()))
+                .thenReturn(wrapperEntitiesList);
+
+        //when
+        WrapperEntitiesList response = wrapperService.findByIdAndType(stationCode,wrapperType);
+        //then
+        assertNotNull(response);
+        verify(wrapperConnectorMock, times(1))
+                .findByIdAndType(stationCode,wrapperType);
+        verifyNoMoreInteractions(wrapperConnectorMock);
+    }
 }

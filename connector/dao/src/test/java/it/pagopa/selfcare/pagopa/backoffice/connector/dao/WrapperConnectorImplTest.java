@@ -569,4 +569,48 @@ class WrapperConnectorImplTest {
                 .findByType(any(),any());
         verifyNoMoreInteractions(repositoryMock);
     }
+
+    @Test
+    void findByIdAndType() {
+        // given
+        WrapperType wrapperType = WrapperType.STATION;
+        String stationCode = "stationCode";
+
+        List<WrapperEntitiesOperations<?>> ListMock =  mock(List.class);
+        when(repositoryMock
+                .findByIdAndType(anyString(),any()))
+                .thenReturn(ListMock);
+
+        // when
+        WrapperEntitiesList
+                response =   wrapperConnector
+                .findByIdAndType(stationCode,wrapperType);
+        // then
+        assertEquals(response.getWrapperEntities(), ListMock);
+        verify(repositoryMock, times(1))
+                .findByIdAndType(anyString(),any());
+        verifyNoMoreInteractions(repositoryMock);
+    }
+
+    @Test
+    void findByIdAndType_nullId() {
+        // given
+        WrapperType wrapperType = WrapperType.STATION;
+        String stationCode = null;
+
+        List<WrapperEntitiesOperations<?>> ListMock =  mock(List.class);
+        when(repositoryMock
+                .findByType(any()))
+                .thenReturn(ListMock);
+
+        // when
+        WrapperEntitiesList
+                response =   wrapperConnector
+                .findByIdAndType(stationCode,wrapperType);
+        // then
+        assertEquals(response.getWrapperEntities(), ListMock);
+        verify(repositoryMock, times(1))
+                .findByType(any());
+        verifyNoMoreInteractions(repositoryMock);
+    }
 }
