@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.117"
+    "version" : "0.0.119"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -462,6 +462,137 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ChannelDetailsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/channels/get-wrapper/{wrapperType}/{wrapperStatus}" : {
+      "get" : {
+        "tags" : [ "channels" ],
+        "summary" : "getWrapperByTypeAndStatus",
+        "description" : "Get Wrapper Channel Details from cosmos db",
+        "operationId" : "getWrapperByTypeAndStatusUsingGET",
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of elements on one page. Default = 50",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number. Page value starts from 0",
+          "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "wrapperType",
+          "in" : "path",
+          "description" : "Type of Wrapper like CHANNEL or STATION",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CHANNEL", "STATION" ]
+          }
+        }, {
+          "name" : "wrapperStatus",
+          "in" : "path",
+          "description" : "Validation Status of a CHANNEL or STATION  ",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          }
+        }, {
+          "name" : "brokerCode",
+          "in" : "query",
+          "description" : "Broker code filter for search",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "idLike",
+          "in" : "query",
+          "description" : "Query with sql like parameter for field id search",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "sorting",
+          "in" : "query",
+          "description" : "Method of sorting",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WrapperEntitiesList"
                 }
               }
             }
@@ -2754,6 +2885,79 @@
         } ]
       }
     },
+    "/stations/get-wrapperEntities/{code}" : {
+      "get" : {
+        "tags" : [ "stations" ],
+        "summary" : "getWrapperEntitiesStation",
+        "description" : "Get wrapper station from mongo DB",
+        "operationId" : "getWrapperEntitiesStationUsingGET",
+        "parameters" : [ {
+          "name" : "code",
+          "in" : "path",
+          "description" : "Channlecode or StationCode",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WrapperEntitiesOperations"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/stations/update-wrapperStation" : {
       "put" : {
         "tags" : [ "stations" ],
@@ -4680,9 +4884,6 @@
           "new_password" : {
             "type" : "string"
           },
-          "operatedBy" : {
-            "type" : "string"
-          },
           "password" : {
             "type" : "string"
           },
@@ -4754,10 +4955,20 @@
           "target_host" : {
             "type" : "string"
           },
+          "target_host_pof" : {
+            "type" : "string"
+          },
           "target_path" : {
             "type" : "string"
           },
+          "target_path_pof" : {
+            "type" : "string"
+          },
           "target_port" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "target_port_pof" : {
             "type" : "integer",
             "format" : "int64"
           },
@@ -5211,13 +5422,13 @@
             "type" : "string",
             "description" : "channel's new password"
           },
+          "nmp_service" : {
+            "type" : "string",
+            "description" : "nmp service"
+          },
           "note" : {
             "type" : "string",
             "description" : "channel note description by operation team"
-          },
-          "npm_service" : {
-            "type" : "string",
-            "description" : "npm service"
           },
           "on_us" : {
             "type" : "boolean",
@@ -5320,14 +5531,26 @@
             "type" : "string",
             "description" : "target host"
           },
+          "target_host_nmp" : {
+            "type" : "string",
+            "description" : "target host NMP"
+          },
           "target_path" : {
             "type" : "string",
             "description" : "target path's"
+          },
+          "target_path_nmp" : {
+            "type" : "string",
+            "description" : "target path NMP"
           },
           "target_port" : {
             "type" : "integer",
             "description" : "target port",
             "format" : "int64"
+          },
+          "target_port_nmp" : {
+            "type" : "string",
+            "description" : "target port NMP"
           },
           "thread_number" : {
             "type" : "integer",
@@ -5353,6 +5576,21 @@
             "type" : "string",
             "description" : "entities type",
             "enum" : [ "CHANNEL", "STATION" ]
+          }
+        }
+      },
+      "WrapperEntitiesList" : {
+        "title" : "WrapperEntitiesList",
+        "type" : "object",
+        "properties" : {
+          "page_info" : {
+            "$ref" : "#/components/schemas/PageInfo"
+          },
+          "wrapper_entities" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/WrapperEntitiesOperationsOfobject"
+            }
           }
         }
       },
@@ -5444,6 +5682,52 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/WrapperEntityOperationsOfStationDetails"
+            }
+          }
+        }
+      },
+      "WrapperEntitiesOperationsOfobject" : {
+        "title" : "WrapperEntitiesOperationsOfobject",
+        "type" : "object",
+        "properties" : {
+          "brokerCode" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "createdBy" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "modifiedBy" : {
+            "type" : "string"
+          },
+          "modifiedByOpt" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "CHANNEL", "STATION" ]
+          },
+          "wrapperEntityOperationsSortedList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/WrapperEntityOperationsOfobject"
             }
           }
         }

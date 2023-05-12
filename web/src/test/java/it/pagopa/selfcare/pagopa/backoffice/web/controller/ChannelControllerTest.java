@@ -34,6 +34,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -818,31 +819,7 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(wrapperServiceMock);
     }
 
-    @Test
-    void getWrapperEntities_station() throws Exception {
-        //given
-        String code = "code";
-        StationDetails stationDetails = mockInstance(new StationDetails());
-        DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
-        DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
-        wrapperEntities.setEntities(List.of(wrapperEntity));
 
-        when(wrapperServiceMock.findById(anyString()))
-                .thenReturn(wrapperEntities);
-        //when
-        mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL + "/get-wrapperEntities/{code}", code)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
-                .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
-                .andExpect(jsonPath("$.entities", notNullValue()));
-
-        verify(wrapperServiceMock, times(1))
-                .findById(anyString());
-
-        verifyNoMoreInteractions(wrapperServiceMock);
-    }
 
     @Test
     void updateWrapperChannelDetails(@Value("classpath:stubs/channelDto.json") Resource dto) throws Exception {
@@ -916,7 +893,7 @@ class ChannelControllerTest {
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
-    //@Test
+    @Test
     void getWrapperByTypeAndStatus() throws Exception {
         //given
         WrapperStatus status = WrapperStatus.TO_CHECK;
@@ -925,10 +902,13 @@ class ChannelControllerTest {
         String idLike = "idLike";
         Integer page = 0;
         Integer size = 50;
+        String sorting = "DESC";
 
         ChannelDetails channelDetails = mockInstance(new ChannelDetails());
         DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        wrapperEntity.setModifiedAt(Instant.now());
         DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setModifiedAt(Instant.now());
         wrapperEntities.setEntities(List.of(wrapperEntity));
 
 
@@ -937,7 +917,7 @@ class ChannelControllerTest {
         wrapperEntitiesList.setWrapperEntities(List.of(wrapperEntities));
         wrapperEntitiesList.setPageInfo(pageInfo);
 
-        when(wrapperServiceMock.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, page, size))
+        when(wrapperServiceMock.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, page, size,sorting))
                 .thenReturn(wrapperEntitiesList);
 
         //when
@@ -948,6 +928,7 @@ class ChannelControllerTest {
                         .queryParam("page", String.valueOf(page))
                         .queryParam("brokerCode", brokerCode)
                         .queryParam("idLike", idLike)
+                        .queryParam("sorting", sorting)
 
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
@@ -956,7 +937,7 @@ class ChannelControllerTest {
 
         //then
         verify(wrapperServiceMock, times(1))
-                .findByStatusAndTypeAndBrokerCodeAndIdLike(any(), any(), anyString(), anyString(), anyInt(), anyInt());
+                .findByStatusAndTypeAndBrokerCodeAndIdLike(any(), any(), anyString(), anyString(), anyInt(), anyInt(), anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }

@@ -5,9 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
@@ -476,30 +474,31 @@ public class ChannelController {
         return ResponseEntity.ok(wfespPluginConfs);
     }
 
-//    @GetMapping(value = "get-wrapper/{wrapperType}/{wrapperStatus}", produces = {MediaType.APPLICATION_JSON_VALUE})
-//    @ResponseStatus(HttpStatus.OK)
-//    @ApiOperation(value = "", notes = "${swagger.api.channels.getWrapperByTypeAndStatus}")
-//    public WrapperEntitiesList getWrapperByTypeAndStatus(@ApiParam("${swagger.request.limit}")
-//                                                         @RequestParam(required = false, defaultValue = "50") Integer limit,
-//                                                         @ApiParam("${swagger.request.page}")
-//                                                         @RequestParam Integer page,
-//                                                         @ApiParam("${swagger.request.wrapperType}")
-//                                                         @PathVariable("wrapperType") WrapperType wrapperType,
-//                                                         @ApiParam("${swagger.request.wrapperStatus}")
-//                                                         @PathVariable("wrapperStatus") WrapperStatus wrapperStatus,
-//                                                         @ApiParam("${swagger.request.brokerCode}")
-//                                                         @RequestParam(required = false,value = "brokerCode") String brokerCode,
-//                                                         @ApiParam("${swagger.request.idLike}")
-//                                                         @RequestParam(required = false,value ="idLike") String idLike) {
-//        log.trace("getWrapperByTypeAndStatus start");
-//
-//        log.debug("getWrapperByTypeAndStatus wrapperType = {} WrapperStatus = {} page = {} limit = {}", wrapperType, wrapperStatus, page, limit);
-//        WrapperEntitiesList response = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(wrapperStatus,wrapperType,brokerCode,idLike, page, limit);
-//
-//        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getWrapperByTypeAndStatus result = {}", response);
-//        log.trace("getWrapperByTypeAndStatus end");
-//
-//        return response;
-//    }
+    @GetMapping(value = "get-wrapper/{wrapperType}/{wrapperStatus}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getWrapperByTypeAndStatus}")
+    public WrapperEntitiesList getWrapperByTypeAndStatus(@ApiParam("${swagger.request.limit}")
+                                                         @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                         @ApiParam("${swagger.request.page}")
+                                                         @RequestParam Integer page,
+                                                         @ApiParam("${swagger.request.wrapperType}")
+                                                         @PathVariable("wrapperType") WrapperType wrapperType,
+                                                         @ApiParam("${swagger.request.wrapperStatus}")
+                                                         @PathVariable(required = false, value = "wrapperStatus") WrapperStatus wrapperStatus,
+                                                         @ApiParam("${swagger.request.brokerCode}")
+                                                         @RequestParam(required = false, value = "brokerCode") String brokerCode,
+                                                         @ApiParam("${swagger.request.idLike}")
+                                                         @RequestParam(required = false, value = "idLike") String idLike,
+                                                         @ApiParam("${swagger.request.sorting}")
+                                                         @RequestParam(required = false, value = "sorting") String sorting) {
+        log.trace("getWrapperByTypeAndStatus start");
+        log.debug("getWrapperByTypeAndStatus wrapperType = {} WrapperStatus = {} page = {} limit = {}", wrapperType, wrapperStatus, page, limit);
+        WrapperEntitiesList response = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(wrapperStatus, wrapperType, brokerCode, idLike, page, limit, sorting);
+
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getWrapperByTypeAndStatus result = {}", response);
+        log.trace("getWrapperByTypeAndStatus end");
+
+        return response;
+    }
 }
 
