@@ -200,6 +200,21 @@ public class WrapperConnectorImpl implements WrapperConnector {
         return repository.findById(id).map(Function.identity());
     }
 
+    @Override
+    public WrapperEntitiesList findByIdAndType(String id, WrapperType wrapperType) {
+
+        List<WrapperEntitiesOperations<?>> response;
+        if(id==null){
+            response = repository.findByType(wrapperType);
+        }else {
+            response = repository.findByIdAndType(id, wrapperType);
+        }
+        WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
+        wrapperEntitiesList.setWrapperEntities(response);
+
+        return wrapperEntitiesList;
+    }
+
 //    @Override
 //    public List<WrapperEntitiesOperations> findAll() {
 //        return new ArrayList<>(repository.findAll());

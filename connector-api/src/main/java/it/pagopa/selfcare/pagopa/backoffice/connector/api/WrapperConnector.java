@@ -27,4 +27,5 @@ public interface WrapperConnector {
 
     Optional<WrapperEntitiesOperations> findById(String id);
 
+    WrapperEntitiesList findByIdAndType(String id, WrapperType wrapperType);
 }

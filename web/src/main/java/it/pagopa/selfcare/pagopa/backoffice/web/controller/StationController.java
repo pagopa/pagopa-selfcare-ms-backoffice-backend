@@ -5,11 +5,15 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
@@ -30,6 +34,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.BufferedInputStream;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -216,5 +223,33 @@ public class StationController {
         log.debug("getWrapperEntities result = {}", result);
         log.trace("getWrapperEntities end");
         return result;
+    }
+
+    @GetMapping(value = "getAllStations", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getAllStationsMerged}")
+    public StationsResource getAllStationsMerged(@ApiParam("${swagger.request.limit}")
+                                                     @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                     @ApiParam("${swagger.model.station.code}")
+                                                     @RequestParam(required = false, value = "stationcode") String stationCode,
+                                                     @ApiParam("${swagger.request.page}")
+                                                     @RequestParam Integer page,
+                                                     @ApiParam("${swagger.request.sorting}")
+                                                     @RequestParam(required = false, value = "sorting") String sorting) {
+        log.trace("getAllStationsMerged start");
+        log.debug("getAllStationsMerged page = {} limit = {}", page, limit);
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getchannels xRequestId = {}", xRequestId);
+        Stations stations = apiConfigService.getStations(limit, page, sorting, null, stationCode, xRequestId);
+        WrapperEntitiesList mongoList = wrapperService.findByIdAndType(stationCode, WrapperType.STATION);
+        stations.getStationsList().addAll(stationMapper.fromWrapperEntitiesList(mongoList).getStationsList());
+        Stations stationsSorted = apiConfigService.sortStations(stations, sorting);
+        StationsResource response = new StationsResource();
+        List<StationResource> stationResourceList = new ArrayList<>(stationMapper.toResourceList(stationsSorted));
+        response.setStationsList(stationResourceList);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getWrapperByTypeAndStatus result = {}", response);
+        log.trace("getWrapperByTypeAndStatus end");
+
+        return response;
     }
 }

@@ -5,11 +5,14 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -19,6 +22,8 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.Credit
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.WrapperStationDetailsDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -33,8 +38,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.InputStream;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
@@ -45,6 +54,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = {StationController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
@@ -83,8 +94,7 @@ class StationControllerTest {
         when(apiConfigServiceMock.getStations(anyInt(), anyInt(), any(), any(), any(), any()))
                 .thenReturn(stations);
         //when
-        mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL)
+        mvc.perform(get(BASE_URL)
                         .queryParam("limit", String.valueOf(limit))
                         .queryParam("page", String.valueOf(page))
                         .queryParam("sort", sort)
@@ -109,8 +119,7 @@ class StationControllerTest {
         when(apiConfigServiceMock.getStation(anyString(), anyString()))
                 .thenReturn(station);
         //when
-        mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL + "/details/{stationId}", stationId)
+        mvc.perform(get(BASE_URL + "/details/{stationId}", stationId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.stationCode", notNullValue()))
@@ -233,8 +242,7 @@ class StationControllerTest {
                 .thenReturn(stationCode);
 
         //when
-        mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL + "/{ecCode}/generate", ecCode)
+        mvc.perform(get(BASE_URL + "/{ecCode}/generate", ecCode)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.stationCode", is(stationCode)));
@@ -446,8 +454,7 @@ class StationControllerTest {
         when(wrapperServiceMock.findById(anyString()))
                 .thenReturn(wrapperEntities);
         //when
-        mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL + "/get-wrapperEntities/{code}", code)
+        mvc.perform(get(BASE_URL + "/get-wrapperEntities/{code}", code)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
@@ -458,6 +465,61 @@ class StationControllerTest {
                 .findById(anyString());
 
         verifyNoMoreInteractions(wrapperServiceMock);
+    }
+
+    @Test
+    void getAllStationsMerged() throws Exception {
+        //given
+        WrapperType wrapperType = WrapperType.STATION;
+        String stationCode = "stationCode";
+        Integer page = 0;
+        Integer size = 50;
+        String sorting = "ASC";
+
+        Stations stations = mockInstance(new Stations());
+        List<Station> stationList = mockInstance(new ArrayList<>());
+        stations.setStationsList(stationList);
+        StationDetails stationDetails = mockInstance(new StationDetails());
+        DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
+        wrapperEntity.setEntity(stationDetails);
+        wrapperEntity.setModifiedAt(Instant.now());
+        DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setModifiedAt(Instant.now());
+        wrapperEntities.setEntities(List.of(wrapperEntity));
+        WrapperEntitiesList mongoList = mockInstance(new WrapperEntitiesList());
+        PageInfo pageInfo = mockInstance(new PageInfo());
+        mongoList.setWrapperEntities(List.of(wrapperEntities));
+        mongoList.setPageInfo(pageInfo);
+
+        when(wrapperServiceMock.findByIdAndType(stationCode, wrapperType))
+                .thenReturn(mongoList);
+        when(apiConfigServiceMock.getStations(anyInt(), anyInt(), anyString(), isNull(), anyString(), anyString()))
+                .thenReturn(stations);
+        stations = mapper.fromWrapperEntitiesList(mongoList);
+        when(apiConfigServiceMock.sortStations(stations, sorting))
+                .thenReturn(stations);
+
+        //when
+        mvc.perform(get(BASE_URL + "/getAllStations")
+
+                        .queryParam("limit", String.valueOf(size))
+                        .queryParam("stationcode", stationCode)
+                        .queryParam("page", String.valueOf(page))
+                        .queryParam("sorting", sorting)
+                
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.stationsList", hasSize(1)));
+
+        //then
+        verify(wrapperServiceMock, times(1))
+                .findByIdAndType(anyString(), any());
+        verify(apiConfigServiceMock, times(1))
+                .getStations(anyInt(), anyInt(), anyString(), isNull(), anyString(), anyString());
+        verify(apiConfigServiceMock, times(1))
+                .sortStations(any(), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }
 

@@ -10,6 +10,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -302,6 +304,21 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.debug("createPaymentServiceProvider result = {}", response);
         log.trace("createPaymentServiceProvider end");
         return response;
+    }
+
+    public Stations sortStations(Stations stations, String sorting) {
+        log.trace("sortStations start");
+        List<Station> station = stations.getStationsList();
+        if ("asc".equalsIgnoreCase(sorting)) {
+            station.sort(Comparator.comparing(Station::getStationCode));
+        } else if ("desc".equalsIgnoreCase(sorting)) {
+            station.sort(Comparator.comparing(Station::getStationCode, Comparator.reverseOrder()));
+        }
+        Stations result = new Stations();
+        result.setStationsList(station);
+        result.setPageInfo(stations.getPageInfo());
+        log.trace("sortStations end");
+        return result;
     }
 
 }
