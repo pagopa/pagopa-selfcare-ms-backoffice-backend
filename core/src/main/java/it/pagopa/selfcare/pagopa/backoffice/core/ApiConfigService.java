@@ -66,5 +66,9 @@ public interface ApiConfigService {
                                                                 String xRequestId);
     StationDetails updateStation(String stationCode, StationDetails stationDetails, String xRequestId);
 
+
+    Stations sortStations(Stations stations, String sorting);
+
     WfespPluginConfs getWfespPlugins(String xRequestId);
+
 }
