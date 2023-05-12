@@ -479,8 +479,6 @@ class StationControllerTest {
         Stations stations = mockInstance(new Stations());
         List<Station> stationList = mockInstance(new ArrayList<>());
         stations.setStationsList(stationList);
-
-
         StationDetails stationDetails = mockInstance(new StationDetails());
         DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
         wrapperEntity.setEntity(stationDetails);
@@ -488,40 +486,38 @@ class StationControllerTest {
         DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
         wrapperEntities.setModifiedAt(Instant.now());
         wrapperEntities.setEntities(List.of(wrapperEntity));
-
         WrapperEntitiesList mongoList = mockInstance(new WrapperEntitiesList());
         PageInfo pageInfo = mockInstance(new PageInfo());
         mongoList.setWrapperEntities(List.of(wrapperEntities));
         mongoList.setPageInfo(pageInfo);
 
-        List<StationResource> stationResourceList = new ArrayList<>();
-
         when(wrapperServiceMock.findByIdAndType(stationCode, wrapperType))
                 .thenReturn(mongoList);
         when(apiConfigServiceMock.getStations(anyInt(), anyInt(), anyString(), isNull(), anyString(), anyString()))
                 .thenReturn(stations);
-
         stations = mapper.fromWrapperEntitiesList(mongoList);
-
-
         when(apiConfigServiceMock.sortStations(stations, sorting))
                 .thenReturn(stations);
 
-        stationResourceList = mapper.toResourceList(stations);
         //when
-        mvc.perform(get(BASE_URL + "/getAllStation")
+        mvc.perform(get(BASE_URL + "/getAllStations")
 
                         .queryParam("limit", String.valueOf(size))
-                        .queryParam("page", String.valueOf(page))
                         .queryParam("stationcode", stationCode)
-
+                        .queryParam("page", String.valueOf(page))
+                        .queryParam("sorting", sorting)
+                
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.stationsList", hasSize(0)));
+                .andExpect(jsonPath("$.stationsList", hasSize(1)));
 
         //then
         verify(wrapperServiceMock, times(1))
                 .findByIdAndType(anyString(), any());
+        verify(apiConfigServiceMock, times(1))
+                .getStations(anyInt(), anyInt(), anyString(), isNull(), anyString(), anyString());
+        verify(apiConfigServiceMock, times(1))
+                .sortStations(any(), anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
