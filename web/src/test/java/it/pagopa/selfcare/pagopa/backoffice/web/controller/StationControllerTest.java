@@ -10,6 +10,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInst
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
@@ -21,6 +22,8 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.Credit
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.WrapperStationDetailsDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -35,9 +38,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.InputStream;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
@@ -48,6 +54,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = {StationController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
@@ -86,8 +94,7 @@ class StationControllerTest {
         when(apiConfigServiceMock.getStations(anyInt(), anyInt(), any(), any(), any(), any()))
                 .thenReturn(stations);
         //when
-        mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL)
+        mvc.perform(get(BASE_URL)
                         .queryParam("limit", String.valueOf(limit))
                         .queryParam("page", String.valueOf(page))
                         .queryParam("sort", sort)
@@ -112,8 +119,7 @@ class StationControllerTest {
         when(apiConfigServiceMock.getStation(anyString(), anyString()))
                 .thenReturn(station);
         //when
-        mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL + "/details/{stationId}", stationId)
+        mvc.perform(get(BASE_URL + "/details/{stationId}", stationId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.stationCode", notNullValue()))
@@ -236,8 +242,7 @@ class StationControllerTest {
                 .thenReturn(stationCode);
 
         //when
-        mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL + "/{ecCode}/generate", ecCode)
+        mvc.perform(get(BASE_URL + "/{ecCode}/generate", ecCode)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.stationCode", is(stationCode)));
@@ -449,8 +454,7 @@ class StationControllerTest {
         when(wrapperServiceMock.findById(anyString()))
                 .thenReturn(wrapperEntities);
         //when
-        mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL + "/get-wrapperEntities/{code}", code)
+        mvc.perform(get(BASE_URL + "/get-wrapperEntities/{code}", code)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
@@ -470,26 +474,42 @@ class StationControllerTest {
         String stationCode = "stationCode";
         Integer page = 0;
         Integer size = 50;
+        String sorting = "ASC";
 
-        ChannelDetails channelDetails = mockInstance(new ChannelDetails());
-        DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        Stations stations = mockInstance(new Stations());
+        List<Station> stationList = mockInstance(new ArrayList<>());
+        stations.setStationsList(stationList);
+
+
+        StationDetails stationDetails = mockInstance(new StationDetails());
+        DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
+        wrapperEntity.setEntity(stationDetails);
         wrapperEntity.setModifiedAt(Instant.now());
-        DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
         wrapperEntities.setModifiedAt(Instant.now());
         wrapperEntities.setEntities(List.of(wrapperEntity));
 
-
-        WrapperEntitiesList wrapperEntitiesList = mockInstance(new WrapperEntitiesList());
+        WrapperEntitiesList mongoList = mockInstance(new WrapperEntitiesList());
         PageInfo pageInfo = mockInstance(new PageInfo());
-        wrapperEntitiesList.setWrapperEntities(List.of(wrapperEntities));
-        wrapperEntitiesList.setPageInfo(pageInfo);
+        mongoList.setWrapperEntities(List.of(wrapperEntities));
+        mongoList.setPageInfo(pageInfo);
+
+        List<StationResource> stationResourceList = new ArrayList<>();
 
         when(wrapperServiceMock.findByIdAndType(stationCode, wrapperType))
-                .thenReturn(wrapperEntitiesList);
+                .thenReturn(mongoList);
+        when(apiConfigServiceMock.getStations(anyInt(), anyInt(), anyString(), isNull(), anyString(), anyString()))
+                .thenReturn(stations);
 
+        stations = mapper.fromWrapperEntitiesList(mongoList);
+
+
+        when(apiConfigServiceMock.sortStations(stations, sorting))
+                .thenReturn(stations);
+
+        stationResourceList = mapper.toResourceList(stations);
         //when
-        mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL + "/getAllStation")
+        mvc.perform(get(BASE_URL + "/getAllStation")
 
                         .queryParam("limit", String.valueOf(size))
                         .queryParam("page", String.valueOf(page))
@@ -497,8 +517,7 @@ class StationControllerTest {
 
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.wrapper_entities[0].id", is(wrapperEntitiesList.getWrapperEntities().get(0).getId())))
-                .andExpect(jsonPath("$.page_info.page", is(wrapperEntitiesList.getPageInfo().getPage())));
+                .andExpect(jsonPath("$.stationsList", hasSize(0)));
 
         //then
         verify(wrapperServiceMock, times(1))
