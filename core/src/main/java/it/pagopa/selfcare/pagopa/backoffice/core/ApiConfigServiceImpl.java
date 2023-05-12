@@ -260,6 +260,16 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
+    public WfespPluginConfs getWfespPlugins(String xRequestId) {
+        log.trace("getWfespPlugins start");
+        log.debug("getWfespPlugins  xRequestId = {}", xRequestId);
+        WfespPluginConfs response = apiConfigConnector.getWfespPlugins(xRequestId);
+        log.debug("getWfespPlugins result = {}", response);
+        log.trace("getWfespPlugins end");
+        return response;
+    }
+
+    @Override
     public Resource getChannelsCSV(String uuid) {
         log.trace("getChannelsCSV start");
         Resource response = apiConfigConnector.getChannelsCSV(uuid);

@@ -64,4 +64,6 @@ public interface ApiConfigConnector {
                                                                 CreditorInstitutionDetails request,
                                                                 String xRequestId);
     StationDetails updateStation(String stationCode, StationDetails stationDetails, String xRequestId);
+
+    WfespPluginConfs getWfespPlugins(String xRequestId);
 }

@@ -164,4 +164,8 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     StationDetails updateStation(@PathVariable("stationcode") String stationCode,
                                                                  @RequestBody StationDetails stationDetails,
                                                                  @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
+    @GetMapping(value = "${rest-client.api-config.getWfespPlugins.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    WfespPluginConfs getWfespPlugins(@RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 }
