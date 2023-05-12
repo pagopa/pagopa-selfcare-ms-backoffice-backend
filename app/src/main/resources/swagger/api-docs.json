@@ -1284,6 +1284,69 @@
         } ]
       }
     },
+    "/channels/wfespplugins" : {
+      "get" : {
+        "tags" : [ "channels" ],
+        "summary" : "getWfespPlugins",
+        "description" : "Update a WrapperChannel on Cosmodb",
+        "operationId" : "getWfespPluginsUsingGET",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WfespPluginConfs"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/channels/{brokerpspcode}/paymentserviceproviders" : {
       "get" : {
         "tags" : [ "channels" ],
@@ -2958,11 +3021,113 @@
         } ]
       }
     },
+    "/stations/getAllStations" : {
+      "get" : {
+        "tags" : [ "stations" ],
+        "summary" : "getAllStationsMerged",
+        "description" : "Get All Station from cosmos db merged whit apiConfig",
+        "operationId" : "getAllStationsMergedUsingGET",
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of elements on one page. Default = 50",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "stationcode",
+          "in" : "query",
+          "description" : "Station's unique identifier",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number. Page value starts from 0",
+          "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "sorting",
+          "in" : "query",
+          "description" : "Method of sorting",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StationsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/stations/update-wrapperStation" : {
       "put" : {
         "tags" : [ "stations" ],
         "summary" : "updateWrapperStationDetails",
-        "description" : "Update WrapperStationDetails ",
+        "description" : "Update WrapperStationDetails",
         "operationId" : "updateWrapperStationDetailsUsingPUT",
         "requestBody" : {
           "content" : {
@@ -5276,6 +5441,39 @@
             "type" : "boolean",
             "description" : "Enables the zipping of the content that goes through fstp",
             "example" : false
+          }
+        }
+      },
+      "WfespPluginConf" : {
+        "title" : "WfespPluginConf",
+        "type" : "object",
+        "properties" : {
+          "id_bean" : {
+            "type" : "string"
+          },
+          "id_serv_plugin" : {
+            "type" : "string"
+          },
+          "pag_const_string_profile" : {
+            "type" : "string"
+          },
+          "pag_rpt_xpath_profile" : {
+            "type" : "string"
+          },
+          "pag_soap_rule_profile" : {
+            "type" : "string"
+          }
+        }
+      },
+      "WfespPluginConfs" : {
+        "title" : "WfespPluginConfs",
+        "type" : "object",
+        "properties" : {
+          "wfesp_plugin_confs" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/WfespPluginConf"
+            }
           }
         }
       },

@@ -722,6 +722,17 @@ class ApiConfigServiceImplTest {
         //then
         assertNotNull(stationsRes);
     }
+    @Test
+    void sortStations_nullSorting() {
+        //given
+        Stations stations = mock(Stations.class);
+        String sorting = null;
+
+        //when
+        Stations stationsRes = apiConfigService.sortStations(stations, sorting);
+        //then
+        assertNotNull(stationsRes);
+    }
 
     @Test
     void getWfespPlugins() {
