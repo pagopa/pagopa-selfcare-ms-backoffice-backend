@@ -311,7 +311,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         List<Station> station = stations.getStationsList();
         if ("asc".equalsIgnoreCase(sorting)) {
             station.sort(Comparator.comparing(Station::getStationCode));
-        } else if ("des".equalsIgnoreCase(sorting)) {
+        } else if ("desc".equalsIgnoreCase(sorting)) {
             station.sort(Comparator.comparing(Station::getStationCode, Comparator.reverseOrder()));
         }
         Stations result = new Stations();
