@@ -552,7 +552,7 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
-    void updateCreditorInstitution(){
+    void updateCreditorInstitution() {
         //given
         String ecCode = "ecCode";
         String xRequestId = UUID.randomUUID().toString();
@@ -562,7 +562,7 @@ class ApiConfigServiceImplTest {
         //when
         CreditorInstitutionDetails response = apiConfigService.updateCreditorInstitutionDetails(ecCode, request, xRequestId);
         //then
-        assertSame( request, response);
+        assertSame(request, response);
         verify(apiConfigConnectorMock, times(1)).updateCreditorInstitutionDetails(ecCode, request, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
@@ -612,7 +612,7 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
-    void createCreditorInstitutionStationRelationship(){
+    void createCreditorInstitutionStationRelationship() {
         //given
         String ecCode = "ecCode";
         String xRequestId = "xRequestId";
@@ -630,7 +630,7 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
-    void createCreditorInstitution(){
+    void createCreditorInstitution() {
         //given
         String xRequestId = UUID.randomUUID().toString();
         CreditorInstitutionDetails creditorInstitutionDetails = mockInstance(new CreditorInstitutionDetails());
@@ -647,7 +647,7 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
-    void getCreditorInstitutionDetails_nullCode(){
+    void getCreditorInstitutionDetails_nullCode() {
         //given
         String ecCode = null;
         String xRequestId = UUID.randomUUID().toString();
@@ -660,7 +660,7 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
-    void getCreditorInstitutionDetails(){
+    void getCreditorInstitutionDetails() {
         //given
         String ecCode = "creditorInstitutionCode";
         String xRequestId = UUID.randomUUID().toString();
@@ -696,6 +696,24 @@ class ApiConfigServiceImplTest {
         reflectionEqualsByName(stationDetailsRes, stationDetailsMock);
         verify(apiConfigConnectorMock, times(1))
                 .updateStation(stationCode, stationDetailsMock, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void getWfespPlugins() {
+        //given
+        final String xRequestId = "xRequestId";
+        WfespPluginConfs wfespPluginConfsMock = mock(WfespPluginConfs.class);
+
+        when(apiConfigConnectorMock.getWfespPlugins(anyString()))
+                .thenReturn(wfespPluginConfsMock);
+
+        //when
+        WfespPluginConfs response = apiConfigService.getWfespPlugins(xRequestId);
+        //then
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .getWfespPlugins(anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 }
