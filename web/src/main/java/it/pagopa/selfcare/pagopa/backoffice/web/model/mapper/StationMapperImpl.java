@@ -170,10 +170,8 @@ public class StationMapperImpl implements StationMapper {
         wrapperStation.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
         //default per gli ogetti di apiconfig poiche non hanno questi campi
         wrapperStation.setWrapperStatus(WrapperStatus.APPROVED);
-        LocalDateTime dateTime = LocalDateTime.of(2000, 1, 1, 0, 0);
-        ZoneOffset romeOffset =  ZoneOffset.ofHoursMinutes(1, 0);
-        OffsetDateTime offsetDateTime = OffsetDateTime.of(dateTime, romeOffset);
-        Instant instant = offsetDateTime.toInstant();
+        LocalDate dateTime = LocalDate.of(2000, 1, 1);
+        Instant instant = dateTime.atStartOfDay(ZoneOffset.UTC).toInstant();
         wrapperStation.setCreatedAt(instant);
         wrapperStation.setModifiedAt(instant);
 

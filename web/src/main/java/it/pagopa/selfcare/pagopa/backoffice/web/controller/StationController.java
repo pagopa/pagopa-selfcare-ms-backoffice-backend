@@ -229,7 +229,6 @@ public class StationController {
         log.debug("getAllStationsMerged page = {} limit = {}", page, limit);
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels xRequestId = {}", xRequestId);
-        List<WrapperStationResource> stationResourceList = new ArrayList<>();
         Stations stations = apiConfigService.getStations(limit, page, sorting, null, stationCode, xRequestId);
         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
         WrapperEntitiesList mongoList = wrapperService.findByIdOrType(stationCode, WrapperType.STATION, page, limit);
