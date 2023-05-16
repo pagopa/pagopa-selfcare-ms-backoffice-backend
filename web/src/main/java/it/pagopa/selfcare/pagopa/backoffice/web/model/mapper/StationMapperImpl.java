@@ -5,9 +5,13 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.*;
 
 import javax.annotation.processing.Generated;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -147,6 +151,130 @@ public class StationMapperImpl implements StationMapper {
         stations.setStationsList(stationList);
         stations.setPageInfo(wrapperEntitiesList.getPageInfo());
         return stations;
+    }
+
+    @Override
+    public WrapperStation toWrapperStation(Station model) {
+        if(model == null){
+            return null;
+        }
+
+        WrapperStation wrapperStation = new WrapperStation();
+
+        wrapperStation.setStationCode(model.getStationCode());
+        wrapperStation.setEnabled(model.getEnabled());
+        wrapperStation.setBrokerDescription(model.getBrokerDescription());
+        wrapperStation.setVersion(model.getVersion());
+        wrapperStation.setStationStatus(model.getStationStatus());
+        wrapperStation.setActivationDate(model.getActivationDate());
+        wrapperStation.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
+        //default per gli ogetti di apiconfig poiche non hanno questi campi
+        wrapperStation.setWrapperStatus(WrapperStatus.APPROVED);
+        LocalDateTime dateTime = LocalDateTime.of(2000, 1, 1, 0, 0);
+        ZoneOffset romeOffset =  ZoneOffset.ofHoursMinutes(1, 0);
+        OffsetDateTime offsetDateTime = OffsetDateTime.of(dateTime, romeOffset);
+        Instant instant = offsetDateTime.toInstant();
+        wrapperStation.setCreatedAt(instant);
+        wrapperStation.setModifiedAt(instant);
+
+        return wrapperStation;
+    }
+
+    @Override
+    public WrapperStations toWrapperStations(Stations model) {
+        if (model == null) {
+            return null;
+        }
+
+        WrapperStations wrapperStations = new WrapperStations();
+
+        wrapperStations.setStationsList(model.getStationsList().stream()
+                .map(station -> toWrapperStation(station))
+                .collect(Collectors.toList()));
+        wrapperStations.setPageInfo(model.getPageInfo());
+
+        return wrapperStations;
+    }
+
+    @Override
+    public WrapperStations toWrapperStations(WrapperEntitiesList wrapperEntitiesList) {
+        if (wrapperEntitiesList == null) {
+            return null;
+        }
+
+        WrapperStations wrapperStations = new WrapperStations();
+        List<WrapperStation> stationList = new ArrayList<>();
+
+        wrapperEntitiesList.getWrapperEntities().forEach(
+                ent-> stationList.add(toWrapperStation(
+                        (WrapperEntityOperations<StationDetails>) ent.getWrapperEntityOperationsSortedList().get(0))));
+
+        wrapperStations.setStationsList(stationList);
+        wrapperStations.setPageInfo(wrapperEntitiesList.getPageInfo());
+
+        return wrapperStations;
+    }
+
+    @Override
+    public WrapperStation toWrapperStation(WrapperEntityOperations<StationDetails> wrapperEntityOperations) {
+        if (wrapperEntityOperations == null) {
+            return null;
+        }
+
+        WrapperStation wrapperStation = new WrapperStation();
+
+        wrapperStation.setStationCode(wrapperEntityOperations.getEntity().getStationCode());
+        wrapperStation.setEnabled(wrapperEntityOperations.getEntity().getEnabled());
+        wrapperStation.setBrokerDescription(wrapperEntityOperations.getEntity().getBrokerDescription());
+        wrapperStation.setVersion(wrapperEntityOperations.getEntity().getVersion());
+        wrapperStation.setStationStatus(wrapperEntityOperations.getEntity().getStationStatus());
+        wrapperStation.setActivationDate(wrapperEntityOperations.getEntity().getActivationDate());
+        wrapperStation.setAssociatedCreditorInstitutions(wrapperEntityOperations.getEntity().getAssociatedCreditorInstitutions());
+
+        wrapperStation.setWrapperStatus(wrapperEntityOperations.getStatus());
+        wrapperStation.setCreatedAt(wrapperEntityOperations.getCreatedAt());
+        wrapperStation.setModifiedAt(wrapperEntityOperations.getModifiedAt());
+
+        return wrapperStation;
+
+    }
+
+    @Override
+    public WrapperStationsResource toWrapperStationsResource(WrapperStations wrapperStations) {
+        if (wrapperStations == null) {
+            return null;
+        }
+
+        WrapperStationsResource wrapperStationsResource = new WrapperStationsResource();
+
+        wrapperStationsResource.setStationsList(wrapperStations.getStationsList().stream()
+                .map(station -> toWrapperStationResource(station))
+                .collect(Collectors.toList()));
+        wrapperStationsResource.setPageInfo(wrapperStations.getPageInfo());
+
+        return wrapperStationsResource;
+    }
+
+    @Override
+    public WrapperStationResource toWrapperStationResource(WrapperStation wrapperStation) {
+        if (wrapperStation == null) {
+            return null;
+        }
+
+        WrapperStationResource wrapperStationResource = new WrapperStationResource();
+
+        wrapperStationResource.setStationCode(wrapperStation.getStationCode());
+        wrapperStationResource.setEnabled(wrapperStation.getEnabled());
+        wrapperStationResource.setBrokerDescription(wrapperStation.getBrokerDescription());
+        wrapperStationResource.setVersion(wrapperStation.getVersion());
+        wrapperStationResource.setStationStatus(wrapperStation.getStationStatus());
+        wrapperStationResource.setActivationDate(wrapperStation.getActivationDate());
+        wrapperStationResource.setAssociatedCreditorInstitutions(wrapperStation.getAssociatedCreditorInstitutions());
+        wrapperStationResource.setWrapperStatus(wrapperStation.getWrapperStatus());
+        wrapperStationResource.setCreatedAt(wrapperStation.getCreatedAt());
+        wrapperStationResource.setModifiedAt(wrapperStation.getModifiedAt());
+
+        return wrapperStationResource;
     }
 
     @Override

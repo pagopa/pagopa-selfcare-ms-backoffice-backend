@@ -189,7 +189,6 @@ public class WrapperConnectorImpl implements WrapperConnector {
         pi.setLimit(size);
         pi.setItemsFound(response.getTotalPages());
         WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
-        response.getContent().forEach(WrapperEntitiesOperations::sortEntitesByCreatedAt);
         wrapperEntitiesList.setWrapperEntities(response.getContent());
         wrapperEntitiesList.setPageInfo(pi);
         return wrapperEntitiesList;
@@ -201,16 +200,24 @@ public class WrapperConnectorImpl implements WrapperConnector {
     }
 
     @Override
-    public WrapperEntitiesList findByIdAndType(String id, WrapperType wrapperType) {
+    public WrapperEntitiesList findByIdOrType(String id, WrapperType wrapperType, Integer page, Integer size) {
 
-        List<WrapperEntitiesOperations<?>> response;
+        Pageable paging = PageRequest.of(page, size);
+        Page<WrapperEntitiesOperations<?>> response;
+
         if(id==null){
-            response = repository.findByType(wrapperType);
+            response = repository.findByType(wrapperType, paging);
         }else {
-            response = repository.findByIdAndType(id, wrapperType);
+            response = repository.findByIdAndType(id, wrapperType, paging);
         }
+
+        PageInfo pi = new PageInfo();
+        pi.setPage(page);
+        pi.setLimit(size);
+        pi.setItemsFound(response.getTotalPages());
         WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
-        wrapperEntitiesList.setWrapperEntities(response);
+        wrapperEntitiesList.setWrapperEntities(response.getContent());
+        wrapperEntitiesList.setPageInfo(pi);
 
         return wrapperEntitiesList;
     }
