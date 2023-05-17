@@ -310,10 +310,10 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.trace("mergeAndSortWrapperStations start");
 
         List<WrapperStation> mergedList = new ArrayList<>();
-        mergedList.addAll(wrapperStationsApiConfig.getStationsList());
+        mergedList.addAll(wrapperStationsMongo.getStationsList());
         mergedList.addAll(
-                wrapperStationsMongo.getStationsList().stream()
-                        .filter(obj2 -> wrapperStationsApiConfig.getStationsList().stream().noneMatch(obj1 -> Objects.equals(obj1.getStationCode(), obj2.getStationCode())))
+                wrapperStationsApiConfig.getStationsList().stream()
+                        .filter(obj2 -> wrapperStationsMongo.getStationsList().stream().noneMatch(obj1 -> Objects.equals(obj1.getStationCode(), obj2.getStationCode())))
                         .collect(Collectors.toList())
         );
 
