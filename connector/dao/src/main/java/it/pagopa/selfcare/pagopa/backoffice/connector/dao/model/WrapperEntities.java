@@ -70,7 +70,7 @@ public class WrapperEntities<T> implements WrapperEntitiesOperations<T>, Persist
             this.type = WrapperType.STATION;
             this.brokerCode = ((StationDetails) obj).getBrokerCode();
         }
-        this.status = WrapperStatus.TO_CHECK;
+        this.status = wrapperEntity.getStatus();
         if (entities == null) {
             entities = new ArrayList<>();
         }

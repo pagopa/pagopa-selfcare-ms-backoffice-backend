@@ -4,23 +4,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationEditResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.*;
@@ -33,11 +25,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.io.BufferedInputStream;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -228,7 +217,7 @@ public class StationController {
     @GetMapping(value = "getAllStations", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getAllStationsMerged}")
-    public StationsResource getAllStationsMerged(@ApiParam("${swagger.request.limit}")
+    public WrapperStationsResource getAllStationsMerged(@ApiParam("${swagger.request.limit}")
                                                      @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                      @ApiParam("${swagger.model.station.code}")
                                                      @RequestParam(required = false, value = "stationcode") String stationCode,
@@ -241,14 +230,13 @@ public class StationController {
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels xRequestId = {}", xRequestId);
         Stations stations = apiConfigService.getStations(limit, page, sorting, null, stationCode, xRequestId);
-        WrapperEntitiesList mongoList = wrapperService.findByIdAndType(stationCode, WrapperType.STATION);
-        stations.getStationsList().addAll(stationMapper.fromWrapperEntitiesList(mongoList).getStationsList());
-        Stations stationsSorted = apiConfigService.sortStations(stations, sorting);
-        StationsResource response = new StationsResource();
-        List<StationResource> stationResourceList = new ArrayList<>(stationMapper.toResourceList(stationsSorted));
-        response.setStationsList(stationResourceList);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getWrapperByTypeAndStatus result = {}", response);
-        log.trace("getWrapperByTypeAndStatus end");
+        WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
+        WrapperEntitiesList mongoList = wrapperService.findByIdOrType(stationCode, WrapperType.STATION, page, limit);
+        WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
+        WrapperStations stationsMergedAndSorted = apiConfigService.mergeAndSortWrapperStations(responseApiConfig, responseMongo, sorting);
+        WrapperStationsResource response = stationMapper.toWrapperStationsResource(stationsMergedAndSorted);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getAllStationsMerged result = {}", response);
+        log.trace("getAllStationsMerged end");
 
         return response;
     }
