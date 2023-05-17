@@ -4,15 +4,15 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.connector.utils.StringUtils.generator;
@@ -306,18 +306,26 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return response;
     }
 
-    public Stations sortStations(Stations stations, String sorting) {
-        log.trace("sortStations start");
-        List<Station> station = stations.getStationsList();
+    public WrapperStations mergeAndSortWrapperStations(WrapperStations wrapperStationsApiConfig, WrapperStations wrapperStationsMongo, String sorting) {
+        log.trace("mergeAndSortWrapperStations start");
+
+        List<WrapperStation> mergedList = new ArrayList<>();
+        mergedList.addAll(wrapperStationsMongo.getStationsList());
+        mergedList.addAll(
+                wrapperStationsApiConfig.getStationsList().stream()
+                        .filter(obj2 -> wrapperStationsMongo.getStationsList().stream().noneMatch(obj1 -> Objects.equals(obj1.getStationCode(), obj2.getStationCode())))
+                        .collect(Collectors.toList())
+        );
+
         if ("asc".equalsIgnoreCase(sorting)) {
-            station.sort(Comparator.comparing(Station::getStationCode));
+            mergedList.sort(Comparator.comparing(WrapperStation::getStationCode));
         } else if ("desc".equalsIgnoreCase(sorting)) {
-            station.sort(Comparator.comparing(Station::getStationCode, Comparator.reverseOrder()));
+            mergedList.sort(Comparator.comparing(WrapperStation::getStationCode, Comparator.reverseOrder()));
         }
-        Stations result = new Stations();
-        result.setStationsList(station);
-        result.setPageInfo(stations.getPageInfo());
-        log.trace("sortStations end");
+        WrapperStations result = new WrapperStations();
+        result.setStationsList(mergedList);
+        result.setPageInfo(wrapperStationsApiConfig.getPageInfo());
+        log.trace("mergeAndSortWrapperStations end");
         return result;
     }
 

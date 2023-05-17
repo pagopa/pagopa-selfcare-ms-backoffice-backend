@@ -26,5 +26,6 @@ public interface WrapperService {
 
     WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike( WrapperStatus status ,WrapperType wrapperType,String brokerCode, String idLike, Integer page, Integer limit, String sorting);
 
-    WrapperEntitiesList findByIdAndType(String id, WrapperType wrapperType);
+    WrapperEntitiesList findByIdOrType(String id, WrapperType wrapperType, Integer page, Integer size);
+
 }

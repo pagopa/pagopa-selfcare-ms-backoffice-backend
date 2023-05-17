@@ -110,11 +110,11 @@ public class WrapperServiceImpl implements WrapperService {
         return response;
     }
 
-    public WrapperEntitiesList findByIdAndType(String id, WrapperType wrapperType) {
+    public WrapperEntitiesList findByIdOrType(String id, WrapperType wrapperType, Integer page, Integer size) {
         log.trace("findAllStation start");
         log.debug("findAllStation ");
         WrapperEntitiesList response;
-        response = wrapperConnector.findByIdAndType(id, wrapperType);
+        response = wrapperConnector.findByIdOrType(id, wrapperType, page, size);
         log.debug("findByStatusAndType result = {}", response);
         log.trace("findByStatusAndType end");
         return response;

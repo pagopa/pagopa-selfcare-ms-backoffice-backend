@@ -4,26 +4,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.WrapperStationDetailsDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -38,12 +34,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
@@ -479,6 +473,7 @@ class StationControllerTest {
         Stations stations = mockInstance(new Stations());
         List<Station> stationList = mockInstance(new ArrayList<>());
         stations.setStationsList(stationList);
+
         StationDetails stationDetails = mockInstance(new StationDetails());
         DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
         wrapperEntity.setEntity(stationDetails);
@@ -486,18 +481,26 @@ class StationControllerTest {
         DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
         wrapperEntities.setModifiedAt(Instant.now());
         wrapperEntities.setEntities(List.of(wrapperEntity));
+
         WrapperEntitiesList mongoList = mockInstance(new WrapperEntitiesList());
         PageInfo pageInfo = mockInstance(new PageInfo());
         mongoList.setWrapperEntities(List.of(wrapperEntities));
         mongoList.setPageInfo(pageInfo);
+        WrapperStations wrapperStations1 = mockInstance(new WrapperStations());
 
-        when(wrapperServiceMock.findByIdAndType(stationCode, wrapperType))
+        List<WrapperStation> w1List = new ArrayList<>();
+        WrapperStation w1 = new WrapperStation();
+        w1List.add(w1);
+        wrapperStations1.setStationsList(w1List);
+
+
+
+        when(wrapperServiceMock.findByIdOrType(stationCode, wrapperType, page, size))
                 .thenReturn(mongoList);
         when(apiConfigServiceMock.getStations(anyInt(), anyInt(), anyString(), isNull(), anyString(), anyString()))
                 .thenReturn(stations);
-        stations = mapper.fromWrapperEntitiesList(mongoList);
-        when(apiConfigServiceMock.sortStations(stations, sorting))
-                .thenReturn(stations);
+        when(apiConfigServiceMock.mergeAndSortWrapperStations(any(), any(), anyString()))
+                .thenReturn(wrapperStations1);
 
         //when
         mvc.perform(get(BASE_URL + "/getAllStations")
@@ -513,11 +516,11 @@ class StationControllerTest {
 
         //then
         verify(wrapperServiceMock, times(1))
-                .findByIdAndType(anyString(), any());
+                .findByIdOrType(anyString(), any(), anyInt(), anyInt());
         verify(apiConfigServiceMock, times(1))
                 .getStations(anyInt(), anyInt(), anyString(), isNull(), anyString(), anyString());
         verify(apiConfigServiceMock, times(1))
-                .sortStations(any(), anyString());
+                .mergeAndSortWrapperStations(any(), any(), anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
