@@ -395,6 +395,11 @@ public class StationMapperImpl implements StationMapper {
         stationDetails.setTargetPort( model.getTargetPort() );
         stationDetails.setTargetPath( model.getTargetPath() );
         stationDetails.setPrimitiveVersion( model.getPrimitiveVersion() );
+        //default
+        stationDetails.setTimeoutA(15L);
+        stationDetails.setTimeoutB(30L);
+        stationDetails.setTimeoutC(120L);
+        stationDetails.setThreadNumber(1L);
 
         return stationDetails;
     }

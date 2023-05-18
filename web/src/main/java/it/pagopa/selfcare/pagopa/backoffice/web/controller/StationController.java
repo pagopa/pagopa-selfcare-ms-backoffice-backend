@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
@@ -116,6 +117,27 @@ public class StationController {
         StationDetailResource resource = stationMapper.toResource(stationDetails);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStation result = {}", resource);
         log.trace("getStation end");
+        return resource;
+    }
+
+    @GetMapping(value = "/get-details/{stationId}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.getStation}")
+    public StationDetailResource getStationDetail(@ApiParam("${swagger.model.station.code}")
+                                                  @PathVariable("stationId") String stationCode) {
+        log.trace("getStationDetail start");
+        StationDetails stationDetails;
+        try {
+            WrapperEntitiesOperations<StationDetails> result = wrapperService.findById(stationCode);
+            stationDetails = result.getWrapperEntityOperationsSortedList().get(0).getEntity();
+        }catch (ResourceNotFoundException e){
+            String uuid = UUID.randomUUID().toString();
+            log.debug("getStationDetail stationCode = {}, X-Request-Id = {}", stationCode, uuid);
+            stationDetails = apiConfigService.getStation(stationCode, uuid);
+        }
+        StationDetailResource resource = stationMapper.toResource(stationDetails);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStation result = {}", resource);
+        log.trace("getStationDetail end");
         return resource;
     }
 
