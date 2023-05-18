@@ -18,7 +18,6 @@ public class StationDetailResource extends StationResource {
     private String newPassword;
     @ApiModelProperty("${swagger.model.station.password}")
     @JsonProperty(required = true)
-    @NotBlank
     private String password;
     @ApiModelProperty("${swagger.model.station.port}")
     private Long port;
