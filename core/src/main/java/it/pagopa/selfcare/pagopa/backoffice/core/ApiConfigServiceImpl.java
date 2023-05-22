@@ -4,6 +4,8 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannel;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import lombok.extern.slf4j.Slf4j;
@@ -325,6 +327,30 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         WrapperStations result = new WrapperStations();
         result.setStationsList(mergedList);
         result.setPageInfo(wrapperStationsApiConfig.getPageInfo());
+        log.trace("mergeAndSortWrapperStations end");
+        return result;
+    }
+
+    @Override
+    public WrapperChannels mergeAndSortWrapperChannels(WrapperChannels wrapperChannelsApiConfig, WrapperChannels wrapperChannelsMongo, String sorting) {
+        log.trace("mergeAndSortWrapperStations start");
+
+        List<WrapperChannel> mergedList = new ArrayList<>();
+        mergedList.addAll(wrapperChannelsMongo.getChannelList());
+        mergedList.addAll(
+                wrapperChannelsApiConfig.getChannelList().stream()
+                        .filter(obj2 -> wrapperChannelsMongo.getChannelList().stream().noneMatch(obj1 -> Objects.equals(obj1.getChannelCode(), obj2.getChannelCode())))
+                        .collect(Collectors.toList())
+        );
+
+        if ("asc".equalsIgnoreCase(sorting)) {
+            mergedList.sort(Comparator.comparing(WrapperChannel::getChannelCode));
+        } else if ("desc".equalsIgnoreCase(sorting)) {
+            mergedList.sort(Comparator.comparing(WrapperChannel::getChannelCode, Comparator.reverseOrder()));
+        }
+        WrapperChannels result = new WrapperChannels();
+        result.setChannelList(mergedList);
+        result.setPageInfo(wrapperChannelsApiConfig.getPageInfo());
         log.trace("mergeAndSortWrapperStations end");
         return result;
     }

@@ -11,19 +11,15 @@ public class CreditorInstitutionDetailsResource extends CreditorInstitutionResou
 
 
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.address}", required = true)
-    @NotNull
     @Valid
     private CreditorInstitutionAddressResource address;
 
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.reportingZip}", required = true)
-    @NotNull
     private Boolean pspPayment;
 
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.reportingZip}", required = true)
-    @NotNull
     private Boolean reportingFtp;
 
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.reportingZip}", required = true)
-    @NotNull
     private Boolean reportingZip;
 }
