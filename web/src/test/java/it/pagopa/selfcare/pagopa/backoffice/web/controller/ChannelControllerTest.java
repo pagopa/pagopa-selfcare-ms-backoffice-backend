@@ -8,9 +8,10 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -36,6 +37,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -1079,5 +1081,69 @@ class ChannelControllerTest {
                 .getChannelPaymentTypes(eq(channelcode), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
 
+    }
+
+    @Test
+    void getAllChannelsMerged() throws Exception {
+        //given
+        WrapperType wrapperType = WrapperType.CHANNEL;
+        String channelCode = "channelCode";
+        Integer page = 0;
+        Integer size = 50;
+        String sorting = "ASC";
+
+        Channels channels = mockInstance(new Channels());
+        List<Channel> channelList = mockInstance(new ArrayList<>());
+        channels.setChannelList(channelList);
+
+        ChannelDetails channelDetails = mockInstance(new ChannelDetails());
+        DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        wrapperEntity.setEntity(channelDetails);
+        wrapperEntity.setModifiedAt(Instant.now());
+        DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setModifiedAt(Instant.now());
+        wrapperEntities.setEntities(List.of(wrapperEntity));
+
+        WrapperEntitiesList mongoList = mockInstance(new WrapperEntitiesList());
+        PageInfo pageInfo = mockInstance(new PageInfo());
+        mongoList.setWrapperEntities(List.of(wrapperEntities));
+        mongoList.setPageInfo(pageInfo);
+        WrapperChannels wrapperChannels = mockInstance(new WrapperChannels());
+
+        List<WrapperChannel> w1List = new ArrayList<>();
+        WrapperChannel w1 = new WrapperChannel();
+        w1List.add(w1);
+        wrapperChannels.setChannelList(w1List);
+
+
+
+        when(wrapperServiceMock.findByIdOrType(anyString(), any(), anyInt(), anyInt()))
+                .thenReturn(mongoList);
+        when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), any(), anyString(), anyString()))
+                .thenReturn(channels);
+        when(apiConfigServiceMock.mergeAndSortWrapperChannels(any(), any(), anyString()))
+                .thenReturn(wrapperChannels);
+
+        //when
+        mvc.perform(get(BASE_URL + "/getAllChannels")
+
+                        .queryParam("limit", String.valueOf(size))
+                        .queryParam("channelCode", channelCode)
+                        .queryParam("page", String.valueOf(page))
+                        .queryParam("sorting", sorting)
+
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.channels", hasSize(1)));
+
+        //then
+        verify(wrapperServiceMock, times(1))
+                .findByIdOrType(any(),any(), anyInt(), anyInt());
+        verify(apiConfigServiceMock, times(1))
+                .getChannels(anyInt(), anyInt(), any(), anyString(), anyString());
+        verify(apiConfigServiceMock, times(1))
+                .mergeAndSortWrapperChannels(any(), any(), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }

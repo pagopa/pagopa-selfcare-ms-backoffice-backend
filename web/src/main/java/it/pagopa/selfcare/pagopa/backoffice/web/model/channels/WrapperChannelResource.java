@@ -24,11 +24,11 @@ public class WrapperChannelResource {
     @ApiModelProperty(value = "${swagger.model.broker.description}")
     protected String brokerDescription;
 
-    @ApiModelProperty("${swagger.model.channel.createdAt}")
+    @ApiModelProperty("${swagger.model.channel.details.createdAt}")
     private Instant createdAt;
-    @ApiModelProperty("${swagger.model.channel.modifiedAt}")
+    @ApiModelProperty("${swagger.model.channel.details.modifiedAt}")
     private Instant modifiedAt;
-    @ApiModelProperty(value = "${swagger.model.channel.status}", required = true)
+    @ApiModelProperty(value = "${swagger.model.channel.details.status}", required = true)
     @JsonProperty(required = true)
     @NotNull
     private WrapperStatus wrapperStatus;
