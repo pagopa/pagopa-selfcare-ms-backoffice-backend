@@ -6,13 +6,11 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -74,6 +72,9 @@ class StationControllerTest {
 
     @MockBean
     private ApiConfigService apiConfigServiceMock;
+
+    @MockBean
+    private ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService;
 
     @MockBean
     private WrapperService wrapperServiceMock;
@@ -520,6 +521,69 @@ class StationControllerTest {
                 .sortStations(any(), anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getStationsDetailsListByBroker() throws Exception {
+        //given
+        String stationId = "code";
+        String brokerId = "stationCode";
+        Integer page = 0;
+        Integer limit = 50;
+        StationDetailsList stationDetailsList = mockInstance(new StationDetailsList());
+        StationDetails stationDetails =mockInstance(new StationDetails());
+        stationDetailsList.setStationsDetailsList(List.of(stationDetails));
+
+
+
+        when(apiConfigSelfcareIntegrationService.getStationsDetailsListByBroker(anyString(),anyString(),anyInt(),anyInt(),anyString()))
+                .thenReturn(stationDetailsList);
+        //when
+        mvc.perform(get(BASE_URL + "/{brokerId}", brokerId)
+                        .queryParam("page", String.valueOf(page))
+                        .queryParam("limit", String.valueOf(limit))
+                        .queryParam("stationId", stationId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.stations[*].stationCode", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].ip", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].newPassword", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].password", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].port", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].protocol", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].redirectIp", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].redirectPath", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].redirectPort", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].redirectQueryString", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].redirectProtocol", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].service", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].pofService", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].brokerCode", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].protocol4Mod", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].ip4Mod", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].port4Mod", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].service4Mod", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].proxyEnabled", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].proxyHost", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].proxyPort", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].proxyUsername", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].proxyPassword", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].threadNumber", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].timeoutA", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].timeoutB", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].timeoutC", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].flagOnline", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].brokerObjId", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].rtInstantaneousDispatch", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].targetHost", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].targetPort", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].targetPath", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.stations[*].primitiveVersion", everyItem(notNullValue())));
+
+        verify(apiConfigSelfcareIntegrationService, times(1))
+                .getStationsDetailsListByBroker(anyString(),anyString(),anyInt(),anyInt(),anyString());
+
+        verifyNoMoreInteractions(wrapperServiceMock);
     }
 }
 
