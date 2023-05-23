@@ -566,8 +566,6 @@ class StationControllerTest {
         when(wrapperServiceMock.findById(stationId))
                 .thenReturn(wrapperEntities);
 
-//        when(apiConfigServiceMock.getStation(anyString(), anyString()))
-//                .thenReturn(station);
         //when
         mvc.perform(get(BASE_URL + "/get-details/{stationId}", stationId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -609,8 +607,6 @@ class StationControllerTest {
         //then
         verify(wrapperServiceMock, times(1))
                 .findById(anyString());
-//        verify(apiConfigServiceMock, times(1))
-//                .getStation(eq(stationId), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 

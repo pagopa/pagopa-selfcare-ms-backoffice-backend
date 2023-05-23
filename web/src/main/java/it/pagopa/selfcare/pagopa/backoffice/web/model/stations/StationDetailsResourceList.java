@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class StationDetailsResourceList {
 
-        @ApiModelProperty(value = "${swagger.model.station}", required = true)
+        @ApiModelProperty(value = "${swagger.model.stations}", required = true)
         @JsonProperty("stations")
         private List<StationDetailResource> stationsDetailsList;
 }
