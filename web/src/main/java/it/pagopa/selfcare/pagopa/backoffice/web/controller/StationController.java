@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
@@ -11,6 +12,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetai
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
@@ -29,8 +31,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -124,6 +124,27 @@ public class StationController {
         StationDetailResource resource = stationMapper.toResource(stationDetails);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStation result = {}", resource);
         log.trace("getStation end");
+        return resource;
+    }
+
+    @GetMapping(value = "/get-details/{stationId}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.getStation}")
+    public StationDetailResource getStationDetail(@ApiParam("${swagger.model.station.code}")
+                                                  @PathVariable("stationId") String stationCode) {
+        log.trace("getStationDetail start");
+        StationDetails stationDetails;
+        try {
+            WrapperEntitiesOperations<StationDetails> result = wrapperService.findById(stationCode);
+            stationDetails = result.getWrapperEntityOperationsSortedList().get(0).getEntity();
+        }catch (ResourceNotFoundException e){
+            String uuid = UUID.randomUUID().toString();
+            log.debug("getStationDetail stationCode = {}, X-Request-Id = {}", stationCode, uuid);
+            stationDetails = apiConfigService.getStation(stationCode, uuid);
+        }
+        StationDetailResource resource = stationMapper.toResource(stationDetails);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStation result = {}", resource);
+        log.trace("getStationDetail end");
         return resource;
     }
 
@@ -226,27 +247,27 @@ public class StationController {
     @GetMapping(value = "getAllStations", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getAllStationsMerged}")
-    public StationsResource getAllStationsMerged(@ApiParam("${swagger.request.limit}")
-                                                 @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                                 @ApiParam("${swagger.model.station.code}")
-                                                 @RequestParam(required = false, value = "stationcode") String stationCode,
-                                                 @ApiParam("${swagger.request.page}")
-                                                 @RequestParam Integer page,
-                                                 @ApiParam("${swagger.request.sorting}")
-                                                 @RequestParam(required = false, value = "sorting") String sorting) {
+
+    public WrapperStationsResource getAllStationsMerged(@ApiParam("${swagger.request.limit}")
+                                                     @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                     @ApiParam("${swagger.model.station.code}")
+                                                     @RequestParam(required = false, value = "stationcode") String stationCode,
+                                                     @ApiParam("${swagger.request.page}")
+                                                     @RequestParam Integer page,
+                                                     @ApiParam("${swagger.request.sorting}")
+                                                     @RequestParam(required = false, value = "sorting") String sorting) {
         log.trace("getAllStationsMerged start");
         log.debug("getAllStationsMerged page = {} limit = {}", page, limit);
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels xRequestId = {}", xRequestId);
         Stations stations = apiConfigService.getStations(limit, page, sorting, null, stationCode, xRequestId);
-        WrapperEntitiesList mongoList = wrapperService.findByIdAndType(stationCode, WrapperType.STATION);
-        stations.getStationsList().addAll(stationMapper.fromWrapperEntitiesList(mongoList).getStationsList());
-        Stations stationsSorted = apiConfigService.sortStations(stations, sorting);
-        StationsResource response = new StationsResource();
-        List<StationResource> stationResourceList = new ArrayList<>(stationMapper.toResourceList(stationsSorted));
-        response.setStationsList(stationResourceList);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getWrapperByTypeAndStatus result = {}", response);
-        log.trace("getWrapperByTypeAndStatus end");
+        WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
+        WrapperEntitiesList mongoList = wrapperService.findByIdOrType(stationCode, WrapperType.STATION, page, limit);
+        WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
+        WrapperStations stationsMergedAndSorted = apiConfigService.mergeAndSortWrapperStations(responseApiConfig, responseMongo, sorting);
+        WrapperStationsResource response = stationMapper.toWrapperStationsResource(stationsMergedAndSorted);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getAllStationsMerged result = {}", response);
+        log.trace("getAllStationsMerged end");
 
         return response;
     }

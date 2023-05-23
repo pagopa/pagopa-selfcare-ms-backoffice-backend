@@ -265,7 +265,11 @@ public class ChannelMapper {
             resource.setBrokerDescription(model.getBrokerDescription());
             resource.setChannelCode(model.getChannelCode());
             resource.setPaymentTypeList(model.getPaymentTypeList());
-
+            //default
+            resource.setThreadNumber(1L);
+            resource.setTimeoutA(15L);
+            resource.setTimeoutB(30L);
+            resource.setTimeoutC(120L);
         }
         return resource;
     }

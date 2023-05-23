@@ -17,7 +17,7 @@ public interface WrapperRepository extends MongoRepository<WrapperEntities, Stri
 
     List<WrapperEntities<?>> findByStatus(WrapperStatus status);
 
-    List<WrapperEntitiesOperations<?>> findByIdAndType(String id, WrapperType wrapperType);
+    Page<WrapperEntitiesOperations<?>> findByIdAndType(String id, WrapperType wrapperType, Pageable pageable);
     List<WrapperEntitiesOperations<?>> findByType(WrapperType wrapperType);
 
     Page<WrapperEntitiesOperations<?>> findByStatusAndTypeAndBrokerCode(WrapperStatus status, WrapperType wrapperType,String brokerCode, Pageable pageable);

@@ -5,6 +5,13 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.*;
 
 import java.util.List;
@@ -33,5 +40,16 @@ public interface StationMapper {
     Stations fromWrapperEntitiesList(WrapperEntitiesList wrapperEntitiesList);
 
     StationDetailsResourceList fromStationDetailsList(StationDetailsList model);
+    WrapperStation toWrapperStation(Station station);
+
+    WrapperStations toWrapperStations(Stations station);
+
+    WrapperStations toWrapperStations(WrapperEntitiesList wrapperEntitiesList);
+
+    WrapperStation toWrapperStation(WrapperEntityOperations<StationDetails> wrapperEntitiesList);
+
+    WrapperStationsResource toWrapperStationsResource(WrapperStations wrapperStations);
+
+    WrapperStationResource toWrapperStationResource(WrapperStation wrapperStation);
 
 }

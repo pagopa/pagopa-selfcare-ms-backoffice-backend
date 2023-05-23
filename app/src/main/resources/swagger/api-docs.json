@@ -556,7 +556,7 @@
           "style" : "simple",
           "schema" : {
             "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
           }
         }, {
           "name" : "brokerCode",
@@ -2948,6 +2948,79 @@
         } ]
       }
     },
+    "/stations/get-details/{stationId}" : {
+      "get" : {
+        "tags" : [ "stations" ],
+        "summary" : "getStationDetail",
+        "description" : "Get station's details",
+        "operationId" : "getStationDetailUsingGET",
+        "parameters" : [ {
+          "name" : "stationId",
+          "in" : "path",
+          "description" : "Station's unique identifier",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StationDetailResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/stations/get-wrapperEntities/{code}" : {
       "get" : {
         "tags" : [ "stations" ],
@@ -3072,7 +3145,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/StationsResource"
+                  "$ref" : "#/components/schemas/WrapperStationsResource"
                 }
               }
             }
@@ -3759,7 +3832,7 @@
           "status" : {
             "type" : "string",
             "description" : "channel's validation status",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
           },
           "target_host" : {
             "type" : "string",
@@ -5300,7 +5373,7 @@
           "status" : {
             "type" : "string",
             "description" : "Station's status",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
           },
           "targetHost" : {
             "type" : "string",
@@ -5529,7 +5602,7 @@
           "status" : {
             "type" : "string",
             "description" : "channel's validation status",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
           },
           "target_host" : {
             "type" : "string",
@@ -5824,7 +5897,7 @@
           },
           "status" : {
             "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
           },
           "type" : {
             "type" : "string",
@@ -5870,7 +5943,7 @@
           },
           "status" : {
             "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
           },
           "type" : {
             "type" : "string",
@@ -5916,7 +5989,7 @@
           },
           "status" : {
             "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
           },
           "type" : {
             "type" : "string",
@@ -5959,7 +6032,7 @@
           },
           "status" : {
             "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
           },
           "type" : {
             "type" : "string",
@@ -5996,7 +6069,7 @@
           },
           "status" : {
             "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
           },
           "type" : {
             "type" : "string",
@@ -6051,7 +6124,7 @@
           "status" : {
             "type" : "string",
             "description" : "Station's status",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
           },
           "targetHost" : {
             "type" : "string",
@@ -6065,6 +6138,79 @@
             "type" : "integer",
             "description" : "Station target's port",
             "format" : "int64"
+          }
+        }
+      },
+      "WrapperStationResource" : {
+        "title" : "WrapperStationResource",
+        "required" : [ "enabled", "stationCode", "stationStatus", "wrapperStatus" ],
+        "type" : "object",
+        "properties" : {
+          "activationDate" : {
+            "type" : "string",
+            "description" : "Station's activation date",
+            "format" : "date-time"
+          },
+          "associatedCreditorInstitutions" : {
+            "type" : "integer",
+            "description" : "Number of station's creditor institutions",
+            "format" : "int32"
+          },
+          "brokerDescription" : {
+            "type" : "string",
+            "description" : "Station broker's description"
+          },
+          "createdAt" : {
+            "type" : "string",
+            "description" : "Station created on",
+            "format" : "date-time"
+          },
+          "enabled" : {
+            "type" : "boolean",
+            "description" : "Station's activation state",
+            "example" : false
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "description" : "Station's last modified date",
+            "format" : "date-time"
+          },
+          "stationCode" : {
+            "type" : "string",
+            "description" : "Station's unique identifier"
+          },
+          "stationStatus" : {
+            "type" : "string",
+            "description" : "Station's status",
+            "enum" : [ "ACTIVE", "ON_REVISION", "TO_BE_CORRECTED" ]
+          },
+          "version" : {
+            "type" : "integer",
+            "description" : "Station's version",
+            "format" : "int64"
+          },
+          "wrapperStatus" : {
+            "type" : "string",
+            "description" : "Station's status",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+          }
+        }
+      },
+      "WrapperStationsResource" : {
+        "title" : "WrapperStationsResource",
+        "required" : [ "pageInfo", "stationsList" ],
+        "type" : "object",
+        "properties" : {
+          "pageInfo" : {
+            "description" : "info pageable",
+            "$ref" : "#/components/schemas/PageInfo"
+          },
+          "stationsList" : {
+            "type" : "array",
+            "description" : "List of ec stations",
+            "items" : {
+              "$ref" : "#/components/schemas/WrapperStationResource"
+            }
           }
         }
       }

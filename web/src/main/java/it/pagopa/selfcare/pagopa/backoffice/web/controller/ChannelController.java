@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
@@ -119,6 +120,27 @@ public class ChannelController {
 
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelDetails result = {}", resource);
         log.trace("getChannelDetails end");
+        return resource;
+    }
+
+    @GetMapping(value = "/get-details/{channelcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public ChannelDetailsResource getChannelDetail(@ApiParam("${swagger.request.channelcode}")
+                                                    @PathVariable("channelcode") String channelcode) {
+        log.trace("getChannelDetail start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getChannelDetail channelcode = {}, xRequestId = {}", channelcode, xRequestId);
+        ChannelDetails channelDetail;
+        try{
+            WrapperEntitiesOperations<ChannelDetails> result = wrapperService.findById(channelcode);
+            channelDetail = result.getWrapperEntityOperationsSortedList().get(0).getEntity();
+        }catch (ResourceNotFoundException e){
+            channelDetail = apiConfigService.getChannelDetails(channelcode, xRequestId);
+        }
+        PspChannelPaymentTypes ptResponse = apiConfigService.getChannelPaymentTypes(channelcode, xRequestId);
+        ChannelDetailsResource resource = ChannelMapper.toResource(channelDetail, ptResponse);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelDetails result = {}", resource);
+        log.trace("getChannelDetail end");
         return resource;
     }
 

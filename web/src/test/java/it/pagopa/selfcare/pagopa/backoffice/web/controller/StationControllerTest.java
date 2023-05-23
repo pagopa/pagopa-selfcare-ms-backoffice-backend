@@ -1,13 +1,14 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
@@ -15,13 +16,9 @@ import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.WrapperStationDetailsDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -36,12 +33,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
@@ -53,7 +48,6 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = {StationController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
@@ -191,42 +185,6 @@ class StationControllerTest {
                 .andExpect(jsonPath("$.entity.ip", notNullValue()))
                 .andExpect(jsonPath("$.entity.port", notNullValue()))
                 .andExpect(jsonPath("$.entity.protocol", notNullValue()));
-        /*
-                .andExpect(jsonPath("$.entity.stationCode", notNullValue()))
-                .andExpect(jsonPath("$.ip", notNullValue()))
-                .andExpect(jsonPath("$.newPassword", notNullValue()))
-                .andExpect(jsonPath("$.password", notNullValue()))
-                .andExpect(jsonPath("$.port", notNullValue()))
-                .andExpect(jsonPath("$.protocol", notNullValue()))
-                .andExpect(jsonPath("$.redirectIp", notNullValue()))
-                .andExpect(jsonPath("$.redirectPath", notNullValue()))
-                .andExpect(jsonPath("$.redirectPort", notNullValue()))
-                .andExpect(jsonPath("$.redirectQueryString", notNullValue()))
-                .andExpect(jsonPath("$.redirectProtocol", notNullValue()))
-                .andExpect(jsonPath("$.service", notNullValue()))
-                .andExpect(jsonPath("$.pofService", notNullValue()))
-                .andExpect(jsonPath("$.brokerCode", notNullValue()))
-                .andExpect(jsonPath("$.protocol4Mod", notNullValue()))
-                .andExpect(jsonPath("$.ip4Mod", notNullValue()))
-                .andExpect(jsonPath("$.port4Mod", notNullValue()))
-                .andExpect(jsonPath("$.service4Mod", notNullValue()))
-                .andExpect(jsonPath("$.proxyEnabled", notNullValue()))
-                .andExpect(jsonPath("$.proxyHost", notNullValue()))
-                .andExpect(jsonPath("$.proxyPort", notNullValue()))
-                .andExpect(jsonPath("$.proxyUsername", notNullValue()))
-                .andExpect(jsonPath("$.proxyPassword", notNullValue()))
-                .andExpect(jsonPath("$.threadNumber", notNullValue()))
-                .andExpect(jsonPath("$.timeoutA", notNullValue()))
-                .andExpect(jsonPath("$.timeoutB", notNullValue()))
-                .andExpect(jsonPath("$.timeoutC", notNullValue()))
-                .andExpect(jsonPath("$.flagOnline", notNullValue()))
-                .andExpect(jsonPath("$.brokerObjId", notNullValue()))
-                .andExpect(jsonPath("$.rtInstantaneousDispatch", notNullValue()))
-                .andExpect(jsonPath("$.targetHost", notNullValue()))
-                .andExpect(jsonPath("$.targetPort", notNullValue()))
-                .andExpect(jsonPath("$.targetPath", notNullValue()))
-                .andExpect(jsonPath("$.primitiveVersion", notNullValue()));
-         */
 
         //then
         verify(wrapperServiceMock, times(1))
@@ -480,6 +438,7 @@ class StationControllerTest {
         Stations stations = mockInstance(new Stations());
         List<Station> stationList = mockInstance(new ArrayList<>());
         stations.setStationsList(stationList);
+
         StationDetails stationDetails = mockInstance(new StationDetails());
         DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
         wrapperEntity.setEntity(stationDetails);
@@ -487,18 +446,26 @@ class StationControllerTest {
         DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
         wrapperEntities.setModifiedAt(Instant.now());
         wrapperEntities.setEntities(List.of(wrapperEntity));
+
         WrapperEntitiesList mongoList = mockInstance(new WrapperEntitiesList());
         PageInfo pageInfo = mockInstance(new PageInfo());
         mongoList.setWrapperEntities(List.of(wrapperEntities));
         mongoList.setPageInfo(pageInfo);
+        WrapperStations wrapperStations1 = mockInstance(new WrapperStations());
 
-        when(wrapperServiceMock.findByIdAndType(stationCode, wrapperType))
+        List<WrapperStation> w1List = new ArrayList<>();
+        WrapperStation w1 = new WrapperStation();
+        w1List.add(w1);
+        wrapperStations1.setStationsList(w1List);
+
+
+
+        when(wrapperServiceMock.findByIdOrType(stationCode, wrapperType, page, size))
                 .thenReturn(mongoList);
         when(apiConfigServiceMock.getStations(anyInt(), anyInt(), anyString(), isNull(), anyString(), anyString()))
                 .thenReturn(stations);
-        stations = mapper.fromWrapperEntitiesList(mongoList);
-        when(apiConfigServiceMock.sortStations(stations, sorting))
-                .thenReturn(stations);
+        when(apiConfigServiceMock.mergeAndSortWrapperStations(any(), any(), anyString()))
+                .thenReturn(wrapperStations1);
 
         //when
         mvc.perform(get(BASE_URL + "/getAllStations")
@@ -514,11 +481,11 @@ class StationControllerTest {
 
         //then
         verify(wrapperServiceMock, times(1))
-                .findByIdAndType(anyString(), any());
+                .findByIdOrType(anyString(), any(), anyInt(), anyInt());
         verify(apiConfigServiceMock, times(1))
                 .getStations(anyInt(), anyInt(), anyString(), isNull(), anyString(), anyString());
         verify(apiConfigServiceMock, times(1))
-                .sortStations(any(), anyString());
+                .mergeAndSortWrapperStations(any(), any(), anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
@@ -531,12 +498,11 @@ class StationControllerTest {
         Integer page = 0;
         Integer limit = 50;
         StationDetailsList stationDetailsList = mockInstance(new StationDetailsList());
-        StationDetails stationDetails =mockInstance(new StationDetails());
+        StationDetails stationDetails = mockInstance(new StationDetails());
         stationDetailsList.setStationsDetailsList(List.of(stationDetails));
 
 
-
-        when(apiConfigSelfcareIntegrationService.getStationsDetailsListByBroker(anyString(),anyString(),anyInt(),anyInt(),anyString()))
+        when(apiConfigSelfcareIntegrationService.getStationsDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt(), anyString()))
                 .thenReturn(stationDetailsList);
         //when
         mvc.perform(get(BASE_URL + "/{brokerId}", brokerId)
@@ -581,10 +547,126 @@ class StationControllerTest {
                 .andExpect(jsonPath("$.stations[*].primitiveVersion", everyItem(notNullValue())));
 
         verify(apiConfigSelfcareIntegrationService, times(1))
-                .getStationsDetailsListByBroker(anyString(),anyString(),anyInt(),anyInt(),anyString());
+                .getStationsDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt(), anyString());
 
         verifyNoMoreInteractions(wrapperServiceMock);
+
     }
+    @Test
+     void getStationDetail_mongo() throws Exception {
+        //given
+        String stationId = "stationId";
+        StationDetails station = mockInstance(new StationDetails());
+        DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(station));
+        wrapperEntity.setEntity(station);
+        DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setModifiedAt(Instant.now());
+        wrapperEntities.setEntities(List.of(wrapperEntity));
+
+        when(wrapperServiceMock.findById(stationId))
+                .thenReturn(wrapperEntities);
+
+//        when(apiConfigServiceMock.getStation(anyString(), anyString()))
+//                .thenReturn(station);
+        //when
+        mvc.perform(get(BASE_URL + "/get-details/{stationId}", stationId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.stationCode", notNullValue()))
+                .andExpect(jsonPath("$.ip", notNullValue()))
+                .andExpect(jsonPath("$.newPassword", notNullValue()))
+                .andExpect(jsonPath("$.password", notNullValue()))
+                .andExpect(jsonPath("$.port", notNullValue()))
+                .andExpect(jsonPath("$.protocol", notNullValue()))
+                .andExpect(jsonPath("$.redirectIp", notNullValue()))
+                .andExpect(jsonPath("$.redirectPath", notNullValue()))
+                .andExpect(jsonPath("$.redirectPort", notNullValue()))
+                .andExpect(jsonPath("$.redirectQueryString", notNullValue()))
+                .andExpect(jsonPath("$.redirectProtocol", notNullValue()))
+                .andExpect(jsonPath("$.service", notNullValue()))
+                .andExpect(jsonPath("$.pofService", notNullValue()))
+                .andExpect(jsonPath("$.brokerCode", notNullValue()))
+                .andExpect(jsonPath("$.protocol4Mod", notNullValue()))
+                .andExpect(jsonPath("$.ip4Mod", notNullValue()))
+                .andExpect(jsonPath("$.port4Mod", notNullValue()))
+                .andExpect(jsonPath("$.service4Mod", notNullValue()))
+                .andExpect(jsonPath("$.proxyEnabled", notNullValue()))
+                .andExpect(jsonPath("$.proxyHost", notNullValue()))
+                .andExpect(jsonPath("$.proxyPort", notNullValue()))
+                .andExpect(jsonPath("$.proxyUsername", notNullValue()))
+                .andExpect(jsonPath("$.proxyPassword", notNullValue()))
+                .andExpect(jsonPath("$.threadNumber", notNullValue()))
+                .andExpect(jsonPath("$.timeoutA", notNullValue()))
+                .andExpect(jsonPath("$.timeoutB", notNullValue()))
+                .andExpect(jsonPath("$.timeoutC", notNullValue()))
+                .andExpect(jsonPath("$.flagOnline", notNullValue()))
+                .andExpect(jsonPath("$.brokerObjId", notNullValue()))
+                .andExpect(jsonPath("$.rtInstantaneousDispatch", notNullValue()))
+                .andExpect(jsonPath("$.targetHost", notNullValue()))
+                .andExpect(jsonPath("$.targetPort", notNullValue()))
+                .andExpect(jsonPath("$.targetPath", notNullValue()))
+                .andExpect(jsonPath("$.primitiveVersion", notNullValue()));
+        //then
+        verify(wrapperServiceMock, times(1))
+                .findById(anyString());
+//        verify(apiConfigServiceMock, times(1))
+//                .getStation(eq(stationId), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getStationDetail_apiConfig() throws Exception {
+        //given
+        String stationId = "stationId";
+        StationDetails station = mockInstance(new StationDetails());
+
+        doThrow(ResourceNotFoundException.class).when(wrapperServiceMock).findById(stationId);
+
+        when(apiConfigServiceMock.getStation(anyString(), anyString()))
+                .thenReturn(station);
+        //when
+        mvc.perform(get(BASE_URL + "/get-details/{stationId}", stationId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.stationCode", notNullValue()))
+                .andExpect(jsonPath("$.ip", notNullValue()))
+                .andExpect(jsonPath("$.newPassword", notNullValue()))
+                .andExpect(jsonPath("$.password", notNullValue()))
+                .andExpect(jsonPath("$.port", notNullValue()))
+                .andExpect(jsonPath("$.protocol", notNullValue()))
+                .andExpect(jsonPath("$.redirectIp", notNullValue()))
+                .andExpect(jsonPath("$.redirectPath", notNullValue()))
+                .andExpect(jsonPath("$.redirectPort", notNullValue()))
+                .andExpect(jsonPath("$.redirectQueryString", notNullValue()))
+                .andExpect(jsonPath("$.redirectProtocol", notNullValue()))
+                .andExpect(jsonPath("$.service", notNullValue()))
+                .andExpect(jsonPath("$.pofService", notNullValue()))
+                .andExpect(jsonPath("$.brokerCode", notNullValue()))
+                .andExpect(jsonPath("$.protocol4Mod", notNullValue()))
+                .andExpect(jsonPath("$.ip4Mod", notNullValue()))
+                .andExpect(jsonPath("$.port4Mod", notNullValue()))
+                .andExpect(jsonPath("$.service4Mod", notNullValue()))
+                .andExpect(jsonPath("$.proxyEnabled", notNullValue()))
+                .andExpect(jsonPath("$.proxyHost", notNullValue()))
+                .andExpect(jsonPath("$.proxyPort", notNullValue()))
+                .andExpect(jsonPath("$.proxyUsername", notNullValue()))
+                .andExpect(jsonPath("$.proxyPassword", notNullValue()))
+                .andExpect(jsonPath("$.threadNumber", notNullValue()))
+                .andExpect(jsonPath("$.timeoutA", notNullValue()))
+                .andExpect(jsonPath("$.timeoutB", notNullValue()))
+                .andExpect(jsonPath("$.timeoutC", notNullValue()))
+                .andExpect(jsonPath("$.flagOnline", notNullValue()))
+                .andExpect(jsonPath("$.brokerObjId", notNullValue()))
+                .andExpect(jsonPath("$.rtInstantaneousDispatch", notNullValue()))
+                .andExpect(jsonPath("$.targetHost", notNullValue()))
+                .andExpect(jsonPath("$.targetPort", notNullValue()))
+                .andExpect(jsonPath("$.targetPath", notNullValue()))
+                .andExpect(jsonPath("$.primitiveVersion", notNullValue()));
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getStation(eq(stationId), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+     }
 }
 
 

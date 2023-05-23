@@ -575,20 +575,24 @@ class WrapperConnectorImplTest {
         // given
         WrapperType wrapperType = WrapperType.STATION;
         String stationCode = "stationCode";
+        Integer page = 0;
+        Integer size = 50;
 
-        List<WrapperEntitiesOperations<?>> ListMock =  mock(List.class);
+        Page<WrapperEntitiesOperations<?>> paginatedMock =  mock(Page.class);
+
+
         when(repositoryMock
-                .findByIdAndType(anyString(),any()))
-                .thenReturn(ListMock);
+                .findByIdAndType(anyString(),any(), any()))
+                .thenReturn(paginatedMock);
 
         // when
         WrapperEntitiesList
                 response =   wrapperConnector
-                .findByIdAndType(stationCode,wrapperType);
+                .findByIdOrType(stationCode,wrapperType, page, size);
         // then
-        assertEquals(response.getWrapperEntities(), ListMock);
+        assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))
-                .findByIdAndType(anyString(),any());
+                .findByIdAndType(anyString(),any(), any());
         verifyNoMoreInteractions(repositoryMock);
     }
 
@@ -597,20 +601,22 @@ class WrapperConnectorImplTest {
         // given
         WrapperType wrapperType = WrapperType.STATION;
         String stationCode = null;
+        Integer page = 0;
+        Integer size = 50;
 
-        List<WrapperEntitiesOperations<?>> ListMock =  mock(List.class);
+        Page<WrapperEntitiesOperations<?>> paginatedMock =  mock(Page.class);
         when(repositoryMock
-                .findByType(any()))
-                .thenReturn(ListMock);
+                .findByType(any(), any()))
+                .thenReturn(paginatedMock);
 
         // when
         WrapperEntitiesList
                 response =   wrapperConnector
-                .findByIdAndType(stationCode,wrapperType);
+                .findByIdOrType(stationCode,wrapperType, page, size);
         // then
-        assertEquals(response.getWrapperEntities(), ListMock);
+        assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))
-                .findByType(any());
+                .findByType(any(), any());
         verifyNoMoreInteractions(repositoryMock);
     }
 }

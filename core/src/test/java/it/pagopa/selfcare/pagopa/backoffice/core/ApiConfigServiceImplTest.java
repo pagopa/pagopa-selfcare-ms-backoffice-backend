@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -18,7 +19,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -701,35 +701,35 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
-    void sortStations_ASC() {
+    void mergeAndSortWrapperStations_ASC() {
         //given
-        Stations stations = mock(Stations.class);
+        WrapperStations stations = mock(WrapperStations.class);
         String sorting = "ASC";
 
         //when
-        Stations stationsRes = apiConfigService.sortStations(stations, sorting);
+        WrapperStations stationsRes = apiConfigService.mergeAndSortWrapperStations(stations, stations, sorting);
         //then
         assertNotNull(stationsRes);
     }
     @Test
-    void sortStations_DESC() {
+    void mergeAndSortWrapperStations_DESC() {
         //given
-        Stations stations = mock(Stations.class);
+        WrapperStations stations = mock(WrapperStations.class);
         String sorting = "DESC";
 
         //when
-        Stations stationsRes = apiConfigService.sortStations(stations, sorting);
+        WrapperStations stationsRes = apiConfigService.mergeAndSortWrapperStations(stations, stations,sorting);
         //then
         assertNotNull(stationsRes);
     }
     @Test
-    void sortStations_nullSorting() {
+    void mergeAndSortWrapperStations_nullSorting() {
         //given
-        Stations stations = mock(Stations.class);
+        WrapperStations stations = mock(WrapperStations.class);
         String sorting = null;
 
         //when
-        Stations stationsRes = apiConfigService.sortStations(stations, sorting);
+        WrapperStations stationsRes = apiConfigService.mergeAndSortWrapperStations(stations, stations,sorting);
         //then
         assertNotNull(stationsRes);
     }
