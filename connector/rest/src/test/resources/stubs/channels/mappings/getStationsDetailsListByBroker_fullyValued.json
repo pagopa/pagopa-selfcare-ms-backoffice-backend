@@ -1,0 +1,85 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/apiconfig-selfcare-integration/v1/brokers/brokerCode1/stations",
+    "queryParameters": {
+      "page": {
+        "equalTo": "0"
+      },
+      "limit": {
+        "equalTo": "2"
+      },
+      "stationId": {
+        "equalTo": "stationId"
+      }
+    }
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": {
+      "stations": [
+        {
+          "stationCode": "0KRvLQ0DAl33zMRqRzG28GJ6UA0cyOM2Vql",
+          "enabled": true,
+          "version": 1,
+          "stationStatus": "ACTIVE",
+          "associatedCreditorInstitutions": 0,
+          "activationDate": "2023-05-23T09:46:00.521521600Z",
+          "createdAt": "2023-05-23T09:46:00.521521600Z",
+          "modifiedAt": "2023-05-23T09:46:00.521521600Z",
+          "ip": "NodoDeiPagamentiDellaPATest.sia.eu",
+          "password": "password",
+          "port": 80,
+          "protocol": "HTTP",
+          "redirectIp": "paygov.collaudo.regione.lazio.it",
+          "redirectPath": "nodo-regionale-fesp/paaInviaRispostaPagamento.html",
+          "redirectPort": 443,
+          "redirectProtocol": "HTTPS",
+          "service": "openspcoop/PD/RT6TPDREGVENETO",
+          "proxyEnabled": true,
+          "proxyHost": "10.101.1.95",
+          "proxyPort": 8080,
+          "threadNumber": 2,
+          "timeoutA": 15,
+          "timeoutB": 30,
+          "timeoutC": 120,
+          "flagOnline": true,
+          "rtInstantaneousDispatch": false,
+          "primitiveVersion": 1
+        },
+        {
+          "stationCode": "EAYOgXkEHU6dJT1jSfIZmSeOKJN36mL4qdB",
+          "enabled": true,
+          "version": 1,
+          "stationStatus": "ACTIVE",
+          "associatedCreditorInstitutions": 0,
+          "activationDate": "2023-05-23T09:46:00.522522300Z",
+          "createdAt": "2023-05-23T09:46:00.522522300Z",
+          "modifiedAt": "2023-05-23T09:46:00.522522300Z",
+          "ip": "NodoDeiPagamentiDellaPATest.sia.eu",
+          "password": "password",
+          "port": 80,
+          "protocol": "HTTP",
+          "redirectIp": "paygov.collaudo.regione.lazio.it",
+          "redirectPath": "nodo-regionale-fesp/paaInviaRispostaPagamento.html",
+          "redirectPort": 443,
+          "redirectProtocol": "HTTPS",
+          "service": "openspcoop/PD/RT6TPDREGVENETO",
+          "proxyEnabled": true,
+          "proxyHost": "10.101.1.95",
+          "proxyPort": 8080,
+          "threadNumber": 2,
+          "timeoutA": 15,
+          "timeoutB": 30,
+          "timeoutC": 120,
+          "flagOnline": true,
+          "rtInstantaneousDispatch": false,
+          "primitiveVersion": 1
+        }
+      ]
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
