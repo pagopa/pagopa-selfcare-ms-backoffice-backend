@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
@@ -519,6 +520,33 @@ public class ChannelController {
 
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getWrapperByTypeAndStatus result = {}", response);
         log.trace("getWrapperByTypeAndStatus end");
+
+        return response;
+    }
+
+    @GetMapping(value = "getAllChannels", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getAllChannelsMerged}")
+    public WrapperChannelsResource getAllChannelsMerged(@ApiParam("${swagger.request.limit}")
+                                                        @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                        @ApiParam("${swagger.model.channel.code}")
+                                                        @RequestParam(required = false, value = "channelcode") String channelcode,
+                                                        @ApiParam("${swagger.request.page}")
+                                                        @RequestParam Integer page,
+                                                        @ApiParam("${swagger.request.sorting}")
+                                                        @RequestParam(required = false, value = "sorting") String sorting) {
+        log.trace("getAllChannelsMerged start");
+        log.debug("getAllChannelsMerged page = {} limit = {}", page, limit);
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getchannels xRequestId = {}", xRequestId);
+        Channels channels = apiConfigService.getChannels(limit, page, channelcode, sorting, xRequestId);
+        WrapperChannels  responseApiConfig = ChannelMapper.toWrapperChannels(channels);
+        WrapperEntitiesList mongoList = wrapperService.findByIdOrType(channelcode, WrapperType.CHANNEL, page, limit);
+        WrapperChannels responseMongo = ChannelMapper.toWrapperChannels(mongoList);
+        WrapperChannels channelsMergedAndSorted = apiConfigService.mergeAndSortWrapperChannels(responseApiConfig, responseMongo, sorting);
+        WrapperChannelsResource response = ChannelMapper.toWrapperChannelsResource(channelsMergedAndSorted);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getAllChannelsMerged result = {}", response);
+        log.trace("getAllChannelsMerged end");
 
         return response;
     }

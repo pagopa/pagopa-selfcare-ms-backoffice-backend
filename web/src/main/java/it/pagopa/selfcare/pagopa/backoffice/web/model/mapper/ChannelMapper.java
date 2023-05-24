@@ -5,15 +5,21 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.WrapperStationsResource;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ChannelMapper {
 
@@ -488,5 +494,115 @@ public class ChannelMapper {
 
         }
         return resource;
+    }
+
+    public static WrapperChannel toWrapperChannel(Channel model) {
+        if(model == null){
+            return null;
+        }
+
+        WrapperChannel wrapperChannel = new WrapperChannel();
+
+        wrapperChannel.setChannelCode(model.getChannelCode());
+        wrapperChannel.setEnabled(model.getEnabled());
+        wrapperChannel.setBrokerDescription(model.getBrokerDescription());
+
+        //default per gli ogetti di apiconfig poiche non hanno questi campi
+        wrapperChannel.setWrapperStatus(WrapperStatus.APPROVED);
+        LocalDate dateTime = LocalDate.of(2000, 1, 1);
+        Instant instant = dateTime.atStartOfDay(ZoneOffset.UTC).toInstant();
+        wrapperChannel.setCreatedAt(instant);
+        wrapperChannel.setModifiedAt(instant);
+
+        return wrapperChannel;
+    }
+
+    public static WrapperChannels toWrapperChannels(Channels model) {
+        if (model == null) {
+            return null;
+        }
+
+        WrapperChannels wrapperChannels = new WrapperChannels();
+
+        wrapperChannels.setChannelList(model.getChannelList().stream()
+                .map(ChannelMapper::toWrapperChannel)
+                .collect(Collectors.toList()));
+        wrapperChannels.setPageInfo(model.getPageInfo());
+
+        return wrapperChannels;
+    }
+
+
+
+
+
+    public static WrapperChannel toWrapperChannel(WrapperEntityOperations<ChannelDetails> wrapperEntityOperations) {
+        if (wrapperEntityOperations == null) {
+            return null;
+        }
+
+        WrapperChannel wrapperChannel = new WrapperChannel();
+
+        wrapperChannel.setChannelCode(wrapperEntityOperations.getEntity().getChannelCode());
+        wrapperChannel.setEnabled(wrapperEntityOperations.getEntity().getEnabled());
+        wrapperChannel.setBrokerDescription(wrapperEntityOperations.getEntity().getBrokerDescription());
+
+        wrapperChannel.setWrapperStatus(wrapperEntityOperations.getStatus());
+        wrapperChannel.setCreatedAt(wrapperEntityOperations.getCreatedAt());
+        wrapperChannel.setModifiedAt(wrapperEntityOperations.getModifiedAt());
+
+        return wrapperChannel;
+
+    }
+
+    public static WrapperChannels toWrapperChannels(WrapperEntitiesList wrapperEntitiesList) {
+        if (wrapperEntitiesList == null) {
+            return null;
+        }
+
+        WrapperChannels wrapperChannels = new WrapperChannels();
+        List<WrapperChannel> channelList = new ArrayList<>();
+
+        wrapperEntitiesList.getWrapperEntities().forEach(
+                ent-> channelList.add(toWrapperChannel(
+                        (WrapperEntityOperations<ChannelDetails>) ent.getWrapperEntityOperationsSortedList().get(0))));
+
+        wrapperChannels.setChannelList(channelList);
+        wrapperChannels.setPageInfo(wrapperEntitiesList.getPageInfo());
+
+        return wrapperChannels;
+    }
+
+    public static WrapperChannelsResource toWrapperChannelsResource(WrapperChannels wrapperChannels) {
+        if (wrapperChannels == null) {
+            return null;
+        }
+
+        WrapperChannelsResource wrapperChannelsResource = new WrapperChannelsResource();
+
+        wrapperChannelsResource.setChannelList(wrapperChannels.getChannelList().stream()
+                .map(station -> toWrapperChannelResource(station))
+                .collect(Collectors.toList()));
+        wrapperChannelsResource.setPageInfo(wrapperChannels.getPageInfo());
+
+        return wrapperChannelsResource;
+    }
+
+    public static WrapperChannelResource toWrapperChannelResource(WrapperChannel wrapperChannel){
+        if (wrapperChannel == null) {
+            return null;
+        }
+
+        WrapperChannelResource wrapperChannelResource = new WrapperChannelResource();
+
+        wrapperChannelResource.setChannelCode(wrapperChannel.getChannelCode());
+        wrapperChannelResource.setBrokerDescription(wrapperChannel.getBrokerDescription());
+        wrapperChannelResource.setEnabled(wrapperChannel.getEnabled());
+        wrapperChannelResource.setWrapperStatus(wrapperChannel.getWrapperStatus());
+        wrapperChannelResource.setModifiedAt(wrapperChannel.getModifiedAt());
+        wrapperChannelResource.setCreatedAt(wrapperChannel.getCreatedAt());
+
+        return wrapperChannelResource;
+
     }
 }
