@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
@@ -77,6 +78,16 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setTargetPortPof(model.getTargetPortPof());
         stationDetailResource.setTargetPathPof(model.getTargetPathPof());
         stationDetailResource.setPrimitiveVersion(model.getPrimitiveVersion());
+
+        BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
+        BrokerDetails brokerDetails = model.getIntermediarioPa();
+        if(brokerDetails!=null){
+            brokerDetailsResource.setBrokerDetails(brokerDetails.getBrokerDetails());
+            brokerDetailsResource.setExtendedFaultBean(brokerDetails.getExtendedFaultBean());
+            brokerDetailsResource.setEnabled(brokerDetails.getEnabled());
+            brokerDetailsResource.setBrokerCode(brokerDetails.getBrokerCode());
+            stationDetailResource.setBrokerDetails(brokerDetailsResource);
+        }
 
         return stationDetailResource;
     }
@@ -162,6 +173,8 @@ public class StationMapperImpl implements StationMapper {
         StationDetailsResourceList resource = new StationDetailsResourceList();
         resource.setStationsDetailsList(model.getStationsDetailsList().stream().map(i ->
                 toResource(i)).collect(Collectors.toList()));
+
+        resource.setPageInfo(model.getPageInfo());
         return resource;
     }
 

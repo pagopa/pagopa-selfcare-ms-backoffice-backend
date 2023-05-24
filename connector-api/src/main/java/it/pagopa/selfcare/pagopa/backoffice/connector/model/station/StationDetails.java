@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.model.station;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Protocol;
 import lombok.Data;
 
@@ -10,6 +11,11 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class StationDetails extends Station {
+
+    @JsonProperty("broker_details")
+    @NotBlank
+    private BrokerDetails intermediarioPa;
+
     @JsonProperty("ip")
     private String ip;
     @JsonProperty("new_password")
