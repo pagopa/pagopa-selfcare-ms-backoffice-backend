@@ -146,7 +146,7 @@ stages:
               steps:
                 - checkout: self
                   displayName: "Checkout"
-
+                - task: KubectlInstaller@0
                 - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
                   parameters:
                     DEPLOY_VERSION: $(deploy_version)
