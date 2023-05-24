@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.stations;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Protocol;
 import lombok.Data;
 
@@ -12,6 +13,9 @@ import javax.validation.constraints.NotNull;
 
 @Data//FIXME fix after integration with DB
 public class StationDetailResource extends StationResource {
+
+    @ApiModelProperty("${swagger.model.station.brokerDetails}")
+    private BrokerDetailsResource brokerDetails;
     @ApiModelProperty("${swagger.model.station.ip}")
     private String ip;
     @ApiModelProperty("${swagger.model.station.newPassword}")

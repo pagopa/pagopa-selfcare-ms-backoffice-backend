@@ -642,7 +642,7 @@ class ApiConfigRestClientTest {
         StationDetails stationDetails = restClient.createStation(stationDetailsDto, xRequestId);
         //then
         assertNotNull(stationDetails);
-        checkNotNullFields(stationDetails, "brokerObjId");
+        checkNotNullFields(stationDetails, "brokerObjId","intermediarioPa");
 
     }
 
