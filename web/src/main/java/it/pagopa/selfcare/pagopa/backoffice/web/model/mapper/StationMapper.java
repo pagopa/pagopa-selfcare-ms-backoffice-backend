@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
@@ -38,6 +39,7 @@ public interface StationMapper {
 
     Stations fromWrapperEntitiesList(WrapperEntitiesList wrapperEntitiesList);
 
+    StationDetailsResourceList fromStationDetailsList(StationDetailsList model);
     WrapperStation toWrapperStation(Station station);
 
     WrapperStations toWrapperStations(Stations station);

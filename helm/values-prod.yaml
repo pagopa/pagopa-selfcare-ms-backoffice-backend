@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: pagopapcommonacr.azurecr.io/pagopaselfcaremsbackofficebackend
-    tag: "0.0.121" #improve
+    tag: "0.0.126" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -63,6 +63,7 @@ microservice-chart:
     WEBSITE_SITE_NAME: 'pagopaselfcaremsbackofficebackend'
     EXTERNAL_API_SERVICE_URL: https://api.selfcare.pagopa.it
     PAGOPA_APIM_SERVICE_URL: https://api.platform.pagopa.it
+    PAGOPA_SELFCARE_INTEGRATION_APIM_SERVICE_URL: https://api.platform.pagopa.it
     AZURE_RESOURCE_GROUP: pagopa-p-api-rg
     AZURE_SERVICE_NAME: pagopa-p-apim
     ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
@@ -72,6 +73,7 @@ microservice-chart:
     AZURE_CLIENT_ID: pagopa-p-selfcare-client-id
     SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selfcare-p-apim-external-api-key
     PAGOPA_APIM_API_CONFIG_API_KEY_PAGOPA: pagopa-p-apim-api-config-key
+    PAGOPA_APIM_API_CONFIG_SELFCARE_INTEGRATION_API_KEY_PAGOPA: pagopa-p-apim-api-config-selfcare-integration-key
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-p-connection-string'
     AZURE_TENANT_ID: pagopa-selfcare-prod-tenant-id
     AZURE_SUBSCRIPTION_ID: pagopa-selfcare-p-subscription-id
