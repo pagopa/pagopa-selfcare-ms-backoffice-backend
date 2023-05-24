@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -711,6 +712,18 @@ class ApiConfigServiceImplTest {
         //then
         assertNotNull(stationsRes);
     }
+
+    @Test
+    void mergeAndSortWrapperChannels_ASC() {
+        //given
+        WrapperChannels channels = mock(WrapperChannels.class);
+        String sorting = "ASC";
+
+        //when
+        WrapperChannels channelsRes = apiConfigService.mergeAndSortWrapperChannels(channels, channels, sorting);
+        //then
+        assertNotNull(channelsRes);
+    }
     @Test
     void mergeAndSortWrapperStations_DESC() {
         //given
@@ -722,6 +735,18 @@ class ApiConfigServiceImplTest {
         //then
         assertNotNull(stationsRes);
     }
+
+    @Test
+    void mergeAndSortWrapperChannels_DESC() {
+        //given
+        WrapperChannels channels = mock(WrapperChannels.class);
+        String sorting = "DESC";
+
+        //when
+        WrapperChannels channelsRes = apiConfigService.mergeAndSortWrapperChannels(channels, channels,sorting);
+        //then
+        assertNotNull(channelsRes);
+    }
     @Test
     void mergeAndSortWrapperStations_nullSorting() {
         //given
@@ -732,6 +757,18 @@ class ApiConfigServiceImplTest {
         WrapperStations stationsRes = apiConfigService.mergeAndSortWrapperStations(stations, stations,sorting);
         //then
         assertNotNull(stationsRes);
+    }
+
+    @Test
+    void mergeAndSortWrapperChannels_nullSorting() {
+        //given
+        WrapperChannels channels = mock(WrapperChannels.class);
+        String sorting = null;
+
+        //when
+        WrapperChannels channelsRes = apiConfigService.mergeAndSortWrapperChannels(channels, channels,sorting);
+        //then
+        assertNotNull(channelsRes);
     }
 
     @Test

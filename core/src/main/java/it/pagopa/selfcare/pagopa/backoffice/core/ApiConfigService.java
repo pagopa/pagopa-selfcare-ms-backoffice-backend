@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import org.springframework.core.io.Resource;
 
@@ -69,6 +70,8 @@ public interface ApiConfigService {
 
 
     WrapperStations mergeAndSortWrapperStations(WrapperStations wrapperStationsApiConfig,WrapperStations wrapperStationsMongo, String sorting);
+
+    WrapperChannels mergeAndSortWrapperChannels(WrapperChannels wrapperChannelsApiConfig, WrapperChannels wrapperChannelsMongo, String sorting);
 
     WfespPluginConfs getWfespPlugins(String xRequestId);
 
