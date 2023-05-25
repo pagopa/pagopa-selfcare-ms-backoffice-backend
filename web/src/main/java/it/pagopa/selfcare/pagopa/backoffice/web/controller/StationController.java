@@ -271,7 +271,7 @@ public class StationController {
         return result;
     }
 
-    @GetMapping(value = "getAllStations", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/getAllStations", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getAllStationsMerged}")
     public WrapperStationsResource getAllStationsMerged(@ApiParam("${swagger.request.limit}")
