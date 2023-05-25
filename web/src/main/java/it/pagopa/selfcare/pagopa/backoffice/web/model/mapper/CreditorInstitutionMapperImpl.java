@@ -18,6 +18,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 //            station.setSegregationCode(1l);//FIXME
             station.setAuxDigit(1l);
 //            station.setApplicationCode(1l);
+// parlare con Stefano per vedere se vengono compilati da lui
         }
         return station;
     }

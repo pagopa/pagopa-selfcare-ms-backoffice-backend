@@ -5,7 +5,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
@@ -202,6 +204,22 @@ public class StationController {
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "associateStationToCreditorInstitution result = {}", resource);
         log.trace("associateStationToCreditorInstitution end");
         return resource;
+    }
+
+    @GetMapping(value = "/getCreditorInstitutions/{stationcode}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.getWrapperEntities}")
+    public CreditorInstitutions getCreditorInstitutionsByStationCode(@ApiParam("${swagger.request.code}") @PathVariable("stationcode") String stationcode,
+                                                           @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                           @RequestParam Integer page) {
+        log.trace("getCreditorInstitutions start");
+        log.debug("getCreditorInstitutions stationcode = {}", stationcode);
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getchannels xRequestId = {}", xRequestId);
+        CreditorInstitutions creditorInstitutions = apiConfigService.getCreditorInstitutionsByStation(stationcode,limit,page,xRequestId);
+        log.debug("getCreditorInstitutions result = {}", creditorInstitutions);
+        log.trace("getCreditorInstitutions end");
+        return creditorInstitutions;
     }
 
     @PutMapping(value = "/{stationcode}", produces = {MediaType.APPLICATION_JSON_VALUE})

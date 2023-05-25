@@ -1,8 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
@@ -353,6 +355,16 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         result.setPageInfo(wrapperChannelsApiConfig.getPageInfo());
         log.trace("mergeAndSortWrapperStations end");
         return result;
+    }
+
+    public CreditorInstitutions getCreditorInstitutionsByStation(String stationcode, Integer limit, Integer page, String xRequestId) {
+
+        log.trace("getCreditorInstitutionsByStation start");
+        CreditorInstitutions response = apiConfigConnector.getCreditorInstitutionsByStation(stationcode, limit, page, xRequestId);
+        log.debug("getCreditorInstitutionsByStation result = {}", response);
+        log.trace("getCreditorInstitutionsByStation end");
+
+        return response;
     }
 
 }

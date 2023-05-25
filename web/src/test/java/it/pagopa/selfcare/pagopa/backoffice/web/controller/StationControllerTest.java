@@ -6,6 +6,8 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitution;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
@@ -39,6 +41,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
@@ -639,6 +642,35 @@ class StationControllerTest {
         //then
         verify(apiConfigServiceMock, times(1))
                 .getStation(eq(stationId), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getCreditorInstitutionsByStationCode() throws Exception {
+        //given
+        String stationCode = "stationCode";
+        Integer page = 0;
+
+        CreditorInstitution creditorInstitution = mockInstance(new CreditorInstitution());
+        CreditorInstitutions creditorInstitutions = mockInstance(new CreditorInstitutions());
+        List<CreditorInstitution> creditorInstitutionList = new ArrayList<>();
+        creditorInstitutionList.add(creditorInstitution);
+        creditorInstitutions.setCreditorInstitutionList(creditorInstitutionList);
+
+
+        when(apiConfigServiceMock.getCreditorInstitutionsByStation(anyString(), anyInt(), anyInt(), anyString()))
+                .thenReturn(creditorInstitutions);
+
+        //when
+        mvc.perform(get(BASE_URL + "/getCreditorInstitutions/{stationcode}", stationCode)
+                        .queryParam("page", String.valueOf(page))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.creditor_institutions", notNullValue()));
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getCreditorInstitutionsByStation(anyString(), anyInt(), anyInt(), anyString());
+
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }
