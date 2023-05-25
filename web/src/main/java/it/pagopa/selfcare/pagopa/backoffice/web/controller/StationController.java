@@ -208,6 +208,20 @@ public class StationController {
         return resource;
     }
 
+    @DeleteMapping(value = "/{ecCode}/station/{stationcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.deleteCreditorInstitutionStationRelationship}")
+    public void deleteCreditorInstitutionStationRelationship(@ApiParam("${swagger.request.ecCode}")
+                                                             @PathVariable("ecCode") String ecCode,
+                                                             @ApiParam("${swagger.request.code}")
+                                                             @PathVariable("stationcode") String stationcode) {
+        log.trace("deleteCreditorInstitutionStationRelationship start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("deleteCreditorInstitutionStationRelationship ecCode ={}, stationcode = {}, xRequestId = {}", ecCode, stationcode, xRequestId);
+        apiConfigService.deleteCreditorInstitutionStationRelationship(ecCode, stationcode, xRequestId);
+        log.trace("deleteCreditorInstitutionStationRelationship end");
+    }
+
     @GetMapping(value = "/getCreditorInstitutions/{stationcode}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getWrapperEntities}")

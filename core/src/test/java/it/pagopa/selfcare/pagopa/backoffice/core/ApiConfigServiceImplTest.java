@@ -816,4 +816,22 @@ class ApiConfigServiceImplTest {
                 .getCreditorInstitutionsByStation(stationCode,50,0, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
+    @Test
+    void deleteCreditorInstitutionStationRelationship(){
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = "1";
+        String stationcode = "stationcode";
+
+        doNothing().when(apiConfigConnectorMock).deleteCreditorInstitutionStationRelationship(anyString(), anyString(), anyString());
+
+        //when
+        apiConfigService.deleteCreditorInstitutionStationRelationship(ecCode, stationcode, xRequestId);
+        //then
+
+        verify(apiConfigConnectorMock, times(1))
+                .deleteCreditorInstitutionStationRelationship(ecCode, stationcode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+
+    }
 }

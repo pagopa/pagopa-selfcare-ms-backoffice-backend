@@ -69,4 +69,6 @@ public interface ApiConfigConnector {
     WfespPluginConfs getWfespPlugins(String xRequestId);
 
     CreditorInstitutions getCreditorInstitutionsByStation(String stationcode, Integer limit, Integer page, String xRequestId);
+
+    void deleteCreditorInstitutionStationRelationship(String ecCode, String stationcode, String xRequestId);
 }

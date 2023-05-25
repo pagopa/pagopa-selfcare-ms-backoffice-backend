@@ -673,6 +673,29 @@ class StationControllerTest {
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
+
+    @Test
+    void deleteCreditorInstitutionStationRelationship() throws Exception{
+
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = "1";
+        String stationcode = "stationcode";
+
+        doNothing().when(apiConfigServiceMock).deleteCreditorInstitutionStationRelationship(anyString(), anyString(), anyString());
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .delete(BASE_URL + "/{ecCode}/station/{stationcode}", ecCode, stationcode)
+                        .header("X-Request-Id", xRequestId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .deleteCreditorInstitutionStationRelationship(anyString(), anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
 }
 
 

@@ -367,4 +367,10 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return response;
     }
 
+    public void deleteCreditorInstitutionStationRelationship(String ecCode, String stationcode, String xRequestId){
+        log.trace("deleteCreditorInstitutionStationRelationship start");
+        apiConfigConnector.deleteCreditorInstitutionStationRelationship(ecCode, stationcode, xRequestId);
+        log.trace("deleteCreditorInstitutionStationRelationship end");
+    }
+
 }
