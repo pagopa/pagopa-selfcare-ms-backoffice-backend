@@ -205,18 +205,14 @@ public class WrapperConnectorImpl implements WrapperConnector {
         Pageable paging = PageRequest.of(page, size);
         Page<WrapperEntitiesOperations<?>> response;
 
-        if(brokerCode==null) {
-            if (id == null) {
-                response = repository.findByType(wrapperType, paging);
-            } else {
-                response = repository.findByIdAndType(id, wrapperType, paging);
-            }
-        }else{
-            if (id == null) {
-                response = repository.findByTypeAndBrokerCode(wrapperType,brokerCode, paging);
-            } else {
-                response = repository.findByIdAndTypeAndBrokerCode(id, wrapperType, brokerCode, paging);
-            }
+        if (brokerCode == null && id == null) {
+            response = repository.findByType(wrapperType, paging);
+        } else if (brokerCode == null) {
+            response = repository.findByIdAndType(id, wrapperType, paging);
+        } else if (id == null) {
+            response = repository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
+        } else {
+            response = repository.findByIdAndTypeAndBrokerCode(id, wrapperType, brokerCode, paging);
         }
 
         PageInfo pi = new PageInfo();

@@ -598,7 +598,7 @@ class WrapperConnectorImplTest {
     }
 
     @Test
-    void findByIdAndType_nullId() {
+    void findByIdAndType_nullId_nullBrokerCode() {
         // given
         WrapperType wrapperType = WrapperType.STATION;
         String stationCode = null;
@@ -619,6 +619,56 @@ class WrapperConnectorImplTest {
         assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))
                 .findByType(any(), any());
+        verifyNoMoreInteractions(repositoryMock);
+    }
+
+    @Test
+    void findByIdAndType_nullId() {
+        // given
+        WrapperType wrapperType = WrapperType.STATION;
+        String stationCode = null;
+        Integer page = 0;
+        Integer size = 50;
+        String brokerCode = "brokerCode";
+
+        Page<WrapperEntitiesOperations<?>> paginatedMock =  mock(Page.class);
+        when(repositoryMock
+                .findByTypeAndBrokerCode(any(), any(), any()))
+                .thenReturn(paginatedMock);
+
+        // when
+        WrapperEntitiesList
+                response =   wrapperConnector
+                .findByIdOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, page, size);
+        // then
+        assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
+        verify(repositoryMock, times(1))
+                .findByTypeAndBrokerCode(any(), any(), any());
+        verifyNoMoreInteractions(repositoryMock);
+    }
+
+    @Test
+    void findByIdAndType_nullBrokerCode() {
+        // given
+        WrapperType wrapperType = WrapperType.STATION;
+        String stationCode = "stationCode";
+        Integer page = 0;
+        Integer size = 50;
+        String brokerCode = null;
+
+        Page<WrapperEntitiesOperations<?>> paginatedMock =  mock(Page.class);
+        when(repositoryMock
+                .findByIdAndType(any(), any(), any()))
+                .thenReturn(paginatedMock);
+
+        // when
+        WrapperEntitiesList
+                response =   wrapperConnector
+                .findByIdOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, page, size);
+        // then
+        assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
+        verify(repositoryMock, times(1))
+                .findByIdAndType(any(), any(), any());
         verifyNoMoreInteractions(repositoryMock);
     }
 }
