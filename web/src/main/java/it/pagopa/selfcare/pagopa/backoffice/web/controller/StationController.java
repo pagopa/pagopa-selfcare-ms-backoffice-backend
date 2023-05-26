@@ -264,6 +264,8 @@ public class StationController {
                                                      @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                      @ApiParam("${swagger.model.station.code}")
                                                      @RequestParam(required = false, value = "stationcode") String stationCode,
+                                                     @ApiParam("${swagger.request.ecCode}")
+                                                     @RequestParam("ecCode") String ecCode,
                                                      @ApiParam("${swagger.request.page}")
                                                      @RequestParam Integer page,
                                                      @ApiParam("${swagger.request.sorting}")
@@ -272,9 +274,9 @@ public class StationController {
         log.debug("getAllStationsMerged page = {} limit = {}", page, limit);
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels xRequestId = {}", xRequestId);
-        Stations stations = apiConfigService.getStations(limit, page, sorting, null, stationCode, xRequestId);
+        Stations stations = apiConfigService.getStations(limit, page, sorting, ecCode, stationCode, xRequestId);
         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
-        WrapperEntitiesList mongoList = wrapperService.findByIdOrType(stationCode, WrapperType.STATION, page, limit);
+        WrapperEntitiesList mongoList = wrapperService.findByIdOrTypeOrBrokerCode(stationCode, WrapperType.STATION, ecCode, page, limit);
         WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
         WrapperStations stationsMergedAndSorted = apiConfigService.mergeAndSortWrapperStations(responseApiConfig, responseMongo, sorting);
         WrapperStationsResource response = stationMapper.toWrapperStationsResource(stationsMergedAndSorted);

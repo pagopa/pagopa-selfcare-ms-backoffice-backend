@@ -27,5 +27,5 @@ public interface WrapperConnector {
 
     Optional<WrapperEntitiesOperations> findById(String id);
 
-    WrapperEntitiesList findByIdOrType(String id, WrapperType wrapperType, Integer page, Integer size);
+    WrapperEntitiesList findByIdOrTypeOrBrokerCode(String id, WrapperType wrapperType,String brokerCode, Integer page, Integer size);
 }
