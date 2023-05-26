@@ -52,7 +52,7 @@ class ApiConfigServiceImplTest {
         final String sort = "sort";
         final String xRequestId = "xRequestId";
         //when
-        apiConfigConnectorMock.getChannels(limit, page, code, sort, xRequestId);
+        apiConfigService.getChannels(limit, page, code, sort, xRequestId);
         //then
         verify(apiConfigConnectorMock, times(1))
                 .getChannels(limit, page, code, sort, xRequestId);

@@ -13,4 +13,7 @@ public class Broker {
 
     @JsonProperty("description")
     private String description;
+
+    @JsonProperty("broker_details")
+    private String brokerDetails;
 }

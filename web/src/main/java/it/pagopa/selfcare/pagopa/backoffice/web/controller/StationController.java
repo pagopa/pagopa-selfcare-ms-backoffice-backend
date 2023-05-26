@@ -5,20 +5,23 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapperImpl;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.*;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +33,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -46,10 +48,13 @@ public class StationController {
 
     private final WrapperService wrapperService;
 
+    private final ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService;
+
     @Autowired
-    public StationController(ApiConfigService apiConfigService, WrapperService wrapperService) {
+    public StationController(ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService, ApiConfigService apiConfigService, WrapperService wrapperService) {
         this.apiConfigService = apiConfigService;
         this.wrapperService = wrapperService;
+        this.apiConfigSelfcareIntegrationService = apiConfigSelfcareIntegrationService;
     }
 
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -73,8 +78,8 @@ public class StationController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.channels.createWrapperStationDetails}")
     public WrapperEntitiesOperations<StationDetails> createWrapperStationDetails(@RequestBody
-                                                                 @Valid
-                                                                 WrapperStationDetailsDto wrapperStationDetailsDto) {
+                                                                                 @Valid
+                                                                                 WrapperStationDetailsDto wrapperStationDetailsDto) {
         log.trace("createWrapperStationDetails start");
         log.debug("createWrapperStationDetails channelDetailsDto = {}", wrapperStationDetailsDto);
         WrapperEntitiesOperations<StationDetails> createdWrapperEntities = wrapperService.
@@ -165,7 +170,7 @@ public class StationController {
     @ApiOperation(value = "", notes = "${swagger.api.stations.updateWrapperStationDetails}")
     public WrapperEntitiesOperations updateWrapperStationDetails(@RequestBody
                                                                  @Valid
-                                                                     StationDetailsDto stationDetailsDto) {
+                                                                 StationDetailsDto stationDetailsDto) {
         log.trace("updateWrapperStationDetails start");
         log.debug("updateWrapperStationDetails stationDetailsDto = {}", stationDetailsDto);
         WrapperEntitiesOperations createdWrapperEntities = wrapperService.
@@ -191,12 +196,13 @@ public class StationController {
         log.trace("updateWrapperStationDetailsByOpt end");
         return createdWrapperEntities;
     }
+
     @PostMapping(value = "/{ecCode}/station", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.stations.associateStationToCreditorInstitution}")
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(@ApiParam("${swagger.request.ecCode}")
-                                                                                    @PathVariable("ecCode") String ecCode,
-                                                                                    @RequestBody @NotNull CreditorInstitutionStationDto dto) {
+                                                                                        @PathVariable("ecCode") String ecCode,
+                                                                                        @RequestBody @NotNull CreditorInstitutionStationDto dto) {
         log.trace("associateStationToCreditorInstitution start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("associateStationToCreditorInstitution ecCode ={}, dto = {}, xRequestId = {}", ecCode, dto, xRequestId);
@@ -229,8 +235,8 @@ public class StationController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.updateStation}")
     public StationDetailResource updateStation(@RequestBody @NotNull StationDetailsDto stationDetailsDto,
-                                                @ApiParam("${swagger.model.station.code}")
-                                                @PathVariable("stationcode") String stationCode) {
+                                               @ApiParam("${swagger.model.station.code}")
+                                               @PathVariable("stationcode") String stationCode) {
 
         log.trace("updateStation start");
         String uuid = UUID.randomUUID().toString();
@@ -284,5 +290,24 @@ public class StationController {
         log.trace("getAllStationsMerged end");
 
         return response;
+    }
+
+    @GetMapping(value = "{brokerId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.getStationsDetailsListByBroker}")
+    public StationDetailsResourceList getStationsDetailsListByBroker(@PathVariable("brokerId") String brokerId,
+                                                                     @RequestParam(required = false) String stationId,
+                                                                     @RequestParam(required = false, defaultValue = "10") Integer limit,
+                                                                     @RequestParam(required = false, defaultValue = "0") Integer page) {
+        log.trace("getStationsDetailsListByBroker start");
+        log.debug("getStationsDetailsListByBroker page = {} limit = {}", page, limit);
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getStationsDetailsListByBroker xRequestId = {}", xRequestId);
+        StationDetailsList response = apiConfigSelfcareIntegrationService.getStationsDetailsListByBroker(brokerId, stationId, limit, page, xRequestId);
+        StationDetailsResourceList resource = stationMapper.fromStationDetailsList(response);
+
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationsDetailsListByBroker result = {}", resource);
+        log.trace("getStationsDetailsListByBroker end");
+        return resource;
     }
 }
