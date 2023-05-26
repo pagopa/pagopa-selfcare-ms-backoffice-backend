@@ -89,7 +89,7 @@ class StationControllerTest {
         stations.setStationsList(List.of(station));
         stations.setPageInfo(pageInfo);
 
-        when(apiConfigServiceMock.getStations(anyInt(), anyInt(), any(), any(), any(), any()))
+        when(apiConfigServiceMock.getStations(anyInt(), anyInt(), any(), any(), any(), any(), any()))
                 .thenReturn(stations);
         //when
         mvc.perform(get(BASE_URL)
@@ -105,7 +105,7 @@ class StationControllerTest {
                 .andExpect(jsonPath("$.stationsList[0].stationCode", notNullValue()));
         //then
         verify(apiConfigServiceMock, times(1))
-                .getStations(eq(limit), eq(page), eq(sort), eq(creditorInstitutionCode), isNull(), anyString());
+                .getStations(eq(limit), eq(page), eq(sort), isNull(), eq(creditorInstitutionCode), isNull(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -470,6 +470,7 @@ class StationControllerTest {
         //given
         WrapperType wrapperType = WrapperType.STATION;
         String stationCode = "stationCode";
+        String brokerCode = "brokerCode";
         Integer page = 0;
         Integer size = 50;
         String sorting = "ASC";
@@ -499,9 +500,9 @@ class StationControllerTest {
 
 
 
-        when(wrapperServiceMock.findByIdOrType(stationCode, wrapperType, page, size))
+        when(wrapperServiceMock.findByIdOrTypeOrBrokerCode(stationCode, wrapperType, brokerCode, page, size))
                 .thenReturn(mongoList);
-        when(apiConfigServiceMock.getStations(anyInt(), anyInt(), anyString(), isNull(), anyString(), anyString()))
+        when(apiConfigServiceMock.getStations(anyInt(), anyInt(), anyString(), anyString(), isNull(), anyString(), anyString()))
                 .thenReturn(stations);
         when(apiConfigServiceMock.mergeAndSortWrapperStations(any(), any(), anyString()))
                 .thenReturn(wrapperStations1);
@@ -513,6 +514,7 @@ class StationControllerTest {
                         .queryParam("stationcode", stationCode)
                         .queryParam("page", String.valueOf(page))
                         .queryParam("sorting", sorting)
+                        .queryParam("brokerCode", brokerCode)
                 
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
@@ -520,9 +522,9 @@ class StationControllerTest {
 
         //then
         verify(wrapperServiceMock, times(1))
-                .findByIdOrType(anyString(), any(), anyInt(), anyInt());
+                .findByIdOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt());
         verify(apiConfigServiceMock, times(1))
-                .getStations(anyInt(), anyInt(), anyString(), isNull(), anyString(), anyString());
+                .getStations(anyInt(), anyInt(), anyString(), anyString(), isNull(), anyString(), anyString());
         verify(apiConfigServiceMock, times(1))
                 .mergeAndSortWrapperStations(any(), any(), anyString());
 

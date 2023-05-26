@@ -337,7 +337,7 @@ class ApiConfigServiceImplTest {
                 .thenReturn(stationsMock);
 
         //when
-        Stations stations = apiConfigService.getStations(limit, page, sort, ecCode, stationCode, xRequestId);
+        Stations stations = apiConfigService.getStations(limit, page, sort,null,  ecCode, stationCode, xRequestId);
 
         //then
         assertNotNull(stations);

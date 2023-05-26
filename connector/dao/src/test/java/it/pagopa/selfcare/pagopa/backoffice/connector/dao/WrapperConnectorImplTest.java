@@ -575,6 +575,7 @@ class WrapperConnectorImplTest {
         // given
         WrapperType wrapperType = WrapperType.STATION;
         String stationCode = "stationCode";
+        String brokerCode = "brokerCode";
         Integer page = 0;
         Integer size = 50;
 
@@ -582,17 +583,17 @@ class WrapperConnectorImplTest {
 
 
         when(repositoryMock
-                .findByIdAndType(anyString(),any(), any()))
+                .findByIdAndTypeAndBrokerCode(anyString(),any(),anyString(), any()))
                 .thenReturn(paginatedMock);
 
         // when
         WrapperEntitiesList
                 response =   wrapperConnector
-                .findByIdOrType(stationCode,wrapperType, page, size);
+                .findByIdOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, page, size);
         // then
         assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))
-                .findByIdAndType(anyString(),any(), any());
+                .findByIdAndTypeAndBrokerCode(anyString(),any(),anyString(), any());
         verifyNoMoreInteractions(repositoryMock);
     }
 
@@ -603,6 +604,7 @@ class WrapperConnectorImplTest {
         String stationCode = null;
         Integer page = 0;
         Integer size = 50;
+        String brokerCode = null;
 
         Page<WrapperEntitiesOperations<?>> paginatedMock =  mock(Page.class);
         when(repositoryMock
@@ -612,7 +614,7 @@ class WrapperConnectorImplTest {
         // when
         WrapperEntitiesList
                 response =   wrapperConnector
-                .findByIdOrType(stationCode,wrapperType, page, size);
+                .findByIdOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, page, size);
         // then
         assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))

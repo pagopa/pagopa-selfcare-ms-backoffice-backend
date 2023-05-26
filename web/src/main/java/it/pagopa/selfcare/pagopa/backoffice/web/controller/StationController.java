@@ -102,7 +102,7 @@ public class StationController {
         log.trace("getStations start");
         String uuid = UUID.randomUUID().toString();
         log.debug("getStations ecCode = {}, stationCode = {}, X-Request-Id = {}", creditorInstitutionCode, stationCode, uuid);
-        Stations stations = apiConfigService.getStations(limit, page, sort, creditorInstitutionCode, stationCode, uuid);
+        Stations stations = apiConfigService.getStations(limit, page, sort,null, creditorInstitutionCode, stationCode, uuid);
         StationsResource resource = stationMapper.toResource(stations);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "StationController result = {}", resource);
         log.trace("getStations end");
@@ -265,7 +265,7 @@ public class StationController {
                                                      @ApiParam("${swagger.model.station.code}")
                                                      @RequestParam(required = false, value = "stationcode") String stationCode,
                                                      @ApiParam("${swagger.request.ecCode}")
-                                                     @RequestParam("ecCode") String ecCode,
+                                                     @RequestParam("brokerCode") String brokerCode,
                                                      @ApiParam("${swagger.request.page}")
                                                      @RequestParam Integer page,
                                                      @ApiParam("${swagger.request.sorting}")
@@ -274,9 +274,9 @@ public class StationController {
         log.debug("getAllStationsMerged page = {} limit = {}", page, limit);
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels xRequestId = {}", xRequestId);
-        Stations stations = apiConfigService.getStations(limit, page, sorting, ecCode, stationCode, xRequestId);
+        Stations stations = apiConfigService.getStations(limit, page, sorting, brokerCode,null, stationCode, xRequestId);
         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
-        WrapperEntitiesList mongoList = wrapperService.findByIdOrTypeOrBrokerCode(stationCode, WrapperType.STATION, ecCode, page, limit);
+        WrapperEntitiesList mongoList = wrapperService.findByIdOrTypeOrBrokerCode(stationCode, WrapperType.STATION, brokerCode, page, limit);
         WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
         WrapperStations stationsMergedAndSorted = apiConfigService.mergeAndSortWrapperStations(responseApiConfig, responseMongo, sorting);
         WrapperStationsResource response = stationMapper.toWrapperStationsResource(stationsMergedAndSorted);
