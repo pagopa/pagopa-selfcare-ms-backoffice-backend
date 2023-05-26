@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
@@ -788,5 +789,24 @@ class ApiConfigServiceImplTest {
                 .getWfespPlugins(anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
 
+    }
+
+    @Test
+    void createBroker() {
+        //given
+        final String xRequestId = "xRequestId";
+        BrokerDetails brokerDetails = mock(BrokerDetails.class);
+        when(apiConfigConnectorMock.createBroker(any(), anyString()))
+                .thenReturn(brokerDetails);
+        //when
+        BrokerDetails brokerDetailsRes = apiConfigService.createBroker(brokerDetails, xRequestId);
+        //then
+        assertNotNull(brokerDetailsRes);
+        assertEquals(brokerDetailsRes, brokerDetails);
+        reflectionEqualsByName(brokerDetailsRes, brokerDetails);
+
+        verify(apiConfigConnectorMock, times(1))
+                .createBroker(brokerDetails, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 }

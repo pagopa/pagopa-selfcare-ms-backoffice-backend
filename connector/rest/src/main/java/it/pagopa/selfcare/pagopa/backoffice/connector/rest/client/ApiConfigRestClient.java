@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
@@ -157,6 +158,10 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     CreditorInstitutionDetails updateCreditorInstitutionDetails(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
                                                                 @RequestBody CreditorInstitutionDetails request,
                                                                 @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+
+    @PostMapping(value = "${rest-client.api-config.createBroker.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    BrokerDetails createBroker(@RequestBody BrokerDetails request,
+                               @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
 
 
     @PutMapping(value = "${rest-client.api-config.updateStation.path}", produces = MediaType.APPLICATION_JSON_VALUE)
