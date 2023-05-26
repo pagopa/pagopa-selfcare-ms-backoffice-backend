@@ -1091,10 +1091,7 @@ class ChannelControllerTest {
         Integer page = 0;
         Integer size = 50;
         String sorting = "ASC";
-<<<<<<< HEAD
         String brokerCode = "brokerCode";
-=======
->>>>>>> release-dev
 
         Channels channels = mockInstance(new Channels());
         List<Channel> channelList = mockInstance(new ArrayList<>());
@@ -1121,11 +1118,7 @@ class ChannelControllerTest {
 
 
 
-<<<<<<< HEAD
         when(wrapperServiceMock.findByIdOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt()))
-=======
-        when(wrapperServiceMock.findByIdOrType(anyString(), any(), anyInt(), anyInt()))
->>>>>>> release-dev
                 .thenReturn(mongoList);
         when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), any(), anyString(), anyString()))
                 .thenReturn(channels);
