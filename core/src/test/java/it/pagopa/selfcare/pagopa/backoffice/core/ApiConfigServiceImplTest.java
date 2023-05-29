@@ -2,8 +2,10 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
@@ -20,6 +22,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -334,7 +337,7 @@ class ApiConfigServiceImplTest {
                 .thenReturn(stationsMock);
 
         //when
-        Stations stations = apiConfigService.getStations(limit, page, sort, ecCode, stationCode, xRequestId);
+        Stations stations = apiConfigService.getStations(limit, page, sort,null,  ecCode, stationCode, xRequestId);
 
         //then
         assertNotNull(stations);
@@ -788,5 +791,29 @@ class ApiConfigServiceImplTest {
                 .getWfespPlugins(anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
 
+    }
+
+    @Test
+    void getCreditorInstitutionsByStation() {
+        //given
+        String stationCode = "stationCode";
+        String xRequestId = "xRequestId";
+        Integer page = 0;
+
+        CreditorInstitution creditorInstitution = mockInstance(new CreditorInstitution());
+        CreditorInstitutions creditorInstitutions = mockInstance(new CreditorInstitutions());
+        List<CreditorInstitution> creditorInstitutionList = new ArrayList<>();
+        creditorInstitutionList.add(creditorInstitution);
+        creditorInstitutions.setCreditorInstitutionList(creditorInstitutionList);
+
+        when(apiConfigConnectorMock.getCreditorInstitutionsByStation(anyString(), anyInt(), anyInt(), anyString()))
+                .thenReturn(creditorInstitutions);
+        //when
+        CreditorInstitutions result = apiConfigService.getCreditorInstitutionsByStation(stationCode,50,0, xRequestId);
+        //then
+        assertSame(creditorInstitutions, result);
+        verify(apiConfigConnectorMock, times(1))
+                .getCreditorInstitutionsByStation(stationCode,50,0, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 }

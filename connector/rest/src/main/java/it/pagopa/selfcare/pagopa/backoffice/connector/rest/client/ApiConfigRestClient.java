@@ -1,8 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
@@ -168,4 +170,11 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     @GetMapping(value = "${rest-client.api-config.getWfespPlugins.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     WfespPluginConfs getWfespPlugins(@RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
+    @GetMapping(value = "${rest-client.api-config.getCreditorInstitutions.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    CreditorInstitutions getCreditorInstitutionsByStation(@PathVariable(required = false, name = "stationcode") String stationcode,
+                                                          @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                          @RequestParam Integer page,
+                                                          @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 }

@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.api;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
@@ -66,4 +67,6 @@ public interface ApiConfigConnector {
     StationDetails updateStation(String stationCode, StationDetails stationDetails, String xRequestId);
 
     WfespPluginConfs getWfespPlugins(String xRequestId);
+
+    CreditorInstitutions getCreditorInstitutionsByStation(String stationcode, Integer limit, Integer page, String xRequestId);
 }

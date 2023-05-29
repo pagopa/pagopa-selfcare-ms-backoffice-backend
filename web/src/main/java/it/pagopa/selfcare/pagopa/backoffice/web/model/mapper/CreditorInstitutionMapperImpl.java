@@ -1,9 +1,14 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.*;
+
+import java.util.stream.Collectors;
 
 public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper {
 
@@ -18,6 +23,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 //            station.setSegregationCode(1l);//FIXME
             station.setAuxDigit(1l);
 //            station.setApplicationCode(1l);
+// parlare con Stefano per vedere se vengono compilati da lui
         }
         return station;
     }
@@ -125,5 +131,35 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         }
 
         return creditorInstitutionDetails;
+    }
+
+    @Override
+    public CreditorInstitutionResource toResorce(CreditorInstitution model) {
+        if(model == null){
+            return null;
+        }
+        CreditorInstitutionResource creditorInstitutionResource = new CreditorInstitutionResource();
+
+        creditorInstitutionResource.setBusinessName(model.getBusinessName());
+        creditorInstitutionResource.setCreditorInstitutionCode(model.getCreditorInstitutionCode());
+        creditorInstitutionResource.setEnabled(model.getEnabled());
+
+        return creditorInstitutionResource;
+    }
+
+    @Override
+    public CreditorInstitutionsResource toResource(CreditorInstitutions model) {
+        if(model == null){
+            return null;
+        }
+
+        CreditorInstitutionsResource creditorInstitutionsResource = new CreditorInstitutionsResource();
+
+        creditorInstitutionsResource.setCreditorInstitutionList(model.getCreditorInstitutionList().stream()
+                .map(this::toResorce)
+                .collect(Collectors.toList()));
+        creditorInstitutionsResource.setPageInfo(model.getPageInfo());
+
+        return creditorInstitutionsResource;
     }
 }
