@@ -10,6 +10,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channel;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.RestTestUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.config.ApiConfigSelfcareIntegrationRestClientConfigTest;
@@ -159,6 +160,40 @@ class ApiConfigSelfcareIntegrationRestClientTest {
         assertNotNull(response);
         assertNotNull(response.getStationsDetailsList());
         assertTrue(response.getStationsDetailsList().isEmpty());
+    }
+
+
+    @Test
+    void getChannelDetailsListByBroker_fullyValued() {
+        // given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        Integer page = 0;
+        Integer limit = 2;
+        String brokerCode = testCaseBrokerCodeMap.get(testCase);
+        String channelId = "channelId";
+        String xRequestId = "1";
+        // when
+        ChannelDetailsList response = restClient.getChannelDetailsListByBroker(brokerCode,channelId,limit,page, xRequestId);
+        assertNotNull(response);
+        assertNotNull(response.getChannelDetailsList());
+        assertNotNull(response.getChannelDetailsList().get(0));
+        assertNotNull(response.getChannelDetailsList().get(0).getEnabled());
+    }
+
+    @Test
+    void getChannelDetailsListByBroker_fullyEmpty() {
+        // given
+        TestCase testCase = TestCase.FULLY_EMPTY;
+        Integer page = 0;
+        Integer limit = 2;
+        String brokerCode = testCaseBrokerCodeMap.get(testCase);
+        String channelId = "channelId";
+        String xRequestId = "1";
+        // when
+        ChannelDetailsList response = restClient.getChannelDetailsListByBroker(brokerCode,channelId,limit,page, xRequestId);
+        assertNotNull(response);
+        assertNotNull(response.getChannelDetailsList());
+        assertTrue(response.getChannelDetailsList().isEmpty());
     }
 
     private void checkNotNullFields(Object o, String... excludedFields) {

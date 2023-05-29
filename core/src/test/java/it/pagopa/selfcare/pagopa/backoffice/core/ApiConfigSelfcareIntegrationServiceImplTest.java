@@ -66,5 +66,30 @@ class ApiConfigSelfcareIntegrationServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
+    @Test
+    void getChannelDetailsListByBroker_nullPage() {
+        //given
+        final Integer limit = 1;
+        final Integer page = 0;
+        final String broker = "broker";
+        final String station = "station";
+        final String xRequestId = "xRequestId";
 
+        ChannelDetailsList channelDetailsListMock = mockInstance(new ChannelDetailsList());
+        ChannelDetails channelDetailsMock =mockInstance(new ChannelDetails());
+        channelDetailsListMock.setChannelDetailsList(List.of(channelDetailsMock));
+
+        when(apiConfigConnectorMock.getChannelDetailsListByBroker(anyString(),anyString(),anyInt(),anyInt(),any()))
+                .thenReturn(channelDetailsListMock);
+
+        //when
+        ChannelDetailsList response = apiConfigSelfcareIntegrationService.getChannelsDetailsListByBroker(broker, station, limit,page, xRequestId);
+        //then
+        assertNotNull(response);
+        assertEquals(response, channelDetailsListMock);
+        reflectionEqualsByName(response, channelDetailsListMock);
+        verify(apiConfigConnectorMock, times(1))
+                .getChannelDetailsListByBroker(broker, station, limit,page, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
 }

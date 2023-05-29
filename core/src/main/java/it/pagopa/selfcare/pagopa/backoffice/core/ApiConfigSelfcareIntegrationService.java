@@ -12,4 +12,6 @@ public interface ApiConfigSelfcareIntegrationService {
 
     StationDetailsList getStationsDetailsListByBroker(String brokerId, String stationId, Integer limit, Integer page, String xRequestId);
 
+    ChannelDetailsList getChannelsDetailsListByBroker(String brokerId, String channelId, Integer limit, Integer page, String xRequestId);
+
 }
