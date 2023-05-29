@@ -541,7 +541,7 @@ public class ChannelController {
         log.debug("getchannels xRequestId = {}", xRequestId);
         Channels channels = apiConfigService.getChannels(limit, page, channelcode, sorting, xRequestId);
         WrapperChannels  responseApiConfig = ChannelMapper.toWrapperChannels(channels);
-        WrapperEntitiesList mongoList = wrapperService.findByIdOrType(channelcode, WrapperType.CHANNEL, page, limit);
+        WrapperEntitiesList mongoList = wrapperService.findByIdOrTypeOrBrokerCode(channelcode, WrapperType.CHANNEL,null, page, limit);
         WrapperChannels responseMongo = ChannelMapper.toWrapperChannels(mongoList);
         WrapperChannels channelsMergedAndSorted = apiConfigService.mergeAndSortWrapperChannels(responseApiConfig, responseMongo, sorting);
         WrapperChannelsResource response = ChannelMapper.toWrapperChannelsResource(channelsMergedAndSorted);
