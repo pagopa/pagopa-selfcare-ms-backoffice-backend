@@ -270,7 +270,7 @@ public class StationController {
                                                      @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                      @ApiParam("${swagger.model.station.code}")
                                                      @RequestParam(required = false, value = "stationcode") String stationCode,
-                                                     @ApiParam("${swagger.request.ecCode}")
+                                                     @ApiParam("${swagger.request.brokerCode}")
                                                      @RequestParam("brokerCode") String brokerCode,
                                                      @ApiParam("${swagger.request.page}")
                                                      @RequestParam Integer page,
