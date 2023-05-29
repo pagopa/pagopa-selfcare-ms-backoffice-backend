@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
@@ -22,6 +23,7 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.Credit
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapperImpl;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.*;
 import lombok.extern.slf4j.Slf4j;
@@ -214,6 +216,20 @@ public class StationController {
         return resource;
     }
 
+    @DeleteMapping(value = "/{ecCode}/station/{stationcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.deleteCreditorInstitutionStationRelationship}")
+    public void deleteCreditorInstitutionStationRelationship(@ApiParam("${swagger.request.ecCode}")
+                                                             @PathVariable("ecCode") String ecCode,
+                                                             @ApiParam("${swagger.request.code}")
+                                                             @PathVariable("stationcode") String stationcode) {
+        log.trace("deleteCreditorInstitutionStationRelationship start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("deleteCreditorInstitutionStationRelationship ecCode ={}, stationcode = {}, xRequestId = {}", ecCode, stationcode, xRequestId);
+        apiConfigService.deleteCreditorInstitutionStationRelationship(ecCode, stationcode, xRequestId);
+        log.trace("deleteCreditorInstitutionStationRelationship end");
+    }
+
     @GetMapping(value = "/getCreditorInstitutions/{stationcode}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getWrapperEntities}")
@@ -263,7 +279,7 @@ public class StationController {
         return result;
     }
 
-    @GetMapping(value = "getAllStations", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/getAllStations", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getAllStationsMerged}")
     public WrapperStationsResource getAllStationsMerged(@ApiParam("${swagger.request.limit}")
