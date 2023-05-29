@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.stations;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Protocol;
 import lombok.Data;
 
@@ -10,8 +11,11 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Data//FIXME fix after integration with DB
+@Data
 public class StationDetailResource extends StationResource {
+
+    @ApiModelProperty("${swagger.model.station.brokerDetails}")
+    private BrokerDetailsResource brokerDetails;
     @ApiModelProperty("${swagger.model.station.ip}")
     private String ip;
     @ApiModelProperty("${swagger.model.station.newPassword}")
@@ -58,16 +62,12 @@ public class StationDetailResource extends StationResource {
     @ApiModelProperty(value = "${swagger.model.station.proxyPassword}")
     private String proxyPassword;
     @ApiModelProperty(value = "${swagger.model.station.threadNumber}")
-    @NotNull
     private Long threadNumber;
     @ApiModelProperty(value = "${swagger.model.station.timeoutA}")
-    @NotNull
     private Long timeoutA;
     @ApiModelProperty(value = "${swagger.model.station.timeoutB}")
-    @NotNull
     private Long timeoutB;
     @ApiModelProperty(value = "${swagger.model.station.timeoutC}")
-    @NotNull
     private Long timeoutC;
     @ApiModelProperty(value = "${swagger.model.station.flagOnline}")
     private Boolean flagOnline;
@@ -91,7 +91,6 @@ public class StationDetailResource extends StationResource {
     @Min(1)
     @ApiModelProperty("${swagger.model.station.primitiveVersion}")
     @JsonProperty(required = true)
-    @NotNull
     private Integer primitiveVersion;
 
 }

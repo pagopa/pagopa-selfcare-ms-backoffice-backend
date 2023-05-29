@@ -52,7 +52,7 @@ class ApiConfigServiceImplTest {
         final String sort = "sort";
         final String xRequestId = "xRequestId";
         //when
-        apiConfigConnectorMock.getChannels(limit, page, code, sort, xRequestId);
+        apiConfigService.getChannels(limit, page, code, sort, xRequestId);
         //then
         verify(apiConfigConnectorMock, times(1))
                 .getChannels(limit, page, code, sort, xRequestId);
@@ -337,7 +337,7 @@ class ApiConfigServiceImplTest {
                 .thenReturn(stationsMock);
 
         //when
-        Stations stations = apiConfigService.getStations(limit, page, sort, ecCode, stationCode, xRequestId);
+        Stations stations = apiConfigService.getStations(limit, page, sort,null,  ecCode, stationCode, xRequestId);
 
         //then
         assertNotNull(stations);
@@ -816,6 +816,7 @@ class ApiConfigServiceImplTest {
                 .getCreditorInstitutionsByStation(stationCode,50,0, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
+
     @Test
     void deleteCreditorInstitutionStationRelationship(){
         //given

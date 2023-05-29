@@ -145,10 +145,10 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
-    public Stations getStations(Integer limit, Integer page, String sort, String ecCode, String stationCode, String xRequestId) {
+    public Stations getStations(Integer limit, Integer page, String sort, String brokerCode, String ecCode, String stationCode, String xRequestId) {
         log.trace("getStations start");
         log.debug("getStations ecCode = {}, stationCode = {}, xRequestId = {}", ecCode, stationCode, xRequestId);
-        Stations response = apiConfigConnector.getStations(limit, page, sort, null, ecCode, stationCode, xRequestId);
+        Stations response = apiConfigConnector.getStations(limit, page, sort, brokerCode, ecCode, stationCode, xRequestId);
         log.debug("getStations result = {}", response);
         log.trace("getStations end");
         return response;
@@ -372,5 +372,4 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         apiConfigConnector.deleteCreditorInstitutionStationRelationship(ecCode, stationcode, xRequestId);
         log.trace("deleteCreditorInstitutionStationRelationship end");
     }
-
 }

@@ -12,8 +12,10 @@ import java.util.List;
 public class CreditorInstitutionsResource {
 
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.list}", required = true)
+    @JsonProperty("creditor_institutions")
     private List<CreditorInstitutionResource> creditorInstitutionList;
 
     @ApiModelProperty(value = "${swagger.model.pageinfo}", required = true)
+    @JsonProperty("page_info")
     private PageInfo pageInfo;
 }

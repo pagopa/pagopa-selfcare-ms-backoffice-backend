@@ -46,7 +46,7 @@ public interface ApiConfigService {
 
     PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails, String xRequestId);
 
-    Stations getStations(Integer limit, Integer page, String sort, String ecCode, String stationCode, String xRequestId);
+    Stations getStations(Integer limit, Integer page, String sort, String brokerCode, String ecCode, String stationCode, String xRequestId);
 
     StationDetails getStation(String stationCode, String xRequestId);
 

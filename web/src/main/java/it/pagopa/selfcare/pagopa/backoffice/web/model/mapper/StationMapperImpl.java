@@ -1,8 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
@@ -72,10 +74,20 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setTargetHost(model.getTargetHost());
         stationDetailResource.setTargetPort(model.getTargetPort());
         stationDetailResource.setTargetPath(model.getTargetPath());
-        stationDetailResource.setTargetHostPof( model.getTargetHostPof() );
-        stationDetailResource.setTargetPortPof( model.getTargetPortPof() );
-        stationDetailResource.setTargetPathPof( model.getTargetPathPof() );
+        stationDetailResource.setTargetHostPof(model.getTargetHostPof());
+        stationDetailResource.setTargetPortPof(model.getTargetPortPof());
+        stationDetailResource.setTargetPathPof(model.getTargetPathPof());
         stationDetailResource.setPrimitiveVersion(model.getPrimitiveVersion());
+
+        BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
+        BrokerDetails brokerDetails = model.getIntermediarioPa();
+        if(brokerDetails!=null){
+            brokerDetailsResource.setBrokerDetails(brokerDetails.getBrokerDetails());
+            brokerDetailsResource.setExtendedFaultBean(brokerDetails.getExtendedFaultBean());
+            brokerDetailsResource.setEnabled(brokerDetails.getEnabled());
+            brokerDetailsResource.setBrokerCode(brokerDetails.getBrokerCode());
+            stationDetailResource.setBrokerDetails(brokerDetailsResource);
+        }
 
         return stationDetailResource;
     }
@@ -98,7 +110,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationResource toStationsResource(StationDetails model) {
-        if(model == null){
+        if (model == null) {
             return null;
         }
 
@@ -118,8 +130,8 @@ public class StationMapperImpl implements StationMapper {
     }
 
     @Override
-    public Station fromStationDetails( StationDetails stationDetails) {
-        if(stationDetails == null){
+    public Station fromStationDetails(StationDetails stationDetails) {
+        if (stationDetails == null) {
             return null;
         }
 
@@ -138,14 +150,14 @@ public class StationMapperImpl implements StationMapper {
     @Override
     public Stations fromWrapperEntitiesList(WrapperEntitiesList wrapperEntitiesList) {
 
-        if(wrapperEntitiesList == null || wrapperEntitiesList.getWrapperEntities() == null){
+        if (wrapperEntitiesList == null || wrapperEntitiesList.getWrapperEntities() == null) {
             return null;
         }
 
         Stations stations = new Stations();
         List<Station> stationList = new ArrayList<>();
         wrapperEntitiesList.getWrapperEntities().forEach(
-                ent-> stationList.add(fromStationDetails(
+                ent -> stationList.add(fromStationDetails(
                         (StationDetails) ent.getWrapperEntityOperationsSortedList().get(0).getEntity())));
 
         stations.setStationsList(stationList);
@@ -154,8 +166,20 @@ public class StationMapperImpl implements StationMapper {
     }
 
     @Override
+    public StationDetailsResourceList fromStationDetailsList(StationDetailsList model) {
+        if (model == null) {
+            return null;
+        }
+        StationDetailsResourceList resource = new StationDetailsResourceList();
+        resource.setStationsDetailsList(model.getStationsDetailsList().stream().map(i ->
+                toResource(i)).collect(Collectors.toList()));
+
+        resource.setPageInfo(model.getPageInfo());
+        return resource;
+    }
+
     public WrapperStation toWrapperStation(Station model) {
-        if(model == null){
+        if (model == null) {
             return null;
         }
 
@@ -204,7 +228,7 @@ public class StationMapperImpl implements StationMapper {
         List<WrapperStation> stationList = new ArrayList<>();
 
         wrapperEntitiesList.getWrapperEntities().forEach(
-                ent-> stationList.add(toWrapperStation(
+                ent -> stationList.add(toWrapperStation(
                         (WrapperEntityOperations<StationDetails>) ent.getWrapperEntityOperationsSortedList().get(0))));
 
         wrapperStations.setStationsList(stationList);
@@ -278,7 +302,7 @@ public class StationMapperImpl implements StationMapper {
     @Override
     public List<StationResource> toResourceList(WrapperEntitiesList wrapperEntitiesList) {
 
-        if(wrapperEntitiesList == null || wrapperEntitiesList.getWrapperEntities() == null){
+        if (wrapperEntitiesList == null || wrapperEntitiesList.getWrapperEntities() == null) {
             return null;
         }
 
@@ -296,7 +320,7 @@ public class StationMapperImpl implements StationMapper {
     @Override
     public List<StationResource> toResourceList(Stations stations) {
 
-        if(stations == null || stations.getStationsList()==null){
+        if (stations == null || stations.getStationsList() == null) {
             return null;
         }
 
@@ -378,29 +402,38 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationDetails fromWrapperStationDetailsDto(WrapperStationDetailsDto model) {
-        if ( model == null ) {
+        if (model == null) {
             return null;
         }
 
         StationDetails stationDetails = new StationDetails();
-
-        stationDetails.setStationCode( model.getStationCode() );
-        stationDetails.setRedirectIp( model.getRedirectIp() );
-        stationDetails.setRedirectPath( model.getRedirectPath() );
-        stationDetails.setRedirectPort( model.getRedirectPort() );
-        stationDetails.setRedirectQueryString( model.getRedirectQueryString() );
-        stationDetails.setRedirectProtocol( model.getRedirectProtocol() );
-        stationDetails.setBrokerCode( model.getBrokerCode() );
-        stationDetails.setTargetHost( model.getTargetHost() );
-        stationDetails.setTargetPort( model.getTargetPort() );
-        stationDetails.setTargetPath( model.getTargetPath() );
-        stationDetails.setPrimitiveVersion( model.getPrimitiveVersion() );
+        stationDetails.setStationCode(model.getStationCode());
+        stationDetails.setRedirectIp(model.getRedirectIp());
+        stationDetails.setRedirectPath(model.getRedirectPath());
+        stationDetails.setRedirectPort(model.getRedirectPort());
+        stationDetails.setRedirectQueryString(model.getRedirectQueryString());
+        stationDetails.setRedirectProtocol(model.getRedirectProtocol());
+        stationDetails.setBrokerCode(model.getBrokerCode());
+        stationDetails.setTargetHost(model.getTargetHost());
+        stationDetails.setTargetPort(model.getTargetPort());
+        stationDetails.setTargetPath(model.getTargetPath());
+        stationDetails.setPrimitiveVersion(model.getPrimitiveVersion());
+        stationDetails.setStationCode(model.getStationCode());
+        stationDetails.setRedirectIp(model.getRedirectIp());
+        stationDetails.setRedirectPath(model.getRedirectPath());
+        stationDetails.setRedirectPort(model.getRedirectPort());
+        stationDetails.setRedirectQueryString(model.getRedirectQueryString());
+        stationDetails.setRedirectProtocol(model.getRedirectProtocol());
+        stationDetails.setBrokerCode(model.getBrokerCode());
+        stationDetails.setTargetHost(model.getTargetHost());
+        stationDetails.setTargetPort(model.getTargetPort());
+        stationDetails.setTargetPath(model.getTargetPath());
+        stationDetails.setPrimitiveVersion(model.getPrimitiveVersion());
         //default
         stationDetails.setTimeoutA(15L);
         stationDetails.setTimeoutB(30L);
         stationDetails.setTimeoutC(120L);
         stationDetails.setThreadNumber(1L);
-
         return stationDetails;
     }
 

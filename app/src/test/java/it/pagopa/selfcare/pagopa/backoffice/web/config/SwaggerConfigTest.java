@@ -1,10 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
-import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
-import it.pagopa.selfcare.pagopa.backoffice.core.ExternalApiService;
-import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
+import it.pagopa.selfcare.pagopa.backoffice.core.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +42,9 @@ class SwaggerConfigTest {
 
     @MockBean
     private ApiConfigService apiConfigService;
+
+    @MockBean
+    private ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService;
 
     @MockBean
     private WrapperService wrapperService;
