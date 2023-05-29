@@ -4,6 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
@@ -147,10 +148,10 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
-    public Stations getStations(Integer limit, Integer page, String sort, String ecCode, String stationCode, String xRequestId) {
+    public Stations getStations(Integer limit, Integer page, String sort, String brokerCode, String ecCode, String stationCode, String xRequestId) {
         log.trace("getStations start");
         log.debug("getStations ecCode = {}, stationCode = {}, xRequestId = {}", ecCode, stationCode, xRequestId);
-        Stations response = apiConfigConnector.getStations(limit, page, sort, null, ecCode, stationCode, xRequestId);
+        Stations response = apiConfigConnector.getStations(limit, page, sort, brokerCode, ecCode, stationCode, xRequestId);
         log.debug("getStations result = {}", response);
         log.trace("getStations end");
         return response;
@@ -368,4 +369,19 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return result;
     }
 
+    public CreditorInstitutions getCreditorInstitutionsByStation(String stationcode, Integer limit, Integer page, String xRequestId) {
+
+        log.trace("getCreditorInstitutionsByStation start");
+        CreditorInstitutions response = apiConfigConnector.getCreditorInstitutionsByStation(stationcode, limit, page, xRequestId);
+        log.debug("getCreditorInstitutionsByStation result = {}", response);
+        log.trace("getCreditorInstitutionsByStation end");
+
+        return response;
+    }
+
+    public void deleteCreditorInstitutionStationRelationship(String ecCode, String stationcode, String xRequestId){
+        log.trace("deleteCreditorInstitutionStationRelationship start");
+        apiConfigConnector.deleteCreditorInstitutionStationRelationship(ecCode, stationcode, xRequestId);
+        log.trace("deleteCreditorInstitutionStationRelationship end");
+    }
 }

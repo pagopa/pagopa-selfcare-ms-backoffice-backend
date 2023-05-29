@@ -7,6 +7,12 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitution;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
@@ -40,6 +46,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
@@ -89,7 +96,7 @@ class StationControllerTest {
         stations.setStationsList(List.of(station));
         stations.setPageInfo(pageInfo);
 
-        when(apiConfigServiceMock.getStations(anyInt(), anyInt(), any(), any(), any(), any()))
+        when(apiConfigServiceMock.getStations(anyInt(), anyInt(), any(), any(), any(), any(), any()))
                 .thenReturn(stations);
         //when
         mvc.perform(get(BASE_URL)
@@ -105,7 +112,7 @@ class StationControllerTest {
                 .andExpect(jsonPath("$.stationsList[0].stationCode", notNullValue()));
         //then
         verify(apiConfigServiceMock, times(1))
-                .getStations(eq(limit), eq(page), eq(sort), eq(creditorInstitutionCode), isNull(), anyString());
+                .getStations(eq(limit), eq(page), eq(sort), isNull(), eq(creditorInstitutionCode), isNull(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -434,6 +441,7 @@ class StationControllerTest {
         //given
         WrapperType wrapperType = WrapperType.STATION;
         String stationCode = "stationCode";
+        String brokerCode = "brokerCode";
         Integer page = 0;
         Integer size = 50;
         String sorting = "ASC";
@@ -463,9 +471,9 @@ class StationControllerTest {
 
 
 
-        when(wrapperServiceMock.findByIdOrType(stationCode, wrapperType, page, size))
+        when(wrapperServiceMock.findByIdOrTypeOrBrokerCode(stationCode, wrapperType, brokerCode, page, size))
                 .thenReturn(mongoList);
-        when(apiConfigServiceMock.getStations(anyInt(), anyInt(), anyString(), isNull(), anyString(), anyString()))
+        when(apiConfigServiceMock.getStations(anyInt(), anyInt(), anyString(), anyString(), isNull(), anyString(), anyString()))
                 .thenReturn(stations);
         when(apiConfigServiceMock.mergeAndSortWrapperStations(any(), any(), anyString()))
                 .thenReturn(wrapperStations1);
@@ -477,6 +485,7 @@ class StationControllerTest {
                         .queryParam("stationcode", stationCode)
                         .queryParam("page", String.valueOf(page))
                         .queryParam("sorting", sorting)
+                        .queryParam("brokerCode", brokerCode)
                 
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
@@ -484,9 +493,9 @@ class StationControllerTest {
 
         //then
         verify(wrapperServiceMock, times(1))
-                .findByIdOrType(anyString(), any(), anyInt(), anyInt());
+                .findByIdOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt());
         verify(apiConfigServiceMock, times(1))
-                .getStations(anyInt(), anyInt(), anyString(), isNull(), anyString(), anyString());
+                .getStations(anyInt(), anyInt(), anyString(), anyString(), isNull(), anyString(), anyString());
         verify(apiConfigServiceMock, times(1))
                 .mergeAndSortWrapperStations(any(), any(), anyString());
 
@@ -688,6 +697,58 @@ class StationControllerTest {
         //then
         verify(apiConfigServiceMock, times(1))
                 .createBroker(any(), anyString());
+    }
+
+    @Test
+    void getCreditorInstitutionsByStationCode() throws Exception {
+        //given
+        String stationCode = "stationCode";
+        Integer page = 0;
+
+        CreditorInstitution creditorInstitution = mockInstance(new CreditorInstitution());
+        CreditorInstitutions creditorInstitutions = mockInstance(new CreditorInstitutions());
+        List<CreditorInstitution> creditorInstitutionList = new ArrayList<>();
+        creditorInstitutionList.add(creditorInstitution);
+        creditorInstitutions.setCreditorInstitutionList(creditorInstitutionList);
+
+
+        when(apiConfigServiceMock.getCreditorInstitutionsByStation(anyString(), anyInt(), anyInt(), anyString()))
+                .thenReturn(creditorInstitutions);
+
+        //when
+        mvc.perform(get(BASE_URL + "/getCreditorInstitutions/{stationcode}", stationCode)
+                        .queryParam("page", String.valueOf(page))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.creditor_institutions", notNullValue()));
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getCreditorInstitutionsByStation(anyString(), anyInt(), anyInt(), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void deleteCreditorInstitutionStationRelationship() throws Exception{
+
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = "1";
+        String stationcode = "stationcode";
+
+        doNothing().when(apiConfigServiceMock).deleteCreditorInstitutionStationRelationship(anyString(), anyString(), anyString());
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .delete(BASE_URL + "/{ecCode}/station/{stationcode}", ecCode, stationcode)
+                        .header("X-Request-Id", xRequestId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .deleteCreditorInstitutionStationRelationship(anyString(), anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }
 

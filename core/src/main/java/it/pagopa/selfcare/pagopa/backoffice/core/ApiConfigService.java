@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
@@ -48,7 +49,7 @@ public interface ApiConfigService {
 
     PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails, String xRequestId);
 
-    Stations getStations(Integer limit, Integer page, String sort, String ecCode, String stationCode, String xRequestId);
+    Stations getStations(Integer limit, Integer page, String sort, String brokerCode, String ecCode, String stationCode, String xRequestId);
 
     StationDetails getStation(String stationCode, String xRequestId);
 
@@ -78,6 +79,8 @@ public interface ApiConfigService {
 
     WfespPluginConfs getWfespPlugins(String xRequestId);
 
+    CreditorInstitutions getCreditorInstitutionsByStation(String stationcode, Integer limit, Integer page, String xRequestId);
 
+    void deleteCreditorInstitutionStationRelationship(String ecCode, String stationcode, String xRequestId);
 
 }
