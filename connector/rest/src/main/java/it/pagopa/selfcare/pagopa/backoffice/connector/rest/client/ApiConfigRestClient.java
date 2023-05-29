@@ -177,4 +177,11 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                                                           @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                           @RequestParam Integer page,
                                                           @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
+    @DeleteMapping(value = "${rest-client.api-config.deleteCreditorInstitutionStationRelationship.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    void deleteCreditorInstitutionStationRelationship(@PathVariable("creditorinstitutioncode")String ecCode,
+                                                      @PathVariable(required = false, name = "stationcode") String stationcode,
+                                                      @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+
 }

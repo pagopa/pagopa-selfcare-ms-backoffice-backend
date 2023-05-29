@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.124"
+    "version" : "0.0.127"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -3296,7 +3296,7 @@
         }, {
           "name" : "brokerCode",
           "in" : "query",
-          "description" : "Creditor institution code",
+          "description" : "Broker code filter for search",
           "required" : true,
           "style" : "form",
           "schema" : {
@@ -3826,6 +3826,71 @@
                 }
               }
             }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/stations/{ecCode}/station/{stationcode}" : {
+      "delete" : {
+        "tags" : [ "stations" ],
+        "summary" : "deleteCreditorInstitutionStationRelationship",
+        "description" : "delete the relationship between the created station and the creditorInstitution",
+        "operationId" : "deleteCreditorInstitutionStationRelationshipUsingDELETE",
+        "parameters" : [ {
+          "name" : "ecCode",
+          "in" : "path",
+          "description" : "Creditor institution code",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "stationcode",
+          "in" : "path",
+          "description" : "Channlecode or StationCode",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
           },
           "400" : {
             "description" : "Bad Request",
