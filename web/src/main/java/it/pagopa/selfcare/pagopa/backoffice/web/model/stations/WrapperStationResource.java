@@ -57,6 +57,6 @@ public class WrapperStationResource {
     private String targetHostPof;
     @ApiModelProperty(value = "${swagger.model.station.targetPortPof}")
     private Long targetPortPof;
-    @ApiModelProperty(value = "${    swagger.model.station.targetPathPof}")
+    @ApiModelProperty(value = "${swagger.model.station.targetPathPof}")
     private String targetPathPof;
 }

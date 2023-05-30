@@ -13,12 +13,12 @@ public class CreditorInstitutionStationDto {
     @NotBlank
     private String stationCode;
 
-    @ApiModelProperty(value = "${swagger.model.station.auxDigit}", required = true)
+    @ApiModelProperty(value = "${swagger.station.model.auxDigit}", required = true)
     @JsonProperty(required = true)
     @NotBlank
     private Long auxDigit;
 
-    @ApiModelProperty(value = "${swagger.model.station.segregationCode}", required = true)
+    @ApiModelProperty(value = "${swagger.station.model.segregationCode}", required = true)
     @JsonProperty(required = true)
     @NotBlank
     private Long segregationCode;
