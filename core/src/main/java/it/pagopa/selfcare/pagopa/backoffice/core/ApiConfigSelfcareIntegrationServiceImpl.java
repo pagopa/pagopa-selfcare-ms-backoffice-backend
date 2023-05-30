@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigSelfcareIntegrationConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,16 @@ public class ApiConfigSelfcareIntegrationServiceImpl implements ApiConfigSelfcar
         StationDetailsList response = apiConfigSelfcareIntegrationConnector.getStationsDetailsListByBroker(brokerId, stationId, limit, page, xRequestId);
         log.debug("getStationsDetailsListByBroker result = {}", response);
         log.trace("getStationsDetailsListByBroker end");
+        return response;
+    }
+
+    @Override
+    public ChannelDetailsList getChannelsDetailsListByBroker(String brokerId, String channelId, Integer limit, Integer page, String xRequestId) {
+        log.trace("getChannelsDetailsListByBroker start");
+        log.debug("getChannelsDetailsListByBroker  xRequestId = {}", xRequestId);
+        ChannelDetailsList response = apiConfigSelfcareIntegrationConnector.getChannelDetailsListByBroker(brokerId, channelId, limit, page, xRequestId);
+        log.debug("getChannelsDetailsListByBroker result = {}", response);
+        log.trace("getChannelsDetailsListByBroker end");
         return response;
     }
 
