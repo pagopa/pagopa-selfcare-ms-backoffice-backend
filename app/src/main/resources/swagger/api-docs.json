@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.123"
+    "version" : "0.0.127"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -1471,6 +1471,108 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/WfespPluginConfs"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/channels/{brokerId}/channels" : {
+      "get" : {
+        "tags" : [ "channels" ],
+        "summary" : "getChannelDetailsListByBroker",
+        "description" : "Get paginated list of channels given brokerid code",
+        "operationId" : "getChannelDetailsListByBrokerUsingGET",
+        "parameters" : [ {
+          "name" : "brokerId",
+          "in" : "path",
+          "description" : "brokerId",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "channelId",
+          "in" : "query",
+          "description" : "channelId",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "limit",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "page",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ChannelDetailsResourceList"
                 }
               }
             }
@@ -4381,6 +4483,23 @@
             "type" : "integer",
             "description" : "timeout C",
             "format" : "int64"
+          }
+        }
+      },
+      "ChannelDetailsResourceList" : {
+        "title" : "ChannelDetailsResourceList",
+        "required" : [ "channels" ],
+        "type" : "object",
+        "properties" : {
+          "channels" : {
+            "type" : "array",
+            "description" : "List of psp channels",
+            "items" : {
+              "$ref" : "#/components/schemas/ChannelDetailsResource"
+            }
+          },
+          "page_info" : {
+            "$ref" : "#/components/schemas/PageInfo"
           }
         }
       },
