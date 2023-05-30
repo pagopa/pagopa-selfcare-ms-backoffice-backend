@@ -7,9 +7,11 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsResourceList;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.WrapperStationsResource;
 
 import java.time.Instant;
@@ -604,5 +606,17 @@ public class ChannelMapper {
 
         return wrapperChannelResource;
 
+    }
+
+
+    public static ChannelDetailsResourceList fromChannelDetailsList(ChannelDetailsList model) {
+        if (model == null) {
+            return null;
+        }
+        ChannelDetailsResourceList resource = new ChannelDetailsResourceList();
+        resource.setChannelDetailsResources(model.getChannelDetailsList().stream().map(ChannelMapper::toResource).collect(Collectors.toList()));
+
+        resource.setPageInfo(model.getPageInfo());
+        return resource;
     }
 }
