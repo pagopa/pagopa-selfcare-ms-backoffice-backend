@@ -1096,6 +1096,7 @@ class ChannelControllerTest {
         Integer page = 0;
         Integer size = 50;
         String sorting = "ASC";
+        String brokerCode = "brokerCode";
 
         Channels channels = mockInstance(new Channels());
         List<Channel> channelList = mockInstance(new ArrayList<>());
@@ -1122,7 +1123,7 @@ class ChannelControllerTest {
 
 
 
-        when(wrapperServiceMock.findByIdOrType(anyString(), any(), anyInt(), anyInt()))
+        when(wrapperServiceMock.findByIdOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt()))
                 .thenReturn(mongoList);
         when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), any(), anyString(), anyString()))
                 .thenReturn(channels);
@@ -1143,7 +1144,7 @@ class ChannelControllerTest {
 
         //then
         verify(wrapperServiceMock, times(1))
-                .findByIdOrType(any(),any(), anyInt(), anyInt());
+                .findByIdOrTypeOrBrokerCode(any(), any(), any(), anyInt(), anyInt());
         verify(apiConfigServiceMock, times(1))
                 .getChannels(anyInt(), anyInt(), any(), anyString(), anyString());
         verify(apiConfigServiceMock, times(1))

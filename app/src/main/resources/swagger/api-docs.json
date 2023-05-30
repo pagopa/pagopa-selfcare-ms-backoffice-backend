@@ -3396,6 +3396,15 @@
             "type" : "string"
           }
         }, {
+          "name" : "brokerCode",
+          "in" : "query",
+          "description" : "Broker code filter for search",
+          "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
           "name" : "page",
           "in" : "query",
           "description" : "Page number. Page value starts from 0",
@@ -3422,6 +3431,99 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/WrapperStationsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/stations/getCreditorInstitutions/{stationcode}" : {
+      "get" : {
+        "tags" : [ "stations" ],
+        "summary" : "getCreditorInstitutionsByStationCode",
+        "description" : "Get wrapper station from mongo DB",
+        "operationId" : "getCreditorInstitutionsByStationCodeUsingGET",
+        "parameters" : [ {
+          "name" : "stationcode",
+          "in" : "path",
+          "description" : "Channlecode or StationCode",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "limit",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "page",
+          "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CreditorInstitutionsResource"
                 }
               }
             }
@@ -3826,6 +3928,71 @@
                 }
               }
             }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/stations/{ecCode}/station/{stationcode}" : {
+      "delete" : {
+        "tags" : [ "stations" ],
+        "summary" : "deleteCreditorInstitutionStationRelationship",
+        "description" : "delete the relationship between the created station and the creditorInstitution",
+        "operationId" : "deleteCreditorInstitutionStationRelationshipUsingDELETE",
+        "parameters" : [ {
+          "name" : "ecCode",
+          "in" : "path",
+          "description" : "Creditor institution code",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "stationcode",
+          "in" : "path",
+          "description" : "Channlecode or StationCode",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
           },
           "400" : {
             "description" : "Bad Request",
@@ -4731,6 +4898,26 @@
           }
         }
       },
+      "CreditorInstitutionResource" : {
+        "title" : "CreditorInstitutionResource",
+        "required" : [ "businessName", "creditorInstitutionCode", "enabled" ],
+        "type" : "object",
+        "properties" : {
+          "businessName" : {
+            "type" : "string",
+            "description" : "Creditor Institution's business name"
+          },
+          "creditorInstitutionCode" : {
+            "type" : "string",
+            "description" : "Creditor Institution's code(Fiscal Code)"
+          },
+          "enabled" : {
+            "type" : "boolean",
+            "description" : "Creditor Institution activation state on ApiConfig",
+            "example" : false
+          }
+        }
+      },
       "CreditorInstitutionStationDto" : {
         "title" : "CreditorInstitutionStationDto",
         "required" : [ "stationCode" ],
@@ -4775,6 +4962,24 @@
           "stationCode" : {
             "type" : "string",
             "description" : "Station's unique identifier"
+          }
+        }
+      },
+      "CreditorInstitutionsResource" : {
+        "title" : "CreditorInstitutionsResource",
+        "required" : [ "creditor_institutions", "page_info" ],
+        "type" : "object",
+        "properties" : {
+          "creditor_institutions" : {
+            "type" : "array",
+            "description" : "A list of Creditor Institution's",
+            "items" : {
+              "$ref" : "#/components/schemas/CreditorInstitutionResource"
+            }
+          },
+          "page_info" : {
+            "description" : "info pageable",
+            "$ref" : "#/components/schemas/PageInfo"
           }
         }
       },

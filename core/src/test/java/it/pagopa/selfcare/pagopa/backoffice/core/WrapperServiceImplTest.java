@@ -224,18 +224,19 @@ public class WrapperServiceImplTest {
         //given
         WrapperType wrapperType = WrapperType.STATION;
         String stationCode = "stationCode";
+        String brokerCode = "brokerCode";
 
         WrapperEntitiesList wrapperEntitiesList = mockInstance(new WrapperEntitiesList());
 
-        when(wrapperConnectorMock.findByIdOrType(anyString(),any(), anyInt(), anyInt()))
+        when(wrapperConnectorMock.findByIdOrTypeOrBrokerCode(anyString(),any(), anyString(), anyInt(), anyInt()))
                 .thenReturn(wrapperEntitiesList);
 
         //when
-        WrapperEntitiesList response = wrapperService.findByIdOrType(stationCode,wrapperType, 0, 50);
+        WrapperEntitiesList response = wrapperService.findByIdOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, 0, 50);
         //then
         assertNotNull(response);
         verify(wrapperConnectorMock, times(1))
-                .findByIdOrType(stationCode,wrapperType, 0, 50);
+                .findByIdOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, 0, 50);
         verifyNoMoreInteractions(wrapperConnectorMock);
     }
 }
