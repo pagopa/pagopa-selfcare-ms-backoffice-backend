@@ -396,6 +396,9 @@ public class StationMapperImpl implements StationMapper {
         stationDetails.setTargetPort(model.getTargetPort());
         stationDetails.setTargetPath(model.getTargetPath());
         stationDetails.setPrimitiveVersion(model.getPrimitiveVersion());
+        stationDetails.setTargetPathPof(model.getTargetPathPof());
+        stationDetails.setTargetPortPof(model.getTargetPortPof());
+        stationDetails.setTargetHostPof(model.getTargetHostPof());
 
         return stationDetails;
     }
@@ -429,6 +432,11 @@ public class StationMapperImpl implements StationMapper {
         stationDetails.setTargetPort(model.getTargetPort());
         stationDetails.setTargetPath(model.getTargetPath());
         stationDetails.setPrimitiveVersion(model.getPrimitiveVersion());
+        stationDetails.setService(model.getService());
+        stationDetails.setPofService(model.getPofService());
+        stationDetails.setTargetPathPof(model.getTargetPathPof());
+        stationDetails.setTargetPortPof(model.getTargetPortPof());
+        stationDetails.setTargetHostPof(model.getTargetHostPof());
         //default
         stationDetails.setTimeoutA(15L);
         stationDetails.setTimeoutB(30L);

@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.127"
+    "version" : "0.0.128"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -4920,9 +4920,19 @@
       },
       "CreditorInstitutionStationDto" : {
         "title" : "CreditorInstitutionStationDto",
-        "required" : [ "stationCode" ],
+        "required" : [ "auxDigit", "segregationCode", "stationCode" ],
         "type" : "object",
         "properties" : {
+          "auxDigit" : {
+            "type" : "integer",
+            "description" : "Station's auxiliary digit",
+            "format" : "int64"
+          },
+          "segregationCode" : {
+            "type" : "integer",
+            "description" : "Station's segregation code number",
+            "format" : "int64"
+          },
           "stationCode" : {
             "type" : "string",
             "description" : "Station's unique identifier"
@@ -5880,7 +5890,7 @@
       },
       "StationDetailsDto" : {
         "title" : "StationDetailsDto",
-        "required" : [ "brokerCode", "primitiveVersion", "redirectIp", "redirectPath", "redirectPort", "redirectProtocol", "redirectQueryString", "stationCode", "targetHost", "targetPath", "targetPort" ],
+        "required" : [ "brokerCode", "primitiveVersion", "redirectIp", "redirectPath", "redirectPort", "redirectProtocol", "redirectQueryString", "stationCode" ],
         "type" : "object",
         "properties" : {
           "brokerCode" : {
@@ -6025,13 +6035,26 @@
             "type" : "string",
             "description" : "Station's target host"
           },
+          "targetHostPof" : {
+            "type" : "string",
+            "description" : "Station's target host POF"
+          },
           "targetPath" : {
             "type" : "string",
             "description" : "Station's target path"
           },
+          "targetPathPof" : {
+            "type" : "string",
+            "description" : "Station's target path POF"
+          },
           "targetPort" : {
             "type" : "integer",
             "description" : "Station target's port",
+            "format" : "int64"
+          },
+          "targetPortPof" : {
+            "type" : "integer",
+            "description" : "Station's target port POF",
             "format" : "int64"
           },
           "threadNumber" : {
@@ -6793,7 +6816,7 @@
       },
       "WrapperStationDetailsDto" : {
         "title" : "WrapperStationDetailsDto",
-        "required" : [ "primitiveVersion", "redirectIp", "redirectPath", "redirectPort", "redirectProtocol", "redirectQueryString", "stationCode", "targetHost", "targetPath", "targetPort" ],
+        "required" : [ "primitiveVersion", "redirectIp", "redirectPath", "redirectPort", "redirectProtocol", "redirectQueryString", "stationCode" ],
         "type" : "object",
         "properties" : {
           "brokerCode" : {
@@ -6803,6 +6826,10 @@
           "note" : {
             "type" : "string",
             "description" : "station note description by operation team"
+          },
+          "pofService" : {
+            "type" : "string",
+            "description" : "Station's pof service"
           },
           "primitiveVersion" : {
             "type" : "integer",
@@ -6831,6 +6858,10 @@
             "type" : "string",
             "description" : "Station's redirect query string"
           },
+          "service" : {
+            "type" : "string",
+            "description" : "Station's service"
+          },
           "stationCode" : {
             "type" : "string",
             "description" : "Station's unique identifier"
@@ -6844,13 +6875,26 @@
             "type" : "string",
             "description" : "Station's target host"
           },
+          "targetHostPof" : {
+            "type" : "string",
+            "description" : "Station's target host POF"
+          },
           "targetPath" : {
             "type" : "string",
             "description" : "Station's target path"
           },
+          "targetPathPof" : {
+            "type" : "string",
+            "description" : "Station's target path POF"
+          },
           "targetPort" : {
             "type" : "integer",
             "description" : "Station target's port",
+            "format" : "int64"
+          },
+          "targetPortPof" : {
+            "type" : "integer",
+            "description" : "Station's target port POF",
             "format" : "int64"
           }
         }
@@ -6889,6 +6933,14 @@
             "description" : "Station's last modified date",
             "format" : "date-time"
           },
+          "pofService" : {
+            "type" : "string",
+            "description" : "Station's pof service"
+          },
+          "service" : {
+            "type" : "string",
+            "description" : "Station's service"
+          },
           "stationCode" : {
             "type" : "string",
             "description" : "Station's unique identifier"
@@ -6897,6 +6949,32 @@
             "type" : "string",
             "description" : "Station's status",
             "enum" : [ "ACTIVE", "ON_REVISION", "TO_BE_CORRECTED" ]
+          },
+          "targetHost" : {
+            "type" : "string",
+            "description" : "Station's target host"
+          },
+          "targetHostPof" : {
+            "type" : "string",
+            "description" : "Station's target host POF"
+          },
+          "targetPath" : {
+            "type" : "string",
+            "description" : "Station's target path"
+          },
+          "targetPathPof" : {
+            "type" : "string",
+            "description" : "Station's target path POF"
+          },
+          "targetPort" : {
+            "type" : "integer",
+            "description" : "Station target's port",
+            "format" : "int64"
+          },
+          "targetPortPof" : {
+            "type" : "integer",
+            "description" : "Station's target port POF",
+            "format" : "int64"
           },
           "version" : {
             "type" : "integer",

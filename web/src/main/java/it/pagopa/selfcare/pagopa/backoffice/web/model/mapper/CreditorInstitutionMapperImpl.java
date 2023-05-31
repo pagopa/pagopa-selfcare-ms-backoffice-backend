@@ -20,10 +20,10 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
             station.setStationCode(dto.getStationCode());
             station.setBroadcast(true);
             station.setMod4(true);
-//            station.setSegregationCode(1l);//FIXME
-            station.setAuxDigit(1l);
+            station.setSegregationCode(dto.getSegregationCode());
+            station.setAuxDigit(dto.getAuxDigit());
 //            station.setApplicationCode(1l);
-// parlare con Stefano per vedere se vengono compilati da lui
+
         }
         return station;
     }
