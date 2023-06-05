@@ -29,7 +29,6 @@ public class StationResource {
     private Long version;
     @ApiModelProperty(value = "${swagger.model.station.status}", required = true)
     @JsonProperty(required = true)
-    @NotNull
     private WrapperStatus wrapperStatus;
     @ApiModelProperty("${swagger.model.station.associatedCreditorInstitutions}")
     @JsonProperty(required = true)
