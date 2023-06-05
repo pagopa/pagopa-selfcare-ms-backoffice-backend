@@ -5533,7 +5533,7 @@
       },
       "StationDetailResource" : {
         "title" : "StationDetailResource",
-        "required" : [ "enabled", "stationCode", "stationStatus" ],
+        "required" : [ "enabled", "stationCode", "wrapperStatus" ],
         "type" : "object",
         "properties" : {
           "activationDate" : {
@@ -5689,11 +5689,6 @@
             "type" : "string",
             "description" : "Station's unique identifier"
           },
-          "stationStatus" : {
-            "type" : "string",
-            "description" : "Station's status",
-            "enum" : [ "ACTIVE", "ON_REVISION", "TO_BE_CORRECTED" ]
-          },
           "targetHost" : {
             "type" : "string",
             "description" : "Station's target host"
@@ -5744,6 +5739,11 @@
             "type" : "integer",
             "description" : "Station's version",
             "format" : "int64"
+          },
+          "wrapperStatus" : {
+            "type" : "string",
+            "description" : "Station's status",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
           }
         }
       },
@@ -6076,6 +6076,11 @@
             "type" : "integer",
             "description" : "Station's timeoutC",
             "format" : "int64"
+          },
+          "version" : {
+            "type" : "integer",
+            "description" : "Station's version",
+            "format" : "int64"
           }
         }
       },
@@ -6098,7 +6103,7 @@
       },
       "StationResource" : {
         "title" : "StationResource",
-        "required" : [ "enabled", "stationCode", "stationStatus" ],
+        "required" : [ "enabled", "stationCode", "wrapperStatus" ],
         "type" : "object",
         "properties" : {
           "activationDate" : {
@@ -6134,15 +6139,15 @@
             "type" : "string",
             "description" : "Station's unique identifier"
           },
-          "stationStatus" : {
-            "type" : "string",
-            "description" : "Station's status",
-            "enum" : [ "ACTIVE", "ON_REVISION", "TO_BE_CORRECTED" ]
-          },
           "version" : {
             "type" : "integer",
             "description" : "Station's version",
             "format" : "int64"
+          },
+          "wrapperStatus" : {
+            "type" : "string",
+            "description" : "Station's status",
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
           }
         }
       },

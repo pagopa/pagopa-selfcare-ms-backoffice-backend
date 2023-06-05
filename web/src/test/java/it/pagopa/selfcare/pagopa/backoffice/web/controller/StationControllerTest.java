@@ -305,7 +305,6 @@ class StationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
                 .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
                 .andExpect(jsonPath("$.entities", notNullValue()));
         //then
@@ -341,7 +340,6 @@ class StationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
                 .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
                 .andExpect(jsonPath("$.entities", notNullValue()));
         //then
