@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.128"
+    "version" : "0.0.130"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -6823,6 +6823,14 @@
             "type" : "string",
             "description" : "Station's broker code"
           },
+          "broker_description" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean",
+            "description" : "Station's activation state",
+            "example" : false
+          },
           "note" : {
             "type" : "string",
             "description" : "station note description by operation team"
@@ -6895,6 +6903,11 @@
           "targetPortPof" : {
             "type" : "integer",
             "description" : "Station's target port POF",
+            "format" : "int64"
+          },
+          "version" : {
+            "type" : "integer",
+            "description" : "Station's version",
             "format" : "int64"
           }
         }

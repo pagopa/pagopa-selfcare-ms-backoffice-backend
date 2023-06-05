@@ -20,6 +20,8 @@ public class WrapperStationDetailsDto {
     private String stationCode;
     @ApiModelProperty("${swagger.model.station.brokerCode}")
     private String brokerCode;
+    @JsonProperty("broker_description")
+    protected String brokerDescription="";
     @ApiModelProperty(value = "${swagger.model.station.redirectIp}", required = true)
     @JsonProperty(required = true)
     @NotBlank
@@ -46,6 +48,10 @@ public class WrapperStationDetailsDto {
     @JsonProperty(required = true)
     @NotNull
     private Integer primitiveVersion;
+    @ApiModelProperty(value = "${swagger.model.station.enabled}")
+    private boolean enabled = true;
+    @ApiModelProperty(value = "${swagger.model.station.version}")
+    private Long version = 0L;
     @ApiModelProperty(value = "${swagger.model.station.note}")
     private String note = "";
     @ApiModelProperty(value = "${swagger.model.station.status}")
