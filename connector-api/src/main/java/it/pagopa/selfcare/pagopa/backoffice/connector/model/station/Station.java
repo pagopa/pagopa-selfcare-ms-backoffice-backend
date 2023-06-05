@@ -17,7 +17,7 @@ public class Station {
 
     @JsonProperty("enabled")
     @NotNull
-    protected Boolean enabled;
+    protected Boolean enabled=true;
 
     @JsonProperty("broker_description")
     protected String brokerDescription;

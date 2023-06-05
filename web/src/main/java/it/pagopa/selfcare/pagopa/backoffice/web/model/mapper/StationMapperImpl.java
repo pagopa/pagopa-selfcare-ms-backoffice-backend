@@ -421,22 +421,15 @@ public class StationMapperImpl implements StationMapper {
         stationDetails.setTargetPort(model.getTargetPort());
         stationDetails.setTargetPath(model.getTargetPath());
         stationDetails.setPrimitiveVersion(model.getPrimitiveVersion());
-        stationDetails.setStationCode(model.getStationCode());
-        stationDetails.setRedirectIp(model.getRedirectIp());
-        stationDetails.setRedirectPath(model.getRedirectPath());
-        stationDetails.setRedirectPort(model.getRedirectPort());
-        stationDetails.setRedirectQueryString(model.getRedirectQueryString());
-        stationDetails.setRedirectProtocol(model.getRedirectProtocol());
-        stationDetails.setBrokerCode(model.getBrokerCode());
-        stationDetails.setTargetHost(model.getTargetHost());
-        stationDetails.setTargetPort(model.getTargetPort());
-        stationDetails.setTargetPath(model.getTargetPath());
-        stationDetails.setPrimitiveVersion(model.getPrimitiveVersion());
         stationDetails.setService(model.getService());
         stationDetails.setPofService(model.getPofService());
         stationDetails.setTargetPathPof(model.getTargetPathPof());
         stationDetails.setTargetPortPof(model.getTargetPortPof());
         stationDetails.setTargetHostPof(model.getTargetHostPof());
+        stationDetails.setEnabled(model.isEnabled());
+        stationDetails.setVersion(model.getVersion());
+        stationDetails.setBrokerDescription(model.getBrokerDescription());
+
         //default
         stationDetails.setTimeoutA(15L);
         stationDetails.setTimeoutB(30L);
