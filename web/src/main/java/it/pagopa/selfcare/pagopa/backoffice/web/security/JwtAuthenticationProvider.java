@@ -22,6 +22,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     private static final String CLAIM_NAME = "name";
     private static final String CLAIM_SURNAME = "family_name";
 
+    private static final String CLAIM_ORG_VAT = "org_vat";
     private final JwtService jwtService;
     private final AuthoritiesRetriever authoritiesRetriever;
 
@@ -49,6 +50,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
                     .email(claims.get(CLAIM_EMAIL, String.class))
                     .name(claims.get(CLAIM_NAME, String.class))
                     .surname(claims.get(CLAIM_SURNAME, String.class))
+                    .orgVat(claims.get(CLAIM_ORG_VAT, String.class))
                     .build();
 
         } catch (Exception e) {
