@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.stations;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationStatus;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -29,7 +30,7 @@ public class StationResource {
     @ApiModelProperty(value = "${swagger.model.station.status}", required = true)
     @JsonProperty(required = true)
     @NotNull
-    private StationStatus stationStatus;
+    private WrapperStatus wrapperStatus;
     @ApiModelProperty("${swagger.model.station.associatedCreditorInstitutions}")
     @JsonProperty(required = true)
     @NotNull
