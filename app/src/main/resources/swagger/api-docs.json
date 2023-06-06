@@ -5533,7 +5533,7 @@
       },
       "StationDetailResource" : {
         "title" : "StationDetailResource",
-        "required" : [ "enabled", "stationCode", "wrapperStatus" ],
+        "required" : [ "enabled", "stationCode" ],
         "type" : "object",
         "properties" : {
           "activationDate" : {
@@ -6103,7 +6103,7 @@
       },
       "StationResource" : {
         "title" : "StationResource",
-        "required" : [ "enabled", "stationCode", "wrapperStatus" ],
+        "required" : [ "enabled", "stationCode" ],
         "type" : "object",
         "properties" : {
           "activationDate" : {
@@ -6919,7 +6919,7 @@
       },
       "WrapperStationResource" : {
         "title" : "WrapperStationResource",
-        "required" : [ "enabled", "stationCode", "stationStatus", "wrapperStatus" ],
+        "required" : [ "enabled", "stationCode", "wrapperStatus" ],
         "type" : "object",
         "properties" : {
           "activationDate" : {
@@ -6962,11 +6962,6 @@
           "stationCode" : {
             "type" : "string",
             "description" : "Station's unique identifier"
-          },
-          "stationStatus" : {
-            "type" : "string",
-            "description" : "Station's status",
-            "enum" : [ "ACTIVE", "ON_REVISION", "TO_BE_CORRECTED" ]
           },
           "targetHost" : {
             "type" : "string",

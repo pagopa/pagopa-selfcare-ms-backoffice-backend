@@ -287,7 +287,6 @@ public class StationMapperImpl implements StationMapper {
         wrapperStationResource.setEnabled(wrapperStation.getEnabled());
         wrapperStationResource.setBrokerDescription(wrapperStation.getBrokerDescription());
         wrapperStationResource.setVersion(wrapperStation.getVersion());
-        wrapperStationResource.setStationStatus(wrapperStation.getStationStatus());
         wrapperStationResource.setActivationDate(wrapperStation.getActivationDate());
         wrapperStationResource.setAssociatedCreditorInstitutions(wrapperStation.getAssociatedCreditorInstitutions());
         wrapperStationResource.setWrapperStatus(wrapperStation.getWrapperStatus());

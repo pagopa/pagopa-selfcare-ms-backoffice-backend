@@ -19,6 +19,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -344,6 +345,29 @@ class ApiConfigServiceImplTest {
         assertNotNull(stations);
         assertEquals(stationsMock, stations);
         reflectionEqualsByName(stationsMock, stations);
+        verify(apiConfigConnectorMock, times(1))
+                .getStations(limit, page, sort, null, ecCode, stationCode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void getStations_Exception() {
+        //given
+        final Integer limit = 1;
+        final Integer page = 1;
+        final String ecCode = "ecCode";
+        final String stationCode = "stationCode";
+        final String sort = "sort";
+        final String xRequestId = "xRequestId";
+        Stations stationsMock = mockInstance(new Stations());
+
+        when(apiConfigConnectorMock.getStations(any(), any(), any(), any(), any(), any(), any()))
+                .thenThrow(new RuntimeException("[404 Not Found]"));
+        //when
+        Stations stations = apiConfigService.getStations(limit, page, sort,null,  ecCode, stationCode, xRequestId);
+
+        //then
+        assertNotNull(stations);
         verify(apiConfigConnectorMock, times(1))
                 .getStations(limit, page, sort, null, ecCode, stationCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
