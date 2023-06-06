@@ -573,5 +573,9 @@ public class ChannelController {
         log.trace("getStationsDetailsListByBroker end");
         return resource;
     }
+
+
+//    // pagopa.it/channels/56t67987/769780/
+//    @GetMapping(value = "/{pspcode}/{pspnamedetails}", produces = {MediaType.APPLICATION_JSON_VALUE})
 }
 
