@@ -210,7 +210,8 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     public String generateStationCode(String ecCode, String xRequestId) {
         log.trace("generateStationCode start");
         log.debug("generateStation ecCode = {}, xRequestId = {}", ecCode, xRequestId);
-        List<CreditorInstitutionStation> stationsList = apiConfigConnector.getEcStations(ecCode, xRequestId).getStationsList();
+        Stations stations = apiConfigConnector.getStations(100,0,"ASC",null,null,ecCode,xRequestId);
+        List<Station> stationsList = stations.getStationsList();
         List<String> codes = stationsList.stream().map(Station::getStationCode)
                 .filter(s -> s.matches("^\\w+_\\d+$"))
                 .collect(Collectors.toList());

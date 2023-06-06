@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.131"
+    "version" : "0.0.133"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -5533,7 +5533,11 @@
       },
       "StationDetailResource" : {
         "title" : "StationDetailResource",
+<<<<<<< HEAD
         "required" : [ "enabled", "stationCode" ],
+=======
+        "required" : [ "enabled", "stationCode", "wrapperStatus" ],
+>>>>>>> release-dev
         "type" : "object",
         "properties" : {
           "activationDate" : {
@@ -6103,7 +6107,11 @@
       },
       "StationResource" : {
         "title" : "StationResource",
+<<<<<<< HEAD
         "required" : [ "enabled", "stationCode" ],
+=======
+        "required" : [ "enabled", "stationCode", "wrapperStatus" ],
+>>>>>>> release-dev
         "type" : "object",
         "properties" : {
           "activationDate" : {
