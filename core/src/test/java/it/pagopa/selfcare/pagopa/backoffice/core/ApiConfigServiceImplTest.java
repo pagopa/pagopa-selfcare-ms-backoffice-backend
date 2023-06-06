@@ -12,6 +12,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStati
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
+import org.mockito.internal.matchers.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.FileSystemResource;
@@ -521,24 +522,28 @@ class ApiConfigServiceImplTest {
     void generateStationCode() {
         //given
         final String xRequestId = "xRequestId";
-        final String ecCode = "ecCode";
+        final Integer limit = 100;
+        final Integer page = 0;
+        final String sort ="ASC";
+        final String brokerCode=null;
+        final String ecCode = null;
+        final String stationCode = "stationCode";
 
-        CreditorInstitutionStations creditorInstitutionStations = mockInstance(new CreditorInstitutionStations());
-        CreditorInstitutionStation creditorInstitutionStation = mockInstance(new CreditorInstitutionStation());
-        creditorInstitutionStation.setStationCode("TEST_01");
+        Stations s =  mockInstance(new Stations());
+        Station station=  mockInstance(new Station());
+        station.setStationCode(stationCode+"_01");
+        s.setStationsList(List.of(station));
 
-        creditorInstitutionStations.setStationsList(List.of(creditorInstitutionStation));
-
-        when(apiConfigConnectorMock.getEcStations(any(), anyString()))
-                .thenReturn(creditorInstitutionStations);
+        when(apiConfigConnectorMock.getStations(limit,page,sort,brokerCode,ecCode,stationCode,xRequestId))
+                .thenReturn(s);
 
         //when
-        String response = apiConfigService.generateStationCode(ecCode, xRequestId);
+        String response = apiConfigService.generateStationCode(stationCode, xRequestId);
         //then
         assertNotNull(response);
-        assertEquals("TEST_02", response);
+        assertEquals(stationCode+"_02", response);
         verify(apiConfigConnectorMock, times(1))
-                .getEcStations(ecCode, xRequestId);
+                .getStations(limit,page,sort,brokerCode,ecCode, stationCode,xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
@@ -576,24 +581,27 @@ class ApiConfigServiceImplTest {
     void generateStationCode_noRegexMatcher() {
         //given
         final String xRequestId = "xRequestId";
-        final String ecCode = "TEST";
+        final Integer limit = 100;
+        final Integer page = 0;
+        final String sort ="ASC";
+        final String brokerCode=null;
+        final String ecCode = null;
+        final String stationCode = "stationCode";
 
-        CreditorInstitutionStations creditorInstitutionStations = mockInstance(new CreditorInstitutionStations());
-        CreditorInstitutionStation creditorInstitutionStation = mockInstance(new CreditorInstitutionStation());
-        creditorInstitutionStation.setStationCode("TEST");
-        creditorInstitutionStations.setStationsList(List.of(creditorInstitutionStation));
+        Stations s =  mockInstance(new Stations());
+        s.setStationsList(new ArrayList<>());
 
-        when(apiConfigConnectorMock.getEcStations(any(), anyString()))
-                .thenReturn(creditorInstitutionStations);
+        when(apiConfigConnectorMock.getStations(limit,page,sort,brokerCode,ecCode,stationCode,xRequestId))
+                .thenReturn(s);
 
         //when
-        String response = apiConfigService.generateStationCode(ecCode, xRequestId);
+        String response = apiConfigService.generateStationCode(stationCode, xRequestId);
         //then
         assertNotNull(response);
         verify(apiConfigConnectorMock, times(1))
-                .getEcStations(ecCode, xRequestId);
+                .getStations(limit,page,sort,brokerCode,ecCode, stationCode,xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
-        assertEquals("TEST_01", response);
+        assertEquals("stationCode_01", response);
     }
 
     @Test
