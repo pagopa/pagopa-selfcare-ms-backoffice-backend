@@ -1,7 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationStatus;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -24,9 +23,6 @@ public class WrapperStation {
     @NotNull
     private Long version;
 
-    @JsonProperty(required = true)
-    @NotNull
-    private StationStatus stationStatus;
 
     @JsonProperty(required = true)
     @NotNull
