@@ -5533,11 +5533,7 @@
       },
       "StationDetailResource" : {
         "title" : "StationDetailResource",
-<<<<<<< HEAD
         "required" : [ "enabled", "stationCode" ],
-=======
-        "required" : [ "enabled", "stationCode", "wrapperStatus" ],
->>>>>>> release-dev
         "type" : "object",
         "properties" : {
           "activationDate" : {
@@ -6107,11 +6103,7 @@
       },
       "StationResource" : {
         "title" : "StationResource",
-<<<<<<< HEAD
         "required" : [ "enabled", "stationCode" ],
-=======
-        "required" : [ "enabled", "stationCode", "wrapperStatus" ],
->>>>>>> release-dev
         "type" : "object",
         "properties" : {
           "activationDate" : {
