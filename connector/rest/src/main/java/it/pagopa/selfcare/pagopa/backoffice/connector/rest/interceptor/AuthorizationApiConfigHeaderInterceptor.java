@@ -30,7 +30,7 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
                 .header("Ocp-Apim-Subscription-Key", apiConfigSubscriptionKey);
     }
 
-    private void check(String paramName,RequestTemplate template,SelfCareUser user) {
+    public void check(String paramName,RequestTemplate template,SelfCareUser user) {
         if((template.queries().containsKey(paramName)&& !(template.queries().get(paramName).toArray()[0]==user.getOrgVat())))
             throw new RuntimeException(new NoPermissionException(""));
 
