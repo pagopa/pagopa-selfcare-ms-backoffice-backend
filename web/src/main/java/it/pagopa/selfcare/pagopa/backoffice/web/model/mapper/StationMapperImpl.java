@@ -37,7 +37,6 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setEnabled(model.getEnabled());
         stationDetailResource.setBrokerDescription(model.getBrokerDescription());
         stationDetailResource.setVersion(model.getVersion());
-        stationDetailResource.setStationStatus(model.getStationStatus());
         stationDetailResource.setActivationDate(model.getActivationDate());
         stationDetailResource.setCreatedAt(model.getCreatedAt());
         stationDetailResource.setModifiedAt(model.getModifiedAt());
@@ -78,6 +77,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setTargetPortPof(model.getTargetPortPof());
         stationDetailResource.setTargetPathPof(model.getTargetPathPof());
         stationDetailResource.setPrimitiveVersion(model.getPrimitiveVersion());
+        stationDetailResource.setWrapperStatus(model.getWrapperStatus());
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
         BrokerDetails brokerDetails = model.getIntermediarioPa();
@@ -120,7 +120,7 @@ public class StationMapperImpl implements StationMapper {
         stationResource.setEnabled(model.getEnabled());
         stationResource.setBrokerDescription(model.getBrokerDescription());
         stationResource.setVersion(model.getVersion());
-        stationResource.setStationStatus(model.getStationStatus());
+
         stationResource.setActivationDate(model.getActivationDate());
         stationResource.setCreatedAt(model.getCreatedAt());
         stationResource.setModifiedAt(model.getModifiedAt());
@@ -137,13 +137,13 @@ public class StationMapperImpl implements StationMapper {
 
         Station station = new Station();
         station.setStationCode(stationDetails.getStationCode());
-        station.setStationStatus(stationDetails.getStationStatus());
         station.setEnabled(stationDetails.getEnabled());
         station.setVersion(stationDetails.getVersion());
         station.setActivationDate(stationDetails.getActivationDate());
         station.setBrokerDescription(stationDetails.getBrokerDescription());
         station.setCreatedAt(stationDetails.getCreatedAt());
         station.setModifiedAt(stationDetails.getModifiedAt());
+        station.setWrapperStatus(stationDetails.getWrapperStatus());
         return station;
     }
 
@@ -189,7 +189,6 @@ public class StationMapperImpl implements StationMapper {
         wrapperStation.setEnabled(model.getEnabled());
         wrapperStation.setBrokerDescription(model.getBrokerDescription());
         wrapperStation.setVersion(model.getVersion());
-        wrapperStation.setStationStatus(model.getStationStatus());
         wrapperStation.setActivationDate(model.getActivationDate());
         wrapperStation.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
         //default per gli ogetti di apiconfig poiche non hanno questi campi
@@ -249,7 +248,6 @@ public class StationMapperImpl implements StationMapper {
         wrapperStation.setEnabled(wrapperEntityOperations.getEntity().getEnabled());
         wrapperStation.setBrokerDescription(wrapperEntityOperations.getEntity().getBrokerDescription());
         wrapperStation.setVersion(wrapperEntityOperations.getEntity().getVersion());
-        wrapperStation.setStationStatus(wrapperEntityOperations.getEntity().getStationStatus());
         wrapperStation.setActivationDate(wrapperEntityOperations.getEntity().getActivationDate());
         wrapperStation.setAssociatedCreditorInstitutions(wrapperEntityOperations.getEntity().getAssociatedCreditorInstitutions());
 
@@ -342,11 +340,11 @@ public class StationMapperImpl implements StationMapper {
         stationResource.setEnabled(model.getEnabled());
         stationResource.setBrokerDescription(model.getBrokerDescription());
         stationResource.setVersion(model.getVersion());
-        stationResource.setStationStatus(model.getStationStatus());
         stationResource.setActivationDate(model.getActivationDate());
         stationResource.setCreatedAt(model.getCreatedAt());
         stationResource.setModifiedAt(model.getModifiedAt());
         stationResource.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
+        stationResource.setWrapperStatus(model.getWrapperStatus());
 
         return stationResource;
     }
@@ -363,7 +361,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetails.setEnabled(model.getEnabled());
         stationDetails.setBrokerDescription(model.getBrokerDescription());
         stationDetails.setIp(model.getIp());
-//        stationDetails.setVersion();
+        stationDetails.setVersion(model.getVersion());
         stationDetails.setNewPassword(model.getNewPassword());
         stationDetails.setPassword(model.getPassword());
         stationDetails.setPort(model.getPort());
@@ -421,22 +419,15 @@ public class StationMapperImpl implements StationMapper {
         stationDetails.setTargetPort(model.getTargetPort());
         stationDetails.setTargetPath(model.getTargetPath());
         stationDetails.setPrimitiveVersion(model.getPrimitiveVersion());
-        stationDetails.setStationCode(model.getStationCode());
-        stationDetails.setRedirectIp(model.getRedirectIp());
-        stationDetails.setRedirectPath(model.getRedirectPath());
-        stationDetails.setRedirectPort(model.getRedirectPort());
-        stationDetails.setRedirectQueryString(model.getRedirectQueryString());
-        stationDetails.setRedirectProtocol(model.getRedirectProtocol());
-        stationDetails.setBrokerCode(model.getBrokerCode());
-        stationDetails.setTargetHost(model.getTargetHost());
-        stationDetails.setTargetPort(model.getTargetPort());
-        stationDetails.setTargetPath(model.getTargetPath());
-        stationDetails.setPrimitiveVersion(model.getPrimitiveVersion());
         stationDetails.setService(model.getService());
         stationDetails.setPofService(model.getPofService());
         stationDetails.setTargetPathPof(model.getTargetPathPof());
         stationDetails.setTargetPortPof(model.getTargetPortPof());
         stationDetails.setTargetHostPof(model.getTargetHostPof());
+        stationDetails.setEnabled(model.isEnabled());
+        stationDetails.setVersion(model.getVersion());
+        stationDetails.setBrokerDescription(model.getBrokerDescription());
+
         //default
         stationDetails.setTimeoutA(15L);
         stationDetails.setTimeoutB(30L);
