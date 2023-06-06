@@ -19,7 +19,7 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
     @Value("${authorization.api-config.subscriptionKey}")
     private String apiConfigSubscriptionKey;
 
-    private static final List<String> PARAMS_NAME = List.of("l","limit");
+    private static final List<String> PARAMS_NAME = List.of("","");
     @Override
     public void apply(RequestTemplate template) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
