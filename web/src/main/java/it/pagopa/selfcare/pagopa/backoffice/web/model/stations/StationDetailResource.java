@@ -87,8 +87,6 @@ public class StationDetailResource extends StationResource {
     private Long targetPortPof;
     @ApiModelProperty(value = "${swagger.model.station.targetPathPof}")
     private String targetPathPof;
-    @Max(2)
-    @Min(1)
     @ApiModelProperty("${swagger.model.station.primitiveVersion}")
     @JsonProperty(required = true)
     private Integer primitiveVersion;
