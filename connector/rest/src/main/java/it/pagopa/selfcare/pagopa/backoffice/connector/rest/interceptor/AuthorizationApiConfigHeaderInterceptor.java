@@ -18,6 +18,9 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
     @Value("${authorization.api-config.subscriptionKey}")
     private String apiConfigSubscriptionKey;
 
+    @Value("${authorization.api-config.flag-authorization}")
+    private boolean flagAuthorization;
+
     private static final List<String> PARAMS_NAME = List.of(
             "stationId", "ecCode", "stationcode", "code", "brokerId", "stationCode", "creditorInstitutionCode",
             "brokerCode", "pspcode", "channelcode", "brokerpspcode", "channelId");
@@ -26,7 +29,9 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
     public void apply(RequestTemplate template) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         SelfCareUser user = (SelfCareUser) auth.getPrincipal();
-        check(template, user);
+        if (flagAuthorization) {
+            check(template, user);
+        }
         template.header("x-selfcare-uid", user.getId());
         template.removeHeader("Ocp-Apim-Subscription-Key")
                 .header("Ocp-Apim-Subscription-Key", apiConfigSubscriptionKey);
