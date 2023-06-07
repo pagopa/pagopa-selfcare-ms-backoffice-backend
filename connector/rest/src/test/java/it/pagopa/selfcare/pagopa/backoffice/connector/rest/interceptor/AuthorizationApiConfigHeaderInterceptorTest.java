@@ -38,7 +38,7 @@ class AuthorizationApiConfigHeaderInterceptorTest {
         user = mock(SelfCareUser.class);
 
         ReflectionTestUtils.setField(interceptor, "apiConfigSubscriptionKey", "sub-key");
-        ReflectionTestUtils.setField(interceptor, "flagAuthorization", true);
+        ReflectionTestUtils.setField(interceptor, "flagAuthorization", "true");
 
         when(auth.getPrincipal()).thenReturn(user);
         when(user.getId()).thenReturn("user-id");
