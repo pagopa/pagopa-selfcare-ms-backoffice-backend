@@ -10,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.naming.NoPermissionException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -19,25 +18,28 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
     @Value("${authorization.api-config.subscriptionKey}")
     private String apiConfigSubscriptionKey;
 
-    private static final List<String> PARAMS_NAME = List.of("","");
+    private static final List<String> PARAMS_NAME = List.of(
+            "stationId", "ecCode", "stationcode", "code", "brokerId", "stationCode", "creditorInstitutionCode",
+            "brokerCode", "pspcode", "channelcode", "brokerpspcode", "channelId");
+
     @Override
     public void apply(RequestTemplate template) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         SelfCareUser user = (SelfCareUser) auth.getPrincipal();
-        check(PARAMS_NAME,template,user);
+        check(template, user);
         template.header("x-selfcare-uid", user.getId());
         template.removeHeader("Ocp-Apim-Subscription-Key")
                 .header("Ocp-Apim-Subscription-Key", apiConfigSubscriptionKey);
     }
 
-    public void check(String paramName,RequestTemplate template,SelfCareUser user) {
-        if((template.queries().containsKey(paramName)&& !(template.queries().get(paramName).toArray()[0]==user.getOrgVat())))
+    public void check(String paramName, RequestTemplate template, SelfCareUser user) {
+        if ((template.queries().containsKey(paramName) && !(template.queries().get(paramName).contains(user.getOrgVat()))))
             throw new RuntimeException(new NoPermissionException(""));
 
     }
 
-    private void check(List<String> paramsName,RequestTemplate template,SelfCareUser user) {
-       paramsName.forEach(param->check(param,template,user));
+    private void check(RequestTemplate template, SelfCareUser user) {
+        AuthorizationApiConfigHeaderInterceptor.PARAMS_NAME.forEach(param -> check(param, template, user));
 
     }
 }

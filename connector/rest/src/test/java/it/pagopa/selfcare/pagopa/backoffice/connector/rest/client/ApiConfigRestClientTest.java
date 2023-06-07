@@ -259,6 +259,7 @@ class ApiConfigRestClientTest {
                 .email("test@example.com")
                 .name("name")
                 .surname("surname")
+                .orgVat("code1")
                 .build();
         TestSecurityContextHolder.setAuthentication(new TestingAuthenticationToken(selfCareUser, null));
     }
