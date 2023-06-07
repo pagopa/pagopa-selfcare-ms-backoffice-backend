@@ -2,15 +2,12 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.jira_servicemanager;
 
 import com.atlassian.jira.rest.client.api.IssueRestClient;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
-import com.atlassian.jira.rest.client.api.domain.BasicIssue;
-import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.JiraServiceManagerConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,23 +15,26 @@ import org.springframework.stereotype.Service;
 @Service
 public class JiraServiceManagerClient implements JiraServiceManagerConnector {
     @Autowired
-    @Qualifier("jiraRestClient")
     private JiraRestClient jiraRestClient;
 
-    private static final Long REQUEST_TYPE_TASKID = 10001L;
-    @Value("${jira.url}")
-    private String jiraUrl;
+//    private static final Long REQUEST_TYPE_TASKID = 10001L;
+    private static final Long REQUEST_TYPE_TASKID = 10007L;
+    @Value("${jira.project.key}")
+    private String projectKey;//PROV
+
+    @Value("${jira.reqTypeId}")
+    private String reqTypeTaskId;
 
     public String createTicket(String summary, String description) {
         try {
             log.trace("createTicket start");
             log.debug("createInstitution summary = {}, description = {}", summary, description);
-            String projectKey = "PROV"; // Sostituisci con la chiave del tuo progetto
-          // https://iltestdellasettimana.atlassian.net/rest/api/2/issuetype
+
+          // https://sitename.atlassian.net/rest/api/latest/project
             IssueRestClient issueClient = jiraRestClient.getIssueClient();
 
             IssueInput newIssue = new IssueInputBuilder(
-                    projectKey, REQUEST_TYPE_TASKID, summary)
+                    projectKey, Long.parseLong(reqTypeTaskId), summary)
                     .setFieldValue("description", description)
                     .build();
 
@@ -42,7 +42,7 @@ public class JiraServiceManagerClient implements JiraServiceManagerConnector {
 
             log.debug(LogUtils.CONFIDENTIAL_MARKER, "createTicket number = {}",ticketId);
             log.trace("createTicket end");
-            return ticketId;
+            return String.format("Created ticket %s",ticketId);
         } catch (Exception e) {
             return "createTicket error: " + e.getMessage();
         }
