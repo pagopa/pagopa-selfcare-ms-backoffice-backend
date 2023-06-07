@@ -20,7 +20,7 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
     private String apiConfigSubscriptionKey;
 
     @Value("${authorization.api-config.flag-authorization}")
-    private boolean flagAuthorization;
+    private String flagAuthorization;
 
     private static final List<String> PARAMS_NAME = List.of(
             "stationId", "ecCode", "stationcode", "code", "brokerId", "stationCode", "creditorInstitutionCode",
@@ -30,7 +30,7 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
     public void apply(RequestTemplate template) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         SelfCareUser user = (SelfCareUser) auth.getPrincipal();
-        if (flagAuthorization) {
+        if (!Boolean.parseBoolean(flagAuthorization)) {
             check(template, user);
         }
         template.header("x-selfcare-uid", user.getId());
