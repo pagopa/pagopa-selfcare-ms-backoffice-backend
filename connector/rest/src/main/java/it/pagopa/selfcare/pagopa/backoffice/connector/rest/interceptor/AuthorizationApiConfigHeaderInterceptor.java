@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.rest.interceptor;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import it.pagopa.selfcare.pagopa.backoffice.connector.exception.PermissionDeniedException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +40,7 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
 
     void check(String paramName, RequestTemplate template, SelfCareUser user) {
         if ((template.queries().containsKey(paramName) && !(template.queries().get(paramName).contains(user.getOrgVat()))))
-            throw new RuntimeException(new NoPermissionException(""));
+            throw new PermissionDeniedException("This action is not permitted by current user");
     }
 
     void check(RequestTemplate template, SelfCareUser user) {

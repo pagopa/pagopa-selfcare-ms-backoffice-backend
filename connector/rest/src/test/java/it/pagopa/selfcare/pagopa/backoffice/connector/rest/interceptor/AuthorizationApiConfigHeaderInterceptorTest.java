@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.rest.interceptor;
 
 import feign.RequestTemplate;
+import it.pagopa.selfcare.pagopa.backoffice.connector.exception.PermissionDeniedException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +56,6 @@ class AuthorizationApiConfigHeaderInterceptorTest {
     void testCheck_withInvalidParam() {
         when(user.getOrgVat()).thenReturn("paramName1");
         template.query("paramName", "paramName");
-        assertThrows(RuntimeException.class, () -> interceptor.check("paramName", template, user));
+        assertThrows(PermissionDeniedException.class, () -> interceptor.check("paramName", template, user));
     }
 }
