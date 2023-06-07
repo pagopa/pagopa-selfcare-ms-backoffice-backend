@@ -11,10 +11,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInst
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
@@ -67,7 +64,7 @@ public class StationController {
         StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
         apiConfigService.createStation(stationDetails, xRequestId);
         log.trace("created station in apiConfig");
-        WrapperEntitiesOperations<StationDetails> response = wrapperService.updateWrapperStationDetailsByOpt(stationDetails, stationDetailsDto.getNote(), stationDetailsDto.getStatus().name());
+        WrapperEntitiesOperations<StationDetails> response = wrapperService.updateWrapperStationDetailsByOpt(stationDetails, stationDetailsDto.getNote(), WrapperStatus.APPROVED.name());
         WrapperEntityOperations<StationDetails> result = response.getWrapperEntityOperationsSortedList().get(0);
         log.debug("createStation result = {}", result);
         log.trace("createStation end");
@@ -136,13 +133,16 @@ public class StationController {
                                                   @PathVariable("stationId") String stationCode) {
         log.trace("getStationDetail start");
         StationDetails stationDetails;
+        WrapperStatus status;
         try {
             WrapperEntitiesOperations<StationDetails> result = wrapperService.findById(stationCode);
             stationDetails = result.getWrapperEntityOperationsSortedList().get(0).getEntity();
+            status = result.getStatus();
         }catch (ResourceNotFoundException e){
             String uuid = UUID.randomUUID().toString();
             log.debug("getStationDetail stationCode = {}, X-Request-Id = {}", stationCode, uuid);
             stationDetails = apiConfigService.getStation(stationCode, uuid);
+            status = WrapperStatus.APPROVED;
         }
         StationDetailResource resource = stationMapper.toResource(stationDetails);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStation result = {}", resource);

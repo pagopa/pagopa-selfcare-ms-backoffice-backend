@@ -195,7 +195,7 @@ class StationControllerTest {
 
         //then
         verify(wrapperServiceMock, times(1))
-                .updateWrapperStationDetailsByOpt(eq(stationDetails), eq(stationDetailsDto.getNote()), eq(stationDetailsDto.getStatus().name()));
+                .updateWrapperStationDetailsByOpt(eq(stationDetails), eq(stationDetailsDto.getNote()), eq(WrapperStatus.APPROVED.name()));
     }
 
     @Test
