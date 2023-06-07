@@ -40,11 +40,9 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
     public void check(String paramName, RequestTemplate template, SelfCareUser user) {
         if ((template.queries().containsKey(paramName) && !(template.queries().get(paramName).contains(user.getOrgVat()))))
             throw new RuntimeException(new NoPermissionException(""));
-
     }
 
     private void check(RequestTemplate template, SelfCareUser user) {
         AuthorizationApiConfigHeaderInterceptor.PARAMS_NAME.forEach(param -> check(param, template, user));
-
     }
 }

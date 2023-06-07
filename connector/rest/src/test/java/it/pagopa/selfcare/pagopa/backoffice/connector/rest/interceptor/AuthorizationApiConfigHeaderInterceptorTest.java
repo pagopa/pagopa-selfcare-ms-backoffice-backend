@@ -25,7 +25,7 @@ public class AuthorizationApiConfigHeaderInterceptorTest {
     private SelfCareUser user;
 
     @BeforeEach
-    public void setup() {
+     void setup() {
         interceptor = new AuthorizationApiConfigHeaderInterceptor();
         template = new RequestTemplate();
         user = mock(SelfCareUser.class);
@@ -35,7 +35,7 @@ public class AuthorizationApiConfigHeaderInterceptorTest {
     }
 
     @Test
-    public void testApply() {
+     void testApply() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         RequestTemplate template = new RequestTemplate();
@@ -51,13 +51,13 @@ public class AuthorizationApiConfigHeaderInterceptorTest {
     }
 
     @Test
-    public void testCheck_withValidParam() {
+     void testCheck_withValidParam() {
         when(user.getOrgVat()).thenReturn("validVat");
         assertDoesNotThrow(() -> interceptor.check("paramName", template, user));
     }
 
     @Test
-    public void testCheck_withInvalidParam() {
+     void testCheck_withInvalidParam() {
         when(user.getOrgVat()).thenReturn("paramName1");
         template.query("paramName","paramName");
         assertThrows(RuntimeException.class, () -> interceptor.check("paramName", template, user));
