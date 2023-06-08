@@ -129,7 +129,8 @@ public class WrapperConnectorImpl implements WrapperConnector {
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.getEntities().add(wrapperEntity);
-        wrapperEntities.setCreatedBy(createdBy);
+        if (createdBy != null)
+            wrapperEntities.setCreatedBy(createdBy);
         return repository.save(wrapperEntities);
     }
 
