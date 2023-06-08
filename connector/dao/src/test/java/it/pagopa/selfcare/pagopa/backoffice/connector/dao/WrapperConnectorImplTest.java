@@ -3,10 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.dao;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.auditing.SpringSecurityAuditorAware;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.WrapperEntity;
-import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceAlreadyExistsException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
@@ -25,8 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.test.context.TestSecurityContextHolder;
@@ -50,7 +45,7 @@ class WrapperConnectorImplTest {
         TestSecurityContextHolder.setAuthentication(authenticationToken);
         this.repositoryMock = mock(WrapperRepository.class);
         this.mongoTemplateMock = mock(MongoTemplate.class);
-        this.wrapperConnector = new WrapperConnectorImpl(repositoryMock, mongoTemplateMock, new SpringSecurityAuditorAware());
+        this.wrapperConnector = new WrapperConnectorImpl(repositoryMock, new SpringSecurityAuditorAware());
     }
 
 
@@ -162,7 +157,7 @@ class WrapperConnectorImplTest {
         when(repositoryMock
                 .insert(any(WrapperEntities.class))).thenReturn(wrapperEntities);
         // when
-        WrapperEntities saved = wrapperConnector.insert(entity, note, status);
+        WrapperEntities<StationDetails> saved = wrapperConnector.insert(entity, note, status);
         // then
         assertEquals(wrapperEntities, saved);
         verify(repositoryMock, times(1))
@@ -211,7 +206,7 @@ class WrapperConnectorImplTest {
         when(repositoryMock
                 .save(any(WrapperEntities.class))).thenReturn(wrapperEntities);
         // when
-        WrapperEntitiesOperations saved = wrapperConnector.update(channelDetailsMockInsert, note, status);
+        WrapperEntitiesOperations<ChannelDetails> saved = wrapperConnector.update(channelDetailsMockInsert, note, status);
         // then
         assertEquals(wrapperEntities, saved);
         verify(repositoryMock, times(1))
@@ -240,7 +235,7 @@ class WrapperConnectorImplTest {
         when(repositoryMock
                 .save(any(WrapperEntities.class))).thenReturn(wrapperEntities);
         // when
-        WrapperEntitiesOperations saved = wrapperConnector.updateByOpt(channelDetailsMockInsert, note, status);
+        WrapperEntitiesOperations<ChannelDetails> saved = wrapperConnector.updateByOpt(channelDetailsMockInsert, note, status);
         // then
         assertEquals(wrapperEntities, saved);
         verify(repositoryMock, times(1))
@@ -269,7 +264,7 @@ class WrapperConnectorImplTest {
         when(repositoryMock
                 .save(any(WrapperEntities.class))).thenReturn(wrapperEntities);
         // when
-        WrapperEntitiesOperations saved = wrapperConnector.updateByOpt(stationDetailsMockInsert, note, status);
+        WrapperEntitiesOperations<StationDetails> saved = wrapperConnector.updateByOpt(stationDetailsMockInsert, note, status);
         // then
         assertEquals(wrapperEntities, saved);
         verify(repositoryMock, times(1))
@@ -318,7 +313,7 @@ class WrapperConnectorImplTest {
         when(repositoryMock
                 .save(any(WrapperEntities.class))).thenReturn(wrapperEntities);
         // when
-        WrapperEntitiesOperations saved = wrapperConnector.update(stationDetailsMockInsert, note, status);
+        WrapperEntitiesOperations<StationDetails> saved = wrapperConnector.update(stationDetailsMockInsert, note, status);
         // then
         assertEquals(wrapperEntities, saved);
         verify(repositoryMock, times(1))
