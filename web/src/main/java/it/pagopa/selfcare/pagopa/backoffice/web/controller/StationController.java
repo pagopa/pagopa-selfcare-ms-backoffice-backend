@@ -179,7 +179,7 @@ public class StationController {
         log.debug("updateWrapperStationDetails stationDetailsDto = {}", stationDetailsDto);
         WrapperEntitiesOperations createdWrapperEntities = wrapperService.
                 updateWrapperStationDetails(stationMapper.fromDto
-                        (stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name());
+                        (stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
         log.debug("updateWrapperStationDetails result = {}", createdWrapperEntities);
         log.trace("updateWrapperStationDetails end");
         return createdWrapperEntities;
@@ -261,7 +261,7 @@ public class StationController {
         log.debug("updateStation code stationDetailsDto = {} , uuid {}", stationDetailsDto, uuid);
         StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
         StationDetails response = apiConfigService.updateStation(stationCode, stationDetails, uuid);
-        wrapperService.updateWrapperStationDetails(stationDetails, stationDetailsDto.getNote(), stationDetailsDto.getStatus().name());
+        wrapperService.updateWrapperStationDetails(stationDetails, stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
         StationDetailResource resource = stationMapper.toResource(response);
 
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "updateStation result = {}", resource);

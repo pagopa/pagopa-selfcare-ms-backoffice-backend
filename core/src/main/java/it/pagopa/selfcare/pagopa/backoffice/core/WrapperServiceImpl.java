@@ -90,10 +90,10 @@ public class WrapperServiceImpl implements WrapperService {
     }
 
     @Override
-    public WrapperEntitiesOperations<StationDetails> updateWrapperStationDetails(StationDetails stationDetails, String note, String status) {
+    public WrapperEntitiesOperations<StationDetails> updateWrapperStationDetails(StationDetails stationDetails, String note, String status, String createdBy) {
         log.trace("updateWrapperChannelDetails start");
         log.debug("updateWrapperChannelDetails stationDetails = {}, channelCode = {}", stationDetails, stationDetails.getStationCode());
-        WrapperEntitiesOperations<StationDetails> response = wrapperConnector.update(stationDetails, note, status);
+        WrapperEntitiesOperations<StationDetails> response = wrapperConnector.update(stationDetails, note, status, createdBy);
         log.debug("updateWrapperChannelDetails result = {}", response);
         log.trace("updateWrapperChannelDetails end");
         return response;

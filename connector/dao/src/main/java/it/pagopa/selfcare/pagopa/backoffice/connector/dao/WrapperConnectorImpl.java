@@ -60,11 +60,13 @@ public class WrapperConnectorImpl implements WrapperConnector {
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
         WrapperEntities<StationDetails> wrapperEntities = new WrapperEntities<>(wrapperEntity);
         wrapperEntities.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
+        String createdBy = wrapperEntities.getCreatedBy();
         WrapperEntities<StationDetails> response = null;
         try {
+            wrapperEntities.setCreatedBy(auditorAware.getCurrentAuditor().orElse(null));
             response = repository.insert(wrapperEntities);
         } catch (DuplicateKeyException e) {
-            response = (WrapperEntities<StationDetails>) update(stationDetails, note, status);
+            response = (WrapperEntities<StationDetails>) update(stationDetails, note, status, createdBy);
         }
         return response;
     }
@@ -116,7 +118,7 @@ public class WrapperConnectorImpl implements WrapperConnector {
     }
 
     @Override
-    public WrapperEntitiesOperations<StationDetails> update(StationDetails stationDetails, String note, String status) {
+    public WrapperEntitiesOperations<StationDetails> update(StationDetails stationDetails, String note, String status, String createdBy) {
         String stationCode = stationDetails.getStationCode();
         Optional<WrapperEntitiesOperations> opt = findById(stationCode);
         if (opt.isEmpty()) {
@@ -127,6 +129,7 @@ public class WrapperConnectorImpl implements WrapperConnector {
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.getEntities().add(wrapperEntity);
+        wrapperEntities.setCreatedBy(createdBy);
         return repository.save(wrapperEntities);
     }
 
