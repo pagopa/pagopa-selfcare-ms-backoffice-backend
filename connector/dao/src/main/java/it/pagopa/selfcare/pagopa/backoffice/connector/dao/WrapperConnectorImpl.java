@@ -200,19 +200,19 @@ public class WrapperConnectorImpl implements WrapperConnector {
     }
 
     @Override
-    public WrapperEntitiesList findByIdOrTypeOrBrokerCode(String id, WrapperType wrapperType,String brokerCode, Integer page, Integer size) {
+    public WrapperEntitiesList findByIdLikeOrTypeOrBrokerCode(String idLike, WrapperType wrapperType,String brokerCode, Integer page, Integer size) {
 
         Pageable paging = PageRequest.of(page, size);
         Page<WrapperEntitiesOperations<?>> response;
 
-        if (brokerCode == null && id == null) {
+        if (brokerCode == null && idLike == null) {
             response = repository.findByType(wrapperType, paging);
         } else if (brokerCode == null) {
-            response = repository.findByIdAndType(id, wrapperType, paging);
-        } else if (id == null) {
+            response = repository.findByIdLikeAndType(idLike, wrapperType, paging);
+        } else if (idLike == null) {
             response = repository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
         } else {
-            response = repository.findByIdAndTypeAndBrokerCode(id, wrapperType, brokerCode, paging);
+            response = repository.findByIdLikeAndTypeAndBrokerCode(idLike, wrapperType, brokerCode, paging);
         }
 
         PageInfo pi = new PageInfo();

@@ -85,5 +85,9 @@ public class StationDetailResource extends StationResource {
     @ApiModelProperty("${swagger.model.station.primitiveVersion}")
     @JsonProperty(required = true)
     private Integer primitiveVersion;
+    @ApiModelProperty("${swagger.model.station.createdBy}")
+    private String createdBy;
+    @ApiModelProperty("${swagger.model.station.modifiedBy}")
+    private String modifiedBy;
 
 }
