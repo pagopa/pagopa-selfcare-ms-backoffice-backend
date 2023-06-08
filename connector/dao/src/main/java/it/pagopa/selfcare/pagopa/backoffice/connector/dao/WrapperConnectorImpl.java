@@ -134,22 +134,6 @@ public class WrapperConnectorImpl implements WrapperConnector {
         return repository.save(wrapperEntities);
     }
 
-//    @Override
-//    public WrapperEntitiesList findByStatusAndTypeAndBrokerCode( WrapperStatus status ,WrapperType wrapperType,String brokerCode, Integer page, Integer size) {
-//        Pageable paging = PageRequest.of(page, size);
-//        Page<WrapperEntitiesOperations> response = repository.findByStatusAndTypeAndBrokerCode(status, wrapperType, brokerCode,paging);
-//        response.getTotalPages();
-//        PageInfo pi = new PageInfo();
-//        pi.setPage(page);
-//        pi.setLimit(size);
-//        pi.setItemsFound(response.getTotalPages());
-//        WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
-//        response.getContent().forEach(WrapperEntitiesOperations::sortEntitesByCreatedAt);
-//        wrapperEntitiesList.setWrapperEntities(response.getContent());
-//        wrapperEntitiesList.setPageInfo(pi);
-//        return wrapperEntitiesList;
-//    }
-
     @Override
     public WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus status, WrapperType wrapperType, String brokerCode, String idLike, Integer page, Integer size, String sorting) {
 
@@ -164,24 +148,40 @@ public class WrapperConnectorImpl implements WrapperConnector {
         Page<WrapperEntitiesOperations<?>> response = null;
 
         if (status != null) {
-            if (brokerCode != null && idLike != null) {
-                response = repository.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, paging);
-            } else if (brokerCode != null) {
-                response = repository.findByStatusAndTypeAndBrokerCode(status, wrapperType, brokerCode, paging);
-            } else if (idLike != null) {
-                response = repository.findByStatusAndTypeAndIdLike(status, wrapperType, idLike, paging);
-            } else {
-                response = repository.findByStatusAndType(status, wrapperType, paging);
+            switch ((brokerCode != null ? 1 : 0) | (idLike != null ? 2 : 0)) {
+                case 0:
+                    response = repository.findByStatusAndType(status, wrapperType, paging);
+                    break;
+                case 1:
+                    response = repository.findByStatusAndTypeAndBrokerCode(status, wrapperType, brokerCode, paging);
+                    break;
+                case 2:
+                    response = repository.findByStatusAndTypeAndIdLike(status, wrapperType, idLike, paging);
+                    break;
+                case 3:
+                    response = repository.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, paging);
+                    break;
+                default:
+                    // Gestisci caso non previsto
+                    break;
             }
         } else {
-            if (brokerCode != null && idLike != null) {
-                response = repository.findByTypeAndBrokerCodeAndIdLike(wrapperType, brokerCode, idLike, paging);
-            } else if (brokerCode != null) {
-                response = repository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
-            } else if (idLike != null) {
-                response = repository.findByTypeAndIdLike(wrapperType, idLike, paging);
-            } else {
-                response = repository.findByType(wrapperType, paging);
+            switch ((brokerCode != null ? 1 : 0) | (idLike != null ? 2 : 0)) {
+                case 0:
+                    response = repository.findByType(wrapperType, paging);
+                    break;
+                case 1:
+                    response = repository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
+                    break;
+                case 2:
+                    response = repository.findByTypeAndIdLike(wrapperType, idLike, paging);
+                    break;
+                case 3:
+                    response = repository.findByTypeAndBrokerCodeAndIdLike(wrapperType, brokerCode, idLike, paging);
+                    break;
+                default:
+                    // Gestisci caso non previsto
+                    break;
             }
         }
        
@@ -226,38 +226,4 @@ public class WrapperConnectorImpl implements WrapperConnector {
 
         return wrapperEntitiesList;
     }
-
-//    @Override
-//    public List<WrapperEntitiesOperations> findAll() {
-//        return new ArrayList<>(repository.findAll());
-//    }
-//
-//
-//    @Override
-//        public Page<WrapperEntitiesOperations> findByStatusAndType(WrapperStatus status, WrapperType wrapperType) {
-//            return repository.findByStatusAndType(status);
-//        }
-//
-//    @Override
-//    public List<WrapperEntitiesOperations> findByStatusNot(WrapperStatus status) {
-//        return new ArrayList<WrapperEntitiesOperations>(repository.findByStatusNot(status));
-//    }
-//
-//
-//    @Override
-//    public void updateWrapperEntitiesStatus(String id, WrapperStatus status) {
-//        log.trace("updateWrapperEntitiesStatus start");
-//        log.debug("updateWrapperEntitiesStatus id = {}, status = {}", id, status);
-//        UpdateResult updateResult = mongoTemplate.updateFirst(
-//                Query.query(Criteria.where(WrapperEntities.Fields.id).is(id)),
-//                Update.update(WrapperEntities.Fields.status, status)
-//                        .set(WrapperEntities.Fields.modifiedBy, auditorAware.getCurrentAuditor().orElse(null))
-//                        .currentDate(WrapperEntities.Fields.modifiedAt),
-//                WrapperEntities.class);
-//        if (updateResult.getMatchedCount() == 0) {
-//            throw new ResourceNotFoundException();
-//        }
-//        log.trace("updateWrapperEntitiesStatus end");
-//    }
-
 }
