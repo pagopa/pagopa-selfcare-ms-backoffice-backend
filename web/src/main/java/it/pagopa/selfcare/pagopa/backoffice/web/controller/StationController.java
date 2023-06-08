@@ -134,8 +134,12 @@ public class StationController {
         log.trace("getStationDetail start");
         StationDetails stationDetails;
         WrapperStatus status;
+        String createdBy = "";
+        String modifiedBy = "";
         try {
             WrapperEntitiesOperations<StationDetails> result = wrapperService.findById(stationCode);
+            createdBy = result.getCreatedBy();
+            modifiedBy = result.getModifiedBy();
             stationDetails = result.getWrapperEntityOperationsSortedList().get(0).getEntity();
             status = result.getStatus();
         }catch (ResourceNotFoundException e){
@@ -144,7 +148,7 @@ public class StationController {
             stationDetails = apiConfigService.getStation(stationCode, uuid);
             status = WrapperStatus.APPROVED;
         }
-        StationDetailResource resource = stationMapper.toResource(stationDetails);
+        StationDetailResource resource = stationMapper.toResource(stationDetails, status, createdBy, modifiedBy);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStation result = {}", resource);
         log.trace("getStationDetail end");
         return resource;
@@ -296,9 +300,8 @@ public class StationController {
         log.debug("getchannels xRequestId = {}", xRequestId);
 
         Stations stations = apiConfigService.getStations(limit, page, sorting, brokerCode,null, stationCode, xRequestId);
-
         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
-        WrapperEntitiesList mongoList = wrapperService.findByIdOrTypeOrBrokerCode(stationCode, WrapperType.STATION, brokerCode, page, limit);
+        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, brokerCode, page, limit);
         WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
         WrapperStations stationsMergedAndSorted = apiConfigService.mergeAndSortWrapperStations(responseApiConfig, responseMongo, sorting);
         WrapperStationsResource response = stationMapper.toWrapperStationsResource(stationsMergedAndSorted);

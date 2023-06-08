@@ -57,7 +57,7 @@ class StationMapperImplTest {
         StationDetailResource resource = mapper.toResource(stationDetails);
         //then
         assertNotNull(resource);
-        checkNotNullFields(resource, "wrapperStatus");
+        checkNotNullFields(resource, "wrapperStatus", "createdBy", "modifiedBy");
     }
 
     @Test
