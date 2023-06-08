@@ -68,7 +68,7 @@ microservice-chart:
     AZURE_SERVICE_NAME: pagopa-u-apim
     ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
     MONGODB_NAME: pagopaBackoffice
-    IS_DEV: 'false'
+    AUTHORIZATION_FLAG: 'false'
   envSecret:
     AZURE_CLIENT_SECRET: pagopa-u-selfcare-client-secret
     AZURE_CLIENT_ID: pagopa-u-selfcare-client-id
