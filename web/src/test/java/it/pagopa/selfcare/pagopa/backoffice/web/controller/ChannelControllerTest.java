@@ -1123,7 +1123,7 @@ class ChannelControllerTest {
 
 
 
-        when(wrapperServiceMock.findByIdOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt()))
+        when(wrapperServiceMock.findByIdLikeOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt()))
                 .thenReturn(mongoList);
         when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), any(), anyString(), anyString()))
                 .thenReturn(channels);
@@ -1144,7 +1144,7 @@ class ChannelControllerTest {
 
         //then
         verify(wrapperServiceMock, times(1))
-                .findByIdOrTypeOrBrokerCode(any(), any(), any(), anyInt(), anyInt());
+                .findByIdLikeOrTypeOrBrokerCode(any(), any(), any(), anyInt(), anyInt());
         verify(apiConfigServiceMock, times(1))
                 .getChannels(anyInt(), anyInt(), any(), anyString(), anyString());
         verify(apiConfigServiceMock, times(1))

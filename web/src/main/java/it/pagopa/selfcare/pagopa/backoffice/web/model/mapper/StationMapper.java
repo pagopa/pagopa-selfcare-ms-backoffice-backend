@@ -22,7 +22,7 @@ public interface StationMapper {
 
     StationDetailResource toResource(StationDetails model);
 
-    StationDetailResource toResource(StationDetails model, WrapperStatus status);
+    StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy);
 
     StationsResource toResource(Stations model);
 

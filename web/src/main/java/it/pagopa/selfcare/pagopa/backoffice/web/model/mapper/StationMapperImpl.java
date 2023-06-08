@@ -92,7 +92,7 @@ public class StationMapperImpl implements StationMapper {
     }
 
     @Override
-    public StationDetailResource toResource(StationDetails model, WrapperStatus status) {
+    public StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy) {
         if (model == null) {
             return null;
         }
@@ -144,6 +144,8 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setTargetPathPof(model.getTargetPathPof());
         stationDetailResource.setPrimitiveVersion(model.getPrimitiveVersion());
         stationDetailResource.setWrapperStatus(status);
+        stationDetailResource.setCreatedBy(createdBy);
+        stationDetailResource.setModifiedBy(modifiedBy);
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
         BrokerDetails brokerDetails = model.getIntermediarioPa();

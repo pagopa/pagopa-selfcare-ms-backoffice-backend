@@ -346,7 +346,12 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         }
         WrapperStations result = new WrapperStations();
         result.setStationsList(mergedList);
-        result.setPageInfo(wrapperStationsApiConfig.getPageInfo());
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(wrapperStationsApiConfig.getPageInfo().getLimit());
+        pageInfo.setTotalPages(wrapperStationsApiConfig.getPageInfo().getTotalPages());
+        pageInfo.setPage(wrapperStationsApiConfig.getPageInfo().getPage());
+        pageInfo.setItemsFound(mergedList.size());
+        result.setPageInfo(pageInfo);
         log.trace("mergeAndSortWrapperStations end");
         return result;
     }

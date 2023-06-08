@@ -466,7 +466,7 @@ class StationControllerTest {
 
 
 
-        when(wrapperServiceMock.findByIdOrTypeOrBrokerCode(stationCode, wrapperType, brokerCode, page, size))
+        when(wrapperServiceMock.findByIdLikeOrTypeOrBrokerCode(stationCode, wrapperType, brokerCode, page, size))
                 .thenReturn(mongoList);
         when(apiConfigServiceMock.getStations(anyInt(), anyInt(), anyString(), anyString(), isNull(), anyString(), anyString()))
                 .thenReturn(stations);
@@ -488,7 +488,7 @@ class StationControllerTest {
 
         //then
         verify(wrapperServiceMock, times(1))
-                .findByIdOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt());
+                .findByIdLikeOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt());
         verify(apiConfigServiceMock, times(1))
                 .getStations(anyInt(), anyInt(), anyString(), anyString(), isNull(), anyString(), anyString());
         verify(apiConfigServiceMock, times(1))
