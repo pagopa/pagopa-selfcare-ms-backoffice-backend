@@ -128,6 +128,7 @@ public class WrapperConnectorImpl implements WrapperConnector {
         WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetails);
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
+        wrapperEntities.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.getEntities().add(wrapperEntity);
         if (createdBy != null)
             wrapperEntities.setCreatedBy(createdBy);
