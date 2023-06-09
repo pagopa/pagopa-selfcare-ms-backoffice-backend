@@ -4,7 +4,8 @@ public enum Subscription {
 
     NODOAUTH("/products/nodo-auth", "Connessione con nodo", "nodauth-"),
     GPD("/products/debt-positions", "Integrazione Asincrona", "gdp-"),
-    BIZ("/products/bizevents", "Recupero Ricevuta", "bes-");
+    BIZ("/products/bizevents", "Recupero Ricevuta", "bes-"),
+    GPD_REP("/products/product-gpd-reporting", "Gestione flussi di rendicontazione", "gpdrep-");
 
     private final String scope;
     private final String displayName;
@@ -27,5 +28,4 @@ public enum Subscription {
         this.displayName = displayName;
         this.prefixId = prefixId;
     }
-    
 }
