@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
@@ -739,7 +740,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperStations_ASC() {
         //given
-        WrapperStations stations = mock(WrapperStations.class);
+        WrapperStations stations = new WrapperStations();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        stations.setPageInfo(pageInfo);
+        stations.setStationsList(new ArrayList<>());
         String sorting = "ASC";
 
         //when
@@ -762,7 +770,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperStations_DESC() {
         //given
-        WrapperStations stations = mock(WrapperStations.class);
+        WrapperStations stations = new WrapperStations();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        stations.setPageInfo(pageInfo);
+        stations.setStationsList(new ArrayList<>());
         String sorting = "DESC";
 
         //when
@@ -785,7 +800,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperStations_nullSorting() {
         //given
-        WrapperStations stations = mock(WrapperStations.class);
+        WrapperStations stations = new WrapperStations();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        stations.setPageInfo(pageInfo);
+        stations.setStationsList(new ArrayList<>());
         String sorting = null;
 
         //when

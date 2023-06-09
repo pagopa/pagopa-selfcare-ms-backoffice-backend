@@ -228,15 +228,15 @@ public class WrapperServiceImplTest {
 
         WrapperEntitiesList wrapperEntitiesList = mockInstance(new WrapperEntitiesList());
 
-        when(wrapperConnectorMock.findByIdOrTypeOrBrokerCode(anyString(),any(), anyString(), anyInt(), anyInt()))
+        when(wrapperConnectorMock.findByIdLikeOrTypeOrBrokerCode(anyString(),any(), anyString(), anyInt(), anyInt()))
                 .thenReturn(wrapperEntitiesList);
 
         //when
-        WrapperEntitiesList response = wrapperService.findByIdOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, 0, 50);
+        WrapperEntitiesList response = wrapperService.findByIdLikeOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, 0, 50);
         //then
         assertNotNull(response);
         verify(wrapperConnectorMock, times(1))
-                .findByIdOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, 0, 50);
+                .findByIdLikeOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, 0, 50);
         verifyNoMoreInteractions(wrapperConnectorMock);
     }
 }
