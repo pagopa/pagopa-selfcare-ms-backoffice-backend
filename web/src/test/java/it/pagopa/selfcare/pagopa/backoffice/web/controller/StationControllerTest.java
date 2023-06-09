@@ -19,6 +19,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatu
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.core.JiraServiceManagerService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
@@ -70,6 +71,9 @@ class StationControllerTest {
     private StationMapper mapper = Mappers.getMapper(StationMapper.class);
     @Autowired
     protected ObjectMapper objectMapper;
+
+    @MockBean
+    JiraServiceManagerService jiraServiceManagerService;
 
     @MockBean
     private ApiConfigService apiConfigServiceMock;
