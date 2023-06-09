@@ -35,7 +35,7 @@ class StationMapperImplTest {
         assertNotNull(resource);
         assertFalse(resource.getStationsList().isEmpty());
         assertNotNull(resource.getStationsList().get(0));
-        checkNotNullFields(resource.getStationsList().get(0));
+        checkNotNullFields(resource.getStationsList().get(0), "wrapperStatus");
         reflectionEqualsByName(stations, resource);
     }
 
@@ -57,7 +57,7 @@ class StationMapperImplTest {
         StationDetailResource resource = mapper.toResource(stationDetails);
         //then
         assertNotNull(resource);
-        checkNotNullFields(resource);
+        checkNotNullFields(resource, "wrapperStatus", "createdBy", "modifiedBy");
     }
 
     @Test
@@ -78,7 +78,7 @@ class StationMapperImplTest {
         StationResource resource = mapper.toResource(station);
         //then
         assertNotNull(resource);
-        checkNotNullFields(resource);
+        checkNotNullFields(resource, "wrapperStatus");
         reflectionEqualsByName(station, resource);
     }
 

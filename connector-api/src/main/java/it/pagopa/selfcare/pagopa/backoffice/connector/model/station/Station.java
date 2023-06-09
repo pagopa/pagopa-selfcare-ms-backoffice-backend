@@ -28,8 +28,6 @@ public class Station {
     protected Long version;
 
     @JsonIgnore
-    private WrapperStatus wrapperStatus;
-    @JsonIgnore
     private Integer associatedCreditorInstitutions = 0;
     @JsonIgnore
     private Instant activationDate = Instant.now();

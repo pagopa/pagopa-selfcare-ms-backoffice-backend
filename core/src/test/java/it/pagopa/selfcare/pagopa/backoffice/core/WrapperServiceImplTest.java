@@ -137,16 +137,16 @@ public class WrapperServiceImplTest {
         DummyWrapperEntity<StationDetails> wrapperEntity = new DummyWrapperEntity<>(stationDetailsMock);
         DummyWrapperEntities<StationDetails> wrapperEntities = new DummyWrapperEntities<>(wrapperEntity);
 
-        when(wrapperConnectorMock.update((StationDetails) any(),anyString(),anyString()))
+        when(wrapperConnectorMock.update((StationDetails) any(),anyString(),anyString(),anyString()))
                 .thenReturn(wrapperEntities);
         //when
-        WrapperEntitiesOperations response = wrapperService.updateWrapperStationDetails(stationDetailsMock,note,status);
+        WrapperEntitiesOperations response = wrapperService.updateWrapperStationDetails(stationDetailsMock,note,status, "createdBy");
         //then
         assertNotNull(response);
         assertEquals(((DummyWrapperEntity) response.getWrapperEntityOperationsSortedList().get(0)).getEntity(), stationDetailsMock);
         reflectionEqualsByName(wrapperEntities.getWrapperEntityOperationsSortedList().get(0).getEntity(), stationDetailsMock);
         verify(wrapperConnectorMock, times(1))
-                .update(stationDetailsMock,note,status);
+                .update(stationDetailsMock,note,status, "createdBy");
         verifyNoMoreInteractions(wrapperConnectorMock);
     }
 
@@ -228,15 +228,15 @@ public class WrapperServiceImplTest {
 
         WrapperEntitiesList wrapperEntitiesList = mockInstance(new WrapperEntitiesList());
 
-        when(wrapperConnectorMock.findByIdOrTypeOrBrokerCode(anyString(),any(), anyString(), anyInt(), anyInt()))
+        when(wrapperConnectorMock.findByIdLikeOrTypeOrBrokerCode(anyString(),any(), anyString(), anyInt(), anyInt()))
                 .thenReturn(wrapperEntitiesList);
 
         //when
-        WrapperEntitiesList response = wrapperService.findByIdOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, 0, 50);
+        WrapperEntitiesList response = wrapperService.findByIdLikeOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, 0, 50);
         //then
         assertNotNull(response);
         verify(wrapperConnectorMock, times(1))
-                .findByIdOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, 0, 50);
+                .findByIdLikeOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, 0, 50);
         verifyNoMoreInteractions(wrapperConnectorMock);
     }
 }

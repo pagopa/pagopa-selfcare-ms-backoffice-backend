@@ -3,10 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.dao;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.auditing.SpringSecurityAuditorAware;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.WrapperEntity;
-import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceAlreadyExistsException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
@@ -25,8 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.test.context.TestSecurityContextHolder;
@@ -50,7 +45,7 @@ class WrapperConnectorImplTest {
         TestSecurityContextHolder.setAuthentication(authenticationToken);
         this.repositoryMock = mock(WrapperRepository.class);
         this.mongoTemplateMock = mock(MongoTemplate.class);
-        this.wrapperConnector = new WrapperConnectorImpl(repositoryMock, mongoTemplateMock, new SpringSecurityAuditorAware());
+        this.wrapperConnector = new WrapperConnectorImpl(repositoryMock, new SpringSecurityAuditorAware());
     }
 
 
@@ -162,7 +157,7 @@ class WrapperConnectorImplTest {
         when(repositoryMock
                 .insert(any(WrapperEntities.class))).thenReturn(wrapperEntities);
         // when
-        WrapperEntities saved = wrapperConnector.insert(entity, note, status);
+        WrapperEntities<StationDetails> saved = wrapperConnector.insert(entity, note, status);
         // then
         assertEquals(wrapperEntities, saved);
         verify(repositoryMock, times(1))
@@ -211,7 +206,7 @@ class WrapperConnectorImplTest {
         when(repositoryMock
                 .save(any(WrapperEntities.class))).thenReturn(wrapperEntities);
         // when
-        WrapperEntitiesOperations saved = wrapperConnector.update(channelDetailsMockInsert, note, status);
+        WrapperEntitiesOperations<ChannelDetails> saved = wrapperConnector.update(channelDetailsMockInsert, note, status);
         // then
         assertEquals(wrapperEntities, saved);
         verify(repositoryMock, times(1))
@@ -240,7 +235,7 @@ class WrapperConnectorImplTest {
         when(repositoryMock
                 .save(any(WrapperEntities.class))).thenReturn(wrapperEntities);
         // when
-        WrapperEntitiesOperations saved = wrapperConnector.updateByOpt(channelDetailsMockInsert, note, status);
+        WrapperEntitiesOperations<ChannelDetails> saved = wrapperConnector.updateByOpt(channelDetailsMockInsert, note, status);
         // then
         assertEquals(wrapperEntities, saved);
         verify(repositoryMock, times(1))
@@ -269,7 +264,7 @@ class WrapperConnectorImplTest {
         when(repositoryMock
                 .save(any(WrapperEntities.class))).thenReturn(wrapperEntities);
         // when
-        WrapperEntitiesOperations saved = wrapperConnector.updateByOpt(stationDetailsMockInsert, note, status);
+        WrapperEntitiesOperations<StationDetails> saved = wrapperConnector.updateByOpt(stationDetailsMockInsert, note, status);
         // then
         assertEquals(wrapperEntities, saved);
         verify(repositoryMock, times(1))
@@ -304,6 +299,7 @@ class WrapperConnectorImplTest {
         // given
         String note = "note";
         String status = "TO_CHECK";
+        String createdBy = "createdBy";
         StationDetails stationDetailsMock = mockInstance(new StationDetails());
         StationDetails stationDetailsMockInsert = mockInstance(new StationDetails());
         WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetailsMock);
@@ -318,7 +314,7 @@ class WrapperConnectorImplTest {
         when(repositoryMock
                 .save(any(WrapperEntities.class))).thenReturn(wrapperEntities);
         // when
-        WrapperEntitiesOperations saved = wrapperConnector.update(stationDetailsMockInsert, note, status);
+        WrapperEntitiesOperations<StationDetails> saved = wrapperConnector.update(stationDetailsMockInsert, note, status, createdBy);
         // then
         assertEquals(wrapperEntities, saved);
         verify(repositoryMock, times(1))
@@ -333,11 +329,12 @@ class WrapperConnectorImplTest {
         // given
         String note = "note";
         String status = "TO_CHECK";
+        String createdBy = "createdBy";
         StationDetails stationDetailsMockInsert = mockInstance(new StationDetails());
         when(repositoryMock
                 .findById(anyString())).thenReturn(Optional.ofNullable(null));
         // when
-        Executable executable = () -> wrapperConnector.update(stationDetailsMockInsert, note, status);
+        Executable executable = () -> wrapperConnector.update(stationDetailsMockInsert, note, status, createdBy);
         // then
         ResourceNotFoundException e = assertThrows(ResourceNotFoundException.class, executable);
         verify(repositoryMock, times(1))
@@ -583,17 +580,17 @@ class WrapperConnectorImplTest {
 
 
         when(repositoryMock
-                .findByIdAndTypeAndBrokerCode(anyString(),any(),anyString(), any()))
+                .findByIdLikeAndTypeAndBrokerCode(anyString(),any(),anyString(), any()))
                 .thenReturn(paginatedMock);
 
         // when
         WrapperEntitiesList
                 response =   wrapperConnector
-                .findByIdOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, page, size);
+                .findByIdLikeOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, page, size);
         // then
         assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))
-                .findByIdAndTypeAndBrokerCode(anyString(),any(),anyString(), any());
+                .findByIdLikeAndTypeAndBrokerCode(anyString(),any(),anyString(), any());
         verifyNoMoreInteractions(repositoryMock);
     }
 
@@ -614,7 +611,7 @@ class WrapperConnectorImplTest {
         // when
         WrapperEntitiesList
                 response =   wrapperConnector
-                .findByIdOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, page, size);
+                .findByIdLikeOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, page, size);
         // then
         assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))
@@ -639,7 +636,7 @@ class WrapperConnectorImplTest {
         // when
         WrapperEntitiesList
                 response =   wrapperConnector
-                .findByIdOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, page, size);
+                .findByIdLikeOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, page, size);
         // then
         assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))
@@ -658,17 +655,17 @@ class WrapperConnectorImplTest {
 
         Page<WrapperEntitiesOperations<?>> paginatedMock =  mock(Page.class);
         when(repositoryMock
-                .findByIdAndType(any(), any(), any()))
+                .findByIdLikeAndType(any(), any(), any()))
                 .thenReturn(paginatedMock);
 
         // when
         WrapperEntitiesList
                 response =   wrapperConnector
-                .findByIdOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, page, size);
+                .findByIdLikeOrTypeOrBrokerCode(stationCode,wrapperType, brokerCode, page, size);
         // then
         assertEquals(response.getWrapperEntities(), paginatedMock.getContent());
         verify(repositoryMock, times(1))
-                .findByIdAndType(any(), any(), any());
+                .findByIdLikeAndType(any(), any(), any());
         verifyNoMoreInteractions(repositoryMock);
     }
 }

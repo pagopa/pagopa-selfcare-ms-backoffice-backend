@@ -16,13 +16,9 @@ import org.springframework.stereotype.Service;
 public class JiraServiceManagerClient implements JiraServiceManagerConnector {
     @Autowired
     private JiraRestClient jiraRestClient;
-
-//    private static final Long REQUEST_TYPE_TASKID = 10001L;
-    private static final Long REQUEST_TYPE_TASKID = 10007L;
     @Value("${jira.project.key}")
-    private String projectKey;//PROV
-
-    @Value("${jira.reqTypeId}")
+    private String projectKey;
+    @Value("${jira.reqTypeTaskId}")
     private String reqTypeTaskId;
 
     public String createTicket(String summary, String description) {

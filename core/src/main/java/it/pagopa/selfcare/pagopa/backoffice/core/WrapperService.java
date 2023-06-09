@@ -22,10 +22,10 @@ public interface WrapperService {
     WrapperEntitiesOperations<ChannelDetails> updateWrapperChannelDetailsByOpt(ChannelDetails channelDetails,String note,String status);
 
     WrapperEntitiesOperations<StationDetails> updateWrapperStationDetailsByOpt(StationDetails stationDetails,String note,String status);
-    WrapperEntitiesOperations<StationDetails> updateWrapperStationDetails(StationDetails channelDetails,String note,String status);
+    WrapperEntitiesOperations<StationDetails> updateWrapperStationDetails(StationDetails channelDetails,String note,String status, String createdBy);
 
     WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike( WrapperStatus status ,WrapperType wrapperType,String brokerCode, String idLike, Integer page, Integer limit, String sorting);
 
-    WrapperEntitiesList findByIdOrTypeOrBrokerCode(String id, WrapperType wrapperType,String brokerCode, Integer page, Integer size);
+    WrapperEntitiesList findByIdLikeOrTypeOrBrokerCode(String id, WrapperType wrapperType,String brokerCode, Integer page, Integer size);
 
 }

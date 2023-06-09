@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
@@ -19,6 +20,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -344,6 +346,29 @@ class ApiConfigServiceImplTest {
         assertNotNull(stations);
         assertEquals(stationsMock, stations);
         reflectionEqualsByName(stationsMock, stations);
+        verify(apiConfigConnectorMock, times(1))
+                .getStations(limit, page, sort, null, ecCode, stationCode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void getStations_Exception() {
+        //given
+        final Integer limit = 1;
+        final Integer page = 1;
+        final String ecCode = "ecCode";
+        final String stationCode = "stationCode";
+        final String sort = "sort";
+        final String xRequestId = "xRequestId";
+        Stations stationsMock = mockInstance(new Stations());
+
+        when(apiConfigConnectorMock.getStations(any(), any(), any(), any(), any(), any(), any()))
+                .thenThrow(new RuntimeException("[404 Not Found]"));
+        //when
+        Stations stations = apiConfigService.getStations(limit, page, sort,null,  ecCode, stationCode, xRequestId);
+
+        //then
+        assertNotNull(stations);
         verify(apiConfigConnectorMock, times(1))
                 .getStations(limit, page, sort, null, ecCode, stationCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
@@ -715,7 +740,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperStations_ASC() {
         //given
-        WrapperStations stations = mock(WrapperStations.class);
+        WrapperStations stations = new WrapperStations();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        stations.setPageInfo(pageInfo);
+        stations.setStationsList(new ArrayList<>());
         String sorting = "ASC";
 
         //when
@@ -738,7 +770,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperStations_DESC() {
         //given
-        WrapperStations stations = mock(WrapperStations.class);
+        WrapperStations stations = new WrapperStations();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        stations.setPageInfo(pageInfo);
+        stations.setStationsList(new ArrayList<>());
         String sorting = "DESC";
 
         //when
@@ -761,7 +800,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperStations_nullSorting() {
         //given
-        WrapperStations stations = mock(WrapperStations.class);
+        WrapperStations stations = new WrapperStations();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        stations.setPageInfo(pageInfo);
+        stations.setStationsList(new ArrayList<>());
         String sorting = null;
 
         //when

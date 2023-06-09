@@ -195,7 +195,7 @@ class StationControllerTest {
 
         //then
         verify(wrapperServiceMock, times(1))
-                .updateWrapperStationDetailsByOpt(eq(stationDetails), eq(stationDetailsDto.getNote()), eq(stationDetailsDto.getStatus().name()));
+                .updateWrapperStationDetailsByOpt(eq(stationDetails), eq(stationDetailsDto.getNote()), eq(WrapperStatus.APPROVED.name()));
     }
 
     @Test
@@ -295,7 +295,7 @@ class StationControllerTest {
         wrapperEntities.getEntities().add(wrapperEntityDto);
         String status = stationDetailsDto.getStatus().name();
         String note = stationDetailsDto.getNote();
-        when(wrapperServiceMock.updateWrapperStationDetails(fromStationDetailsDto, note, status))
+        when(wrapperServiceMock.updateWrapperStationDetails(fromStationDetailsDto, note, status, null))
                 .thenReturn(wrapperEntities);
 
         //when
@@ -309,7 +309,7 @@ class StationControllerTest {
                 .andExpect(jsonPath("$.entities", notNullValue()));
         //then
         verify(wrapperServiceMock, times(1))
-                .updateWrapperStationDetails(any(), anyString(), anyString());
+                .updateWrapperStationDetails(any(), anyString(), anyString(), eq(null));
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
@@ -364,7 +364,7 @@ class StationControllerTest {
 
         when(apiConfigServiceMock.updateStation(anyString(), any(), anyString()))
                 .thenReturn(stationDetails);
-        when(wrapperServiceMock.updateWrapperStationDetails(any(), anyString(), anyString()))
+        when(wrapperServiceMock.updateWrapperStationDetails(any(), anyString(), anyString(), anyString()))
                 .thenReturn(wrapperEntities);
 
         //when
@@ -401,7 +401,7 @@ class StationControllerTest {
                 .updateStation(anyString(), any(), anyString());
 
         verify(wrapperServiceMock, times(1))
-                .updateWrapperStationDetails(any(), anyString(), anyString());
+                .updateWrapperStationDetails(any(), anyString(), anyString(), eq(null));
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
@@ -466,7 +466,7 @@ class StationControllerTest {
 
 
 
-        when(wrapperServiceMock.findByIdOrTypeOrBrokerCode(stationCode, wrapperType, brokerCode, page, size))
+        when(wrapperServiceMock.findByIdLikeOrTypeOrBrokerCode(stationCode, wrapperType, brokerCode, page, size))
                 .thenReturn(mongoList);
         when(apiConfigServiceMock.getStations(anyInt(), anyInt(), anyString(), anyString(), isNull(), anyString(), anyString()))
                 .thenReturn(stations);
@@ -488,7 +488,7 @@ class StationControllerTest {
 
         //then
         verify(wrapperServiceMock, times(1))
-                .findByIdOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt());
+                .findByIdLikeOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt());
         verify(apiConfigServiceMock, times(1))
                 .getStations(anyInt(), anyInt(), anyString(), anyString(), isNull(), anyString(), anyString());
         verify(apiConfigServiceMock, times(1))

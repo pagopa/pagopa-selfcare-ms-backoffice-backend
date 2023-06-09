@@ -8,6 +8,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationResource;
@@ -20,6 +21,8 @@ import java.util.List;
 public interface StationMapper {
 
     StationDetailResource toResource(StationDetails model);
+
+    StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy);
 
     StationsResource toResource(Stations model);
 

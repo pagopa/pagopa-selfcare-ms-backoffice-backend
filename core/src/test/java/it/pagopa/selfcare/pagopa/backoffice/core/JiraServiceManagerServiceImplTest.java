@@ -33,7 +33,9 @@ class JiraServiceManagerServiceImplTest {
         //given
         String summary = "institutionId";
         String description = "description";
-        String responseMock = "";
+        String responseMock = "ticket TEST-1";
+
+        when(jiraServiceManagerConnectorMock.createTicket(anyString(),anyString())).thenReturn(responseMock);
         //when
         String response = jiraServiceManagerService.createTicket(summary,description);
         //then
