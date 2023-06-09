@@ -128,6 +128,7 @@ public class WrapperConnectorImpl implements WrapperConnector {
         WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetails);
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
+        wrapperEntities.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.getEntities().add(wrapperEntity);
         if (createdBy != null)
             wrapperEntities.setCreatedBy(createdBy);
@@ -147,8 +148,9 @@ public class WrapperConnectorImpl implements WrapperConnector {
         Pageable paging = PageRequest.of(page, size, sort);
         Page<WrapperEntitiesOperations<?>> response = null;
 
+        int switchCase = (brokerCode != null ? 1 : 0) | (idLike != null ? 2 : 0);
         if (status != null) {
-            switch ((brokerCode != null ? 1 : 0) | (idLike != null ? 2 : 0)) {
+            switch (switchCase) {
                 case 0:
                     response = repository.findByStatusAndType(status, wrapperType, paging);
                     break;
@@ -166,7 +168,7 @@ public class WrapperConnectorImpl implements WrapperConnector {
                     break;
             }
         } else {
-            switch ((brokerCode != null ? 1 : 0) | (idLike != null ? 2 : 0)) {
+            switch (switchCase) {
                 case 0:
                     response = repository.findByType(wrapperType, paging);
                     break;
