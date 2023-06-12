@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
@@ -43,6 +44,8 @@ public interface ApiConfigService {
     ChannelPspList getChannelPaymentServiceProviders(Integer limit, Integer page, String channelCode, String xRequestId);
 
     BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails, String xRequestId);
+
+    BrokerDetails createBroker(BrokerDetails request, String xRequestId);
 
     PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails, String xRequestId);
 

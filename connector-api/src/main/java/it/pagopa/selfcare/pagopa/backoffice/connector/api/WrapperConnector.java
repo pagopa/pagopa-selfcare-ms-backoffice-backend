@@ -21,7 +21,7 @@ public interface WrapperConnector {
 
     WrapperEntitiesOperations<StationDetails> updateByOpt(StationDetails stationDetails, String note, String status);
 
-    WrapperEntitiesOperations<StationDetails> update(StationDetails channelDetails, String note, String status);
+    WrapperEntitiesOperations<StationDetails> update(StationDetails channelDetails, String note, String status, String createdBy);
 
     WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus status,WrapperType wrapperType,String brokerCode, String idLike, Integer page, Integer size, String sorting);
 
