@@ -3,7 +3,11 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
+<<<<<<< HEAD
+    "version" : "0.0.139"
+=======
     "version" : "0.0.139-1"
+>>>>>>> release-dev
   },
   "servers" : [ {
     "url" : "http://localhost:80",
