@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitution;
@@ -13,14 +14,12 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStati
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
-import org.mockito.internal.matchers.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -848,6 +847,24 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
+    void createBroker() {
+        //given
+        final String xRequestId = "xRequestId";
+        BrokerDetails brokerDetails = mock(BrokerDetails.class);
+        when(apiConfigConnectorMock.createBroker(any(), anyString()))
+                .thenReturn(brokerDetails);
+        //when
+        BrokerDetails brokerDetailsRes = apiConfigService.createBroker(brokerDetails, xRequestId);
+        //then
+        assertNotNull(brokerDetailsRes);
+        assertEquals(brokerDetailsRes, brokerDetails);
+        reflectionEqualsByName(brokerDetailsRes, brokerDetails);
+
+        verify(apiConfigConnectorMock, times(1))
+                .createBroker(brokerDetails, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
     void getCreditorInstitutionsByStation() {
         //given
         String stationCode = "stationCode";

@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.PermissionDeniedException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
@@ -19,6 +20,7 @@ import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.*;
@@ -284,6 +286,17 @@ public class StationController {
         log.debug("getWrapperEntities result = {}", result);
         log.trace("getWrapperEntities end");
         return result;
+    }
+
+    @PostMapping(value = "/create-broker")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.createBroker}")
+    public BrokerResource createBroker(@RequestBody BrokerDto brokerDto){
+        log.trace("createBroker start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("createBroker xRequestId = {}", xRequestId);
+        BrokerDetails broker = apiConfigService.createBroker(BrokerMapper.fromDto(brokerDto), xRequestId);
+        return BrokerMapper.toResource(broker);
     }
 
     @GetMapping(value = "/getAllStations", produces = {MediaType.APPLICATION_JSON_VALUE})

@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.api;
 
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
@@ -64,6 +65,8 @@ public interface ApiConfigConnector {
     CreditorInstitutionDetails updateCreditorInstitutionDetails(String creditorInstitutionCode,
                                                                 CreditorInstitutionDetails request,
                                                                 String xRequestId);
+    BrokerDetails createBroker(BrokerDetails request, String xRequestId);
+
     StationDetails updateStation(String stationCode, StationDetails stationDetails, String xRequestId);
 
     WfespPluginConfs getWfespPlugins(String xRequestId);
