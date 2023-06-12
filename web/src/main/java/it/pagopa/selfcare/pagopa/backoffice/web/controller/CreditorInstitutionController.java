@@ -3,12 +3,16 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionAndBrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.UpdateCreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerDto;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +53,24 @@ public class CreditorInstitutionController {
         return result;
     }
 
+    @PostMapping(value = "creditor-institution-and-broker", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.createCreditorInstitutionAndBroker}")
+    public CreditorInstitutionDetailsResource createCreditorInstitutionAndBroker(@RequestBody @NotNull CreditorInstitutionAndBrokerDto dto){
+        log.trace("createCreditorInstitutionAndBroker start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("createCreditorInstitutionAndBroker dto = {}, xRequestId = {}", dto, xRequestId);
+        CreditorInstitutionDto creditorInstitutionDto = dto.getCreditorInstitutionDto();
+        BrokerDto brokerDto = dto.getBrokerDto();
+        CreditorInstitutionDetails creditorInstitution = mapper.fromDto(creditorInstitutionDto);
+        CreditorInstitutionDetails created = apiConfigService.createCreditorInstitution(creditorInstitution, xRequestId);
+        apiConfigService.createBroker(BrokerMapper.fromDto(brokerDto), xRequestId);
+        CreditorInstitutionDetailsResource result = mapper.toResource(created);
+        log.debug("createCreditorInstitution result = {}", result);
+        log.trace("createCreditorInstitution end");
+        return result;
+    }
+
     @GetMapping(value = "/{ecCode}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.getCreditorInstitutionDetails}")
@@ -81,5 +103,7 @@ public class CreditorInstitutionController {
         log.trace("updateCreditorInstitutionDetails end");
         return result;
     }
+
+
 
 }
