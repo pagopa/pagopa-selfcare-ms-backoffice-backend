@@ -206,9 +206,13 @@ class StationControllerTest {
         //given
         String ecCode = "ecCode";
         String stationCode = "stationCode";
+        WrapperEntitiesList entitiesList = mockInstance(new WrapperEntitiesList());
+        entitiesList.setWrapperEntities(new ArrayList<>());
 
         when(apiConfigServiceMock.generateStationCode(anyString(), any()))
                 .thenReturn(stationCode);
+        when(wrapperServiceMock.findByStatusAndTypeAndBrokerCodeAndIdLike(any(), any(), any(), anyString(), anyInt(), anyInt(), anyString()))
+                .thenReturn(entitiesList);
 
         //when
         mvc.perform(get(BASE_URL + "/{ecCode}/generate", ecCode)
