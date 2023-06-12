@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
@@ -16,7 +17,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.connector.utils.StringUtils.generator;
@@ -316,6 +320,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         BrokerPspDetails response = apiConfigConnector.createBrokerPsp(brokerPspDetails, xRequestId);
         log.debug("createBrokerPsp result = {}", response);
         log.trace("createBrokerPsp end");
+        return response;
+    }
+
+    @Override
+    public BrokerDetails createBroker(BrokerDetails request, String xRequestId){
+        log.trace("createBroker start");
+        BrokerDetails response = apiConfigConnector.createBroker(request, xRequestId);
+        log.debug("createBroker result = {}", response);
+        log.trace("createBroker end");
         return response;
     }
 

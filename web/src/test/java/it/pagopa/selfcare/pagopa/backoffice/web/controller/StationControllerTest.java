@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFound
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
@@ -23,7 +24,9 @@ import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.WrapperStationDetailsDto;
 import org.junit.jupiter.api.Test;
@@ -673,6 +676,29 @@ class StationControllerTest {
         verify(apiConfigServiceMock, times(1))
                 .getStation(eq(stationId), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
+     }
+
+    @Test
+    void createBroker(@Value("classpath:stubs/brokerDto.json") Resource dto) throws Exception {
+        // Given
+        BrokerDto brokerDto = objectMapper.readValue(dto.getInputStream(), BrokerDto.class);
+        BrokerDetails broker = BrokerMapper.fromDto(brokerDto);
+        when(apiConfigServiceMock.createBroker(any(), anyString())).thenReturn(broker);
+
+        // When
+        mvc.perform(MockMvcRequestBuilders.post(BASE_URL + "/create-broker")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.broker_code", notNullValue()))
+                .andExpect(jsonPath("$.extended_fault_bean", notNullValue()))
+                .andExpect(jsonPath("$.description", notNullValue()))
+                .andExpect(jsonPath("$.enabled", notNullValue()));
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .createBroker(any(), anyString());
     }
 
     @Test
