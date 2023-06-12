@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.pagopa.selfcare.pagopa.backoffice.connector.exception.PermissionDeniedException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
@@ -162,6 +163,10 @@ public class StationController {
         log.trace("getStationCode start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getStationCode ecCode = {}, xRequestId = {}", ecCode, xRequestId);
+        WrapperEntitiesList entitiesList = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_CHECK, WrapperType.STATION, null, ecCode,  0, 1, "ASC");
+        WrapperEntitiesList entitiesList2 = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_FIX, WrapperType.STATION, null, ecCode,  0, 1, "ASC");
+        if (!entitiesList.getWrapperEntities().isEmpty() || !entitiesList2.getWrapperEntities().isEmpty())
+            throw new PermissionDeniedException("ERROR There is a Station not completed!");
         String result = apiConfigService.generateStationCode(ecCode, xRequestId);
         StationCodeResource stationCode = new StationCodeResource(result);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationCode result = {}", stationCode);
@@ -234,7 +239,7 @@ public class StationController {
 
     @GetMapping(value = "/getCreditorInstitutions/{stationcode}")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "", notes = "${swagger.api.stations.getWrapperEntities}")
+    @ApiOperation(value = "", notes = "${swagger.api.stations.getCreditorInstitutionsByStationCode}")
     public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(@ApiParam("${swagger.request.code}") @PathVariable("stationcode") String stationcode,
                                                            @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                            @RequestParam Integer page) {
