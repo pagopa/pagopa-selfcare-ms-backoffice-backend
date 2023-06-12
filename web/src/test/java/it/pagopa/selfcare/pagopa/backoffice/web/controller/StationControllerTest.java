@@ -484,7 +484,7 @@ class StationControllerTest {
         mvc.perform(get(BASE_URL + "/getAllStations")
 
                         .queryParam("limit", String.valueOf(size))
-                        .queryParam("stationcode", stationCode)
+                        .queryParam("stationcodefilter", stationCode)
                         .queryParam("page", String.valueOf(page))
                         .queryParam("sorting", sorting)
                         .queryParam("brokerCode", brokerCode)
