@@ -534,13 +534,14 @@ public class ChannelController {
     public WrapperChannelsResource getAllChannelsMerged(@ApiParam("${swagger.request.limit}")
                                                         @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                         @ApiParam("${swagger.model.channel.code}")
-                                                        @RequestParam(required = false, value = "channelcode") String channelcode,
+                                                        @RequestParam(required = false, value = "channelcodefilter") String channelcode,
                                                         @ApiParam("${swagger.request.page}")
                                                         @RequestParam Integer page,
                                                         @ApiParam("${swagger.request.sorting}")
                                                         @RequestParam(required = false, value = "sorting") String sorting) {
         log.trace("getAllChannelsMerged start");
         log.debug("getAllChannelsMerged page = {} limit = {}", page, limit);
+        //fixme
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels xRequestId = {}", xRequestId);
         Channels channels = apiConfigService.getChannels(limit, page, channelcode, sorting, xRequestId);
