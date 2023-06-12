@@ -315,6 +315,7 @@ class WrapperConnectorImplTest {
                 .save(any(WrapperEntities.class))).thenReturn(wrapperEntities);
         // when
         WrapperEntitiesOperations<StationDetails> saved = wrapperConnector.update(stationDetailsMockInsert, note, status, createdBy);
+
         // then
         assertEquals(wrapperEntities, saved);
         verify(repositoryMock, times(1))
