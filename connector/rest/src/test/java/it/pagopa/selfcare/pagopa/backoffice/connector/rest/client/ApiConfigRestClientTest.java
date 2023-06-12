@@ -15,6 +15,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInst
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.RestTestUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.config.ApiConfigRestClientConfigTest;
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
@@ -257,6 +258,7 @@ class ApiConfigRestClientTest {
                 .email("test@example.com")
                 .name("name")
                 .surname("surname")
+                .orgVat("code1")
                 .build();
         TestSecurityContextHolder.setAuthentication(new TestingAuthenticationToken(selfCareUser, null));
     }
@@ -642,7 +644,7 @@ class ApiConfigRestClientTest {
         StationDetails stationDetails = restClient.createStation(stationDetailsDto, xRequestId);
         //then
         assertNotNull(stationDetails);
-        checkNotNullFields(stationDetails, "brokerObjId","intermediarioPa");
+        checkNotNullFields(stationDetails, "brokerObjId","intermediarioPa", "wrapperStatus");
 
     }
 

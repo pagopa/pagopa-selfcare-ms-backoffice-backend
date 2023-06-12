@@ -20,6 +20,8 @@ public class WrapperStationDetailsDto {
     private String stationCode;
     @ApiModelProperty("${swagger.model.station.brokerCode}")
     private String brokerCode;
+    @JsonProperty("broker_description")
+    protected String brokerDescription="";
     @ApiModelProperty(value = "${swagger.model.station.redirectIp}", required = true)
     @JsonProperty(required = true)
     @NotBlank
@@ -40,26 +42,34 @@ public class WrapperStationDetailsDto {
     @JsonProperty(required = true)
     @NotNull
     private Protocol redirectProtocol;
-    @ApiModelProperty(value = "${swagger.model.station.targetHost}", required = true)
-    @JsonProperty(required = true)
-    @NotBlank
-    private String targetHost;
-    @ApiModelProperty(value = "${swagger.model.station.targetPort}", required = true)
-    @JsonProperty(required = true)
-    @NotNull
-    private Long targetPort;
-    @ApiModelProperty(value = "${swagger.model.station.targetPath}", required = true)
-    @JsonProperty(required = true)
-    @NotNull
-    private String targetPath;
     @Max(2)
     @Min(1)
     @ApiModelProperty(value = "${swagger.model.station.primitiveVersion}", required = true)
     @JsonProperty(required = true)
     @NotNull
     private Integer primitiveVersion;
+    @ApiModelProperty(value = "${swagger.model.station.enabled}")
+    private boolean enabled = true;
+    @ApiModelProperty(value = "${swagger.model.station.version}")
+    private Long version = 0L;
     @ApiModelProperty(value = "${swagger.model.station.note}")
     private String note = "";
     @ApiModelProperty(value = "${swagger.model.station.status}")
     private WrapperStatus status = WrapperStatus.TO_CHECK;
+    @ApiModelProperty("${swagger.model.station.service}")
+    private String service;
+    @ApiModelProperty("${swagger.model.station.pofService}")
+    private String pofService;
+    @ApiModelProperty(value = "${swagger.model.station.targetHost}")
+    private String targetHost;
+    @ApiModelProperty(value = "${swagger.model.station.targetPort}")
+    private Long targetPort;
+    @ApiModelProperty(value = "${swagger.model.station.targetPath}")
+    private String targetPath;
+    @ApiModelProperty(value = "${swagger.model.station.targetHostPof}")
+    private String targetHostPof;
+    @ApiModelProperty(value = "${swagger.model.station.targetPortPof}")
+    private Long targetPortPof;
+    @ApiModelProperty(value = "${swagger.model.station.targetPathPof}")
+    private String targetPathPof;
 }

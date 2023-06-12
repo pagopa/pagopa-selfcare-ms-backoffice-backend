@@ -90,10 +90,10 @@ public class WrapperServiceImpl implements WrapperService {
     }
 
     @Override
-    public WrapperEntitiesOperations<StationDetails> updateWrapperStationDetails(StationDetails stationDetails, String note, String status) {
+    public WrapperEntitiesOperations<StationDetails> updateWrapperStationDetails(StationDetails stationDetails, String note, String status, String createdBy) {
         log.trace("updateWrapperChannelDetails start");
         log.debug("updateWrapperChannelDetails stationDetails = {}, channelCode = {}", stationDetails, stationDetails.getStationCode());
-        WrapperEntitiesOperations<StationDetails> response = wrapperConnector.update(stationDetails, note, status);
+        WrapperEntitiesOperations<StationDetails> response = wrapperConnector.update(stationDetails, note, status, createdBy);
         log.debug("updateWrapperChannelDetails result = {}", response);
         log.trace("updateWrapperChannelDetails end");
         return response;
@@ -110,11 +110,11 @@ public class WrapperServiceImpl implements WrapperService {
         return response;
     }
 
-    public WrapperEntitiesList findByIdOrTypeOrBrokerCode(String id, WrapperType wrapperType,String brokerCode, Integer page, Integer size) {
+    public WrapperEntitiesList findByIdLikeOrTypeOrBrokerCode(String id, WrapperType wrapperType,String brokerCode, Integer page, Integer size) {
         log.trace("findAllStation start");
         log.debug("findAllStation ");
         WrapperEntitiesList response;
-        response = wrapperConnector.findByIdOrTypeOrBrokerCode(id, wrapperType,brokerCode, page, size);
+        response = wrapperConnector.findByIdLikeOrTypeOrBrokerCode(id, wrapperType,brokerCode, page, size);
         log.debug("findByStatusAndType result = {}", response);
         log.trace("findByStatusAndType end");
         return response;

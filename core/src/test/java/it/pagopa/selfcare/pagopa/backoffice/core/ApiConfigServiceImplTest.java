@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
@@ -350,6 +351,29 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
+    void getStations_Exception() {
+        //given
+        final Integer limit = 1;
+        final Integer page = 1;
+        final String ecCode = "ecCode";
+        final String stationCode = "stationCode";
+        final String sort = "sort";
+        final String xRequestId = "xRequestId";
+        Stations stationsMock = mockInstance(new Stations());
+
+        when(apiConfigConnectorMock.getStations(any(), any(), any(), any(), any(), any(), any()))
+                .thenThrow(new RuntimeException("[404 Not Found]"));
+        //when
+        Stations stations = apiConfigService.getStations(limit, page, sort,null,  ecCode, stationCode, xRequestId);
+
+        //then
+        assertNotNull(stations);
+        verify(apiConfigConnectorMock, times(1))
+                .getStations(limit, page, sort, null, ecCode, stationCode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
     void getStation() {
         //given
         final String stationCode = "stationCode";
@@ -522,24 +546,28 @@ class ApiConfigServiceImplTest {
     void generateStationCode() {
         //given
         final String xRequestId = "xRequestId";
-        final String ecCode = "ecCode";
+        final Integer limit = 100;
+        final Integer page = 0;
+        final String sort ="ASC";
+        final String brokerCode=null;
+        final String ecCode = null;
+        final String stationCode = "stationCode";
 
-        CreditorInstitutionStations creditorInstitutionStations = mockInstance(new CreditorInstitutionStations());
-        CreditorInstitutionStation creditorInstitutionStation = mockInstance(new CreditorInstitutionStation());
-        creditorInstitutionStation.setStationCode("TEST_01");
+        Stations s =  mockInstance(new Stations());
+        Station station=  mockInstance(new Station());
+        station.setStationCode(stationCode+"_01");
+        s.setStationsList(List.of(station));
 
-        creditorInstitutionStations.setStationsList(List.of(creditorInstitutionStation));
-
-        when(apiConfigConnectorMock.getEcStations(any(), anyString()))
-                .thenReturn(creditorInstitutionStations);
+        when(apiConfigConnectorMock.getStations(limit,page,sort,brokerCode,ecCode,stationCode,xRequestId))
+                .thenReturn(s);
 
         //when
-        String response = apiConfigService.generateStationCode(ecCode, xRequestId);
+        String response = apiConfigService.generateStationCode(stationCode, xRequestId);
         //then
         assertNotNull(response);
-        assertEquals("TEST_02", response);
+        assertEquals(stationCode+"_02", response);
         verify(apiConfigConnectorMock, times(1))
-                .getEcStations(ecCode, xRequestId);
+                .getStations(limit,page,sort,brokerCode,ecCode, stationCode,xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
@@ -577,24 +605,27 @@ class ApiConfigServiceImplTest {
     void generateStationCode_noRegexMatcher() {
         //given
         final String xRequestId = "xRequestId";
-        final String ecCode = "TEST";
+        final Integer limit = 100;
+        final Integer page = 0;
+        final String sort ="ASC";
+        final String brokerCode=null;
+        final String ecCode = null;
+        final String stationCode = "stationCode";
 
-        CreditorInstitutionStations creditorInstitutionStations = mockInstance(new CreditorInstitutionStations());
-        CreditorInstitutionStation creditorInstitutionStation = mockInstance(new CreditorInstitutionStation());
-        creditorInstitutionStation.setStationCode("TEST");
-        creditorInstitutionStations.setStationsList(List.of(creditorInstitutionStation));
+        Stations s =  mockInstance(new Stations());
+        s.setStationsList(new ArrayList<>());
 
-        when(apiConfigConnectorMock.getEcStations(any(), anyString()))
-                .thenReturn(creditorInstitutionStations);
+        when(apiConfigConnectorMock.getStations(limit,page,sort,brokerCode,ecCode,stationCode,xRequestId))
+                .thenReturn(s);
 
         //when
-        String response = apiConfigService.generateStationCode(ecCode, xRequestId);
+        String response = apiConfigService.generateStationCode(stationCode, xRequestId);
         //then
         assertNotNull(response);
         verify(apiConfigConnectorMock, times(1))
-                .getEcStations(ecCode, xRequestId);
+                .getStations(limit,page,sort,brokerCode,ecCode, stationCode,xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
-        assertEquals("TEST_01", response);
+        assertEquals("stationCode_01", response);
     }
 
     @Test
@@ -708,7 +739,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperStations_ASC() {
         //given
-        WrapperStations stations = mock(WrapperStations.class);
+        WrapperStations stations = new WrapperStations();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        stations.setPageInfo(pageInfo);
+        stations.setStationsList(new ArrayList<>());
         String sorting = "ASC";
 
         //when
@@ -731,7 +769,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperStations_DESC() {
         //given
-        WrapperStations stations = mock(WrapperStations.class);
+        WrapperStations stations = new WrapperStations();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        stations.setPageInfo(pageInfo);
+        stations.setStationsList(new ArrayList<>());
         String sorting = "DESC";
 
         //when
@@ -754,7 +799,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperStations_nullSorting() {
         //given
-        WrapperStations stations = mock(WrapperStations.class);
+        WrapperStations stations = new WrapperStations();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        stations.setPageInfo(pageInfo);
+        stations.setStationsList(new ArrayList<>());
         String sorting = null;
 
         //when

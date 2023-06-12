@@ -10,8 +10,10 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
+import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -68,6 +70,9 @@ class ChannelControllerTest {
 
     @MockBean
     private ApiConfigService apiConfigServiceMock;
+
+    @MockBean
+    private ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationServiceMock;
 
     @MockBean
     private ApiConfigConnector apiConfigConnectorMock;
@@ -1118,7 +1123,7 @@ class ChannelControllerTest {
 
 
 
-        when(wrapperServiceMock.findByIdOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt()))
+        when(wrapperServiceMock.findByIdLikeOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt()))
                 .thenReturn(mongoList);
         when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), any(), anyString(), anyString()))
                 .thenReturn(channels);
@@ -1139,12 +1144,41 @@ class ChannelControllerTest {
 
         //then
         verify(wrapperServiceMock, times(1))
-                .findByIdOrTypeOrBrokerCode(any(), any(), any(), anyInt(), anyInt());
+                .findByIdLikeOrTypeOrBrokerCode(any(), any(), any(), anyInt(), anyInt());
         verify(apiConfigServiceMock, times(1))
                 .getChannels(anyInt(), anyInt(), any(), anyString(), anyString());
         verify(apiConfigServiceMock, times(1))
                 .mergeAndSortWrapperChannels(any(), any(), anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getChannelDetailsListByBroker() throws Exception {
+        //given
+        String channelId = "code";
+        String brokerId = "channelCode";
+        Integer page = 0;
+        Integer limit = 50;
+        ChannelDetailsList channelDetailsList = mockInstance(new ChannelDetailsList());
+        ChannelDetails channelDetails = mockInstance(new ChannelDetails());
+        channelDetailsList.setChannelDetailsList(List.of(channelDetails));
+
+
+        when(apiConfigSelfcareIntegrationServiceMock.getChannelsDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt(), anyString()))
+                .thenReturn(channelDetailsList);
+        //when
+        mvc.perform(get(BASE_URL + "/{brokerId}/channels", brokerId)
+                        .queryParam("page", String.valueOf(page))
+                        .queryParam("limit", String.valueOf(limit))
+                        .queryParam("channelId", channelId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(apiConfigSelfcareIntegrationServiceMock, times(1))
+                .getChannelsDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt(), anyString());
+
+        verifyNoMoreInteractions(wrapperServiceMock);
+
     }
 }

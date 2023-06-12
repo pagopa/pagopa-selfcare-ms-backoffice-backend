@@ -1,5 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.stations;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Protocol;
@@ -20,7 +22,10 @@ public class StationDetailsDto {
     private String stationCode;
     @ApiModelProperty(value = "${swagger.model.station.enabled}")
     private Boolean enabled;
-
+    @ApiModelProperty("${swagger.model.station.version}")
+    @JsonProperty(required = true)
+    @NotNull
+    private Long version;
     @ApiModelProperty(value = "${swagger.model.station.brokerDescription}")
     private String brokerDescription;
     @ApiModelProperty(value = "${swagger.model.station.brokerCode}", required = true )
@@ -93,17 +98,11 @@ public class StationDetailsDto {
     private Long brokerObjId;
     @ApiModelProperty(value = "${swagger.model.station.rtInstantaneousDispatch}")
     private Boolean rtInstantaneousDispatch;
-    @ApiModelProperty(value = "${swagger.model.station.targetHost}", required = true)
-    @JsonProperty(required = true)
-    @NotBlank
+    @ApiModelProperty(value = "${swagger.model.station.targetHost}")
     private String targetHost;
-    @ApiModelProperty(value = "${swagger.model.station.targetPort}", required = true)
-    @JsonProperty(required = true)
-    @NotNull
+    @ApiModelProperty(value = "${swagger.model.station.targetPort}")
     private Long targetPort;
-    @ApiModelProperty(value = "${swagger.model.station.targetPath}", required = true)
-    @JsonProperty(required = true)
-    @NotNull
+    @ApiModelProperty(value = "${swagger.model.station.targetPath}")
     private String targetPath;
     @Max(2)
     @Min(1)
@@ -115,5 +114,11 @@ public class StationDetailsDto {
     private String note = "";
     @ApiModelProperty(value = "${swagger.model.station.status}")
     private WrapperStatus status = WrapperStatus.TO_CHECK;
+    @ApiModelProperty(value = "${swagger.model.station.targetHostPof}")
+    private String targetHostPof;
+    @ApiModelProperty(value = "${swagger.model.station.targetPortPof}")
+    private Long targetPortPof;
+    @ApiModelProperty(value = "${swagger.model.station.targetPathPof}")
+    private String targetPathPof;
 
 }

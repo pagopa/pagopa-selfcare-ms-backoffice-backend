@@ -10,6 +10,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChann
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
@@ -38,11 +39,14 @@ public class ChannelController {
 
     private final ApiConfigService apiConfigService;
 
+    private final ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService;
+
     private final WrapperService wrapperService;
 
     @Autowired
-    public ChannelController(ApiConfigService apiConfigService, WrapperService wrapperService) {
+    public ChannelController(ApiConfigService apiConfigService, ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService, WrapperService wrapperService) {
         this.apiConfigService = apiConfigService;
+        this.apiConfigSelfcareIntegrationService = apiConfigSelfcareIntegrationService;
         this.wrapperService = wrapperService;
     }
 
@@ -541,7 +545,7 @@ public class ChannelController {
         log.debug("getchannels xRequestId = {}", xRequestId);
         Channels channels = apiConfigService.getChannels(limit, page, channelcode, sorting, xRequestId);
         WrapperChannels  responseApiConfig = ChannelMapper.toWrapperChannels(channels);
-        WrapperEntitiesList mongoList = wrapperService.findByIdOrTypeOrBrokerCode(channelcode, WrapperType.CHANNEL,null, page, limit);
+        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(channelcode, WrapperType.CHANNEL,null, page, limit);
         WrapperChannels responseMongo = ChannelMapper.toWrapperChannels(mongoList);
         WrapperChannels channelsMergedAndSorted = apiConfigService.mergeAndSortWrapperChannels(responseApiConfig, responseMongo, sorting);
         WrapperChannelsResource response = ChannelMapper.toWrapperChannelsResource(channelsMergedAndSorted);
@@ -549,6 +553,25 @@ public class ChannelController {
         log.trace("getAllChannelsMerged end");
 
         return response;
+    }
+
+    @GetMapping(value = "{brokerId}/channels", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.getChannelDetailsListByBroker}")
+    public ChannelDetailsResourceList getChannelDetailsListByBroker(@PathVariable("brokerId") String brokerId,
+                                                                     @RequestParam(required = false) String channelId,
+                                                                     @RequestParam(required = false, defaultValue = "10") Integer limit,
+                                                                     @RequestParam(required = false, defaultValue = "0") Integer page) {
+        log.trace("getChannelDetailsListByBroker start");
+        log.debug("getChannelDetailsListByBroker page = {} limit = {}", page, limit);
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getChannelDetailsListByBroker xRequestId = {}", xRequestId);
+        ChannelDetailsList response = apiConfigSelfcareIntegrationService.getChannelsDetailsListByBroker(brokerId, channelId, limit, page, xRequestId);
+        ChannelDetailsResourceList resource = ChannelMapper.fromChannelDetailsList(response);
+
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationsDetailsListByBroker result = {}", resource);
+        log.trace("getStationsDetailsListByBroker end");
+        return resource;
     }
 }
 

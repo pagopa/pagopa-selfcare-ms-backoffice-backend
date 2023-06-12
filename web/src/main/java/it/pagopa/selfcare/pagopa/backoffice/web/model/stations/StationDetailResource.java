@@ -2,14 +2,9 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.stations;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Protocol;
 import lombok.Data;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Data
 public class StationDetailResource extends StationResource {
@@ -87,10 +82,12 @@ public class StationDetailResource extends StationResource {
     private Long targetPortPof;
     @ApiModelProperty(value = "${swagger.model.station.targetPathPof}")
     private String targetPathPof;
-    @Max(2)
-    @Min(1)
     @ApiModelProperty("${swagger.model.station.primitiveVersion}")
     @JsonProperty(required = true)
     private Integer primitiveVersion;
+    @ApiModelProperty("${swagger.model.station.createdBy}")
+    private String createdBy;
+    @ApiModelProperty("${swagger.model.station.modifiedBy}")
+    private String modifiedBy;
 
 }

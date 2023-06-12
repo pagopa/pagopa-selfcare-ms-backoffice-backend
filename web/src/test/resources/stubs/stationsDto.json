@@ -35,6 +35,7 @@
   "targetPort": 0,
   "targetPath": "string",
   "primitiveVersion": 1,
-  "status": "TO_CHECK",
-  "note": "note"
+  "wrapperStatus": "TO_CHECK",
+  "note": "note",
+  "version": 1
 }

@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
@@ -151,7 +152,24 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     public Stations getStations(Integer limit, Integer page, String sort, String brokerCode, String ecCode, String stationCode, String xRequestId) {
         log.trace("getStations start");
         log.debug("getStations ecCode = {}, stationCode = {}, xRequestId = {}", ecCode, stationCode, xRequestId);
-        Stations response = apiConfigConnector.getStations(limit, page, sort, brokerCode, ecCode, stationCode, xRequestId);
+        Stations response = null;
+        try {
+            response = apiConfigConnector.getStations(limit, page, sort, brokerCode, ecCode, stationCode, xRequestId);
+        } catch (Exception e) {
+            if (e.getMessage().contains("[404 Not Found]")) {
+                response = new Stations();
+                response.setStationsList(new ArrayList<>());
+                PageInfo pageInfo = new PageInfo();
+                pageInfo.setPage(0);
+                pageInfo.setTotalPages(0);
+                pageInfo.setLimit(50);
+                pageInfo.setItemsFound(0);
+                response.setPageInfo(pageInfo);
+            } else {
+                log.error("getStations error message = {}", e.getMessage());
+                throw e;
+            }
+        }
         log.debug("getStations result = {}", response);
         log.trace("getStations end");
         return response;
@@ -196,7 +214,8 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     public String generateStationCode(String ecCode, String xRequestId) {
         log.trace("generateStationCode start");
         log.debug("generateStation ecCode = {}, xRequestId = {}", ecCode, xRequestId);
-        List<CreditorInstitutionStation> stationsList = apiConfigConnector.getEcStations(ecCode, xRequestId).getStationsList();
+        Stations stations = apiConfigConnector.getStations(100,0,"ASC",null,null,ecCode,xRequestId);
+        List<Station> stationsList = stations.getStationsList();
         List<String> codes = stationsList.stream().map(Station::getStationCode)
                 .filter(s -> s.matches("^\\w+_\\d+$"))
                 .collect(Collectors.toList());
@@ -340,7 +359,12 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         }
         WrapperStations result = new WrapperStations();
         result.setStationsList(mergedList);
-        result.setPageInfo(wrapperStationsApiConfig.getPageInfo());
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(wrapperStationsApiConfig.getPageInfo().getLimit());
+        pageInfo.setTotalPages(wrapperStationsApiConfig.getPageInfo().getTotalPages());
+        pageInfo.setPage(wrapperStationsApiConfig.getPageInfo().getPage());
+        pageInfo.setItemsFound(mergedList.size());
+        result.setPageInfo(pageInfo);
         log.trace("mergeAndSortWrapperStations end");
         return result;
     }

@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.model.station;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -17,7 +18,7 @@ public class Station {
 
     @JsonProperty("enabled")
     @NotNull
-    protected Boolean enabled;
+    protected Boolean enabled=true;
 
     @JsonProperty("broker_description")
     protected String brokerDescription;
@@ -26,8 +27,6 @@ public class Station {
     @NotNull
     protected Long version;
 
-    @JsonIgnore
-    private StationStatus stationStatus = StationStatus.ACTIVE;
     @JsonIgnore
     private Integer associatedCreditorInstitutions = 0;
     @JsonIgnore

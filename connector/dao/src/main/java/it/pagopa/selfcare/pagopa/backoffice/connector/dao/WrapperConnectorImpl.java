@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.*;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,46 +27,46 @@ import java.util.function.Function;
 public class WrapperConnectorImpl implements WrapperConnector {
 
     private final WrapperRepository repository;
-    private final MongoTemplate mongoTemplate;
     private final AuditorAware<String> auditorAware;
 
 
     @Autowired
-    public WrapperConnectorImpl(WrapperRepository repository, MongoTemplate mongoTemplate, AuditorAware<String> auditorAware) {
+    public WrapperConnectorImpl(WrapperRepository repository, AuditorAware<String> auditorAware) {
         this.repository = repository;
-        this.mongoTemplate = mongoTemplate;
         this.auditorAware = auditorAware;
     }
 
 
     @Override
-    public WrapperEntities insert(ChannelDetails channelDetails, String note, String status) {
-        WrapperEntity<Object> wrapperEntity = new WrapperEntity<>(channelDetails);
+    public WrapperEntities<ChannelDetails> insert(ChannelDetails channelDetails, String note, String status) {
+        WrapperEntity<ChannelDetails> wrapperEntity = new WrapperEntity<>(channelDetails);
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
-        WrapperEntities wrapperEntities = new WrapperEntities(wrapperEntity);
+        WrapperEntities<ChannelDetails> wrapperEntities = new WrapperEntities<>(wrapperEntity);
         wrapperEntities.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
-        WrapperEntities response = null;
+        WrapperEntities<ChannelDetails> response = null;
         try {
             response = repository.insert(wrapperEntities);
         } catch (DuplicateKeyException e) {
-            response = (WrapperEntities) update(channelDetails, note, status);
+            response = (WrapperEntities<ChannelDetails>) update(channelDetails, note, status);
         }
         return response;
     }
 
     @Override
-    public WrapperEntities insert(StationDetails stationDetails, String note, String status) {
-        WrapperEntity<Object> wrapperEntity = new WrapperEntity<>(stationDetails);
+    public WrapperEntities<StationDetails> insert(StationDetails stationDetails, String note, String status) {
+        WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetails);
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
-        WrapperEntities<Object> wrapperEntities = new WrapperEntities(wrapperEntity);
+        WrapperEntities<StationDetails> wrapperEntities = new WrapperEntities<>(wrapperEntity);
         wrapperEntities.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
-        WrapperEntities<Object> response = null;
+        String createdBy = wrapperEntities.getCreatedBy();
+        WrapperEntities<StationDetails> response = null;
         try {
+            wrapperEntities.setCreatedBy(auditorAware.getCurrentAuditor().orElse(null));
             response = repository.insert(wrapperEntities);
         } catch (DuplicateKeyException e) {
-            response = (WrapperEntities) update(stationDetails, note, status);
+            response = (WrapperEntities<StationDetails>) update(stationDetails, note, status, createdBy);
         }
         return response;
     }
@@ -112,14 +111,14 @@ public class WrapperConnectorImpl implements WrapperConnector {
         }
         WrapperEntities<StationDetails> wrapperEntities = (WrapperEntities) opt.get();
         String modifiedByOpt = auditorAware.getCurrentAuditor().orElse(null);
-        WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity(stationDetails);
+        WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetails);
         wrapperEntity.setModifiedByOpt(modifiedByOpt);
         wrapperEntities.updateCurrentWrapperEntity(wrapperEntity, status, note, modifiedByOpt);
         return repository.save(wrapperEntities);
     }
 
     @Override
-    public WrapperEntitiesOperations<StationDetails> update(StationDetails stationDetails, String note, String status) {
+    public WrapperEntitiesOperations<StationDetails> update(StationDetails stationDetails, String note, String status, String createdBy) {
         String stationCode = stationDetails.getStationCode();
         Optional<WrapperEntitiesOperations> opt = findById(stationCode);
         if (opt.isEmpty()) {
@@ -130,24 +129,10 @@ public class WrapperConnectorImpl implements WrapperConnector {
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.getEntities().add(wrapperEntity);
+        if (createdBy != null)
+            wrapperEntities.setCreatedBy(createdBy);
         return repository.save(wrapperEntities);
     }
-
-//    @Override
-//    public WrapperEntitiesList findByStatusAndTypeAndBrokerCode( WrapperStatus status ,WrapperType wrapperType,String brokerCode, Integer page, Integer size) {
-//        Pageable paging = PageRequest.of(page, size);
-//        Page<WrapperEntitiesOperations> response = repository.findByStatusAndTypeAndBrokerCode(status, wrapperType, brokerCode,paging);
-//        response.getTotalPages();
-//        PageInfo pi = new PageInfo();
-//        pi.setPage(page);
-//        pi.setLimit(size);
-//        pi.setItemsFound(response.getTotalPages());
-//        WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
-//        response.getContent().forEach(WrapperEntitiesOperations::sortEntitesByCreatedAt);
-//        wrapperEntitiesList.setWrapperEntities(response.getContent());
-//        wrapperEntitiesList.setPageInfo(pi);
-//        return wrapperEntitiesList;
-//    }
 
     @Override
     public WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus status, WrapperType wrapperType, String brokerCode, String idLike, Integer page, Integer size, String sorting) {
@@ -163,24 +148,40 @@ public class WrapperConnectorImpl implements WrapperConnector {
         Page<WrapperEntitiesOperations<?>> response = null;
 
         if (status != null) {
-            if (brokerCode != null && idLike != null) {
-                response = repository.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, paging);
-            } else if (brokerCode != null) {
-                response = repository.findByStatusAndTypeAndBrokerCode(status, wrapperType, brokerCode, paging);
-            } else if (idLike != null) {
-                response = repository.findByStatusAndTypeAndIdLike(status, wrapperType, idLike, paging);
-            } else {
-                response = repository.findByStatusAndType(status, wrapperType, paging);
+            switch ((brokerCode != null ? 1 : 0) | (idLike != null ? 2 : 0)) {
+                case 0:
+                    response = repository.findByStatusAndType(status, wrapperType, paging);
+                    break;
+                case 1:
+                    response = repository.findByStatusAndTypeAndBrokerCode(status, wrapperType, brokerCode, paging);
+                    break;
+                case 2:
+                    response = repository.findByStatusAndTypeAndIdLike(status, wrapperType, idLike, paging);
+                    break;
+                case 3:
+                    response = repository.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, paging);
+                    break;
+                default:
+                    // Gestisci caso non previsto
+                    break;
             }
         } else {
-            if (brokerCode != null && idLike != null) {
-                response = repository.findByTypeAndBrokerCodeAndIdLike(wrapperType, brokerCode, idLike, paging);
-            } else if (brokerCode != null) {
-                response = repository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
-            } else if (idLike != null) {
-                response = repository.findByTypeAndIdLike(wrapperType, idLike, paging);
-            } else {
-                response = repository.findByType(wrapperType, paging);
+            switch ((brokerCode != null ? 1 : 0) | (idLike != null ? 2 : 0)) {
+                case 0:
+                    response = repository.findByType(wrapperType, paging);
+                    break;
+                case 1:
+                    response = repository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
+                    break;
+                case 2:
+                    response = repository.findByTypeAndIdLike(wrapperType, idLike, paging);
+                    break;
+                case 3:
+                    response = repository.findByTypeAndBrokerCodeAndIdLike(wrapperType, brokerCode, idLike, paging);
+                    break;
+                default:
+                    // Gestisci caso non previsto
+                    break;
             }
         }
        
@@ -200,19 +201,19 @@ public class WrapperConnectorImpl implements WrapperConnector {
     }
 
     @Override
-    public WrapperEntitiesList findByIdOrTypeOrBrokerCode(String id, WrapperType wrapperType,String brokerCode, Integer page, Integer size) {
+    public WrapperEntitiesList findByIdLikeOrTypeOrBrokerCode(String idLike, WrapperType wrapperType,String brokerCode, Integer page, Integer size) {
 
         Pageable paging = PageRequest.of(page, size);
         Page<WrapperEntitiesOperations<?>> response;
 
-        if (brokerCode == null && id == null) {
+        if (brokerCode == null && idLike == null) {
             response = repository.findByType(wrapperType, paging);
         } else if (brokerCode == null) {
-            response = repository.findByIdAndType(id, wrapperType, paging);
-        } else if (id == null) {
+            response = repository.findByIdLikeAndType(idLike, wrapperType, paging);
+        } else if (idLike == null) {
             response = repository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
         } else {
-            response = repository.findByIdAndTypeAndBrokerCode(id, wrapperType, brokerCode, paging);
+            response = repository.findByIdLikeAndTypeAndBrokerCode(idLike, wrapperType, brokerCode, paging);
         }
 
         PageInfo pi = new PageInfo();
@@ -225,38 +226,4 @@ public class WrapperConnectorImpl implements WrapperConnector {
 
         return wrapperEntitiesList;
     }
-
-//    @Override
-//    public List<WrapperEntitiesOperations> findAll() {
-//        return new ArrayList<>(repository.findAll());
-//    }
-//
-//
-//    @Override
-//        public Page<WrapperEntitiesOperations> findByStatusAndType(WrapperStatus status, WrapperType wrapperType) {
-//            return repository.findByStatusAndType(status);
-//        }
-//
-//    @Override
-//    public List<WrapperEntitiesOperations> findByStatusNot(WrapperStatus status) {
-//        return new ArrayList<WrapperEntitiesOperations>(repository.findByStatusNot(status));
-//    }
-//
-//
-//    @Override
-//    public void updateWrapperEntitiesStatus(String id, WrapperStatus status) {
-//        log.trace("updateWrapperEntitiesStatus start");
-//        log.debug("updateWrapperEntitiesStatus id = {}, status = {}", id, status);
-//        UpdateResult updateResult = mongoTemplate.updateFirst(
-//                Query.query(Criteria.where(WrapperEntities.Fields.id).is(id)),
-//                Update.update(WrapperEntities.Fields.status, status)
-//                        .set(WrapperEntities.Fields.modifiedBy, auditorAware.getCurrentAuditor().orElse(null))
-//                        .currentDate(WrapperEntities.Fields.modifiedAt),
-//                WrapperEntities.class);
-//        if (updateResult.getMatchedCount() == 0) {
-//            throw new ResourceNotFoundException();
-//        }
-//        log.trace("updateWrapperEntitiesStatus end");
-//    }
-
 }
