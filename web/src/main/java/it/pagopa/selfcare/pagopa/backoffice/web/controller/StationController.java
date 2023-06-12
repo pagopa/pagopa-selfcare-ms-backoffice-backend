@@ -239,7 +239,7 @@ public class StationController {
 
     @GetMapping(value = "/getCreditorInstitutions/{stationcode}")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "", notes = "${swagger.api.stations.getWrapperEntities}")
+    @ApiOperation(value = "", notes = "${swagger.api.stations.getCreditorInstitutionsByStationCode}")
     public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(@ApiParam("${swagger.request.code}") @PathVariable("stationcode") String stationcode,
                                                            @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                            @RequestParam Integer page) {
