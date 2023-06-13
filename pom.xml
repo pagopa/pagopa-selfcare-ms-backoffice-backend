@@ -52,7 +52,7 @@
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-connector-jira-servicemanager</artifactId>
-                <version>0.0.145</version>
+                <version>0.0.146</version>
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
