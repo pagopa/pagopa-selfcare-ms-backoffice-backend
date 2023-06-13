@@ -48,8 +48,10 @@ public class StationController {
 
     private final ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService;
 
-
     private final JiraServiceManagerService jiraServiceManagerService;
+
+    private static final String CREATE_STATION_SUMMARY = "Station creation validation: %s";
+    private static final String CREATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validate";
 
     @Autowired
     public StationController(ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService, ApiConfigService apiConfigService, WrapperService wrapperService, JiraServiceManagerService jiraServiceManagerService) {
@@ -88,6 +90,9 @@ public class StationController {
                 createWrapperStationDetails(stationMapper.
                         fromWrapperStationDetailsDto(wrapperStationDetailsDto), wrapperStationDetailsDto.getNote(), wrapperStationDetailsDto.getStatus().name());
         log.debug("createWrapperStationDetails result = {}", createdWrapperEntities);
+        log.debug("createWrapperStationDetails result = {}", createdWrapperEntities);
+        jiraServiceManagerService.createTicket(String.format(CREATE_STATION_SUMMARY, wrapperStationDetailsDto.getStationCode()),
+                String.format(CREATE_STATION_DESCRIPTION, wrapperStationDetailsDto.getStationCode(), wrapperStationDetailsDto.getBrokerCode()));
         log.trace("createWrapperStationDetails end");
         return createdWrapperEntities;
     }
@@ -147,8 +152,8 @@ public class StationController {
             modifiedBy = result.getModifiedBy();
             stationDetails = result.getWrapperEntityOperationsSortedList().get(0).getEntity();
             status = result.getStatus();
-        }catch (ResourceNotFoundException e){
-             String uuid = UUID.randomUUID().toString();
+        } catch (ResourceNotFoundException e) {
+            String uuid = UUID.randomUUID().toString();
             log.debug("getStationDetail stationCode = {}, X-Request-Id = {}", stationCode, uuid);
             stationDetails = apiConfigService.getStation(stationCode, uuid);
             status = WrapperStatus.APPROVED;
@@ -305,8 +310,8 @@ public class StationController {
         log.debug("getchannels xRequestId = {}", xRequestId);
 
 
-        Stations stations = apiConfigService.getStations(limit, page, sorting, brokerCode,null, stationCode, xRequestId);
-         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
+        Stations stations = apiConfigService.getStations(limit, page, sorting, brokerCode, null, stationCode, xRequestId);
+        WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
         WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, brokerCode, page, limit);
         WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
         WrapperStations stationsMergedAndSorted = apiConfigService.mergeAndSortWrapperStations(responseApiConfig, responseMongo, sorting);
@@ -317,7 +322,7 @@ public class StationController {
         return response;
     }
 
-    @GetMapping(value = "{brokerId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "{brokerId}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getStationsDetailsListByBroker}")
     public StationDetailsResourceList getStationsDetailsListByBroker(@PathVariable("brokerId") String brokerId,
@@ -337,10 +342,10 @@ public class StationController {
     }
 
 
-    @PostMapping( value = "{ticket}" )
-    @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "", notes = "${swagger.api.stations.createIssueJira}")
-    public String createIssueJira(String summary,String description){
-       return jiraServiceManagerService.createTicket(summary,description);
-    }
+//    @PostMapping(value = "{ticket}", produces = MediaType.APPLICATION_JSON_VALUE)
+//    @ResponseStatus(HttpStatus.CREATED)
+//    @ApiOperation(value = "", notes = "${swagger.api.stations.createIssueJira}")
+//    public String createIssueJira(String summary, String description) {
+//        return jiraServiceManagerService.createTicket(summary, description);
+//    }
 }
