@@ -23,6 +23,7 @@ public class JiraServiceManagerConfig {
     @Value("${jira.password}")
     private String password;
 
+
     @Bean
     public JiraRestClient jiraRestClient() throws URISyntaxException {
         return new AsynchronousJiraRestClientFactory().createWithBasicHttpAuthentication( URI.create(jiraUrl), username, password);

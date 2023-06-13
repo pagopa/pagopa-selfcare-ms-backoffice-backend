@@ -21,6 +21,10 @@ public class JiraServiceManagerClient implements JiraServiceManagerConnector {
     @Value("${jira.reqTypeTaskId}")
     private String reqTypeTaskId;
 
+    public void setReqTypeTaskId(String reqTypeTaskId) {
+        this.reqTypeTaskId = reqTypeTaskId;
+    }
+
     public String createTicket(String summary, String description) {
         try {
             log.trace("createTicket start");
