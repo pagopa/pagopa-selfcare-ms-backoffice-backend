@@ -23,7 +23,7 @@
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-connector-jira-servicemanager</artifactId>
-            <version>0.0.141</version>
+            <version>0.0.145</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
