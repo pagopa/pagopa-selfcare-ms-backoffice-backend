@@ -3,8 +3,10 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.pagopa.selfcare.pagopa.backoffice.connector.exception.PermissionDeniedException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
@@ -19,6 +21,7 @@ import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.*;
@@ -172,6 +175,10 @@ public class StationController {
         log.trace("getStationCode start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getStationCode ecCode = {}, xRequestId = {}", ecCode, xRequestId);
+        WrapperEntitiesList entitiesList = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_CHECK, WrapperType.STATION, null, ecCode,  0, 1, "ASC");
+        WrapperEntitiesList entitiesList2 = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_FIX, WrapperType.STATION, null, ecCode,  0, 1, "ASC");
+        if (!entitiesList.getWrapperEntities().isEmpty() || !entitiesList2.getWrapperEntities().isEmpty())
+            throw new PermissionDeniedException("ERROR There is a Station not completed!");
         String result = apiConfigService.generateStationCode(ecCode, xRequestId);
         StationCodeResource stationCode = new StationCodeResource(result);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationCode result = {}", stationCode);
@@ -244,7 +251,7 @@ public class StationController {
 
     @GetMapping(value = "/getCreditorInstitutions/{stationcode}")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "", notes = "${swagger.api.stations.getWrapperEntities}")
+    @ApiOperation(value = "", notes = "${swagger.api.stations.getCreditorInstitutionsByStationCode}")
     public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(@ApiParam("${swagger.request.code}") @PathVariable("stationcode") String stationcode,
                                                                              @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                                              @RequestParam Integer page) {
@@ -291,25 +298,35 @@ public class StationController {
         return result;
     }
 
+    @PostMapping(value = "/create-broker")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.createBroker}")
+    public BrokerResource createBroker(@RequestBody BrokerDto brokerDto){
+        log.trace("createBroker start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("createBroker xRequestId = {}", xRequestId);
+        BrokerDetails broker = apiConfigService.createBroker(BrokerMapper.fromDto(brokerDto), xRequestId);
+        return BrokerMapper.toResource(broker);
+    }
+
     @GetMapping(value = "/getAllStations", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getAllStationsMerged}")
     public WrapperStationsResource getAllStationsMerged(@ApiParam("${swagger.request.limit}")
-                                                        @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                                        @ApiParam("${swagger.model.station.code}")
-                                                        @RequestParam(required = false, value = "stationcode") String stationCode,
-                                                        @ApiParam("${swagger.request.brokerCode}")
-                                                        @RequestParam("brokerCode") String brokerCode,
-                                                        @ApiParam("${swagger.request.page}")
-                                                        @RequestParam Integer page,
-                                                        @ApiParam("${swagger.request.sorting}")
-                                                        @RequestParam(required = false, value = "sorting") String sorting) {
+                                                     @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                     @ApiParam("${swagger.model.station.code}")
+                                                     @RequestParam(required = false, value = "stationcodefilter") String stationCode,
+                                                     @ApiParam("${swagger.request.brokerCode}")
+                                                     @RequestParam("brokerCode") String brokerCode,
+                                                     @ApiParam("${swagger.request.page}")
+                                                     @RequestParam Integer page,
+                                                     @ApiParam("${swagger.request.sorting}")
+                                                     @RequestParam(required = false, value = "sorting") String sorting) {
         log.trace("getAllStationsMerged start");
         log.debug("getAllStationsMerged page = {} limit = {}", page, limit);
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels xRequestId = {}", xRequestId);
-
-
+        
         Stations stations = apiConfigService.getStations(limit, page, sorting, brokerCode, null, stationCode, xRequestId);
         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
         WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, brokerCode, page, limit);

@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.139-1"
+    "version" : "0.0.144"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -628,7 +628,7 @@
           "style" : "simple",
           "schema" : {
             "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX", "TO_FIX_UPDATE" ]
           }
         }, {
           "name" : "brokerCode",
@@ -805,7 +805,7 @@
             "format" : "int32"
           }
         }, {
-          "name" : "channelcode",
+          "name" : "channelcodefilter",
           "in" : "query",
           "description" : "Channel code",
           "required" : false,
@@ -3089,6 +3089,68 @@
         } ]
       }
     },
+    "/stations/create-broker" : {
+      "post" : {
+        "tags" : [ "stations" ],
+        "summary" : "createBroker",
+        "description" : "Create a Broker",
+        "operationId" : "createBrokerUsingPOST",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BrokerDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BrokerResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/stations/create-wrapperStation" : {
       "post" : {
         "tags" : [ "stations" ],
@@ -3387,7 +3449,7 @@
             "format" : "int32"
           }
         }, {
-          "name" : "stationcode",
+          "name" : "stationcodefilter",
           "in" : "query",
           "description" : "Station's unique identifier",
           "required" : false,
@@ -3485,7 +3547,7 @@
       "get" : {
         "tags" : [ "stations" ],
         "summary" : "getCreditorInstitutionsByStationCode",
-        "description" : "Get wrapper station from mongo DB",
+        "description" : "Get Creditor Institutions By Station Code",
         "operationId" : "getCreditorInstitutionsByStationCodeUsingGET",
         "parameters" : [ {
           "name" : "stationcode",
@@ -4210,6 +4272,18 @@
           }
         }
       },
+      "BrokerDto" : {
+        "title" : "BrokerDto",
+        "type" : "object",
+        "properties" : {
+          "broker_code" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          }
+        }
+      },
       "BrokerPspDetailsDto" : {
         "title" : "BrokerPspDetailsDto",
         "type" : "object",
@@ -4233,6 +4307,24 @@
         "type" : "object",
         "properties" : {
           "broker_psp_code" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "extended_fault_bean" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "BrokerResource" : {
+        "title" : "BrokerResource",
+        "type" : "object",
+        "properties" : {
+          "broker_code" : {
             "type" : "string"
           },
           "description" : {
@@ -4416,7 +4508,7 @@
           "status" : {
             "type" : "string",
             "description" : "channel's validation status",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX", "TO_FIX_UPDATE" ]
           },
           "target_host" : {
             "type" : "string",
@@ -5751,7 +5843,7 @@
           "wrapperStatus" : {
             "type" : "string",
             "description" : "Station's status",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX", "TO_FIX_UPDATE" ]
           }
         }
       },
@@ -6037,7 +6129,7 @@
           "status" : {
             "type" : "string",
             "description" : "Station's status",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX", "TO_FIX_UPDATE" ]
           },
           "targetHost" : {
             "type" : "string",
@@ -6155,7 +6247,7 @@
           "wrapperStatus" : {
             "type" : "string",
             "description" : "Station's status",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX", "TO_FIX_UPDATE" ]
           }
         }
       },
@@ -6301,7 +6393,7 @@
           "status" : {
             "type" : "string",
             "description" : "channel's validation status",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX", "TO_FIX_UPDATE" ]
           },
           "target_host" : {
             "type" : "string",
@@ -6578,7 +6670,7 @@
           "wrapperStatus" : {
             "type" : "string",
             "description" : "channel's validation status",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX", "TO_FIX_UPDATE" ]
           }
         }
       },
@@ -6647,7 +6739,7 @@
           },
           "status" : {
             "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX", "TO_FIX_UPDATE" ]
           },
           "type" : {
             "type" : "string",
@@ -6693,7 +6785,7 @@
           },
           "status" : {
             "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX", "TO_FIX_UPDATE" ]
           },
           "type" : {
             "type" : "string",
@@ -6739,7 +6831,7 @@
           },
           "status" : {
             "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX", "TO_FIX_UPDATE" ]
           },
           "type" : {
             "type" : "string",
@@ -6782,7 +6874,7 @@
           },
           "status" : {
             "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX", "TO_FIX_UPDATE" ]
           },
           "type" : {
             "type" : "string",
@@ -6819,7 +6911,7 @@
           },
           "status" : {
             "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX", "TO_FIX_UPDATE" ]
           },
           "type" : {
             "type" : "string",
@@ -6890,7 +6982,7 @@
           "status" : {
             "type" : "string",
             "description" : "Station's status",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX", "TO_FIX_UPDATE" ]
           },
           "targetHost" : {
             "type" : "string",
@@ -7005,7 +7097,7 @@
           "wrapperStatus" : {
             "type" : "string",
             "description" : "Station's status",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX" ]
+            "enum" : [ "APPROVED", "TO_CHECK", "TO_CHECK_UPDATE", "TO_FIX", "TO_FIX_UPDATE" ]
           }
         }
       },

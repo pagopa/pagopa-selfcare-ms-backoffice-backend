@@ -5,8 +5,10 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionAndBrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.UpdateCreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -81,6 +83,44 @@ class CreditorInstitutionControllerTest {
         //then
         verify(apiConfigServiceMock, times(1))
                 .createCreditorInstitution(eq(response), any());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void createCreditorInstitutionAndBroker(@Value("classpath:stubs/creditorInstitutionAndBrokerDto.json") Resource dto) throws Exception {
+        //given
+        InputStream resource = dto.getInputStream();
+
+        CreditorInstitutionAndBrokerDto creditorInstitutionAndBrokerDto = objectMapper.readValue(resource, CreditorInstitutionAndBrokerDto.class);
+
+        CreditorInstitutionDetails response = mapper.fromDto(creditorInstitutionAndBrokerDto.getCreditorInstitutionDto());
+
+        when(apiConfigServiceMock.createCreditorInstitution(any(), anyString()))
+                .thenReturn(response);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .post(BASE_URL +"/creditor-institution-and-broker")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.address.city", is(response.getAddress().getCity())))
+                .andExpect(jsonPath("$.address.location", is(response.getAddress().getLocation())))
+                .andExpect(jsonPath("$.address.countryCode", is(response.getAddress().getCountryCode())))
+                .andExpect(jsonPath("$.address.zipCode", is(response.getAddress().getZipCode())))
+                .andExpect(jsonPath("$.address.taxDomicile", is(response.getAddress().getTaxDomicile())))
+                .andExpect(jsonPath("$.enabled", is(response.getEnabled())))
+                .andExpect(jsonPath("$.pspPayment", is(response.getPspPayment())))
+                .andExpect(jsonPath("$.creditorInstitutionCode", is(response.getCreditorInstitutionCode())))
+                .andExpect(jsonPath("$.businessName", is(response.getBusinessName())))
+                .andExpect(jsonPath("$.reportingFtp", is(response.getReportingFtp())));
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .createCreditorInstitution(eq(response), any());
+        verify(apiConfigServiceMock, times(1))
+                .createBroker(eq(BrokerMapper.fromDto(creditorInstitutionAndBrokerDto.getBrokerDto())), any());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
