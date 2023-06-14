@@ -87,8 +87,8 @@ public class StationController {
         log.trace("createWrapperStationDetails start");
         log.debug("createWrapperStationDetails channelDetailsDto = {}", wrapperStationDetailsDto);
 
-        final String CREATE_STATION_SUMMARY = "Station creation validation: %s";
-        final String CREATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validate: %s";
+        final String CREATE_STATION_SUMMARY = "Validate station creation: %s";
+        final String CREATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validated: %s";
 
         WrapperEntitiesOperations<StationDetails> createdWrapperEntities = wrapperService.
                 createWrapperStationDetails(stationMapper.
@@ -100,6 +100,7 @@ public class StationController {
                 String.format(CREATE_STATION_DESCRIPTION, wrapperStationDetailsDto.getStationCode(), wrapperStationDetailsDto.getBrokerCode(),wrapperStationDetailsDto.getValidationUrl()));
         log.trace("createWrapperStationDetails end");
         return createdWrapperEntities;
+
     }
 
 
@@ -195,11 +196,15 @@ public class StationController {
                                                                  @Valid
                                                                  StationDetailsDto stationDetailsDto) {
         log.trace("updateWrapperStationDetails start");
+        final String UPDATE_STATION_SUMMARY = "Station creation validation: %s";
+        final String UPDATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validated: %s";
         log.debug("updateWrapperStationDetails stationDetailsDto = {}", stationDetailsDto);
         WrapperEntitiesOperations createdWrapperEntities = wrapperService.
                 updateWrapperStationDetails(stationMapper.fromDto
                         (stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
         log.debug("updateWrapperStationDetails result = {}", createdWrapperEntities);
+        jiraServiceManagerService.createTicket(String.format(UPDATE_STATION_SUMMARY, stationDetailsDto.getStationCode()),
+                String.format(UPDATE_STATION_DESCRIPTION, stationDetailsDto.getStationCode(), stationDetailsDto.getBrokerCode(),stationDetailsDto.getValidationUrl()));
         log.trace("updateWrapperStationDetails end");
         return createdWrapperEntities;
     }
@@ -361,10 +366,4 @@ public class StationController {
     }
 
 
-//    @PostMapping(value = "{ticket}", produces = MediaType.APPLICATION_JSON_VALUE)
-//    @ResponseStatus(HttpStatus.CREATED)
-//    @ApiOperation(value = "", notes = "${swagger.api.stations.createIssueJira}")
-//    public String createIssueJira(String summary, String description) {
-//        return jiraServiceManagerService.createTicket(summary, description);
-//    }
 }

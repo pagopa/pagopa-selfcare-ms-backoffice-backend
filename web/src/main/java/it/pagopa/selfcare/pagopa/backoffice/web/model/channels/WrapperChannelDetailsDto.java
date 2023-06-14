@@ -84,4 +84,9 @@ public class WrapperChannelDetailsDto {
 
     @ApiModelProperty(value = "${swagger.model.channel.details.status}")
     private WrapperStatus status = WrapperStatus.TO_CHECK;
+
+    @JsonProperty(required = true)
+    @NotBlank
+    @ApiModelProperty(value = "${swagger.model.channel.details.validationUrl}")
+    private String validationUrl;
 }
