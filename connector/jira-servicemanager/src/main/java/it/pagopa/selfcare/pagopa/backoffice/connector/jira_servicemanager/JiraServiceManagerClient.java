@@ -44,6 +44,7 @@ public class JiraServiceManagerClient implements JiraServiceManagerConnector {
             log.trace("createTicket end");
             return String.format("Created ticket %s",ticketId);
         } catch (Exception e) {
+            log.error("createTicket error: " + e.getMessage());
             return "createTicket error: " + e.getMessage();
         }
     }
