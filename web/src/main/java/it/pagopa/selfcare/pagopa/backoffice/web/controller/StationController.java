@@ -53,9 +53,6 @@ public class StationController {
 
     private final JiraServiceManagerService jiraServiceManagerService;
 
-    private static final String CREATE_STATION_SUMMARY = "Station creation validation: %s";
-    private static final String CREATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validate";
-
     @Autowired
     public StationController(ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService, ApiConfigService apiConfigService, WrapperService wrapperService, JiraServiceManagerService jiraServiceManagerService) {
         this.apiConfigService = apiConfigService;
@@ -89,13 +86,18 @@ public class StationController {
                                                                                  WrapperStationDetailsDto wrapperStationDetailsDto) {
         log.trace("createWrapperStationDetails start");
         log.debug("createWrapperStationDetails channelDetailsDto = {}", wrapperStationDetailsDto);
+
+        final String CREATE_STATION_SUMMARY = "Station creation validation: %s";
+        final String CREATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validate: %s";
+
         WrapperEntitiesOperations<StationDetails> createdWrapperEntities = wrapperService.
                 createWrapperStationDetails(stationMapper.
                         fromWrapperStationDetailsDto(wrapperStationDetailsDto), wrapperStationDetailsDto.getNote(), wrapperStationDetailsDto.getStatus().name());
         log.debug("createWrapperStationDetails result = {}", createdWrapperEntities);
         log.debug("createWrapperStationDetails result = {}", createdWrapperEntities);
+
         jiraServiceManagerService.createTicket(String.format(CREATE_STATION_SUMMARY, wrapperStationDetailsDto.getStationCode()),
-                String.format(CREATE_STATION_DESCRIPTION, wrapperStationDetailsDto.getStationCode(), wrapperStationDetailsDto.getBrokerCode()));
+                String.format(CREATE_STATION_DESCRIPTION, wrapperStationDetailsDto.getStationCode(), wrapperStationDetailsDto.getBrokerCode(),wrapperStationDetailsDto.getValidationUrl()));
         log.trace("createWrapperStationDetails end");
         return createdWrapperEntities;
     }
