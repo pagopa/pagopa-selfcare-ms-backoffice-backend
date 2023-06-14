@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.145"
+    "version" : "0.0.146"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -7086,6 +7086,10 @@
             "type" : "integer",
             "description" : "Station's target port POF",
             "format" : "int64"
+          },
+          "validationUrl" : {
+            "type" : "string",
+            "description" : "Url jira for StationDetail validation"
           },
           "version" : {
             "type" : "integer",
