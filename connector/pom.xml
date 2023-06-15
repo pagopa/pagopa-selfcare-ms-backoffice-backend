@@ -27,7 +27,9 @@
     </dependencies>
     <modules>
         <module>azure-apimanager</module>
+        <module>jira-servicemanager</module>
         <module>rest</module>
         <module>dao</module>
+
     </modules>
 </project>

@@ -61,4 +61,22 @@ class StringUtilsTest {
         result = stringUtils.generator(codes, retrievedCode);
         assertEquals("test_01", result);
     }
+    @Test
+    void testTruncateString() {
+        String input1 = "Short string";
+        int maxLength1 = 100;
+        String expectedResult1 = "Short string";
+
+        String result1 = stringUtils.truncateString(input1, maxLength1);
+        assertNotNull(result1);
+        assertEquals(expectedResult1, result1);
+
+        String input2 = "This is a long string that exceeds the maximum length of 100 characters";
+        int maxLength2 = 100;
+        String expectedResult2 = "This is a long string that exceeds the maximum length of 100 characters";
+
+        String result2 = stringUtils.truncateString(input2, maxLength2);
+        assertNotNull(result2);
+        assertEquals(expectedResult2, result2);
+    }
 }

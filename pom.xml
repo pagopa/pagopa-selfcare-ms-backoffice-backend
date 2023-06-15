@@ -24,6 +24,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
+
+
+
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -43,6 +47,11 @@
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-connector-azure-apim</artifactId>
+                <version>0.0.147</version>
+            </dependency>
+            <dependency>
+                <groupId>it.pagopa.selfcare.pagopa</groupId>
+                <artifactId>pagopa-selfcare-connector-jira-servicemanager</artifactId>
                 <version>0.0.147</version>
             </dependency>
             <dependency>

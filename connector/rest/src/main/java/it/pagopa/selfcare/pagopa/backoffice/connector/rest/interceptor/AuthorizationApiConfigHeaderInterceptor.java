@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.naming.NoPermissionException;
 import java.util.List;
 
 @Slf4j
@@ -18,6 +17,7 @@ import java.util.List;
 public class AuthorizationApiConfigHeaderInterceptor implements RequestInterceptor {
     @Value("${authorization.api-config.subscriptionKey}")
     private String apiConfigSubscriptionKey;
+
 
     @Value("${authorization.api-config.flag-authorization}")
     private String flagAuthorization;
@@ -33,6 +33,7 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
     public void apply(RequestTemplate template) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         SelfCareUser user = (SelfCareUser) auth.getPrincipal();
+
         if (!Boolean.parseBoolean(flagAuthorization) && !EMAIL_AUTHORIZED.contains(user.getEmail().toLowerCase())) {
             check(template, user);
         }

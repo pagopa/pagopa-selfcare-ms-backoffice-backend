@@ -14,6 +14,13 @@ public class StringUtils {
 
     private static final String VALID_REGEX = "[a-zA-Z0-9-]+";
 
+    public static String truncateString(String inputString, int maxLength) {
+        if (inputString.length() <= maxLength) {
+            return inputString;
+        } else {
+            return inputString.substring(0, maxLength);
+        }
+    }
     public static String validateAndReplace(String str, String replace) {
         if (str.matches(VALID_REGEX)) {
             return str;

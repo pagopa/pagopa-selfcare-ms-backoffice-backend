@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.144"
+    "version" : "0.0.147"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -2238,6 +2238,68 @@
             "application/json" : {
               "schema" : {
                 "$ref" : "#/components/schemas/CreditorInstitutionDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CreditorInstitutionDetailsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/creditor-institutions/creditor-institution-and-broker" : {
+      "post" : {
+        "tags" : [ "creditor-institutions" ],
+        "summary" : "createCreditorInstitutionAndBroker",
+        "description" : "Service to add a Creditor Institution And Broker to Api Config",
+        "operationId" : "createCreditorInstitutionAndBrokerUsingPOST",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreditorInstitutionAndBrokerDto"
               }
             }
           }
@@ -4542,6 +4604,10 @@
             "type" : "integer",
             "description" : "timeout C",
             "format" : "int64"
+          },
+          "validationUrl" : {
+            "type" : "string",
+            "description" : "Url jira for ChannelDetail validation"
           }
         }
       },
@@ -4909,6 +4975,21 @@
           "zipCode" : {
             "type" : "string",
             "description" : "Creditor Institution's zip code"
+          }
+        }
+      },
+      "CreditorInstitutionAndBrokerDto" : {
+        "title" : "CreditorInstitutionAndBrokerDto",
+        "required" : [ "brokerDto", "creditorInstitutionDto" ],
+        "type" : "object",
+        "properties" : {
+          "brokerDto" : {
+            "description" : "Broker",
+            "$ref" : "#/components/schemas/BrokerDto"
+          },
+          "creditorInstitutionDto" : {
+            "description" : "Creditor Institution",
+            "$ref" : "#/components/schemas/CreditorInstitutionDto"
           }
         }
       },
@@ -6177,6 +6258,10 @@
             "description" : "Station's timeoutC",
             "format" : "int64"
           },
+          "validationUrl" : {
+            "type" : "string",
+            "description" : "Url jira for StationDetail validation"
+          },
           "version" : {
             "type" : "integer",
             "description" : "Station's version",
@@ -6407,6 +6492,10 @@
             "type" : "integer",
             "description" : "target port",
             "format" : "int64"
+          },
+          "validationUrl" : {
+            "type" : "string",
+            "description" : "Url jira for ChannelDetail validation"
           }
         }
       },
@@ -7009,6 +7098,10 @@
             "type" : "integer",
             "description" : "Station's target port POF",
             "format" : "int64"
+          },
+          "validationUrl" : {
+            "type" : "string",
+            "description" : "Url jira for StationDetail validation"
           },
           "version" : {
             "type" : "integer",

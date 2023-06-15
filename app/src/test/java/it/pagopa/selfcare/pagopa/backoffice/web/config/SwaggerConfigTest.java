@@ -53,6 +53,9 @@ class SwaggerConfigTest {
     private ApiManagementService managementService;
 
     @MockBean
+    JiraServiceManagerService jiraServiceManagerService;
+
+    @MockBean
     private ExternalApiService externalApiService;
 
     @Autowired

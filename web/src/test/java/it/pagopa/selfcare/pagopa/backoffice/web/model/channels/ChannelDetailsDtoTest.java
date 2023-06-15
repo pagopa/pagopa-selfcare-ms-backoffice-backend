@@ -7,6 +7,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;
@@ -30,8 +32,11 @@ class ChannelDetailsDtoTest {
         //given
         HashMap<String, Class<? extends Annotation>> toCheckMap = new HashMap<>();
 
-        ChannelDetailsDto model = new ChannelDetailsDto();
+        toCheckMap.put("validationUrl",NotBlank.class);
 
+
+        ChannelDetailsDto model = new ChannelDetailsDto();
+        model.setValidationUrl("ValidationUrl");
         //when
         Set<ConstraintViolation<Object>> violations = validator.validate(model);
         // then
