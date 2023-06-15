@@ -9,6 +9,9 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatu
 import lombok.Data;
 import lombok.ToString;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
@@ -176,7 +179,7 @@ public class ChannelDetailsDto {
 
     @JsonProperty("primitive_version")
     @ApiModelProperty(value = "${swagger.model.channel.details.primitiveVersion}")
-    private String primitiveVersion;
+    private Integer primitiveVersion;
 
     @ApiModelProperty(value = "${swagger.model.channel.details.note}")
     private String note = "";

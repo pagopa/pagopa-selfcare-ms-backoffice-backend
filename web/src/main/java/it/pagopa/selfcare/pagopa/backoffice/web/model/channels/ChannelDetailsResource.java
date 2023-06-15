@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentModel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Protocol;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import lombok.Data;
 import lombok.ToString;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -178,7 +180,7 @@ public class ChannelDetailsResource extends ChannelResource {
 
     @JsonProperty("primitive_version")
     @ApiModelProperty(value = "${swagger.model.channel.details.primitiveVersion}")
-    private String primitiveVersion;
+    private Integer primitiveVersion;
 
     @JsonProperty("target_host_nmp")
     @ApiModelProperty(value = "${swagger.model.channel.details.targetHostNmp}")
@@ -191,5 +193,16 @@ public class ChannelDetailsResource extends ChannelResource {
     @JsonProperty("target_path_nmp")
     @ApiModelProperty(value = "${swagger.model.channel.details.targetPathNmp}")
     private String targetPathNmp;
+
+    @ApiModelProperty("${swagger.model.channel.details.createdBy}")
+    private String createdBy;
+    @ApiModelProperty("${swagger.model.channel.details.modifiedBy}")
+    private String modifiedBy;
+    @ApiModelProperty(value = "${swagger.model.channel.details.status}")
+    private WrapperStatus wrapperStatus;
+    @ApiModelProperty("${swagger.model.channel.details.createdAt}")
+    private Instant createdAt;
+    @ApiModelProperty("${swagger.model.channel.details.modifiedAt}")
+    private Instant modifiedAt;
 
 }

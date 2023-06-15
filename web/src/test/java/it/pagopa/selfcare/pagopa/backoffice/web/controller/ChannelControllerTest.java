@@ -994,8 +994,6 @@ class ChannelControllerTest {
 
         when(wrapperServiceMock.findById(channelcode))
                 .thenReturn(wrapperEntities);
-        when(apiConfigServiceMock.getChannelPaymentTypes(anyString(), anyString()))
-                .thenReturn(paymentTypes);
 
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -1028,8 +1026,6 @@ class ChannelControllerTest {
         //then
         verify(wrapperServiceMock, times(1))
                 .findById(anyString());
-        verify(apiConfigServiceMock, times(1))
-                .getChannelPaymentTypes(eq(channelcode), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 

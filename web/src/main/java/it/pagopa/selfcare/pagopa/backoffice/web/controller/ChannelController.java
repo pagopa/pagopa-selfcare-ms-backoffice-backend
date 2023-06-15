@@ -136,14 +136,23 @@ public class ChannelController {
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getChannelDetail channelcode = {}, xRequestId = {}", channelcode, xRequestId);
         ChannelDetails channelDetail;
+        WrapperStatus status;
+        String createdBy = "";
+        String modifiedBy = "";
+        PspChannelPaymentTypes ptResponse= new PspChannelPaymentTypes();
         try{
             WrapperEntitiesOperations<ChannelDetails> result = wrapperService.findById(channelcode);
+            createdBy = result.getCreatedBy();
+            modifiedBy = result.getModifiedBy();
             channelDetail = result.getWrapperEntityOperationsSortedList().get(0).getEntity();
+            status = result.getStatus();
+            ptResponse.setPaymentTypeList(result.getWrapperEntityOperationsSortedList().get(0).getEntity().getPaymentTypeList());
         }catch (ResourceNotFoundException e){
             channelDetail = apiConfigService.getChannelDetails(channelcode, xRequestId);
+            ptResponse = apiConfigService.getChannelPaymentTypes(channelcode, xRequestId);
+            status = WrapperStatus.APPROVED;
         }
-        PspChannelPaymentTypes ptResponse = apiConfigService.getChannelPaymentTypes(channelcode, xRequestId);
-        ChannelDetailsResource resource = ChannelMapper.toResource(channelDetail, ptResponse);
+        ChannelDetailsResource resource = ChannelMapper.toResource(channelDetail, ptResponse, status, createdBy, modifiedBy);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelDetails result = {}", resource);
         log.trace("getChannelDetail end");
         return resource;
