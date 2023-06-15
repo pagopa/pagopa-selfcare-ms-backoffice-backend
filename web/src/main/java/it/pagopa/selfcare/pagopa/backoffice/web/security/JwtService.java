@@ -22,10 +22,12 @@ import java.util.Base64;
 public class JwtService {
 
     private final PublicKey jwtSigningKey;
+    private final PublicKey jwtSigningKeyProd;
 
 
-    public JwtService(@Value("${jwt.signingKey}") String jwtSigningKey) throws Exception {
+    public JwtService(@Value("${jwt.jwtSigningKey}") String jwtSigningKey, @Value("${jwt.jwtsigningKeyProd}") String jwtSigningKeyProd) throws Exception {
         this.jwtSigningKey = getPublicKey(jwtSigningKey);
+        this.jwtSigningKeyProd = getPublicKey(jwtSigningKeyProd);
     }
 
 
@@ -34,6 +36,15 @@ public class JwtService {
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getClaims token = {}" , token);
         return Jwts.parser()
                 .setSigningKey(jwtSigningKey)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public Claims getClaimsProd(String token) {
+        log.trace("getClaims start");
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getClaims token = {}" , token);
+        return Jwts.parser()
+                .setSigningKey(jwtSigningKeyProd)
                 .parseClaimsJws(token)
                 .getBody();
     }
