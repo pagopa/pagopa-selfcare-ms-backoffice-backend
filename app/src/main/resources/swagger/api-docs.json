@@ -4604,6 +4604,10 @@
             "type" : "integer",
             "description" : "timeout C",
             "format" : "int64"
+          },
+          "validationUrl" : {
+            "type" : "string",
+            "description" : "Url jira for ChannelDetail validation"
           }
         }
       },
@@ -6254,6 +6258,10 @@
             "description" : "Station's timeoutC",
             "format" : "int64"
           },
+          "validationUrl" : {
+            "type" : "string",
+            "description" : "Url jira for StationDetail validation"
+          },
           "version" : {
             "type" : "integer",
             "description" : "Station's version",
@@ -6484,6 +6492,10 @@
             "type" : "integer",
             "description" : "target port",
             "format" : "int64"
+          },
+          "validationUrl" : {
+            "type" : "string",
+            "description" : "Url jira for ChannelDetail validation"
           }
         }
       },
