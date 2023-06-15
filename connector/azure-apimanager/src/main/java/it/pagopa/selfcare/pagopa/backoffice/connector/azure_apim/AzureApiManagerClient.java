@@ -71,7 +71,7 @@ public class AzureApiManagerClient implements ApiManagerConnector {
                 .withExistingService(resourceGroupName, serviceName)
                 .withEmail(dto.getEmail())
                 .withFirstName(dto.getFiscalCode())
-                .withLastName(StringUtils.validateAndReplace(dto.getDescription(), "-"))
+                .withLastName(StringUtils.truncateString(StringUtils.validateAndReplace(dto.getDescription(), "-"),100))
                 .withConfirmation(Confirmation.SIGNUP)
                 .create();
         it.pagopa.selfcare.pagopa.backoffice.connector.model.UserContract contract = AZURE_USER_CONTRACT_TO_PAGOPA_USER_CONTRACT.apply(userContract);

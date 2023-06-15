@@ -3,9 +3,10 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.subscriptions;
 public enum Subscription {
 
     NODOAUTH("/products/nodo-auth", "Connessione con nodo", "nodauth-"),
-    GPD("/products/debt-positions", "Integrazione Asincrona", "gdp-"),
+    GPD("/products/debt-positions", "Integrazione Asincrona - Posizioni Debitorie", "gdp-"),
     BIZ("/products/bizevents", "Recupero Ricevuta", "bes-"),
-    GPD_REP("/products/product-gpd-reporting", "Gestione flussi di rendicontazione", "gpdrep-");
+    GPD_REP("/products/product-gpd-reporting", "-> Integrazione Asincrona - Gestione flussi di rendicontazione", "gpdrep-"),
+    GPD_PAY("/products/gpd-payments-rest-aks", "-> Integrazione Asincrona - Ricevute", "gpdpayra-");
 
     private final String scope;
     private final String displayName;

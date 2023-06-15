@@ -14,5 +14,6 @@
     "paymentType"
   ],
   "status": "TO_CHECK",
-  "note": "note"
+  "note": "note",
+  "validationUrl": "validationUrl"
 }

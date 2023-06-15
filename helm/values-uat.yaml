@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaselfcaremsbackofficebackend
-    tag: "0.0.144" #improve
+    tag: "0.0.149" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -81,6 +81,11 @@ microservice-chart:
     JWT_TOKEN_PUBLIC_KEY: pagopa-u-weu-selfcare-jwt-pub-key
     TEST_EMAIL: pagopa-u-env-test-email
     MONGODB_CONNECTION_URI: cosmodbmongo-u-bopagopa-connection-string
+    JIRA_URL: jira-u-url
+    JIRA_USERNAME: jira-u-username
+    JIRA_PASSWORD: jira-u-token
+    JIRA_PROJECT_KEY: jira-u-project-key
+    JIRA_REQ_TYPE_TASKID: jira-u-req-task-id
   keyvault:
     name: "pagopa-u-selfcare-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"

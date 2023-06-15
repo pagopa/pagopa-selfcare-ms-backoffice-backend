@@ -120,5 +120,8 @@ public class StationDetailsDto {
     private Long targetPortPof;
     @ApiModelProperty(value = "${swagger.model.station.targetPathPof}")
     private String targetPathPof;
-
+    @JsonProperty(required = true)
+    @NotBlank
+    @ApiModelProperty(value = "${swagger.model.station.validationUrl}")
+    private String validationUrl;
 }
