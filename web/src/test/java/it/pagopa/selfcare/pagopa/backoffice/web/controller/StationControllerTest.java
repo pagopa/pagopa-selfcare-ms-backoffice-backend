@@ -326,7 +326,7 @@ class StationControllerTest {
     }
 
     @Test
-    void updateWrapperChannelDetailsByOpt(@Value("classpath:stubs/stationsDto.json") Resource dto) throws Exception {
+    void updateWrapperStationDetailsByOpt(@Value("classpath:stubs/stationsDto.json") Resource dto) throws Exception {
         //given
         String stationCode = "stationCode";
         StationDetails stationDetails = mockInstance(new StationDetails());
