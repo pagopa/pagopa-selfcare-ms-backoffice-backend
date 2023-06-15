@@ -15,6 +15,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.core.JiraServiceManagerService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
@@ -82,6 +83,9 @@ class ChannelControllerTest {
 
     @MockBean
     private WrapperConnector wrapperConnectorMock;
+
+    @MockBean
+    private JiraServiceManagerService jiraServiceManagerService;
 
     @Test
     void getChannels() throws Exception {

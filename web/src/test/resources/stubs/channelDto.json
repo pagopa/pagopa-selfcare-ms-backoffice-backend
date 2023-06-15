@@ -40,5 +40,6 @@
   "payment_types": ["paymentType"],
   "primitive_version": "1",
   "status": "TO_CHECK",
-  "note": "note"
+  "note": "note",
+  "validationUrl": "validationUrl"
 }

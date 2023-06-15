@@ -9,6 +9,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatu
 import lombok.Data;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 
@@ -183,4 +184,9 @@ public class ChannelDetailsDto {
 
     @ApiModelProperty(value = "${swagger.model.channel.details.status}")
     private WrapperStatus status = WrapperStatus.TO_CHECK;
+
+    @JsonProperty(required = true)
+    @NotBlank
+    @ApiModelProperty(value = "${swagger.model.channel.details.validationUrl}")
+    private String validationUrl;
 }

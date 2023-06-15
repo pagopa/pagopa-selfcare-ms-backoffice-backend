@@ -44,6 +44,7 @@ class WrapperChannelDetailsDtoTest {
         toCheckMap.put("redirectQueryString", NotBlank.class);
         toCheckMap.put("redirectProtocol", NotNull.class);
         toCheckMap.put("paymentTypeList", NotNull.class);
+        toCheckMap.put("validationUrl", NotBlank.class);
 
 
         WrapperChannelDetailsDto model = new WrapperChannelDetailsDto();
