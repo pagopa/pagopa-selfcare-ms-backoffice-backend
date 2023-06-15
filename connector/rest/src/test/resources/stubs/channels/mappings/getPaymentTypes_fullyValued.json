@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/apiconfig/auth/api/v1/configuration/paymenttypes"
+    "urlPath": "/apiconfig/api/v1/configuration/paymenttypes"
   },
   "response": {
     "status": "200",

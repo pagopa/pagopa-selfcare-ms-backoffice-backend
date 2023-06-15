@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "urlPath": "/apiconfig/auth/api/v1/stations"
+    "urlPath": "/apiconfig/api/v1/stations"
   },
   "response": {
     "status": "201",

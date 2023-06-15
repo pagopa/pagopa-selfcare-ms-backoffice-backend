@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "PUT",
-    "urlPath": "/apiconfig/auth/api/v1/stations/stationCode1"
+    "urlPath": "/apiconfig/api/v1/stations/stationCode1"
   },
   "response": {
     "status": "200",

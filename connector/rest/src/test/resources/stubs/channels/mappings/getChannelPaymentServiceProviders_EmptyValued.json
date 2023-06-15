@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/apiconfig/auth/api/v1/channels/channelcode2/paymentserviceproviders",
+    "urlPath": "/apiconfig/api/v1/channels/channelcode2/paymentserviceproviders",
     "queryParameters": {
       "page": {
         "equalTo": "0"

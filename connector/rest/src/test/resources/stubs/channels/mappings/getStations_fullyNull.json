@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/apiconfig/auth/api/v1/stations",
+    "urlPath": "/apiconfig/api/v1/stations",
     "queryParameters": {
       "page": {
         "equalTo": "2"
