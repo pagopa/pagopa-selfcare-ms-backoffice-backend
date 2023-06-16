@@ -192,6 +192,7 @@ class WrapperConnectorImplTest {
         // given
         String note = "note";
         String status = "TO_CHECK";
+        String createdBy = "createdBy";
         ChannelDetails channelDetailsMock = mockInstance(new ChannelDetails());
         ChannelDetails channelDetailsMockInsert = mockInstance(new ChannelDetails());
         WrapperEntity<ChannelDetails> wrapperEntity = new WrapperEntity<>(channelDetailsMock);
@@ -206,7 +207,7 @@ class WrapperConnectorImplTest {
         when(repositoryMock
                 .save(any(WrapperEntities.class))).thenReturn(wrapperEntities);
         // when
-        WrapperEntitiesOperations<ChannelDetails> saved = wrapperConnector.update(channelDetailsMockInsert, note, status);
+        WrapperEntitiesOperations<ChannelDetails> saved = wrapperConnector.update(channelDetailsMockInsert, note, status, createdBy);
         // then
         assertEquals(wrapperEntities, saved);
         verify(repositoryMock, times(1))
@@ -280,11 +281,12 @@ class WrapperConnectorImplTest {
         // given
         String note = "note";
         String status = "TO_CHECK";
+        String createdBy = "createdBy";
         ChannelDetails channelDetailsMockInsert = mockInstance(new ChannelDetails());
         when(repositoryMock
                 .findById(anyString())).thenReturn(Optional.ofNullable(null));
         // when
-        Executable executable = () -> wrapperConnector.update(channelDetailsMockInsert, note, status);
+        Executable executable = () -> wrapperConnector.update(channelDetailsMockInsert, note, status, createdBy);
         // then
         ResourceNotFoundException e = assertThrows(ResourceNotFoundException.class, executable);
         verify(repositoryMock, times(1))
