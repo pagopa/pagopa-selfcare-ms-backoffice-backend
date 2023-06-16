@@ -182,6 +182,7 @@ public class ChannelDetailsResource extends ChannelResource {
 
     @ApiModelProperty("${swagger.model.channel.details.createdBy}")
     private String createdBy;
+    
     @ApiModelProperty("${swagger.model.channel.details.modifiedBy}")
     private String modifiedBy;
     @ApiModelProperty(value = "${swagger.model.channel.details.status}")
