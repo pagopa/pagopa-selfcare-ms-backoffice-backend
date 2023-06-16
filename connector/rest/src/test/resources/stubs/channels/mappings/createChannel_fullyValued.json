@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "urlPath": "/apiconfig/api/v1/channels"
+    "urlPath": "/apiconfig/api/auth/v1/channels"
   },
   "response": {
     "status": "200",

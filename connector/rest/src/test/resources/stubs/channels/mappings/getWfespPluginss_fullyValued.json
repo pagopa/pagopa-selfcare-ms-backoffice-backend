@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/apiconfig/api/v1/configuration/wfespplugins"
+    "urlPath": "/apiconfig/api/auth/v1/configuration/wfespplugins"
   },
   "response": {
     "status": "200",

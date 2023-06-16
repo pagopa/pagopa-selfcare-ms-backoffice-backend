@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/apiconfig/api/v1/brokerspsp/brokerpspcode2/paymentserviceproviders",
+    "urlPath": "/apiconfig/api/auth/v1/brokerspsp/brokerpspcode2/paymentserviceproviders",
     "queryParameters": {
       "page": {
         "equalTo": "1"
