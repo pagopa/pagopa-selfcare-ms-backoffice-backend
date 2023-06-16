@@ -161,6 +161,62 @@ public class ChannelMapper {
         return resource;
     }
 
+    public static ChannelDetailsResource toResource(ChannelDetails model, PspChannelPaymentTypes listModel, WrapperStatus status,String createdBy,String modifiedBy) {
+        ChannelDetailsResource resource = null;
+        if (model != null) {
+            resource = new ChannelDetailsResource();
+            resource.setPassword(model.getPassword());
+            resource.setNewPassword(model.getNewPassword());
+            resource.setProtocol(model.getProtocol());
+            resource.setIp(model.getIp());
+            resource.setPort(model.getPort());
+            resource.setService(model.getService());
+            resource.setBrokerPspCode(model.getBrokerPspCode());
+            resource.setProxyEnabled(model.getProxyEnabled());
+            resource.setProxyHost(model.getProxyHost());
+            resource.setProxyPort(model.getProxyPort());
+            resource.setProxyUsername(model.getProxyUsername());
+            resource.setProxyPassword(model.getProxyPassword());
+            resource.setTargetHost(model.getTargetHost());
+            resource.setTargetPort(model.getTargetPort());
+            resource.setTargetPath(model.getTargetPath());
+            resource.setThreadNumber(model.getThreadNumber());
+            resource.setTimeoutA(model.getTimeoutA());
+            resource.setTimeoutB(model.getTimeoutB());
+            resource.setTimeoutC(model.getTimeoutC());
+            resource.setNmpService(model.getNmpService());
+            resource.setNewFaultCode(model.getNewFaultCode());
+            resource.setRedirectIp(model.getRedirectIp());
+            resource.setRedirectPath(model.getRedirectPath());
+            resource.setRedirectPort(model.getRedirectPort());
+            resource.setRedirectQueryString(model.getRedirectQueryString());
+            resource.setRedirectProtocol(model.getRedirectProtocol());
+            resource.setPaymentModel(model.getPaymentModel());
+            resource.setServPlugin(model.getServPlugin());
+            resource.setRtPush(model.getRtPush());
+            resource.setOnUs(model.getOnUs());
+            resource.setCardChart(model.getCardChart());
+            resource.setRecovery(model.getRecovery());
+            resource.setDigitalStampBrand(model.getDigitalStampBrand());
+            resource.setFlagIo(model.getFlagIo());
+            resource.setAgid(model.getAgid());
+            resource.setBrokerDescription(model.getBrokerDescription());
+            resource.setEnabled(model.getEnabled());
+            resource.setChannelCode(model.getChannelCode());
+            resource.setPrimitiveVersion(model.getPrimitiveVersion());
+            resource.setTargetHostNmp(model.getTargetHostNmp());
+            resource.setTargetPortNmp(model.getTargetPortNmp());
+            resource.setTargetPathNmp(model.getTargetPathNmp());
+            resource.setPaymentTypeList(listModel != null ? listModel.getPaymentTypeList() : new ArrayList<>());
+            resource.setWrapperStatus(status);
+            resource.setCreatedBy(createdBy);
+            resource.setModifiedBy(modifiedBy);
+            resource.setModifiedAt(model.getModifiedAt());
+            resource.setCreatedAt(model.getCreatedAt());
+        }
+        return resource;
+    }
+
     public static ChannelDetailsResource toResource(ChannelDetails model) {
         ChannelDetailsResource resource = null;
         if (model != null) {

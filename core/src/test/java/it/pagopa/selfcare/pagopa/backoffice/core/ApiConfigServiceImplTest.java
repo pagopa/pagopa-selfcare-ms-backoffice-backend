@@ -758,7 +758,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperChannels_ASC() {
         //given
-        WrapperChannels channels = mock(WrapperChannels.class);
+        WrapperChannels channels = new WrapperChannels();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        channels.setPageInfo(pageInfo);
+        channels.setChannelList(new ArrayList<>());
         String sorting = "ASC";
 
         //when
@@ -788,7 +795,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperChannels_DESC() {
         //given
-        WrapperChannels channels = mock(WrapperChannels.class);
+        WrapperChannels channels = new WrapperChannels();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        channels.setPageInfo(pageInfo);
+        channels.setChannelList(new ArrayList<>());
         String sorting = "DESC";
 
         //when
@@ -818,7 +832,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperChannels_nullSorting() {
         //given
-        WrapperChannels channels = mock(WrapperChannels.class);
+        WrapperChannels channels = new WrapperChannels();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        channels.setPageInfo(pageInfo);
+        channels.setChannelList(new ArrayList<>());
         String sorting = null;
 
         //when

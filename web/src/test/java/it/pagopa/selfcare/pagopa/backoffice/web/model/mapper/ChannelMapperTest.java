@@ -92,7 +92,7 @@ class ChannelMapperTest {
         ChannelDetailsResource resource = ChannelMapper.toResource(model, model2);
         //then
         assertNotNull(resource);
-        reflectionEqualsByName(model, resource);
+        reflectionEqualsByName(model, resource,"createdBy","modifiedBy","wrapperStatus","createdAt","modifiedAt");
     }
 
     @Test

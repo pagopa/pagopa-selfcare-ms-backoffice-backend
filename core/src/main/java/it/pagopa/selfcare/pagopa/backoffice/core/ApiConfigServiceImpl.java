@@ -371,7 +371,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
 
     @Override
     public WrapperChannels mergeAndSortWrapperChannels(WrapperChannels wrapperChannelsApiConfig, WrapperChannels wrapperChannelsMongo, String sorting) {
-        log.trace("mergeAndSortWrapperStations start");
+        log.trace("mergeAndSortWrapperChannels start");
 
         List<WrapperChannel> mergedList = new ArrayList<>();
         mergedList.addAll(wrapperChannelsMongo.getChannelList());
@@ -388,8 +388,13 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         }
         WrapperChannels result = new WrapperChannels();
         result.setChannelList(mergedList);
-        result.setPageInfo(wrapperChannelsApiConfig.getPageInfo());
-        log.trace("mergeAndSortWrapperStations end");
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(wrapperChannelsApiConfig.getPageInfo().getLimit());
+        pageInfo.setTotalPages(wrapperChannelsApiConfig.getPageInfo().getTotalPages());
+        pageInfo.setPage(wrapperChannelsApiConfig.getPageInfo().getPage());
+        pageInfo.setItemsFound(mergedList.size());
+        result.setPageInfo(pageInfo);
+        log.trace("mergeAndSortWrapperChannels end");
         return result;
     }
 

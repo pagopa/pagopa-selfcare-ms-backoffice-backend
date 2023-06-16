@@ -178,7 +178,7 @@ class ApiConfigRestClientTest {
         channelDetails.setBrokerDescription("setBrokerDescription");
         channelDetails.setEnabled(true);
         channelDetails.setChannelCode("setChannelCode");
-        channelDetails.setPrimitiveVersion("1");
+        channelDetails.setPrimitiveVersion(1);
         put(TestCase.FULLY_VALUED, channelDetails);
 
     }};
