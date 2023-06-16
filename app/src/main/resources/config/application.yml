@@ -11,11 +11,13 @@ spring:
       - swaggerEN
 
 info:
+  env: ${ENV:}
   build:
     artifact: "@project.parent.artifactId@"
     name: "@project.parent.artifactId@"
     description: "@project.description@"
     version: "@project.version@"
+
 
 
 logging:
