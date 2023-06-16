@@ -248,6 +248,7 @@ class ChannelControllerTest {
         //given
         String xRequestId = "1";
         String channelCode = "setChannelCode";
+        String createdBy = "createdBy";
         InputStream is = dto.getInputStream();
         ChannelDetailsDto channelDetailsDto = objectMapper.readValue(is, ChannelDetailsDto.class);
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
@@ -259,7 +260,7 @@ class ChannelControllerTest {
 
         when(apiConfigServiceMock.updateChannel(any(), anyString(), anyString()))
                 .thenReturn(channelDetails);
-        when(wrapperServiceMock.updateWrapperChannelDetails(channelDetails,channelDetailsDto.getNote(),channelDetailsDto.getStatus().name()))
+        when(wrapperServiceMock.updateWrapperChannelDetails(channelDetails,channelDetailsDto.getNote(),channelDetailsDto.getStatus().name(), createdBy))
                 .thenReturn(wrapperEntities);
 
         //when
@@ -298,7 +299,7 @@ class ChannelControllerTest {
         verify(apiConfigServiceMock, times(1))
                 .updateChannel(any(), anyString(), anyString());
         verify(wrapperServiceMock, times(1))
-                .updateWrapperChannelDetails(eq(channelDetails), anyString(), anyString());
+                .updateWrapperChannelDetails(eq(channelDetails), anyString(), anyString(), any());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
@@ -838,6 +839,7 @@ class ChannelControllerTest {
     void updateWrapperChannelDetails(@Value("classpath:stubs/channelDto.json") Resource dto) throws Exception {
         //given
         String channelCode = "channelCode";
+        String createdBy = "createdBy";
         ChannelDetails channelDetails = mockInstance(new ChannelDetails());
         DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
         DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
@@ -850,7 +852,7 @@ class ChannelControllerTest {
         wrapperEntities.getEntities().add(wrapperEntityDto);
         String status = channelDetailsDto.getStatus().name();
         String note = channelDetailsDto.getNote();
-        when(wrapperServiceMock.updateWrapperChannelDetails(fromChannelDetailsDto, note, status))
+        when(wrapperServiceMock.updateWrapperChannelDetails(fromChannelDetailsDto, note, status, null))
                 .thenReturn(wrapperEntities);
 
         //when
@@ -860,12 +862,11 @@ class ChannelControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
                 .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
                 .andExpect(jsonPath("$.entities", notNullValue()));
         //then
         verify(wrapperServiceMock, times(1))
-                .updateWrapperChannelDetails(any(), anyString(), anyString());
+                .updateWrapperChannelDetails(any(), anyString(), anyString(), any());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }

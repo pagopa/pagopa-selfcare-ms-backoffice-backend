@@ -17,7 +17,7 @@ public interface WrapperService {
     WrapperEntitiesOperations<StationDetails> createWrapperStationDetails(StationDetails channelDetails,String note,String status);
 
     WrapperEntitiesOperations findById(String id);
-    WrapperEntitiesOperations<ChannelDetails> updateWrapperChannelDetails(ChannelDetails channelDetails,String note,String status);
+    WrapperEntitiesOperations<ChannelDetails> updateWrapperChannelDetails(ChannelDetails channelDetails,String note,String status, String createdBy);
 
     WrapperEntitiesOperations<ChannelDetails> updateWrapperChannelDetailsByOpt(ChannelDetails channelDetails,String note,String status);
 

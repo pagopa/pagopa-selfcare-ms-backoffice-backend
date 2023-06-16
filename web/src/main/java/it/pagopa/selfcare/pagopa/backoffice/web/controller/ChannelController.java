@@ -191,7 +191,7 @@ public class ChannelController {
 
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         ChannelDetails response = apiConfigService.updateChannel(channelDetails, channelCode, uuid);
-        wrapperService.updateWrapperChannelDetails(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
+        wrapperService.updateWrapperChannelDetails(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
         ChannelDetailsResource resource = ChannelMapper.toResource(response, null);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "updateChannel result = {}", resource);
         log.trace("updateChannel end");
@@ -474,7 +474,7 @@ public class ChannelController {
         log.debug("updateWrapperChannelDetails channelDetailsDto = {}", channelDetailsDto);
         WrapperEntitiesOperations createdWrapperEntities = wrapperService.
                 updateWrapperChannelDetails(ChannelMapper.
-                        fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
+                        fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
         log.debug("updateWrapperChannelDetails result = {}", createdWrapperEntities);
         jiraServiceManagerService.createTicket(String.format(CREATE_CHANNEL_SUMMARY, channelDetailsDto.getChannelCode()),
                 String.format(CREATE_CHANEL_DESCRIPTION, channelDetailsDto.getChannelCode(), channelDetailsDto.getBrokerPspCode(),channelDetailsDto.getValidationUrl()));
