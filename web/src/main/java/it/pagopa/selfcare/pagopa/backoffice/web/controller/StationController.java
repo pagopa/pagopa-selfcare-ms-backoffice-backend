@@ -364,6 +364,11 @@ public class StationController {
         log.trace("getStationsDetailsListByBroker end");
         return resource;
     }
-
+    @PostMapping(value = "{ticket}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.createIssueJira}")
+    public String createIssueJira(String summary, String description) {
+        return jiraServiceManagerService.createTicket(summary, description);
+    }
 
 }

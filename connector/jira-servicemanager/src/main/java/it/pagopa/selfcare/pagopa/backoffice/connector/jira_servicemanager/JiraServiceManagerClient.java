@@ -21,6 +21,9 @@ public class JiraServiceManagerClient implements JiraServiceManagerConnector {
     @Value("${jira.reqTypeTaskId}")
     private String reqTypeTaskId;
 
+    @Value("${info.env}")
+    private String env;
+
     public void setReqTypeTaskId(String reqTypeTaskId) {
         this.reqTypeTaskId = reqTypeTaskId;
     }
@@ -34,7 +37,7 @@ public class JiraServiceManagerClient implements JiraServiceManagerConnector {
             IssueRestClient issueClient = jiraRestClient.getIssueClient();
 
             IssueInput newIssue = new IssueInputBuilder(
-                    projectKey, Long.parseLong(reqTypeTaskId), summary)
+                    projectKey, Long.parseLong(reqTypeTaskId), "["+env+"] "+summary)
                     .setFieldValue("description", description)
                     .build();
 
