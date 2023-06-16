@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.utils.StringUtils;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.*;
 
 import java.util.stream.Collectors;
@@ -53,7 +54,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
         creditorInstitutionDetails.setCreditorInstitutionCode(dto.getCreditorInstitutionCode());
         creditorInstitutionDetails.setEnabled(dto.getEnabled());
-        creditorInstitutionDetails.setBusinessName(dto.getBusinessName());
+        creditorInstitutionDetails.setBusinessName(StringUtils.truncateString(dto.getBusinessName(),70));
         creditorInstitutionDetails.setAddress(fromDto(dto.getAddress()));
         creditorInstitutionDetails.setPspPayment(dto.getPspPayment());
         creditorInstitutionDetails.setReportingFtp(dto.getReportingFtp());
