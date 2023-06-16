@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaselfcaremsbackofficebackend
-    tag: "0.0.149" #improve
+    tag: "0.0.152" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -69,6 +69,7 @@ microservice-chart:
     ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
     MONGODB_NAME: pagopaBackoffice
     AUTHORIZATION_FLAG: 'true'
+    ENV: 'DEV'
   envSecret:
     AZURE_CLIENT_SECRET: pagopa-d-selfcare-client-secret
     AZURE_CLIENT_ID: pagopa-d-selfcare-client-id
