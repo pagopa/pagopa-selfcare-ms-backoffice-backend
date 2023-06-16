@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "urlPath": "/apiconfig/api/auth/v1/channels/channelcode2/paymenttypes"
+    "urlPath": "/apiconfig/auth/api/v1/channels/channelcode2/paymenttypes"
   },
   "response": {
     "status": "200",

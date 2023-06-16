@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "PUT",
-    "urlPath": "/apiconfig/api/auth/v1/creditorinstitutions/ecCode"
+    "urlPath": "/apiconfig/auth/api/v1/creditorinstitutions/ecCode"
   },
   "response": {
     "status": "200",

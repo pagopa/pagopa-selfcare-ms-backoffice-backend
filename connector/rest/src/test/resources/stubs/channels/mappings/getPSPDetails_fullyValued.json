@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/apiconfig/api/auth/v1/paymentserviceproviders/pspCode1"
+    "urlPath": "/apiconfig/auth/api/v1/paymentserviceproviders/pspCode1"
   },
   "response": {
     "status": "201",

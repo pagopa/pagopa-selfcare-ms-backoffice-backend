@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/apiconfig/api/auth/v1/creditorinstitutions/ecCode1"
+    "urlPath": "/apiconfig/auth/api/v1/creditorinstitutions/ecCode1"
   },
   "response": {
     "status": "200",

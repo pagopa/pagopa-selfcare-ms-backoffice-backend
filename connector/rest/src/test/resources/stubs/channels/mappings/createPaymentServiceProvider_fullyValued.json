@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "urlPath": "/apiconfig/api/auth/v1/paymentserviceproviders"
+    "urlPath": "/apiconfig/auth/api/v1/paymentserviceproviders"
   },
   "response": {
     "status": "201",

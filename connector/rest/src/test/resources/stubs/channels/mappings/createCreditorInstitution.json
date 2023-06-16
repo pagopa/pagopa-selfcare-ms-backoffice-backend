@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "urlPath": "/apiconfig/api/auth/v1/creditorinstitutions"
+    "urlPath": "/apiconfig/auth/api/v1/creditorinstitutions"
   },
   "response": {
     "status": "200",
