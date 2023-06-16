@@ -84,6 +84,7 @@ public class WrapperConnectorImpl implements WrapperConnector {
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
         wrapperEntity.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
+        wrapperEntities.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.getEntities().add(wrapperEntity);
         return repository.save(wrapperEntities);
 
@@ -98,6 +99,8 @@ public class WrapperConnectorImpl implements WrapperConnector {
         }
         WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) opt.get();
         String modifiedByOpt = auditorAware.getCurrentAuditor().orElse(null);
+        WrapperEntity<ChannelDetails> wrapperEntity = new WrapperEntity<>(channelDetails);
+        wrapperEntity.setModifiedByOpt(modifiedByOpt);
         wrapperEntities.updateCurrentWrapperEntity(new WrapperEntity<>(channelDetails), status, note, modifiedByOpt);
         return repository.save(wrapperEntities);
     }

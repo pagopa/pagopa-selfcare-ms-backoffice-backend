@@ -141,14 +141,23 @@ public class ChannelController {
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getChannelDetail channelcode = {}, xRequestId = {}", channelcode, xRequestId);
         ChannelDetails channelDetail;
+        WrapperStatus status;
+        String createdBy = "";
+        String modifiedBy = "";
+        PspChannelPaymentTypes ptResponse= new PspChannelPaymentTypes();
         try{
             WrapperEntitiesOperations<ChannelDetails> result = wrapperService.findById(channelcode);
+            createdBy = result.getCreatedBy();
+            modifiedBy = result.getModifiedBy();
             channelDetail = result.getWrapperEntityOperationsSortedList().get(0).getEntity();
+            status = result.getStatus();
+            ptResponse.setPaymentTypeList(result.getWrapperEntityOperationsSortedList().get(0).getEntity().getPaymentTypeList());
         }catch (ResourceNotFoundException e){
             channelDetail = apiConfigService.getChannelDetails(channelcode, xRequestId);
+            ptResponse = apiConfigService.getChannelPaymentTypes(channelcode, xRequestId);
+            status = WrapperStatus.APPROVED;
         }
-        PspChannelPaymentTypes ptResponse = apiConfigService.getChannelPaymentTypes(channelcode, xRequestId);
-        ChannelDetailsResource resource = ChannelMapper.toResource(channelDetail, ptResponse);
+        ChannelDetailsResource resource = ChannelMapper.toResource(channelDetail, ptResponse, status, createdBy, modifiedBy);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelDetails result = {}", resource);
         log.trace("getChannelDetail end");
         return resource;
@@ -548,13 +557,14 @@ public class ChannelController {
                                                         @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                         @ApiParam("${swagger.model.channel.code}")
                                                         @RequestParam(required = false, value = "channelcodefilter") String channelcode,
+                                                        @ApiParam("${swagger.request.brokerCode}")
+                                                        @RequestParam(required = false, value = "brokerCode") String brokerCode,
                                                         @ApiParam("${swagger.request.page}")
                                                         @RequestParam Integer page,
                                                         @ApiParam("${swagger.request.sorting}")
                                                         @RequestParam(required = false, value = "sorting") String sorting) {
         log.trace("getAllChannelsMerged start");
         log.debug("getAllChannelsMerged page = {} limit = {}", page, limit);
-        //fixme
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels xRequestId = {}", xRequestId);
         Channels channels = apiConfigService.getChannels(limit, page, channelcode, sorting, xRequestId);
