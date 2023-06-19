@@ -501,18 +501,22 @@ class ApiConfigServiceImplTest {
         //given
         final String xRequestId = "xRequestId";
         final String pspCode = "pspCode";
+        final String sorting = "ASC";
+        final Integer limit = 100;
+        final Integer page = 0;
 
-        PspChannels pspChannels = mockInstance(new PspChannels());
-        PspChannel pspChannel = mockInstance(new PspChannel());
-        pspChannel.setChannelCode("TEST_01");
 
-        pspChannels.setChannelsList(List.of(pspChannel));
+        Channels channels = mockInstance(new Channels());
+        Channel channel = mockInstance(new Channel());
+        channel.setChannelCode("TEST_01");
 
-        when(apiConfigConnectorMock.getPspChannels(any(), anyString()))
-                .thenReturn(pspChannels);
+        channels.setChannelList(List.of(channel));
+
+        when(apiConfigConnectorMock.getChannels(eq(limit), eq(page), anyString(), eq(sorting), anyString()))
+                .thenReturn(channels);
 
         //when
-        String response = apiConfigService.generateChannelCode(anyString(), anyString());
+        String response = apiConfigService.generateChannelCode(pspCode, xRequestId);
         assertNotNull(response);
 
         assertEquals("TEST_02", response);
@@ -523,21 +527,24 @@ class ApiConfigServiceImplTest {
         //given
         final String xRequestId = "xRequestId";
         final String pspCode = "TEST";
+        final String sorting = "ASC";
+        final Integer limit = 100;
+        final Integer page = 0;
 
-        PspChannels pspChannels = mockInstance(new PspChannels());
-        PspChannel pspChannel = mockInstance(new PspChannel());
-        pspChannel.setChannelCode("TEST");
+        Channels channels = mockInstance(new Channels());
+        Channel channel = mockInstance(new Channel());
+        channel.setChannelCode("TEST");
 
-        pspChannels.setChannelsList(List.of(pspChannel));
+        channels.setChannelList(List.of(channel));
 
-        when(apiConfigConnectorMock.getPspChannels(any(), anyString()))
-                .thenReturn(pspChannels);
+        when(apiConfigConnectorMock.getChannels(eq(limit), eq(page), anyString(), eq(sorting), anyString()))
+                .thenReturn(channels);
 
         //when
         String response = apiConfigService.generateChannelCode(pspCode, xRequestId);
         assertNotNull(response);
         verify(apiConfigConnectorMock, times(1))
-                .getPspChannels(anyString(), anyString());
+                .getChannels(eq(limit), eq(page), anyString(), eq(sorting), anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
         assertEquals("TEST_01", response);
     }
