@@ -310,6 +310,7 @@ public class ChannelMapper {
             resource.setChannelCode(model.getChannelCode());
             resource.setPrimitiveVersion(model.getPrimitiveVersion());
             resource.setFlagPspCp(model.getFlagPspCp());
+            resource.setPaymentTypeList(model.getPaymentTypeList());
         }
         return resource;
     }
