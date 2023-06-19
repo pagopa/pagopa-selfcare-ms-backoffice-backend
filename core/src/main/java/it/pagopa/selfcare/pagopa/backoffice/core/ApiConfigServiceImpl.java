@@ -199,9 +199,9 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     public String generateChannelCode(String pspCode, String xRequestId) {
         log.trace("generateChannelCode start");
         log.debug("generateChannelCode pspCode = {}", pspCode);
-        PspChannels response = apiConfigConnector.getPspChannels(pspCode, xRequestId);
-        List<PspChannel> codeList = response.getChannelsList();
-        List<String> codes = codeList.stream().map(PspChannel::getChannelCode)
+        Channels response = apiConfigConnector.getChannels(100, 0, pspCode, "ASC", xRequestId);
+        List<Channel> codeList = response.getChannelList();
+        List<String> codes = codeList.stream().map(Channel::getChannelCode)
                 .filter(s -> s.matches("^\\w+_\\d+$")) // String_nn
                 .collect(Collectors.toList());
         String newChannelCode = generator(codes, pspCode);

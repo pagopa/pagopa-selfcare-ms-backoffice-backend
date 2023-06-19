@@ -17,7 +17,6 @@ public class AuthorizationApiConfigSelfcareIntegrationHeaderInterceptor implemen
 
     @Override
     public void apply(RequestTemplate template) {
-        System.out.println("AuthorizationApiConfigSelfcareIntegrationHeaderInterceptor subscription: " + apiConfigSubscriptionKey);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         SelfCareUser user = (SelfCareUser) auth.getPrincipal();
         template.header("x-selfcare-uid", user.getId());
