@@ -142,6 +142,9 @@ public class ChannelDetails extends  Channel{
     @JsonProperty("flag_io")
     private Boolean flagIo;
 
+    @JsonProperty("flag_psp_cp")
+    private Boolean flagPspCp;
+
     @JsonProperty("agid")
     @NotNull
     private Boolean agid;

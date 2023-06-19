@@ -189,4 +189,7 @@ public class ChannelDetailsDto {
     @NotBlank
     @ApiModelProperty(value = "${swagger.model.channel.details.validationUrl}")
     private String validationUrl;
+
+    @ApiModelProperty(value = "${swagger.model.channel.details.flagPspCp}")
+    private Boolean flagPspCp = false;
 }
