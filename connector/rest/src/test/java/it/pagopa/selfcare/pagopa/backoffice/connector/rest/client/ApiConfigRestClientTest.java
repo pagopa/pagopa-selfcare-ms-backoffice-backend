@@ -394,7 +394,7 @@ class ApiConfigRestClientTest {
 
         //then
         assertNotNull(response);
-        checkNotNullFields(response);
+        checkNotNullFields(response, "flagPspCp");
 
     }
 

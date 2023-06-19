@@ -309,6 +309,7 @@ public class ChannelMapper {
             resource.setEnabled(model.getEnabled());
             resource.setChannelCode(model.getChannelCode());
             resource.setPrimitiveVersion(model.getPrimitiveVersion());
+            resource.setFlagPspCp(model.getFlagPspCp());
         }
         return resource;
     }
