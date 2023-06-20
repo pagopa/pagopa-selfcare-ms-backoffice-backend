@@ -37,7 +37,7 @@ public class JiraServiceManagerClient implements JiraServiceManagerConnector {
             IssueRestClient issueClient = jiraRestClient.getIssueClient();
 
             IssueInput newIssue = new IssueInputBuilder(
-                    projectKey, Long.parseLong(reqTypeTaskId), "["+env+"] "+summary)
+                    projectKey, Long.parseLong(reqTypeTaskId), "[BOpagopa] ["+env+"] "+summary)
                     .setFieldValue("description", description)
                     .build();
 
