@@ -449,15 +449,15 @@ public class ChannelController {
                                                                  @Valid
                                                                  WrapperChannelDetailsDto wrapperChannelDetailsDto) {
         log.trace("createWrapperChannelDetails start");
-        final String CREATE_CHANNEL_SUMMARY = "Validate channel creation: %s";
-        final String CREATE_CHANEL_DESCRIPTION = "The channel %s created by broker %s needs to be validate: %s";
+        final String CREATE_CHANNEL_SUMMARY = "Validazione canale creazione: %s";
+        final String CREATE_CHANEL_DESCRIPTION = "Il canale %s deve essere validato: %s";
         log.debug("createWrapperChannelDetails channelDetailsDto = {}", wrapperChannelDetailsDto);
         WrapperEntitiesOperations createdWrapperEntities = wrapperService.
                 createWrapperChannelDetails(ChannelMapper.
                         fromWrapperChannelDetailsDto(wrapperChannelDetailsDto), wrapperChannelDetailsDto.getNote(), wrapperChannelDetailsDto.getStatus().name());
         log.debug("createWrapperChannelDetails result = {}", createdWrapperEntities);
         jiraServiceManagerService.createTicket(String.format(CREATE_CHANNEL_SUMMARY, wrapperChannelDetailsDto.getChannelCode()),
-                String.format(CREATE_CHANEL_DESCRIPTION, wrapperChannelDetailsDto.getChannelCode(), wrapperChannelDetailsDto.getBrokerPspCode(),wrapperChannelDetailsDto.getValidationUrl()));
+                String.format(CREATE_CHANEL_DESCRIPTION, wrapperChannelDetailsDto.getChannelCode(),wrapperChannelDetailsDto.getValidationUrl()));
         log.trace("createWrapperChannelDetails end");
         return createdWrapperEntities;
     }
