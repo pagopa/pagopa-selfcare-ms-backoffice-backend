@@ -87,8 +87,8 @@ public class StationController {
         log.trace("createWrapperStationDetails start");
         log.debug("createWrapperStationDetails channelDetailsDto = {}", wrapperStationDetailsDto);
 
-        final String CREATE_STATION_SUMMARY = "Validate station creation: %s";
-        final String CREATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validated: %s";
+        final String CREATE_STATION_SUMMARY = " Validazione stazione - creazione: %s";
+        final String CREATE_STATION_DESCRIPTION = "La stazione %s deve essere validata: %s";
 
         WrapperEntitiesOperations<StationDetails> createdWrapperEntities = wrapperService.
                 createWrapperStationDetails(stationMapper.
@@ -97,7 +97,7 @@ public class StationController {
         log.debug("createWrapperStationDetails result = {}", createdWrapperEntities);
 
         jiraServiceManagerService.createTicket(String.format(CREATE_STATION_SUMMARY, wrapperStationDetailsDto.getStationCode()),
-                String.format(CREATE_STATION_DESCRIPTION, wrapperStationDetailsDto.getStationCode(), wrapperStationDetailsDto.getBrokerCode(),wrapperStationDetailsDto.getValidationUrl()));
+                String.format(CREATE_STATION_DESCRIPTION, wrapperStationDetailsDto.getStationCode(),wrapperStationDetailsDto.getValidationUrl()));
         log.trace("createWrapperStationDetails end");
         return createdWrapperEntities;
 
