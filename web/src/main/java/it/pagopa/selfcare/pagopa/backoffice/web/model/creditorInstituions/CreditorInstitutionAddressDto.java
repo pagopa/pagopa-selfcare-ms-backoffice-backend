@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 public class CreditorInstitutionAddressDto {
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.address.location}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
+//    @NotBlank
     private String location;
 
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.address.city}", required = true)
@@ -20,16 +20,16 @@ public class CreditorInstitutionAddressDto {
 
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.address.zipCode}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
+//    @NotBlank
     private String zipCode;
 
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.address.countryCode}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
+//    @NotBlank
     private String countryCode;
 
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.address.taxDomicile}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
+//    @NotBlank
     private String taxDomicile;
 }
