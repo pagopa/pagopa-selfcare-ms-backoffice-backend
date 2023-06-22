@@ -6,12 +6,15 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanRequestDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbansResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -48,9 +51,8 @@ public class IbanControllerTest {
     private ApiConfigService apiConfigServiceMock;
 
     @Test
-    void getCreditorInstitutionIbans() throws Exception {
+    void getCreditorInstitutionIbans(@Value("classpath:stubs/IbanRequestDto.json") Resource dto) throws Exception {
 
-        String ecCode = "ecCode";
         IbansDetails ibansDetails = mockInstance(new IbansDetails());
         IbanDetails ibanDetails = mockInstance(new IbanDetails());
         ibansDetails.setIbanList(List.of(ibanDetails));
@@ -60,7 +62,7 @@ public class IbanControllerTest {
 
         mvc.perform(MockMvcRequestBuilders
                 .get(BASE_URL)
-                .content(ecCode)
+                .content(dto.getInputStream().readAllBytes())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
