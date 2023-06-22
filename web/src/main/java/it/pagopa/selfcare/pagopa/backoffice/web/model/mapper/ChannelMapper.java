@@ -488,7 +488,6 @@ public class ChannelMapper {
             model.setAbi(dto.getAbi());
             model.setBic(dto.getBic());
             model.setStamp(dto.getStamp());
-            model.setTransfer(dto.getTransfer());
             model.setAgidPsp(dto.getAgidPsp());
             model.setMyBankCode(dto.getMyBankCode());
             model.setVatNumber(dto.getVatNumber());
@@ -512,7 +511,6 @@ public class ChannelMapper {
             model.setAbi(dto.getAbi());
             model.setBic(dto.getBic());
             model.setStamp(dto.getStamp());
-            model.setTransfer(dto.getTransfer());
             model.setAgidPsp(dto.getAgidPsp());
             model.setMyBankCode(dto.getMyBankCode());
             model.setVatNumber(dto.getVatNumber());
@@ -541,7 +539,6 @@ public class ChannelMapper {
             resource.setAbi(model.getAbi());
             resource.setBic(model.getBic());
             resource.setStamp(model.getStamp());
-            resource.setTransfer(model.getTransfer());
             resource.setAgidPsp(model.getAgidPsp());
             resource.setMyBankCode(model.getMyBankCode());
             resource.setVatNumber(model.getVatNumber());

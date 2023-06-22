@@ -676,7 +676,6 @@ class ApiConfigRestClientTest {
 
         paymentServiceProviderDetails.setAbi("abi");
         paymentServiceProviderDetails.setBic("bic");
-        paymentServiceProviderDetails.setTransfer(true);
         paymentServiceProviderDetails.setStamp(true);
         paymentServiceProviderDetails.setAgidPsp(true);
         paymentServiceProviderDetails.setMyBankCode("test");

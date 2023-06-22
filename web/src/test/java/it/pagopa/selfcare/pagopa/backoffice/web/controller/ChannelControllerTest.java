@@ -8,10 +8,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
@@ -661,7 +657,6 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.stamp", is(paymentServiceProviderDetailsDto.getStamp())))
                 .andExpect(jsonPath("$.agid_psp", is(paymentServiceProviderDetailsDto.getAgidPsp())))
                 .andExpect(jsonPath("$.vat_number", is(paymentServiceProviderDetailsDto.getVatNumber())))
-                .andExpect(jsonPath("$.transfer", is(paymentServiceProviderDetailsDto.getTransfer())))
                 .andExpect(jsonPath("$.psp_code", is(paymentServiceProviderDetailsDto.getPspCode())))
                 .andExpect(jsonPath("$.business_name", is(paymentServiceProviderDetailsDto.getBusinessName())))
                 .andExpect(jsonPath("$.enabled", is(paymentServiceProviderDetailsDto.getEnabled())));
@@ -705,7 +700,6 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.stamp", is(paymentServiceProviderDetailsDto.getStamp())))
                 .andExpect(jsonPath("$.agid_psp", is(paymentServiceProviderDetailsDto.getAgidPsp())))
                 .andExpect(jsonPath("$.vat_number", is(paymentServiceProviderDetailsDto.getVatNumber())))
-                .andExpect(jsonPath("$.transfer", is(paymentServiceProviderDetailsDto.getTransfer())))
                 .andExpect(jsonPath("$.psp_code", is(paymentServiceProviderDetailsDto.getPspCode())))
                 .andExpect(jsonPath("$.business_name", is(paymentServiceProviderDetailsDto.getBusinessName())))
                 .andExpect(jsonPath("$.enabled", is(paymentServiceProviderDetailsDto.getEnabled())));
@@ -760,7 +754,6 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.stamp", is(paymentServiceProviderDetails.getStamp())))
                 .andExpect(jsonPath("$.agid_psp", is(paymentServiceProviderDetails.getAgidPsp())))
                 .andExpect(jsonPath("$.vat_number", is(paymentServiceProviderDetails.getVatNumber())))
-                .andExpect(jsonPath("$.transfer", is(paymentServiceProviderDetails.getTransfer())))
                 .andExpect(jsonPath("$.psp_code", is(paymentServiceProviderDetails.getPspCode())))
                 .andExpect(jsonPath("$.business_name", is(paymentServiceProviderDetails.getBusinessName())))
                 .andExpect(jsonPath("$.enabled", is(paymentServiceProviderDetails.getEnabled())));

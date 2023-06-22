@@ -15,7 +15,6 @@
       "psp_code":"pspCode",
       "stamp":true,
       "tax_code":"1",
-      "transfer":true,
       "vat_number":"1"
     },
     "headers": {
