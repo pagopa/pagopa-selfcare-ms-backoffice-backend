@@ -31,7 +31,7 @@ public class IbanController {
         this.apiConfigService = apiConfigService;
     }
 
-    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans}")
     public IbansResource getCreditorInstitutionIbans(@RequestBody @NotNull IbanRequestDto requestDto){
