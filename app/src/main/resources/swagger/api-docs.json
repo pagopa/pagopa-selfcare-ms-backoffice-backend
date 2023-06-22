@@ -3,13 +3,16 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.155"
+    "version" : "0.0.161"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
     "description" : "Inferred Url"
   } ],
   "tags" : [ {
+    "name" : "Ibans",
+    "description" : "Iban Controller"
+  }, {
     "name" : "channels",
     "description" : "Api config channels operations"
   }, {
@@ -2489,6 +2492,78 @@
           },
           "409" : {
             "description" : "Conflict",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/creditorinstitutions/ibans" : {
+      "get" : {
+        "tags" : [ "Ibans" ],
+        "summary" : "getCreditorInstitutionIbans",
+        "description" : "Get creditor institution ibans",
+        "operationId" : "getCreditorInstitutionIbansUsingGET",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "string"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IbansResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
             "content" : {
               "application/problem+json" : {
                 "schema" : {
@@ -5221,6 +5296,41 @@
           "pec" : {
             "type" : "string",
             "description" : "DPO's PEC"
+          }
+        }
+      },
+      "IbanResource" : {
+        "title" : "IbanResource",
+        "required" : [ "ibanValue", "publicationDate", "validityDate" ],
+        "type" : "object",
+        "properties" : {
+          "ibanValue" : {
+            "type" : "string",
+            "description" : "Creditor Institution's address object"
+          },
+          "publicationDate" : {
+            "type" : "string",
+            "description" : "Creditor Institution's address object",
+            "format" : "date-time"
+          },
+          "validityDate" : {
+            "type" : "string",
+            "description" : "Creditor Institution's address object",
+            "format" : "date-time"
+          }
+        }
+      },
+      "IbansResource" : {
+        "title" : "IbansResource",
+        "required" : [ "ibanList" ],
+        "type" : "object",
+        "properties" : {
+          "ibanList" : {
+            "type" : "array",
+            "description" : "Creditor Institution's address object",
+            "items" : {
+              "$ref" : "#/components/schemas/IbanResource"
+            }
           }
         }
       },
