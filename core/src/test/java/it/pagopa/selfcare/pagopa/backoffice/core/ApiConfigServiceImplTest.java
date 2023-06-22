@@ -4,10 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitution;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
@@ -931,6 +928,29 @@ class ApiConfigServiceImplTest {
 
         verify(apiConfigConnectorMock, times(1))
                 .deleteCreditorInstitutionStationRelationship(ecCode, stationcode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+
+    }
+
+    @Test
+    void getCreditorInstitutionIbans(){
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = "1";
+
+        IbansDetails ibansDetails = mockInstance(new IbansDetails());
+        IbanDetails ibanDetails = mockInstance(new IbanDetails());
+        ibansDetails.setIbanList(List.of(ibanDetails));
+
+        when(apiConfigConnectorMock.getCreditorInstitutionIbans(anyString(), anyString()))
+                .thenReturn(ibansDetails);
+
+        //when
+        apiConfigService.getCreditorInstitutionIbans(ecCode, xRequestId);
+        //then
+
+        verify(apiConfigConnectorMock, times(1))
+                .getCreditorInstitutionIbans(ecCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
 
     }
