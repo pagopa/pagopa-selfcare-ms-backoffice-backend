@@ -61,7 +61,7 @@ public class IbanControllerTest {
                 .thenReturn(ibansDetails);
 
         mvc.perform(MockMvcRequestBuilders
-                .get(BASE_URL)
+                .post(BASE_URL)
                 .content(dto.getInputStream().readAllBytes())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
