@@ -1,9 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitution;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.utils.StringUtils;
@@ -162,5 +159,33 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         creditorInstitutionsResource.setPageInfo(model.getPageInfo());
 
         return creditorInstitutionsResource;
+    }
+
+    @Override
+    public IbanResource toResource(IbanDetails model) {
+        if(model == null){
+            return null;
+        }
+
+        IbanResource resource = new IbanResource();
+
+        resource.setIbanValue(model.getIbanValue());
+        resource.setValidityDate(model.getValidityDate());
+        resource.setPublicationDate(model.getPublicationDate());
+
+        return resource;
+    }
+
+    @Override
+    public IbansResource toResource(IbansDetails model) {
+        if(model == null){
+            return null;
+        }
+
+        IbansResource resource = new IbansResource();
+
+        resource.setIbanList(model.getIbanList().stream().map(this::toResource).collect(Collectors.toList()));
+
+        return resource;
     }
 }

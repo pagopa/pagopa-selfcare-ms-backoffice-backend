@@ -15,10 +15,6 @@ public class PaymentServiceProviderDetailsResource extends  PaymentServiceProvid
     @ApiModelProperty(value = "${swagger.model.pspDetails.bic}", required = true)
     private String bic;
 
-    @JsonProperty("transfer")
-    @ApiModelProperty(value = "${swagger.model.pspDetails.transfer}", required = true)
-    private Boolean transfer;
-
     @JsonProperty("my_bank_code")
     @ApiModelProperty(value = "${swagger.model.pspDetails.myBankCode}", required = true)
     private String myBankCode;
