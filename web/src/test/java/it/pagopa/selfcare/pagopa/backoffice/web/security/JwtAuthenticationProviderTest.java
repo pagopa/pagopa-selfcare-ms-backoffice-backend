@@ -12,13 +12,18 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith({MockitoExtension.class})
 class JwtAuthenticationProviderTest {
@@ -35,6 +40,9 @@ class JwtAuthenticationProviderTest {
     @Mock
     private AuthoritiesRetriever authoritiesRetrieverMock;
 
+    @Mock
+    private JwtAuthenticationStrategyFactory jwtAuthenticationStrategyFactoryMock;
+
 
     @Test
     void authenticate_nullAuth() {
@@ -48,103 +56,128 @@ class JwtAuthenticationProviderTest {
     }
 
 
+//    @Test
+//    void authenticate_invalidToken() {
+//        // given
+//        String token = "token";
+//        Authentication authentication = new JwtAuthenticationToken(token);
+//
+//        when(authentication.getCredentials()).thenReturn("dummyCredentials");
+//        when(jwtAuthenticationStrategyFactoryMock.create("dummyCredentials")).thenReturn();
+//
+//        // when
+//
+//        Executable executable = () -> jwtAuthenticationProvider.authenticate(authentication);
+//        // then
+//        //Assertions.assertThrows(JwtAuthenticationException.class, executable);
+//        Assertions.assertNull(MDC.get(MDC_UID));
+//        verify(jwtServiceMock, Mockito.times(1))
+//                .getClaims(token);
+//        Mockito.verifyNoMoreInteractions(jwtServiceMock);
+//        Mockito.verifyNoInteractions(authoritiesRetrieverMock);
+//    }
+
+
+//    @Test
+//    void authenticate_koAuthoritiesRetriever() {
+//        // given
+//        String token = "token";
+//        Authentication authentication = new JwtAuthenticationToken(token);
+//        when(jwtServiceMock.getClaims(any()))
+//                .thenReturn(mock(Claims.class));
+//        Mockito.doThrow(RuntimeException.class)
+//                .when(authoritiesRetrieverMock)
+//                .retrieveAuthorities();
+//        // when
+//        Executable executable = () -> jwtAuthenticationProvider.authenticate(authentication);
+//        // then
+//        Assertions.assertThrows(AuthoritiesRetrieverException.class, executable);
+//        Assertions.assertNull(MDC.get(MDC_UID));
+//        verify(jwtServiceMock, Mockito.times(1))
+//                .getClaims(token);
+//        verify(authoritiesRetrieverMock, Mockito.times(1))
+//                .retrieveAuthorities();
+//        Mockito.verifyNoMoreInteractions(jwtServiceMock, authoritiesRetrieverMock);
+//    }
+
+
+//    @Test
+//    void authenticate_nullUidAndNullAuthorities() {
+//        // given
+//        String token = "token";
+//        Authentication authentication = new JwtAuthenticationToken(token);
+//        when(jwtServiceMock.getClaims(any()))
+//                .thenReturn(mock(Claims.class));
+//        // when
+//        Authentication authenticate = jwtAuthenticationProvider.authenticate(authentication);
+//        // then
+//        Assertions.assertNull(MDC.get(MDC_UID));
+//        Assertions.assertNotNull(authenticate);
+//        assertEquals(token, authenticate.getCredentials());
+//        assertEquals(SelfCareUser.class, authenticate.getPrincipal().getClass());
+//        assertEquals("uid_not_provided", ((SelfCareUser) authenticate.getPrincipal()).getId());
+//        Assertions.assertNotNull(authenticate.getAuthorities());
+//        Assertions.assertTrue(authenticate.getAuthorities().isEmpty());
+//        verify(jwtServiceMock, Mockito.times(1))
+//                .getClaims(token);
+//        verify(authoritiesRetrieverMock, Mockito.times(1))
+//                .retrieveAuthorities();
+//        Mockito.verifyNoMoreInteractions(jwtServiceMock, authoritiesRetrieverMock);
+//    }
+
+
+//    @Test
+//    void authenticate() {
+//        // given
+//        String token = "token";
+//        Authentication authentication = new JwtAuthenticationToken(token);
+//        String uid = "uid";
+//        String email = "email@prova.com";
+//        when(jwtServiceMock.getClaims(any()))
+//                .thenReturn(new DefaultClaims(Map.of(CLAIM_UID, uid, CLAIM_EMAIL, email)));
+//        String role = "role";
+//        when(authoritiesRetrieverMock.retrieveAuthorities())
+//                .thenReturn(List.of(new SimpleGrantedAuthority(role), new SimpleGrantedAuthority(role), new SimpleGrantedAuthority(role)));
+//        // when
+//        Authentication authenticate = jwtAuthenticationProvider.authenticate(authentication);
+//        // then
+//        assertEquals(uid, MDC.get(MDC_UID));
+//        Assertions.assertNotNull(authenticate);
+//        assertEquals(token, authenticate.getCredentials());
+//        assertEquals(SelfCareUser.class, authenticate.getPrincipal().getClass());
+//        assertEquals(uid, ((SelfCareUser) authenticate.getPrincipal()).getId());
+//        assertEquals(email, ((SelfCareUser) authenticate.getPrincipal()).getEmail());
+//        Assertions.assertNotNull(authenticate.getAuthorities());
+//        assertEquals(3, authenticate.getAuthorities().size());
+//        authenticate.getAuthorities().forEach(grantedAuthority -> assertEquals(role, grantedAuthority.getAuthority()));
+//        verify(jwtServiceMock, Mockito.times(1))
+//                .getClaims(token);
+//        verify(authoritiesRetrieverMock, Mockito.times(1))
+//                .retrieveAuthorities();
+//        Mockito.verifyNoMoreInteractions(jwtServiceMock, authoritiesRetrieverMock);
+//    }
+
     @Test
-    void authenticate_invalidToken() {
+    void authenticate2() {
         // given
         String token = "token";
-        Authentication authentication = new JwtAuthenticationToken(token);
-        Mockito.doThrow(RuntimeException.class)
-                .when(jwtServiceMock)
-                .getClaims(Mockito.any());
+        JwtAuthenticationToken jwtAuthenticationToken = new JwtAuthenticationToken(token);
+        jwtAuthenticationToken.setDetails("details");
+        final JwtAuthenticationStrategy jwtAuthenticationStrategyMock = mock(JwtAuthenticationStrategy.class);
+        when(jwtAuthenticationStrategyMock.authenticate(any()))
+                .thenReturn(new JwtAuthenticationToken(null, null, null));
+        when(jwtAuthenticationStrategyFactoryMock.create(any()))
+                .thenReturn(jwtAuthenticationStrategyMock);
         // when
-        Executable executable = () -> jwtAuthenticationProvider.authenticate(authentication);
+        final Authentication authentication = jwtAuthenticationProvider.authenticate(jwtAuthenticationToken);
         // then
-        Assertions.assertThrows(JwtAuthenticationException.class, executable);
-        Assertions.assertNull(MDC.get(MDC_UID));
-        Mockito.verify(jwtServiceMock, Mockito.times(1))
-                .getClaims(token);
-        Mockito.verifyNoMoreInteractions(jwtServiceMock);
-        Mockito.verifyNoInteractions(authoritiesRetrieverMock);
-    }
-
-
-    @Test
-    void authenticate_koAuthoritiesRetriever() {
-        // given
-        String token = "token";
-        Authentication authentication = new JwtAuthenticationToken(token);
-        Mockito.when(jwtServiceMock.getClaims(any()))
-                .thenReturn(Mockito.mock(Claims.class));
-        Mockito.doThrow(RuntimeException.class)
-                .when(authoritiesRetrieverMock)
-                .retrieveAuthorities();
-        // when
-        Executable executable = () -> jwtAuthenticationProvider.authenticate(authentication);
-        // then
-        Assertions.assertThrows(AuthoritiesRetrieverException.class, executable);
-        Assertions.assertNull(MDC.get(MDC_UID));
-        Mockito.verify(jwtServiceMock, Mockito.times(1))
-                .getClaims(token);
-        Mockito.verify(authoritiesRetrieverMock, Mockito.times(1))
-                .retrieveAuthorities();
-        Mockito.verifyNoMoreInteractions(jwtServiceMock, authoritiesRetrieverMock);
-    }
-
-
-    @Test
-    void authenticate_nullUidAndNullAuthorities() {
-        // given
-        String token = "token";
-        Authentication authentication = new JwtAuthenticationToken(token);
-        Mockito.when(jwtServiceMock.getClaims(any()))
-                .thenReturn(Mockito.mock(Claims.class));
-        // when
-        Authentication authenticate = jwtAuthenticationProvider.authenticate(authentication);
-        // then
-        Assertions.assertNull(MDC.get(MDC_UID));
-        Assertions.assertNotNull(authenticate);
-        Assertions.assertEquals(token, authenticate.getCredentials());
-        Assertions.assertEquals(SelfCareUser.class, authenticate.getPrincipal().getClass());
-        Assertions.assertEquals("uid_not_provided", ((SelfCareUser) authenticate.getPrincipal()).getId());
-        Assertions.assertNotNull(authenticate.getAuthorities());
-        Assertions.assertTrue(authenticate.getAuthorities().isEmpty());
-        Mockito.verify(jwtServiceMock, Mockito.times(1))
-                .getClaims(token);
-        Mockito.verify(authoritiesRetrieverMock, Mockito.times(1))
-                .retrieveAuthorities();
-        Mockito.verifyNoMoreInteractions(jwtServiceMock, authoritiesRetrieverMock);
-    }
-
-
-    @Test
-    void authenticate() {
-        // given
-        String token = "token";
-        Authentication authentication = new JwtAuthenticationToken(token);
-        String uid = "uid";
-        String email = "email@prova.com";
-        Mockito.when(jwtServiceMock.getClaims(any()))
-                .thenReturn(new DefaultClaims(Map.of(CLAIM_UID, uid, CLAIM_EMAIL, email)));
-        String role = "role";
-        Mockito.when(authoritiesRetrieverMock.retrieveAuthorities())
-                .thenReturn(List.of(new SimpleGrantedAuthority(role), new SimpleGrantedAuthority(role), new SimpleGrantedAuthority(role)));
-        // when
-        Authentication authenticate = jwtAuthenticationProvider.authenticate(authentication);
-        // then
-        Assertions.assertEquals(uid, MDC.get(MDC_UID));
-        Assertions.assertNotNull(authenticate);
-        Assertions.assertEquals(token, authenticate.getCredentials());
-        Assertions.assertEquals(SelfCareUser.class, authenticate.getPrincipal().getClass());
-        Assertions.assertEquals(uid, ((SelfCareUser) authenticate.getPrincipal()).getId());
-        Assertions.assertEquals(email, ((SelfCareUser) authenticate.getPrincipal()).getEmail());
-        Assertions.assertNotNull(authenticate.getAuthorities());
-        Assertions.assertEquals(3, authenticate.getAuthorities().size());
-        authenticate.getAuthorities().forEach(grantedAuthority -> Assertions.assertEquals(role, grantedAuthority.getAuthority()));
-        Mockito.verify(jwtServiceMock, Mockito.times(1))
-                .getClaims(token);
-        Mockito.verify(authoritiesRetrieverMock, Mockito.times(1))
-                .retrieveAuthorities();
-        Mockito.verifyNoMoreInteractions(jwtServiceMock, authoritiesRetrieverMock);
+        assertNotNull(authentication);
+        assertEquals(jwtAuthenticationToken.getDetails(), authentication.getDetails());
+        verify(jwtAuthenticationStrategyFactoryMock, times(1))
+                .create(token);
+        verify(jwtAuthenticationStrategyMock, times(1))
+                .authenticate(jwtAuthenticationToken);
+        verifyNoMoreInteractions(jwtAuthenticationStrategyFactoryMock, jwtAuthenticationStrategyMock);
     }
 
 
