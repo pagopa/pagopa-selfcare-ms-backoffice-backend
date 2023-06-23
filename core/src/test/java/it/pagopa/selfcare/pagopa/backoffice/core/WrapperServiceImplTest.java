@@ -111,20 +111,21 @@ public class WrapperServiceImplTest {
         //given
         String note ="note";
         String status="TO_CHECK";
+        String createdBy = "createdBy";
         ChannelDetails channelDetailsMock = mockInstance(new ChannelDetails());
         DummyWrapperEntity<ChannelDetails> wrapperEntity = new DummyWrapperEntity<>(channelDetailsMock);
         DummyWrapperEntities<ChannelDetails> wrapperEntities = new DummyWrapperEntities<>(wrapperEntity);
 
-        when(wrapperConnectorMock.update((ChannelDetails) any(),anyString(),anyString()))
+        when(wrapperConnectorMock.update((ChannelDetails) any(),anyString(),anyString(),anyString()))
                 .thenReturn(wrapperEntities);
         //when
-        WrapperEntitiesOperations response = wrapperService.updateWrapperChannelDetails(channelDetailsMock,note,status);
+        WrapperEntitiesOperations response = wrapperService.updateWrapperChannelDetails(channelDetailsMock,note,status, createdBy);
         //then
         assertNotNull(response);
         assertEquals(((DummyWrapperEntity) response.getWrapperEntityOperationsSortedList().get(0)).getEntity(), channelDetailsMock);
         reflectionEqualsByName(wrapperEntities.getWrapperEntityOperationsSortedList().get(0).getEntity(), channelDetailsMock);
         verify(wrapperConnectorMock, times(1))
-                .update(channelDetailsMock,note,status);
+                .update(channelDetailsMock,note,status, createdBy);
         verifyNoMoreInteractions(wrapperConnectorMock);
     }
 

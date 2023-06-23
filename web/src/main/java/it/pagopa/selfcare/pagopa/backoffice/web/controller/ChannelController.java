@@ -12,6 +12,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatu
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.core.JiraServiceManagerService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
@@ -43,11 +44,15 @@ public class ChannelController {
 
     private final WrapperService wrapperService;
 
+    private final JiraServiceManagerService jiraServiceManagerService;
+
+
     @Autowired
-    public ChannelController(ApiConfigService apiConfigService, ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService, WrapperService wrapperService) {
+    public ChannelController(ApiConfigService apiConfigService, ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService, WrapperService wrapperService, JiraServiceManagerService jiraServiceManagerService) {
         this.apiConfigService = apiConfigService;
         this.apiConfigSelfcareIntegrationService = apiConfigSelfcareIntegrationService;
         this.wrapperService = wrapperService;
+        this.jiraServiceManagerService = jiraServiceManagerService;
     }
 
     @GetMapping("")
@@ -136,14 +141,23 @@ public class ChannelController {
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getChannelDetail channelcode = {}, xRequestId = {}", channelcode, xRequestId);
         ChannelDetails channelDetail;
+        WrapperStatus status;
+        String createdBy = "";
+        String modifiedBy = "";
+        PspChannelPaymentTypes ptResponse= new PspChannelPaymentTypes();
         try{
             WrapperEntitiesOperations<ChannelDetails> result = wrapperService.findById(channelcode);
+            createdBy = result.getCreatedBy();
+            modifiedBy = result.getModifiedBy();
             channelDetail = result.getWrapperEntityOperationsSortedList().get(0).getEntity();
+            status = result.getStatus();
+            ptResponse.setPaymentTypeList(result.getWrapperEntityOperationsSortedList().get(0).getEntity().getPaymentTypeList());
         }catch (ResourceNotFoundException e){
             channelDetail = apiConfigService.getChannelDetails(channelcode, xRequestId);
+            ptResponse = apiConfigService.getChannelPaymentTypes(channelcode, xRequestId);
+            status = WrapperStatus.APPROVED;
         }
-        PspChannelPaymentTypes ptResponse = apiConfigService.getChannelPaymentTypes(channelcode, xRequestId);
-        ChannelDetailsResource resource = ChannelMapper.toResource(channelDetail, ptResponse);
+        ChannelDetailsResource resource = ChannelMapper.toResource(channelDetail, ptResponse, status, createdBy, modifiedBy);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelDetails result = {}", resource);
         log.trace("getChannelDetail end");
         return resource;
@@ -177,7 +191,7 @@ public class ChannelController {
 
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         ChannelDetails response = apiConfigService.updateChannel(channelDetails, channelCode, uuid);
-        wrapperService.updateWrapperChannelDetails(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
+        wrapperService.updateWrapperChannelDetails(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
         ChannelDetailsResource resource = ChannelMapper.toResource(response, null);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "updateChannel result = {}", resource);
         log.trace("updateChannel end");
@@ -435,11 +449,15 @@ public class ChannelController {
                                                                  @Valid
                                                                  WrapperChannelDetailsDto wrapperChannelDetailsDto) {
         log.trace("createWrapperChannelDetails start");
+        final String CREATE_CHANNEL_SUMMARY = "Validazione canale creazione: %s";
+        final String CREATE_CHANEL_DESCRIPTION = "Il canale %s deve essere validato: %s";
         log.debug("createWrapperChannelDetails channelDetailsDto = {}", wrapperChannelDetailsDto);
         WrapperEntitiesOperations createdWrapperEntities = wrapperService.
                 createWrapperChannelDetails(ChannelMapper.
                         fromWrapperChannelDetailsDto(wrapperChannelDetailsDto), wrapperChannelDetailsDto.getNote(), wrapperChannelDetailsDto.getStatus().name());
         log.debug("createWrapperChannelDetails result = {}", createdWrapperEntities);
+        jiraServiceManagerService.createTicket(String.format(CREATE_CHANNEL_SUMMARY, wrapperChannelDetailsDto.getChannelCode()),
+                String.format(CREATE_CHANEL_DESCRIPTION, wrapperChannelDetailsDto.getChannelCode(),wrapperChannelDetailsDto.getValidationUrl()));
         log.trace("createWrapperChannelDetails end");
         return createdWrapperEntities;
     }
@@ -451,11 +469,15 @@ public class ChannelController {
                                                                  @Valid
                                                                  ChannelDetailsDto channelDetailsDto) {
         log.trace("updateWrapperChannelDetails start");
+        final String CREATE_CHANNEL_SUMMARY = "Validate channel update: %s";
+        final String CREATE_CHANEL_DESCRIPTION = "The channel %s updated by broker %s needs to be validated: %s";
         log.debug("updateWrapperChannelDetails channelDetailsDto = {}", channelDetailsDto);
         WrapperEntitiesOperations createdWrapperEntities = wrapperService.
                 updateWrapperChannelDetails(ChannelMapper.
-                        fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
+                        fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
         log.debug("updateWrapperChannelDetails result = {}", createdWrapperEntities);
+        jiraServiceManagerService.createTicket(String.format(CREATE_CHANNEL_SUMMARY, channelDetailsDto.getChannelCode()),
+                String.format(CREATE_CHANEL_DESCRIPTION, channelDetailsDto.getChannelCode(), channelDetailsDto.getBrokerPspCode(),channelDetailsDto.getValidationUrl()));
         log.trace("updateWrapperChannelDetails end");
         return createdWrapperEntities;
     }
@@ -535,13 +557,14 @@ public class ChannelController {
                                                         @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                         @ApiParam("${swagger.model.channel.code}")
                                                         @RequestParam(required = false, value = "channelcodefilter") String channelcode,
+                                                        @ApiParam("${swagger.request.brokerCode}")
+                                                        @RequestParam(required = false, value = "brokerCode") String brokerCode,
                                                         @ApiParam("${swagger.request.page}")
                                                         @RequestParam Integer page,
                                                         @ApiParam("${swagger.request.sorting}")
                                                         @RequestParam(required = false, value = "sorting") String sorting) {
         log.trace("getAllChannelsMerged start");
         log.debug("getAllChannelsMerged page = {} limit = {}", page, limit);
-        //fixme
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels xRequestId = {}", xRequestId);
         Channels channels = apiConfigService.getChannels(limit, page, channelcode, sorting, xRequestId);
@@ -574,5 +597,9 @@ public class ChannelController {
         log.trace("getStationsDetailsListByBroker end");
         return resource;
     }
+
+
+//    // pagopa.it/channels/56t67987/769780/
+//    @GetMapping(value = "/{pspcode}/{pspnamedetails}", produces = {MediaType.APPLICATION_JSON_VALUE})
 }
 

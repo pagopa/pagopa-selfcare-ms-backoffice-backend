@@ -178,7 +178,7 @@ class ApiConfigRestClientTest {
         channelDetails.setBrokerDescription("setBrokerDescription");
         channelDetails.setEnabled(true);
         channelDetails.setChannelCode("setChannelCode");
-        channelDetails.setPrimitiveVersion("1");
+        channelDetails.setPrimitiveVersion(1);
         put(TestCase.FULLY_VALUED, channelDetails);
 
     }};
@@ -394,7 +394,7 @@ class ApiConfigRestClientTest {
 
         //then
         assertNotNull(response);
-        checkNotNullFields(response);
+        checkNotNullFields(response, "flagPspCp");
 
     }
 
@@ -676,7 +676,6 @@ class ApiConfigRestClientTest {
 
         paymentServiceProviderDetails.setAbi("abi");
         paymentServiceProviderDetails.setBic("bic");
-        paymentServiceProviderDetails.setTransfer(true);
         paymentServiceProviderDetails.setStamp(true);
         paymentServiceProviderDetails.setAgidPsp(true);
         paymentServiceProviderDetails.setMyBankCode("test");

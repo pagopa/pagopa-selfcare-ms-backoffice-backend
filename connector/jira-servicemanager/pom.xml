@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>pagopa-selfcare-ms-backoffice-connector</artifactId>
+        <groupId>it.pagopa.selfcare.pagopa</groupId>
+        <version>0.0.164</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>pagopa-selfcare-connector-jira-servicemanager</artifactId>
+    <repositories>
+        <repository>
+            <id>atlassian-public</id>
+            <url>https://packages.atlassian.com/maven-external/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+        </repository>
+    </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-rest-java-client-core</artifactId>
+            <version>5.2.4</version>
+
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.atlassian.jira</groupId>-->
+<!--            <artifactId>jira-rest-java-client-api</artifactId>-->
+<!--            <version>5.2.4</version>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>io.atlassian.fugue</groupId>
+            <artifactId>fugue</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.atlassian.jira</groupId>-->
+<!--            <artifactId>jira-rest-java-client-core</artifactId>-->
+<!--            <version>4.0.0</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.atlassian.fugue</groupId>-->
+<!--            <artifactId>fugue</artifactId>-->
+<!--            <version>2.6.1</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.atlassian.jira</groupId>-->
+<!--            <artifactId>jira-api</artifactId>-->
+<!--            <version>5.2.4</version>-->
+<!--        </dependency>-->
+
+
+    </dependencies>
+
+</project>

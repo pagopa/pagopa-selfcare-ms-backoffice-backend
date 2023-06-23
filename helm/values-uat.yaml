@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaselfcaremsbackofficebackend
-    tag: "0.0.147" #improve
+    tag: "0.0.164" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -61,7 +61,7 @@ microservice-chart:
           value: "70"
   envConfig:
     WEBSITE_SITE_NAME: 'pagopaselfcaremsbackofficebackend'
-    EXTERNAL_API_SERVICE_URL: https://api.uat.selfcare.pagopa.it
+    EXTERNAL_API_SERVICE_URL: https://api.selfcare.pagopa.it
     PAGOPA_APIM_SERVICE_URL: https://api.uat.platform.pagopa.it
     PAGOPA_SELFCARE_INTEGRATION_APIM_SERVICE_URL: https://api.uat.platform.pagopa.it
     AZURE_RESOURCE_GROUP: pagopa-u-api-rg
@@ -69,10 +69,11 @@ microservice-chart:
     ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
     MONGODB_NAME: pagopaBackoffice
     AUTHORIZATION_FLAG: 'false'
+    ENV: 'UAT'
   envSecret:
     AZURE_CLIENT_SECRET: pagopa-u-selfcare-client-secret
     AZURE_CLIENT_ID: pagopa-u-selfcare-client-id
-    SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selfcare-u-apim-external-api-key
+    SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selfcare-u-apim-external-api-key-env-prod
     PAGOPA_APIM_API_CONFIG_API_KEY_PAGOPA: pagopa-u-apim-api-config-key
     PAGOPA_APIM_API_CONFIG_SELFCARE_INTEGRATION_API_KEY_PAGOPA: pagopa-u-apim-api-config-selfcare-integration-key
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-u-connection-string'
@@ -81,6 +82,11 @@ microservice-chart:
     JWT_TOKEN_PUBLIC_KEY: pagopa-u-weu-selfcare-jwt-pub-key
     TEST_EMAIL: pagopa-u-env-test-email
     MONGODB_CONNECTION_URI: cosmodbmongo-u-bopagopa-connection-string
+    JIRA_URL: jira-u-url
+    JIRA_USERNAME: jira-u-username
+    JIRA_PASSWORD: jira-u-token
+    JIRA_PROJECT_KEY: jira-u-project-key
+    JIRA_REQ_TYPE_TASKID: jira-u-req-task-id
   keyvault:
     name: "pagopa-u-selfcare-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"

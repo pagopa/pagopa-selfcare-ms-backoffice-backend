@@ -39,6 +39,7 @@
   "channel_code": "setChannelCode",
   "payment_types": ["paymentType"],
   "primitive_version": "1",
-  "status": "TO_CHECK",
-  "note": "note"
+  "status": "APPROVED",
+  "note": "note",
+  "validationUrl": "validationUrl"
 }

@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
@@ -188,4 +189,7 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                                                       @PathVariable(required = false, name = "stationcode") String stationcode,
                                                       @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
 
+    @GetMapping(value = "${rest-client.api-config.getCreditorInstitutionIbans.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    IbansDetails getCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
+                                             @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
 }

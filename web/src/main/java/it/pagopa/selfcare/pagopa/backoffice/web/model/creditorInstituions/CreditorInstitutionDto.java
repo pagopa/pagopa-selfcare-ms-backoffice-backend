@@ -28,7 +28,7 @@ public class CreditorInstitutionDto {
     @NotBlank
     private String businessName;
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.address}", required = true)
-    @NotNull
+//    @NotNull
     @JsonProperty(required = true)
     @Valid
     private CreditorInstitutionAddressDto address;

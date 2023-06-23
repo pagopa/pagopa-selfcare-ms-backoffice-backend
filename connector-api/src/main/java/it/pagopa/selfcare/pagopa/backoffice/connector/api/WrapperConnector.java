@@ -15,7 +15,7 @@ public interface WrapperConnector {
 
     WrapperEntitiesOperations<StationDetails> insert(StationDetails stationDetails, String note, String status);
 
-    WrapperEntitiesOperations<ChannelDetails> update(ChannelDetails channelDetails, String note, String status);
+    WrapperEntitiesOperations<ChannelDetails> update(ChannelDetails channelDetails, String note, String status, String createdBy);
 
     WrapperEntitiesOperations<ChannelDetails> updateByOpt(ChannelDetails channelDetails, String note, String status);
 

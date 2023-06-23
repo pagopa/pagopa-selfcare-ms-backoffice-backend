@@ -4,10 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitution;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
@@ -501,18 +498,22 @@ class ApiConfigServiceImplTest {
         //given
         final String xRequestId = "xRequestId";
         final String pspCode = "pspCode";
+        final String sorting = "ASC";
+        final Integer limit = 100;
+        final Integer page = 0;
 
-        PspChannels pspChannels = mockInstance(new PspChannels());
-        PspChannel pspChannel = mockInstance(new PspChannel());
-        pspChannel.setChannelCode("TEST_01");
 
-        pspChannels.setChannelsList(List.of(pspChannel));
+        Channels channels = mockInstance(new Channels());
+        Channel channel = mockInstance(new Channel());
+        channel.setChannelCode("TEST_01");
 
-        when(apiConfigConnectorMock.getPspChannels(any(), anyString()))
-                .thenReturn(pspChannels);
+        channels.setChannelList(List.of(channel));
+
+        when(apiConfigConnectorMock.getChannels(eq(limit), eq(page), anyString(), eq(sorting), anyString()))
+                .thenReturn(channels);
 
         //when
-        String response = apiConfigService.generateChannelCode(anyString(), anyString());
+        String response = apiConfigService.generateChannelCode(pspCode, xRequestId);
         assertNotNull(response);
 
         assertEquals("TEST_02", response);
@@ -523,21 +524,24 @@ class ApiConfigServiceImplTest {
         //given
         final String xRequestId = "xRequestId";
         final String pspCode = "TEST";
+        final String sorting = "ASC";
+        final Integer limit = 100;
+        final Integer page = 0;
 
-        PspChannels pspChannels = mockInstance(new PspChannels());
-        PspChannel pspChannel = mockInstance(new PspChannel());
-        pspChannel.setChannelCode("TEST");
+        Channels channels = mockInstance(new Channels());
+        Channel channel = mockInstance(new Channel());
+        channel.setChannelCode("TEST");
 
-        pspChannels.setChannelsList(List.of(pspChannel));
+        channels.setChannelList(List.of(channel));
 
-        when(apiConfigConnectorMock.getPspChannels(any(), anyString()))
-                .thenReturn(pspChannels);
+        when(apiConfigConnectorMock.getChannels(eq(limit), eq(page), anyString(), eq(sorting), anyString()))
+                .thenReturn(channels);
 
         //when
         String response = apiConfigService.generateChannelCode(pspCode, xRequestId);
         assertNotNull(response);
         verify(apiConfigConnectorMock, times(1))
-                .getPspChannels(anyString(), anyString());
+                .getChannels(eq(limit), eq(page), anyString(), eq(sorting), anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
         assertEquals("TEST_01", response);
     }
@@ -758,7 +762,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperChannels_ASC() {
         //given
-        WrapperChannels channels = mock(WrapperChannels.class);
+        WrapperChannels channels = new WrapperChannels();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        channels.setPageInfo(pageInfo);
+        channels.setChannelList(new ArrayList<>());
         String sorting = "ASC";
 
         //when
@@ -788,7 +799,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperChannels_DESC() {
         //given
-        WrapperChannels channels = mock(WrapperChannels.class);
+        WrapperChannels channels = new WrapperChannels();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        channels.setPageInfo(pageInfo);
+        channels.setChannelList(new ArrayList<>());
         String sorting = "DESC";
 
         //when
@@ -818,7 +836,14 @@ class ApiConfigServiceImplTest {
     @Test
     void mergeAndSortWrapperChannels_nullSorting() {
         //given
-        WrapperChannels channels = mock(WrapperChannels.class);
+        WrapperChannels channels = new WrapperChannels();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(50);
+        pageInfo.setTotalPages(0);
+        pageInfo.setPage(0);
+        pageInfo.setItemsFound(5);
+        channels.setPageInfo(pageInfo);
+        channels.setChannelList(new ArrayList<>());
         String sorting = null;
 
         //when
@@ -903,6 +928,29 @@ class ApiConfigServiceImplTest {
 
         verify(apiConfigConnectorMock, times(1))
                 .deleteCreditorInstitutionStationRelationship(ecCode, stationcode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+
+    }
+
+    @Test
+    void getCreditorInstitutionIbans(){
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = "1";
+
+        IbansDetails ibansDetails = mockInstance(new IbansDetails());
+        IbanDetails ibanDetails = mockInstance(new IbanDetails());
+        ibansDetails.setIbanList(List.of(ibanDetails));
+
+        when(apiConfigConnectorMock.getCreditorInstitutionIbans(anyString(), anyString()))
+                .thenReturn(ibansDetails);
+
+        //when
+        apiConfigService.getCreditorInstitutionIbans(ecCode, xRequestId);
+        //then
+
+        verify(apiConfigConnectorMock, times(1))
+                .getCreditorInstitutionIbans(ecCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
 
     }

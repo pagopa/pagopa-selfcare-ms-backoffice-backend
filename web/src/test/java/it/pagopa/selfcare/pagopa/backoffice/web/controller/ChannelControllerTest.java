@@ -8,13 +8,10 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.core.JiraServiceManagerService;
 import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
@@ -82,6 +79,9 @@ class ChannelControllerTest {
 
     @MockBean
     private WrapperConnector wrapperConnectorMock;
+
+    @MockBean
+    private JiraServiceManagerService jiraServiceManagerService;
 
     @Test
     void getChannels() throws Exception {
@@ -244,6 +244,7 @@ class ChannelControllerTest {
         //given
         String xRequestId = "1";
         String channelCode = "setChannelCode";
+        String createdBy = "createdBy";
         InputStream is = dto.getInputStream();
         ChannelDetailsDto channelDetailsDto = objectMapper.readValue(is, ChannelDetailsDto.class);
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
@@ -255,7 +256,7 @@ class ChannelControllerTest {
 
         when(apiConfigServiceMock.updateChannel(any(), anyString(), anyString()))
                 .thenReturn(channelDetails);
-        when(wrapperServiceMock.updateWrapperChannelDetails(channelDetails,channelDetailsDto.getNote(),channelDetailsDto.getStatus().name()))
+        when(wrapperServiceMock.updateWrapperChannelDetails(channelDetails,channelDetailsDto.getNote(),channelDetailsDto.getStatus().name(), createdBy))
                 .thenReturn(wrapperEntities);
 
         //when
@@ -294,7 +295,7 @@ class ChannelControllerTest {
         verify(apiConfigServiceMock, times(1))
                 .updateChannel(any(), anyString(), anyString());
         verify(wrapperServiceMock, times(1))
-                .updateWrapperChannelDetails(eq(channelDetails), anyString(), anyString());
+                .updateWrapperChannelDetails(eq(channelDetails), anyString(), anyString(), any());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
@@ -656,7 +657,6 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.stamp", is(paymentServiceProviderDetailsDto.getStamp())))
                 .andExpect(jsonPath("$.agid_psp", is(paymentServiceProviderDetailsDto.getAgidPsp())))
                 .andExpect(jsonPath("$.vat_number", is(paymentServiceProviderDetailsDto.getVatNumber())))
-                .andExpect(jsonPath("$.transfer", is(paymentServiceProviderDetailsDto.getTransfer())))
                 .andExpect(jsonPath("$.psp_code", is(paymentServiceProviderDetailsDto.getPspCode())))
                 .andExpect(jsonPath("$.business_name", is(paymentServiceProviderDetailsDto.getBusinessName())))
                 .andExpect(jsonPath("$.enabled", is(paymentServiceProviderDetailsDto.getEnabled())));
@@ -700,7 +700,6 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.stamp", is(paymentServiceProviderDetailsDto.getStamp())))
                 .andExpect(jsonPath("$.agid_psp", is(paymentServiceProviderDetailsDto.getAgidPsp())))
                 .andExpect(jsonPath("$.vat_number", is(paymentServiceProviderDetailsDto.getVatNumber())))
-                .andExpect(jsonPath("$.transfer", is(paymentServiceProviderDetailsDto.getTransfer())))
                 .andExpect(jsonPath("$.psp_code", is(paymentServiceProviderDetailsDto.getPspCode())))
                 .andExpect(jsonPath("$.business_name", is(paymentServiceProviderDetailsDto.getBusinessName())))
                 .andExpect(jsonPath("$.enabled", is(paymentServiceProviderDetailsDto.getEnabled())));
@@ -755,7 +754,6 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.stamp", is(paymentServiceProviderDetails.getStamp())))
                 .andExpect(jsonPath("$.agid_psp", is(paymentServiceProviderDetails.getAgidPsp())))
                 .andExpect(jsonPath("$.vat_number", is(paymentServiceProviderDetails.getVatNumber())))
-                .andExpect(jsonPath("$.transfer", is(paymentServiceProviderDetails.getTransfer())))
                 .andExpect(jsonPath("$.psp_code", is(paymentServiceProviderDetails.getPspCode())))
                 .andExpect(jsonPath("$.business_name", is(paymentServiceProviderDetails.getBusinessName())))
                 .andExpect(jsonPath("$.enabled", is(paymentServiceProviderDetails.getEnabled())));
@@ -834,6 +832,7 @@ class ChannelControllerTest {
     void updateWrapperChannelDetails(@Value("classpath:stubs/channelDto.json") Resource dto) throws Exception {
         //given
         String channelCode = "channelCode";
+        String createdBy = "createdBy";
         ChannelDetails channelDetails = mockInstance(new ChannelDetails());
         DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
         DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
@@ -846,7 +845,7 @@ class ChannelControllerTest {
         wrapperEntities.getEntities().add(wrapperEntityDto);
         String status = channelDetailsDto.getStatus().name();
         String note = channelDetailsDto.getNote();
-        when(wrapperServiceMock.updateWrapperChannelDetails(fromChannelDetailsDto, note, status))
+        when(wrapperServiceMock.updateWrapperChannelDetails(fromChannelDetailsDto, note, status, null))
                 .thenReturn(wrapperEntities);
 
         //when
@@ -856,12 +855,11 @@ class ChannelControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.status", is(wrapperEntities.getStatus().name())))
                 .andExpect(jsonPath("$.type", is(wrapperEntities.getType().name())))
                 .andExpect(jsonPath("$.entities", notNullValue()));
         //then
         verify(wrapperServiceMock, times(1))
-                .updateWrapperChannelDetails(any(), anyString(), anyString());
+                .updateWrapperChannelDetails(any(), anyString(), anyString(), any());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
@@ -994,8 +992,6 @@ class ChannelControllerTest {
 
         when(wrapperServiceMock.findById(channelcode))
                 .thenReturn(wrapperEntities);
-        when(apiConfigServiceMock.getChannelPaymentTypes(anyString(), anyString()))
-                .thenReturn(paymentTypes);
 
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -1028,8 +1024,6 @@ class ChannelControllerTest {
         //then
         verify(wrapperServiceMock, times(1))
                 .findById(anyString());
-        verify(apiConfigServiceMock, times(1))
-                .getChannelPaymentTypes(eq(channelcode), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 

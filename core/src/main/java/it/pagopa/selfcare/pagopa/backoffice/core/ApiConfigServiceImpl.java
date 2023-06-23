@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
@@ -199,9 +200,9 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     public String generateChannelCode(String pspCode, String xRequestId) {
         log.trace("generateChannelCode start");
         log.debug("generateChannelCode pspCode = {}", pspCode);
-        PspChannels response = apiConfigConnector.getPspChannels(pspCode, xRequestId);
-        List<PspChannel> codeList = response.getChannelsList();
-        List<String> codes = codeList.stream().map(PspChannel::getChannelCode)
+        Channels response = apiConfigConnector.getChannels(100, 0, pspCode, "ASC", xRequestId);
+        List<Channel> codeList = response.getChannelList();
+        List<String> codes = codeList.stream().map(Channel::getChannelCode)
                 .filter(s -> s.matches("^\\w+_\\d+$")) // String_nn
                 .collect(Collectors.toList());
         String newChannelCode = generator(codes, pspCode);
@@ -371,7 +372,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
 
     @Override
     public WrapperChannels mergeAndSortWrapperChannels(WrapperChannels wrapperChannelsApiConfig, WrapperChannels wrapperChannelsMongo, String sorting) {
-        log.trace("mergeAndSortWrapperStations start");
+        log.trace("mergeAndSortWrapperChannels start");
 
         List<WrapperChannel> mergedList = new ArrayList<>();
         mergedList.addAll(wrapperChannelsMongo.getChannelList());
@@ -388,8 +389,13 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         }
         WrapperChannels result = new WrapperChannels();
         result.setChannelList(mergedList);
-        result.setPageInfo(wrapperChannelsApiConfig.getPageInfo());
-        log.trace("mergeAndSortWrapperStations end");
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setLimit(wrapperChannelsApiConfig.getPageInfo().getLimit());
+        pageInfo.setTotalPages(wrapperChannelsApiConfig.getPageInfo().getTotalPages());
+        pageInfo.setPage(wrapperChannelsApiConfig.getPageInfo().getPage());
+        pageInfo.setItemsFound(mergedList.size());
+        result.setPageInfo(pageInfo);
+        log.trace("mergeAndSortWrapperChannels end");
         return result;
     }
 
@@ -407,5 +413,14 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.trace("deleteCreditorInstitutionStationRelationship start");
         apiConfigConnector.deleteCreditorInstitutionStationRelationship(ecCode, stationcode, xRequestId);
         log.trace("deleteCreditorInstitutionStationRelationship end");
+    }
+
+    public IbansDetails getCreditorInstitutionIbans(String ecCode, String xRequestId){
+        log.trace("getCreditorInstitutionIbans start");
+        IbansDetails response = apiConfigConnector.getCreditorInstitutionIbans(ecCode, xRequestId);
+        log.debug("getCreditorInstitutionIbans result = {}", response);
+        log.trace("getCreditorInstitutionIbans end");
+
+        return response;
     }
 }
