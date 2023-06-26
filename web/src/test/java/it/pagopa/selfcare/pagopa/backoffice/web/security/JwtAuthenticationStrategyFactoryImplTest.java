@@ -8,6 +8,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.util.ResourceUtils;
@@ -30,14 +31,12 @@ public class JwtAuthenticationStrategyFactoryImplTest {
 
     private final JwtAuthenticationStrategyFactoryImpl jwtAuthenticationStrategyFactory;
     private final BeanFactory beanFactoryMock;
-
-
-    public JwtAuthenticationStrategyFactoryImplTest() throws Exception {
+    public JwtAuthenticationStrategyFactoryImplTest() {
         beanFactoryMock = mock(BeanFactory.class);
-        Mockito.when(beanFactoryMock.getBean(any(Class.class)))
+        Mockito.when(beanFactoryMock.getBean(anyString(), any(Class.class)))
                 .thenAnswer(invocation -> {
                     final JwtAuthenticationStrategy jwtAuthenticationStrategy;
-                    final Class<?> argument = invocation.getArgument(0, Class.class);
+                    final Class<?> argument = invocation.getArgument(1, Class.class);
                     if (PagopaAuthenticationStrategy.class.equals(argument)) {
                         jwtAuthenticationStrategy = new PagopaAuthenticationStrategy(
                                 mock(JwtService.class),
@@ -88,7 +87,7 @@ public class JwtAuthenticationStrategyFactoryImplTest {
         // then
         assertEquals(clazz, jwtAuthenticationStrategy.getClass());
         verify(beanFactoryMock, times(1))
-                .getBean(clazz);
+                .getBean(anyString(), eq(clazz));
         verifyNoMoreInteractions(beanFactoryMock);
     }
 

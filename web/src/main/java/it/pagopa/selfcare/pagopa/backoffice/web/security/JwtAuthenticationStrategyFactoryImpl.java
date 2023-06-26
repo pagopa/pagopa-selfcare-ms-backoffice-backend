@@ -40,7 +40,7 @@ public class JwtAuthenticationStrategyFactoryImpl implements JwtAuthenticationSt
         }
         switch (issuer) {
             case "https://api.prod.platform.pagopa.it":
-                bean = beanFactory.getBean(PagopaPRODAuthenticationStrategy.class);
+                bean = beanFactory.getBean("pagopaPRODAuthenticationStrategy", PagopaPRODAuthenticationStrategy.class);
                 break;
             default:
                 bean = beanFactory.getBean("pagopaAuthenticationStrategy", PagopaAuthenticationStrategy.class);
