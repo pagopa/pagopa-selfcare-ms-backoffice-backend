@@ -65,6 +65,7 @@ public class PagopaAuthenticationStrategyTest {
     void authenticate_invalidToken() {
         // given
         String token = "token";
+
         JwtAuthenticationToken authentication = new JwtAuthenticationToken(token);
         doThrow(RuntimeException.class)
                 .when(jwtServiceMock)
@@ -75,7 +76,7 @@ public class PagopaAuthenticationStrategyTest {
         assertThrows(JwtAuthenticationException.class, executable);
         assertNull(MDC.get(MDC_UID));
         verify(jwtServiceMock, times(1))
-                .getClaims(token);
+                .getClaims(any(),anyString());
         verifyNoMoreInteractions(jwtServiceMock);
         verifyNoInteractions(authoritiesRetrieverMock);
     }
@@ -86,7 +87,7 @@ public class PagopaAuthenticationStrategyTest {
         // given
         String token = "token";
         JwtAuthenticationToken authentication = new JwtAuthenticationToken(token);
-        when(jwtServiceMock.getClaims(any()))
+        when(jwtServiceMock.getClaims(any(),any()))
                 .thenReturn(mock(Claims.class));
         doThrow(RuntimeException.class)
                 .when(authoritiesRetrieverMock)
@@ -97,7 +98,7 @@ public class PagopaAuthenticationStrategyTest {
         assertThrows(AuthoritiesRetrieverException.class, executable);
         assertNull(MDC.get(MDC_UID));
         verify(jwtServiceMock, times(1))
-                .getClaims(token);
+                .getClaims(any(),eq(token));
         verify(authoritiesRetrieverMock, times(1))
                 .retrieveAuthorities();
         verifyNoMoreInteractions(jwtServiceMock, authoritiesRetrieverMock);
@@ -109,7 +110,7 @@ public class PagopaAuthenticationStrategyTest {
         // given
         String token = "token";
         JwtAuthenticationToken authentication = new JwtAuthenticationToken(token);
-        when(jwtServiceMock.getClaims(any()))
+        when(jwtServiceMock.getClaims(any(),any()))
                 .thenReturn(mock(Claims.class));
         // when
         Authentication authenticate = pagopaAuthenticationStrategy.authenticate(authentication);
@@ -122,7 +123,7 @@ public class PagopaAuthenticationStrategyTest {
         assertNotNull(authenticate.getAuthorities());
         assertTrue(authenticate.getAuthorities().isEmpty());
         verify(jwtServiceMock, times(1))
-                .getClaims(token);
+                .getClaims(any(),eq(token));
         verify(authoritiesRetrieverMock, times(1))
                 .retrieveAuthorities();
         verifyNoMoreInteractions(jwtServiceMock, authoritiesRetrieverMock);
@@ -137,7 +138,7 @@ public class PagopaAuthenticationStrategyTest {
         String uid = "uid";
         String email = "email@prova.com";
         String fiscalCode = "fiscalCode";
-        when(jwtServiceMock.getClaims(any()))
+        when(jwtServiceMock.getClaims(any(),any()))
                 .thenReturn(new DefaultClaims(Map.of(CLAIMS_UID, uid, CLAIM_EMAIL, email, CLAIM_ORG_VAT, fiscalCode)));
         String role = "role";
         when(authoritiesRetrieverMock.retrieveAuthorities())
@@ -155,7 +156,7 @@ public class PagopaAuthenticationStrategyTest {
         assertEquals(3, authenticate.getAuthorities().size());
         authenticate.getAuthorities().forEach(grantedAuthority -> assertEquals(role, grantedAuthority.getAuthority()));
         verify(jwtServiceMock, times(1))
-                .getClaims(token);
+                .getClaims(any(),eq(token));
         verify(authoritiesRetrieverMock, times(1))
                 .retrieveAuthorities();
         verifyNoMoreInteractions(jwtServiceMock, authoritiesRetrieverMock);
