@@ -78,6 +78,22 @@ class JwtServiceTest {
         Assertions.assertEquals("id", body.getId());
     }
 
+    @Test
+    void getClaimsProd_signatureOK() throws Exception {
+        // given
+        DefaultClaims claims = new DefaultClaims();
+        claims.setId("id");
+        String jwt = generateToken(loadPrivateKey(), claims);
+        File file = ResourceUtils.getFile("classpath:certs/pubkey.pem");
+        String jwtSigningKey = Files.readString(file.toPath(), Charset.defaultCharset());
+        JwtService jwtService = new JwtService(jwtSigningKey, jwtSigningKey);
+        // when
+        Claims body = jwtService.getClaimsProd(jwt);
+        // then
+        Assertions.assertNotNull(body);
+        Assertions.assertEquals("id", body.getId());
+    }
+
 
     private PrivateKey loadPrivateKey() throws Exception {
         File file = ResourceUtils.getFile("classpath:certs/key.pem");
