@@ -40,10 +40,10 @@ public class PagopaPRODAuthenticationStrategy implements JwtAuthenticationStrate
         SelfCareUser user;
         try {
             Claims claims = jwtService.getClaimsProd(authentication.getCredentials());
-            log.debug(LogUtils.CONFIDENTIAL_MARKER, "authenticate claims = {}", claims);
+            log.debug(LogUtils.CONFIDENTIAL_MARKER, "authenticate claimsProd = {}", claims);
             Optional<String> uid = Optional.ofNullable(claims.get(CLAIMS_UID, String.class));
             uid.ifPresentOrElse(value -> MDC.put(MDC_UID, value),
-                    () -> log.warn("uid claims is null"));
+                    () -> log.warn("uid claimsProd is null"));
 
             user = SelfCareUser.builder(uid.orElse("uid_not_provided"))
                     .email(claims.get(CLAIM_EMAIL, String.class))
@@ -51,26 +51,24 @@ public class PagopaPRODAuthenticationStrategy implements JwtAuthenticationStrate
                     .surname(claims.get(CLAIM_SURNAME, String.class))
                     .orgVat(claims.get(CLAIM_ORG_VAT, String.class))
                     .build();
-
         } catch (Exception e) {
             MDC.remove(MDC_UID);
             throw new JwtAuthenticationException(e.getMessage(), e);
         }
-
         final Collection<GrantedAuthority> authorities;
         try {
             authorities = authoritiesRetriever.retrieveAuthorities();
         } catch (Exception e) {
             MDC.remove(MDC_UID);
-            throw new AuthoritiesRetrieverException("An error occurred during authorities retrieval", e);
+            throw new AuthoritiesRetrieverException("An error occurred during authorities retrieval Prod", e);
         }
         JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authentication.getCredentials(),
                 user,
                 authorities);
         authenticationToken.setDetails(authentication.getDetails());
 
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "authenticate result = {}", authentication);
-        log.trace("authenticate end");
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "authenticate prod result = {}", authentication);
+        log.trace("authenticate prod end");
         return authenticationToken;
     }
 }
