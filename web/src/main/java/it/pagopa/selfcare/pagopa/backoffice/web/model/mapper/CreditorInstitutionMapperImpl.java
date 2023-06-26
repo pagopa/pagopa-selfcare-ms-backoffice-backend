@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.utils.StringUtils;
@@ -187,5 +188,34 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         resource.setIbanList(model.getIbanList().stream().map(this::toResource).collect(Collectors.toList()));
 
         return resource;
+    }
+
+    @Override
+    public IbanCreate fromDto(IbanCreateRequestDto ibanCreateRequestDto) {
+        if(ibanCreateRequestDto == null){
+            return null;
+        }
+        IbanCreate response = new IbanCreate();
+
+        response.setActive(ibanCreateRequestDto.isActive());
+        response.setDescription(ibanCreateRequestDto.getDescription());
+        response.setIban(ibanCreateRequestDto.getIban());
+        response.setLabels(ibanCreateRequestDto.getLabels().stream().map(this::fromDto).collect(Collectors.toList()));
+        response.setDueDate(ibanCreateRequestDto.getDueDate());
+        response.setValidityDate(ibanCreateRequestDto.getValidityDate());
+
+        return response;
+    }
+
+    @Override
+    public IbanLabel fromDto(it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel dto) {
+        if(dto == null){
+            return null;
+        }
+        IbanLabel response = new IbanLabel();
+
+        response.setDescription(dto.getDescription());
+        response.setName(dto.getName());
+        return response;
     }
 }

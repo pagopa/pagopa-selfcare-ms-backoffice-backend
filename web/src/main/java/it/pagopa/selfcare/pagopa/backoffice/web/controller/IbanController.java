@@ -2,8 +2,10 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansDetails;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanCreateRequestDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanRequestDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbansResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
@@ -45,6 +47,23 @@ public class IbanController {
 
         log.debug("getCreditorInstitutionsIbans result = {}", resource);
         log.trace("getCreditorInstitutionsIbans end");
+        return resource;
+    }
+
+    @PostMapping(value = "create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.create}")
+    public IbansResource createCreditorInstitutionIbans(@RequestBody @NotNull IbanCreateRequestDto requestDto){
+        log.trace("createCreditorInstitutionIbans start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("createCreditorInstitutionIbans xRequestId = {}", xRequestId);
+
+        IbanCreate ibans = apiConfigService.createCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), mapper.fromDto(requestDto), xRequestId);
+
+        IbansResource resource = mapper.toResource(ibans);
+
+        log.debug("createCreditorInstitutionIbans result = {}", resource);
+        log.trace("createCreditorInstitutionIbans end");
         return resource;
     }
 

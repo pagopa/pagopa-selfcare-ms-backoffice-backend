@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannel;
@@ -423,4 +424,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
 
         return response;
     }
+
+    public IbanCreate createCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId){
+        log.trace("createCreditorInstitutionIbans start");
+        IbanCreate response = apiConfigConnector.createCreditorInstitutionIbans(ecCode, ibanCreate, xRequestId);
+        log.debug("createCreditorInstitutionIbans result = {}", response);
+        log.trace("createCreditorInstitutionIbans end");
+
+        return response;
+    }
+
+
 }

@@ -4,6 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
@@ -77,4 +78,6 @@ public interface ApiConfigConnector {
     void deleteCreditorInstitutionStationRelationship(String ecCode, String stationcode, String xRequestId);
 
     IbansDetails getCreditorInstitutionIbans(String ecCode, String xRequestId);
+
+    IbanCreate createCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId);
 }
