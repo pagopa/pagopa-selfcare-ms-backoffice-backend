@@ -43,7 +43,7 @@ public class JwtAuthenticationStrategyFactoryImpl implements JwtAuthenticationSt
                 bean = beanFactory.getBean(PagopaPRODAuthenticationStrategy.class);
                 break;
             default:
-                bean = beanFactory.getBean(PagopaAuthenticationStrategy.class);
+                bean = beanFactory.getBean("pagopaAuthenticationStrategy", PagopaAuthenticationStrategy.class);
                 break;
         }
         return bean;
