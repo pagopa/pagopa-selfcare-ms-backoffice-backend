@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class PagopaAuthenticationStrategy implements JwtAuthenticationStrategy{
+public class PagopaAuthenticationStrategy implements JwtAuthenticationStrategy {
 
 
     private static final String MDC_UID = "uid";
@@ -27,6 +27,7 @@ public class PagopaAuthenticationStrategy implements JwtAuthenticationStrategy{
     private final JwtService jwtService;
     private final AuthoritiesRetriever authoritiesRetriever;
 
+    protected String env;
 
     @Autowired
     public PagopaAuthenticationStrategy(JwtService jwtService, AuthoritiesRetriever authoritiesRetriever) {
@@ -37,11 +38,12 @@ public class PagopaAuthenticationStrategy implements JwtAuthenticationStrategy{
 
     @Override
     public JwtAuthenticationToken authenticate(JwtAuthenticationToken authentication) throws AuthenticationException {
-        log.trace("authenticate start");log.debug(LogUtils.CONFIDENTIAL_MARKER, "authenticate authentication = {}", authentication);
+        log.trace("authenticate start");
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "authenticate authentication = {}", authentication);
 
         SelfCareUser user;
         try {
-            Claims claims = jwtService.getClaims(authentication.getCredentials());
+            Claims claims = jwtService.getClaims(env,authentication.getCredentials());
             log.debug(LogUtils.CONFIDENTIAL_MARKER, "authenticate claims = {}", claims);
             Optional<String> uid = Optional.ofNullable(claims.get(CLAIMS_UID, String.class));
             uid.ifPresentOrElse(value -> MDC.put(MDC_UID, value),

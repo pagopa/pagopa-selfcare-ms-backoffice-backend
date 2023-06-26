@@ -33,7 +33,7 @@ public class JwtService {
 
     public Claims getClaims(String token) {
         log.trace("getClaims start");
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getClaims token = {}" , token);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getClaims token = {}", token);
         return Jwts.parser()
                 .setSigningKey(jwtSigningKey)
                 .parseClaimsJws(token)
@@ -42,11 +42,22 @@ public class JwtService {
 
     public Claims getClaimsProd(String token) {
         log.trace("getClaims start");
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getClaims token = {}" , token);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getClaims token = {}", token);
         return Jwts.parser()
                 .setSigningKey(jwtSigningKeyProd)
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public Claims getClaims(String env, String token) {
+        log.trace("getClaims start");
+        Claims claims;
+        if (env == "PROD") {
+            claims = getClaimsProd(token);
+        } else {
+            claims = getClaims(token);
+        }
+        return claims;
     }
 
 
