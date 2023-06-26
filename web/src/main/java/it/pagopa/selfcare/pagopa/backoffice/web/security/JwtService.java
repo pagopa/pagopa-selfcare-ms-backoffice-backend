@@ -52,7 +52,7 @@ public class JwtService {
     public Claims getClaims(String env, String token) {
         log.trace("getClaims start");
         Claims claims;
-        if (env == "PROD") {
+        if (env != null && env.equals("PROD")) {
             claims = getClaimsProd(token);
         } else {
             claims = getClaims(token);
