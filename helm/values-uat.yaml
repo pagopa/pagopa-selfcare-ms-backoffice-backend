@@ -80,6 +80,7 @@ microservice-chart:
     AZURE_TENANT_ID: pagopa-selfcare-uat-tenant-id
     AZURE_SUBSCRIPTION_ID: pagopa-selfcare-u-subscription-id
     JWT_TOKEN_PUBLIC_KEY: pagopa-u-weu-selfcare-jwt-pub-key
+    JWT_TOKEN_PUBLIC_KEY_PROD: pagopa-u-weu-selfcare-jwt-pub-key-env-prod
     TEST_EMAIL: pagopa-u-env-test-email
     MONGODB_CONNECTION_URI: cosmodbmongo-u-bopagopa-connection-string
     JIRA_URL: jira-u-url
