@@ -51,7 +51,7 @@ public class IbanController {
         return resource;
     }
 
-    @PostMapping(value = "create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.create}")
     public IbanResource createCreditorInstitutionIbans(@RequestBody @NotNull IbanCreateRequestDto requestDto){

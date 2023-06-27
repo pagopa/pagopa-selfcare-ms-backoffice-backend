@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansEnhanced;
@@ -71,6 +72,29 @@ public class IbanControllerTest {
 
         verify(apiConfigServiceMock, times(1))
                 .getCreditorInstitutionIbans(anyString(), anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void createCreditorInstitutionIbans(@Value("classpath:stubs/ibanCreateRequestDto.json") Resource dto) throws Exception {
+
+        IbanCreate ibanCreate = mockInstance(new IbanCreate());
+        ibanCreate.setLabels(new ArrayList<>());
+
+        when(apiConfigServiceMock.createCreditorInstitutionIbans(anyString(), any(), anyString()))
+                .thenReturn(ibanCreate);
+
+        mvc.perform(MockMvcRequestBuilders
+                        .post(BASE_URL + "/create")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(APPLICATION_JSON));
+
+
+        verify(apiConfigServiceMock, times(1))
+                .createCreditorInstitutionIbans(anyString(), any(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }
