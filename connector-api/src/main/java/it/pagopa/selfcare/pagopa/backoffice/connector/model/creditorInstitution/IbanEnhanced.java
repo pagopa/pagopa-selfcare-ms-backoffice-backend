@@ -8,24 +8,37 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Data
-public class IbanDetails {
+public class IbanEnhanced {
+
+    @JsonProperty("ci_owner")
+    private String ecOwner;
+
+    @JsonProperty("company_name")
+    private String companyName;
+
+    @JsonProperty("description")
+    private String description;
+
+    @JsonProperty("due_date")
+    private LocalDateTime dueDate;
+
     @JsonProperty("iban")
-    private String ibanValue;
+    private String iban;
+
+    @JsonProperty("is_active")
+    private boolean isActive;
+
+    @JsonProperty("labels")
+    private List<IbanLabel> labels;
 
     @JsonProperty("validity_date")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-    @JsonSerialize(using = OffsetDateTimeSerializer.class)
-    @NotNull
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private OffsetDateTime validityDate;
+    private LocalDateTime validityDate;
 
     @JsonProperty("publication_date")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-    @JsonSerialize(using = OffsetDateTimeSerializer.class)
-    @NotNull
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private OffsetDateTime publicationDate;
+    private LocalDateTime publicationDate;
 }

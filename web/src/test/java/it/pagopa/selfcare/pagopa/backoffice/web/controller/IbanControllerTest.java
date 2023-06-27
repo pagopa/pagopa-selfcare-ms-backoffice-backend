@@ -1,13 +1,11 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanEnhanced;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanRequestDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbansResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +21,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
-import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
@@ -53,8 +50,8 @@ public class IbanControllerTest {
     @Test
     void getCreditorInstitutionIbans(@Value("classpath:stubs/IbanRequestDto.json") Resource dto) throws Exception {
 
-        IbansDetails ibansDetails = mockInstance(new IbansDetails());
-        IbanDetails ibanDetails = mockInstance(new IbanDetails());
+        IbansEnhanced ibansDetails = mockInstance(new IbansEnhanced());
+        IbanEnhanced ibanDetails = mockInstance(new IbanEnhanced());
         ibansDetails.setIbanList(List.of(ibanDetails));
 
         when(apiConfigServiceMock.getCreditorInstitutionIbans(anyString(), anyString()))

@@ -3,10 +3,10 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.utils.StringUtils;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.*;
 
+import java.time.OffsetDateTime;
 import java.util.stream.Collectors;
 
 public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper {
@@ -163,22 +163,28 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
     }
 
     @Override
-    public IbanResource toResource(IbanDetails model) {
+    public IbanResource toResource(IbanEnhanced model) {
         if(model == null){
             return null;
         }
 
         IbanResource resource = new IbanResource();
 
-        resource.setIbanValue(model.getIbanValue());
-        resource.setValidityDate(model.getValidityDate());
+        resource.setDueDate(model.getDueDate());
         resource.setPublicationDate(model.getPublicationDate());
+        resource.setIban(model.getIban());
+        resource.setActive(model.isActive());
+        resource.setLabels(model.getLabels().stream().map(this::toResource).collect(Collectors.toList()));
+        resource.setDescription(model.getDescription());
+        resource.setEcOwner(model.getEcOwner());
+        resource.setCompanyName(model.getCompanyName());
+        resource.setValidityDate(model.getValidityDate());
 
         return resource;
     }
 
     @Override
-    public IbansResource toResource(IbansDetails model) {
+    public IbansResource toResource(IbansEnhanced model) {
         if(model == null){
             return null;
         }
@@ -208,6 +214,25 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
     }
 
     @Override
+    public IbanResource toResource(IbanCreate model) {
+        if(model == null){
+            return null;
+        }
+
+        IbanResource resource = new IbanResource();
+
+        resource.setActive(model.isActive());
+        resource.setIban(model.getIban());
+        resource.setLabels(model.getLabels().stream().map(this::toResource).collect(Collectors.toList()));
+        resource.setDescription(model.getDescription());
+        resource.setValidityDate(model.getValidityDate());
+        resource.setDueDate(model.getDueDate());
+
+        return resource;
+
+    }
+
+    @Override
     public IbanLabel fromDto(it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel dto) {
         if(dto == null){
             return null;
@@ -218,4 +243,17 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         response.setName(dto.getName());
         return response;
     }
+
+    public it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel toResource(IbanLabel model) {
+        if(model == null){
+            return null;
+        }
+        it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel response = new it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel();
+
+        response.setDescription(model.getDescription());
+        response.setName(model.getName());
+        return response;
+    }
+
+
 }

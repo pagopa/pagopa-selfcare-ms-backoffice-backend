@@ -938,8 +938,8 @@ class ApiConfigServiceImplTest {
         String ecCode = "ecCode";
         String xRequestId = "1";
 
-        IbansDetails ibansDetails = mockInstance(new IbansDetails());
-        IbanDetails ibanDetails = mockInstance(new IbanDetails());
+        IbansEnhanced ibansDetails = mockInstance(new IbansEnhanced());
+        IbanEnhanced ibanDetails = mockInstance(new IbanEnhanced());
         ibansDetails.setIbanList(List.of(ibanDetails));
 
         when(apiConfigConnectorMock.getCreditorInstitutionIbans(anyString(), anyString()))

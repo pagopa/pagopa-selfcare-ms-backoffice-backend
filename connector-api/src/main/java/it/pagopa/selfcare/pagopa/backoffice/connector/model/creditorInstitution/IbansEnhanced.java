@@ -7,9 +7,9 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-public class IbansDetails {
+public class IbansEnhanced {
 
-    @JsonProperty("ibans")
+    @JsonProperty("ibans_enhanced")
     @NotNull
-    private List<IbanDetails> ibanList;
+    private List<IbanEnhanced> ibanList;
 }
