@@ -42,7 +42,7 @@ public class IbanController {
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getCreditorInstitutionsIbans ecCode = {}, xRequestId = {}", requestDto.getCreditorInstitutionCode(), xRequestId);
 
-        IbansEnhanced ibans = apiConfigService.getCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), xRequestId);
+        IbansEnhanced ibans = apiConfigService.getCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(),requestDto.getLabel(), xRequestId);
 
         IbansResource resource = mapper.toResource(ibans);
 

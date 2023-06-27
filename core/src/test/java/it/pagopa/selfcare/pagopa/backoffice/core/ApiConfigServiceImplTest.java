@@ -937,20 +937,21 @@ class ApiConfigServiceImplTest {
         //given
         String ecCode = "ecCode";
         String xRequestId = "1";
+        String label = "label";
 
         IbansEnhanced ibansDetails = mockInstance(new IbansEnhanced());
         IbanEnhanced ibanDetails = mockInstance(new IbanEnhanced());
         ibansDetails.setIbanList(List.of(ibanDetails));
 
-        when(apiConfigConnectorMock.getCreditorInstitutionIbans(anyString(), anyString()))
+        when(apiConfigConnectorMock.getCreditorInstitutionIbans(anyString(), anyString(), anyString()))
                 .thenReturn(ibansDetails);
 
         //when
-        apiConfigService.getCreditorInstitutionIbans(ecCode, xRequestId);
+        apiConfigService.getCreditorInstitutionIbans(ecCode, label, xRequestId);
         //then
 
         verify(apiConfigConnectorMock, times(1))
-                .getCreditorInstitutionIbans(ecCode, xRequestId);
+                .getCreditorInstitutionIbans(ecCode, label, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
 
     }

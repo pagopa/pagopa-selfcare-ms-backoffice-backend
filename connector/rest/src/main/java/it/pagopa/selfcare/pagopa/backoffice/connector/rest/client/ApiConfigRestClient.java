@@ -192,6 +192,7 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
 
     @GetMapping(value = "${rest-client.api-config.getCreditorInstitutionIbans-enhanced.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     IbansEnhanced getCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
+                                              @RequestParam String label,
                                               @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
 
     @PostMapping(value = "${rest-client.api-config.getCreditorInstitutionIbans.path}", produces = MediaType.APPLICATION_JSON_VALUE)

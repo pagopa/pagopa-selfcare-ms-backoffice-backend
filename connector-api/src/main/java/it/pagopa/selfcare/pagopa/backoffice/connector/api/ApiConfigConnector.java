@@ -77,7 +77,7 @@ public interface ApiConfigConnector {
 
     void deleteCreditorInstitutionStationRelationship(String ecCode, String stationcode, String xRequestId);
 
-    IbansEnhanced getCreditorInstitutionIbans(String ecCode, String xRequestId);
+    IbansEnhanced getCreditorInstitutionIbans(String ecCode, String label, String xRequestId);
 
     IbanCreate createCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId);
 }

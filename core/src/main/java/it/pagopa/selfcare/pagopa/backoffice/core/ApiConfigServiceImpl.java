@@ -416,9 +416,9 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.trace("deleteCreditorInstitutionStationRelationship end");
     }
 
-    public IbansEnhanced getCreditorInstitutionIbans(String ecCode, String xRequestId){
+    public IbansEnhanced getCreditorInstitutionIbans(String ecCode, String label, String xRequestId){
         log.trace("getCreditorInstitutionIbans start");
-        IbansEnhanced response = apiConfigConnector.getCreditorInstitutionIbans(ecCode, xRequestId);
+        IbansEnhanced response = apiConfigConnector.getCreditorInstitutionIbans(ecCode, label, xRequestId);
         log.debug("getCreditorInstitutionIbans result = {}", response);
         log.trace("getCreditorInstitutionIbans end");
 

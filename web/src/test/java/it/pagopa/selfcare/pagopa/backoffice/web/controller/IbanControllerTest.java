@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanEnhanced;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -18,6 +19,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
@@ -52,9 +54,10 @@ public class IbanControllerTest {
 
         IbansEnhanced ibansDetails = mockInstance(new IbansEnhanced());
         IbanEnhanced ibanDetails = mockInstance(new IbanEnhanced());
+        ibanDetails.setLabels(new ArrayList<>());
         ibansDetails.setIbanList(List.of(ibanDetails));
 
-        when(apiConfigServiceMock.getCreditorInstitutionIbans(anyString(), anyString()))
+        when(apiConfigServiceMock.getCreditorInstitutionIbans(anyString(), anyString(), anyString()))
                 .thenReturn(ibansDetails);
 
         mvc.perform(MockMvcRequestBuilders
@@ -67,7 +70,7 @@ public class IbanControllerTest {
 
 
         verify(apiConfigServiceMock, times(1))
-                .getCreditorInstitutionIbans(anyString(), anyString());
+                .getCreditorInstitutionIbans(anyString(), anyString(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }
