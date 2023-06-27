@@ -26,7 +26,7 @@ class JwtServiceTest {
         // given
         String signature = "invalid signature";
         // when
-        Executable invalid_signature = () -> new JwtService(signature);
+        Executable invalid_signature = () -> new JwtService(signature, signature);
         // then
         Assertions.assertThrows(InvalidKeySpecException.class, invalid_signature);
     }
@@ -40,7 +40,7 @@ class JwtServiceTest {
         String jwt = generateToken(loadPrivateKey(), claims);
         File file = ResourceUtils.getFile("classpath:certs/different_pubkey.pem");
         String jwtSigningKey = Files.readString(file.toPath(), Charset.defaultCharset());
-        JwtService jwtService = new JwtService(jwtSigningKey);
+        JwtService jwtService = new JwtService(jwtSigningKey, jwtSigningKey);
         // when
         Executable executable = () -> jwtService.getClaims(jwt);
         // then
@@ -54,7 +54,7 @@ class JwtServiceTest {
         String jwt = null;
         File file = ResourceUtils.getFile("classpath:certs/pubkey.pem");
         String jwtSigningKey = Files.readString(file.toPath(), Charset.defaultCharset());
-        JwtService jwtService = new JwtService(jwtSigningKey);
+        JwtService jwtService = new JwtService(jwtSigningKey, jwtSigningKey);
         // when
         Executable executable = () -> jwtService.getClaims(jwt);
         // then
@@ -70,9 +70,25 @@ class JwtServiceTest {
         String jwt = generateToken(loadPrivateKey(), claims);
         File file = ResourceUtils.getFile("classpath:certs/pubkey.pem");
         String jwtSigningKey = Files.readString(file.toPath(), Charset.defaultCharset());
-        JwtService jwtService = new JwtService(jwtSigningKey);
+        JwtService jwtService = new JwtService(jwtSigningKey, jwtSigningKey);
         // when
         Claims body = jwtService.getClaims(jwt);
+        // then
+        Assertions.assertNotNull(body);
+        Assertions.assertEquals("id", body.getId());
+    }
+
+    @Test
+    void getClaimsProd_signatureOK() throws Exception {
+        // given
+        DefaultClaims claims = new DefaultClaims();
+        claims.setId("id");
+        String jwt = generateToken(loadPrivateKey(), claims);
+        File file = ResourceUtils.getFile("classpath:certs/pubkey.pem");
+        String jwtSigningKey = Files.readString(file.toPath(), Charset.defaultCharset());
+        JwtService jwtService = new JwtService(jwtSigningKey, jwtSigningKey);
+        // when
+        Claims body = jwtService.getClaimsProd(jwt);
         // then
         Assertions.assertNotNull(body);
         Assertions.assertEquals("id", body.getId());
