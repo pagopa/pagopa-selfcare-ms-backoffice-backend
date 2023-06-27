@@ -955,4 +955,27 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
 
     }
+
+    @Test
+    void createCreditorInstitutionIbans(){
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = "1";
+        String label = "label";
+
+        IbanCreate ibanCreate = mockInstance(new IbanCreate());
+        ibanCreate.setLabels(new ArrayList<>());
+
+        when(apiConfigConnectorMock.createCreditorInstitutionIbans(anyString(), any(), anyString()))
+                .thenReturn(ibanCreate);
+
+        //when
+        apiConfigService.createCreditorInstitutionIbans(ecCode, ibanCreate, xRequestId);
+        //then
+
+        verify(apiConfigConnectorMock, times(1))
+                .createCreditorInstitutionIbans(ecCode, ibanCreate, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+
+    }
 }
