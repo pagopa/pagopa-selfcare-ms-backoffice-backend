@@ -4,6 +4,7 @@ import com.azure.core.credential.TokenCredential;
 import com.azure.core.http.rest.PagedIterable;
 import com.azure.core.http.rest.Response;
 import com.azure.core.management.AzureEnvironment;
+import com.azure.core.management.exception.ManagementException;
 import com.azure.core.management.profile.AzureProfile;
 import com.azure.core.util.Context;
 import com.azure.identity.DefaultAzureCredentialBuilder;
@@ -13,10 +14,12 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiManagerConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.connector.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -34,7 +37,7 @@ public class AzureApiManagerClient implements ApiManagerConnector {
                                  @Value("${azure.resource-manager.api-manager.resource-group}") String resourceGroupName,
                                  @Value("${azure.resource-manager.api-manager.subscription-id}") String subscriptionId,
                                  @Value("${azure.resource-manager.api-manager.tenant-id}") String tenantId
-                                 ) {
+    ) {
         this.serviceName = serviceName;
         this.resourceGroupName = resourceGroupName;
 
@@ -56,8 +59,8 @@ public class AzureApiManagerClient implements ApiManagerConnector {
         contract.setTaxCode(userContract.firstName());
         return contract;
     };
-    
-    
+
+
     @Override
     public it.pagopa.selfcare.pagopa.backoffice.connector.model.UserContract createInstitution(String institutionId, CreateInstitutionApiKeyDto dto) {
         log.trace("createInstitution start");
@@ -68,7 +71,7 @@ public class AzureApiManagerClient implements ApiManagerConnector {
                 .withExistingService(resourceGroupName, serviceName)
                 .withEmail(dto.getEmail())
                 .withFirstName(dto.getFiscalCode())
-                .withLastName(dto.getDescription())
+                .withLastName(StringUtils.truncateString(StringUtils.validateAndReplace(dto.getDescription(), "-"),100))
                 .withConfirmation(Confirmation.SIGNUP)
                 .create();
         it.pagopa.selfcare.pagopa.backoffice.connector.model.UserContract contract = AZURE_USER_CONTRACT_TO_PAGOPA_USER_CONTRACT.apply(userContract);
@@ -109,7 +112,6 @@ public class AzureApiManagerClient implements ApiManagerConnector {
                         .withScope(scope)
         );
         log.trace("createInstitutionSubscription end");
-
     }
 
     @Override
@@ -143,23 +145,27 @@ public class AzureApiManagerClient implements ApiManagerConnector {
         log.trace("getApiSubscriptions start");
         log.debug("getApiSubscriptions institutionId = {}", institutionId);
 
-        PagedIterable<SubscriptionContract> subscriptionContractList = manager.userSubscriptions().list(resourceGroupName, serviceName, institutionId);
+        PagedIterable<SubscriptionContract> subscriptionContractList = null;
+        List<InstitutionApiKeys> institutionApiKeysList =null;
+        try {
+            subscriptionContractList = manager.userSubscriptions().list(resourceGroupName, serviceName, institutionId);
 
-
-        List<InstitutionApiKeys> institutionApiKeysList = subscriptionContractList.stream()
-                .map(contract -> {
-                    InstitutionApiKeys apiKeys = new InstitutionApiKeys();
-                    Response<SubscriptionKeysContract> response = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, contract.name(), Context.NONE);
-                    if (response.getValue() != null) {
-                        apiKeys = new InstitutionApiKeys();
-                        apiKeys.setPrimaryKey(response.getValue().primaryKey());
-                        apiKeys.setSecondaryKey(response.getValue().secondaryKey());
-                        apiKeys.setDisplayName(contract.displayName());
-                        apiKeys.setId(contract.name());
-                    }
-                    return apiKeys;
-                }).collect(Collectors.toList());
-
+            institutionApiKeysList = subscriptionContractList.stream()
+                    .map(contract -> {
+                        InstitutionApiKeys apiKeys = new InstitutionApiKeys();
+                        Response<SubscriptionKeysContract> response = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, contract.name(), Context.NONE);
+                        if (response.getValue() != null) {
+                            apiKeys = new InstitutionApiKeys();
+                            apiKeys.setPrimaryKey(response.getValue().primaryKey());
+                            apiKeys.setSecondaryKey(response.getValue().secondaryKey());
+                            apiKeys.setDisplayName(contract.displayName());
+                            apiKeys.setId(contract.name());
+                        }
+                        return apiKeys;
+                    }).collect(Collectors.toList());
+        }catch (ManagementException e){
+            institutionApiKeysList = new ArrayList<>();
+        }
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getApiSubscriptions response = {}", subscriptionContractList);
         log.trace("getApiSubscriptions end");
 

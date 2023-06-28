@@ -10,9 +10,9 @@ import java.util.List;
 public interface ExternalApiService {
     
     Institution getInstitution(String institutionId);
+
+    Collection<InstitutionInfo> getInstitutions(String userIdForAuth);
     
-    Collection<InstitutionInfo> getInstitutions();
-    
-    List<Product> getInstitutionUserProducts(String institutionId);
+    List<Product> getInstitutionUserProducts(String institutionId,String userIdForAuth);
     
 }

@@ -21,4 +21,5 @@ public interface ApiManagerConnector {
     void regenerateSecondaryKey(String institutionId);
 
     List<InstitutionApiKeys> getApiSubscriptions(String institutionId);
-}
+
+ }

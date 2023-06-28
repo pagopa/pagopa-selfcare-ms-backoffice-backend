@@ -1,0 +1,50 @@
+{
+  "request": {
+    "method": "PUT",
+    "urlPath": "/apiconfig/auth/api/v1/stations/stationCode1"
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": {
+      "broker_code": "string",
+      "broker_description": "Lorem ipsum dolor sit amet",
+      "enabled": true,
+      "flag_online": true,
+      "invio_rt_istantaneo": true,
+      "ip": "string",
+      "ip_4mod": "string",
+      "new_password": "string",
+      "password": "string",
+      "pof_service": "string",
+      "port": 65535,
+      "port_4mod": 65535,
+      "primitive_version": 2,
+      "protocol": "HTTPS",
+      "protocol_4mod": "HTTPS",
+      "proxy_enabled": true,
+      "proxy_host": "string",
+      "proxy_password": "string",
+      "proxy_port": 65535,
+      "proxy_username": "string",
+      "redirect_ip": "string",
+      "redirect_path": "string",
+      "redirect_port": 65535,
+      "redirect_protocol": "HTTPS",
+      "redirect_query_string": "string",
+      "service": "string",
+      "service_4mod": "string",
+      "station_code": "1234567890100",
+      "target_host": "string",
+      "target_path": "string",
+      "target_port": 0,
+      "thread_number": 1,
+      "timeout_a": 0,
+      "timeout_b": 0,
+      "timeout_c": 0,
+      "version": 2
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/apiconfig/auth/api/v1/channels/channelcode1"
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": {
+      "password": "password",
+      "new_password": "newPassword",
+      "protocol": "HTTP",
+      "ip": "127.0.0.1",
+      "port": 8080,
+      "service": "service",
+      "broker_psp_code": "psp",
+      "proxy_enabled": true,
+      "proxy_host": "127.0.0.1",
+      "proxy_port": 8090,
+      "proxy_username": "username",
+      "proxy_password": "setProxyPassword",
+      "target_host": "setTargetHost",
+      "target_port": 8888,
+      "target_path": "setTargetPath",
+      "thread_number": 1,
+      "timeout_a": 1,
+      "timeout_b": 2,
+      "timeout_c": 3,
+      "npm_service": "setNpmService",
+      "new_fault_code": false,
+      "redirect_ip": "127.0.0.3",
+      "redirect_path": "setRedirectPath",
+      "redirect_port": 8989,
+      "redirect_query_string": "/setRedirectQueryString",
+      "redirect_protocol": "HTTP",
+      "payment_model": "IMMEDIATE",
+      "serv_plugin": "setServPlugin",
+      "rt_push": true,
+      "on_us": true,
+      "card_chart": true,
+      "recovery": true,
+      "digital_stamp_brand": true,
+      "flag_io": true,
+      "agid": true,
+      "broker_description": "setBrokerDescription",
+      "enabled": true,
+      "channel_code": "setChannelCode"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

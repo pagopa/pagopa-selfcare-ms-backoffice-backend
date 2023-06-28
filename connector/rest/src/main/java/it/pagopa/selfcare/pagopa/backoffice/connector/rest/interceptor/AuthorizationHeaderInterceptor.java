@@ -18,8 +18,9 @@ public class AuthorizationHeaderInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate template) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        SelfCareUser user = (SelfCareUser) auth.getPrincipal(); 
+        SelfCareUser user = (SelfCareUser) auth.getPrincipal();
         template.header("x-selfcare-uid", user.getId());
-        template.header("Ocp-Apim-Subscription-Key", externalApiSubscriptionKey);
+        template.removeHeader("Ocp-Apim-Subscription-Key")
+                .header("Ocp-Apim-Subscription-Key", externalApiSubscriptionKey);
     }
 }

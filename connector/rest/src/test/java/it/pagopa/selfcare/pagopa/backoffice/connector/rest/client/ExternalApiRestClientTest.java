@@ -198,8 +198,9 @@ class ExternalApiRestClientTest {
     void getInstitutionUserProducts_fullyValued(){
         //given
         String institutionId = testCase2instIdMap.get(TestCase.FULLY_VALUED);
+        String userId ="userId";
         //when
-        List<Product> products = restClient.getInstitutionUserProducts(institutionId);
+        List<Product> products = restClient.getInstitutionUserProducts(institutionId,userId);
         //then
         assertNotNull(products);
         assertFalse(products.isEmpty());
@@ -210,8 +211,9 @@ class ExternalApiRestClientTest {
     void getInstitutionUserProducts_fullyNull(){
         //given
         String institutionId = testCase2instIdMap.get(TestCase.FULLY_NULL);
+        String userId ="userId";
         //when
-        List<Product> products = restClient.getInstitutionUserProducts(institutionId);
+        List<Product> products = restClient.getInstitutionUserProducts(institutionId,userId);
         //then
         assertNotNull(products);
         assertFalse(products.isEmpty());
@@ -223,8 +225,9 @@ class ExternalApiRestClientTest {
     void getInstitutionUserProducts_fullyEmpty(){
         //given
         String institutionId = testCase2instIdMap.get(TestCase.EMPTY_RESULT);
+        String userId ="userId";
         //when
-        List<Product> products = restClient.getInstitutionUserProducts(institutionId);
+        List<Product> products = restClient.getInstitutionUserProducts(institutionId,userId);
         //then
         assertNotNull(products);
         assertTrue(products.isEmpty());

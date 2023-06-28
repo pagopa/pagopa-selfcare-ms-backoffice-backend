@@ -8,11 +8,12 @@ public interface ApiManagementService {
 
     List<InstitutionApiKeys> createInstitutionKeys(String institutionId);
 
-    List<InstitutionApiKeys> createInstitutionKeysList(String institutionId);
+    List<InstitutionApiKeys> createSubscriptionKeys(String institutionId, String scope, String subscriptionId, String subScriptionDisplay);
 
     List<InstitutionApiKeys> getInstitutionApiKeys(String institutionId);
 
     void regeneratePrimaryKey(String institutionId);
 
     void regenerateSecondaryKey(String institutionId);
+
 }

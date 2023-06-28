@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/apiconfig/auth/api/v1/stations",
+    "queryParameters": {
+      "page": {
+        "equalTo": "2"
+      }
+    }
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": {},
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

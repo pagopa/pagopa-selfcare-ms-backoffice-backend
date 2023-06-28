@@ -4,7 +4,7 @@
     <parent>
         <artifactId>pagopa-selfcare-ms-backoffice</artifactId>
         <groupId>it.pagopa.selfcare.pagopa</groupId>
-        <version>0.0.40-4-improve</version>
+        <version>0.0.168</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -14,14 +14,14 @@
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-ms-backoffice-connector-api</artifactId>
-            <version>0.0.40-4-improve</version>
+            <version>0.0.168</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-ms-backoffice-core</artifactId>
-            <version>0.0.40-4-improve</version>
+            <version>0.0.168</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -49,6 +49,42 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.5.3.Final</version>
+        </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>1.5.3.Final</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.24</version>
+                        </path>
+                        <!-- additional annotation processor required as of Lombok 1.18.16 -->
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok-mapstruct-binding</artifactId>
+                            <version>0.2.0</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
 
+        </plugins>
+    </build>
 </project>

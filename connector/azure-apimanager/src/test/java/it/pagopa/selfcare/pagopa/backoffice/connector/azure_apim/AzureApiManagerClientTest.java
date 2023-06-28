@@ -8,6 +8,7 @@ import com.azure.core.http.rest.PagedFlux;
 import com.azure.core.http.rest.PagedIterable;
 import com.azure.core.http.rest.PagedResponse;
 import com.azure.core.http.rest.PagedResponseBase;
+import com.azure.core.management.exception.ManagementException;
 import com.azure.resourcemanager.apimanagement.ApiManagementManager;
 import com.azure.resourcemanager.apimanagement.implementation.SubscriptionsImpl;
 import com.azure.resourcemanager.apimanagement.implementation.UserContractImpl;
@@ -31,6 +32,7 @@ import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -462,5 +464,39 @@ class AzureApiManagerClientTest {
         verify(userSubscriptionMock, times(1))
                 .list(any(), any(), any());
 
+    }
+
+    @Test
+    void getApiSubscriptions_user_not_exist() throws NoSuchFieldException, IllegalAccessException {
+
+        final AzureApiManagerClient managerClient = new AzureApiManagerClient(serviceName,
+                resourceGroup,
+                subscriptionId,
+                tenantId);
+        final UserSubscriptionsImpl userSubscriptionMock = mock(UserSubscriptionsImpl.class);
+        final SubscriptionsImpl subscriptionMock = mock(SubscriptionsImpl.class);
+        final ApiManagementManager managerMock = mock(ApiManagementManager.class);
+        mockAzureApiManagement(managerClient, managerMock);
+        //given
+        DummyKeyContract keyContract = mockInstance(new DummyKeyContract());
+        //InstitutionApiKeys apiKeys = mockInstance(new InstitutionApiKeys());
+        List<InstitutionApiKeys> InstitutionApiKeysList = mockInstance(new ArrayList<>());
+        ;
+        PagedIterable<SubscriptionContract> subscriptionContractListMock = mockInstance(getPi(1));
+
+
+        when(managerMock.userSubscriptions())
+                .thenReturn(userSubscriptionMock);
+        when(managerMock.userSubscriptions().list(resourceGroup, serviceName, institutionId))
+                .thenReturn(subscriptionContractListMock);
+
+        when(managerMock.userSubscriptions().list(resourceGroup, serviceName, institutionId).stream())
+                .thenThrow(ManagementException.class);
+        //when
+        List<InstitutionApiKeys> InstitutionApiKeysListResult = managerClient.getApiSubscriptions(institutionId);
+        assertNotNull(InstitutionApiKeysList);
+        assertTrue(InstitutionApiKeysListResult.isEmpty());
+        verify(managerMock, times(3))
+                .userSubscriptions();
     }
 }
