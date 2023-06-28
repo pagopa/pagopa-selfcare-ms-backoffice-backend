@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/apiconfig/auth/api/v1/brokerspsp"
+  },
+  "response": {
+    "status": "201",
+    "jsonBody": {
+      "broker_psp_code":"pspCode1",
+      "description":"description",
+      "enabled":true,
+      "extended_fault_bean":true
+},
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

@@ -2,10 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.Problem;
-import it.pagopa.selfcare.pagopa.backoffice.web.security.AuthoritiesRetriever;
-import it.pagopa.selfcare.pagopa.backoffice.web.security.JwtAuthenticationFilter;
-import it.pagopa.selfcare.pagopa.backoffice.web.security.JwtAuthenticationProvider;
-import it.pagopa.selfcare.pagopa.backoffice.web.security.JwtService;
+import it.pagopa.selfcare.pagopa.backoffice.web.security.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.*;
 import org.springframework.http.HttpHeaders;
@@ -39,14 +36,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/actuator/**"
     };
 
-    private final JwtService jwtService;
-    private final AuthoritiesRetriever authoritiesRetriever;
     private final ObjectMapper objectMapper;
+    private final JwtAuthenticationStrategyFactory jwtAuthenticationStrategyFactory;
 
-    public SecurityConfig(JwtService jwtService, AuthoritiesRetriever authoritiesRetriever, ObjectMapper objectMapper) {
-        this.jwtService = jwtService;
-        this.authoritiesRetriever = authoritiesRetriever;
+    public SecurityConfig(ObjectMapper objectMapper, JwtAuthenticationStrategyFactory jwtAuthenticationStrategyFactory) {
         this.objectMapper = objectMapper;
+        this.jwtAuthenticationStrategyFactory = jwtAuthenticationStrategyFactory;
+
     }
 
 
@@ -59,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) {
-        JwtAuthenticationProvider authenticationProvider = new JwtAuthenticationProvider(jwtService, authoritiesRetriever);
+        JwtAuthenticationProvider authenticationProvider = new JwtAuthenticationProvider(jwtAuthenticationStrategyFactory);
         authenticationManagerBuilder.authenticationProvider(authenticationProvider);
         authenticationManagerBuilder.eraseCredentials(false);
     }

@@ -8,6 +8,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institut
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.product.Product;
+import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ExternalApiService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.institutions.InstitutionDetailResource;
@@ -17,10 +18,13 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.InstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ProductMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.products.ProductsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.subscriptions.ApiKeysResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.subscriptions.Subscription;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -61,10 +65,14 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.institution.createInstitutionApiKeys}")
     public List<ApiKeysResource> createInstitutionApiKeys(@ApiParam("${swagger.model.institution.id}")
-                                                          @PathVariable("institutionId") String institutionId) {
+                                                          @PathVariable("institutionId") String institutionId,
+                                                          @ApiParam("${swagger.model.subscription.code}")
+                                                          @RequestParam("subscriptionCode") String subscriptionCode
+    ) {
         log.trace("createInstitutionApiKeys start");
         log.debug("createInstitutionApiKeys institutionId = {}", institutionId);
-        List<InstitutionApiKeys> institutionKeys = apiManagementService.createInstitutionKeysList(institutionId);
+        Subscription subscriptionEnum = Subscription.valueOf(subscriptionCode);
+        List<InstitutionApiKeys> institutionKeys = apiManagementService.createSubscriptionKeys(institutionId, subscriptionEnum.getScope(), subscriptionEnum.getPrefixId(), subscriptionEnum.getDisplayName());
         List<ApiKeysResource> apiKeysResourceList = ApiManagerMapper.toApikeysResourceList(institutionKeys);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createInstitutionApiKeys result = {}", apiKeysResourceList);
         log.trace("createInstitutionApiKeys end");
@@ -74,7 +82,7 @@ public class InstitutionController {
     @PostMapping("/{subscriptionid}/api-keys/primary/regenerate")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "", notes = "${swagger.api.institution.regeneratePrimaryKey}")
-    public void regeneratePrimaryKey(@ApiParam("${swagger.model.institution.subscription.id}")
+    public void regeneratePrimaryKey(@ApiParam("${swagger.model.subscription.id}")
                                      @PathVariable("subscriptionid") String subscriptionid) {
         log.trace("regeneratePrimaryKey start");
         log.debug("regeneratePrimaryKey institutionId = {}", subscriptionid);
@@ -85,21 +93,28 @@ public class InstitutionController {
     @PostMapping("/{subscriptionid}/api-keys/secondary/regenerate")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "", notes = "${swagger.api.institution.regenerateSecondaryKey}")
-    public void regenerateSecondaryKey(@ApiParam("${swagger.model.institution.subscription.id}")
+    public void regenerateSecondaryKey(@ApiParam("${swagger.model.subscription.id}")
                                        @PathVariable("subscriptionid") String subscriptionid) {
         log.trace("regenerateSecondaryKey start");
         log.debug("regenerateSecondaryKey institutionId = {}", subscriptionid);
         apiManagementService.regenerateSecondaryKey(subscriptionid);
         log.trace("regenerateSecondaryKey end");
     }
-    
+
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutions}")
-    public List<InstitutionResource> getInstitutions(){
-
+    public List<InstitutionResource> getInstitutions() {
         log.trace("getInstitutions start");
-        Collection<InstitutionInfo> institutions = externalApiService.getInstitutions();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userIdForAuth = "";
+        if (authentication != null && authentication.getPrincipal() instanceof SelfCareUser) {
+            SelfCareUser user = (SelfCareUser) authentication.getPrincipal();
+            userIdForAuth = user.getId();
+        }
+
+        Collection<InstitutionInfo> institutions = externalApiService.getInstitutions(userIdForAuth);
         List<InstitutionResource> resources = institutions.stream()
                 .map(InstitutionMapper::toResource)
                 .collect(Collectors.toList());
@@ -107,12 +122,12 @@ public class InstitutionController {
         log.trace("getInstitutions end");
         return resources;
     }
-    
+
     @GetMapping("/{institutionId}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitution}")
     public InstitutionDetailResource getInstitution(@ApiParam("${swagger.model.institution.id}")
-                                              @PathVariable("institutionId")String institutionId){
+                                                    @PathVariable("institutionId") String institutionId) {
         log.trace("getInstitution start");
         log.debug("getInstitution institutionId = {}", institutionId);
         Institution institution = externalApiService.getInstitution(institutionId);
@@ -121,15 +136,23 @@ public class InstitutionController {
         log.trace("getInstitution end");
         return resource;
     }
-    
+
     @GetMapping("/{institutionId}/products")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutionProducts}")
     public List<ProductsResource> getInstitutionProducts(@ApiParam("${swagger.model.institution.id}")
-                                                         @PathVariable("institutionId")String institutionId){
+                                                         @PathVariable("institutionId") String institutionId) {
         log.trace("getInstitutionProducts start");
         log.debug("getInstitutionProducts institutionId = {}", institutionId);
-        List<Product> products = externalApiService.getInstitutionUserProducts(institutionId);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userIdForAuth = "";
+        if (authentication != null && authentication.getPrincipal() instanceof SelfCareUser) {
+            SelfCareUser user = (SelfCareUser) authentication.getPrincipal();
+            userIdForAuth = user.getId();
+        }
+
+        List<Product> products = externalApiService.getInstitutionUserProducts(institutionId,userIdForAuth);
         List<ProductsResource> resource = products.stream()
                 .map(ProductMapper::toResource)
                 .collect(Collectors.toList());
@@ -137,5 +160,4 @@ public class InstitutionController {
         log.trace("getInstitutionProducts end");
         return resource;
     }
-
 }

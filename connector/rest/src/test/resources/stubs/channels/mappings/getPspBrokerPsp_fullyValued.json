@@ -1,0 +1,38 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/apiconfig/auth/api/v1/brokerspsp/brokerpspcode1/paymentserviceproviders",
+    "queryParameters": {
+      "page": {
+        "equalTo": "1"
+      },
+      "limit": {
+        "equalTo": "1"
+      }
+    }
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": {
+
+  "page_info": {
+    "items_found": 0,
+    "limit": 0,
+    "page": 0,
+    "total_pages": 0
+  },
+  "payment_service_providers": [
+    {
+      "business_name": "string",
+      "enabled": true,
+      "psp_code": "R4P2FPY7GY"
+    }
+  ]
+
+
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

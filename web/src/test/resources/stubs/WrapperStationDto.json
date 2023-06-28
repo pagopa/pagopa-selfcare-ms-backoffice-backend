@@ -1,0 +1,16 @@
+{
+  "stationCode": "stringg",
+  "brokerCode": "string",
+  "redirectIp": "string",
+  "redirectPath": "string",
+  "redirectPort": 0,
+  "redirectQueryString": "string",
+  "redirectProtocol": "HTTP",
+  "targetHost": "string",
+  "targetPort": 0,
+  "targetPath": "string",
+  "primitiveVersion": 1,
+  "status": "TO_CHECK",
+  "note": "note",
+  "validationUrl": "http://validationUrl"
+}

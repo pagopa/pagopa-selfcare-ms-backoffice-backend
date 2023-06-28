@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/apiconfig/auth/api/v1/channels/channelcode1/paymenttypes"
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": {
+
+  "payment_types": [
+    "paymentType"
+  ]
+},
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

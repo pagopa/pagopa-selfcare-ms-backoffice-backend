@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/external/v1/institutions/institutionId2"
+    "urlPath": "/external/v2/institutions/institutionId2"
   },
   "response": {
     "status": "200",
