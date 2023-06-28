@@ -937,20 +937,44 @@ class ApiConfigServiceImplTest {
         //given
         String ecCode = "ecCode";
         String xRequestId = "1";
+        String label = "label";
 
-        IbansDetails ibansDetails = mockInstance(new IbansDetails());
-        IbanDetails ibanDetails = mockInstance(new IbanDetails());
+        IbansEnhanced ibansDetails = mockInstance(new IbansEnhanced());
+        IbanEnhanced ibanDetails = mockInstance(new IbanEnhanced());
         ibansDetails.setIbanList(List.of(ibanDetails));
 
-        when(apiConfigConnectorMock.getCreditorInstitutionIbans(anyString(), anyString()))
+        when(apiConfigConnectorMock.getCreditorInstitutionIbans(anyString(), anyString(), anyString()))
                 .thenReturn(ibansDetails);
 
         //when
-        apiConfigService.getCreditorInstitutionIbans(ecCode, xRequestId);
+        apiConfigService.getCreditorInstitutionIbans(ecCode, label, xRequestId);
         //then
 
         verify(apiConfigConnectorMock, times(1))
-                .getCreditorInstitutionIbans(ecCode, xRequestId);
+                .getCreditorInstitutionIbans(ecCode, label, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+
+    }
+
+    @Test
+    void createCreditorInstitutionIbans(){
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = "1";
+        String label = "label";
+
+        IbanCreate ibanCreate = mockInstance(new IbanCreate());
+        ibanCreate.setLabels(new ArrayList<>());
+
+        when(apiConfigConnectorMock.createCreditorInstitutionIbans(anyString(), any(), anyString()))
+                .thenReturn(ibanCreate);
+
+        //when
+        apiConfigService.createCreditorInstitutionIbans(ecCode, ibanCreate, xRequestId);
+        //then
+
+        verify(apiConfigConnectorMock, times(1))
+                .createCreditorInstitutionIbans(ecCode, ibanCreate, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
 
     }

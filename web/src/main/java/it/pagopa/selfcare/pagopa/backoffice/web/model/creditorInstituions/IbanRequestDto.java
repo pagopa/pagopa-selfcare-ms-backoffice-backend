@@ -15,4 +15,7 @@ public class IbanRequestDto {
     @JsonProperty(required = true)
     @NotBlank
     private String creditorInstitutionCode;
+
+    @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.label}")
+    private String label;
 }

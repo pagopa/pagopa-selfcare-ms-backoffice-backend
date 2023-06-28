@@ -1,13 +1,13 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanEnhanced;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanRequestDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbansResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,10 +20,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
-import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
@@ -53,11 +53,12 @@ public class IbanControllerTest {
     @Test
     void getCreditorInstitutionIbans(@Value("classpath:stubs/IbanRequestDto.json") Resource dto) throws Exception {
 
-        IbansDetails ibansDetails = mockInstance(new IbansDetails());
-        IbanDetails ibanDetails = mockInstance(new IbanDetails());
+        IbansEnhanced ibansDetails = mockInstance(new IbansEnhanced());
+        IbanEnhanced ibanDetails = mockInstance(new IbanEnhanced());
+        ibanDetails.setLabels(new ArrayList<>());
         ibansDetails.setIbanList(List.of(ibanDetails));
 
-        when(apiConfigServiceMock.getCreditorInstitutionIbans(anyString(), anyString()))
+        when(apiConfigServiceMock.getCreditorInstitutionIbans(anyString(), anyString(), anyString()))
                 .thenReturn(ibansDetails);
 
         mvc.perform(MockMvcRequestBuilders
@@ -70,7 +71,30 @@ public class IbanControllerTest {
 
 
         verify(apiConfigServiceMock, times(1))
-                .getCreditorInstitutionIbans(anyString(), anyString());
+                .getCreditorInstitutionIbans(anyString(), anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void createCreditorInstitutionIbans(@Value("classpath:stubs/ibanCreateRequestDto.json") Resource dto) throws Exception {
+
+        IbanCreate ibanCreate = mockInstance(new IbanCreate());
+        ibanCreate.setLabels(new ArrayList<>());
+
+        when(apiConfigServiceMock.createCreditorInstitutionIbans(anyString(), any(), anyString()))
+                .thenReturn(ibanCreate);
+
+        mvc.perform(MockMvcRequestBuilders
+                        .post(BASE_URL + "/create")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(APPLICATION_JSON));
+
+
+        verify(apiConfigServiceMock, times(1))
+                .createCreditorInstitutionIbans(anyString(), any(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }
