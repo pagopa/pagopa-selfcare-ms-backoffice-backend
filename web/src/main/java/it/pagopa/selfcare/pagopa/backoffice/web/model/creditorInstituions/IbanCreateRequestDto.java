@@ -1,12 +1,15 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 @Data
 public class IbanCreateRequestDto {
@@ -21,7 +24,7 @@ public class IbanCreateRequestDto {
     private String description;
 
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.due-date}", required = true)
-    private LocalDateTime dueDate;
+    private OffsetDateTime dueDate;
 
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.iban}", required = true)
     private String iban;
@@ -33,6 +36,6 @@ public class IbanCreateRequestDto {
     private List<IbanLabel> labels;
 
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.validityDate}", required = true)
-    private LocalDateTime validityDate;
+    private OffsetDateTime validityDate;
 
 }

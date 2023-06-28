@@ -20,7 +20,7 @@ public class IbanResource {
     private String description;
 
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.due-date}", required = true)
-    private LocalDateTime dueDate;
+    private OffsetDateTime dueDate;
 
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.iban}", required = true)
     private String iban;
@@ -38,8 +38,8 @@ public class IbanResource {
     private String companyName;
 
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.validityDate}", required = true)
-    private LocalDateTime validityDate;
+    private OffsetDateTime validityDate;
 
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.publicationDate}", required = true)
-    private LocalDateTime publicationDate;
+    private OffsetDateTime publicationDate;
 }

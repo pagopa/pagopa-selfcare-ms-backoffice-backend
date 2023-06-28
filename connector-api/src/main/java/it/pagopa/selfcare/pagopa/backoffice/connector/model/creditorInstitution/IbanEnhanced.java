@@ -25,7 +25,7 @@ public class IbanEnhanced {
     private String description;
 
     @JsonProperty("due_date")
-    private LocalDateTime dueDate;
+    private OffsetDateTime dueDate;
 
     @JsonProperty("iban")
     private String iban;
@@ -37,8 +37,8 @@ public class IbanEnhanced {
     private List<IbanLabel> labels;
 
     @JsonProperty("validity_date")
-    private LocalDateTime validityDate;
+    private OffsetDateTime validityDate;
 
     @JsonProperty("publication_date")
-    private LocalDateTime publicationDate;
+    private OffsetDateTime publicationDate;
 }

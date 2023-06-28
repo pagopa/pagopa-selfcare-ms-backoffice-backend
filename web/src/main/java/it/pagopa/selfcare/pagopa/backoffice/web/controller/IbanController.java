@@ -52,14 +52,15 @@ public class IbanController {
     }
 
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.create}")
     public IbanResource createCreditorInstitutionIbans(@RequestBody @NotNull IbanCreateRequestDto requestDto){
         log.trace("createCreditorInstitutionIbans start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("createCreditorInstitutionIbans xRequestId = {}", xRequestId);
 
-        IbanCreate ibans = apiConfigService.createCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), mapper.fromDto(requestDto), xRequestId);
+        IbanCreate ibanCreate = mapper.fromDto(requestDto);
+        IbanCreate ibans = apiConfigService.createCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate, xRequestId);
 
         IbanResource resource = mapper.toResource(ibans);
 
