@@ -30,18 +30,18 @@ jobs:
         with:
           java-version: 11
 
-      - name: Run Service on Docker
-        shell: bash
-        run: |
-          cd ./docker
-          chmod +x ./run_docker.sh
-          ./run_docker.sh local
-
-      - name: Update OpenApi/Swagger file
-        run: |
-          cd ./openapi
-          chmod +x ./generate_openapi.sh
-          ./generate_openapi.sh
+#      - name: Run Service on Docker
+#        shell: bash
+#        run: |
+#          cd ./docker
+#          chmod +x ./run_docker.sh
+#          ./run_docker.sh local
+#
+#      - name: Update OpenApi/Swagger file
+#        run: |
+#          cd ./openapi
+#          chmod +x ./generate_openapi.sh
+#          ./generate_openapi.sh
 
       - name: Formatting
         id: format
