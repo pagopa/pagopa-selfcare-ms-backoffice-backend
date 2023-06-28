@@ -2,9 +2,12 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanCreateRequestDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanRequestDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbansResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -39,12 +42,30 @@ public class IbanController {
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getCreditorInstitutionsIbans ecCode = {}, xRequestId = {}", requestDto.getCreditorInstitutionCode(), xRequestId);
 
-        IbansDetails ibans = apiConfigService.getCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), xRequestId);
+        IbansEnhanced ibans = apiConfigService.getCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(),requestDto.getLabel(), xRequestId);
 
         IbansResource resource = mapper.toResource(ibans);
 
         log.debug("getCreditorInstitutionsIbans result = {}", resource);
         log.trace("getCreditorInstitutionsIbans end");
+        return resource;
+    }
+
+    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.create}")
+    public IbanResource createCreditorInstitutionIbans(@RequestBody @NotNull IbanCreateRequestDto requestDto){
+        log.trace("createCreditorInstitutionIbans start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("createCreditorInstitutionIbans xRequestId = {}", xRequestId);
+
+        IbanCreate ibanCreate = mapper.fromDto(requestDto);
+        IbanCreate ibans = apiConfigService.createCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate, xRequestId);
+
+        IbanResource resource = mapper.toResource(ibans);
+
+        log.debug("createCreditorInstitutionIbans result = {}", resource);
+        log.trace("createCreditorInstitutionIbans end");
         return resource;
     }
 

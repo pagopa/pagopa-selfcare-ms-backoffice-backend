@@ -5,7 +5,8 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
@@ -189,7 +190,15 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                                                       @PathVariable(required = false, name = "stationcode") String stationcode,
                                                       @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
 
-    @GetMapping(value = "${rest-client.api-config.getCreditorInstitutionIbans.path}", produces = MediaType.APPLICATION_JSON_VALUE)
-    IbansDetails getCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
+    @GetMapping(value = "${rest-client.api-config.getCreditorInstitutionIbans-enhanced.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    IbansEnhanced getCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
+                                              @RequestParam String label,
+                                              @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+
+    @PostMapping(value = "${rest-client.api-config.getCreditorInstitutionIbans.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    IbanCreate createCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
+                                             @RequestBody IbanCreate ibanCreate,
                                              @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
 }

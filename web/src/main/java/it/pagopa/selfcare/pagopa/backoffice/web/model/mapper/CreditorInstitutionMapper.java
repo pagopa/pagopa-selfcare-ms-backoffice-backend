@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.*;
 
@@ -19,6 +20,11 @@ public interface CreditorInstitutionMapper {
     CreditorInstitutionResource toResorce(CreditorInstitution model);
     CreditorInstitutionsResource toResource(CreditorInstitutions model);
 
-    IbanResource toResource(IbanDetails model);
-    IbansResource toResource(IbansDetails model);
+    IbanResource toResource(IbanEnhanced model);
+    IbansResource toResource(IbansEnhanced model);
+    IbanCreate fromDto(IbanCreateRequestDto ibanCreateRequestDto);
+    IbanResource toResource(IbanCreate model);
+
+    IbanLabel fromDto(it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel dto);
+    it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel toResource(IbanLabel model);
 }
