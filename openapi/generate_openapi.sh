@@ -7,5 +7,7 @@ fi
 
 # save openapi
 curl http://localhost:8080/v3/api-docs | python3 -m json.tool > ./openapi.json
+jq  '."servers"[0]."url" |= "https://${host}/${basePath}"' "./openapi.json" > "./openapi.json.tpl"
+
 
 # UI mode http://localhost:8080/swagger-ui/index.html

@@ -12,14 +12,6 @@ locals {
 
 }
 
-resource "azurerm_api_management_group" "api_group" {
-  name                = local.apim.product_id
-  resource_group_name = local.apim.rg
-  api_management_name = local.apim.name
-  display_name        = local.display_name
-  description         = local.description
-}
-
 resource "azurerm_api_management_api_version_set" "api_backoffice_apiConfig_api" {
   name                = format("%s-${local.repo_name}", var.env_short)
   resource_group_name = local.apim.rg
@@ -35,7 +27,7 @@ module "apim_api_backoffice_apiConfig_api_v1" {
   api_management_name   = local.apim.name
   resource_group_name   = local.apim.rg
   product_ids           = [local.apim.product_id]
-  subscription_required = true
+  subscription_required = false
 
   version_set_id = azurerm_api_management_api_version_set.api_backoffice_apiConfig_api.id
   api_version    = "v1"
@@ -48,7 +40,7 @@ module "apim_api_backoffice_apiConfig_api_v1" {
   service_url = null
 
   content_format = "openapi"
-  content_value  = templatefile("../openapi/openapi.json", {
+  content_value  = templatefile("../openapi/openapi.json.tpl", {
     host = local.host
     basePath = "selfcare"
   })

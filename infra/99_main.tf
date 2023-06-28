@@ -21,6 +21,10 @@ provider "azurerm" {
   features {}
 }
 
+provider "github" {
+  owner = "pagopa"
+}
+
 provider "azapi" {}
 
 data "azurerm_subscription" "current" {}
