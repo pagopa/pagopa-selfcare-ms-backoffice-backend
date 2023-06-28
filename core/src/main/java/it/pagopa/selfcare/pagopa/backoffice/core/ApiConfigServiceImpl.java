@@ -230,6 +230,19 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return newStationCode;
     }
 
+    @Override
+    public String generateStationCodeV2( List<WrapperStation> stationList, String ecCode, String xRequestId) {
+        log.trace("generateStationCodeV2 start");
+        log.debug("generateStationCodeV2 xRequestId = {}", xRequestId);
+        List<String> codes = stationList.stream().map(WrapperStation::getStationCode)
+                .filter(s -> s.matches("^\\w+_\\d+$"))
+                .collect(Collectors.toList());
+        String newStationCode = generator(codes, ecCode);
+        log.debug("generateStationCode result = {}", newStationCode);
+        log.trace("generateStationCode end");
+        return newStationCode;
+    }
+
 
     @Override
     public PaymentServiceProviderDetails getPSPDetails(String pspCode, String xRequestId) {
