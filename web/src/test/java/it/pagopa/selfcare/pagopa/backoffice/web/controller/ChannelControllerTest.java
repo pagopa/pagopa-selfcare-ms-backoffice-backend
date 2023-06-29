@@ -8,6 +8,9 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
@@ -1174,5 +1177,67 @@ class ChannelControllerTest {
 
         verifyNoMoreInteractions(wrapperServiceMock);
 
+    }
+
+    @Test
+    void getChannelCodeV2() throws Exception {
+        //given
+        WrapperType wrapperType = WrapperType.CHANNEL;
+        String channelCode = "channelCode";
+        Integer page = 0;
+        Integer size = 100;
+        String sorting = "ASC";
+
+        Channels channels = mockInstance(new Channels());
+        List<Channel> channelList = mockInstance(new ArrayList<>());
+        channels.setChannelList(channelList);
+
+        ChannelDetails channelDetails = mockInstance(new ChannelDetails());
+        DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
+        wrapperEntity.setEntity(channelDetails);
+        wrapperEntity.setModifiedAt(Instant.now());
+        DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setModifiedAt(Instant.now());
+        wrapperEntities.setEntities(List.of(wrapperEntity));
+
+        WrapperEntitiesList mongoList = mockInstance(new WrapperEntitiesList());
+        PageInfo pageInfo = mockInstance(new PageInfo());
+        mongoList.setWrapperEntities(List.of(wrapperEntities));
+        mongoList.setPageInfo(pageInfo);
+        WrapperChannels wrapperChannels = mockInstance(new WrapperChannels());
+
+        List<WrapperChannel> w1List = new ArrayList<>();
+        WrapperChannel w1 = new WrapperChannel();
+        w1List.add(w1);
+        wrapperChannels.setChannelList(w1List);
+
+
+
+        when(wrapperServiceMock.findByIdLikeOrTypeOrBrokerCode(channelCode, wrapperType, null, page, size))
+                .thenReturn(mongoList);
+        when(apiConfigServiceMock.getChannels(eq(size), eq(page), eq(channelCode), eq(sorting), any()))
+                .thenReturn(channels);
+        when(apiConfigServiceMock.mergeAndSortWrapperChannels(any(), any(), anyString()))
+                .thenReturn(wrapperChannels);
+        when(apiConfigServiceMock.generateChannelCodeV2(any(), anyString(), anyString()))
+                .thenReturn("channelCode_01");
+
+        //when
+        mvc.perform(get(BASE_URL + "/{pspcode}/generateV2", channelCode)
+
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+
+        //then
+        verify(wrapperServiceMock, times(1))
+                .findByIdLikeOrTypeOrBrokerCode(channelCode, wrapperType, null, page, size);
+        verify(apiConfigServiceMock, times(1))
+                .getChannels(eq(size), eq(page), eq(channelCode), eq(sorting), any());
+        verify(apiConfigServiceMock, times(1))
+                .mergeAndSortWrapperChannels(any(), any(), anyString());
+        verify(apiConfigServiceMock, times(1))
+                .generateChannelCodeV2(any(), anyString(), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }

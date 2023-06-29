@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
@@ -996,5 +997,23 @@ class ApiConfigServiceImplTest {
         //then
         assertNotNull(response);
         assertEquals(stationCode+"_02", response);
+    }
+
+    @Test
+    void generateChannelCodeV2() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String channelCode = "channelCode";
+
+        List<WrapperChannel> channelList = new ArrayList<>();
+        WrapperChannel channel = new WrapperChannel();
+        channel.setChannelCode(channelCode+"_01");
+        channelList.add(channel);
+
+        //when
+        String response = apiConfigService.generateChannelCodeV2(channelList, channelCode, xRequestId);
+        //then
+        assertNotNull(response);
+        assertEquals(channelCode+"_02", response);
     }
 }
