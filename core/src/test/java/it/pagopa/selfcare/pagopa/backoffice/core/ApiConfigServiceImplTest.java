@@ -7,6 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -977,5 +978,23 @@ class ApiConfigServiceImplTest {
                 .createCreditorInstitutionIbans(ecCode, ibanCreate, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
 
+    }
+
+    @Test
+    void generateStationCodeV2() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String stationCode = "stationCode";
+
+        List<WrapperStation> stationList = new ArrayList<>();
+        WrapperStation station = new WrapperStation();
+        station.setStationCode(stationCode+"_01");
+        stationList.add(station);
+
+        //when
+        String response = apiConfigService.generateStationCodeV2(stationList, stationCode, xRequestId);
+        //then
+        assertNotNull(response);
+        assertEquals(stationCode+"_02", response);
     }
 }

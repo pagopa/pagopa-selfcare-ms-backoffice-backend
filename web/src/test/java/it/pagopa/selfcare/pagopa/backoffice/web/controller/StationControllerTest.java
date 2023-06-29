@@ -28,6 +28,7 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.Credit
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationCodeResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.WrapperStationDetailsDto;
 import org.junit.jupiter.api.Test;
@@ -754,6 +755,70 @@ class StationControllerTest {
         //then
         verify(apiConfigServiceMock, times(1))
                 .deleteCreditorInstitutionStationRelationship(anyString(), anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getStationCodeV2() throws Exception {
+        //given
+        WrapperType wrapperType = WrapperType.STATION;
+        String stationCode = "stationCode";
+        String brokerCode = null;
+        Integer page = 0;
+        Integer size = 100;
+        String sorting = "ASC";
+
+        Stations stations = mockInstance(new Stations());
+        List<Station> stationList = mockInstance(new ArrayList<>());
+        stations.setStationsList(stationList);
+
+        StationDetails stationDetails = mockInstance(new StationDetails());
+        DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
+        wrapperEntity.setEntity(stationDetails);
+        wrapperEntity.setModifiedAt(Instant.now());
+        DummyWrapperEntities<StationDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
+        wrapperEntities.setModifiedAt(Instant.now());
+        wrapperEntities.setEntities(List.of(wrapperEntity));
+
+        WrapperEntitiesList mongoList = mockInstance(new WrapperEntitiesList());
+        PageInfo pageInfo = mockInstance(new PageInfo());
+        mongoList.setWrapperEntities(List.of(wrapperEntities));
+        mongoList.setPageInfo(pageInfo);
+        WrapperStations wrapperStations1 = mockInstance(new WrapperStations());
+
+        List<WrapperStation> w1List = new ArrayList<>();
+        WrapperStation w1 = new WrapperStation();
+        w1List.add(w1);
+        wrapperStations1.setStationsList(w1List);
+
+
+
+
+        when(wrapperServiceMock.findByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, null, 0, 100))
+                .thenReturn(mongoList);
+        when(apiConfigServiceMock.getStations(eq(100), eq(0), eq("ASC"), eq(null), eq(null), eq(stationCode), any()))
+                .thenReturn(stations);
+        when(apiConfigServiceMock.mergeAndSortWrapperStations(any(), any(), anyString()))
+                .thenReturn(wrapperStations1);
+        when(apiConfigServiceMock.generateStationCodeV2(any(), anyString(), anyString()))
+                .thenReturn("stationCode_01");
+
+        //when
+        mvc.perform(get(BASE_URL + "/{ecCode}/generateV2", stationCode)
+
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+
+        //then
+        verify(wrapperServiceMock, times(1))
+                .findByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, null, 0, 100);
+        verify(apiConfigServiceMock, times(1))
+                .getStations(eq(100), eq(0), eq("ASC"), eq(null), eq(null), eq(stationCode), any());
+        verify(apiConfigServiceMock, times(1))
+                .mergeAndSortWrapperStations(any(), any(), anyString());
+        verify(apiConfigServiceMock, times(1))
+                .generateStationCodeV2(any(), anyString(), anyString());
+
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }
