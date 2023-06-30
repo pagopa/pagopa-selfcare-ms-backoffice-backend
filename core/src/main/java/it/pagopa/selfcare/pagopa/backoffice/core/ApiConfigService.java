@@ -7,11 +7,16 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import org.springframework.core.io.Resource;
+
+import java.util.List;
 
 public interface ApiConfigService {
 
@@ -88,5 +93,9 @@ public interface ApiConfigService {
     IbansEnhanced getCreditorInstitutionIbans(String ecCode, String label, String xRequestId);
 
     IbanCreate createCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId);
+
+    String generateStationCodeV2(List<WrapperStation> stationList, String ecCode, String xRequestId);
+
+    String generateChannelCodeV2(List<WrapperChannel> channelList, String ecCode, String xRequestId);
 
 }
