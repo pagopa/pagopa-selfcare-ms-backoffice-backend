@@ -26,6 +26,7 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     Channels getChannels(@RequestParam(required = false, defaultValue = "50") Integer limit,
                          @RequestParam(required = true) Integer page,
                          @RequestParam(required = false) String code,
+                         @RequestParam(required = false) String brokercode,
                          @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort,
                          @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 

@@ -67,7 +67,7 @@ public class ChannelController {
         log.trace("getchannels start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels code filter = {}, xRequestId = {}", code, xRequestId);
-        Channels channels = apiConfigService.getChannels(limit, page, code, sort, xRequestId);
+        Channels channels = apiConfigService.getChannels(limit, page, code, null, sort, xRequestId);
         ChannelsResource resource = ChannelMapper.toResource(channels);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getchannels result = {}", resource);
         log.trace("getchannels end");
@@ -433,7 +433,7 @@ public class ChannelController {
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getChannelCodeV2 pspcode = {}, xRequestId = {}", pspCode, xRequestId);
 
-        Channels channels = apiConfigService.getChannels(100, 0, pspCode, "ASC", xRequestId);
+        Channels channels = apiConfigService.getChannels(100, 0, pspCode, null, "ASC", xRequestId);
         WrapperChannels  responseApiConfig = ChannelMapper.toWrapperChannels(channels);
         WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(pspCode, WrapperType.CHANNEL,null, 0, 100);
         WrapperChannels responseMongo = ChannelMapper.toWrapperChannels(mongoList);
@@ -587,7 +587,7 @@ public class ChannelController {
         log.debug("getAllChannelsMerged page = {} limit = {}", page, limit);
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels xRequestId = {}", xRequestId);
-        Channels channels = apiConfigService.getChannels(limit, page, channelcode, sorting, xRequestId);
+        Channels channels = apiConfigService.getChannels(limit, page, channelcode, brokerCode, sorting, xRequestId);
         WrapperChannels  responseApiConfig = ChannelMapper.toWrapperChannels(channels);
         WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(channelcode, WrapperType.CHANNEL,null, page, limit);
         WrapperChannels responseMongo = ChannelMapper.toWrapperChannels(mongoList);

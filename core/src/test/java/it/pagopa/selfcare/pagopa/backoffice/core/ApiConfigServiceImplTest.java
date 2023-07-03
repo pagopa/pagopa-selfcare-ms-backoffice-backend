@@ -50,13 +50,14 @@ class ApiConfigServiceImplTest {
         final Integer limit = 1;
         final Integer page = null;
         final String code = "code";
+        final String brokercode = "brokercode";
         final String sort = "sort";
         final String xRequestId = "xRequestId";
         //when
-        apiConfigService.getChannels(limit, page, code, sort, xRequestId);
+        apiConfigService.getChannels(limit, page, code, brokercode, sort, xRequestId);
         //then
         verify(apiConfigConnectorMock, times(1))
-                .getChannels(limit, page, code, sort, xRequestId);
+                .getChannels(limit, page, code, brokercode, sort, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
@@ -66,19 +67,20 @@ class ApiConfigServiceImplTest {
         final Integer limit = 1;
         final Integer page = 1;
         final String code = "code";
+        final String brokercode = "brokercode";
         final String sort = "sort";
         final String xRequestId = "xRequestId";
         Channels channelsMock = mock(Channels.class);
-        when(apiConfigConnectorMock.getChannels(any(), any(), any(), any(), any()))
+        when(apiConfigConnectorMock.getChannels(any(), any(), any(), any(), any(), any()))
                 .thenReturn(channelsMock);
         //when
-        Channels channels = apiConfigService.getChannels(limit, page, code, sort, xRequestId);
+        Channels channels = apiConfigService.getChannels(limit, page, code, brokercode, sort, xRequestId);
         //then
         assertNotNull(channels);
         assertEquals(channelsMock, channels);
         reflectionEqualsByName(channelsMock, channels);
         verify(apiConfigConnectorMock, times(1))
-                .getChannels(limit, page, code, sort, xRequestId);
+                .getChannels(limit, page, code, brokercode, sort, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
@@ -511,7 +513,7 @@ class ApiConfigServiceImplTest {
 
         channels.setChannelList(List.of(channel));
 
-        when(apiConfigConnectorMock.getChannels(eq(limit), eq(page), anyString(), eq(sorting), anyString()))
+        when(apiConfigConnectorMock.getChannels(eq(limit), eq(page), anyString(), eq(null), eq(sorting), anyString()))
                 .thenReturn(channels);
 
         //when
@@ -536,14 +538,14 @@ class ApiConfigServiceImplTest {
 
         channels.setChannelList(List.of(channel));
 
-        when(apiConfigConnectorMock.getChannels(eq(limit), eq(page), anyString(), eq(sorting), anyString()))
+        when(apiConfigConnectorMock.getChannels(eq(limit), eq(page), anyString(), eq(null), eq(sorting), anyString()))
                 .thenReturn(channels);
 
         //when
         String response = apiConfigService.generateChannelCode(pspCode, xRequestId);
         assertNotNull(response);
         verify(apiConfigConnectorMock, times(1))
-                .getChannels(eq(limit), eq(page), anyString(), eq(sorting), anyString());
+                .getChannels(eq(limit), eq(page), anyString(), eq(null), eq(sorting), anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
         assertEquals("TEST_01", response);
     }

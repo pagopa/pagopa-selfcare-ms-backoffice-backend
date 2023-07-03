@@ -43,9 +43,9 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
-    public Channels getChannels(Integer limit, Integer page, String code, String sort, String xRequestId) {
+    public Channels getChannels(Integer limit, Integer page, String code, String brokerCode, String sort, String xRequestId) {
         log.trace("getChannels start");
-        Channels channels = apiConfigConnector.getChannels(limit, page, code, sort, xRequestId);
+        Channels channels = apiConfigConnector.getChannels(limit, page, code, brokerCode, sort, xRequestId);
         log.debug("getChannels result = {}", channels);
         log.trace("getChannels end");
         return channels;
@@ -204,7 +204,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     public String generateChannelCode(String pspCode, String xRequestId) {
         log.trace("generateChannelCode start");
         log.debug("generateChannelCode pspCode = {}", pspCode);
-        Channels response = apiConfigConnector.getChannels(100, 0, pspCode, "ASC", xRequestId);
+        Channels response = apiConfigConnector.getChannels(100, 0, pspCode, null, "ASC", xRequestId);
         List<Channel> codeList = response.getChannelList();
         List<String> codes = codeList.stream().map(Channel::getChannelCode)
                 .filter(s -> s.matches("^\\w+_\\d+$")) // String_nn
