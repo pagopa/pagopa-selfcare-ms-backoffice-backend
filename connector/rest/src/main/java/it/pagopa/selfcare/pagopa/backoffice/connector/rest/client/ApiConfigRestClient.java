@@ -157,6 +157,13 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     @GetMapping(value = "${rest-client.api-config.getCreditorInstitutionDetails.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     CreditorInstitutionDetails getCreditorInstitutionDetails(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
                                                              @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+    @GetMapping(value = "${rest-client.api-config.getCreditorInstitutions.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    CreditorInstitutions getCreditorInstitutions(@RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                 @RequestParam(required = true) Integer page,
+                                                 @RequestParam(required = false, name = "code") String ecCode,
+                                                 @RequestParam(required = false, name = "name") String name,
+                                                 @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sorting,
+                                                 @RequestHeader(required = false, name = "X-Request-Id") String xRequestId);
     @PutMapping(value = "${rest-client.api-config.updateCreditorInstitutionDetails.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     CreditorInstitutionDetails updateCreditorInstitutionDetails(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
                                                                 @RequestBody CreditorInstitutionDetails request,
@@ -177,7 +184,7 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     @ResponseBody
     WfespPluginConfs getWfespPlugins(@RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
-    @GetMapping(value = "${rest-client.api-config.getCreditorInstitutions.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "${rest-client.api-config.getCreditorInstitutionsByStation.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     CreditorInstitutions getCreditorInstitutionsByStation(@PathVariable(required = false, name = "stationcode") String stationcode,
                                                           @RequestParam(required = false, defaultValue = "50") Integer limit,

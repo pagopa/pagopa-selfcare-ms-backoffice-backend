@@ -74,6 +74,8 @@ public interface ApiConfigService {
 
     CreditorInstitutionDetails getCreditorInstitutionDetails(String ecCode, String xRequestId);
 
+    CreditorInstitutions getCreditorInstitutions(Integer limit, Integer page, String ecCode, String name, String sorting, String xRequestId);
+
     CreditorInstitutionDetails updateCreditorInstitutionDetails(String creditorInstitutionCode,
                                                                 CreditorInstitutionDetails request,
                                                                 String xRequestId);

@@ -723,6 +723,28 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
+    void getCreditorInstitutions() {
+        //given
+        String ecCode = "creditorInstitutionCode";
+        Integer page = 0;
+        Integer size = 50;
+        String sorting = "ASC";
+        String name = "name";
+        String xRequestId = UUID.randomUUID().toString();
+        CreditorInstitutions creditorInstitutions = mockInstance(new CreditorInstitutions());
+
+        when(apiConfigConnectorMock.getCreditorInstitutions(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(creditorInstitutions);
+        //when
+        CreditorInstitutions result = apiConfigService.getCreditorInstitutions(size, page, ecCode, name, sorting, xRequestId);
+        //then
+        assertSame(creditorInstitutions, result);
+        verify(apiConfigConnectorMock, times(1))
+                .getCreditorInstitutions(size, page, ecCode, name, sorting, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
     void updateStation() {
         //given
         final String xRequestId = "xRequestId";
