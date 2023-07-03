@@ -299,6 +299,17 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
+    public CreditorInstitutions getCreditorInstitutions(Integer limit, Integer page, String ecCode, String name, String sorting, String xRequestId) {
+        log.trace("getCreditorInstitutions start");
+        log.debug("getCreditorInstitutions ecCode = {}, xRequestId = {}", ecCode , xRequestId);
+        Assert.hasText(ecCode, CREDITOR_INSTITUTION_CODE_IS_REQUIRED);
+        CreditorInstitutions result = apiConfigConnector.getCreditorInstitutions(limit, page, ecCode, name, sorting, xRequestId);
+        log.debug("getCreditorInstitutions result = {}", result);
+        log.trace("getCreditorInstitutions end");
+        return result;
+    }
+
+    @Override
     public CreditorInstitutionDetails updateCreditorInstitutionDetails(String creditorInstitutionCode, CreditorInstitutionDetails request, String xRequestId) {
         log.trace("updateCreditorInstitutionDetails start");
         log.debug("updateCreditorInstitutionDetails creditorInstitutionCode = {}, request = {}, xRequestId = {}", creditorInstitutionCode , request, xRequestId);
