@@ -240,21 +240,21 @@ public class ApiConfigServiceImpl implements ApiConfigService {
                 .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toList());
         String newStationCode = generator(codes, ecCode);
-        log.debug("generateStationCode result = {}", newStationCode);
-        log.trace("generateStationCode end");
+        log.debug("generateStationCodeV2 result = {}", newStationCode);
+        log.trace("generateStationCodeV2 end");
         return newStationCode;
     }
 
     @Override
     public String generateChannelCodeV2( List<WrapperChannel> stationList, String ecCode, String xRequestId) {
-        log.trace("generateStationCodeV2 start");
-        log.debug("generateStationCodeV2 xRequestId = {}", xRequestId);
+        log.trace("generateChannelCodeV2 start");
+        log.debug("generateChannelCodeV2 xRequestId = {}", xRequestId);
         List<String> codes = stationList.stream().map(WrapperChannel::getChannelCode)
                 .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toList());
         String newStationCode = generator(codes, ecCode);
-        log.debug("generateStationCode result = {}", newStationCode);
-        log.trace("generateStationCode end");
+        log.debug("generateChannelCodeV2 result = {}", newStationCode);
+        log.trace("generateChannelCodeV2 end");
         return newStationCode;
     }
 
