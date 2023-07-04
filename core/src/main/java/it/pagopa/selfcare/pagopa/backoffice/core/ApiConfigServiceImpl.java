@@ -37,6 +37,8 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     protected static final String CREDITOR_INSTITUTION_CODE_IS_REQUIRED = "A creditor institution code is required";
     private final ApiConfigConnector apiConfigConnector;
 
+    private final String REGEX_GENERATE = "^\\w+_\\d+$";
+
     @Autowired
     public ApiConfigServiceImpl(ApiConfigConnector apiConfigConnector) {
         this.apiConfigConnector = apiConfigConnector;
@@ -207,7 +209,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         Channels response = apiConfigConnector.getChannels(100, 0, pspCode, null, "ASC", xRequestId);
         List<Channel> codeList = response.getChannelList();
         List<String> codes = codeList.stream().map(Channel::getChannelCode)
-                .filter(s -> s.matches("^\\w+_\\d+$")) // String_nn
+                .filter(s -> s.matches(REGEX_GENERATE)) // String_nn
                 .collect(Collectors.toList());
         String newChannelCode = generator(codes, pspCode);
         log.debug("generateChannelCode result = {}", newChannelCode);
@@ -222,7 +224,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         Stations stations = apiConfigConnector.getStations(100,0,"ASC",null,null,ecCode,xRequestId);
         List<Station> stationsList = stations.getStationsList();
         List<String> codes = stationsList.stream().map(Station::getStationCode)
-                .filter(s -> s.matches("^\\w+_\\d+$"))
+                .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toList());
         String newStationCode = generator(codes, ecCode);
         log.debug("generateStationCode result = {}", newStationCode);
@@ -235,7 +237,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.trace("generateStationCodeV2 start");
         log.debug("generateStationCodeV2 xRequestId = {}", xRequestId);
         List<String> codes = stationList.stream().map(WrapperStation::getStationCode)
-                .filter(s -> s.matches("^\\w+_\\d+$"))
+                .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toList());
         String newStationCode = generator(codes, ecCode);
         log.debug("generateStationCode result = {}", newStationCode);
@@ -248,7 +250,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.trace("generateStationCodeV2 start");
         log.debug("generateStationCodeV2 xRequestId = {}", xRequestId);
         List<String> codes = stationList.stream().map(WrapperChannel::getChannelCode)
-                .filter(s -> s.matches("^\\w+_\\d+$"))
+                .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toList());
         String newStationCode = generator(codes, ecCode);
         log.debug("generateStationCode result = {}", newStationCode);
