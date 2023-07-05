@@ -1,33 +1,60 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/external/v1/institutions",
+    "urlPath": "/external/v2/institutions",
     "queryParameters": {
-          "productId": {
-            "equalTo": "productId"
-     }
+      "userIdForAuth": {
+        "equalTo": "productId"
+      }
     }
   },
   "response": {
     "status": "200",
     "jsonBody": [
-                  {
-                    "address": "string",
-                    "description": "string",
-                    "digitalAddress": "string",
-                    "externalId": "string",
-                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                    "institutionType": "GSP",
-                    "origin": "string",
-                    "originId": "string",
-                    "status": "string",
-                    "taxCode": "string",
-                    "userProductRoles": [
-                      "string"
-                    ],
-                    "zipCode": "string"
-                  }
-                ],
+      {
+        "address": "string",
+        "description": "string",
+        "digitalAddress": "string",
+        "externalId": "string",
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "institutionType": "PSP",
+        "origin": "string",
+        "originId": "string",
+        "status": "string",
+        "taxCode": "string",
+        "billing": {
+          "vatNumber": "1",
+          "recipientCode": "",
+          "publicServices": true
+        },
+        "userProductRoles": [
+          "string"
+        ],
+        "zipCode": "string",
+        "recipientCode": "recipientCode",
+        "assistanceContacts": {
+          "supportEmail": "email@example.com",
+          "supportPhone": "string"
+        },
+        "companyInformations": {
+          "businessRegisterPlace": "string",
+          "rea": "string",
+          "shareCapital": "string"
+        },
+        "dpoData": {
+          "address": "string",
+          "email": "email@example.com",
+          "pec": "email@example.com"
+        },
+        "pspData": {
+          "abiCode": "string",
+          "businessRegisterNumber": "string",
+          "legalRegisterName": "string",
+          "legalRegisterNumber": "string",
+          "vatNumberGroup": false
+        }
+      }
+    ],
     "headers": {
       "Content-Type": "application/json"
     }

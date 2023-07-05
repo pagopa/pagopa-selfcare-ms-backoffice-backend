@@ -1,0 +1,25 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/apiconfig/auth/api/v1/paymentserviceproviders/pspCode1"
+  },
+  "response": {
+    "status": "201",
+    "jsonBody":{
+      "abi":"abi",
+      "agid_psp":true,
+      "bic":"bic",
+      "business_name":"test",
+      "enabled":true,
+      "my_bank_code":"test",
+      "psp_code":"pspCode",
+      "stamp":true,
+      "tax_code":"1",
+      "vat_number":"1"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
+

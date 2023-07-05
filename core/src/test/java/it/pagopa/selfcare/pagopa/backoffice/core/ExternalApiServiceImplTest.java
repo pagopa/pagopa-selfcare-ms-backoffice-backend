@@ -69,19 +69,19 @@ class ExternalApiServiceImplTest {
     @Test
     void getInstitutions(){
         //given
-        String productId = "prod-pagopa";
+        String userIdForAuth = "prod-userIdForAuth";
         InstitutionInfo institutionInfo = mockInstance(new InstitutionInfo());
         institutionInfo.setUserProductRoles(List.of("productRole"));
         when(externalApiConnectorMock.getInstitutions(any()))
                 .thenReturn(List.of(institutionInfo));
         //when
-        Collection<InstitutionInfo> institutionInfos = externalApiService.getInstitutions();
+        Collection<InstitutionInfo> institutionInfos = externalApiService.getInstitutions(userIdForAuth);
         //then
         assertNotNull(institutionInfos);
         institutionInfos.forEach(TestUtils::checkNotNullFields);
         institutionInfos.forEach(institutionInfo1 -> TestUtils.reflectionEqualsByName(institutionInfo, institutionInfo1));
         verify(externalApiConnectorMock, times(1))
-                .getInstitutions(productId);
+                .getInstitutions(userIdForAuth);
         verifyNoMoreInteractions(externalApiConnectorMock);
     }
     
@@ -89,8 +89,9 @@ class ExternalApiServiceImplTest {
     void getInstitutionUserProducts_nullInstitutionId(){
         //given
         String institutionId = null;
+        String userId = "userId";
         //when
-        Executable executable = () -> externalApiService.getInstitutionUserProducts(institutionId);
+        Executable executable = () -> externalApiService.getInstitutionUserProducts(institutionId,userId);
         //then
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, executable);
         assertEquals(AN_INSTITUTION_ID_IS_REQUIRED, e.getMessage());
@@ -101,17 +102,18 @@ class ExternalApiServiceImplTest {
     void getInstitutionUserProducts(){
         //given
         String institutionId = "institutionId";
+        String userId = "userId";
         Product productMock = mockInstance(new Product());
-        when(externalApiConnectorMock.getInstitutionUserProducts(any()))
+        when(externalApiConnectorMock.getInstitutionUserProducts(any(),anyString()))
                 .thenReturn(List.of(productMock));
         //when
-        List<Product> products = externalApiService.getInstitutionUserProducts(institutionId);
+        List<Product> products = externalApiService.getInstitutionUserProducts(institutionId,userId);
         //then
         assertNotNull(products);
         products.forEach(TestUtils::checkNotNullFields);
         products.forEach(product -> TestUtils.reflectionEqualsByName(productMock, product));
         verify(externalApiConnectorMock, times(1))
-                .getInstitutionUserProducts(institutionId);
+                .getInstitutionUserProducts(institutionId,userId);
     }
 
 }

@@ -3,8 +3,8 @@ microservice-chart:
   nameOverride: ""
   fullnameOverride: ""
   image:
-    repository: pagopapcommonacr.azurecr.io/pagopaselfcaremsbackofficebackend
-    tag: "0.0.40" #improve
+    repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
+    tag: "0.0.168-1-improve" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -49,8 +49,8 @@ microservice-chart:
       cpu: "0.5"
   autoscaling:
     enable: true
-    minReplica: 1
-    maxReplica: 2
+    minReplica: 2
+    maxReplica: 3
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
     triggers:
@@ -62,21 +62,61 @@ microservice-chart:
   envConfig:
     WEBSITE_SITE_NAME: 'pagopaselfcaremsbackofficebackend'
     EXTERNAL_API_SERVICE_URL: https://api.selfcare.pagopa.it
+    PAGOPA_APIM_SERVICE_URL: https://api.platform.pagopa.it
+    PAGOPA_SELFCARE_INTEGRATION_APIM_SERVICE_URL: https://api.platform.pagopa.it
     AZURE_RESOURCE_GROUP: pagopa-p-api-rg
     AZURE_SERVICE_NAME: pagopa-p-apim
     ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
+    MONGODB_NAME: pagopaBackoffice
+    AUTHORIZATION_FLAG: 'false'
+    ENV: 'PROD'
   envSecret:
-    AZURE_CLIENT_SECRET: pagopa-selfcare-p-azure-client-secret
-    AZURE_CLIENT_ID: pagopa-selfcare-p-azure-client-id
+    AZURE_CLIENT_SECRET: pagopa-p-selfcare-client-secret
+    AZURE_CLIENT_ID: pagopa-p-selfcare-client-id
     SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selfcare-p-apim-external-api-key
+    PAGOPA_APIM_API_CONFIG_API_KEY_PAGOPA: pagopa-p-apim-api-config-key
+    PAGOPA_APIM_API_CONFIG_SELFCARE_INTEGRATION_API_KEY_PAGOPA: pagopa-p-apim-api-config-selfcare-integration-key
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-p-connection-string'
     AZURE_TENANT_ID: pagopa-selfcare-prod-tenant-id
     AZURE_SUBSCRIPTION_ID: pagopa-selfcare-p-subscription-id
     JWT_TOKEN_PUBLIC_KEY: pagopa-p-weu-selfcare-jwt-pub-key
     TEST_EMAIL: pagopa-p-env-test-email
+    MONGODB_CONNECTION_URI: cosmodbmongo-p-bopagopa-connection-string
+    JIRA_URL: jira-p-url
+    JIRA_USERNAME: jira-p-username
+    JIRA_PASSWORD: jira-p-token
+    JIRA_PROJECT_KEY: jira-p-project-key
+    JIRA_REQ_TYPE_TASKID: jira-p-req-task-id
   keyvault:
     name: "pagopa-p-selfcare-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   nodeSelector: {}
   tolerations: []
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node_type
+                operator: In
+                values:
+                  - user
+  canaryDelivery:
+    create: true
+    ingress:
+      create: true
+      canary:
+        type: header
+        headerName: X-Canary
+        headerValue: canary
+        weightPercent: 0
+    service:
+      create: true
+    deployment:
+      create: true
+      image:
+        repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
+        tag: 0.0.168-1-improve
+        pullPolicy: Always
+      envConfig: {}
+      envSecret: {}

@@ -1,0 +1,27 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/apiconfig/auth/api/v1/creditorinstitutions/ecCode/stations"
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": {
+      "stations": [
+        {
+          "application_code": 0,
+          "aux_digit": 0,
+          "broadcast": true,
+          "broker_description": "Lorem ipsum dolor sit amet",
+          "enabled": true,
+          "mod4": true,
+          "segregation_code": 0,
+          "station_code": "1234567890100",
+          "version": 2
+        }
+      ]
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

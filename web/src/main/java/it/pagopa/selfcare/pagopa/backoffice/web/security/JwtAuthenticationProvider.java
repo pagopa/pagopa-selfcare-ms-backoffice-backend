@@ -16,19 +16,12 @@ import java.util.Optional;
 @Slf4j
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
-    private static final String MDC_UID = "uid";
-    private static final String CLAIMS_UID = "uid";
-    private static final String CLAIM_EMAIL = "email";
-    private static final String CLAIM_NAME = "name";
-    private static final String CLAIM_SURNAME = "family_name";
-
-    private final JwtService jwtService;
-    private final AuthoritiesRetriever authoritiesRetriever;
+    private final JwtAuthenticationStrategyFactory jwtAuthenticationStrategyFactory;
 
 
-    public JwtAuthenticationProvider(JwtService jwtService, AuthoritiesRetriever authoritiesRetriever) {
-        this.jwtService = jwtService;
-        this.authoritiesRetriever = authoritiesRetriever;
+    public JwtAuthenticationProvider(JwtAuthenticationStrategyFactory jwtAuthenticationStrategyFactory) {
+        log.trace("Initializing {}", JwtAuthenticationProvider.class.getSimpleName());
+        this.jwtAuthenticationStrategyFactory = jwtAuthenticationStrategyFactory;
     }
 
     @Override
@@ -36,41 +29,12 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         log.trace("authenticate start");
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "authenticate authentication = {}", authentication);
         final JwtAuthenticationToken requestAuth = (JwtAuthenticationToken) authentication;
-
-        SelfCareUser user;
-        try {
-            Claims claims = jwtService.getClaims(requestAuth.getCredentials());
-            log.debug(LogUtils.CONFIDENTIAL_MARKER, "authenticate claims = {}", claims);
-            Optional<String> uid = Optional.ofNullable(claims.get(CLAIMS_UID, String.class));
-            uid.ifPresentOrElse(value -> MDC.put(MDC_UID, value),
-                    () -> log.warn("uid claims is null"));
-
-            user = SelfCareUser.builder(uid.orElse("uid_not_provided"))
-                    .email(claims.get(CLAIM_EMAIL, String.class))
-                    .name(claims.get(CLAIM_NAME, String.class))
-                    .surname(claims.get(CLAIM_SURNAME, String.class))
-                    .build();
-
-        } catch (Exception e) {
-            MDC.remove(MDC_UID);
-            throw new JwtAuthenticationException(e.getMessage(), e);
-        }
-
-        final Collection<GrantedAuthority> authorities;
-        try {
-            authorities = authoritiesRetriever.retrieveAuthorities();
-        } catch (Exception e) {
-            MDC.remove(MDC_UID);
-            throw new AuthoritiesRetrieverException("An error occurred during authorities retrieval", e);
-        }
-        JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(requestAuth.getCredentials(),
-                user,
-                authorities);
-        authenticationToken.setDetails(authentication.getDetails());
-
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "authenticate result = {}", authentication);
+        final JwtAuthenticationStrategy jwtAuthenticationStrategy = jwtAuthenticationStrategyFactory.create(requestAuth.getCredentials());
+        final JwtAuthenticationToken jwtAuthenticationToken = jwtAuthenticationStrategy.authenticate(requestAuth);
+        jwtAuthenticationToken.setDetails(authentication.getDetails());
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "authenticate result = {}", jwtAuthenticationToken);
         log.trace("authenticate end");
-        return authenticationToken;
+        return jwtAuthenticationToken;
     }
 
 

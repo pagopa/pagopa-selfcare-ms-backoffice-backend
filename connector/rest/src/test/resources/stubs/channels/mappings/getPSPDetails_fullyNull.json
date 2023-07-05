@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/apiconfig/auth/api/v1/paymentserviceproviders/pspCode3"
+  },
+  "response": {
+    "status": "201",
+    "jsonBody":{
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
+

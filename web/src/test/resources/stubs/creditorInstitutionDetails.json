@@ -1,0 +1,15 @@
+{
+  "address": {
+    "city": "string",
+    "country_code": "string",
+    "location": "string",
+    "tax_domicile": "string",
+    "zip_code": "string"
+  },
+  "business_name": "string",
+  "creditor_institution_code": "string",
+  "enabled": false,
+  "psp_payment": false,
+  "reporting_ftp": false,
+  "reporting_zip": false
+}
