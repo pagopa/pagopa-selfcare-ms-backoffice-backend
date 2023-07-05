@@ -102,7 +102,7 @@ class ChannelControllerTest {
         PageInfo pageInfo = mockInstance(new PageInfo());
         channels.setPageInfo(pageInfo);
 
-        when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), anyString(), anyString(), anyString()))
+        when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), anyString(), any(), anyString(), anyString()))
                 .thenReturn(channels);
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -119,7 +119,7 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.channels[0].broker_description", notNullValue()));
         //then
         verify(apiConfigServiceMock, times(1))
-                .getChannels(eq(limit), eq(page), eq(code), eq(sort), anyString());
+                .getChannels(eq(limit), eq(page), eq(code), eq(null), eq(sort), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -1122,7 +1122,7 @@ class ChannelControllerTest {
 
         when(wrapperServiceMock.findByIdLikeOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt()))
                 .thenReturn(mongoList);
-        when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), any(), anyString(), anyString()))
+        when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), any(), any(), anyString(), anyString()))
                 .thenReturn(channels);
         when(apiConfigServiceMock.mergeAndSortWrapperChannels(any(), any(), anyString()))
                 .thenReturn(wrapperChannels);
@@ -1143,7 +1143,7 @@ class ChannelControllerTest {
         verify(wrapperServiceMock, times(1))
                 .findByIdLikeOrTypeOrBrokerCode(any(), any(), any(), anyInt(), anyInt());
         verify(apiConfigServiceMock, times(1))
-                .getChannels(anyInt(), anyInt(), any(), anyString(), anyString());
+                .getChannels(anyInt(), anyInt(), any(), any(), anyString(), anyString());
         verify(apiConfigServiceMock, times(1))
                 .mergeAndSortWrapperChannels(any(), any(), anyString());
 
@@ -1215,7 +1215,7 @@ class ChannelControllerTest {
 
         when(wrapperServiceMock.findByIdLikeOrTypeOrBrokerCode(channelCode, wrapperType, null, page, size))
                 .thenReturn(mongoList);
-        when(apiConfigServiceMock.getChannels(eq(size), eq(page), eq(channelCode), eq(sorting), any()))
+        when(apiConfigServiceMock.getChannels(eq(size), eq(page), eq(channelCode), eq(null), eq(sorting), any()))
                 .thenReturn(channels);
         when(apiConfigServiceMock.mergeAndSortWrapperChannels(any(), any(), anyString()))
                 .thenReturn(wrapperChannels);
@@ -1232,7 +1232,7 @@ class ChannelControllerTest {
         verify(wrapperServiceMock, times(1))
                 .findByIdLikeOrTypeOrBrokerCode(channelCode, wrapperType, null, page, size);
         verify(apiConfigServiceMock, times(1))
-                .getChannels(eq(size), eq(page), eq(channelCode), eq(sorting), any());
+                .getChannels(eq(size), eq(page), eq(channelCode), eq(null), eq(sorting), any());
         verify(apiConfigServiceMock, times(1))
                 .mergeAndSortWrapperChannels(any(), any(), anyString());
         verify(apiConfigServiceMock, times(1))

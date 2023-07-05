@@ -14,7 +14,7 @@ import org.springframework.core.io.Resource;
 
 public interface ApiConfigConnector {
 
-    Channels getChannels(Integer limit, Integer page, String code, String sort, String xRequestId);
+    Channels getChannels(Integer limit, Integer page, String code, String brokerCode, String sort, String xRequestId);
 
     ChannelDetails createChannel(ChannelDetails channelDetails, String xRequestId);
 
