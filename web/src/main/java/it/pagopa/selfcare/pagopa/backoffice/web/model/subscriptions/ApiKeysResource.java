@@ -23,7 +23,7 @@ public class ApiKeysResource {
     @NotBlank
     private String displayName;
 
-    @ApiModelProperty(value = "${swagger.model.institution.subscription.id}", required = true)
+    @ApiModelProperty(value = "${swagger.model.subscription.id}", required = true)
     @JsonProperty(required = true)
     @NotBlank
     private String id;

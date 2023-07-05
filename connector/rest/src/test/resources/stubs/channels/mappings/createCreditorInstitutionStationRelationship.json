@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/apiconfig/auth/api/v1/creditorinstitutions/ecCode/stations"
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": {
+      "application_code": 0,
+      "aux_digit": 1,
+      "broadcast": true,
+      "mod4": true,
+      "segregation_code": 0,
+      "station_code": "1234567890100"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

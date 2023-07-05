@@ -1,9 +1,9 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/external/v1/institutions",
+    "urlPath": "/external/v2/institutions",
     "queryParameters": {
-          "productId": {
+          "userIdForAuth": {
             "equalTo": "productId1"
      }
     }
