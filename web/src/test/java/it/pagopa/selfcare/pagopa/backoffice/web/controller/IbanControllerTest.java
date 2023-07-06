@@ -3,7 +3,6 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanEnhanced;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -25,11 +24,10 @@ import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = {IbanController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 @ContextConfiguration(classes = {
