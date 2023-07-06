@@ -8,7 +8,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannel;
@@ -101,6 +100,6 @@ public interface ApiConfigService {
 
     String generateChannelCodeV2(List<WrapperChannel> channelList, String ecCode, String xRequestId);
 
-    Brokers getStationBroker(Integer limit, Integer page, String code, String name, String orderby, String ordering, String xRequestId);
+    Brokers getBrokersEC(Integer limit, Integer page, String code, String name, String orderby, String ordering, String xRequestId);
 
     }

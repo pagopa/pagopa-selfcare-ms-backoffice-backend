@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
@@ -32,6 +33,7 @@ import static it.pagopa.selfcare.pagopa.TestUtils.reflectionEqualsByName;
 import static it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigServiceImpl.CREDITOR_INSTITUTION_CODE_IS_REQUIRED;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -1039,5 +1041,28 @@ class ApiConfigServiceImplTest {
         //then
         assertNotNull(response);
         assertEquals(channelCode+"_02", response);
+    }
+
+    @Test
+    void getBrokersEC() {
+        //given
+        Integer page = 0;
+        Integer limit = 50;
+        String code = "code";
+        String name = "name";
+        String orderby = "NAME";
+        String ordering = "DESC";
+        String xRequestId = "xRequestId";
+        Brokers brokers = mockInstance(new Brokers());
+
+        when(apiConfigConnectorMock.getBrokersEC(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString() ,anyString()))
+                .thenReturn(brokers);
+        //when
+        Brokers response = apiConfigConnectorMock.getBrokersEC(limit, page, code, name, orderby, ordering, xRequestId);
+        //then
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .getBrokersEC(limit, page, code, name, orderby, ordering, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 }

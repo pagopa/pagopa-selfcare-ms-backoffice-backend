@@ -390,7 +390,7 @@ public class StationController {
     @GetMapping(value = "/brokers-EC", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getStationBroker}")
-    public BrokersResource getBrokerEC(@ApiParam("${swagger.request.limit}")
+    public BrokersResource getBrokersEC(@ApiParam("${swagger.request.limit}")
                                @RequestParam(required = false, defaultValue = "50") Integer limit,
                                @ApiParam("${swagger.request.page}")
                                @RequestParam Integer page,
@@ -405,7 +405,7 @@ public class StationController {
         log.debug("getStationBroker page = {} limit = {}", page, limit);
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getStationBroker xRequestId = {}", xRequestId);
-        Brokers response = apiConfigService.getStationBroker(limit, page, code, name, orderby, ordering, xRequestId);
+        Brokers response = apiConfigService.getBrokersEC(limit, page, code, name, orderby, ordering, xRequestId);
         BrokersResource resource = BrokerMapper.toResource(response);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationBroker result = {}", resource);
         log.trace("getStationBroker end");

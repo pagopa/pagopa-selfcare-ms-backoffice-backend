@@ -477,9 +477,9 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return response;
     }
 
-    public Brokers getStationBroker(Integer limit, Integer page, String code, String name, String orderby, String ordering, String xRequestId){
+    public Brokers getBrokersEC(Integer limit, Integer page, String code, String name, String orderby, String ordering, String xRequestId){
         log.trace("getStationBroker start");
-        Brokers response = apiConfigConnector.getStationBroker(limit, page, code, name, orderby, ordering, xRequestId);
+        Brokers response = apiConfigConnector.getBrokersEC(limit, page, code, name, orderby, ordering, xRequestId);
         log.debug("getStationBroker result = {}", response);
         log.trace("getStationBroker end");
 

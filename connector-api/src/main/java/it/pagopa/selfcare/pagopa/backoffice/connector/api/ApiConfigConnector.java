@@ -84,5 +84,5 @@ public interface ApiConfigConnector {
 
     IbanCreate createCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId);
 
-    Brokers getStationBroker(Integer limit, Integer page, String code, String name, String orderby, String ordering, String xRequestId);
+    Brokers getBrokersEC(Integer limit, Integer page, String code, String name, String orderby, String ordering, String xRequestId);
 }
