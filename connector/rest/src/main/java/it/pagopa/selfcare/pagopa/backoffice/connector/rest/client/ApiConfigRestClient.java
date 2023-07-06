@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
@@ -209,4 +210,14 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     IbanCreate createCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
                                              @RequestBody IbanCreate ibanCreate,
                                              @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+
+    @GetMapping(value = "${rest-client.api-config.getStationBroker.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    Brokers getStationBroker(@RequestParam(required = false, defaultValue = "50") Integer limit,
+                             @RequestParam Integer page,
+                             @RequestParam(required = false) String code,
+                             @RequestParam(required = false) String name,
+                             @RequestParam(required = false, defaultValue = "CODE") String orderby,
+                             @RequestParam(required = false, defaultValue = "DESC") String ordering,
+                             @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
 }
