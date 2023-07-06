@@ -3,13 +3,10 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionAndBrokerDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.UpdateCreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerDto;
@@ -81,6 +78,29 @@ public class CreditorInstitutionController {
         log.debug("getCreditorInstitutionDetails ecCode = {}, xRequestId = {}", ecCode, xRequestId);
         CreditorInstitutionDetails creditorInstitutionDetails = apiConfigService.getCreditorInstitutionDetails(ecCode, xRequestId);
         CreditorInstitutionDetailsResource result = mapper.toResource(creditorInstitutionDetails);
+        log.debug("getCreditorInstitutionDetails result = {}", result);
+        log.trace("getCreditorInstitutionDetails end");
+        return result;
+    }
+
+    @GetMapping(value = "/get-creditor-institutions", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.getCreditorInstitutions}")
+    public CreditorInstitutionsResource getCreditorInstitutions(@ApiParam("${swagger.request.limit}")
+                                                                          @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                                      @ApiParam("${swagger.request.page}")
+                                                                          @RequestParam Integer page,
+                                                                      @ApiParam("${swagger.request.ecCode}")
+                                                                          @RequestParam(required = false, value = "ecCode") String ecCode,
+                                                                      @ApiParam("${swagger.request.name}")
+                                                                          @RequestParam(required = false, value = "name") String name,
+                                                                      @ApiParam("${swagger.request.sorting}")
+                                                                          @RequestParam(required = false, value = "sorting") String sorting){
+        log.trace("getCreditorInstitutionDetails start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getCreditorInstitutionDetails ecCode = {}, xRequestId = {}", ecCode, xRequestId);
+        CreditorInstitutions creditorInstitutions = apiConfigService.getCreditorInstitutions(limit, page, ecCode, name, sorting, xRequestId);
+        CreditorInstitutionsResource result = mapper.toResource(creditorInstitutions);
         log.debug("getCreditorInstitutionDetails result = {}", result);
         log.trace("getCreditorInstitutionDetails end");
         return result;

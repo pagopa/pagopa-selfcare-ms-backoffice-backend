@@ -37,15 +37,17 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     protected static final String CREDITOR_INSTITUTION_CODE_IS_REQUIRED = "A creditor institution code is required";
     private final ApiConfigConnector apiConfigConnector;
 
+    private final String REGEX_GENERATE = "^\\w+_\\d+$";
+
     @Autowired
     public ApiConfigServiceImpl(ApiConfigConnector apiConfigConnector) {
         this.apiConfigConnector = apiConfigConnector;
     }
 
     @Override
-    public Channels getChannels(Integer limit, Integer page, String code, String sort, String xRequestId) {
+    public Channels getChannels(Integer limit, Integer page, String code, String brokerCode, String sort, String xRequestId) {
         log.trace("getChannels start");
-        Channels channels = apiConfigConnector.getChannels(limit, page, code, sort, xRequestId);
+        Channels channels = apiConfigConnector.getChannels(limit, page, code, brokerCode, sort, xRequestId);
         log.debug("getChannels result = {}", channels);
         log.trace("getChannels end");
         return channels;
@@ -204,10 +206,10 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     public String generateChannelCode(String pspCode, String xRequestId) {
         log.trace("generateChannelCode start");
         log.debug("generateChannelCode pspCode = {}", pspCode);
-        Channels response = apiConfigConnector.getChannels(100, 0, pspCode, "ASC", xRequestId);
+        Channels response = apiConfigConnector.getChannels(100, 0, pspCode, null, "ASC", xRequestId);
         List<Channel> codeList = response.getChannelList();
         List<String> codes = codeList.stream().map(Channel::getChannelCode)
-                .filter(s -> s.matches("^\\w+_\\d+$")) // String_nn
+                .filter(s -> s.matches(REGEX_GENERATE)) // String_nn
                 .collect(Collectors.toList());
         String newChannelCode = generator(codes, pspCode);
         log.debug("generateChannelCode result = {}", newChannelCode);
@@ -222,11 +224,37 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         Stations stations = apiConfigConnector.getStations(100,0,"ASC",null,null,ecCode,xRequestId);
         List<Station> stationsList = stations.getStationsList();
         List<String> codes = stationsList.stream().map(Station::getStationCode)
-                .filter(s -> s.matches("^\\w+_\\d+$"))
+                .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toList());
         String newStationCode = generator(codes, ecCode);
         log.debug("generateStationCode result = {}", newStationCode);
         log.trace("generateStationCode end");
+        return newStationCode;
+    }
+
+    @Override
+    public String generateStationCodeV2( List<WrapperStation> stationList, String ecCode, String xRequestId) {
+        log.trace("generateStationCodeV2 start");
+        log.debug("generateStationCodeV2 xRequestId = {}", xRequestId);
+        List<String> codes = stationList.stream().map(WrapperStation::getStationCode)
+                .filter(s -> s.matches(REGEX_GENERATE))
+                .collect(Collectors.toList());
+        String newStationCode = generator(codes, ecCode);
+        log.debug("generateStationCodeV2 result = {}", newStationCode);
+        log.trace("generateStationCodeV2 end");
+        return newStationCode;
+    }
+
+    @Override
+    public String generateChannelCodeV2( List<WrapperChannel> stationList, String ecCode, String xRequestId) {
+        log.trace("generateChannelCodeV2 start");
+        log.debug("generateChannelCodeV2 xRequestId = {}", xRequestId);
+        List<String> codes = stationList.stream().map(WrapperChannel::getChannelCode)
+                .filter(s -> s.matches(REGEX_GENERATE))
+                .collect(Collectors.toList());
+        String newStationCode = generator(codes, ecCode);
+        log.debug("generateChannelCodeV2 result = {}", newStationCode);
+        log.trace("generateChannelCodeV2 end");
         return newStationCode;
     }
 
@@ -269,6 +297,17 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         CreditorInstitutionDetails result = apiConfigConnector.getCreditorInstitutionDetails(ecCode, xRequestId);
         log.debug("getCreditorInstitutionDetails result = {}", result);
         log.trace("getCreditorInstitutionDetails end");
+        return result;
+    }
+
+    @Override
+    public CreditorInstitutions getCreditorInstitutions(Integer limit, Integer page, String ecCode, String name, String sorting, String xRequestId) {
+        log.trace("getCreditorInstitutions start");
+        log.debug("getCreditorInstitutions ecCode = {}, xRequestId = {}", ecCode , xRequestId);
+        Assert.hasText(ecCode, CREDITOR_INSTITUTION_CODE_IS_REQUIRED);
+        CreditorInstitutions result = apiConfigConnector.getCreditorInstitutions(limit, page, ecCode, name, sorting, xRequestId);
+        log.debug("getCreditorInstitutions result = {}", result);
+        log.trace("getCreditorInstitutions end");
         return result;
     }
 

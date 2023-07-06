@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
@@ -189,4 +190,40 @@ class CreditorInstitutionControllerTest {
                 .updateCreditorInstitutionDetails(eq(ecCode),eq(response), any());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
+
+    @Test
+    void getCreditorInstitutions() throws Exception {
+        //given
+
+        String ecCode = "creditorInstitution";
+        Integer page = 0;
+        Integer size = 50;
+        String sorting = "ASC";
+        String name = "name";
+        CreditorInstitutions creditorInstitutions = mock(CreditorInstitutions.class);
+
+
+        when(apiConfigServiceMock.getCreditorInstitutions(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(creditorInstitutions);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL+ "/get-creditor-institutions")
+
+                        .queryParam("limit", String.valueOf(size))
+                        .queryParam("ecCode", ecCode)
+                        .queryParam("name", name)
+                        .queryParam("page", String.valueOf(page))
+                        .queryParam("sorting", sorting)
+
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .accept(APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_VALUE));
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getCreditorInstitutions(eq(size),eq(page),eq(ecCode),eq(name),eq(sorting), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
 }
