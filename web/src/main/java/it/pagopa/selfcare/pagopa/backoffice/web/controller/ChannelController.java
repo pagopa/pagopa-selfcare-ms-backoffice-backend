@@ -6,10 +6,8 @@ import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.JiraServiceManagerService;
@@ -69,7 +67,7 @@ public class ChannelController {
         log.trace("getchannels start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels code filter = {}, xRequestId = {}", code, xRequestId);
-        Channels channels = apiConfigService.getChannels(limit, page, code, sort, xRequestId);
+        Channels channels = apiConfigService.getChannels(limit, page, code, null, sort, xRequestId);
         ChannelsResource resource = ChannelMapper.toResource(channels);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getchannels result = {}", resource);
         log.trace("getchannels end");
@@ -426,6 +424,28 @@ public class ChannelController {
         return channelCode;
     }
 
+    @GetMapping(value = "/{pspcode}/generateV2", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getChannelCode}")
+    public ChannelCodeResource getChannelCodeV2(@ApiParam("${swagger.request.pspCode}")
+                                              @PathVariable("pspcode") String pspCode) {
+        log.trace("getChannelCodeV2 start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getChannelCodeV2 pspcode = {}, xRequestId = {}", pspCode, xRequestId);
+
+        Channels channels = apiConfigService.getChannels(100, 0, pspCode, null, "ASC", xRequestId);
+        WrapperChannels  responseApiConfig = ChannelMapper.toWrapperChannels(channels);
+        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(pspCode, WrapperType.CHANNEL,null, 0, 100);
+        WrapperChannels responseMongo = ChannelMapper.toWrapperChannels(mongoList);
+        WrapperChannels channelsMergedAndSorted = apiConfigService.mergeAndSortWrapperChannels(responseApiConfig, responseMongo, "ASC");
+        String result = apiConfigService.generateChannelCodeV2(channelsMergedAndSorted.getChannelList(), pspCode, xRequestId);
+
+        ChannelCodeResource channelCode = new ChannelCodeResource(result);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getChannelCode result = {}", channelCode);
+        log.trace("getChannelCodeV2 end");
+        return channelCode;
+    }
+
     @GetMapping(value = "/psp/{pspcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getPSPDetails}")
@@ -567,7 +587,7 @@ public class ChannelController {
         log.debug("getAllChannelsMerged page = {} limit = {}", page, limit);
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels xRequestId = {}", xRequestId);
-        Channels channels = apiConfigService.getChannels(limit, page, channelcode, sorting, xRequestId);
+        Channels channels = apiConfigService.getChannels(limit, page, channelcode, brokerCode, sorting, xRequestId);
         WrapperChannels  responseApiConfig = ChannelMapper.toWrapperChannels(channels);
         WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(channelcode, WrapperType.CHANNEL,null, page, limit);
         WrapperChannels responseMongo = ChannelMapper.toWrapperChannels(mongoList);

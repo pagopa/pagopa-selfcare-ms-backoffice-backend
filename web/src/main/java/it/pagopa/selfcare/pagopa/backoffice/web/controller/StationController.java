@@ -189,6 +189,27 @@ public class StationController {
         return stationCode;
     }
 
+    @GetMapping(value = "/{ecCode}/generateV2", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.getStationCode}")
+    public StationCodeResource getStationCodeV2(@ApiParam("${swagger.request.ecCode}")
+                                              @PathVariable("ecCode") String ecCode) {
+        log.trace("getStationCode start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getStationCode ecCode = {}, xRequestId = {}", ecCode, xRequestId);
+
+        Stations stations = apiConfigService.getStations(100, 0, "ASC", null, null, ecCode, xRequestId);
+        WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
+        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(ecCode, WrapperType.STATION, null, 0, 100);
+        WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
+        WrapperStations stationsMergedAndSorted = apiConfigService.mergeAndSortWrapperStations(responseApiConfig, responseMongo, "ASC");
+        String result = apiConfigService.generateStationCodeV2(stationsMergedAndSorted.getStationsList(), ecCode, xRequestId);
+        StationCodeResource stationCode = new StationCodeResource(result);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationCode result = {}", stationCode);
+        log.trace("getStationCode end");
+        return stationCode;
+    }
+
     @PutMapping(value = "/update-wrapperStation", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.updateWrapperStationDetails}")
