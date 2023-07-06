@@ -204,9 +204,16 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                                               @RequestParam String label,
                                               @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
 
-    @PostMapping(value = "${rest-client.api-config.getCreditorInstitutionIbans.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "${rest-client.api-config.createCreditorInstitutionIbans.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     IbanCreate createCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
                                              @RequestBody IbanCreate ibanCreate,
                                              @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+
+    @PutMapping(value = "${rest-client.api-config.updateCreditorInstitutionIbans.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    IbanCreate updateCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
+                                           @PathVariable("ibanId")String ibanId,
+                                              @RequestBody IbanCreate ibanCreate,
+                                              @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
 }

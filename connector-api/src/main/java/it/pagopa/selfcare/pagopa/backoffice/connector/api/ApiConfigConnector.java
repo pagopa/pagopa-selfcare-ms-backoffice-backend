@@ -82,4 +82,6 @@ public interface ApiConfigConnector {
     IbansEnhanced getCreditorInstitutionIbans(String ecCode, String label, String xRequestId);
 
     IbanCreate createCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId);
+
+    IbanCreate updateCreditorInstitutionIbans(String ecCode, String ibanId, IbanCreate ibanCreate, String xRequestId);
 }

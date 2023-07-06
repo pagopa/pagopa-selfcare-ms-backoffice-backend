@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.169"
+    "version" : "0.0.170"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -2800,6 +2800,78 @@
           },
           "401" : {
             "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/creditorinstitutions/ibans/put" : {
+      "put" : {
+        "tags" : [ "Ibans" ],
+        "summary" : "putCreditorInstitutionIbans",
+        "description" : "Update creditor institution ibans",
+        "operationId" : "putCreditorInstitutionIbansUsingPUT",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IbanCreateRequestDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IbanResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
             "content" : {
               "application/problem+json" : {
                 "schema" : {

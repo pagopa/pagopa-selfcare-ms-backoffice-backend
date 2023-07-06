@@ -476,5 +476,13 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return response;
     }
 
+    public IbanCreate updateCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId){
+        log.trace("putCreditorInstitutionIbans start");
+        IbanCreate response = apiConfigConnector.updateCreditorInstitutionIbans(ecCode, ibanCreate.getIban(), ibanCreate, xRequestId);
+        log.debug("putCreditorInstitutionIbans result = {}", response);
+        log.trace("putCreditorInstitutionIbans end");
+
+        return response;
+    }
 
 }

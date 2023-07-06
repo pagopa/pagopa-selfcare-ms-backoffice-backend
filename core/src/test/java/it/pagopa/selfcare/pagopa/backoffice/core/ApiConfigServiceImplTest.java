@@ -1040,4 +1040,24 @@ class ApiConfigServiceImplTest {
         assertNotNull(response);
         assertEquals(channelCode+"_02", response);
     }
+
+    @Test
+    void updateCreditorInstitutionIbans(){
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = "1";
+        String label = "label";
+        String ibanId = "IT12L212123123";
+        IbanCreate ibanCreate = mockInstance(new IbanCreate());
+        ibanCreate.setLabels(new ArrayList<>());
+        ibanCreate.setIban(ibanId);
+        //when
+        when(apiConfigConnectorMock.updateCreditorInstitutionIbans(anyString(), anyString(), any(), anyString()))
+                .thenReturn(ibanCreate);
+        apiConfigService.updateCreditorInstitutionIbans(ecCode, ibanCreate, xRequestId);
+        //then
+        verify(apiConfigConnectorMock, times(1))
+                .updateCreditorInstitutionIbans(ecCode,ibanId, ibanCreate, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
 }

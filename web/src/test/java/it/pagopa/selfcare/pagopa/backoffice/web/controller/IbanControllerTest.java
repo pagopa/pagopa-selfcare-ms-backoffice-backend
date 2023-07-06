@@ -97,4 +97,29 @@ public class IbanControllerTest {
                 .createCreditorInstitutionIbans(anyString(), any(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
+
+    @Test
+    void updateCreditorInstitutionIbans(@Value("classpath:stubs/ibanCreateRequestDto.json") Resource dto) throws Exception {
+
+        IbanCreate ibanCreate = mockInstance(new IbanCreate());
+        ibanCreate.setLabels(new ArrayList<>());
+        ibanCreate.setIban("IT12L12312311111");
+
+
+        when(apiConfigServiceMock.updateCreditorInstitutionIbans(anyString(), any(), anyString()))
+                .thenReturn(ibanCreate);
+
+        mvc.perform(MockMvcRequestBuilders
+                        .put(BASE_URL + "/update")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(APPLICATION_JSON));
+
+
+        verify(apiConfigServiceMock, times(1))
+                .updateCreditorInstitutionIbans(anyString(), any(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
 }
