@@ -8,6 +8,5 @@ public class SelfCarePagoPaBackofficeApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SelfCarePagoPaBackofficeApplication.class, args);
-        System.out.println("hello");
     }
 }
