@@ -231,12 +231,14 @@ class ApiConfigRestClientTest {
             put("limit", 16);
             put("code", "code1");
             put("ordering", "DESC");
+            put("brokercode","brokercode");
         }});
         put(TestCase.FULLY_NULL, new HashMap<String, Object>() {{
             put("page", 2);
             put("limit", null);
             put("code", null);
             put("ordering", null);
+            put("brokercode", null);
         }});
         put(TestCase.EMPTY_RESULT, new HashMap<String, Object>() {{
             put("page", 3);
@@ -275,9 +277,10 @@ class ApiConfigRestClientTest {
         Integer limit = (Integer) testCaseChannelParamMap.get(testCase).get("limit");
         String code = (String) testCaseChannelParamMap.get(testCase).get("code");
         String ordering = (String) testCaseChannelParamMap.get(testCase).get("ordering");
+        String brokercode = (String) testCaseChannelParamMap.get(testCase).get("brokercode");
         String xRequestId = "1";
         // when
-        Channels response = restClient.getChannels(limit, page, code, ordering, xRequestId);
+        Channels response = restClient.getChannels(limit, page, code, brokercode, ordering, xRequestId);
         assertNotNull(response);
         assertNull(response.getChannelList());
         assertNull(response.getPageInfo());
@@ -292,9 +295,10 @@ class ApiConfigRestClientTest {
         String sortBy = (String) testCaseChannelParamMap.get(testCase).get("sortBy");
         String code = (String) testCaseChannelParamMap.get(testCase).get("code");
         String ordering = (String) testCaseChannelParamMap.get(testCase).get("ordering");
+        String brokercode = (String) testCaseChannelParamMap.get(testCase).get("brokercode");
         String requestId = UUID.randomUUID().toString();
         // when
-        Channels response = restClient.getChannels(limit, page, code, ordering, requestId);
+        Channels response = restClient.getChannels(limit, page, code, brokercode, ordering, requestId);
 
         //then
         assertNotNull(response);

@@ -6,7 +6,9 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,13 +50,14 @@ class ApiConfigServiceImplTest {
         final Integer limit = 1;
         final Integer page = null;
         final String code = "code";
+        final String brokercode = "brokercode";
         final String sort = "sort";
         final String xRequestId = "xRequestId";
         //when
-        apiConfigService.getChannels(limit, page, code, sort, xRequestId);
+        apiConfigService.getChannels(limit, page, code, brokercode, sort, xRequestId);
         //then
         verify(apiConfigConnectorMock, times(1))
-                .getChannels(limit, page, code, sort, xRequestId);
+                .getChannels(limit, page, code, brokercode, sort, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
@@ -64,19 +67,20 @@ class ApiConfigServiceImplTest {
         final Integer limit = 1;
         final Integer page = 1;
         final String code = "code";
+        final String brokercode = "brokercode";
         final String sort = "sort";
         final String xRequestId = "xRequestId";
         Channels channelsMock = mock(Channels.class);
-        when(apiConfigConnectorMock.getChannels(any(), any(), any(), any(), any()))
+        when(apiConfigConnectorMock.getChannels(any(), any(), any(), any(), any(), any()))
                 .thenReturn(channelsMock);
         //when
-        Channels channels = apiConfigService.getChannels(limit, page, code, sort, xRequestId);
+        Channels channels = apiConfigService.getChannels(limit, page, code, brokercode, sort, xRequestId);
         //then
         assertNotNull(channels);
         assertEquals(channelsMock, channels);
         reflectionEqualsByName(channelsMock, channels);
         verify(apiConfigConnectorMock, times(1))
-                .getChannels(limit, page, code, sort, xRequestId);
+                .getChannels(limit, page, code, brokercode, sort, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
@@ -509,7 +513,7 @@ class ApiConfigServiceImplTest {
 
         channels.setChannelList(List.of(channel));
 
-        when(apiConfigConnectorMock.getChannels(eq(limit), eq(page), anyString(), eq(sorting), anyString()))
+        when(apiConfigConnectorMock.getChannels(eq(limit), eq(page), anyString(), eq(null), eq(sorting), anyString()))
                 .thenReturn(channels);
 
         //when
@@ -534,14 +538,14 @@ class ApiConfigServiceImplTest {
 
         channels.setChannelList(List.of(channel));
 
-        when(apiConfigConnectorMock.getChannels(eq(limit), eq(page), anyString(), eq(sorting), anyString()))
+        when(apiConfigConnectorMock.getChannels(eq(limit), eq(page), anyString(), eq(null), eq(sorting), anyString()))
                 .thenReturn(channels);
 
         //when
         String response = apiConfigService.generateChannelCode(pspCode, xRequestId);
         assertNotNull(response);
         verify(apiConfigConnectorMock, times(1))
-                .getChannels(eq(limit), eq(page), anyString(), eq(sorting), anyString());
+                .getChannels(eq(limit), eq(page), anyString(), eq(null), eq(sorting), anyString());
         verifyNoMoreInteractions(apiConfigConnectorMock);
         assertEquals("TEST_01", response);
     }
@@ -717,6 +721,28 @@ class ApiConfigServiceImplTest {
         assertSame(creditorInstitutionDetails, result);
         verify(apiConfigConnectorMock, times(1))
                 .getCreditorInstitutionDetails(ecCode, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void getCreditorInstitutions() {
+        //given
+        String ecCode = "creditorInstitutionCode";
+        Integer page = 0;
+        Integer size = 50;
+        String sorting = "ASC";
+        String name = "name";
+        String xRequestId = UUID.randomUUID().toString();
+        CreditorInstitutions creditorInstitutions = mockInstance(new CreditorInstitutions());
+
+        when(apiConfigConnectorMock.getCreditorInstitutions(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(creditorInstitutions);
+        //when
+        CreditorInstitutions result = apiConfigService.getCreditorInstitutions(size, page, ecCode, name, sorting, xRequestId);
+        //then
+        assertSame(creditorInstitutions, result);
+        verify(apiConfigConnectorMock, times(1))
+                .getCreditorInstitutions(size, page, ecCode, name, sorting, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
@@ -1006,5 +1032,41 @@ class ApiConfigServiceImplTest {
                 .createCreditorInstitutionIbans(ecCode, ibanCreate, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
 
+    }
+
+    @Test
+    void generateStationCodeV2() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String stationCode = "stationCode";
+
+        List<WrapperStation> stationList = new ArrayList<>();
+        WrapperStation station = new WrapperStation();
+        station.setStationCode(stationCode+"_01");
+        stationList.add(station);
+
+        //when
+        String response = apiConfigService.generateStationCodeV2(stationList, stationCode, xRequestId);
+        //then
+        assertNotNull(response);
+        assertEquals(stationCode+"_02", response);
+    }
+
+    @Test
+    void generateChannelCodeV2() {
+        //given
+        final String xRequestId = "xRequestId";
+        final String channelCode = "channelCode";
+
+        List<WrapperChannel> channelList = new ArrayList<>();
+        WrapperChannel channel = new WrapperChannel();
+        channel.setChannelCode(channelCode+"_01");
+        channelList.add(channel);
+
+        //when
+        String response = apiConfigService.generateChannelCodeV2(channelList, channelCode, xRequestId);
+        //then
+        assertNotNull(response);
+        assertEquals(channelCode+"_02", response);
     }
 }
