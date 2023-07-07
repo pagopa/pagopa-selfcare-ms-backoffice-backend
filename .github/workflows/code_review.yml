@@ -71,10 +71,10 @@ jobs:
       - name: Build and analyze on Pull Requests
         if: ${{ github.event_name == 'pull_request' }}
         shell: bash
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        run: mvn -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
           -Dsonar.organization=pagopa
           -Dsonar.projectKey=${{ env.PROJECT_KEY }}
-          -Dsonar.coverage.jacoco.xmlReportPaths=./target/site/jacoco-aggregate/jacoco.xml
+          -Dsonar.coverage.jacoco.xmlReportPaths=./app/target/site/jacoco-aggregate/jacoco.xml
           -Dsonar.coverage.exclusions="**/config/*,**/*Mock*,**/model/**,**/entity/*"
           -Dsonar.cpd.exclusions="**/config/*,**/*Mock*,**/model/**,**/entity/*"
           -Dsonar.host.url=https://sonarcloud.io
@@ -94,10 +94,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        run: mvn -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
           -Dsonar.organization=pagopa
           -Dsonar.projectKey=${{ env.PROJECT_KEY }}
-          -Dsonar.coverage.jacoco.xmlReportPaths=./target/site/jacoco-aggregate/jacoco.xml
+          -Dsonar.coverage.jacoco.xmlReportPaths=./app/target/site/jacoco-aggregate/jacoco.xml
           -Dsonar.coverage.exclusions="**/config/*,**/*Mock*,**/model/**,**/entity/*"
           -Dsonar.cpd.exclusions="**/config/*,**/*Mock*,**/model/**,**/entity/*"
           -Dsonar.branch.name=${{ github.head_ref }}
