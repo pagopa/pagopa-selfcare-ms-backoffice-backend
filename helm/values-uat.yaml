@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "0.0.170" #improve
+    tag: "0.0.171" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -124,4 +124,4 @@ microservice-chart:
   canaryDelivery:
     deployment:
       image:
-        tag: 0.0.170
+        tag: 0.0.171
