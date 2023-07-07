@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.169"
+    "version" : "0.0.170"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -189,6 +189,124 @@
       }
     },
     "/channels/brokerspsp" : {
+      "get" : {
+        "tags" : [ "channels" ],
+        "summary" : "getBrokersPsp",
+        "description" : "Create a PSP broker",
+        "operationId" : "getBrokersPspUsingGET",
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of elements on one page. Default = 50",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number. Page value starts from 0",
+          "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "code",
+          "in" : "query",
+          "description" : "Broker's code",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "name",
+          "in" : "query",
+          "description" : "Broker's name",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "orderby",
+          "in" : "query",
+          "description" : "Order by column name",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "sorting",
+          "in" : "query",
+          "description" : "Method of sorting",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BrokersPspResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      },
       "post" : {
         "tags" : [ "channels" ],
         "summary" : "createBrokerPsp",
@@ -4775,6 +4893,21 @@
           }
         }
       },
+      "BrokerPspResource" : {
+        "title" : "BrokerPspResource",
+        "type" : "object",
+        "properties" : {
+          "broker_psp_code" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          }
+        }
+      },
       "BrokerResource" : {
         "title" : "BrokerResource",
         "type" : "object",
@@ -4790,6 +4923,23 @@
           },
           "extended_fault_bean" : {
             "type" : "boolean"
+          }
+        }
+      },
+      "BrokersPspResource" : {
+        "title" : "BrokersPspResource",
+        "type" : "object",
+        "properties" : {
+          "brokers_psp" : {
+            "type" : "array",
+            "description" : "Psp's broker",
+            "items" : {
+              "$ref" : "#/components/schemas/BrokerPspResource"
+            }
+          },
+          "page_info" : {
+            "description" : "info pageable",
+            "$ref" : "#/components/schemas/PageInfo"
           }
         }
       },
