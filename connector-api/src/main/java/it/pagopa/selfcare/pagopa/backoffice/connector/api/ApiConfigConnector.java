@@ -14,6 +14,8 @@ import org.springframework.core.io.Resource;
 
 public interface ApiConfigConnector {
 
+    BrokersPsp getBrokersPsp(Integer limit, Integer page, String filterByCode, String filterByName, String orderBy, String sorting, String xRequestId);
+
     Channels getChannels(Integer limit, Integer page, String code, String sort, String xRequestId);
 
     ChannelDetails createChannel(ChannelDetails channelDetails, String xRequestId);
@@ -67,6 +69,7 @@ public interface ApiConfigConnector {
     CreditorInstitutionDetails updateCreditorInstitutionDetails(String creditorInstitutionCode,
                                                                 CreditorInstitutionDetails request,
                                                                 String xRequestId);
+
     BrokerDetails createBroker(BrokerDetails request, String xRequestId);
 
     StationDetails updateStation(String stationCode, StationDetails stationDetails, String xRequestId);

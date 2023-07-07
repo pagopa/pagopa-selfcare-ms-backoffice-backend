@@ -192,7 +192,7 @@ class ChannelControllerTest {
         when(apiConfigServiceMock.createChannel(any(), anyString()))
                 .thenReturn(channelDetails);
 
-        when(wrapperServiceMock.updateWrapperChannelDetailsByOpt(channelDetails,channelDetailsDto.getNote(),channelDetailsDto.getStatus().name()))
+        when(wrapperServiceMock.updateWrapperChannelDetailsByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name()))
                 .thenReturn(wrapperEntities);
 
         when(apiConfigServiceMock.createChannelPaymentType(any(), anyString(), anyString()))
@@ -256,7 +256,7 @@ class ChannelControllerTest {
 
         when(apiConfigServiceMock.updateChannel(any(), anyString(), anyString()))
                 .thenReturn(channelDetails);
-        when(wrapperServiceMock.updateWrapperChannelDetails(channelDetails,channelDetailsDto.getNote(),channelDetailsDto.getStatus().name(), createdBy))
+        when(wrapperServiceMock.updateWrapperChannelDetails(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), createdBy))
                 .thenReturn(wrapperEntities);
 
         //when
@@ -774,7 +774,6 @@ class ChannelControllerTest {
         ChannelDetails channelDetails = ChannelMapper.fromWrapperChannelDetailsDto(channelDetailsDto);
 
 
-
         DummyWrapperEntity<ChannelDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(channelDetails));
         wrapperEntity.setEntity(channelDetails);
         DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
@@ -825,7 +824,6 @@ class ChannelControllerTest {
 
         verifyNoMoreInteractions(wrapperServiceMock);
     }
-
 
 
     @Test
@@ -924,7 +922,7 @@ class ChannelControllerTest {
         wrapperEntitiesList.setWrapperEntities(List.of(wrapperEntities));
         wrapperEntitiesList.setPageInfo(pageInfo);
 
-        when(wrapperServiceMock.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, page, size,sorting))
+        when(wrapperServiceMock.findByStatusAndTypeAndBrokerCodeAndIdLike(status, wrapperType, brokerCode, idLike, page, size, sorting))
                 .thenReturn(wrapperEntitiesList);
 
         //when
@@ -961,11 +959,11 @@ class ChannelControllerTest {
 
         //when
         mvc.perform(
-        MockMvcRequestBuilders.get(BASE_URL + "/wfespplugins")
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                        MockMvcRequestBuilders.get(BASE_URL + "/wfespplugins")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.wfesp_plugin_confs[*]",  everyItem(notNullValue())))
-                .andExpect(jsonPath("$.wfesp_plugin_confs[*].id_serv_plugin",  everyItem(notNullValue())));
+                .andExpect(jsonPath("$.wfesp_plugin_confs[*]", everyItem(notNullValue())))
+                .andExpect(jsonPath("$.wfesp_plugin_confs[*].id_serv_plugin", everyItem(notNullValue())));
 
         //then
         verify(apiConfigServiceMock, times(1))
@@ -1116,7 +1114,6 @@ class ChannelControllerTest {
         wrapperChannels.setChannelList(w1List);
 
 
-
         when(wrapperServiceMock.findByIdLikeOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt()))
                 .thenReturn(mongoList);
         when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), any(), anyString(), anyString()))
@@ -1174,5 +1171,41 @@ class ChannelControllerTest {
 
         verifyNoMoreInteractions(wrapperServiceMock);
 
+    }
+
+    @Test
+    void getBrokersPsp() throws Exception {
+        //given
+        Integer limit = 50;
+        Integer page = 0;
+        String filterByCode = "filterByCode";
+        String filterByName = "filterByName";
+        String orderBy = "ASC";
+        String sorting = "CODE";
+
+
+        BrokersPsp brokersPspMock = mockInstance(new BrokersPsp());
+        BrokerPsp brokerPspMock = mockInstance(new BrokerPsp());
+        brokersPspMock.setBrokerPspList(List.of(brokerPspMock));
+
+        when(apiConfigServiceMock.getBrokersPsp(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(brokersPspMock);
+
+        //when
+        mvc.perform(get(BASE_URL + "/brokerspsp")
+                        .queryParam("page", String.valueOf(limit))
+                        .queryParam("limit", String.valueOf(page))
+                        .queryParam("code", filterByCode)
+                        .queryParam("name", filterByName)
+                        .queryParam("orderby", orderBy)
+                        .queryParam("sorting", sorting)
+
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(apiConfigServiceMock, times(1))
+                .getBrokersPsp(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }

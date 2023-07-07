@@ -15,7 +15,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInst
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.RestTestUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.config.ApiConfigRestClientConfigTest;
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
@@ -789,6 +788,22 @@ class ApiConfigRestClientTest {
         //when
         CreditorInstitutionDetails response = restClient.updateCreditorInstitutionDetails(ecCode, request, xRequestId);
         //then
+        assertNotNull(response);
+        checkNotNullFields(response);
+
+    }
+
+    @Test
+    void getBrokersPsp(){
+        Integer limit = 50;
+        Integer page = 0;
+        String filterByCode = "code1";
+        String filterByName = "filterByName";
+        String orderBy = "ASC";
+        String sorting = "CODE";
+        String xRequestId = "1";
+
+        BrokersPsp response = restClient.getBrokersPsp(limit,page,filterByCode,filterByName,orderBy,sorting, xRequestId);
         assertNotNull(response);
         checkNotNullFields(response);
 

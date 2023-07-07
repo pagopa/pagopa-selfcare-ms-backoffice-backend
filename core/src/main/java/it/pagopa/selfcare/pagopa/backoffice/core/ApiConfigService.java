@@ -15,6 +15,8 @@ import org.springframework.core.io.Resource;
 
 public interface ApiConfigService {
 
+    BrokersPsp getBrokersPsp(Integer limit, Integer page, String filterByCode, String filterByName,String orderBy,String sorting, String xRequestId);
+
     Channels getChannels(Integer limit, Integer page, String code, String sort, String xRequestId);
 
     ChannelDetails createChannel(ChannelDetails channelDetails, String xRequestId);
