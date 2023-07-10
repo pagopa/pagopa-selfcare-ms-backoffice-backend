@@ -1,0 +1,59 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/apiconfig/auth/api/v1/brokerspsp",
+    "queryParameters": {
+      "page": {
+        "equalTo": "0"
+      },
+      "limit": {
+        "equalTo": "50"
+      },
+
+      "code": {
+        "equalTo": "code1"
+      },
+      "name": {
+        "equalTo": "filterByName"
+      },
+      "orderby": {
+        "equalTo": "ASC"
+      },
+      "ordering": {
+        "equalTo": "CODE"
+      }
+    }
+},
+  "response": {
+    "status": "200",
+    "jsonBody": {
+
+      "brokers_psp": [
+        {
+          "broker_psp_code": "XPAY",
+          "description": "Intermediario XPAY",
+          "enabled": true
+        },
+        {
+          "broker_psp_code": "WFESP",
+          "description": "Intermediario per test WFESP",
+          "enabled": true
+        },
+        {
+          "broker_psp_code": "unicredito",
+          "description": "unicredito",
+          "enabled": true
+        }
+      ],
+      "page_info": {
+        "page": 0,
+        "limit": 50,
+        "items_found": 50,
+        "total_pages": 4
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

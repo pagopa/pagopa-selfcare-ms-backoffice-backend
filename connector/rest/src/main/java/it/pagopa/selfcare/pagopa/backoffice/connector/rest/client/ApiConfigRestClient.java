@@ -22,6 +22,17 @@ import javax.validation.constraints.NotNull;
 @FeignClient(name = "${rest-client.api-config.serviceCode}", url = "${rest-client.api-config.base-url}")
 public interface ApiConfigRestClient extends ApiConfigConnector {
 
+    @GetMapping(value = "${rest-client.api-config.getBrokersPsp.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    BrokersPsp getBrokersPsp (@RequestParam(required = false, defaultValue = "50") Integer limit,
+             @RequestParam(required = true) Integer page,
+             @RequestParam(required = false, name = "code") String filterByCode,
+             @RequestParam(required = false, name = "name") String filterByName,
+             @RequestParam(required = false, name = "orderby", defaultValue = "CODE") String orderBy,
+             @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort,
+             @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
+
     @GetMapping(value = "${rest-client.api-config.getChannels.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     Channels getChannels(@RequestParam(required = false, defaultValue = "50") Integer limit,
@@ -143,9 +154,9 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
 
     @PostMapping(value = "${rest-client.api-config.createCreditorInstitutionStationRelationship.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    CreditorInstitutionStationEdit createCreditorInstitutionStationRelationship(@PathVariable("creditorinstitutioncode")String ecCode,
-                                                                            @RequestBody CreditorInstitutionStationEdit station,
-                                                                            @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+    CreditorInstitutionStationEdit createCreditorInstitutionStationRelationship(@PathVariable("creditorinstitutioncode") String ecCode,
+                                                                                @RequestBody CreditorInstitutionStationEdit station,
+                                                                                @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
     @GetMapping(value = "${rest-client.api-config.getPSPDetails.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -154,9 +165,10 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
 
     @PostMapping(value = "${rest-client.api-config.createCreditorInstitution.path}")
     CreditorInstitutionDetails createCreditorInstitution(@RequestBody CreditorInstitutionDetails request,
-                                                         @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+                                                         @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
     @GetMapping(value = "${rest-client.api-config.getCreditorInstitutionDetails.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+
     CreditorInstitutionDetails getCreditorInstitutionDetails(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
                                                              @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
     @GetMapping(value = "${rest-client.api-config.getCreditorInstitutions.path}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -166,21 +178,22 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                                                  @RequestParam(required = false, name = "name") String name,
                                                  @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sorting,
                                                  @RequestHeader(required = false, name = "X-Request-Id") String xRequestId);
+
     @PutMapping(value = "${rest-client.api-config.updateCreditorInstitutionDetails.path}", produces = MediaType.APPLICATION_JSON_VALUE)
-    CreditorInstitutionDetails updateCreditorInstitutionDetails(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
+    CreditorInstitutionDetails updateCreditorInstitutionDetails(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
                                                                 @RequestBody CreditorInstitutionDetails request,
-                                                                @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+                                                                @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
     @PostMapping(value = "${rest-client.api-config.createBroker.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     BrokerDetails createBroker(@RequestBody BrokerDetails request,
-                               @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+                               @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
 
     @PutMapping(value = "${rest-client.api-config.updateStation.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     StationDetails updateStation(@PathVariable("stationcode") String stationCode,
-                                                                 @RequestBody StationDetails stationDetails,
-                                                                 @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+                                 @RequestBody StationDetails stationDetails,
+                                 @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
     @GetMapping(value = "${rest-client.api-config.getWfespPlugins.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -195,15 +208,15 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
 
     @DeleteMapping(value = "${rest-client.api-config.deleteCreditorInstitutionStationRelationship.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    void deleteCreditorInstitutionStationRelationship(@PathVariable("creditorinstitutioncode")String ecCode,
+    void deleteCreditorInstitutionStationRelationship(@PathVariable("creditorinstitutioncode") String ecCode,
                                                       @PathVariable(required = false, name = "stationcode") String stationcode,
-                                                      @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+                                                      @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
     @GetMapping(value = "${rest-client.api-config.getCreditorInstitutionIbans-enhanced.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    IbansEnhanced getCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
+    IbansEnhanced getCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
                                               @RequestParam String label,
-                                              @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+                                              @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
     @PostMapping(value = "${rest-client.api-config.getCreditorInstitutionIbans.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -220,4 +233,5 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                          @RequestParam(required = false, defaultValue = "CODE") String orderby,
                          @RequestParam(required = false, defaultValue = "DESC") String ordering,
                          @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+
 }
