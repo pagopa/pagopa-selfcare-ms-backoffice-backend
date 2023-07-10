@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.170"
+    "version" : "0.0.171"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -3474,9 +3474,9 @@
     "/stations/brokers-EC" : {
       "get" : {
         "tags" : [ "stations" ],
-        "summary" : "getBrokerEC",
+        "summary" : "getBrokersEC",
         "description" : "Get paginated list of creditor brokers",
-        "operationId" : "getBrokerECUsingGET",
+        "operationId" : "getBrokersECUsingGET",
         "parameters" : [ {
           "name" : "limit",
           "in" : "query",
@@ -3518,11 +3518,12 @@
         }, {
           "name" : "orderby",
           "in" : "query",
-          "description" : "orderby",
+          "description" : "order by name or code, default = CODE",
           "required" : false,
           "style" : "form",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "CODE", "NAME" ]
           }
         }, {
           "name" : "ordering",
@@ -3531,7 +3532,8 @@
           "required" : false,
           "style" : "form",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "ASC", "DESC" ]
           }
         } ],
         "responses" : {
