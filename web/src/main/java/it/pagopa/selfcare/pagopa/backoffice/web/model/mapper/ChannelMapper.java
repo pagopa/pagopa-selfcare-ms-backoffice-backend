@@ -28,6 +28,35 @@ public class ChannelMapper {
     private ChannelMapper() {
     }
 
+
+    public static BrokersPspResource toResource(BrokersPsp model) {
+        BrokersPspResource resource = null;
+        List<BrokerPspResource> list = new ArrayList<>();
+        if (model != null) {
+            resource = new BrokersPspResource();
+            resource.setPageInfo(model.getPageInfo());
+            model.getBrokerPspList().forEach(i->{
+               list.add(toResource(i));
+            });
+            resource.setBrokerPspResources(list);
+
+
+        }
+        return resource;
+    }
+
+    public static BrokerPspResource toResource(BrokerPsp model) {
+        BrokerPspResource resource = null;
+        if (model != null) {
+            resource = new BrokerPspResource();
+            resource.setDescription(model.getDescription());
+            resource.setEnabled(model.getEnabled());
+            resource.setBrokerPspCode(model.getBrokerPspCode());
+
+        }
+        return resource;
+    }
+
     public static ChannelResource toResource(Channel model) {
         ChannelResource resource = null;
         if (model != null) {
@@ -161,7 +190,7 @@ public class ChannelMapper {
         return resource;
     }
 
-    public static ChannelDetailsResource toResource(ChannelDetails model, PspChannelPaymentTypes listModel, WrapperStatus status,String createdBy,String modifiedBy) {
+    public static ChannelDetailsResource toResource(ChannelDetails model, PspChannelPaymentTypes listModel, WrapperStatus status, String createdBy, String modifiedBy) {
         ChannelDetailsResource resource = null;
         if (model != null) {
             resource = new ChannelDetailsResource();
@@ -339,6 +368,7 @@ public class ChannelMapper {
         }
         return resource;
     }
+
     public static PaymentTypesResource toResource(PaymentTypes model) {
         PaymentTypesResource resource = null;
         List<PaymentTypeResource> paymentTypeResourceList = new ArrayList<>();
@@ -503,7 +533,7 @@ public class ChannelMapper {
     public static Map<String, Object> fromPaymentServiceProviderDetailsDtoToMap(PaymentServiceProviderDetailsDto dto) {
         PaymentServiceProviderDetails model = null;
         BrokerPspDetails modelBrokerPsp = null;
-        Map<String,Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         if (dto != null) {
             model = new PaymentServiceProviderDetails();
             modelBrokerPsp = new BrokerPspDetails();
@@ -525,11 +555,12 @@ public class ChannelMapper {
             modelBrokerPsp.setDescription(dto.getBusinessName());
             modelBrokerPsp.setExtendedFaultBean(true);
         }
-        result.put("psp",model);
-        result.put("broker",modelBrokerPsp);
+        result.put("psp", model);
+        result.put("broker", modelBrokerPsp);
 
         return result;
     }
+
     public static PaymentServiceProviderDetailsResource toResource(PaymentServiceProviderDetails model) {
         PaymentServiceProviderDetailsResource resource = null;
 
@@ -554,7 +585,7 @@ public class ChannelMapper {
     }
 
     public static WrapperChannel toWrapperChannel(Channel model) {
-        if(model == null){
+        if (model == null) {
             return null;
         }
 
@@ -590,9 +621,6 @@ public class ChannelMapper {
     }
 
 
-
-
-
     public static WrapperChannel toWrapperChannel(WrapperEntityOperations<ChannelDetails> wrapperEntityOperations) {
         if (wrapperEntityOperations == null) {
             return null;
@@ -621,7 +649,7 @@ public class ChannelMapper {
         List<WrapperChannel> channelList = new ArrayList<>();
 
         wrapperEntitiesList.getWrapperEntities().forEach(
-                ent-> channelList.add(toWrapperChannel(
+                ent -> channelList.add(toWrapperChannel(
                         (WrapperEntityOperations<ChannelDetails>) ent.getWrapperEntityOperationsSortedList().get(0))));
 
         wrapperChannels.setChannelList(channelList);
@@ -645,7 +673,7 @@ public class ChannelMapper {
         return wrapperChannelsResource;
     }
 
-    public static WrapperChannelResource toWrapperChannelResource(WrapperChannel wrapperChannel){
+    public static WrapperChannelResource toWrapperChannelResource(WrapperChannel wrapperChannel) {
         if (wrapperChannel == null) {
             return null;
         }
