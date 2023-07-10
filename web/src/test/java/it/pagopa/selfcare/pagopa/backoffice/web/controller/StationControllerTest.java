@@ -5,7 +5,9 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFound
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Broker;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
@@ -28,7 +30,6 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.Credit
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationCodeResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.WrapperStationDetailsDto;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
@@ -818,6 +818,40 @@ class StationControllerTest {
                 .mergeAndSortWrapperStations(any(), any(), anyString());
         verify(apiConfigServiceMock, times(1))
                 .generateStationCodeV2(any(), anyString(), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getBrokersEC() throws Exception {
+        //given
+        Integer page = 0;
+        Integer limit = 50;
+        String code = "code";
+        String name = "name";
+        String orderby = "NAME";
+        String ordering = "DESC";
+        Brokers brokers = mockInstance(new Brokers());
+        Broker broker = mockInstance(new Broker());
+        brokers.setBrokerList(new ArrayList<>());
+        brokers.getBrokerList().add(broker);
+
+        when(apiConfigServiceMock.getBrokersEC( anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(brokers);
+
+        //when
+        mvc.perform(get(BASE_URL + "/brokers-EC")
+                        .queryParam("limit", String.valueOf(page))
+                        .queryParam("page", String.valueOf(limit))
+                        .queryParam("code", code)
+                        .queryParam("name", name)
+                        .queryParam("orderby", orderby)
+                        .queryParam("ordering", ordering)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getBrokersEC( anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
