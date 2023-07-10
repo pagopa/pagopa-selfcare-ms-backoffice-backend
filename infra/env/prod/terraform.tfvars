@@ -12,4 +12,4 @@ tags = {
 
 apim_dns_zone_prefix               = "platform"
 external_domain                    = "pagopa.it"
-hostname = "weuprod.apiconfig.internal.platform.pagopa.it"
+hostname = "weuprod.selfcare.internal.platform.pagopa.it"
