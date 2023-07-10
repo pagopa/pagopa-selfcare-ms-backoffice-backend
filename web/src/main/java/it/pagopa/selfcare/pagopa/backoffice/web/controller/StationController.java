@@ -7,6 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.exception.PermissionDenied
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
@@ -385,11 +386,30 @@ public class StationController {
         log.trace("getStationsDetailsListByBroker end");
         return resource;
     }
-//    @PostMapping(value = "{ticket}", produces = MediaType.APPLICATION_JSON_VALUE)
-//    @ResponseStatus(HttpStatus.CREATED)
-//    @ApiOperation(value = "", notes = "${swagger.api.stations.createIssueJira}")
-//    public String createIssueJira(String summary, String description) {
-//        return jiraServiceManagerService.createTicket(summary, description);
-//    }
+
+    @GetMapping(value = "/brokers-EC", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.stations.getStationBroker}")
+    public BrokersResource getBrokersEC(@ApiParam("${swagger.request.limit}")
+                               @RequestParam(required = false, defaultValue = "50") Integer limit,
+                               @ApiParam("${swagger.request.page}")
+                               @RequestParam Integer page,
+                               @RequestParam(required = false) String code,
+                               @RequestParam(required = false) String name,
+                               @ApiParam(value = "order by name or code, default = CODE", allowableValues = "CODE,NAME")
+                               @RequestParam(required = false, defaultValue = "CODE") String orderby,
+                               @ApiParam(allowableValues = "ASC,DESC")
+                               @RequestParam(required = false, defaultValue = "DESC") String ordering){
+
+        log.trace("getStationBroker start");
+        log.debug("getStationBroker page = {} limit = {}", page, limit);
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getStationBroker xRequestId = {}", xRequestId);
+        Brokers response = apiConfigService.getBrokersEC(limit, page, code, name, orderby, ordering, xRequestId);
+        BrokersResource resource = BrokerMapper.toResource(response);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationBroker result = {}", resource);
+        log.trace("getStationBroker end");
+        return resource;
+    }
 
 }
