@@ -1058,11 +1058,12 @@ class ApiConfigServiceImplTest {
         when(apiConfigConnectorMock.getBrokersEC(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString() ,anyString()))
                 .thenReturn(brokers);
         //when
-        Brokers response = apiConfigConnectorMock.getBrokersEC(limit, page, code, name, orderby, ordering, xRequestId);
+        Brokers response = apiConfigService.getBrokersEC(limit, page, code, name, orderby, ordering, xRequestId);
         //then
         assertNotNull(response);
         verify(apiConfigConnectorMock, times(1))
                 .getBrokersEC(limit, page, code, name, orderby, ordering, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
+
 }
