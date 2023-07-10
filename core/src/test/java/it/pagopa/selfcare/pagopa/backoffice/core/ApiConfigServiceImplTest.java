@@ -340,7 +340,7 @@ class ApiConfigServiceImplTest {
                 .thenReturn(stationsMock);
 
         //when
-        Stations stations = apiConfigService.getStations(limit, page, sort,null,  ecCode, stationCode, xRequestId);
+        Stations stations = apiConfigService.getStations(limit, page, sort, null, ecCode, stationCode, xRequestId);
 
         //then
         assertNotNull(stations);
@@ -365,7 +365,7 @@ class ApiConfigServiceImplTest {
         when(apiConfigConnectorMock.getStations(any(), any(), any(), any(), any(), any(), any()))
                 .thenThrow(new RuntimeException("[404 Not Found]"));
         //when
-        Stations stations = apiConfigService.getStations(limit, page, sort,null,  ecCode, stationCode, xRequestId);
+        Stations stations = apiConfigService.getStations(limit, page, sort, null, ecCode, stationCode, xRequestId);
 
         //then
         assertNotNull(stations);
@@ -556,26 +556,26 @@ class ApiConfigServiceImplTest {
         final String xRequestId = "xRequestId";
         final Integer limit = 100;
         final Integer page = 0;
-        final String sort ="ASC";
-        final String brokerCode=null;
+        final String sort = "ASC";
+        final String brokerCode = null;
         final String ecCode = null;
         final String stationCode = "stationCode";
 
-        Stations s =  mockInstance(new Stations());
-        Station station=  mockInstance(new Station());
-        station.setStationCode(stationCode+"_01");
+        Stations s = mockInstance(new Stations());
+        Station station = mockInstance(new Station());
+        station.setStationCode(stationCode + "_01");
         s.setStationsList(List.of(station));
 
-        when(apiConfigConnectorMock.getStations(limit,page,sort,brokerCode,ecCode,stationCode,xRequestId))
+        when(apiConfigConnectorMock.getStations(limit, page, sort, brokerCode, ecCode, stationCode, xRequestId))
                 .thenReturn(s);
 
         //when
         String response = apiConfigService.generateStationCode(stationCode, xRequestId);
         //then
         assertNotNull(response);
-        assertEquals(stationCode+"_02", response);
+        assertEquals(stationCode + "_02", response);
         verify(apiConfigConnectorMock, times(1))
-                .getStations(limit,page,sort,brokerCode,ecCode, stationCode,xRequestId);
+                .getStations(limit, page, sort, brokerCode, ecCode, stationCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
@@ -615,15 +615,15 @@ class ApiConfigServiceImplTest {
         final String xRequestId = "xRequestId";
         final Integer limit = 100;
         final Integer page = 0;
-        final String sort ="ASC";
-        final String brokerCode=null;
+        final String sort = "ASC";
+        final String brokerCode = null;
         final String ecCode = null;
         final String stationCode = "stationCode";
 
-        Stations s =  mockInstance(new Stations());
+        Stations s = mockInstance(new Stations());
         s.setStationsList(new ArrayList<>());
 
-        when(apiConfigConnectorMock.getStations(limit,page,sort,brokerCode,ecCode,stationCode,xRequestId))
+        when(apiConfigConnectorMock.getStations(limit, page, sort, brokerCode, ecCode, stationCode, xRequestId))
                 .thenReturn(s);
 
         //when
@@ -631,7 +631,7 @@ class ApiConfigServiceImplTest {
         //then
         assertNotNull(response);
         verify(apiConfigConnectorMock, times(1))
-                .getStations(limit,page,sort,brokerCode,ecCode, stationCode,xRequestId);
+                .getStations(limit, page, sort, brokerCode, ecCode, stationCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
         assertEquals("stationCode_01", response);
     }
@@ -803,6 +803,7 @@ class ApiConfigServiceImplTest {
         //then
         assertNotNull(channelsRes);
     }
+
     @Test
     void mergeAndSortWrapperStations_DESC() {
         //given
@@ -817,7 +818,7 @@ class ApiConfigServiceImplTest {
         String sorting = "DESC";
 
         //when
-        WrapperStations stationsRes = apiConfigService.mergeAndSortWrapperStations(stations, stations,sorting);
+        WrapperStations stationsRes = apiConfigService.mergeAndSortWrapperStations(stations, stations, sorting);
         //then
         assertNotNull(stationsRes);
     }
@@ -836,10 +837,11 @@ class ApiConfigServiceImplTest {
         String sorting = "DESC";
 
         //when
-        WrapperChannels channelsRes = apiConfigService.mergeAndSortWrapperChannels(channels, channels,sorting);
+        WrapperChannels channelsRes = apiConfigService.mergeAndSortWrapperChannels(channels, channels, sorting);
         //then
         assertNotNull(channelsRes);
     }
+
     @Test
     void mergeAndSortWrapperStations_nullSorting() {
         //given
@@ -854,7 +856,7 @@ class ApiConfigServiceImplTest {
         String sorting = null;
 
         //when
-        WrapperStations stationsRes = apiConfigService.mergeAndSortWrapperStations(stations, stations,sorting);
+        WrapperStations stationsRes = apiConfigService.mergeAndSortWrapperStations(stations, stations, sorting);
         //then
         assertNotNull(stationsRes);
     }
@@ -873,7 +875,7 @@ class ApiConfigServiceImplTest {
         String sorting = null;
 
         //when
-        WrapperChannels channelsRes = apiConfigService.mergeAndSortWrapperChannels(channels, channels,sorting);
+        WrapperChannels channelsRes = apiConfigService.mergeAndSortWrapperChannels(channels, channels, sorting);
         //then
         assertNotNull(channelsRes);
     }
@@ -931,16 +933,16 @@ class ApiConfigServiceImplTest {
         when(apiConfigConnectorMock.getCreditorInstitutionsByStation(anyString(), anyInt(), anyInt(), anyString()))
                 .thenReturn(creditorInstitutions);
         //when
-        CreditorInstitutions result = apiConfigService.getCreditorInstitutionsByStation(stationCode,50,0, xRequestId);
+        CreditorInstitutions result = apiConfigService.getCreditorInstitutionsByStation(stationCode, 50, 0, xRequestId);
         //then
         assertSame(creditorInstitutions, result);
         verify(apiConfigConnectorMock, times(1))
-                .getCreditorInstitutionsByStation(stationCode,50,0, xRequestId);
+                .getCreditorInstitutionsByStation(stationCode, 50, 0, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
     @Test
-    void deleteCreditorInstitutionStationRelationship(){
+    void deleteCreditorInstitutionStationRelationship() {
         //given
         String ecCode = "ecCode";
         String xRequestId = "1";
@@ -959,7 +961,7 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
-    void getCreditorInstitutionIbans(){
+    void getCreditorInstitutionIbans() {
         //given
         String ecCode = "ecCode";
         String xRequestId = "1";
@@ -983,7 +985,34 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
-    void createCreditorInstitutionIbans(){
+    void getBrokersPsp() {
+        //given
+        Integer limit = 50;
+        Integer page = 0;
+        String filterByCode = "filterByCode";
+        String filterByName = "filterByName";
+        String orderBy = "ASC";
+        String sorting = "CODE";
+        String xRequestId = "1";
+
+        BrokersPsp brokersPspMock = mockInstance(new BrokersPsp());
+        BrokerPsp brokerPspMock = mockInstance(new BrokerPsp());
+        brokersPspMock.setBrokerPspList(List.of(brokerPspMock));
+
+        when(apiConfigConnectorMock.getBrokersPsp(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(brokersPspMock);
+
+        //when
+        apiConfigService.getBrokersPsp(limit, page, filterByCode, filterByName, orderBy, sorting, xRequestId);
+        //then
+
+        verify(apiConfigConnectorMock, times(1))
+                .getBrokersPsp(limit, page, filterByCode, filterByName, orderBy, sorting, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void createCreditorInstitutionIbans() {
         //given
         String ecCode = "ecCode";
         String xRequestId = "1";
