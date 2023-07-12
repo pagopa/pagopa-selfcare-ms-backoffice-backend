@@ -8,6 +8,7 @@ public enum Subscription {
     GPD_REP("/products/product-gpd-reporting", "Integrazione Asincrona - Gestione flussi di rendicontazione", "gpdrep-"),
     GPD_PAY("/products/gpd-payments-rest-aks", "Integrazione Asincrona - Ricevute", "gpdpayra-");
 
+
     private final String scope;
     private final String displayName;
     private final String prefixId;
