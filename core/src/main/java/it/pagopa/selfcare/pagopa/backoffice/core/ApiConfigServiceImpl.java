@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
@@ -42,6 +43,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     @Autowired
     public ApiConfigServiceImpl(ApiConfigConnector apiConfigConnector) {
         this.apiConfigConnector = apiConfigConnector;
+    }
+
+    @Override
+    public BrokersPsp getBrokersPsp(Integer limit, Integer page, String filterByCode, String filterByName, String orderBy, String sorting, String xRequestId) {
+        log.trace("getBrokersPsp start");
+        BrokersPsp brokersPsp = apiConfigConnector.getBrokersPsp(limit, page, filterByCode, filterByName, orderBy, sorting, xRequestId);
+        log.debug("getBrokersPsp result = {}", brokersPsp);
+        log.trace("getBrokersPsp end");
+        return brokersPsp;
     }
 
     @Override
@@ -221,7 +231,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     public String generateStationCode(String ecCode, String xRequestId) {
         log.trace("generateStationCode start");
         log.debug("generateStation ecCode = {}, xRequestId = {}", ecCode, xRequestId);
-        Stations stations = apiConfigConnector.getStations(100,0,"ASC",null,null,ecCode,xRequestId);
+        Stations stations = apiConfigConnector.getStations(100, 0, "ASC", null, null, ecCode, xRequestId);
         List<Station> stationsList = stations.getStationsList();
         List<String> codes = stationsList.stream().map(Station::getStationCode)
                 .filter(s -> s.matches(REGEX_GENERATE))
@@ -282,7 +292,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     @Override
     public CreditorInstitutionDetails createCreditorInstitution(CreditorInstitutionDetails dto, String xRequestId) {
         log.trace("createCreditorInstitution start");
-        log.debug("createCreditorInstitution dto = {}, xRequestId = {}", dto , xRequestId);
+        log.debug("createCreditorInstitution dto = {}, xRequestId = {}", dto, xRequestId);
         CreditorInstitutionDetails result = apiConfigConnector.createCreditorInstitution(dto, xRequestId);
         log.debug("createCreditorInstitution result = {}", result);
         log.trace("createCreditorInstitution end");
@@ -292,7 +302,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     @Override
     public CreditorInstitutionDetails getCreditorInstitutionDetails(String ecCode, String xRequestId) {
         log.trace("getCreditorInstitutionDetails start");
-        log.debug("getCreditorInstitutionDetails ecCode = {}, xRequestId = {}", ecCode , xRequestId);
+        log.debug("getCreditorInstitutionDetails ecCode = {}, xRequestId = {}", ecCode, xRequestId);
         Assert.hasText(ecCode, CREDITOR_INSTITUTION_CODE_IS_REQUIRED);
         CreditorInstitutionDetails result = apiConfigConnector.getCreditorInstitutionDetails(ecCode, xRequestId);
         log.debug("getCreditorInstitutionDetails result = {}", result);
@@ -314,7 +324,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     @Override
     public CreditorInstitutionDetails updateCreditorInstitutionDetails(String creditorInstitutionCode, CreditorInstitutionDetails request, String xRequestId) {
         log.trace("updateCreditorInstitutionDetails start");
-        log.debug("updateCreditorInstitutionDetails creditorInstitutionCode = {}, request = {}, xRequestId = {}", creditorInstitutionCode , request, xRequestId);
+        log.debug("updateCreditorInstitutionDetails creditorInstitutionCode = {}, request = {}, xRequestId = {}", creditorInstitutionCode, request, xRequestId);
         Assert.hasText(creditorInstitutionCode, CREDITOR_INSTITUTION_CODE_IS_REQUIRED);
         CreditorInstitutionDetails result = apiConfigConnector.updateCreditorInstitutionDetails(creditorInstitutionCode, request, xRequestId);
         log.debug("updateCreditorInstitutionDetails result = {}", result);
@@ -368,7 +378,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
-    public BrokerDetails createBroker(BrokerDetails request, String xRequestId){
+    public BrokerDetails createBroker(BrokerDetails request, String xRequestId) {
         log.trace("createBroker start");
         BrokerDetails response = apiConfigConnector.createBroker(request, xRequestId);
         log.debug("createBroker result = {}", response);
@@ -452,13 +462,13 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return response;
     }
 
-    public void deleteCreditorInstitutionStationRelationship(String ecCode, String stationcode, String xRequestId){
+    public void deleteCreditorInstitutionStationRelationship(String ecCode, String stationcode, String xRequestId) {
         log.trace("deleteCreditorInstitutionStationRelationship start");
         apiConfigConnector.deleteCreditorInstitutionStationRelationship(ecCode, stationcode, xRequestId);
         log.trace("deleteCreditorInstitutionStationRelationship end");
     }
 
-    public IbansEnhanced getCreditorInstitutionIbans(String ecCode, String label, String xRequestId){
+    public IbansEnhanced getCreditorInstitutionIbans(String ecCode, String label, String xRequestId) {
         log.trace("getCreditorInstitutionIbans start");
         IbansEnhanced response = apiConfigConnector.getCreditorInstitutionIbans(ecCode, label, xRequestId);
         log.debug("getCreditorInstitutionIbans result = {}", response);
@@ -467,7 +477,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return response;
     }
 
-    public IbanCreate createCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId){
+    public IbanCreate createCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId) {
         log.trace("createCreditorInstitutionIbans start");
         IbanCreate response = apiConfigConnector.createCreditorInstitutionIbans(ecCode, ibanCreate, xRequestId);
         log.debug("createCreditorInstitutionIbans result = {}", response);
@@ -476,12 +486,19 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return response;
     }
 
-    public IbanCreate updateCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId){
+    public IbanCreate updateCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId) {
         log.trace("putCreditorInstitutionIbans start");
         IbanCreate response = apiConfigConnector.updateCreditorInstitutionIbans(ecCode, ibanCreate.getIban(), ibanCreate, xRequestId);
         log.debug("putCreditorInstitutionIbans result = {}", response);
         log.trace("putCreditorInstitutionIbans end");
+        return response;
+    }
 
+    public Brokers getBrokersEC(Integer limit, Integer page, String code, String name, String orderby, String ordering, String xRequestId){
+        log.trace("getStationBroker start");
+        Brokers response = apiConfigConnector.getBrokersEC(limit, page, code, name, orderby, ordering, xRequestId);
+        log.debug("getStationBroker result = {}", response);
+        log.trace("getStationBroker end");
         return response;
     }
 

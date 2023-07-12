@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
@@ -19,7 +20,13 @@ import java.util.List;
 
 public interface ApiConfigService {
 
+
+    BrokersPsp getBrokersPsp(Integer limit, Integer page, String filterByCode, String filterByName,String orderBy,String sorting, String xRequestId);
+
+
+
     Channels getChannels(Integer limit, Integer page, String code, String brokerCode, String sort, String xRequestId);
+
 
     ChannelDetails createChannel(ChannelDetails channelDetails, String xRequestId);
 
@@ -101,4 +108,6 @@ public interface ApiConfigService {
 
     String generateChannelCodeV2(List<WrapperChannel> channelList, String ecCode, String xRequestId);
 
-}
+    Brokers getBrokersEC(Integer limit, Integer page, String code, String name, String orderby, String ordering, String xRequestId);
+
+    }

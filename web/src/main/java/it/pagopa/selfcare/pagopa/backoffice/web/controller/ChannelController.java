@@ -136,7 +136,7 @@ public class ChannelController {
     @GetMapping(value = "/get-details/{channelcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public ChannelDetailsResource getChannelDetail(@ApiParam("${swagger.request.channelcode}")
-                                                    @PathVariable("channelcode") String channelcode) {
+                                                   @PathVariable("channelcode") String channelcode) {
         log.trace("getChannelDetail start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getChannelDetail channelcode = {}, xRequestId = {}", channelcode, xRequestId);
@@ -144,15 +144,15 @@ public class ChannelController {
         WrapperStatus status;
         String createdBy = "";
         String modifiedBy = "";
-        PspChannelPaymentTypes ptResponse= new PspChannelPaymentTypes();
-        try{
+        PspChannelPaymentTypes ptResponse = new PspChannelPaymentTypes();
+        try {
             WrapperEntitiesOperations<ChannelDetails> result = wrapperService.findById(channelcode);
             createdBy = result.getCreatedBy();
             modifiedBy = result.getModifiedBy();
             channelDetail = result.getWrapperEntityOperationsSortedList().get(0).getEntity();
             status = result.getStatus();
             ptResponse.setPaymentTypeList(result.getWrapperEntityOperationsSortedList().get(0).getEntity().getPaymentTypeList());
-        }catch (ResourceNotFoundException e){
+        } catch (ResourceNotFoundException e) {
             channelDetail = apiConfigService.getChannelDetails(channelcode, xRequestId);
             ptResponse = apiConfigService.getChannelPaymentTypes(channelcode, xRequestId);
             status = WrapperStatus.APPROVED;
@@ -479,7 +479,7 @@ public class ChannelController {
                         fromWrapperChannelDetailsDto(wrapperChannelDetailsDto), wrapperChannelDetailsDto.getNote(), wrapperChannelDetailsDto.getStatus().name());
         log.debug("createWrapperChannelDetails result = {}", createdWrapperEntities);
         jiraServiceManagerService.createTicket(String.format(CREATE_CHANNEL_SUMMARY, wrapperChannelDetailsDto.getChannelCode()),
-                String.format(CREATE_CHANEL_DESCRIPTION, wrapperChannelDetailsDto.getChannelCode(),wrapperChannelDetailsDto.getValidationUrl()));
+                String.format(CREATE_CHANEL_DESCRIPTION, wrapperChannelDetailsDto.getChannelCode(), wrapperChannelDetailsDto.getValidationUrl()));
         log.trace("createWrapperChannelDetails end");
         return createdWrapperEntities;
     }
@@ -499,7 +499,7 @@ public class ChannelController {
                         fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
         log.debug("updateWrapperChannelDetails result = {}", createdWrapperEntities);
         jiraServiceManagerService.createTicket(String.format(CREATE_CHANNEL_SUMMARY, channelDetailsDto.getChannelCode()),
-                String.format(CREATE_CHANEL_DESCRIPTION, channelDetailsDto.getChannelCode(), channelDetailsDto.getBrokerPspCode(),channelDetailsDto.getValidationUrl()));
+                String.format(CREATE_CHANEL_DESCRIPTION, channelDetailsDto.getChannelCode(), channelDetailsDto.getBrokerPspCode(), channelDetailsDto.getValidationUrl()));
         log.trace("updateWrapperChannelDetails end");
         return createdWrapperEntities;
     }
@@ -532,7 +532,7 @@ public class ChannelController {
         return createdWrapperEntities;
     }
 
-    @GetMapping(  value = "/wfespplugins",  produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/wfespplugins", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.updateWrapperChannelDetailsByOpt}")
     public ResponseEntity<WfespPluginConfs> getWfespPlugins() {
@@ -589,9 +589,11 @@ public class ChannelController {
         log.debug("getAllChannelsMerged page = {} limit = {}", page, limit);
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getchannels xRequestId = {}", xRequestId);
+
         Channels channels = apiConfigService.getChannels(limit, page, channelcode, brokerCode, sorting, xRequestId);
         WrapperChannels  responseApiConfig = ChannelMapper.toWrapperChannels(channels);
         WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(channelcode, WrapperType.CHANNEL,null, page, limit);
+
         WrapperChannels responseMongo = ChannelMapper.toWrapperChannels(mongoList);
         WrapperChannels channelsMergedAndSorted = apiConfigService.mergeAndSortWrapperChannels(responseApiConfig, responseMongo, sorting);
         WrapperChannelsResource response = ChannelMapper.toWrapperChannelsResource(channelsMergedAndSorted);
@@ -605,9 +607,9 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getChannelDetailsListByBroker}")
     public ChannelDetailsResourceList getChannelDetailsListByBroker(@PathVariable("brokerId") String brokerId,
-                                                                     @RequestParam(required = false) String channelId,
-                                                                     @RequestParam(required = false, defaultValue = "10") Integer limit,
-                                                                     @RequestParam(required = false, defaultValue = "0") Integer page) {
+                                                                    @RequestParam(required = false) String channelId,
+                                                                    @RequestParam(required = false, defaultValue = "10") Integer limit,
+                                                                    @RequestParam(required = false, defaultValue = "0") Integer page) {
         log.trace("getChannelDetailsListByBroker start");
         log.debug("getChannelDetailsListByBroker page = {} limit = {}", page, limit);
         String xRequestId = UUID.randomUUID().toString();
@@ -621,7 +623,34 @@ public class ChannelController {
     }
 
 
-//    // pagopa.it/channels/56t67987/769780/
-//    @GetMapping(value = "/{pspcode}/{pspnamedetails}", produces = {MediaType.APPLICATION_JSON_VALUE})
-}
 
+    @GetMapping(value = "/brokerspsp", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.createBrokerPsp}")
+    public BrokersPspResource getBrokersPsp(@ApiParam("${swagger.request.limit}")
+                                           @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                           @ApiParam("${swagger.request.page}")
+                                           @RequestParam Integer page,
+                                           @ApiParam("${swagger.request.broker.code}")
+                                           @RequestParam(required = false, name = "code") String filterByCode,
+                                           @ApiParam("${swagger.request.broker.name}")
+                                           @RequestParam(required = false, name = "name") String filterByName,
+                                           @ApiParam("${swagger.request.broker.ordering}")
+                                           @RequestParam(required = false, name = "orderby", defaultValue = "CODE") String orderBy,
+                                           @ApiParam("${swagger.request.sorting}")
+                                           @RequestParam(required = false, value = "sorting", defaultValue = "DESC") String sorting) {
+        log.trace("getBrokersPsp start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("getBrokersPsp limit = {}, page = {},filterByCode = {}, filterByName = {}, orderBy = {}, sorting = {}", limit, page, filterByCode, filterByName, orderBy, sorting);
+
+
+        BrokersPsp response = apiConfigService.getBrokersPsp(limit, page, filterByCode, filterByName, orderBy, sorting, uuid);
+
+
+        BrokersPspResource resource = ChannelMapper.toResource(response);
+
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getBrokersPsp result = {}", resource);
+        log.trace("getBrokersPsp end");
+        return resource;
+    }
+}

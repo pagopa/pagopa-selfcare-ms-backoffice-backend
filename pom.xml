@@ -11,7 +11,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <artifactId>pagopa-selfcare-ms-backoffice</artifactId>
-    <version>0.0.170</version>
+    <version>0.0.173</version>
     <name>pagopa-selfcare-ms-backoffice</name>
     <description>Microservice to manage PagoPA Backoffice</description>
 
@@ -23,9 +23,6 @@
         <bom_version_to_target>1.2.4</bom_version_to_target>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-
-
-
 
 
     <dependencyManagement>
@@ -47,38 +44,38 @@
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-connector-azure-apim</artifactId>
-                <version>0.0.170</version>
+                <version>0.0.173</version>
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-connector-jira-servicemanager</artifactId>
-                <version>0.0.170</version>
+                <version>0.0.173</version>
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-connector-dao</artifactId>
-                <version>0.0.170</version>
+                <version>0.0.173</version>
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-ms-backoffice-connector</artifactId>
-                <version>0.0.170</version>
+                <version>0.0.173</version>
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-ms-backoffice-connector-api</artifactId>
-                <version>0.0.170</version>
+                <version>0.0.173</version>
                 <type>test-jar</type>
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-ms-backoffice-core</artifactId>
-                <version>0.0.170</version>
+                <version>0.0.173</version>
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-ms-backoffice-web</artifactId>
-                <version>0.0.170</version>
+                <version>0.0.173</version>
             </dependency>
             <dependency>
                 <groupId>io.springfox</groupId>
@@ -147,4 +144,57 @@
         <module>connector-api</module>
         <module>connector</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.8</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>report-aggregate</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sonar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+    </build>
+
 </project>
