@@ -1256,10 +1256,6 @@ class ChannelControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful());
 
-//<<<<<<< HEAD
-//        verify(apiConfigServiceMock, times(1))
-//                .getBrokersPsp(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyString());
-//=======
         //then
         verify(wrapperServiceMock, times(1))
                 .findByIdLikeOrTypeOrBrokerCode(channelCode, wrapperType, null, page, size);
@@ -1269,8 +1265,36 @@ class ChannelControllerTest {
                 .mergeAndSortWrapperChannels(any(), any(), anyString());
         verify(apiConfigServiceMock, times(1))
                 .generateChannelCodeV2(any(), anyString(), anyString());
-//>>>>>>> main
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
+
+    @Test
+    void getBrokerPsp() throws Exception {
+        //given
+        String brokerpspcode = "brokerpspcode";
+        String xRequestId = "1";
+        BrokerPspDetails brokerPspDetailsMock = mockInstance(new BrokerPspDetails());
+
+        when(apiConfigServiceMock.getBrokerPsp(anyString(), anyString()))
+                .thenReturn(brokerPspDetailsMock);
+
+        //when
+        mvc.perform(get(BASE_URL + "/brokerdetails")
+                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .queryParam("brokerpspcode", brokerpspcode)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                               .andExpect(jsonPath("$.broker_psp_code", is(brokerPspDetailsMock.getBrokerPspCode())))
+                .andExpect(jsonPath("$.extended_fault_bean", is(brokerPspDetailsMock.getExtendedFaultBean())))
+                .andExpect(jsonPath("$.enabled", is(brokerPspDetailsMock.getEnabled())))
+                .andExpect(jsonPath("$.description", is(brokerPspDetailsMock.getDescription())));
+
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getBrokerPsp(anyString(), anyString());
+
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
 }

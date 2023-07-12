@@ -55,6 +55,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
+    public BrokerPspDetails getBrokerPsp(String brokerpspcode, String xRequestId) {
+        log.trace("getBrokerPsp start");
+        BrokerPspDetails brokersPsp = apiConfigConnector.getBrokerPsp(brokerpspcode, xRequestId);
+        log.debug("getBrokerPsp result = {}", brokersPsp);
+        log.trace("getBrokerPsp end");
+        return brokersPsp;
+    }
+
+    @Override
     public Channels getChannels(Integer limit, Integer page, String code, String brokerCode, String sort, String xRequestId) {
         log.trace("getChannels start");
         Channels channels = apiConfigConnector.getChannels(limit, page, code, brokerCode, sort, xRequestId);
