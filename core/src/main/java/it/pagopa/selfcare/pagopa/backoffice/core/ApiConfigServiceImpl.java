@@ -486,6 +486,12 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return response;
     }
 
+    public void deleteCreditorInstitutionIbans(String ecCode, String iban, String xRequestId){
+        log.trace("deleteCreditorInstitutionIbans start");
+        apiConfigConnector.deleteCreditorInstitutionIbans(ecCode, iban, xRequestId);
+        log.trace("deleteCreditorInstitutionIbans end");
+    }
+
     public Brokers getBrokersEC(Integer limit, Integer page, String code, String name, String orderby, String ordering, String xRequestId){
         log.trace("getStationBroker start");
         Brokers response = apiConfigConnector.getBrokersEC(limit, page, code, name, orderby, ordering, xRequestId);
