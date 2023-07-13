@@ -223,9 +223,10 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     IbanCreate createCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
                                              @RequestBody IbanCreate ibanCreate,
                                              @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+
     @DeleteMapping(value = "${rest-client.api-config.deleteCreditorInstitutionIbans.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    void deleteCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode")String creditorInstitutionCode,
+    void deleteCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode")String creditorinstitutioncode,
                                         @PathVariable("ibanValue")String ibanValue,
                                         @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
 

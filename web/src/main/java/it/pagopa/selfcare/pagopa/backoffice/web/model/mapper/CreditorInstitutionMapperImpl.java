@@ -206,7 +206,8 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         response.setActive(ibanCreateRequestDto.isActive());
         response.setDescription(ibanCreateRequestDto.getDescription());
         response.setIban(ibanCreateRequestDto.getIban());
-        response.setLabels(ibanCreateRequestDto.getLabels().stream().map(this::fromDto).collect(Collectors.toList()));
+        if(ibanCreateRequestDto.getLabels() != null)
+            response.setLabels(ibanCreateRequestDto.getLabels().stream().map(this::fromDto).collect(Collectors.toList()));
         response.setDueDate(ibanCreateRequestDto.getDueDate());
         response.setValidityDate(ibanCreateRequestDto.getValidityDate());
 

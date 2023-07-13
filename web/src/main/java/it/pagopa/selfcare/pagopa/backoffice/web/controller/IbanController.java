@@ -69,7 +69,7 @@ public class IbanController {
         return resource;
     }
 
-    @DeleteMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.delete}")
     public void deleteCreditorInstitutionIbans(@RequestBody @NotNull IbanCreateRequestDto requestDto){
