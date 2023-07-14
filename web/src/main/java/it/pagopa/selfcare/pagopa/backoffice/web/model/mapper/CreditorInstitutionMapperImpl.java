@@ -7,6 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.utils.StringUtils;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.*;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper {
@@ -231,6 +232,25 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
         return resource;
 
+    }
+
+    public IbanCreate toIbanCreate(IbanEnhanced ibanEnhanced){
+        if(ibanEnhanced == null){
+            return null;
+        }
+
+        IbanCreate response = new IbanCreate();
+        response.setIban(ibanEnhanced.getIban());
+        response.setDescription(ibanEnhanced.getDescription());
+        if (ibanEnhanced.getLabels() != null) {
+            if (response.getLabels() == null) response.setLabels(new ArrayList<>());
+            response.getLabels().addAll(ibanEnhanced.getLabels());
+        }
+        response.setActive(ibanEnhanced.isActive());
+        response.setValidityDate(ibanEnhanced.getValidityDate());
+        response.setDueDate(ibanEnhanced.getDueDate());
+
+        return response;
     }
 
     @Override
