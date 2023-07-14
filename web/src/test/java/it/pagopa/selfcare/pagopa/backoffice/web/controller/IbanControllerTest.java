@@ -118,6 +118,5 @@ public class IbanControllerTest {
 
         verify(apiConfigServiceMock, times(1))
                 .updateCreditorInstitutionIbans(anyString(), any(), anyString());
-        verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }

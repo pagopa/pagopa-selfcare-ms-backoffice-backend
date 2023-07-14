@@ -94,8 +94,6 @@ public class IbanController {
 
         }
 
-
-
         IbanCreate ibanCreate = mapper.fromDto(requestDto);
         IbanCreate ibans = apiConfigService.updateCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate, xRequestId);
 
