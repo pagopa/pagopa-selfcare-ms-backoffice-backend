@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanEnhanced;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -118,6 +119,46 @@ public class IbanControllerTest {
 
         verify(apiConfigServiceMock, times(1))
                 .updateCreditorInstitutionIbans(anyString(), any(), anyString());
+
+    }
+
+    @Test
+    void updateCreditorInstitutionIbans_Label(@Value("classpath:stubs/ibanCreateRequestDto.json") Resource dto) throws Exception {
+
+        IbanCreate ibanCreate = mockInstance(new IbanCreate());
+        ibanCreate.setLabels(new ArrayList<>());
+        IbanLabel label = new IbanLabel();
+        label.setName("CUP");
+        ibanCreate.getLabels().add(label);
+        ibanCreate.setIban("IT12L12312311111");
+
+        IbansEnhanced ibansEnhanced = mockInstance(new IbansEnhanced());
+        ibansEnhanced.setIbanList(new ArrayList<>());
+        IbanEnhanced ibanEnhanced = mockInstance(new IbanEnhanced());
+        ibanEnhanced.setLabels(new ArrayList<>());
+        ibanEnhanced.getLabels().add(label);
+        ibansEnhanced.getIbanList().add(ibanEnhanced);
+
+
+        when(apiConfigServiceMock.updateCreditorInstitutionIbans(anyString(), any(), anyString()))
+                .thenReturn(ibanCreate);
+        when(apiConfigServiceMock.getCreditorInstitutionIbans(anyString(), any(), anyString()))
+                .thenReturn(ibansEnhanced);
+
+
+        mvc.perform(MockMvcRequestBuilders
+                        .put(BASE_URL + "/update")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(APPLICATION_JSON));
+
+
+        verify(apiConfigServiceMock, times(2))
+                .updateCreditorInstitutionIbans(anyString(), any(), anyString());
+        verify(apiConfigServiceMock, times(1))
+                .getCreditorInstitutionIbans(anyString(), any(), anyString());
 
     }
 }
