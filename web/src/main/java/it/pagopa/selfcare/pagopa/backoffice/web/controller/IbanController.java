@@ -74,7 +74,7 @@ public class IbanController {
         log.trace("createCreditorInstitutionIbans end");
         return resource;
     }
-    
+
     @DeleteMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.delete}")

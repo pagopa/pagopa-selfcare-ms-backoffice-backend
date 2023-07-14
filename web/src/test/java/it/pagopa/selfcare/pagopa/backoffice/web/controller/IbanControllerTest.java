@@ -162,5 +162,24 @@ public class IbanControllerTest {
 
     }
 
+    @Test
+    void deleteCreditorInstitutionIbans(@Value("classpath:stubs/ibanCreateRequestDto.json") Resource dto) throws Exception {
 
+        IbanCreate ibanCreate = mockInstance(new IbanCreate());
+        ibanCreate.setLabels(new ArrayList<>());
+
+        doNothing().when(apiConfigServiceMock).deleteCreditorInstitutionIbans(anyString(), any(), anyString());
+
+        mvc.perform(MockMvcRequestBuilders
+                        .delete(BASE_URL + "/delete")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+
+
+        verify(apiConfigServiceMock, times(1))
+                .deleteCreditorInstitutionIbans(anyString(), any(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
 }
