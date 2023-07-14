@@ -85,7 +85,7 @@ public class IbanController {
 
         if(!isEmpty(requestDto.getLabels().get(0))) {
             IbansEnhanced ibansEnhanced = apiConfigService.getCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), requestDto.getLabels().get(0).getName(), xRequestId);
-            if(!isEmpty(ibansEnhanced.getIbanList())) {
+            if(ibansEnhanced!=null && !isEmpty(ibansEnhanced.getIbanList())) {
                 IbanCreate ibanCreate =  mapper.toIbanCreate(ibansEnhanced.getIbanList().get(0));
                 List<IbanLabel> ibanLabelList = ibanCreate.getLabels().stream().filter(f->!(f.getName().equals(requestDto.getLabels().get(0).getName()))).collect(Collectors.toList());
                 ibanCreate.setLabels(ibanLabelList);
