@@ -233,6 +233,23 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
     }
 
+    public IbanCreate toIbanCreate(IbanEnhanced ibanEnhanced){
+        if(ibanEnhanced == null){
+            return null;
+        }
+
+        IbanCreate response = new IbanCreate();
+        response.setIban(ibanEnhanced.getIban());
+        response.setDescription(ibanEnhanced.getDescription());
+        if(ibanEnhanced.getLabels() != null)
+            response.getLabels().addAll(ibanEnhanced.getLabels());
+        response.setActive(ibanEnhanced.isActive());
+        response.setValidityDate(ibanEnhanced.getValidityDate());
+        response.setDueDate(ibanEnhanced.getDueDate());
+
+        return response;
+    }
+
     @Override
     public IbanLabel fromDto(it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel dto) {
         if(dto == null){
