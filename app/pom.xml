@@ -4,7 +4,7 @@
     <parent>
         <artifactId>pagopa-selfcare-ms-backoffice</artifactId>
         <groupId>it.pagopa.selfcare.pagopa</groupId>
-        <version>0.3.3</version>
+        <version>0.3.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -23,19 +23,19 @@
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-connector-jira-servicemanager</artifactId>
-            <version>0.3.3</version>
+            <version>0.3.4</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-connector-rest</artifactId>
-            <version>0.3.3</version>
+            <version>0.3.4</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-connector-dao</artifactId>
-            <version>0.3.3</version>
+            <version>0.3.4</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
