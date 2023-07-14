@@ -6,8 +6,10 @@ import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.JiraServiceManagerService;
@@ -428,14 +430,14 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getChannelCode}")
     public ChannelCodeResource getChannelCodeV2(@ApiParam("${swagger.request.pspCode}")
-                                              @PathVariable("pspcode") String pspCode) {
+                                                @PathVariable("pspcode") String pspCode) {
         log.trace("getChannelCodeV2 start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getChannelCodeV2 pspcode = {}, xRequestId = {}", pspCode, xRequestId);
 
         Channels channels = apiConfigService.getChannels(100, 0, pspCode, null, "ASC", xRequestId);
-        WrapperChannels  responseApiConfig = ChannelMapper.toWrapperChannels(channels);
-        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(pspCode, WrapperType.CHANNEL,null, 0, 100);
+        WrapperChannels responseApiConfig = ChannelMapper.toWrapperChannels(channels);
+        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(pspCode, WrapperType.CHANNEL, null, 0, 100);
         WrapperChannels responseMongo = ChannelMapper.toWrapperChannels(mongoList);
         WrapperChannels channelsMergedAndSorted = apiConfigService.mergeAndSortWrapperChannels(responseApiConfig, responseMongo, "ASC");
         String result = apiConfigService.generateChannelCodeV2(channelsMergedAndSorted.getChannelList(), pspCode, xRequestId);
@@ -589,8 +591,8 @@ public class ChannelController {
         log.debug("getchannels xRequestId = {}", xRequestId);
 
         Channels channels = apiConfigService.getChannels(limit, page, channelcode, brokerCode, sorting, xRequestId);
-        WrapperChannels  responseApiConfig = ChannelMapper.toWrapperChannels(channels);
-        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(channelcode, WrapperType.CHANNEL,null, page, limit);
+        WrapperChannels responseApiConfig = ChannelMapper.toWrapperChannels(channels);
+        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(channelcode, WrapperType.CHANNEL, null, page, limit);
 
         WrapperChannels responseMongo = ChannelMapper.toWrapperChannels(mongoList);
         WrapperChannels channelsMergedAndSorted = apiConfigService.mergeAndSortWrapperChannels(responseApiConfig, responseMongo, sorting);
@@ -621,22 +623,21 @@ public class ChannelController {
     }
 
 
-
     @GetMapping(value = "/brokerspsp", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.createBrokerPsp}")
     public BrokersPspResource getBrokersPsp(@ApiParam("${swagger.request.limit}")
-                                           @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                           @ApiParam("${swagger.request.page}")
-                                           @RequestParam Integer page,
-                                           @ApiParam("${swagger.request.broker.code}")
-                                           @RequestParam(required = false, name = "code") String filterByCode,
-                                           @ApiParam("${swagger.request.broker.name}")
-                                           @RequestParam(required = false, name = "name") String filterByName,
-                                           @ApiParam("${swagger.request.broker.ordering}")
-                                           @RequestParam(required = false, name = "orderby", defaultValue = "CODE") String orderBy,
-                                           @ApiParam("${swagger.request.sorting}")
-                                           @RequestParam(required = false, value = "sorting", defaultValue = "DESC") String sorting) {
+                                            @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                            @ApiParam("${swagger.request.page}")
+                                            @RequestParam Integer page,
+                                            @ApiParam("${swagger.request.broker.code}")
+                                            @RequestParam(required = false, name = "code") String filterByCode,
+                                            @ApiParam("${swagger.request.broker.name}")
+                                            @RequestParam(required = false, name = "name") String filterByName,
+                                            @ApiParam("${swagger.request.broker.ordering}")
+                                            @RequestParam(required = false, name = "orderby", defaultValue = "CODE") String orderBy,
+                                            @ApiParam("${swagger.request.sorting}")
+                                            @RequestParam(required = false, value = "sorting", defaultValue = "DESC") String sorting) {
         log.trace("getBrokersPsp start");
         String uuid = UUID.randomUUID().toString();
         log.debug("getBrokersPsp limit = {}, page = {},filterByCode = {}, filterByName = {}, orderBy = {}, sorting = {}", limit, page, filterByCode, filterByName, orderBy, sorting);
@@ -651,4 +652,25 @@ public class ChannelController {
         log.trace("getBrokersPsp end");
         return resource;
     }
+
+    @GetMapping(value = "/brokerdetails", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getBrokerPsp}")
+    public BrokerPspDetailsResource getBrokerPsp(@ApiParam("swagger.request.brokerpspcode")
+                                                 @RequestParam(required = false, name = "brokerpspcode") String brokerPspCode) {
+        log.trace("getBrokerPsp start");
+        String uuid = UUID.randomUUID().toString();
+        log.debug("getBrokerPsp brokerPspCode = {} , xRequestId:  {}", brokerPspCode, uuid);
+
+        BrokerPspDetails response = apiConfigService.getBrokerPsp(brokerPspCode, uuid);
+
+        BrokerPspDetailsResource resource = ChannelMapper.toResource(response);
+
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getBrokerPsp result = {}", resource);
+        log.trace("getBrokerPsp end");
+
+        return resource;
+    }
+
+  
 }

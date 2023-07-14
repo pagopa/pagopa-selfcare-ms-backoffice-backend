@@ -55,6 +55,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
+    public BrokerPspDetails getBrokerPsp(String brokerpspcode, String xRequestId) {
+        log.trace("getBrokerPsp start");
+        BrokerPspDetails brokersPsp = apiConfigConnector.getBrokerPsp(brokerpspcode, xRequestId);
+        log.debug("getBrokerPsp result = {}", brokersPsp);
+        log.trace("getBrokerPsp end");
+        return brokersPsp;
+    }
+
+    @Override
     public Channels getChannels(Integer limit, Integer page, String code, String brokerCode, String sort, String xRequestId) {
         log.trace("getChannels start");
         Channels channels = apiConfigConnector.getChannels(limit, page, code, brokerCode, sort, xRequestId);
@@ -492,12 +501,19 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         log.trace("deleteCreditorInstitutionIbans end");
     }
 
+    public IbanCreate updateCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId) {
+        log.trace("putCreditorInstitutionIbans start");
+        IbanCreate response = apiConfigConnector.updateCreditorInstitutionIbans(ecCode, ibanCreate.getIban(), ibanCreate, xRequestId);
+        log.debug("putCreditorInstitutionIbans result = {}", response);
+        log.trace("putCreditorInstitutionIbans end");
+        return response;
+    }
+
     public Brokers getBrokersEC(Integer limit, Integer page, String code, String name, String orderby, String ordering, String xRequestId){
         log.trace("getStationBroker start");
         Brokers response = apiConfigConnector.getBrokersEC(limit, page, code, name, orderby, ordering, xRequestId);
         log.debug("getStationBroker result = {}", response);
         log.trace("getStationBroker end");
-
         return response;
     }
 

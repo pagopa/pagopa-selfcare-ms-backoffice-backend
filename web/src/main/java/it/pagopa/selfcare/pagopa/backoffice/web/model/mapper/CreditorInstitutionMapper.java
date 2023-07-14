@@ -24,6 +24,7 @@ public interface CreditorInstitutionMapper {
     IbansResource toResource(IbansEnhanced model);
     IbanCreate fromDto(IbanCreateRequestDto ibanCreateRequestDto);
     IbanResource toResource(IbanCreate model);
+    IbanCreate toIbanCreate(IbanEnhanced ibanEnhanced);
 
     IbanLabel fromDto(it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel dto);
     it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel toResource(IbanLabel model);

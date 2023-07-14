@@ -23,7 +23,7 @@ public interface ApiConfigService {
 
     BrokersPsp getBrokersPsp(Integer limit, Integer page, String filterByCode, String filterByName,String orderBy,String sorting, String xRequestId);
 
-
+    BrokerPspDetails getBrokerPsp(String brokerpspcode, String xRequestId);
 
     Channels getChannels(Integer limit, Integer page, String code, String brokerCode, String sort, String xRequestId);
 
@@ -102,7 +102,11 @@ public interface ApiConfigService {
 
     IbanCreate createCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId);
 
+<<<<<<< HEAD
     void deleteCreditorInstitutionIbans(String ecCode, String iban, String xRequestId);
+=======
+    IbanCreate updateCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId);
+>>>>>>> main
 
     String generateStationCodeV2(List<WrapperStation> stationList, String ecCode, String xRequestId);
 

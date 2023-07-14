@@ -25,11 +25,10 @@ import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = {IbanController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 @ContextConfiguration(classes = {
@@ -96,5 +95,70 @@ public class IbanControllerTest {
         verify(apiConfigServiceMock, times(1))
                 .createCreditorInstitutionIbans(anyString(), any(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void updateCreditorInstitutionIbans(@Value("classpath:stubs/ibanCreateRequestDto.json") Resource dto) throws Exception {
+
+        IbanCreate ibanCreate = mockInstance(new IbanCreate());
+        ibanCreate.setLabels(new ArrayList<>());
+        ibanCreate.setIban("IT12L12312311111");
+
+
+        when(apiConfigServiceMock.updateCreditorInstitutionIbans(anyString(), any(), anyString()))
+                .thenReturn(ibanCreate);
+
+        mvc.perform(MockMvcRequestBuilders
+                        .put(BASE_URL + "/update")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(APPLICATION_JSON));
+
+
+        verify(apiConfigServiceMock, times(1))
+                .updateCreditorInstitutionIbans(anyString(), any(), anyString());
+
+    }
+
+    @Test
+    void updateCreditorInstitutionIbans_Label(@Value("classpath:stubs/ibanCreateRequestDto.json") Resource dto) throws Exception {
+
+        IbanCreate ibanCreate = mockInstance(new IbanCreate());
+        ibanCreate.setLabels(new ArrayList<>());
+        IbanLabel label = new IbanLabel();
+        label.setName("CUP");
+        ibanCreate.getLabels().add(label);
+        ibanCreate.setIban("IT12L12312311111");
+
+        IbansEnhanced ibansEnhanced = mockInstance(new IbansEnhanced());
+        ibansEnhanced.setIbanList(new ArrayList<>());
+        IbanEnhanced ibanEnhanced = mockInstance(new IbanEnhanced());
+        ibanEnhanced.setLabels(new ArrayList<>());
+        ibanEnhanced.getLabels().add(label);
+        ibansEnhanced.getIbanList().add(ibanEnhanced);
+
+
+        when(apiConfigServiceMock.updateCreditorInstitutionIbans(anyString(), any(), anyString()))
+                .thenReturn(ibanCreate);
+        when(apiConfigServiceMock.getCreditorInstitutionIbans(anyString(), any(), anyString()))
+                .thenReturn(ibansEnhanced);
+
+
+        mvc.perform(MockMvcRequestBuilders
+                        .put(BASE_URL + "/update")
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(APPLICATION_JSON));
+
+
+        verify(apiConfigServiceMock, times(2))
+                .updateCreditorInstitutionIbans(anyString(), any(), anyString());
+        verify(apiConfigServiceMock, times(1))
+                .getCreditorInstitutionIbans(anyString(), any(), anyString());
+
     }
 }
