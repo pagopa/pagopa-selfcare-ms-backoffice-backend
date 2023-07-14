@@ -102,11 +102,9 @@ public interface ApiConfigService {
 
     IbanCreate createCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId);
 
-<<<<<<< HEAD
     void deleteCreditorInstitutionIbans(String ecCode, String iban, String xRequestId);
-=======
+
     IbanCreate updateCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId);
->>>>>>> main
 
     String generateStationCodeV2(List<WrapperStation> stationList, String ecCode, String xRequestId);
 

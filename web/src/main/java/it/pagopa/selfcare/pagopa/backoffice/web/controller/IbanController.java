@@ -74,6 +74,17 @@ public class IbanController {
         log.trace("createCreditorInstitutionIbans end");
         return resource;
     }
+    
+    @DeleteMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.delete}")
+    public void deleteCreditorInstitutionIbans(@RequestBody @NotNull IbanCreateRequestDto requestDto){
+        log.trace("deleteCreditorInstitutionIbans start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("deleteCreditorInstitutionIbans xRequestId = {}", xRequestId);
+        apiConfigService.deleteCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), requestDto.getIban(), xRequestId);
+        log.trace("deleteCreditorInstitutionIbans end");
+    }
 
     @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
