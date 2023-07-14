@@ -486,12 +486,19 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return response;
     }
 
+    public IbanCreate updateCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId) {
+        log.trace("putCreditorInstitutionIbans start");
+        IbanCreate response = apiConfigConnector.updateCreditorInstitutionIbans(ecCode, ibanCreate.getIban(), ibanCreate, xRequestId);
+        log.debug("putCreditorInstitutionIbans result = {}", response);
+        log.trace("putCreditorInstitutionIbans end");
+        return response;
+    }
+
     public Brokers getBrokersEC(Integer limit, Integer page, String code, String name, String orderby, String ordering, String xRequestId){
         log.trace("getStationBroker start");
         Brokers response = apiConfigConnector.getBrokersEC(limit, page, code, name, orderby, ordering, xRequestId);
         log.debug("getStationBroker result = {}", response);
         log.trace("getStationBroker end");
-
         return response;
     }
 

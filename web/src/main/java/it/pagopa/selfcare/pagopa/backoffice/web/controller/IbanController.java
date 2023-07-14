@@ -69,4 +69,22 @@ public class IbanController {
         return resource;
     }
 
+    @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.put}")
+    public IbanResource putCreditorInstitutionIbans(@RequestBody @NotNull IbanCreateRequestDto requestDto){
+        log.trace("putCreditorInstitutionIbans start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("putCreditorInstitutionIbans xRequestId = {}", xRequestId);
+
+        IbanCreate ibanCreate = mapper.fromDto(requestDto);
+        IbanCreate ibans = apiConfigService.updateCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate, xRequestId);
+
+        IbanResource resource = mapper.toResource(ibans);
+
+        log.debug("putCreditorInstitutionIbans result = {}", resource);
+        log.trace("putCreditorInstitutionIbans end");
+        return resource;
+    }
+
 }
