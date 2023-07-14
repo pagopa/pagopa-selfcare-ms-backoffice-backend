@@ -17,6 +17,8 @@ public interface ApiConfigConnector {
 
     BrokersPsp getBrokersPsp(Integer limit, Integer page, String filterByCode, String filterByName, String orderBy, String sorting, String xRequestId);
 
+    BrokerPspDetails getBrokerPsp(String brokerpspcode, String xRequestId);
+
     Channels getChannels(Integer limit, Integer page, String code, String brokerCode, String sort, String xRequestId);
 
     ChannelDetails createChannel(ChannelDetails channelDetails, String xRequestId);

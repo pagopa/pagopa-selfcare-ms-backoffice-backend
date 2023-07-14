@@ -812,6 +812,17 @@ class ApiConfigRestClientTest {
         checkNotNullFields(response);
 
     }
+    @Test
+    void getBrokerPsp(){
+
+        String brokerpspcode = "code1";
+        String xRequestId = "1";
+
+        BrokerPsp response = restClient.getBrokerPsp(brokerpspcode, xRequestId);
+        assertNotNull(response);
+        checkNotNullFields(response);
+
+    }
 
     private void checkNotNullFields(Object o, String... excludedFields) {
         Set<String> excludedFieldsSet = new HashSet<>(Arrays.asList(excludedFields));

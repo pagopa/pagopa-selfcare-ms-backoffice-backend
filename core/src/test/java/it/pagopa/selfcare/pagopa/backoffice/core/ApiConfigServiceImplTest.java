@@ -987,6 +987,25 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
+    void getBrokerPsp() {
+        //given
+        String brokerpspcode = "brokerpspcode";
+        String xRequestId = "1";
+        BrokerPspDetails brokerPspDetailsMock = mockInstance(new BrokerPspDetails());
+
+        when(apiConfigConnectorMock.getBrokerPsp(anyString(), anyString()))
+                .thenReturn(brokerPspDetailsMock);
+
+        //when
+        BrokerPspDetails response = apiConfigService.getBrokerPsp(brokerpspcode, xRequestId);
+        //then
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .getBrokerPsp(anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
     void getBrokersPsp() {
         //given
         Integer limit = 50;
@@ -1044,14 +1063,14 @@ class ApiConfigServiceImplTest {
 
         List<WrapperStation> stationList = new ArrayList<>();
         WrapperStation station = new WrapperStation();
-        station.setStationCode(stationCode+"_01");
+        station.setStationCode(stationCode + "_01");
         stationList.add(station);
 
         //when
         String response = apiConfigService.generateStationCodeV2(stationList, stationCode, xRequestId);
         //then
         assertNotNull(response);
-        assertEquals(stationCode+"_02", response);
+        assertEquals(stationCode + "_02", response);
     }
 
     @Test
@@ -1062,14 +1081,34 @@ class ApiConfigServiceImplTest {
 
         List<WrapperChannel> channelList = new ArrayList<>();
         WrapperChannel channel = new WrapperChannel();
-        channel.setChannelCode(channelCode+"_01");
+        channel.setChannelCode(channelCode + "_01");
         channelList.add(channel);
 
         //when
         String response = apiConfigService.generateChannelCodeV2(channelList, channelCode, xRequestId);
         //then
         assertNotNull(response);
-        assertEquals(channelCode+"_02", response);
+        assertEquals(channelCode + "_02", response);
+    }
+
+    @Test
+    void updateCreditorInstitutionIbans(){
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = "1";
+        String label = "label";
+        String ibanId = "IT12L212123123";
+        IbanCreate ibanCreate = mockInstance(new IbanCreate());
+        ibanCreate.setLabels(new ArrayList<>());
+        ibanCreate.setIban(ibanId);
+        //when
+        when(apiConfigConnectorMock.updateCreditorInstitutionIbans(anyString(), anyString(), any(), anyString()))
+                .thenReturn(ibanCreate);
+        apiConfigService.updateCreditorInstitutionIbans(ecCode, ibanCreate, xRequestId);
+        //then
+        verify(apiConfigConnectorMock, times(1))
+                .updateCreditorInstitutionIbans(ecCode,ibanId, ibanCreate, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
     @Test
@@ -1104,7 +1143,7 @@ class ApiConfigServiceImplTest {
         String xRequestId = "xRequestId";
         Brokers brokers = mockInstance(new Brokers());
 
-        when(apiConfigConnectorMock.getBrokersEC(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString() ,anyString()))
+        when(apiConfigConnectorMock.getBrokersEC(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(brokers);
         //when
         Brokers response = apiConfigService.getBrokersEC(limit, page, code, name, orderby, ordering, xRequestId);
