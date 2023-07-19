@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.0.173"
+    "version" : "0.3.3"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -164,6 +164,79 @@
           },
           "401" : {
             "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/channels/brokerdetails" : {
+      "get" : {
+        "tags" : [ "channels" ],
+        "summary" : "getBrokerPsp",
+        "description" : "Get PSP broker details",
+        "operationId" : "getBrokerPspUsingGET",
+        "parameters" : [ {
+          "name" : "brokerpspcode",
+          "in" : "query",
+          "description" : "swagger.request.brokerpspcode",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BrokerPspDetailsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
             "content" : {
               "application/problem+json" : {
                 "schema" : {
@@ -5281,6 +5354,10 @@
           "proxy_username" : {
             "type" : "string",
             "description" : "proxy Username"
+          },
+          "psp_email" : {
+            "type" : "string",
+            "description" : "email of the payment service provider"
           },
           "recovery" : {
             "type" : "boolean",
