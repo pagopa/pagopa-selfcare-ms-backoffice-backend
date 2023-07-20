@@ -27,7 +27,7 @@ public class IbanCreateRequestDto {
     private String iban;
 
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.isActive}", required = true)
-    private boolean isActive;
+    private boolean active;
 
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.labels}")
     private List<IbanLabel> labels;

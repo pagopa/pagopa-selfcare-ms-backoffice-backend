@@ -13,6 +13,9 @@
     "name" : "Ibans",
     "description" : "Iban Controller"
   }, {
+    "name" : "Utils",
+    "description" : "Utils Controller"
+  }, {
     "name" : "channels",
     "description" : "Api config channels operations"
   }, {
@@ -5068,6 +5071,79 @@
           "bearerAuth" : [ "global" ]
         } ]
       }
+    },
+    "/utils/broker-or-psp-details" : {
+      "get" : {
+        "tags" : [ "Utils" ],
+        "summary" : "getBrokerOrPspDetails",
+        "description" : "Get PSP broker details",
+        "operationId" : "getBrokerOrPspDetailsUsingGET",
+        "parameters" : [ {
+          "name" : "brokerpspcode",
+          "in" : "query",
+          "description" : "swagger.request.brokerpspcode",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BrokerOrPspDetailsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
     }
   },
   "components" : {
@@ -5176,6 +5252,18 @@
           },
           "description" : {
             "type" : "string"
+          }
+        }
+      },
+      "BrokerOrPspDetailsResource" : {
+        "title" : "BrokerOrPspDetailsResource",
+        "type" : "object",
+        "properties" : {
+          "brokerPspDetailsResource" : {
+            "$ref" : "#/components/schemas/BrokerPspDetailsResource"
+          },
+          "paymentServiceProviderDetailsResource" : {
+            "$ref" : "#/components/schemas/PaymentServiceProviderDetailsResource"
           }
         }
       },
@@ -6094,11 +6182,13 @@
       },
       "IbanCreateRequestDto" : {
         "title" : "IbanCreateRequestDto",
-        "required" : [ "creditorInstitutionCode", "dueDate", "iban", "validityDate" ],
+        "required" : [ "active", "creditorInstitutionCode", "dueDate", "iban", "validityDate" ],
         "type" : "object",
         "properties" : {
           "active" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "True if the iban is active",
+            "example" : false
           },
           "creditorInstitutionCode" : {
             "type" : "string",
@@ -6163,11 +6253,13 @@
       },
       "IbanResource" : {
         "title" : "IbanResource",
-        "required" : [ "dueDate", "ecOwner", "iban", "publicationDate", "validityDate" ],
+        "required" : [ "active", "dueDate", "ecOwner", "iban", "publicationDate", "validityDate" ],
         "type" : "object",
         "properties" : {
           "active" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "True if the iban is active",
+            "example" : false
           },
           "companyName" : {
             "type" : "string",
