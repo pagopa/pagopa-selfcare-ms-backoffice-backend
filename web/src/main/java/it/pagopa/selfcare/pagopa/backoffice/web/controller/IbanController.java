@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
@@ -94,15 +95,16 @@ public class IbanController {
         String xRequestId = UUID.randomUUID().toString();
         log.debug("putCreditorInstitutionIbans xRequestId = {}", xRequestId);
 
-        if(!isEmpty(requestDto.getLabels().get(0))) {
+        if (!isEmpty(requestDto.getLabels().get(0))) {
             IbansEnhanced ibansEnhanced = apiConfigService.getCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), requestDto.getLabels().get(0).getName(), xRequestId);
-            if(ibansEnhanced!=null && !isEmpty(ibansEnhanced.getIbanList())) {
-                IbanCreate ibanCreate =  mapper.toIbanCreate(ibansEnhanced.getIbanList().get(0));
-                List<IbanLabel> ibanLabelList = ibanCreate.getLabels().stream().filter(f->!(f.getName().equals(requestDto.getLabels().get(0).getName()))).collect(Collectors.toList());
-                ibanCreate.setLabels(ibanLabelList);
-                apiConfigService.updateCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate, xRequestId);
+            if (ibansEnhanced != null && !isEmpty(ibansEnhanced.getIbanList())) {
+                ibansEnhanced.getIbanList().forEach(iban -> {
+                    IbanCreate ibanCreate = mapper.toIbanCreate(iban);
+                    List<IbanLabel> ibanLabelList = ibanCreate.getLabels().stream().filter(f -> !(f.getName().equals(requestDto.getLabels().get(0).getName()))).collect(Collectors.toList());
+                    ibanCreate.setLabels(ibanLabelList);
+                    apiConfigService.updateCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate, xRequestId);
+                });
             }
-
         }
 
         IbanCreate ibanCreate = mapper.fromDto(requestDto);
