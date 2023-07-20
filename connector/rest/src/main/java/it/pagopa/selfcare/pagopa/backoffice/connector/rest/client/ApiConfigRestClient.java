@@ -237,6 +237,12 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                                               @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
 
 
+    @DeleteMapping(value = "${rest-client.api-config.deleteCreditorInstitutionIbans.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    void deleteCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode")String creditorinstitutioncode,
+                                        @PathVariable("ibanValue")String ibanValue,
+                                        @RequestHeader(name = "X-Request-Id", required = false)String xRequestId);
+
     @GetMapping(value = "${rest-client.api-config.getStationBroker.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     Brokers getBrokersEC(@RequestParam(required = false, defaultValue = "50") Integer limit,

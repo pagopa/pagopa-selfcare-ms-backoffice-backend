@@ -1112,6 +1112,21 @@ class ApiConfigServiceImplTest {
     }
 
     @Test
+    void deleteCreditorInstitutionIbans(){
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = "1";
+        String ibanId = "IT12L212123123";
+        //when
+        doNothing().when(apiConfigConnectorMock).deleteCreditorInstitutionIbans(anyString(), any(), anyString());
+        apiConfigService.deleteCreditorInstitutionIbans(ecCode, ibanId, xRequestId);
+        //then
+        verify(apiConfigConnectorMock, times(1))
+                .deleteCreditorInstitutionIbans(ecCode,ibanId, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
     void getBrokersEC() {
         //given
         Integer page = 0;
