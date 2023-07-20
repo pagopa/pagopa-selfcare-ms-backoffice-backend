@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
@@ -76,14 +77,17 @@ public class IbanController {
         return resource;
     }
 
-    @DeleteMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{creditorinstitutioncode}/delete/{ibanValue}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.delete}")
-    public void deleteCreditorInstitutionIbans(@RequestBody @NotNull IbanCreateRequestDto requestDto){
+    public void deleteCreditorInstitutionIbans(@ApiParam("${swagger.request.ecCode}")
+                                               @PathVariable("creditorinstitutioncode") String creditorinstitutioncode,
+                                               @ApiParam("${swagger.request.pspCode}")
+                                               @PathVariable("ibanValue") String ibanValue){
         log.trace("deleteCreditorInstitutionIbans start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("deleteCreditorInstitutionIbans xRequestId = {}", xRequestId);
-        apiConfigService.deleteCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), requestDto.getIban(), xRequestId);
+        apiConfigService.deleteCreditorInstitutionIbans(creditorinstitutioncode, ibanValue, xRequestId);
         log.trace("deleteCreditorInstitutionIbans end");
     }
 

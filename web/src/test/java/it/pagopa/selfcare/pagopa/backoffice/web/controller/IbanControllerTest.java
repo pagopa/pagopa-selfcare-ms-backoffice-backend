@@ -165,14 +165,15 @@ public class IbanControllerTest {
     @Test
     void deleteCreditorInstitutionIbans(@Value("classpath:stubs/ibanCreateRequestDto.json") Resource dto) throws Exception {
 
+        String ecCode ="ecCode";
+        String iban="iban";
         IbanCreate ibanCreate = mockInstance(new IbanCreate());
         ibanCreate.setLabels(new ArrayList<>());
 
         doNothing().when(apiConfigServiceMock).deleteCreditorInstitutionIbans(anyString(), any(), anyString());
 
         mvc.perform(MockMvcRequestBuilders
-                        .delete(BASE_URL + "/delete")
-                        .content(dto.getInputStream().readAllBytes())
+                        .delete(BASE_URL + "/{creditorinstitutioncode}/delete/{ibanValue}", ecCode, iban)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful());
