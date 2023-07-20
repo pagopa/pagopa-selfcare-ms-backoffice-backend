@@ -3,6 +3,8 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanEnhanced;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanCreateRequestDto;
@@ -15,10 +17,15 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Slf4j
 @RestController
@@ -69,6 +76,17 @@ public class IbanController {
         return resource;
     }
 
+    @DeleteMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.delete}")
+    public void deleteCreditorInstitutionIbans(@RequestBody @NotNull IbanCreateRequestDto requestDto){
+        log.trace("deleteCreditorInstitutionIbans start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("deleteCreditorInstitutionIbans xRequestId = {}", xRequestId);
+        apiConfigService.deleteCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), requestDto.getIban(), xRequestId);
+        log.trace("deleteCreditorInstitutionIbans end");
+    }
+
     @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.put}")
@@ -76,6 +94,18 @@ public class IbanController {
         log.trace("putCreditorInstitutionIbans start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("putCreditorInstitutionIbans xRequestId = {}", xRequestId);
+
+        if (!isEmpty(requestDto.getLabels().get(0))) {
+            IbansEnhanced ibansEnhanced = apiConfigService.getCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), requestDto.getLabels().get(0).getName(), xRequestId);
+            if (ibansEnhanced != null && !isEmpty(ibansEnhanced.getIbanList())) {
+                ibansEnhanced.getIbanList().forEach(iban -> {
+                    IbanCreate ibanCreate = mapper.toIbanCreate(iban);
+                    List<IbanLabel> ibanLabelList = ibanCreate.getLabels().stream().filter(f -> !(f.getName().equals(requestDto.getLabels().get(0).getName()))).collect(Collectors.toList());
+                    ibanCreate.setLabels(ibanLabelList);
+                    apiConfigService.updateCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate, xRequestId);
+                });
+            }
+        }
 
         IbanCreate ibanCreate = mapper.fromDto(requestDto);
         IbanCreate ibans = apiConfigService.updateCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate, xRequestId);

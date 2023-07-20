@@ -17,7 +17,7 @@ public class IbanCreateRequestDto {
     @NotBlank
     private String creditorInstitutionCode;
 
-    @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.description}", required = true)
+    @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.description}")
     private String description;
 
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.due-date}", required = true)
@@ -29,7 +29,7 @@ public class IbanCreateRequestDto {
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.isActive}", required = true)
     private boolean isActive;
 
-    @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.labels}", required = true)
+    @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.labels}")
     private List<IbanLabel> labels;
 
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.validityDate}", required = true)
