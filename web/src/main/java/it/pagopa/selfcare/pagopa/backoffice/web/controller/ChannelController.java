@@ -684,17 +684,19 @@ public class ChannelController {
         return resource;
     }
 
-//    @GetMapping(value = "sendEmail")
-//    @ResponseStatus(HttpStatus.OK)
-//    public String sendMail(@RequestParam String to,
-//                           @RequestParam String subject,
-//                           @RequestParam String body
-//    ) {
-//        log.info("Sending mail");
-//        final String CREATE_CHANEL_SUBJECT = "Creazione Canale";
-//        final String CREATE_CHANEL_EMAIL_BODY = String.format("Buongiorno\n\nIl canale %s è stato validato da un operatore e risulta essere attivo\n\nSaluti", "12232345657678878");
-//
-//        String res = awsSesService.sendEmail(to, CREATE_CHANEL_SUBJECT, CREATE_CHANEL_EMAIL_BODY);
-//        return res;
-//    }
+    @GetMapping(value = "sendEmail")
+    @ResponseStatus(HttpStatus.OK)
+    public String sendMail(@RequestParam String to,
+                           @RequestParam String subject,
+                           @RequestParam String body
+    ) {
+        log.info("Sending mail");
+        final String CREATE_CHANEL_SUBJECT = "Creazione Canale";
+        final String CREATE_CHANEL_EMAIL_BODY = String.format("Buongiorno\n\nIl canale %s è stato validato da un operatore e risulta essere attivo\n\nSaluti", "12232345657678878");
+        ChannelDetailsDto channelDetailsDto = new ChannelDetailsDto();
+        channelDetailsDto.setPspEmail("a@s.it");
+        String email = channelDetailsDto.getEmail();
+        String res = awsSesService.sendEmail(to, CREATE_CHANEL_SUBJECT, CREATE_CHANEL_EMAIL_BODY);
+        return res;
+    }
 }

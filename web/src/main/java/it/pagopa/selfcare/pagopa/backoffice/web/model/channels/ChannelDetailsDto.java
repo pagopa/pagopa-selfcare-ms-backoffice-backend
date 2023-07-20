@@ -196,4 +196,9 @@ public class ChannelDetailsDto {
 
     @ApiModelProperty(value = "${swagger.model.channel.details.flagPspCp}")
     private Boolean flagPspCp = false;
+
+    public String getEmail(){
+        String environment = System.getenv("env")!=null?System.getenv("env"):"local";
+        return environment.equals("prod")? getPspEmail():System.getenv("TEST_EMAIL") ;
+    }
 }
