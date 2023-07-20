@@ -28,6 +28,12 @@
         </dependency>
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
+            <artifactId>pagopa-selfcare-connector-aws-ses</artifactId>
+            <version>0.3.3</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-connector-rest</artifactId>
             <version>0.3.3</version>
             <scope>runtime</scope>
