@@ -41,8 +41,8 @@ public class UtilsController {
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getBrokerOrPspDetails brokerPspCode = {} , xRequestId:  {}", brokerPspCode, xRequestId);
 
-        BrokerPspDetails response = apiConfigService.getBrokerPsp(brokerPspCode, xRequestId);
-        BrokerPspDetailsResource brokerPspDetailsResource = ChannelMapper.toResource(response);
+        BrokerPspDetails brokerPspDetails = apiConfigService.getBrokerPsp(brokerPspCode, xRequestId);
+        BrokerPspDetailsResource brokerPspDetailsResource = ChannelMapper.toResource(brokerPspDetails);
 
         PaymentServiceProviderDetails paymentServiceProviderDetails = apiConfigService.getPSPDetails(brokerPspCode, xRequestId);
         PaymentServiceProviderDetailsResource paymentServiceProviderDetailsResource = ChannelMapper.toResource(paymentServiceProviderDetails);
