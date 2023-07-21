@@ -637,7 +637,7 @@ public class ChannelController {
 
     @GetMapping(value = "/brokerspsp", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "", notes = "${swagger.api.channels.createBrokerPsp}")
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getBrokersPsp}")
     public BrokersPspResource getBrokersPsp(@ApiParam("${swagger.request.limit}")
                                             @RequestParam(required = false, defaultValue = "50") Integer limit,
                                             @ApiParam("${swagger.request.page}")

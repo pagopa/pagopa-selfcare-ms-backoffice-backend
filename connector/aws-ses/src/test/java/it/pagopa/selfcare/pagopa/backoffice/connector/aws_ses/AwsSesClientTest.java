@@ -2,18 +2,16 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.aws_ses;
 
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.AwsSesConnector;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import software.amazon.awssdk.services.ses.SesClient;
 import software.amazon.awssdk.services.ses.model.*;
+
 import java.net.URISyntaxException;
+
 import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {
