@@ -3175,6 +3175,71 @@
         } ]
       }
     },
+    "/creditorinstitutions/ibans/{creditorinstitutioncode}/delete/{ibanValue}" : {
+      "delete" : {
+        "tags" : [ "Ibans" ],
+        "summary" : "deleteCreditorInstitutionIbans",
+        "description" : "Delete a creditor institution iban",
+        "operationId" : "deleteCreditorInstitutionIbansUsingDELETE",
+        "parameters" : [ {
+          "name" : "creditorinstitutioncode",
+          "in" : "path",
+          "description" : "Creditor institution code",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "ibanValue",
+          "in" : "path",
+          "description" : "Code of the payment service provider",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/institutions" : {
       "get" : {
         "tags" : [ "institution" ],
