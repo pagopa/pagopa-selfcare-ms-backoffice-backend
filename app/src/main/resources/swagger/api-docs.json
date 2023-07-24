@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.3.3"
+    "version" : "0.3.6"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -265,7 +265,7 @@
       "get" : {
         "tags" : [ "channels" ],
         "summary" : "getBrokersPsp",
-        "description" : "Create a PSP broker",
+        "description" : "Get list of psp brokers",
         "operationId" : "getBrokersPspUsingGET",
         "parameters" : [ {
           "name" : "limit",
@@ -2978,6 +2978,61 @@
                 }
               }
             }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/creditorinstitutions/ibans/delete" : {
+      "delete" : {
+        "tags" : [ "Ibans" ],
+        "summary" : "deleteCreditorInstitutionIbans",
+        "description" : "Delete a creditor institution iban",
+        "operationId" : "deleteCreditorInstitutionIbansUsingDELETE",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IbanCreateRequestDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
           },
           "400" : {
             "description" : "Bad Request",
@@ -6043,7 +6098,7 @@
       },
       "IbanCreateRequestDto" : {
         "title" : "IbanCreateRequestDto",
-        "required" : [ "creditorInstitutionCode", "description", "dueDate", "iban", "labels", "validityDate" ],
+        "required" : [ "creditorInstitutionCode", "dueDate", "iban", "validityDate" ],
         "type" : "object",
         "properties" : {
           "active" : {
@@ -6082,13 +6137,16 @@
       },
       "IbanLabel" : {
         "title" : "IbanLabel",
+        "required" : [ "description", "name" ],
         "type" : "object",
         "properties" : {
           "description" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Label description"
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Label name"
           }
         }
       },

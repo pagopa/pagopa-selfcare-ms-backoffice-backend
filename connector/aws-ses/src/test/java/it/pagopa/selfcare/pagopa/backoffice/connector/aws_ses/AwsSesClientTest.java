@@ -1,9 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.aws_ses;
 
 
-import it.pagopa.selfcare.pagopa.backoffice.connector.api.AwsSesConnector;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -12,7 +13,9 @@ import software.amazon.awssdk.services.ses.model.*;
 
 import java.net.URISyntaxException;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @ContextConfiguration(classes = {
         AwsSesClient.class})
@@ -23,8 +26,9 @@ class AwsSesClientTest {
     @MockBean
     private SesClient sesClient;
 
-    @MockBean
-    private AwsSesConnector awsSesConnector;
+    @Autowired
+    @InjectMocks
+    private AwsSesClient awsSesClient;
 
 
     @Test
@@ -46,16 +50,12 @@ class AwsSesClientTest {
                 .build();
 
         SendEmailResponse res = SendEmailResponse.builder().messageId(messageId).build();
-        when(sesClient.sendEmail(eq(request))).thenReturn(res);
+        when(sesClient.sendEmail(any(SendEmailRequest.class))).thenReturn(res);
 
         //when
-        String response = awsSesConnector.sendEmail(to, subject, body);
+        String response = awsSesClient.sendEmail(to, subject, body);
 
-                verify(awsSesConnector, times(1))
-                .sendEmail(eq(to),eq(subject),eq(body));
-
-        when(awsSesConnector.sendEmail(eq(to),eq(subject),eq(body)))
-                .thenReturn("Email sent! Message ID: " + messageId);
+        assertEquals("Email sent! Message ID: " + res.messageId(), response);
     }
 
 }
