@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.3.5"
+    "version" : "0.3.6"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -2894,68 +2894,6 @@
         } ]
       }
     },
-    "/creditorinstitutions/ibans" : {
-      "post" : {
-        "tags" : [ "Ibans" ],
-        "summary" : "getCreditorInstitutionIbans",
-        "description" : "Get creditor institution ibans",
-        "operationId" : "getCreditorInstitutionIbansUsingPOST",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/IbanRequestDto"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/IbansResource"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "bearerAuth" : [ "global" ]
-        } ]
-      }
-    },
     "/creditorinstitutions/ibans/create" : {
       "post" : {
         "tags" : [ "Ibans" ],
@@ -2981,61 +2919,6 @@
                 }
               }
             }
-          },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "bearerAuth" : [ "global" ]
-        } ]
-      }
-    },
-    "/creditorinstitutions/ibans/delete" : {
-      "delete" : {
-        "tags" : [ "Ibans" ],
-        "summary" : "deleteCreditorInstitutionIbans",
-        "description" : "Delete a creditor institution iban",
-        "operationId" : "deleteCreditorInstitutionIbansUsingDELETE",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/IbanCreateRequestDto"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "OK"
           },
           "400" : {
             "description" : "Bad Request",
@@ -3121,6 +3004,88 @@
           },
           "409" : {
             "description" : "Conflict",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/creditorinstitutions/ibans/{creditorinstitutioncode}" : {
+      "get" : {
+        "tags" : [ "Ibans" ],
+        "summary" : "getCreditorInstitutionIbans",
+        "description" : "Get creditor institution ibans",
+        "operationId" : "getCreditorInstitutionIbansUsingGET",
+        "parameters" : [ {
+          "name" : "creditorinstitutioncode",
+          "in" : "path",
+          "description" : "Creditor institution code",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "labelName",
+          "in" : "query",
+          "description" : "Label name",
+          "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IbansResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
             "content" : {
               "application/problem+json" : {
                 "schema" : {
@@ -6298,21 +6263,6 @@
           "name" : {
             "type" : "string",
             "description" : "Label name"
-          }
-        }
-      },
-      "IbanRequestDto" : {
-        "title" : "IbanRequestDto",
-        "required" : [ "creditorInstitutionCode" ],
-        "type" : "object",
-        "properties" : {
-          "creditorInstitutionCode" : {
-            "type" : "string",
-            "description" : "Creditor Institution's code(Fiscal Code)"
-          },
-          "label" : {
-            "type" : "string",
-            "description" : "Filter by label"
           }
         }
       },
