@@ -19,7 +19,7 @@ public class IbanCreate {
     private String iban;
 
     @JsonProperty("is_active")
-    private boolean isActive;
+    private boolean active;
 
     @JsonProperty("labels")
     private List<IbanLabel> labels;

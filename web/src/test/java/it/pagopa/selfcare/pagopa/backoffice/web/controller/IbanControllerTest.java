@@ -50,8 +50,10 @@ public class IbanControllerTest {
     private ApiConfigService apiConfigServiceMock;
 
     @Test
-    void getCreditorInstitutionIbans(@Value("classpath:stubs/IbanRequestDto.json") Resource dto) throws Exception {
+    void getCreditorInstitutionIbans() throws Exception {
 
+        String creditorinstitutioncode = "creditorinstitutioncode";
+        String labelName = "CUP";
         IbansEnhanced ibansDetails = mockInstance(new IbansEnhanced());
         IbanEnhanced ibanDetails = mockInstance(new IbanEnhanced());
         ibanDetails.setLabels(new ArrayList<>());
@@ -61,8 +63,8 @@ public class IbanControllerTest {
                 .thenReturn(ibansDetails);
 
         mvc.perform(MockMvcRequestBuilders
-                .post(BASE_URL)
-                .content(dto.getInputStream().readAllBytes())
+                .get(BASE_URL+"/{creditorinstitutioncode}", creditorinstitutioncode)
+                        .queryParam("labelName", labelName)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
@@ -165,14 +167,15 @@ public class IbanControllerTest {
     @Test
     void deleteCreditorInstitutionIbans(@Value("classpath:stubs/ibanCreateRequestDto.json") Resource dto) throws Exception {
 
+        String ecCode ="ecCode";
+        String iban="iban";
         IbanCreate ibanCreate = mockInstance(new IbanCreate());
         ibanCreate.setLabels(new ArrayList<>());
 
         doNothing().when(apiConfigServiceMock).deleteCreditorInstitutionIbans(anyString(), any(), anyString());
 
         mvc.perform(MockMvcRequestBuilders
-                        .delete(BASE_URL + "/delete")
-                        .content(dto.getInputStream().readAllBytes())
+                        .delete(BASE_URL + "/{creditorinstitutioncode}/delete/{ibanValue}", ecCode, iban)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful());
