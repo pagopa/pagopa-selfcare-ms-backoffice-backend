@@ -90,7 +90,7 @@ public class ChannelController {
         log.debug("createChannel code channelDetailsDto = {}, xRequestId = {}", channelDetailsDto, xRequestId);
 
         final String CREATE_CHANEL_SUBJECT = "Creazione Canale";
-        final String CREATE_CHANEL_EMAIL_BODY = String.format("Buongiorno\n\nIl canale %s è stato validato da un operatore e risulta essere attivo\n\nSaluti", channelDetailsDto.getChannelCode());
+        final String CREATE_CHANEL_EMAIL_BODY = String.format("Buongiorno %n%n Il canale %s è stato validato da un operatore e risulta essere attivo%n%nSaluti", channelDetailsDto.getChannelCode());
 
         PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
         List<String> paymentTypeList = channelDetailsDto.getPaymentTypeList();
@@ -198,7 +198,7 @@ public class ChannelController {
         log.debug("updateChannel code channelDetailsDto = {} , uuid {}", channelDetailsDto, uuid);
 
         final String UPDATE_CHANEL_SUBJECT = "Update Canale";
-        final String UPDATE_CHANEL_EMAIL_BODY = String.format("Buongiorno\n\n la modifica per Il canale %s è stata validata da un operatore e risulta essere attiva\n\nSaluti", channelDetailsDto.getChannelCode());
+        final String UPDATE_CHANEL_EMAIL_BODY = String.format("Buongiorno%n%n la modifica per Il canale %s è stata validata da un operatore e risulta essere attiva%n%nSaluti", channelDetailsDto.getChannelCode());
 
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         ChannelDetails response = apiConfigService.updateChannel(channelDetails, channelCode, uuid);
@@ -683,20 +683,5 @@ public class ChannelController {
 
         return resource;
     }
-
-//    @GetMapping(value = "sendEmail")
-//    @ResponseStatus(HttpStatus.OK)
-//    public String sendMail(@RequestParam String to,
-//                           @RequestParam String subject,
-//                           @RequestParam String body
-//    ) {
-//        log.info("Sending mail");
-//        final String CREATE_CHANEL_SUBJECT = "Creazione Canale";
-//        final String CREATE_CHANEL_EMAIL_BODY = String.format("Buongiorno\n\nIl canale %s è stato validato da un operatore e risulta essere attivo\n\nSaluti", "12232345657678878");
-//        ChannelDetailsDto channelDetailsDto = new ChannelDetailsDto();
-//        channelDetailsDto.setPspEmail("a@s.it");
-//        String email = channelDetailsDto.getEmail();
-//        String res = awsSesService.sendEmail(to, CREATE_CHANEL_SUBJECT, CREATE_CHANEL_EMAIL_BODY);
-//        return res;
-//    }
+    
 }
