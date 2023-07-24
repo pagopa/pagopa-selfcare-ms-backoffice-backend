@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
@@ -41,15 +42,19 @@ public class IbanController {
         this.apiConfigService = apiConfigService;
     }
 
-    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{creditorinstitutioncode}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans}")
-    public IbansResource getCreditorInstitutionIbans(@RequestBody @NotNull IbanRequestDto requestDto){
+    public IbansResource getCreditorInstitutionIbans(@ApiParam("${swagger.request.ecCode}")
+                                                     @PathVariable("creditorinstitutioncode") String creditorinstitutioncode,
+                                                     @ApiParam("${swagger.api.creditor-institutions.ibans.labels.name}")
+                                                     @RequestParam String labelName
+                                                     ){
         log.trace("getCreditorInstitutionsIbans start");
         String xRequestId = UUID.randomUUID().toString();
-        log.debug("getCreditorInstitutionsIbans ecCode = {}, xRequestId = {}", requestDto.getCreditorInstitutionCode(), xRequestId);
+        log.debug("getCreditorInstitutionsIbans ecCode = {}, xRequestId = {}", creditorinstitutioncode, xRequestId);
 
-        IbansEnhanced ibans = apiConfigService.getCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(),requestDto.getLabel(), xRequestId);
+        IbansEnhanced ibans = apiConfigService.getCreditorInstitutionIbans(creditorinstitutioncode,labelName, xRequestId);
 
         IbansResource resource = mapper.toResource(ibans);
 
@@ -76,21 +81,24 @@ public class IbanController {
         return resource;
     }
 
-    @DeleteMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{creditorinstitutioncode}/delete/{ibanValue}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.delete}")
-    public void deleteCreditorInstitutionIbans(@RequestBody @NotNull IbanCreateRequestDto requestDto){
+    public void deleteCreditorInstitutionIbans(@ApiParam("${swagger.request.ecCode}")
+                                               @PathVariable("creditorinstitutioncode") String creditorinstitutioncode,
+                                               @ApiParam("${swagger.request.pspCode}")
+                                               @PathVariable("ibanValue") String ibanValue){
         log.trace("deleteCreditorInstitutionIbans start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("deleteCreditorInstitutionIbans xRequestId = {}", xRequestId);
-        apiConfigService.deleteCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), requestDto.getIban(), xRequestId);
+        apiConfigService.deleteCreditorInstitutionIbans(creditorinstitutioncode, ibanValue, xRequestId);
         log.trace("deleteCreditorInstitutionIbans end");
     }
 
     @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.put}")
-    public IbanResource putCreditorInstitutionIbans(@RequestBody @NotNull IbanCreateRequestDto requestDto){
+    public IbanResource updateCreditorInstitutionIbans(@RequestBody @NotNull IbanCreateRequestDto requestDto){
         log.trace("putCreditorInstitutionIbans start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("putCreditorInstitutionIbans xRequestId = {}", xRequestId);
