@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith({SpringExtension.class, SystemStubsExtension.class})
 @ContextConfiguration(classes = {AwsSesServiceImpl.class})
-public class AwsSesServiceImplTest {
+ class AwsSesServiceImplTest {
 
     @SystemStub
     private EnvironmentVariables environmentVariables;
@@ -38,7 +38,7 @@ public class AwsSesServiceImplTest {
         String messageId = "111";
         String res = "Email sent! Message ID: " + messageId;
 
-        when(awsSesConnector.sendEmail(eq(to), eq(subject), eq(body)))
+        when(awsSesConnector.sendEmail(to, subject, body))
                 .thenReturn(res);
 
         //when
@@ -46,7 +46,7 @@ public class AwsSesServiceImplTest {
 
         assertEquals(response,res);
         verify(awsSesConnector, times(1))
-                .sendEmail(eq(to), eq(subject), eq(body));
+                .sendEmail(to, subject, body);
 
         verifyNoMoreInteractions(awsSesConnector);
     }
