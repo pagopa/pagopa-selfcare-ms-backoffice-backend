@@ -3018,6 +3018,61 @@
         } ]
       }
     },
+    "/creditorinstitutions/ibans/delete" : {
+      "delete" : {
+        "tags" : [ "Ibans" ],
+        "summary" : "deleteCreditorInstitutionIbans",
+        "description" : "Delete a creditor institution iban",
+        "operationId" : "deleteCreditorInstitutionIbansUsingDELETE",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IbanCreateRequestDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/creditorinstitutions/ibans/update" : {
       "put" : {
         "tags" : [ "Ibans" ],
