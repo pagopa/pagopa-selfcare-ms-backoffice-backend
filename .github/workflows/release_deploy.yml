@@ -111,7 +111,6 @@ jobs:
         id: semver
         uses: pagopa/github-actions-template/ghcr-build-push@v1.5.4
         with:
-          branch: ${{ github.ref_name}}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ needs.release.outputs.version }}
 
