@@ -29,7 +29,7 @@
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-connector-aws-ses</artifactId>
-            <version>0.3.6</version>
+            <version>0.3.7</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
