@@ -48,7 +48,7 @@ public class IbanController {
     public IbansResource getCreditorInstitutionIbans(@ApiParam("${swagger.request.ecCode}")
                                                      @PathVariable("creditorinstitutioncode") String creditorinstitutioncode,
                                                      @ApiParam("${swagger.api.creditor-institutions.ibans.labels.name}")
-                                                     @RequestParam String labelName
+                                                     @RequestParam(required = false) String labelName
                                                      ){
         log.trace("getCreditorInstitutionsIbans start");
         String xRequestId = UUID.randomUUID().toString();

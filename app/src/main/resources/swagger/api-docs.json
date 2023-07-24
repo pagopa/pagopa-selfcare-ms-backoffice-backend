@@ -3047,7 +3047,7 @@
           "name" : "labelName",
           "in" : "query",
           "description" : "Label name",
-          "required" : true,
+          "required" : false,
           "style" : "form",
           "schema" : {
             "type" : "string"
