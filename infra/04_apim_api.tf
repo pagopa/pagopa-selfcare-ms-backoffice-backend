@@ -40,7 +40,7 @@ module "apim_api_backoffice_apiConfig_api_v1" {
   service_url = null
 
   content_format = "openapi"
-  content_value  = templatefile("../openapi/openapi.json.tpl", {
+  content_value  = templatefile("../openapi/openapi.json", {
     host = local.host
     basePath = "selfcare"
   })
