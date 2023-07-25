@@ -42,7 +42,7 @@ public class IbanController {
         this.apiConfigService = apiConfigService;
     }
 
-    @GetMapping(value = "/{creditorinstitutioncode}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{creditorinstitutioncode}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans}")
     public IbansResource getCreditorInstitutionIbans(@ApiParam("${swagger.request.ecCode}")
