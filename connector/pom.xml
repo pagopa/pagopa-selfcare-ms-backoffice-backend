@@ -28,8 +28,8 @@
     <modules>
         <module>azure-apimanager</module>
         <module>jira-servicemanager</module>
+        <module>aws-ses</module>
         <module>rest</module>
         <module>dao</module>
-
     </modules>
 </project>

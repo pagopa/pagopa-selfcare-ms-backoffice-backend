@@ -16,6 +16,10 @@ import java.util.List;
 @Data
 public class ChannelDetailsDto {
 
+    @JsonProperty("psp_email")
+    @ApiModelProperty(value = "${swagger.model.channel.pspEmail}")
+    private String pspEmail;
+
     @JsonProperty("channel_code")
     @ApiModelProperty(value = "${swagger.model.channel.code}")
     private String channelCode;
@@ -192,4 +196,9 @@ public class ChannelDetailsDto {
 
     @ApiModelProperty(value = "${swagger.model.channel.details.flagPspCp}")
     private Boolean flagPspCp = false;
+
+    public String getEmail(){
+        String environment = System.getenv("env")!=null?System.getenv("env"):"local";
+        return environment.equals("prod")? getPspEmail():System.getenv("TEST_EMAIL") ;
+    }
 }

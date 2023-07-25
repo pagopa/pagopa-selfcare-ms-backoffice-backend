@@ -53,6 +53,11 @@
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
+                <artifactId>pagopa-selfcare-connector-aws-ses</artifactId>
+                <version>0.3.10</version>
+            </dependency>
+            <dependency>
+                <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-connector-dao</artifactId>
                 <version>0.3.10</version>
             </dependency>

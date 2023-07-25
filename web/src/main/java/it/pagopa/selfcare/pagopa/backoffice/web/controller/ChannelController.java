@@ -10,14 +10,12 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChann
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
-import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
-import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
-import it.pagopa.selfcare.pagopa.backoffice.core.JiraServiceManagerService;
-import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
+import it.pagopa.selfcare.pagopa.backoffice.core.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.monitor.StringMonitor;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -46,13 +45,19 @@ public class ChannelController {
 
     private final JiraServiceManagerService jiraServiceManagerService;
 
+    private final AwsSesService awsSesService;
+
+    @Value("${aws.ses.user}")
+    private String awsSesUser;
+
 
     @Autowired
-    public ChannelController(ApiConfigService apiConfigService, ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService, WrapperService wrapperService, JiraServiceManagerService jiraServiceManagerService) {
+    public ChannelController(ApiConfigService apiConfigService, ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService, WrapperService wrapperService, JiraServiceManagerService jiraServiceManagerService, AwsSesService awsSesService) {
         this.apiConfigService = apiConfigService;
         this.apiConfigSelfcareIntegrationService = apiConfigSelfcareIntegrationService;
         this.wrapperService = wrapperService;
         this.jiraServiceManagerService = jiraServiceManagerService;
+        this.awsSesService = awsSesService;
     }
 
     @GetMapping("")
@@ -84,6 +89,9 @@ public class ChannelController {
         String xRequestId = UUID.randomUUID().toString();
         log.debug("createChannel code channelDetailsDto = {}, xRequestId = {}", channelDetailsDto, xRequestId);
 
+        final String CREATE_CHANEL_SUBJECT = "Creazione Canale";
+        final String CREATE_CHANEL_EMAIL_BODY = String.format("Buongiorno %n%n Il canale %s è stato validato da un operatore e risulta essere attivo%n%nSaluti", channelDetailsDto.getChannelCode());
+
         PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
         List<String> paymentTypeList = channelDetailsDto.getPaymentTypeList();
         String channelCode = channelDetailsDto.getChannelCode();
@@ -96,7 +104,7 @@ public class ChannelController {
         WrapperEntitiesOperations<ChannelDetails> response = wrapperService.updateWrapperChannelDetailsByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
         PspChannelPaymentTypes ptResponse = apiConfigService.createChannelPaymentType(pspChannelPaymentTypes, channelCode, xRequestId);
         WrapperChannelDetailsResource resource = ChannelMapper.toResource(response.getWrapperEntityOperationsSortedList().get(0), ptResponse);
-
+        awsSesService.sendEmail(channelDetailsDto.getPspEmail(), CREATE_CHANEL_SUBJECT, CREATE_CHANEL_EMAIL_BODY);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createChannel result = {}", resource);
         log.trace("createChannel end");
         return resource;
@@ -189,10 +197,14 @@ public class ChannelController {
         String uuid = UUID.randomUUID().toString();
         log.debug("updateChannel code channelDetailsDto = {} , uuid {}", channelDetailsDto, uuid);
 
+        final String UPDATE_CHANEL_SUBJECT = "Update Canale";
+        final String UPDATE_CHANEL_EMAIL_BODY = String.format("Buongiorno%n%n la modifica per Il canale %s è stata validata da un operatore e risulta essere attiva%n%nSaluti", channelDetailsDto.getChannelCode());
+
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         ChannelDetails response = apiConfigService.updateChannel(channelDetails, channelCode, uuid);
         wrapperService.updateWrapperChannelDetails(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
         ChannelDetailsResource resource = ChannelMapper.toResource(response, null);
+        awsSesService.sendEmail(channelDetailsDto.getPspEmail(), UPDATE_CHANEL_SUBJECT, UPDATE_CHANEL_EMAIL_BODY);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "updateChannel result = {}", resource);
         log.trace("updateChannel end");
         return resource;
@@ -625,7 +637,7 @@ public class ChannelController {
 
     @GetMapping(value = "/brokerspsp", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "", notes = "${swagger.api.channels.createBrokerPsp}")
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getBrokersPsp}")
     public BrokersPspResource getBrokersPsp(@ApiParam("${swagger.request.limit}")
                                             @RequestParam(required = false, defaultValue = "50") Integer limit,
                                             @ApiParam("${swagger.request.page}")
@@ -672,5 +684,4 @@ public class ChannelController {
         return resource;
     }
 
-  
 }
