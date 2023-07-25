@@ -53,6 +53,9 @@ class SwaggerConfigTest {
     private ApiManagementService managementService;
 
     @MockBean
+    private AwsSesService awsSesService;
+
+    @MockBean
     JiraServiceManagerService jiraServiceManagerService;
 
     @MockBean

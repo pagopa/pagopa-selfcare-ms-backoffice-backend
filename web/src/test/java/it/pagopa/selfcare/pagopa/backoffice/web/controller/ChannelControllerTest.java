@@ -12,10 +12,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
-import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
-import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
-import it.pagopa.selfcare.pagopa.backoffice.core.JiraServiceManagerService;
-import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
+import it.pagopa.selfcare.pagopa.backoffice.core.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelDetailsDto;
@@ -85,6 +82,9 @@ class ChannelControllerTest {
 
     @MockBean
     private JiraServiceManagerService jiraServiceManagerService;
+
+    @MockBean
+    private AwsSesService awsSesService;
 
     @Test
     void getChannels() throws Exception {
