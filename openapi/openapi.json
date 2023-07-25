@@ -29,6 +29,10 @@
       "description": "Api Config creditor institution's operations"
     },
     {
+      "name": "institution",
+      "description": "Institution operations"
+    },
+    {
       "name": "stations",
       "description": "Api config stations operations"
     }
@@ -3381,7 +3385,7 @@
             "name": "labelName",
             "in": "query",
             "description": "Label name",
-            "required": true,
+            "required": false,
             "style": "form",
             "schema": {
               "type": "string"
@@ -5217,71 +5221,6 @@
   },
   "components": {
     "schemas": {
-      "ApiKeysResource": {
-        "title": "ApiKeysResource",
-        "required": [
-          "displayName",
-          "id",
-          "primaryKey",
-          "secondaryKey"
-        ],
-        "type": "object",
-        "properties": {
-          "displayName": {
-            "type": "string",
-            "description": "Institution's name Api Key"
-          },
-          "id": {
-            "type": "string",
-            "description": "Institution's subscription id"
-          },
-          "primaryKey": {
-            "type": "string",
-            "description": "Institution's primary Api Key"
-          },
-          "secondaryKey": {
-            "type": "string",
-            "description": "Institution's secondary Api Key"
-          }
-        }
-      },
-      "AssistanceContactsResource": {
-        "title": "AssistanceContactsResource",
-        "type": "object",
-        "properties": {
-          "supportEmail": {
-            "type": "string",
-            "description": "Institution's support email contact"
-          },
-          "supportPhone": {
-            "type": "string",
-            "description": "Institution's support phone contact"
-          }
-        }
-      },
-      "AttributeResource": {
-        "title": "AttributeResource",
-        "required": [
-          "code",
-          "description",
-          "origin"
-        ],
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "description": "Institution's code"
-          },
-          "description": {
-            "type": "string",
-            "description": "Institution's name"
-          },
-          "origin": {
-            "type": "string",
-            "description": "Institution data origin"
-          }
-        }
-      },
       "BrokerDetails": {
         "title": "BrokerDetails",
         "type": "object",
@@ -6022,24 +5961,6 @@
           }
         }
       },
-      "CompanyInformationsResource": {
-        "title": "CompanyInformationsResource",
-        "type": "object",
-        "properties": {
-          "businessRegisterPlace": {
-            "type": "string",
-            "description": "Institution's business register place"
-          },
-          "rea": {
-            "type": "string",
-            "description": "Institution's REA"
-          },
-          "shareCapital": {
-            "type": "string",
-            "description": "Institution's share capital value"
-          }
-        }
-      },
       "CreditorInstitutionAddressDto": {
         "title": "CreditorInstitutionAddressDto",
         "required": [
@@ -6326,29 +6247,6 @@
           }
         }
       },
-      "DpoDataResource": {
-        "title": "DpoDataResource",
-        "required": [
-          "address",
-          "email",
-          "pec"
-        ],
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "description": "DPO's address"
-          },
-          "email": {
-            "type": "string",
-            "description": "DPO's email"
-          },
-          "pec": {
-            "type": "string",
-            "description": "DPO's PEC"
-          }
-        }
-      },
       "IbanCreateRequestDto": {
         "title": "IbanCreateRequestDto",
         "required": [
@@ -6490,171 +6388,6 @@
       "InputStream": {
         "title": "InputStream",
         "type": "object"
-      },
-      "InstitutionDetailResource": {
-        "title": "InstitutionDetailResource",
-        "required": [
-          "address",
-          "attributes",
-          "description",
-          "digitalAddress",
-          "externalId",
-          "id",
-          "institutionType",
-          "origin",
-          "originId",
-          "taxCode",
-          "zipCode"
-        ],
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "description": "Institution's physical address"
-          },
-          "attributes": {
-            "type": "array",
-            "description": "Institution's attributes",
-            "items": {
-              "$ref": "#/components/schemas/AttributeResource"
-            }
-          },
-          "description": {
-            "type": "string",
-            "description": "Institution's name"
-          },
-          "digitalAddress": {
-            "type": "string",
-            "description": "Institution's digitalAddress"
-          },
-          "externalId": {
-            "type": "string",
-            "description": "Institution's unique external identifier"
-          },
-          "id": {
-            "type": "string",
-            "description": "Institution's unique internal identifier"
-          },
-          "institutionType": {
-            "type": "string",
-            "description": "Institution's type",
-            "enum": [
-              "GSP",
-              "PA",
-              "PSP",
-              "PT",
-              "SCP"
-            ]
-          },
-          "origin": {
-            "type": "string",
-            "description": "Institution data origin"
-          },
-          "originId": {
-            "type": "string",
-            "description": "Institution's details origin Id"
-          },
-          "taxCode": {
-            "type": "string",
-            "description": "Institution's taxCode"
-          },
-          "zipCode": {
-            "type": "string",
-            "description": "Institution's zipCode"
-          }
-        }
-      },
-      "InstitutionResource": {
-        "title": "InstitutionResource",
-        "required": [
-          "address",
-          "externalId",
-          "fiscalCode",
-          "id",
-          "mailAddress",
-          "name",
-          "origin",
-          "originId",
-          "status",
-          "userProductRoles"
-        ],
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "description": "Institution's physical address"
-          },
-          "assistanceContacts": {
-            "description": "Institution's assistance contacts",
-            "$ref": "#/components/schemas/AssistanceContactsResource"
-          },
-          "companyInformations": {
-            "description": "GPS, SCP, PT optional data",
-            "$ref": "#/components/schemas/CompanyInformationsResource"
-          },
-          "dpoData": {
-            "description": "Data Protection Officer (DPO) specific data",
-            "$ref": "#/components/schemas/DpoDataResource"
-          },
-          "externalId": {
-            "type": "string",
-            "description": "Institution's unique external identifier"
-          },
-          "fiscalCode": {
-            "type": "string",
-            "description": "Institution's taxCode"
-          },
-          "id": {
-            "type": "string",
-            "description": "Institution's unique internal identifier"
-          },
-          "institutionType": {
-            "type": "string",
-            "description": "Institution's type",
-            "enum": [
-              "GSP",
-              "PA",
-              "PSP",
-              "PT",
-              "SCP"
-            ]
-          },
-          "mailAddress": {
-            "type": "string",
-            "description": "Institution's digitalAddress"
-          },
-          "name": {
-            "type": "string",
-            "description": "Institution's name"
-          },
-          "origin": {
-            "type": "string",
-            "description": "Institution data origin"
-          },
-          "originId": {
-            "type": "string",
-            "description": "Institution's details origin Id"
-          },
-          "pspData": {
-            "description": "Payment Service Provider (PSP) specific data",
-            "$ref": "#/components/schemas/PspDataResource"
-          },
-          "recipientCode": {
-            "type": "string",
-            "description": "Billing recipient code"
-          },
-          "status": {
-            "type": "string",
-            "description": "Institution onboarding status"
-          },
-          "userProductRoles": {
-            "type": "array",
-            "description": "Logged user's roles on product",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
       },
       "InvalidParam": {
         "title": "InvalidParam",
@@ -6890,38 +6623,6 @@
         },
         "description": "A \"problem detail\" as a way to carry machine-readable details of errors (https://datatracker.ietf.org/doc/html/rfc7807)"
       },
-      "ProductsResource": {
-        "title": "ProductsResource",
-        "required": [
-          "description",
-          "id",
-          "title",
-          "urlBO"
-        ],
-        "type": "object",
-        "properties": {
-          "description": {
-            "type": "string",
-            "description": "Product's description"
-          },
-          "id": {
-            "type": "string",
-            "description": "Product's unique identifier"
-          },
-          "title": {
-            "type": "string",
-            "description": "Product's title"
-          },
-          "urlBO": {
-            "type": "string",
-            "description": "URL that redirects to the back-office section, where is possible to manage the product"
-          },
-          "urlPublic": {
-            "type": "string",
-            "description": "URL that redirects to the public information webpage of the product"
-          }
-        }
-      },
       "PspChannelPaymentTypes": {
         "title": "PspChannelPaymentTypes",
         "type": "object",
@@ -6990,40 +6691,6 @@
             "items": {
               "$ref": "#/components/schemas/PspChannelResource"
             }
-          }
-        }
-      },
-      "PspDataResource": {
-        "title": "PspDataResource",
-        "required": [
-          "abiCode",
-          "businessRegisterNumber",
-          "legalRegisterName",
-          "legalRegisterNumber",
-          "vatNumberGroup"
-        ],
-        "type": "object",
-        "properties": {
-          "abiCode": {
-            "type": "string",
-            "description": "PSP's ABI code"
-          },
-          "businessRegisterNumber": {
-            "type": "string",
-            "description": "PSP's Business Register number"
-          },
-          "legalRegisterName": {
-            "type": "string",
-            "description": "PSP's legal register name"
-          },
-          "legalRegisterNumber": {
-            "type": "string",
-            "description": "PSP's legal register number"
-          },
-          "vatNumberGroup": {
-            "type": "boolean",
-            "description": "PSP's Vat Number group",
-            "example": false
           }
         }
       },
