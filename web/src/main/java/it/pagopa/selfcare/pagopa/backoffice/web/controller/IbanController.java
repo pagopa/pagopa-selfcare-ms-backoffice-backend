@@ -103,7 +103,7 @@ public class IbanController {
         String xRequestId = UUID.randomUUID().toString();
         log.debug("putCreditorInstitutionIbans xRequestId = {}", xRequestId);
 
-        if (!isEmpty(requestDto.getLabels().get(0))) {
+        if (!isEmpty(requestDto.getLabels())) {
             IbansEnhanced ibansEnhanced = apiConfigService.getCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), requestDto.getLabels().get(0).getName(), xRequestId);
             if (ibansEnhanced != null && !isEmpty(ibansEnhanced.getIbanList())) {
                 ibansEnhanced.getIbanList().forEach(iban -> {
