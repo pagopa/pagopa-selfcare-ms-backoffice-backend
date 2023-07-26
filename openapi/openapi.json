@@ -1,9 +1,10 @@
 {
-  "openapi" : "3.0.3",
-  "info" : {
-    "title" : "pagopa-selfcare-ms-backoffice",
-    "description" : "PagoPa backoffice API documentation",
-    "version" : "0.3.10"
+
+  "openapi": "3.0.3",
+  "info": {
+    "title": "pagopa-selfcare-ms-backoffice",
+    "description": "PagoPa backoffice API documentation",
+    "version": "0.3.14"
   },
   "servers" : [ {
     "url" : "http://${host}:${basePath}",
