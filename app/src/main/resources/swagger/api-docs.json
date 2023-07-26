@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.3.11"
+    "version" : "0.3.13"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -6272,7 +6272,7 @@
       },
       "IbanResource" : {
         "title" : "IbanResource",
-        "required" : [ "active", "dueDate", "ecOwner", "iban", "publicationDate", "validityDate" ],
+        "required" : [ "active", "dueDate", "iban", "validityDate" ],
         "type" : "object",
         "properties" : {
           "active" : {
