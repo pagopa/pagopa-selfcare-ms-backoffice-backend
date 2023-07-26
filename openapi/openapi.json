@@ -6317,9 +6317,7 @@
         "required": [
           "active",
           "dueDate",
-          "ecOwner",
           "iban",
-          "publicationDate",
           "validityDate"
         ],
         "type": "object",

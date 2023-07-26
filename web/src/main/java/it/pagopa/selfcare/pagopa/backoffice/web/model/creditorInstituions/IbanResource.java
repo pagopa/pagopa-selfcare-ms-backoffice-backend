@@ -25,7 +25,7 @@ public class IbanResource {
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.labels}")
     private List<IbanLabel> labels;
 
-    @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.ecOwner}", required = true)
+    @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.ecOwner}")
     private String ecOwner;
 
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.companyName}")
@@ -34,6 +34,6 @@ public class IbanResource {
     @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.validityDate}", required = true)
     private OffsetDateTime validityDate;
 
-    @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.publicationDate}", required = true)
+    @ApiModelProperty(value = "${swagger.api.creditor-institutions.ibans.publicationDate}")
     private OffsetDateTime publicationDate;
 }
