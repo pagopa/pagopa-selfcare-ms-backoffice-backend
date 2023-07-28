@@ -33,7 +33,9 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
 
     @Override
     public void apply(RequestTemplate template) {
-        Method method = template.methodMetadata().method();
+        Method method = null;
+        if(template.methodMetadata()!=null){
+         method = template.methodMetadata().method();
 
         if (!method.isAnnotationPresent(RequestLine.class)) {
            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -45,6 +47,7 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
            }
 
         template.header("x-selfcare-uid", user.getId());
+        }
        } template.removeHeader("Ocp-Apim-Subscription-Key")
                 .header("Ocp-Apim-Subscription-Key", apiConfigSubscriptionKey);
     }
