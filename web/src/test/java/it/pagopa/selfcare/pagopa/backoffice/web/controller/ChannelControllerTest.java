@@ -1195,7 +1195,7 @@ class ChannelControllerTest {
                 .thenReturn(brokersPspMock);
 
         //when
-        mvc.perform(get(BASE_URL + "/brokerspsp")
+        mvc.perform(get(BASE_URL + "/getBrokersPsp")
                         .queryParam("page", String.valueOf(limit))
                         .queryParam("limit", String.valueOf(page))
                         .queryParam("code", filterByCode)
