@@ -1,5 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
+import feign.Headers;
+import feign.RequestLine;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
@@ -24,6 +26,7 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
 
     @GetMapping(value = "${rest-client.api-config.getBrokersPsp.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
+    @RequestLine("getBrokersPsp")
     BrokersPsp getBrokersPsp(@RequestParam(required = false, defaultValue = "50") Integer limit,
                              @RequestParam(required = true) Integer page,
                              @RequestParam(required = false, name = "code") String filterByCode,
@@ -245,6 +248,7 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
 
     @GetMapping(value = "${rest-client.api-config.getStationBroker.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
+    @RequestLine("getBrokersEC")
     Brokers getBrokersEC(@RequestParam(required = false, defaultValue = "50") Integer limit,
                          @RequestParam Integer page,
                          @RequestParam(required = false) String code,
