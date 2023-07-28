@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.rest.interceptor;
 
 import feign.RequestInterceptor;
+import feign.RequestLine;
 import feign.RequestTemplate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.PermissionDeniedException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
@@ -10,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 @Slf4j
@@ -31,14 +33,22 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
 
     @Override
     public void apply(RequestTemplate template) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        SelfCareUser user = (SelfCareUser) auth.getPrincipal();
+        Method method = null;
+        if(template.methodMetadata()!=null){
+         method = template.methodMetadata().method();
 
-        if (!Boolean.parseBoolean(flagAuthorization) && !EMAIL_AUTHORIZED.contains(user.getEmail().toLowerCase())) {
-            check(template, user);
-        }
+        if (!method.isAnnotationPresent(RequestLine.class)) {
+           Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+           SelfCareUser user = (SelfCareUser) auth.getPrincipal();
+
+           if (!Boolean.parseBoolean(flagAuthorization) && !EMAIL_AUTHORIZED.contains(user.getEmail().toLowerCase())) {
+               check(template, user);
+           }
+
         template.header("x-selfcare-uid", user.getId());
-        template.removeHeader("Ocp-Apim-Subscription-Key")
+        }
+       } template.removeHeader("Ocp-Apim-Subscription-Key")
                 .header("Ocp-Apim-Subscription-Key", apiConfigSubscriptionKey);
     }
 

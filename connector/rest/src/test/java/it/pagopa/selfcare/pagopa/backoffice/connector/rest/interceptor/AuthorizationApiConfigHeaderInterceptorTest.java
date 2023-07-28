@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.exception.PermissionDenied
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,6 +36,7 @@ class AuthorizationApiConfigHeaderInterceptorTest {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         RequestTemplate template = new RequestTemplate();
+
         user = mock(SelfCareUser.class);
 
         ReflectionTestUtils.setField(interceptor, "apiConfigSubscriptionKey", "sub-key");

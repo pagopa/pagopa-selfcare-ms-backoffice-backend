@@ -33,7 +33,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/swagger-ui/**",
             "/favicon.ico",
             "/error",
-            "/actuator/**"
+            "/actuator/**",
+            "/channels/getBrokersPsp/**",
+            "/stations/brokers-EC/**"
     };
 
     private final ObjectMapper objectMapper;
