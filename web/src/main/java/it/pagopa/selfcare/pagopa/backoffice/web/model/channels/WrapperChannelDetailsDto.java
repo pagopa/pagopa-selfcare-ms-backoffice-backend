@@ -51,22 +51,18 @@ public class WrapperChannelDetailsDto {
 
     @JsonProperty("redirect_ip")
     @ApiModelProperty(value = "${swagger.model.channel.details.redirectIp}")
-    @NotBlank
     private String redirectIp;//ok
 
     @JsonProperty("redirect_path")
     @ApiModelProperty(value = "${swagger.model.channel.details.redirectPath}")
-    @NotBlank
     private String redirectPath;//ok
 
     @JsonProperty("redirect_port")
     @ApiModelProperty(value = "${swagger.model.channel.details.redirectPort}")
-    @NotNull
     private Long redirectPort;//ok
 
     @JsonProperty("redirect_query_string")
     @ApiModelProperty(value = "${swagger.model.channel.details.redirectQueryString}")
-    @NotBlank
     private String redirectQueryString;//ok
 
     @JsonProperty("redirect_protocol")
