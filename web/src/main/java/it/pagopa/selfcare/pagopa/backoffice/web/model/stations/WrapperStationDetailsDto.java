@@ -13,7 +13,6 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class WrapperStationDetailsDto {
-
     @ApiModelProperty(value = "${swagger.model.station.code}", required = true)
     @JsonProperty(required = true)
     @NotBlank
