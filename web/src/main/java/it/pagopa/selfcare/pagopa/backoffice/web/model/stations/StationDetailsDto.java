@@ -44,23 +44,18 @@ public class StationDetailsDto {
     private Protocol protocol = Protocol.HTTPS;
     @ApiModelProperty(value = "${swagger.model.station.redirectIp}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
     private String redirectIp;
     @ApiModelProperty(value = "${swagger.model.station.redirectPath}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
     private String redirectPath;
     @ApiModelProperty(value = "${swagger.model.station.redirectPort}", required = true)
     @JsonProperty(required = true)
-    @NotNull
     private Long redirectPort;
     @ApiModelProperty(value = "${swagger.model.station.redirectQueryString}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
     private String redirectQueryString;
     @ApiModelProperty(value = "${swagger.model.station.redirectProtocol}", required = true)
     @JsonProperty(required = true)
-    @NotNull
     private Protocol redirectProtocol;
     @ApiModelProperty("${swagger.model.station.service}")
     private String service;
@@ -121,7 +116,6 @@ public class StationDetailsDto {
     @ApiModelProperty(value = "${swagger.model.station.targetPathPof}")
     private String targetPathPof;
     @JsonProperty(required = true)
-    @NotBlank
     @ApiModelProperty(value = "${swagger.model.station.validationUrl}")
     private String validationUrl;
 }
