@@ -17,12 +17,12 @@ public class AwsSesServiceImpl implements AwsSesService {
     }
 
     @Override
-    public String sendEmail(String to, String subject, String body) {
+    public String sendEmail( String subject, String body,String...to) {
         log.trace("sendEmail start");
         log.debug("sendEmail , to = {}, subject = {}, body = {}", to, subject, body);
         String result = null;
         try {
-            result = awsSesConnector.sendEmail(to, subject, body);
+            result = awsSesConnector.sendEmail(subject, body,to);
         }catch (Exception e){
             log.error(e.getMessage());
             result = "sendEmail error to = "+to+", subject = "+subject;

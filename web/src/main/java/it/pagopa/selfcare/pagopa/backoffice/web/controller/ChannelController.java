@@ -503,8 +503,8 @@ public class ChannelController {
                                                                  @Valid
                                                                  ChannelDetailsDto channelDetailsDto) {
         log.trace("updateWrapperChannelDetails start");
-        final String CREATE_CHANNEL_SUMMARY = "Validate channel update: %s";
-        final String CREATE_CHANEL_DESCRIPTION = "The channel %s updated by broker %s needs to be validated: %s";
+        final String CREATE_CHANNEL_SUMMARY = "Validazione modifica canale: %s";
+        final String CREATE_CHANEL_DESCRIPTION = "Il canale %s modificato dal broker %s deve essere validato: %s";
         log.debug("updateWrapperChannelDetails channelDetailsDto = {}", channelDetailsDto);
         WrapperEntitiesOperations createdWrapperEntities = wrapperService.
                 updateWrapperChannelDetails(ChannelMapper.
@@ -683,5 +683,20 @@ public class ChannelController {
 
         return resource;
     }
+
+//    @GetMapping(value = "/sendmail", produces = {MediaType.APPLICATION_JSON_VALUE})
+//    @ResponseStatus(HttpStatus.OK)
+//    @ApiOperation(value = "", notes = "${swagger.api.channels.getBrokerPsp}")
+//    public String sendMail(@ApiParam("swagger.request.brokerpspcode")
+//                               @RequestParam String body,
+//                           @RequestParam String subject,
+//                                                 @RequestParam String[] to) {
+//        log.trace("sendMail start");
+//        String res = awsSesService.sendEmail(subject,body,to);
+//
+//        log.trace("sendMail end");
+//
+//        return res;
+//    }
 
 }

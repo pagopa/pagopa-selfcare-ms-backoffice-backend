@@ -18,7 +18,7 @@ public class AwsSesClient implements AwsSesConnector {
     @Value("${aws.ses.user}")
     private String from;
 
-    public String sendEmail(String to, String subject, String body) {
+    public String sendEmail(String subject, String body, String...to) {
 
         SendEmailRequest request = SendEmailRequest.builder()
                 .source(from)
