@@ -13,7 +13,6 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class WrapperStationDetailsDto {
-
     @ApiModelProperty(value = "${swagger.model.station.code}", required = true)
     @JsonProperty(required = true)
     @NotBlank
@@ -24,23 +23,18 @@ public class WrapperStationDetailsDto {
     protected String brokerDescription="";
     @ApiModelProperty(value = "${swagger.model.station.redirectIp}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
     private String redirectIp;
     @ApiModelProperty(value = "${swagger.model.station.redirectPath}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
     private String redirectPath;
     @ApiModelProperty(value = "${swagger.model.station.redirectPort}", required = true)
     @JsonProperty(required = true)
-    @NotNull
     private Long redirectPort = 2l;
     @ApiModelProperty(value = "${swagger.model.station.redirectQueryString}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
     private String redirectQueryString;
     @ApiModelProperty(value = "${swagger.model.station.redirectProtocol}", required = true)
     @JsonProperty(required = true)
-    @NotNull
     private Protocol redirectProtocol;
     @Max(2)
     @Min(1)
@@ -73,7 +67,6 @@ public class WrapperStationDetailsDto {
     @ApiModelProperty(value = "${swagger.model.station.targetPathPof}")
     private String targetPathPof;
     @JsonProperty(required = true)
-    @NotBlank
     @ApiModelProperty(value = "${swagger.model.station.validationUrl}")
     private String validationUrl;
 }
