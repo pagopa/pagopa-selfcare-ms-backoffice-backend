@@ -104,7 +104,7 @@ public class ChannelController {
         WrapperEntitiesOperations<ChannelDetails> response = wrapperService.updateWrapperChannelDetailsByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
         PspChannelPaymentTypes ptResponse = apiConfigService.createChannelPaymentType(pspChannelPaymentTypes, channelCode, xRequestId);
         WrapperChannelDetailsResource resource = ChannelMapper.toResource(response.getWrapperEntityOperationsSortedList().get(0), ptResponse);
-        awsSesService.sendEmail(channelDetailsDto.getPspEmail(), CREATE_CHANEL_SUBJECT, CREATE_CHANEL_EMAIL_BODY);
+        awsSesService.sendEmail(channelDetailsDto.getEmail(), CREATE_CHANEL_SUBJECT, CREATE_CHANEL_EMAIL_BODY);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createChannel result = {}", resource);
         log.trace("createChannel end");
         return resource;
@@ -204,7 +204,7 @@ public class ChannelController {
         ChannelDetails response = apiConfigService.updateChannel(channelDetails, channelCode, uuid);
         wrapperService.updateWrapperChannelDetails(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
         ChannelDetailsResource resource = ChannelMapper.toResource(response, null);
-        awsSesService.sendEmail(channelDetailsDto.getPspEmail(), UPDATE_CHANEL_SUBJECT, UPDATE_CHANEL_EMAIL_BODY);
+        awsSesService.sendEmail(channelDetailsDto.getEmail(), UPDATE_CHANEL_SUBJECT, UPDATE_CHANEL_EMAIL_BODY);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "updateChannel result = {}", resource);
         log.trace("updateChannel end");
         return resource;
@@ -684,19 +684,6 @@ public class ChannelController {
         return resource;
     }
 
-//    @GetMapping(value = "/sendmail", produces = {MediaType.APPLICATION_JSON_VALUE})
-//    @ResponseStatus(HttpStatus.OK)
-//    @ApiOperation(value = "", notes = "${swagger.api.channels.getBrokerPsp}")
-//    public String sendMail(@ApiParam("swagger.request.brokerpspcode")
-//                               @RequestParam String body,
-//                           @RequestParam String subject,
-//                                                 @RequestParam String[] to) {
-//        log.trace("sendMail start");
-//        String res = awsSesService.sendEmail(subject,body,to);
-//
-//        log.trace("sendMail end");
-//
-//        return res;
-//    }
+
 
 }
