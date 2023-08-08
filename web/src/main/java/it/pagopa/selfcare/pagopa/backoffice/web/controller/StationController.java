@@ -15,10 +15,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetai
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
-import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
-import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
-import it.pagopa.selfcare.pagopa.backoffice.core.JiraServiceManagerService;
-import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
+import it.pagopa.selfcare.pagopa.backoffice.core.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionsResource;
@@ -50,15 +47,17 @@ public class StationController {
 
     private final WrapperService wrapperService;
 
+    private final AwsSesService awsSesService;
     private final ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService;
 
     private final JiraServiceManagerService jiraServiceManagerService;
 
     @Autowired
-    public StationController(ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService, ApiConfigService apiConfigService, WrapperService wrapperService, JiraServiceManagerService jiraServiceManagerService) {
+    public StationController(ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService, ApiConfigService apiConfigService, WrapperService wrapperService, AwsSesService awsSesService, JiraServiceManagerService jiraServiceManagerService) {
         this.apiConfigService = apiConfigService;
         this.wrapperService = wrapperService;
         this.apiConfigSelfcareIntegrationService = apiConfigSelfcareIntegrationService;
+        this.awsSesService = awsSesService;
         this.jiraServiceManagerService = jiraServiceManagerService;
     }
 
@@ -69,11 +68,16 @@ public class StationController {
         log.trace("createStation start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createStation dto = {}, xRequestId = {}", stationDetailsDto, xRequestId);
+
+        final String CREATE_STATION_SUBJECT = "Creazione Stazione";
+        final String CREATE_STATION_EMAIL_BODY = String.format("Buongiorno %n%n la stazione %s è stata validata da un operatore e risulta essere attiva%n%nSaluti", stationDetailsDto.getStationCode());
+
         StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
         apiConfigService.createStation(stationDetails, xRequestId);
         log.trace("created station in apiConfig");
         WrapperEntitiesOperations<StationDetails> response = wrapperService.updateWrapperStationDetailsByOpt(stationDetails, stationDetailsDto.getNote(), WrapperStatus.APPROVED.name());
         WrapperEntityOperations<StationDetails> result = response.getWrapperEntityOperationsSortedList().get(0);
+        awsSesService.sendEmail(stationDetailsDto.getEmail(), CREATE_STATION_SUBJECT, CREATE_STATION_EMAIL_BODY);
         log.debug("createStation result = {}", result);
         log.trace("createStation end");
         return result;
@@ -305,11 +309,15 @@ public class StationController {
         log.trace("updateStation start");
         String uuid = UUID.randomUUID().toString();
         log.debug("updateStation code stationDetailsDto = {} , uuid {}", stationDetailsDto, uuid);
+
+        final String UPDATE_STATION_SUBJECT = "Update Stazione";
+        final String UPDATE_STATION_EMAIL_BODY = String.format("Buongiorno%n%n la modifica per la stazione %s è stata validata da un operatore e risulta essere attiva%n%nSaluti", stationDetailsDto.getStationCode());
+
         StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
         StationDetails response = apiConfigService.updateStation(stationCode, stationDetails, uuid);
         wrapperService.updateWrapperStationDetails(stationDetails, stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
         StationDetailResource resource = stationMapper.toResource(response);
-
+        awsSesService.sendEmail(stationDetailsDto.getEmail(), UPDATE_STATION_SUBJECT, UPDATE_STATION_EMAIL_BODY);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "updateStation result = {}", resource);
         log.trace("updateStation end");
         return resource;
