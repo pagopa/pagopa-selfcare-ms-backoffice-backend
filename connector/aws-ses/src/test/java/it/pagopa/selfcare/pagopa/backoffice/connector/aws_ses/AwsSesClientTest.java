@@ -53,7 +53,7 @@ class AwsSesClientTest {
         when(sesClient.sendEmail(any(SendEmailRequest.class))).thenReturn(res);
 
         //when
-        String response = awsSesClient.sendEmail(to, subject, body);
+        String response = awsSesClient.sendEmail(subject, body,to);
 
         assertEquals("Email sent! Message ID: " + res.messageId(), response);
     }
