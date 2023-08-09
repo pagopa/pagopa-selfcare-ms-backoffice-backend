@@ -104,7 +104,7 @@ public class ChannelController {
         WrapperEntitiesOperations<ChannelDetails> response = wrapperService.updateWrapperChannelDetailsByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
         PspChannelPaymentTypes ptResponse = apiConfigService.createChannelPaymentType(pspChannelPaymentTypes, channelCode, xRequestId);
         WrapperChannelDetailsResource resource = ChannelMapper.toResource(response.getWrapperEntityOperationsSortedList().get(0), ptResponse);
-        awsSesService.sendEmail(channelDetailsDto.getEmail(), CREATE_CHANEL_SUBJECT, CREATE_CHANEL_EMAIL_BODY);
+        awsSesService.sendEmail(CREATE_CHANEL_SUBJECT, CREATE_CHANEL_EMAIL_BODY,channelDetailsDto.getEmail());
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createChannel result = {}", resource);
         log.trace("createChannel end");
         return resource;
@@ -204,7 +204,7 @@ public class ChannelController {
         ChannelDetails response = apiConfigService.updateChannel(channelDetails, channelCode, uuid);
         wrapperService.updateWrapperChannelDetails(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
         ChannelDetailsResource resource = ChannelMapper.toResource(response, null);
-        awsSesService.sendEmail(channelDetailsDto.getEmail(), UPDATE_CHANEL_SUBJECT, UPDATE_CHANEL_EMAIL_BODY);
+        awsSesService.sendEmail(UPDATE_CHANEL_SUBJECT, UPDATE_CHANEL_EMAIL_BODY,channelDetailsDto.getEmail());
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "updateChannel result = {}", resource);
         log.trace("updateChannel end");
         return resource;
