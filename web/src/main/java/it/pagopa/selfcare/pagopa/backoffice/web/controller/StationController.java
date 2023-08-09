@@ -77,7 +77,7 @@ public class StationController {
         log.trace("created station in apiConfig");
         WrapperEntitiesOperations<StationDetails> response = wrapperService.updateWrapperStationDetailsByOpt(stationDetails, stationDetailsDto.getNote(), WrapperStatus.APPROVED.name());
         WrapperEntityOperations<StationDetails> result = response.getWrapperEntityOperationsSortedList().get(0);
-        awsSesService.sendEmail(stationDetailsDto.getEmail(), CREATE_STATION_SUBJECT, CREATE_STATION_EMAIL_BODY);
+        awsSesService.sendEmail(CREATE_STATION_SUBJECT, CREATE_STATION_EMAIL_BODY,stationDetailsDto.getEmail());
         log.debug("createStation result = {}", result);
         log.trace("createStation end");
         return result;
@@ -317,7 +317,7 @@ public class StationController {
         StationDetails response = apiConfigService.updateStation(stationCode, stationDetails, uuid);
         wrapperService.updateWrapperStationDetails(stationDetails, stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
         StationDetailResource resource = stationMapper.toResource(response);
-        awsSesService.sendEmail(stationDetailsDto.getEmail(), UPDATE_STATION_SUBJECT, UPDATE_STATION_EMAIL_BODY);
+        awsSesService.sendEmail(UPDATE_STATION_SUBJECT, UPDATE_STATION_EMAIL_BODY,stationDetailsDto.getEmail());
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "updateStation result = {}", resource);
         log.trace("updateStation end");
         return resource;
