@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigSelfcareIntegrationConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetailsList;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -27,6 +28,12 @@ public interface ApiConfigSelfcareIntegrationRestClient extends ApiConfigSelfcar
             @RequestParam(required = false) String channelId,
             @RequestParam(required = false, defaultValue = "10") Integer limit,
             @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+
+    @GetMapping(value = "${rest-client.api-config-selfcare-integration.getCreditorInstitutionSegregationcodes.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationcodes(
+            @PathVariable("creditorInstitutionCode") String creditorInstitutionCode,
             @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
 
 }

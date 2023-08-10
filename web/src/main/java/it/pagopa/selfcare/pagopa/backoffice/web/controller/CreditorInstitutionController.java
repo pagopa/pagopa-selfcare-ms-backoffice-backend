@@ -3,8 +3,10 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
+import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
@@ -30,10 +32,14 @@ public class CreditorInstitutionController {
     CreditorInstitutionMapper mapper = Mappers.getMapper(CreditorInstitutionMapper.class);
     private final ApiConfigService apiConfigService;
 
+    private final ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService;
+
     @Autowired
-    public CreditorInstitutionController(ApiConfigService apiConfigService) {
+    public CreditorInstitutionController(ApiConfigService apiConfigService, ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService) {
         this.apiConfigService = apiConfigService;
+        this.apiConfigSelfcareIntegrationService = apiConfigSelfcareIntegrationService;
     }
+
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -124,6 +130,17 @@ public class CreditorInstitutionController {
         return result;
     }
 
-
+    @GetMapping(value = "/{ecCode}/segregationcodes", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.getCreditorInstitutionSegregationcodes}")
+    public CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationcodes(@ApiParam("${swagger.request.ecCode}")
+                                                                            @PathVariable("ecCode")String ecCode){
+        log.trace("getCreditorInstitutionSegregationcodes start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getCreditorInstitutionSegregationcodes ecCode = {}, xRequestId = {}", ecCode, xRequestId);
+        CreditorInstitutionAssociatedCodeList result = apiConfigSelfcareIntegrationService.getCreditorInstitutionSegregationcodes(ecCode, xRequestId);
+        log.trace("getCreditorInstitutionSegregationcodes end");
+        return result;
+    }
 
 }
