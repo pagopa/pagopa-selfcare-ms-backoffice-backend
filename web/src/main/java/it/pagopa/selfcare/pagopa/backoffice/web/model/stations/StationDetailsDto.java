@@ -16,6 +16,10 @@ import javax.validation.constraints.NotNull;
 @Data
 public class StationDetailsDto {
 
+    @JsonProperty("ec_email")
+    @ApiModelProperty(value = "${swagger.model.channel.ecEmail}")
+    private String ecEmail;
+
     @ApiModelProperty(value = "${swagger.model.station.code}", required = true)
     @JsonProperty(required = true)
     @NotBlank
@@ -118,4 +122,9 @@ public class StationDetailsDto {
     @JsonProperty(required = true)
     @ApiModelProperty(value = "${swagger.model.station.validationUrl}")
     private String validationUrl;
+
+    public String getEmail(){
+        String environment = System.getenv("env")!=null?System.getenv("env"):"local";
+        return environment.equals("prod")? getEcEmail():System.getenv("TEST_EMAIL") ;
+    }
 }

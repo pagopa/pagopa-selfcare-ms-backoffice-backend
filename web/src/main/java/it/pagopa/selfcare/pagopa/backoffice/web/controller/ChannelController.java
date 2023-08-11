@@ -104,7 +104,7 @@ public class ChannelController {
         WrapperEntitiesOperations<ChannelDetails> response = wrapperService.updateWrapperChannelDetailsByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
         PspChannelPaymentTypes ptResponse = apiConfigService.createChannelPaymentType(pspChannelPaymentTypes, channelCode, xRequestId);
         WrapperChannelDetailsResource resource = ChannelMapper.toResource(response.getWrapperEntityOperationsSortedList().get(0), ptResponse);
-        awsSesService.sendEmail(channelDetailsDto.getPspEmail(), CREATE_CHANEL_SUBJECT, CREATE_CHANEL_EMAIL_BODY);
+        awsSesService.sendEmail(CREATE_CHANEL_SUBJECT, CREATE_CHANEL_EMAIL_BODY,channelDetailsDto.getEmail());
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "createChannel result = {}", resource);
         log.trace("createChannel end");
         return resource;
@@ -204,7 +204,7 @@ public class ChannelController {
         ChannelDetails response = apiConfigService.updateChannel(channelDetails, channelCode, uuid);
         wrapperService.updateWrapperChannelDetails(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
         ChannelDetailsResource resource = ChannelMapper.toResource(response, null);
-        awsSesService.sendEmail(channelDetailsDto.getPspEmail(), UPDATE_CHANEL_SUBJECT, UPDATE_CHANEL_EMAIL_BODY);
+        awsSesService.sendEmail(UPDATE_CHANEL_SUBJECT, UPDATE_CHANEL_EMAIL_BODY,channelDetailsDto.getEmail());
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "updateChannel result = {}", resource);
         log.trace("updateChannel end");
         return resource;
@@ -503,8 +503,8 @@ public class ChannelController {
                                                                  @Valid
                                                                  ChannelDetailsDto channelDetailsDto) {
         log.trace("updateWrapperChannelDetails start");
-        final String CREATE_CHANNEL_SUMMARY = "Validate channel update: %s";
-        final String CREATE_CHANEL_DESCRIPTION = "The channel %s updated by broker %s needs to be validated: %s";
+        final String CREATE_CHANNEL_SUMMARY = "Validazione modifica canale: %s";
+        final String CREATE_CHANEL_DESCRIPTION = "Il canale %s modificato dal broker %s deve essere validato: %s";
         log.debug("updateWrapperChannelDetails channelDetailsDto = {}", channelDetailsDto);
         WrapperEntitiesOperations createdWrapperEntities = wrapperService.
                 updateWrapperChannelDetails(ChannelMapper.
@@ -683,5 +683,7 @@ public class ChannelController {
 
         return resource;
     }
+
+
 
 }

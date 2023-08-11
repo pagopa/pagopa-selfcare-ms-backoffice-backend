@@ -20,10 +20,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStati
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
-import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
-import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
-import it.pagopa.selfcare.pagopa.backoffice.core.JiraServiceManagerService;
-import it.pagopa.selfcare.pagopa.backoffice.core.WrapperService;
+import it.pagopa.selfcare.pagopa.backoffice.core.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
@@ -81,6 +78,9 @@ class StationControllerTest {
 
     @MockBean
     private ApiConfigService apiConfigServiceMock;
+
+    @MockBean
+    private AwsSesService awsSesService;
 
     @MockBean
     private ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService;

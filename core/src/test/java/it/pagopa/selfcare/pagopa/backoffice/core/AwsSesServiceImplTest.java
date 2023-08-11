@@ -38,15 +38,15 @@ import static org.mockito.Mockito.*;
         String messageId = "111";
         String res = "Email sent! Message ID: " + messageId;
 
-        when(awsSesConnector.sendEmail(to, subject, body))
+        when(awsSesConnector.sendEmail(subject, body,to))
                 .thenReturn(res);
 
         //when
-        String response = awsSesService.sendEmail(to, subject, body);
+        String response = awsSesService.sendEmail(subject, body,to);
 
         assertEquals(response,res);
         verify(awsSesConnector, times(1))
-                .sendEmail(to, subject, body);
+                .sendEmail(subject, body,to);
 
         verifyNoMoreInteractions(awsSesConnector);
     }
