@@ -1,8 +1,11 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitution;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
+import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
@@ -25,13 +28,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = {CreditorInstitutionController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
@@ -50,6 +58,9 @@ class CreditorInstitutionControllerTest {
 
     @MockBean
     private ApiConfigService apiConfigServiceMock;
+
+    @MockBean
+    private ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationServiceMock;
 
     @Test
     void createCreditorInstitution(@Value("classpath:stubs/creditorInstitutionDetailsDto.json") Resource dto) throws Exception {
@@ -224,6 +235,26 @@ class CreditorInstitutionControllerTest {
         verify(apiConfigServiceMock, times(1))
                 .getCreditorInstitutions(eq(size),eq(page),eq(ecCode),eq(name),eq(sorting), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getCreditorInstitutionSegregationcodes() throws Exception {
+        //given
+        String ecCode = "ecCode";
+        CreditorInstitutionAssociatedCodeList creditorInstitutionAssociatedCodeList = mockInstance(new CreditorInstitutionAssociatedCodeList());
+
+        when(apiConfigSelfcareIntegrationServiceMock.getCreditorInstitutionSegregationcodes(anyString(), anyString()))
+                .thenReturn(creditorInstitutionAssociatedCodeList);
+
+        //when
+        mvc.perform(get(BASE_URL + "/{ecCode}/segregationcodes", ecCode)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+        //then
+        verify(apiConfigSelfcareIntegrationServiceMock, times(1))
+                .getCreditorInstitutionSegregationcodes(anyString(), anyString());
+
+        verifyNoMoreInteractions(apiConfigSelfcareIntegrationServiceMock);
     }
 
 }
