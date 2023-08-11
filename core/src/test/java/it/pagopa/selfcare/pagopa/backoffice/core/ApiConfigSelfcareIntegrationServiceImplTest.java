@@ -2,8 +2,10 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigSelfcareIntegrationConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
 import org.junit.jupiter.api.Test;
@@ -90,6 +92,24 @@ class ApiConfigSelfcareIntegrationServiceImplTest {
         reflectionEqualsByName(response, channelDetailsListMock);
         verify(apiConfigConnectorMock, times(1))
                 .getChannelDetailsListByBroker(broker, station, limit,page, xRequestId);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
+    @Test
+    void getCreditorInstitutionSegregationcodes() {
+        //given
+        String ecCode = "ecCode";
+        String xRequestId = "xRequestId";
+        CreditorInstitutionAssociatedCodeList creditorInstitutionAssociatedCodeList = mockInstance(new CreditorInstitutionAssociatedCodeList());
+
+        when(apiConfigConnectorMock.getCreditorInstitutionSegregationcodes(anyString(), anyString()))
+                .thenReturn(creditorInstitutionAssociatedCodeList);
+
+        CreditorInstitutionAssociatedCodeList response = apiConfigSelfcareIntegrationService.getCreditorInstitutionSegregationcodes(ecCode, xRequestId);
+        //then
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .getCreditorInstitutionSegregationcodes(ecCode, xRequestId);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 }
