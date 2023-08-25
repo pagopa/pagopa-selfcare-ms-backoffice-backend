@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.delegation.Delegation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Attribute;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
@@ -108,6 +109,12 @@ class ExternalApiRestClientTest {
         put(TestCase.FULLY_VALUED, "institutionId1");
         put(TestCase.FULLY_NULL, "institutionId2");
         put(TestCase.EMPTY_RESULT, "institutionId3");
+    }};
+
+    private static final Map<TestCase, String> testCaseBrokerDelegation = new EnumMap<>(TestCase.class) {{
+        put(TestCase.FULLY_VALUED, "broker1");
+        put(TestCase.FULLY_NULL, "broker2");
+        put(TestCase.EMPTY_RESULT, "broker3");
     }};
     
     @BeforeEach
@@ -231,6 +238,20 @@ class ExternalApiRestClientTest {
         //then
         assertNotNull(products);
         assertTrue(products.isEmpty());
+    }
+
+    @Test
+    void getBrokerDelegation_fullyValued(){
+        //given
+        String institutionId = testCase2instIdMap.get(TestCase.FULLY_VALUED);
+        String brokerId = testCaseBrokerDelegation.get(TestCase.FULLY_VALUED);
+        final String productId = "productId";
+        //when
+        List<Delegation> delegations = restClient.getBrokerDelegation(institutionId,brokerId,productId);
+        //then
+        assertNotNull(delegations);
+        assertFalse(delegations.isEmpty());
+        checkNotNullFields(delegations.get(0));
     }
 
     private void checkNotNullFields(Object o, String... excludedFields) {
