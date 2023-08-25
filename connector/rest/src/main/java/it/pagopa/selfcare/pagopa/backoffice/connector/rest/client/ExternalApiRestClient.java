@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ExternalApiConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.delegation.Delegation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.product.Product;
@@ -28,6 +29,9 @@ public interface ExternalApiRestClient extends ExternalApiConnector {
     @ResponseBody
     List<Product> getInstitutionUserProducts(@PathVariable(value = "institutionId")String institutionId,@RequestParam(value = "userId")String userId);
 
+    @GetMapping(value = "${rest-client.external-api.getBrokerDelegation.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    List<Delegation> getBrokerDelegation(@RequestParam String institutionId,@RequestParam String brokerId,@RequestParam String productId);
 
 
 }

@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.delegation.Delegation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Attribute;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
@@ -31,6 +32,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
+import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -377,4 +379,41 @@ class InstitutionControllerTest {
         verifyNoMoreInteractions(externalApiServiceMock);
     }
 
+
+    @Test
+    void getBrokerDelegation() throws Exception {
+        //given
+        String institutionId = "institutionId";
+        String brokerId = "brokerId";
+        Delegation delegationMock = mockInstance(new Delegation());
+
+        Authentication auth = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+
+
+        when(securityContext.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(externalApiServiceMock.getBrokerDelegation(anyString(), anyString(), anyString()))
+                .thenReturn(List.of(delegationMock));
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL + "/delegations", institutionId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .queryParam("institutionId", String.valueOf(institutionId))
+                        .queryParam("brokerId", String.valueOf(brokerId)))
+                .andExpect(status().isOk())
+               .andExpect(jsonPath("$[*].brokerId",everyItem(notNullValue())))
+                .andExpect(jsonPath("$[*].brokerName", everyItem(notNullValue())))
+                .andExpect(jsonPath("$[*].institutionId", everyItem(notNullValue())))
+                .andExpect(jsonPath("$[*].productId", everyItem(notNullValue())))
+                .andExpect(jsonPath("$[*].type", everyItem(notNullValue())))
+                .andExpect(jsonPath("$[*].institutionName", everyItem(notNullValue())));
+        //then
+        verify(externalApiServiceMock, times(1))
+                .getBrokerDelegation(anyString(), anyString(), anyString());
+        verifyNoMoreInteractions(externalApiServiceMock);
+    }
+
 }
+

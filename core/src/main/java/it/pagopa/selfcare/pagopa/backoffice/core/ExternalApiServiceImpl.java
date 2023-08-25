@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ExternalApiConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.delegation.Delegation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.product.Product;
@@ -14,12 +15,12 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class ExternalApiServiceImpl implements ExternalApiService{
+public class ExternalApiServiceImpl implements ExternalApiService {
 
     protected static final String AN_INSTITUTION_ID_IS_REQUIRED = "An institutionId is required";
     protected static final String A_PRODUCT_ID_IS_REQUIRED = "A productId is required";
     private final ExternalApiConnector externalApiConnector;
-    
+
 
     @Autowired
     public ExternalApiServiceImpl(ExternalApiConnector externalApiConnector) {
@@ -47,15 +48,24 @@ public class ExternalApiServiceImpl implements ExternalApiService{
     }
 
     @Override
-    public List<Product> getInstitutionUserProducts(String institutionId,String userIdForAuth) {
+    public List<Product> getInstitutionUserProducts(String institutionId, String userIdForAuth) {
         log.trace("getInstitutionUserProducts start");
         log.debug("getInstitutionUserProducts institutionId = {}", institutionId);
         Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
-        List<Product> userProducts = externalApiConnector.getInstitutionUserProducts(institutionId,userIdForAuth);
+        List<Product> userProducts = externalApiConnector.getInstitutionUserProducts(institutionId, userIdForAuth);
         log.debug("getInstitutionUserProducts result = {}", userProducts);
         log.trace("getInstitutionUserProducts end");
         return userProducts;
     }
 
+    @Override
+    public List<Delegation> getBrokerDelegation(String institutionId, String brokerId, String productId) {
+        log.trace("getBrokerDelegation start");
+        log.debug("getBrokerDelegation institutionId = {},  brokerId = {},  productId = {}", institutionId, brokerId, productId);
+        List<Delegation> delegations = externalApiConnector.getBrokerDelegation(institutionId, brokerId, productId);
+        log.debug("getBrokerDelegation result = {}", delegations);
+        log.trace("getBrokerDelegation end");
+        return delegations;
+    }
 
 }
