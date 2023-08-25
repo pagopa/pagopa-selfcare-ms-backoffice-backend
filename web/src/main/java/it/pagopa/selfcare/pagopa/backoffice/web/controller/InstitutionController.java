@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.delegation.Delegation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
@@ -11,9 +12,11 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.product.Product;
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ExternalApiService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.delegation.DelegationResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.institutions.InstitutionDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.institutions.InstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ApiManagerMapper;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.DelegationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.InstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ProductMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.products.ProductsResource;
@@ -152,12 +155,33 @@ public class InstitutionController {
             userIdForAuth = user.getId();
         }
 
-        List<Product> products = externalApiService.getInstitutionUserProducts(institutionId,userIdForAuth);
+        List<Product> products = externalApiService.getInstitutionUserProducts(institutionId, userIdForAuth);
         List<ProductsResource> resource = products.stream()
                 .map(ProductMapper::toResource)
                 .collect(Collectors.toList());
         log.debug("getInstitutionProducts result = {}", resource);
         log.trace("getInstitutionProducts end");
+        return resource;
+    }
+
+    @GetMapping("/delegations")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.institution.getInstitutionProducts}")
+    public List<DelegationResource> getBrokerDelegation(@ApiParam("${swagger.model.institution.id}")
+                                                        @RequestParam(required = false,value = "institutionId") String institutionId,
+                                                        @ApiParam("${swagger.model.broker.id}")
+                                                        @RequestParam(required = false,value = "brokerId") String brokerId) {
+        log.trace("getBrokerDelegation start");
+        log.debug("getBrokerDelegation institutionId = {}, brokerId = {}", institutionId, brokerId);
+
+        final String productId = "prod-pagopa";
+
+        List<Delegation> delegations = externalApiService.getBrokerDelegation(institutionId, brokerId, productId);
+        List<DelegationResource> resource = delegations.stream()
+                .map(DelegationMapper::toResource)
+                .collect(Collectors.toList());
+        log.debug("getBrokerDelegation result = {}", resource);
+        log.trace("getBrokerDelegation end");
         return resource;
     }
 }

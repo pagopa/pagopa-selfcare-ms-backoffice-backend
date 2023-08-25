@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.TestUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ExternalApiConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.delegation.Delegation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Attribute;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.institution.InstitutionInfo;
@@ -114,6 +115,26 @@ class ExternalApiServiceImplTest {
         products.forEach(product -> TestUtils.reflectionEqualsByName(productMock, product));
         verify(externalApiConnectorMock, times(1))
                 .getInstitutionUserProducts(institutionId,userId);
+    }
+
+
+    @Test
+    void getBrokerDelegation(){
+        //given
+        String institutionId = "institutionId";
+        String brokerId = "brokerId";
+        String productId = "productId";
+        Delegation delegationMock = mockInstance(new Delegation());
+        when(externalApiConnectorMock.getBrokerDelegation(anyString(),anyString(),anyString()))
+                .thenReturn(List.of(delegationMock));
+        //when
+        List<Delegation> delegations = externalApiService.getBrokerDelegation(institutionId,brokerId,productId);
+        //then
+        assertNotNull(delegations);
+        delegations.forEach(TestUtils::checkNotNullFields);
+        delegations.forEach(product -> TestUtils.reflectionEqualsByName(delegationMock, delegations));
+        verify(externalApiConnectorMock, times(1))
+                .getBrokerDelegation(institutionId,brokerId,productId);
     }
 
 }
