@@ -15,7 +15,7 @@ public class CreditorInstitutionStationEdit {
     private Long applicationCode;
 
     @JsonProperty("segregation_code")
-    private Long segregationCode;
+    private String segregationCode;
 
     @JsonProperty("mod4")
     private Boolean mod4;

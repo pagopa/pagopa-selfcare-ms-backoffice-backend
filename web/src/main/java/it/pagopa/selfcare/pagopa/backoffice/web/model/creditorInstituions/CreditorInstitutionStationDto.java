@@ -21,7 +21,7 @@ public class CreditorInstitutionStationDto {
     @ApiModelProperty(value = "${swagger.station.model.segregationCode}", required = true)
     @JsonProperty(required = true)
     @NotBlank
-    private Long segregationCode;
+    private String segregationCode;
 
     @ApiModelProperty(value = "${swagger.station.model.broadcast}", required = true)
     @JsonProperty(required = true)

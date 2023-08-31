@@ -18,7 +18,7 @@ public class CreditorInstitutionStationEditResource {
     @ApiModelProperty(value = "${swagger.station.model.applicationCode}")
     private Long applicationCode;
     @ApiModelProperty(value = "${swagger.station.model.segregationCode}")
-    private Long segregationCode;
+    private String segregationCode;
     @ApiModelProperty(value = "${swagger.station.model.mod4}")
     private Boolean mod4;
     @ApiModelProperty(value = "${swagger.station.model.broadcast}")
