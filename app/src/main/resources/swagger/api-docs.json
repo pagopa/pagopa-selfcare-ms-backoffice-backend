@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.3.24"
+    "version" : "0.3.25"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -6472,13 +6472,18 @@
       },
       "CreditorInstitutionStationDto" : {
         "title" : "CreditorInstitutionStationDto",
-        "required" : [ "auxDigit", "segregationCode", "stationCode" ],
+        "required" : [ "auxDigit", "broadcast", "segregationCode", "stationCode" ],
         "type" : "object",
         "properties" : {
           "auxDigit" : {
             "type" : "integer",
             "description" : "Station's auxiliary digit",
             "format" : "int64"
+          },
+          "broadcast" : {
+            "type" : "boolean",
+            "description" : "Station's broadcast enabled",
+            "example" : false
           },
           "segregationCode" : {
             "type" : "integer",

@@ -6410,6 +6410,7 @@
         "title": "CreditorInstitutionStationDto",
         "required": [
           "auxDigit",
+          "broadcast",
           "segregationCode",
           "stationCode"
         ],
@@ -6419,6 +6420,11 @@
             "type": "integer",
             "description": "Station's auxiliary digit",
             "format": "int64"
+          },
+          "broadcast": {
+            "type": "boolean",
+            "description": "Station's broadcast enabled",
+            "example": false
           },
           "segregationCode": {
             "type": "integer",
@@ -7399,6 +7405,10 @@
             "type": "integer",
             "description": "Station's broker object id",
             "format": "int64"
+          },
+          "ec_email": {
+            "type": "string",
+            "description": "email of the ec"
           },
           "enabled": {
             "type": "boolean",

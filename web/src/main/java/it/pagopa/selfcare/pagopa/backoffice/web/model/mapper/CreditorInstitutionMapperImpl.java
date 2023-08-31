@@ -22,6 +22,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
             station.setMod4(true);
             station.setSegregationCode(dto.getSegregationCode());
             station.setAuxDigit(dto.getAuxDigit());
+            station.setBroadcast(dto.getBroadcast());
 //            station.setApplicationCode(1l);
 
         }
