@@ -13,4 +13,20 @@ public class CreditorInstitution {
 
     @JsonProperty("business_name")
     private String businessName;
+
+    @JsonProperty("application_code")
+    private String applicationCode;
+
+    @JsonProperty("aux_digit")
+    private String auxDigit;
+
+    @JsonProperty("segregation_code")
+    private String segregationCode;
+
+    @JsonProperty("mod4")
+    private String mod4;
+
+    @JsonProperty("broadcast")
+    private String broadcast;
+
 }

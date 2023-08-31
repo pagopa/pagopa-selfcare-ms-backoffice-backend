@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.3.26"
+    "version" : "0.3.27"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -6381,6 +6381,15 @@
             "description" : "Creditor Institution's address object",
             "$ref" : "#/components/schemas/CreditorInstitutionAddressResource"
           },
+          "applicationCode" : {
+            "type" : "string"
+          },
+          "auxDigit" : {
+            "type" : "string"
+          },
+          "broadcast" : {
+            "type" : "string"
+          },
           "businessName" : {
             "type" : "string",
             "description" : "Creditor Institution's business name"
@@ -6393,6 +6402,9 @@
             "type" : "boolean",
             "description" : "Creditor Institution activation state on ApiConfig",
             "example" : false
+          },
+          "mod4" : {
+            "type" : "string"
           },
           "pspPayment" : {
             "type" : "boolean",
@@ -6408,6 +6420,9 @@
             "type" : "boolean",
             "description" : "Enables the zipping of the content that goes through fstp",
             "example" : false
+          },
+          "segregationCode" : {
+            "type" : "string"
           }
         }
       },
@@ -6455,6 +6470,15 @@
         "required" : [ "businessName", "creditorInstitutionCode", "enabled" ],
         "type" : "object",
         "properties" : {
+          "applicationCode" : {
+            "type" : "string"
+          },
+          "auxDigit" : {
+            "type" : "string"
+          },
+          "broadcast" : {
+            "type" : "string"
+          },
           "businessName" : {
             "type" : "string",
             "description" : "Creditor Institution's business name"
@@ -6467,6 +6491,12 @@
             "type" : "boolean",
             "description" : "Creditor Institution activation state on ApiConfig",
             "example" : false
+          },
+          "mod4" : {
+            "type" : "string"
+          },
+          "segregationCode" : {
+            "type" : "string"
           }
         }
       },

@@ -288,6 +288,9 @@ public class StationController {
     public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(@ApiParam("${swagger.request.code}") @PathVariable("stationcode") String stationcode,
                                                                              @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                                              @RequestParam Integer page) {
+
+        //todo cambiare la response
+
         log.trace("getCreditorInstitutions start");
         log.debug("getCreditorInstitutions stationcode = {}", stationcode);
         String xRequestId = UUID.randomUUID().toString();

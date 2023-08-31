@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -21,4 +22,14 @@ public class CreditorInstitutionResource {
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.businessName}", required = true)
     @NotBlank
     private String businessName;
+    //todo aggiungere ApiModelProperty
+    private String applicationCode;
+
+    private String auxDigit;
+
+    private String segregationCode;
+
+    private String mod4;
+
+    private String broadcast;
 }
