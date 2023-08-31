@@ -28,9 +28,4 @@ public class CreditorInstitutionStationDto {
     @NotBlank
     private Boolean broadcast;
 
-    @ApiModelProperty(value = "${swagger.station.model.broadcast}", required = true)
-    @JsonProperty(required = true)
-    @NotBlank
-    private Boolean broadcast;
-
 }
