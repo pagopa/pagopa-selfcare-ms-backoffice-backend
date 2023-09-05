@@ -744,7 +744,8 @@ class ApiConfigRestClientTest {
         CreditorInstitutionDetails response = restClient.getCreditorInstitutionDetails(creditorInstitutionCode, xRequestId);
         //then
         assertNotNull(response);
-        checkNotNullFields(response);
+        checkNotNullFields(response, "applicationCode", "auxDigit",
+                "mod4", "segregationCode", "broadcast");
     }
 
     @Test
@@ -780,7 +781,8 @@ class ApiConfigRestClientTest {
         CreditorInstitutionDetails response = restClient.createCreditorInstitution(request, xRequestId);
         //then
         assertNotNull(response);
-        checkNotNullFields(response);
+        checkNotNullFields(response, "applicationCode", "auxDigit",
+                "mod4", "segregationCode", "broadcast");
     }
 
     @Test
@@ -793,7 +795,8 @@ class ApiConfigRestClientTest {
         CreditorInstitutionDetails response = restClient.updateCreditorInstitutionDetails(ecCode, request, xRequestId);
         //then
         assertNotNull(response);
-        checkNotNullFields(response);
+        checkNotNullFields(response, "applicationCode", "auxDigit",
+                "mod4", "segregationCode", "broadcast");
 
     }
 

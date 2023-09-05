@@ -144,6 +144,11 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         creditorInstitutionResource.setBusinessName(model.getBusinessName());
         creditorInstitutionResource.setCreditorInstitutionCode(model.getCreditorInstitutionCode());
         creditorInstitutionResource.setEnabled(model.getEnabled());
+        creditorInstitutionResource.setBroadcast(model.getBroadcast());
+        creditorInstitutionResource.setMod4(model.getMod4());
+        creditorInstitutionResource.setApplicationCode(model.getApplicationCode());
+        creditorInstitutionResource.setAuxDigit(model.getAuxDigit());
+        creditorInstitutionResource.setSegregationCode(model.getSegregationCode());
 
         return creditorInstitutionResource;
     }

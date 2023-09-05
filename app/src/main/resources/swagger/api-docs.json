@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.3.26"
+    "version" : "0.3.27"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -6374,12 +6374,25 @@
       },
       "CreditorInstitutionDetailsResource" : {
         "title" : "CreditorInstitutionDetailsResource",
-        "required" : [ "address", "businessName", "creditorInstitutionCode", "enabled", "pspPayment", "reportingFtp", "reportingZip" ],
+        "required" : [ "address", "broadcast", "businessName", "creditorInstitutionCode", "enabled", "pspPayment", "reportingFtp", "reportingZip" ],
         "type" : "object",
         "properties" : {
           "address" : {
             "description" : "Creditor Institution's address object",
             "$ref" : "#/components/schemas/CreditorInstitutionAddressResource"
+          },
+          "applicationCode" : {
+            "type" : "string",
+            "description" : "ApplicationCode"
+          },
+          "auxDigit" : {
+            "type" : "string",
+            "description" : "AuxDigit maximum:3 minimum:0"
+          },
+          "broadcast" : {
+            "type" : "boolean",
+            "description" : "Broadcast",
+            "example" : false
           },
           "businessName" : {
             "type" : "string",
@@ -6393,6 +6406,10 @@
             "type" : "boolean",
             "description" : "Creditor Institution activation state on ApiConfig",
             "example" : false
+          },
+          "mod4" : {
+            "type" : "string",
+            "description" : "Mod4"
           },
           "pspPayment" : {
             "type" : "boolean",
@@ -6408,6 +6425,10 @@
             "type" : "boolean",
             "description" : "Enables the zipping of the content that goes through fstp",
             "example" : false
+          },
+          "segregationCode" : {
+            "type" : "string",
+            "description" : "SegregationCode"
           }
         }
       },
@@ -6452,9 +6473,22 @@
       },
       "CreditorInstitutionResource" : {
         "title" : "CreditorInstitutionResource",
-        "required" : [ "businessName", "creditorInstitutionCode", "enabled" ],
+        "required" : [ "broadcast", "businessName", "creditorInstitutionCode", "enabled" ],
         "type" : "object",
         "properties" : {
+          "applicationCode" : {
+            "type" : "string",
+            "description" : "ApplicationCode"
+          },
+          "auxDigit" : {
+            "type" : "string",
+            "description" : "AuxDigit maximum:3 minimum:0"
+          },
+          "broadcast" : {
+            "type" : "boolean",
+            "description" : "Broadcast",
+            "example" : false
+          },
           "businessName" : {
             "type" : "string",
             "description" : "Creditor Institution's business name"
@@ -6467,6 +6501,14 @@
             "type" : "boolean",
             "description" : "Creditor Institution activation state on ApiConfig",
             "example" : false
+          },
+          "mod4" : {
+            "type" : "string",
+            "description" : "Mod4"
+          },
+          "segregationCode" : {
+            "type" : "string",
+            "description" : "SegregationCode"
           }
         }
       },
