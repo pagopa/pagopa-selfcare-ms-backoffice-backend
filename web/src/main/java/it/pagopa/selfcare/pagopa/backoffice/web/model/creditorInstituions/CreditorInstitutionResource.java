@@ -22,14 +22,19 @@ public class CreditorInstitutionResource {
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.businessName}", required = true)
     @NotBlank
     private String businessName;
-    //todo aggiungere ApiModelProperty
+
+    @ApiModelProperty(value = "${swagger.creditor-institutions.model.applicationCode}")
     private String applicationCode;
 
+    @ApiModelProperty(value = "${swagger.creditor-institutions.model.auxDigit}")
     private String auxDigit;
 
+    @ApiModelProperty(value = "${swagger.creditor-institutions.model.segregationCode}")
     private String segregationCode;
 
+    @ApiModelProperty(value = "${swagger.creditor-institutions.model.mod4}")
     private String mod4;
 
-    private String broadcast;
+    @ApiModelProperty(value = "${swagger.creditor-institutions.model.broadcast}", required = true)
+    private Boolean broadcast;
 }

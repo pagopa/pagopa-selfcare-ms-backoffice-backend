@@ -288,17 +288,14 @@ public class StationController {
     public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(@ApiParam("${swagger.request.code}") @PathVariable("stationcode") String stationcode,
                                                                              @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                                              @RequestParam Integer page) {
-
-        //todo cambiare la response
-
-        log.trace("getCreditorInstitutions start");
-        log.debug("getCreditorInstitutions stationcode = {}", stationcode);
+        log.trace("getCreditorInstitutionsByStationCode start");
+        log.debug("getCreditorInstitutionsByStationCode stationcode = {}", stationcode);
         String xRequestId = UUID.randomUUID().toString();
-        log.debug("getchannels xRequestId = {}", xRequestId);
+        log.debug("getCreditorInstitutionsByStationCode xRequestId = {}", xRequestId);
         CreditorInstitutions creditorInstitutions = apiConfigService.getCreditorInstitutionsByStation(stationcode, limit, page, xRequestId);
         CreditorInstitutionsResource resource = creditorInstitutionMapper.toResource(creditorInstitutions);
-        log.debug("getCreditorInstitutions result = {}", creditorInstitutions);
-        log.trace("getCreditorInstitutions end");
+        log.debug("getCreditorInstitutionsByStationCode result = {}", resource);
+        log.trace("getCreditorInstitutionsByStationCode end");
         return resource;
     }
 

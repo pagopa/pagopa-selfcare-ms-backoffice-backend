@@ -27,6 +27,6 @@ public class CreditorInstitution {
     private String mod4;
 
     @JsonProperty("broadcast")
-    private String broadcast;
+    private Boolean broadcast;
 
 }
