@@ -35,6 +35,6 @@ public class CreditorInstitutionResource {
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.mod4}")
     private String mod4;
 
-    @ApiModelProperty(value = "${swagger.creditor-institutions.model.broadcast}", required = true)
+    @ApiModelProperty(value = "${swagger.creditor-institutions.model.broadcast}")
     private Boolean broadcast;
 }
