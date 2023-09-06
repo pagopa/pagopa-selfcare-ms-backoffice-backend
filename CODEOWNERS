@@ -1,6 +1,6 @@
 # see https://help.github.com/en/articles/about-code-owners#example-of-a-codeowners-file
-* @pagopa/pagopa-backoffice-team @pagopa/selfcare-contributors @KevinSi96 @biaMurNtt @GiacomoBrancazi @GabrieleMaiocchiFilippo @kaiban
-/openapi/ @pagopa/pagopa-backoffice-team
-/infra/ @pagopa/pagopa-backoffice-team
-/helm/ @pagopa/pagopa-backoffice-team
+* @pagopa/pagopa-team-backoffice @pagopa/selfcare-contributors @KevinSi96 @biaMurNtt @GiacomoBrancazi @GabrieleMaiocchiFilippo @kaiban
+/openapi/ @pagopa/pagopa-team-backoffice
+/infra/ @pagopa/pagopa-team-backoffice
+/helm/ @pagopa/pagopa-team-backoffice
 
