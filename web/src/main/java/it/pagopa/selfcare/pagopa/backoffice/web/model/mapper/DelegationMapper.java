@@ -17,6 +17,10 @@ public class DelegationMapper {
             resource.setType(model.getType());
             resource.setProductId(model.getProductId());
             resource.setInstitutionName(model.getInstitutionName());
+            resource.setBrokerTaxCode(model.getBrokerTaxCode());
+            resource.setBrokerType(model.getBrokerType());
+            resource.setInstitutionType(model.getInstitutionType());
+            resource.setTaxCode(model.getTaxCode());
         }
         return resource;
     }
