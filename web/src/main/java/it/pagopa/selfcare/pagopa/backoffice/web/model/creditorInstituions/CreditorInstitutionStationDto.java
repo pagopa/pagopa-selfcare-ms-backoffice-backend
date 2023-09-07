@@ -28,4 +28,9 @@ public class CreditorInstitutionStationDto {
     @NotBlank
     private Boolean broadcast;
 
+    @ApiModelProperty(value = "${swagger.station.model.applicationCode}")
+    private Long applicationCode;
+
+    @ApiModelProperty(value = "${swagger.station.model.mod4}")
+    private Boolean mod4 = true;
 }
