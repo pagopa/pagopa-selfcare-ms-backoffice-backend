@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://${host}:${basePath}",
+      "url": "http://localhost:80",
       "description": "Inferred Url"
     }
   ],
@@ -6292,7 +6292,6 @@
         "title": "CreditorInstitutionDetailsResource",
         "required": [
           "address",
-          "broadcast",
           "businessName",
           "creditorInstitutionCode",
           "enabled",
@@ -6407,7 +6406,6 @@
       "CreditorInstitutionResource": {
         "title": "CreditorInstitutionResource",
         "required": [
-          "broadcast",
           "businessName",
           "creditorInstitutionCode",
           "enabled"
@@ -6460,6 +6458,11 @@
         ],
         "type": "object",
         "properties": {
+          "applicationCode": {
+            "type": "integer",
+            "description": "Station's application code",
+            "format": "int64"
+          },
           "auxDigit": {
             "type": "integer",
             "description": "Station's auxiliary digit",
@@ -6468,6 +6471,11 @@
           "broadcast": {
             "type": "boolean",
             "description": "Station's broadcast enabled",
+            "example": false
+          },
+          "mod4": {
+            "type": "boolean",
+            "description": "Station's mod 4 enabled",
             "example": false
           },
           "segregationCode": {
