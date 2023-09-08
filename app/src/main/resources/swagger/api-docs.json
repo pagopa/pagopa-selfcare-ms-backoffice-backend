@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.3.27"
+    "version" : "0.4.0"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -6374,7 +6374,7 @@
       },
       "CreditorInstitutionDetailsResource" : {
         "title" : "CreditorInstitutionDetailsResource",
-        "required" : [ "address", "broadcast", "businessName", "creditorInstitutionCode", "enabled", "pspPayment", "reportingFtp", "reportingZip" ],
+        "required" : [ "address", "businessName", "creditorInstitutionCode", "enabled", "pspPayment", "reportingFtp", "reportingZip" ],
         "type" : "object",
         "properties" : {
           "address" : {
@@ -6473,7 +6473,7 @@
       },
       "CreditorInstitutionResource" : {
         "title" : "CreditorInstitutionResource",
-        "required" : [ "broadcast", "businessName", "creditorInstitutionCode", "enabled" ],
+        "required" : [ "businessName", "creditorInstitutionCode", "enabled" ],
         "type" : "object",
         "properties" : {
           "applicationCode" : {
@@ -6517,6 +6517,11 @@
         "required" : [ "auxDigit", "broadcast", "segregationCode", "stationCode" ],
         "type" : "object",
         "properties" : {
+          "applicationCode" : {
+            "type" : "integer",
+            "description" : "Station's application code",
+            "format" : "int64"
+          },
           "auxDigit" : {
             "type" : "integer",
             "description" : "Station's auxiliary digit",
@@ -6525,6 +6530,11 @@
           "broadcast" : {
             "type" : "boolean",
             "description" : "Station's broadcast enabled",
+            "example" : false
+          },
+          "mod4" : {
+            "type" : "boolean",
+            "description" : "Station's mod 4 enabled",
             "example" : false
           },
           "segregationCode" : {

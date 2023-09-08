@@ -18,13 +18,11 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         if (dto != null) {
             station = new CreditorInstitutionStationEdit();
             station.setStationCode(dto.getStationCode());
-            station.setBroadcast(true);
-            station.setMod4(true);
+            station.setMod4(dto.getMod4());
             station.setSegregationCode(dto.getSegregationCode());
             station.setAuxDigit(dto.getAuxDigit());
             station.setBroadcast(dto.getBroadcast());
-//            station.setApplicationCode(1l);
-
+            station.setApplicationCode(dto.getApplicationCode());
         }
         return station;
     }
