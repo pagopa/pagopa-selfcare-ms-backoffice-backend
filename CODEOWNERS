@@ -3,4 +3,4 @@
 /openapi/ @pagopa/pagopa-team-backoffice
 /infra/ @pagopa/pagopa-team-backoffice
 /helm/ @pagopa/pagopa-team-backoffice
-
+**/swagger/ @pagopa/pagopa-team-backoffice
