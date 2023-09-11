@@ -6612,6 +6612,14 @@
             "type" : "string",
             "description" : "broker's name"
           },
+          "brokerTaxCode" : {
+            "type" : "string",
+            "description" : "broker tax code"
+          },
+          "brokerType" : {
+            "type" : "string",
+            "description" : "broker type"
+          },
           "id" : {
             "type" : "string",
             "description" : "delegation Id"
@@ -6628,9 +6636,17 @@
             "type" : "string",
             "description" : "institution root name"
           },
+          "institutionType" : {
+            "type" : "string",
+            "description" : "institution type"
+          },
           "productId" : {
             "type" : "string",
             "description" : "id product"
+          },
+          "taxCode" : {
+            "type" : "string",
+            "description" : "tax code"
           },
           "type" : {
             "type" : "string",

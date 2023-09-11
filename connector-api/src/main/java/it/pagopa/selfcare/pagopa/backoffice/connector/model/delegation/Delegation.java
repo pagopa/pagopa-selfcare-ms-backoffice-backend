@@ -13,6 +13,10 @@ public class Delegation {
     private String institutionName;
     private String productId;
     private String type;
+    private String brokerTaxCode;
+    private String brokerType;
+    private String institutionType;
+    private String taxCode;
 
 
 }
