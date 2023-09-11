@@ -30,4 +30,16 @@ public class DelegationResource {
 
     @ApiModelProperty(value = "${swagger.model.delegation.type}")
     private String type;
+
+    @ApiModelProperty(value = "${swagger.model.delegation.brokerTaxCode}")
+    private String brokerTaxCode;
+
+    @ApiModelProperty(value = "${swagger.model.delegation.brokerType}")
+    private String brokerType;
+
+    @ApiModelProperty(value = "${swagger.model.delegation.institutionType}")
+    private String institutionType;
+
+    @ApiModelProperty(value = "${swagger.model.delegation.taxCode}")
+    private String taxCode;
 }

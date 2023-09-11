@@ -25,7 +25,11 @@
         "institutionName": "institutionName",
         "institutionRootName": "institutionRootName",
         "productId": "productId",
-        "type": "type"
+        "type": "type",
+        "brokerTaxCode":"brokerTaxCode",
+        "brokerType": "brokerType",
+        "institutionType": "institutionType",
+        "taxCode": "taxCode"
       }
     ],
     "headers": {
