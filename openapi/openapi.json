@@ -3,7 +3,7 @@
   "info": {
     "title": "pagopa-selfcare-ms-backoffice",
     "description": "PagoPa backoffice API documentation",
-    "version": "0.4.7"
+    "version": "0.4.7-1-PASELC-518-fixare-la-pipeline-di-deploy"
   },
   "servers": [
     {
