@@ -31,7 +31,7 @@ public interface ExternalApiRestClient extends ExternalApiConnector {
 
     @GetMapping(value = "${rest-client.external-api.getBrokerDelegation.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    List<Delegation> getBrokerDelegation(@RequestParam String institutionId,@RequestParam String brokerId,@RequestParam String productId);
+    List<Delegation> getBrokerDelegation(@RequestParam String institutionId,@RequestParam String brokerId,@RequestParam String productId, @RequestParam String mode);
 
 
 }
