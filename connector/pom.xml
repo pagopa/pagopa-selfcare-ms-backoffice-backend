@@ -4,23 +4,23 @@
     <parent>
         <artifactId>pagopa-selfcare-ms-backoffice</artifactId>
         <groupId>it.pagopa.selfcare.pagopa</groupId>
-        <version>0.4.9</version>
+        <version>0.4.10</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>pagopa-selfcare-ms-backoffice-connector</artifactId>
     <packaging>pom</packaging>
-    <version>0.4.9</version>
+    <version>0.4.10</version>
     <dependencies>
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-ms-backoffice-connector-api</artifactId>
-            <version>0.4.9</version>
+            <version>0.4.10</version>
         </dependency>
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-ms-backoffice-connector-api</artifactId>
-            <version>0.4.9</version>
+            <version>0.4.10</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
