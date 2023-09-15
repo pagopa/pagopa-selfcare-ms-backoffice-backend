@@ -44,6 +44,9 @@ class SwaggerConfigTest {
     private ApiConfigService apiConfigService;
 
     @MockBean
+    private GecService gecService;
+
+    @MockBean
     private ApiConfigSelfcareIntegrationService apiConfigSelfcareIntegrationService;
 
     @MockBean
