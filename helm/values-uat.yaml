@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "0.4.3" #improve
+    tag: "0.4.9" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -22,14 +22,25 @@ microservice-chart:
     periodSeconds: 10
   deployment:
     create: true
+  serviceMonitor:
+    create: true
+    endpoints:
+      - interval: 10s #jmx-exporter
+        targetPort: 12345
+        path: /metrics
+  ports:
+    - 80 #http
+    - 12345 #jmx-exporter
   service:
     create: true
     type: ClusterIP
-    port: 8080 #80
+    ports:
+      - 8080
   ingress:
     create: true
     host: "weuuat.selfcare.internal.uat.platform.pagopa.it"
     path: "/selfcare/pagopa/v1/(.*)"
+    servicePort: 8080
   serviceAccount:
     create: false
     annotations: {}
@@ -39,7 +50,11 @@ microservice-chart:
     seccompProfile:
       type: RuntimeDefault
   securityContext:
+    readOnlyRootFilesystem: false
     allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - all
   resources:
     requests:
       memory: "512Mi"
