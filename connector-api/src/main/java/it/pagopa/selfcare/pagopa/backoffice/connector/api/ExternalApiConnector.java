@@ -15,6 +15,6 @@ public interface ExternalApiConnector {
     
     List<Product> getInstitutionUserProducts(String institutionId,String userId);
 
-    List<Delegation> getBrokerDelegation(String institutionId, String brokerId, String productId);
+    List<Delegation> getBrokerDelegation(String institutionId, String brokerId, String productId, String mode);
     
 }

@@ -59,10 +59,10 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     }
 
     @Override
-    public List<Delegation> getBrokerDelegation(String institutionId, String brokerId, String productId) {
+    public List<Delegation> getBrokerDelegation(String institutionId, String brokerId, String productId, String mode) {
         log.trace("getBrokerDelegation start");
         log.debug("getBrokerDelegation institutionId = {},  brokerId = {},  productId = {}", institutionId, brokerId, productId);
-        List<Delegation> delegations = externalApiConnector.getBrokerDelegation(institutionId, brokerId, productId);
+        List<Delegation> delegations = externalApiConnector.getBrokerDelegation(institutionId, brokerId, productId, mode);
         log.debug("getBrokerDelegation result = {}", delegations);
         log.trace("getBrokerDelegation end");
         return delegations;

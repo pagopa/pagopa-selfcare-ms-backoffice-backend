@@ -16,6 +16,6 @@ public interface ExternalApiService {
 
     List<Product> getInstitutionUserProducts(String institutionId, String userIdForAuth);
 
-    List<Delegation> getBrokerDelegation(String institutionId, String brokerId, String productId);
+    List<Delegation> getBrokerDelegation(String institutionId, String brokerId, String productId, String mode);
 
 }
