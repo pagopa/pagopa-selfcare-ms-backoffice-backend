@@ -550,7 +550,7 @@ public class ChannelMapper {
             model.setEnabled(dto.getEnabled());
             model.setTaxCode(dto.getTaxCode());
 
-            modelBrokerPsp.setBrokerPspCode(dto.getPspCode());
+            modelBrokerPsp.setBrokerPspCode(dto.getTaxCode());
             modelBrokerPsp.setEnabled(dto.getEnabled());
             modelBrokerPsp.setDescription(dto.getBusinessName());
             modelBrokerPsp.setExtendedFaultBean(true);

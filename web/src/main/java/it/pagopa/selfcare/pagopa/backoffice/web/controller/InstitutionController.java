@@ -175,8 +175,9 @@ public class InstitutionController {
         log.debug("getBrokerDelegation institutionId = {}, brokerId = {}", institutionId, brokerId);
 
         final String productId = "prod-pagopa";
+        final String mode = "FULL";
 
-        List<Delegation> delegations = externalApiService.getBrokerDelegation(institutionId, brokerId, productId);
+        List<Delegation> delegations = externalApiService.getBrokerDelegation(institutionId, brokerId, productId, mode);
         List<DelegationResource> resource = delegations.stream()
                 .map(DelegationMapper::toResource)
                 .collect(Collectors.toList());
