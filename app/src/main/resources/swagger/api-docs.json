@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.4.3"
+    "version" : "0.4.7"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -21,6 +21,9 @@
   }, {
     "name" : "creditor-institutions",
     "description" : "Api Config creditor institution's operations"
+  }, {
+    "name" : "gec",
+    "description" : "Gec Controller"
   }, {
     "name" : "institution",
     "description" : "Institution operations"
@@ -3049,6 +3052,108 @@
         } ]
       }
     },
+    "/gec" : {
+      "get" : {
+        "tags" : [ "gec" ],
+        "summary" : "getBundlesByCI",
+        "description" : "Get paginated list of bundles",
+        "operationId" : "getBundlesByCIUsingGET",
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of elements on one page. Default = 50",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number. Page value starts from 0",
+          "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "ciFiscalcode",
+          "in" : "query",
+          "description" : "Fiscalcode of creditor institution",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "ordering",
+          "in" : "query",
+          "description" : "Sort Direction ordering",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BundlesResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/creditorinstitutions/ibans/create" : {
       "post" : {
         "tags" : [ "Ibans" ],
@@ -5712,6 +5817,81 @@
             "items" : {
               "$ref" : "#/components/schemas/BrokerResource"
             }
+          }
+        }
+      },
+      "BundleResource" : {
+        "title" : "BundleResource",
+        "type" : "object",
+        "properties" : {
+          "description" : {
+            "type" : "string"
+          },
+          "id_bundle" : {
+            "type" : "string"
+          },
+          "id_ci_bundle" : {
+            "type" : "string"
+          },
+          "id_psp" : {
+            "type" : "string"
+          },
+          "inserted_date" : {
+            "type" : "string"
+          },
+          "last_updated_date" : {
+            "type" : "string"
+          },
+          "max_payment_amount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "min_payment_amount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "payment_amount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "payment_type" : {
+            "type" : "string"
+          },
+          "touchpoint" : {
+            "type" : "string"
+          },
+          "transfer_category_list" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "validity_date_from" : {
+            "type" : "string"
+          },
+          "validity_date_to" : {
+            "type" : "string"
+          }
+        }
+      },
+      "BundlesResource" : {
+        "title" : "BundlesResource",
+        "type" : "object",
+        "properties" : {
+          "bundles" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/BundleResource"
+            }
+          },
+          "pageInfo" : {
+            "$ref" : "#/components/schemas/PageInfo"
           }
         }
       },
