@@ -10,6 +10,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansEnhanced;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
@@ -42,4 +43,12 @@ public class GecServiceImpl implements GecService {
         this.gecConnector = gecConnector;
     }
 
+    @Override
+    public Bundles getBundlesByCI(String cifiscalcode, Integer limit, Integer page, String xRequestId) {
+        log.trace("getBundlesByCI start");
+        Bundles response = gecConnector.getBundlesByCI(cifiscalcode, limit, page, xRequestId);
+        log.debug("getBundlesByCI result = {}", response);
+        log.trace("getBundlesByCI end");
+        return response;
+    }
 }
