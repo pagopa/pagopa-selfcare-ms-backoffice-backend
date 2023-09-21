@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.model.gec;
 
 import lombok.Data;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
@@ -18,10 +19,10 @@ public class Bundle {
     private String touchpoint;
     private String type;
     private List<String> transferCategoryList;
-    private String validityDateFrom;
-    private String validityDateTo;
-    private String insertedDate;
-    private String lastUpdatedDate;
+    private OffsetDateTime validityDateFrom;
+    private OffsetDateTime validityDateTo;
+    private OffsetDateTime insertedDate;
+    private OffsetDateTime lastUpdatedDate;
     private String idBundle;
 
 }
