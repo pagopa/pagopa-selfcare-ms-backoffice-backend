@@ -21,9 +21,8 @@ public class AuthorizationGecHeaderInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate template) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Method method = template.methodMetadata().method();
 
-        if (!method.isAnnotationPresent(RequestLine.class)) {
+        if (auth.getPrincipal()!=null) {
             SelfCareUser user = (SelfCareUser) auth.getPrincipal();
             template.header("x-selfcare-uid", user.getId());
         }
