@@ -93,6 +93,7 @@ microservice-chart:
     AZURE_CLIENT_SECRET: pagopa-u-selfcare-client-secret
     AZURE_CLIENT_ID: pagopa-u-selfcare-client-id
     SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selfcare-u-apim-external-api-key-env-prod
+    PAPGOPA_APIM_GEC_API_KEY_PAGOPA: pagopa-u-apim-gec-key
     PAGOPA_APIM_API_CONFIG_API_KEY_PAGOPA: pagopa-u-apim-api-config-key
     PAGOPA_APIM_API_CONFIG_SELFCARE_INTEGRATION_API_KEY_PAGOPA: pagopa-u-apim-api-config-selfcare-integration-key
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-u-connection-string'
