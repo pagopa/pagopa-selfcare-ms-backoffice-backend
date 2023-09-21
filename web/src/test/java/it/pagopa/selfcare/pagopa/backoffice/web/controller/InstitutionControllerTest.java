@@ -394,7 +394,7 @@ class InstitutionControllerTest {
         when(securityContext.getAuthentication()).thenReturn(auth);
         SecurityContextHolder.setContext(securityContext);
 
-        when(externalApiServiceMock.getBrokerDelegation(anyString(), anyString(), anyString()))
+        when(externalApiServiceMock.getBrokerDelegation(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(List.of(delegationMock));
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -411,7 +411,7 @@ class InstitutionControllerTest {
                 .andExpect(jsonPath("$[*].institutionName", everyItem(notNullValue())));
         //then
         verify(externalApiServiceMock, times(1))
-                .getBrokerDelegation(anyString(), anyString(), anyString());
+                .getBrokerDelegation(anyString(), anyString(), anyString(), anyString());
         verifyNoMoreInteractions(externalApiServiceMock);
     }
 

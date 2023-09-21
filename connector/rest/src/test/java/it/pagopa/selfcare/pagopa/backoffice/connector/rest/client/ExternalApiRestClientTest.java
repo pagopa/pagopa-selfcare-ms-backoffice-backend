@@ -247,7 +247,7 @@ class ExternalApiRestClientTest {
         String brokerId = testCaseBrokerDelegation.get(TestCase.FULLY_VALUED);
         final String productId = "productId";
         //when
-        List<Delegation> delegations = restClient.getBrokerDelegation(institutionId,brokerId,productId);
+        List<Delegation> delegations = restClient.getBrokerDelegation(institutionId,brokerId,productId, "FULL");
         //then
         assertNotNull(delegations);
         assertFalse(delegations.isEmpty());
