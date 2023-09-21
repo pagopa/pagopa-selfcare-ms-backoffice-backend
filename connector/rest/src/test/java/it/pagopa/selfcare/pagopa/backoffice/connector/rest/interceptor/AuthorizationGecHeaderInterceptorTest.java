@@ -37,7 +37,6 @@ class AuthorizationGecHeaderInterceptorTest {
         user = mock(SelfCareUser.class);
 
         ReflectionTestUtils.setField(interceptor, "gecSubscriptionKey", "sub-key");
-        ReflectionTestUtils.setField(interceptor, "flagAuthorization", "true");
 
         when(auth.getPrincipal()).thenReturn(user);
         when(user.getId()).thenReturn("user-id");
