@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.gec;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
@@ -42,16 +43,16 @@ public class BundleResource {
     private List<String> transferCategoryList;
 
     @JsonProperty("validity_date_from")
-    private String validityDateFrom;
+    private OffsetDateTime validityDateFrom;
 
     @JsonProperty("validity_date_to")
-    private String validityDateTo;
+    private OffsetDateTime validityDateTo;
 
     @JsonProperty("inserted_date")
-    private String insertedDate;
+    private OffsetDateTime insertedDate;
 
     @JsonProperty("last_updated_date")
-    private String lastUpdatedDate;
+    private OffsetDateTime lastUpdatedDate;
 
     @JsonProperty("id_bundle")
     private String idBundle;

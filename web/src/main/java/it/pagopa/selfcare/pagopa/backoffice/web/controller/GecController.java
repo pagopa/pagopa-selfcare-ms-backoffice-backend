@@ -5,13 +5,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.core.GecService;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.ChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.BundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.TouchpointsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.GecMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -42,16 +42,31 @@ public class GecController {
                                         @ApiParam("${swagger.pageable.start}")
                                         @RequestParam(required = true) Integer page,
                                         @ApiParam("${swagger.model.gec.cifiscalcode}")
-                                        @RequestParam(required = false) String ciFiscalcode,
-                                        @ApiParam("${swagger.model.sort.order}")
-                                        @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort) {
-        log.trace("getchannels start");
+                                        @RequestParam(required = false) String ciFiscalcode) {
+        log.trace("getBundlesByCI start");
         String xRequestId = UUID.randomUUID().toString();
-        log.debug("getchannels code filter = {}, xRequestId = {}", ciFiscalcode, xRequestId);
+        log.debug("getBundlesByCI cifiscalcode = {}, xRequestId = {}", ciFiscalcode, xRequestId);
         Bundles bundles = gecService.getBundlesByCI(ciFiscalcode, limit, page, xRequestId);
         BundlesResource resource = GecMapper.toResource(bundles);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getchannels result = {}", resource);
-        log.trace("getchannels end");
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getBundlesByCI result = {}", resource);
+        log.trace("getBundlesByCI end");
+        return resource;
+    }
+
+    @GetMapping("/touchpoints")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.gec.getBundlesByCI}")
+    public TouchpointsResource getTouchpoints(@ApiParam("${swagger.pageable.number}")
+                                          @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                              @ApiParam("${swagger.pageable.start}")
+                                          @RequestParam(required = false) Integer page) {
+        log.trace("getTouchpoints start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getTouchpoints xRequestId = {}", xRequestId);
+        Touchpoints touchpoints = gecService.getTouchpoints(limit, page, xRequestId);
+        TouchpointsResource resource = GecMapper.toResource(touchpoints);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getTouchpoints result = {}", resource);
+        log.trace("getTouchpoints end");
         return resource;
     }
 

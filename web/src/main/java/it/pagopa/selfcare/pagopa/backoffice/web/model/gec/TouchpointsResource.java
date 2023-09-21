@@ -7,10 +7,10 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class BundlesResource {
+public class TouchpointsResource {
 
-    @JsonProperty("bundles")
-    private List<BundleResource> bundles;
+    @JsonProperty("touchpoints")
+    private List<TouchpointResource> touchpoints;
 
     @JsonProperty("pageInfo")
     private PageInfo pageInfo;

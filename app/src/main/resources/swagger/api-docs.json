@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.4.7"
+    "version" : "0.4.12"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -3087,15 +3087,6 @@
           "schema" : {
             "type" : "string"
           }
-        }, {
-          "name" : "ordering",
-          "in" : "query",
-          "description" : "Sort Direction ordering",
-          "required" : false,
-          "style" : "form",
-          "schema" : {
-            "type" : "string"
-          }
         } ],
         "responses" : {
           "200" : {
@@ -3104,6 +3095,90 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/BundlesResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/gec/touchpoints" : {
+      "get" : {
+        "tags" : [ "gec" ],
+        "summary" : "getTouchpoints",
+        "description" : "Get paginated list of bundles",
+        "operationId" : "getTouchpointsUsingGET",
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of elements on one page. Default = 50",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number. Page value starts from 0",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TouchpointsResource"
                 }
               }
             }
@@ -5837,10 +5912,12 @@
             "type" : "string"
           },
           "inserted_date" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "date-time"
           },
           "last_updated_date" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "date-time"
           },
           "max_payment_amount" : {
             "type" : "integer",
@@ -5873,10 +5950,12 @@
             "type" : "string"
           },
           "validity_date_from" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "date-time"
           },
           "validity_date_to" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "date-time"
           }
         }
       },
@@ -8133,6 +8212,37 @@
             "description" : "List of ec stations",
             "items" : {
               "$ref" : "#/components/schemas/StationResource"
+            }
+          }
+        }
+      },
+      "TouchpointResource" : {
+        "title" : "TouchpointResource",
+        "type" : "object",
+        "properties" : {
+          "createdDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TouchpointsResource" : {
+        "title" : "TouchpointsResource",
+        "type" : "object",
+        "properties" : {
+          "pageInfo" : {
+            "$ref" : "#/components/schemas/PageInfo"
+          },
+          "touchpoints" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TouchpointResource"
             }
           }
         }
