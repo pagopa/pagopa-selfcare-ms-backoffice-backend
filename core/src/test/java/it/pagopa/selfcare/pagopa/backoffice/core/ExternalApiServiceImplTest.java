@@ -125,16 +125,16 @@ class ExternalApiServiceImplTest {
         String brokerId = "brokerId";
         String productId = "productId";
         Delegation delegationMock = mockInstance(new Delegation());
-        when(externalApiConnectorMock.getBrokerDelegation(anyString(),anyString(),anyString()))
+        when(externalApiConnectorMock.getBrokerDelegation(anyString(),anyString(),anyString(),anyString()))
                 .thenReturn(List.of(delegationMock));
         //when
-        List<Delegation> delegations = externalApiService.getBrokerDelegation(institutionId,brokerId,productId);
+        List<Delegation> delegations = externalApiService.getBrokerDelegation(institutionId,brokerId,productId, "FULL");
         //then
         assertNotNull(delegations);
         delegations.forEach(TestUtils::checkNotNullFields);
         delegations.forEach(product -> TestUtils.reflectionEqualsByName(delegationMock, delegations));
         verify(externalApiConnectorMock, times(1))
-                .getBrokerDelegation(institutionId,brokerId,productId);
+                .getBrokerDelegation(institutionId,brokerId,productId, "FULL");
     }
 
 }
