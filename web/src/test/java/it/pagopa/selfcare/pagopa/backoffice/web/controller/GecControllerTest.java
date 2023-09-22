@@ -6,6 +6,8 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoint;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.core.GecService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
@@ -69,7 +71,7 @@ class GecControllerTest {
                 .thenReturn(bundles);
         //when
         mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL)
+                        .get(BASE_URL+ "/ci/bundles")
                         .queryParam("limit", String.valueOf(limit))
                         .queryParam("page", String.valueOf(page))
                         .queryParam("ciFiscalcode", cifiscalcode)
@@ -82,6 +84,72 @@ class GecControllerTest {
         //then
         verify(gecServiceMock, times(1))
                 .getBundlesByCI(anyString(), anyInt(), anyInt(), anyString());
+        verifyNoMoreInteractions(gecServiceMock);
+    }
+
+    @Test
+    void getTouchpoints() throws Exception {
+        //given
+
+        Integer limit = 1;
+        Integer page = 1;
+        String xRequestId = "1";
+
+        Touchpoint touchpoint = mockInstance(new Touchpoint());
+        Touchpoints touchpoints = mockInstance(new Touchpoints());
+        touchpoints.setTouchpoints(List.of(touchpoint));
+        PageInfo pageInfo = mockInstance(new PageInfo());
+        touchpoints.setPageInfo(pageInfo);
+
+        when(gecServiceMock.getTouchpoints(anyInt(), anyInt(),anyString()))
+                .thenReturn(touchpoints);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL+ "/touchpoints")
+                        .queryParam("limit", String.valueOf(limit))
+                        .queryParam("page", String.valueOf(page))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.touchpoints", notNullValue()))
+                .andExpect(jsonPath("$.touchpoints", not(empty())));
+        //then
+        verify(gecServiceMock, times(1))
+                .getTouchpoints(anyInt(), anyInt(), anyString());
+        verifyNoMoreInteractions(gecServiceMock);
+    }
+
+    @Test
+    void getBundlesByPSP() throws Exception {
+        //given
+
+        Integer limit = 1;
+        Integer page = 1;
+        String pspcode = "pspcode";
+        String xRequestId = "1";
+
+        Bundle bundle = mockInstance(new Bundle());
+        Bundles bundles = mockInstance(new Bundles());
+        bundles.setBundles(List.of(bundle));
+        PageInfo pageInfo = mockInstance(new PageInfo());
+        bundles.setPageInfo(pageInfo);
+
+        when(gecServiceMock.getBundlesByPSP(anyString(), anyInt(), anyInt(),anyString()))
+                .thenReturn(bundles);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL+ "/psps/bundles")
+                        .queryParam("limit", String.valueOf(limit))
+                        .queryParam("page", String.valueOf(page))
+                        .queryParam("pspcode", pspcode)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.pageInfo", notNullValue()));
+                .andExpect(jsonPath("$.bundles", notNullValue()))
+                .andExpect(jsonPath("$.bundles", not(empty())))
+                .andExpect(jsonPath("$.bundles[0].description", notNullValue()));
+        //then
+        verify(gecServiceMock, times(1))
+                .getBundlesByPSP(anyString(), anyInt(), anyInt(), anyString());
         verifyNoMoreInteractions(gecServiceMock);
     }
 }
