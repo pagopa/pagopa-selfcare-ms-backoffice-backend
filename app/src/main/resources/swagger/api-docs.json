@@ -3069,6 +3069,17 @@
             "format" : "int32"
           }
         }, {
+          "name" : "bundleType",
+          "in" : "query",
+          "description" : "Boundles's type",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "GLOBAL", "PRIVATE", "PUBLIC" ]
+          }
+        }, {
           "name" : "page",
           "in" : "query",
           "description" : "Page number. Page value starts from 0",
@@ -3081,8 +3092,17 @@
         }, {
           "name" : "pspcode",
           "in" : "query",
-          "description" : "Fiscalcode of creditor institution",
+          "description" : "Fiscalcode of the payment service provider",
           "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "name",
+          "in" : "query",
+          "description" : "Boundle's name",
+          "required" : false,
           "style" : "form",
           "schema" : {
             "type" : "string"
