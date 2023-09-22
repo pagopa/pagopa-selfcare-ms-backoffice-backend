@@ -34,7 +34,7 @@ public class GecController {
 
     }
 
-    @GetMapping("")
+    @GetMapping("/ci/bundles")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.gec.getBundlesByCI}")
     public BundlesResource getBundlesByCI(@ApiParam("${swagger.pageable.number}")
@@ -70,7 +70,24 @@ public class GecController {
         return resource;
     }
 
-
+    @GetMapping("/psps/bundles")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.gec.getBundlesByCI}")
+    public BundlesResource getBundlesByPSP(@ApiParam("${swagger.pageable.number}")
+                                          @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                          @ApiParam("${swagger.pageable.start}")
+                                          @RequestParam(required = false) Integer page,
+                                          @ApiParam("${swagger.model.gec.cifiscalcode}")
+                                          @RequestParam(required = true) String pspcode) {
+        log.trace("getBundlesByPSP start");
+        String xRequestId = UUID.randomUUID().toString();
+        log.debug("getBundlesByPSP cifiscalcode = {}, xRequestId = {}", pspcode, xRequestId);
+        Bundles bundles = gecService.getBundlesByPSP(pspcode, limit, page, xRequestId);
+        BundlesResource resource = GecMapper.toResource(bundles);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getBundlesByPSP result = {}", resource);
+        log.trace("getBundlesByPSP end");
+        return resource;
+    }
 
 
 }
