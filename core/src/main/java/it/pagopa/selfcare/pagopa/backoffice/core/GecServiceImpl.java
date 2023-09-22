@@ -33,5 +33,13 @@ public class GecServiceImpl implements GecService {
         log.trace("getTouchpoints end");
         return response;
     }
+    @Override
+    public Bundles getBundlesByPSP(String pspcode, Integer limit, Integer page, String xRequestId){
+        log.trace("getBundlesByPSP start");
+        Bundles response = gecConnector.getBundlesByPSP(pspcode, limit, page, xRequestId);
+        log.debug("getBundlesByPSP result = {}", response);
+        log.trace("getBundlesByPSP end");
+        return response;
+    }
 
 }
