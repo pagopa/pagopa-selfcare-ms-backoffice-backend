@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.GecConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.ArrayList;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.reflectionEqualsByName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -77,19 +80,22 @@ class GecServiceImplTest {
         final Integer limit = 1;
         final Integer page = 1;
         final String pspcode = "pspcode";
+        final ArrayList<BundleType> boundleType = new ArrayList<>();
+        final String name = "name";
+
 
         final String xRequestId = "xRequestId";
         Bundles bundlesMock = mock(Bundles.class);
-        when(gecConnectorMock.getBundlesByPSP(any(), any(), any(), any()))
+        when(gecConnectorMock.getBundlesByPSP(any(), any(), any(), any(), any(), any()))
                 .thenReturn(bundlesMock);
         //when
-        Bundles bundles = gecService.getBundlesByPSP(pspcode, limit, page, xRequestId);
+        Bundles bundles = gecService.getBundlesByPSP(pspcode, boundleType, name, limit, page, xRequestId);
         //then
         assertNotNull(bundles);
         assertEquals(bundlesMock, bundles);
         reflectionEqualsByName(bundlesMock, bundles);
         verify(gecConnectorMock, times(1))
-                .getBundlesByPSP(pspcode, limit, page, xRequestId);
+                .getBundlesByPSP(pspcode, boundleType, name, limit, page, xRequestId);
         verifyNoMoreInteractions(gecConnectorMock);
     }
 }
