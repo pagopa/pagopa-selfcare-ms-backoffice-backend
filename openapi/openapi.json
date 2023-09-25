@@ -3476,7 +3476,7 @@
         ]
       }
     },
-    "/gec/{pspCode}/bundles": {
+    "/gec/psp/{pspCode}/bundles": {
       "get": {
         "tags": [
           "gec"
@@ -8056,7 +8056,7 @@
         "title": "TouchpointResource",
         "type": "object",
         "properties": {
-          "createdDate": {
+          "created_date": {
             "type": "string",
             "format": "date-time"
           },
