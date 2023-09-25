@@ -37,18 +37,17 @@ class GecServiceImplTest {
         final Integer page = 1;
         final String cifiscalcode = "cifiscalcode";
 
-        final String xRequestId = "xRequestId";
         Bundles bundlesMock = mock(Bundles.class);
-        when(gecConnectorMock.getBundlesByCI(any(), any(), any(), any()))
+        when(gecConnectorMock.getBundlesByCI(any(), any(), any()))
                 .thenReturn(bundlesMock);
         //when
-        Bundles bundles = gecService.getBundlesByCI(cifiscalcode, limit, page, xRequestId);
+        Bundles bundles = gecService.getBundlesByCI(cifiscalcode, limit, page);
         //then
         assertNotNull(bundles);
         assertEquals(bundlesMock, bundles);
         reflectionEqualsByName(bundlesMock, bundles);
         verify(gecConnectorMock, times(1))
-                .getBundlesByCI(cifiscalcode, limit, page, xRequestId);
+                .getBundlesByCI(cifiscalcode, limit, page);
         verifyNoMoreInteractions(gecConnectorMock);
     }
 
@@ -57,19 +56,18 @@ class GecServiceImplTest {
         //given
         final Integer limit = 1;
         final Integer page = 1;
-        final String xRequestId = "xRequestId";
 
         Touchpoints touchpointsMock = mock(Touchpoints.class);
-        when(gecConnectorMock.getTouchpoints( any(), any(), any()))
+        when(gecConnectorMock.getTouchpoints( any(), any()))
                 .thenReturn(touchpointsMock);
         //when
-        Touchpoints touchpoints = gecService.getTouchpoints(limit, page, xRequestId);
+        Touchpoints touchpoints = gecService.getTouchpoints(limit, page);
         //then
         assertNotNull(touchpoints);
         assertEquals(touchpointsMock, touchpoints);
         reflectionEqualsByName(touchpointsMock, touchpoints);
         verify(gecConnectorMock, times(1))
-                .getTouchpoints(limit, page, xRequestId);
+                .getTouchpoints(limit, page);
         verifyNoMoreInteractions(gecConnectorMock);
     }
 
@@ -83,18 +81,17 @@ class GecServiceImplTest {
         final String name = "name";
 
 
-        final String xRequestId = "xRequestId";
         Bundles bundlesMock = mock(Bundles.class);
-        when(gecConnectorMock.getBundlesByPSP(any(), any(), any(), any(), any(), any()))
+        when(gecConnectorMock.getBundlesByPSP(any(), any(), any(), any(), any()))
                 .thenReturn(bundlesMock);
         //when
-        Bundles bundles = gecService.getBundlesByPSP(pspcode, boundleType, name, limit, page, xRequestId);
+        Bundles bundles = gecService.getBundlesByPSP(pspcode, boundleType, name, limit, page);
         //then
         assertNotNull(bundles);
         assertEquals(bundlesMock, bundles);
         reflectionEqualsByName(bundlesMock, bundles);
         verify(gecConnectorMock, times(1))
-                .getBundlesByPSP(pspcode, boundleType, name, limit, page, xRequestId);
+                .getBundlesByPSP(pspcode, boundleType, name, limit, page);
         verifyNoMoreInteractions(gecConnectorMock);
     }
 }
