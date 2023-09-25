@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.channels;
 
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentServiceProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

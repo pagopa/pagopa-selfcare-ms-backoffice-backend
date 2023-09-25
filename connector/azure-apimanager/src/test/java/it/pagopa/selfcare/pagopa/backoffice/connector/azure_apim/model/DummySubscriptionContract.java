@@ -1,12 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.azure_apim.model;
 
-import com.azure.core.http.rest.PagedFlux;
-import com.azure.core.http.rest.PagedIterable;
-import com.azure.core.http.rest.PagedResponse;
 import com.azure.resourcemanager.apimanagement.fluent.models.SubscriptionContractInner;
 import com.azure.resourcemanager.apimanagement.models.SubscriptionContract;
 import com.azure.resourcemanager.apimanagement.models.SubscriptionState;
 import lombok.Setter;
+
 import java.time.OffsetDateTime;
 
 @Setter

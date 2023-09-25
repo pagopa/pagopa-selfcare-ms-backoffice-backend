@@ -1,18 +1,11 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channel;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannel;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsResourceList;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.WrapperStationsResource;
 
 import java.time.Instant;
 import java.time.LocalDate;
