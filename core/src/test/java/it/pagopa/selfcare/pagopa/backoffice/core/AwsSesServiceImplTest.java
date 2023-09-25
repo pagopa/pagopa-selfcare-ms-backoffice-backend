@@ -12,12 +12,11 @@ import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith({SpringExtension.class, SystemStubsExtension.class})
 @ContextConfiguration(classes = {AwsSesServiceImpl.class})
- class AwsSesServiceImplTest {
+class AwsSesServiceImplTest {
 
     @SystemStub
     private EnvironmentVariables environmentVariables;
@@ -38,15 +37,15 @@ import static org.mockito.Mockito.*;
         String messageId = "111";
         String res = "Email sent! Message ID: " + messageId;
 
-        when(awsSesConnector.sendEmail(subject, body,to))
+        when(awsSesConnector.sendEmail(subject, body, to))
                 .thenReturn(res);
 
         //when
-        String response = awsSesService.sendEmail(subject, body,to);
+        String response = awsSesService.sendEmail(subject, body, to);
 
-        assertEquals(response,res);
+        assertEquals(response, res);
         verify(awsSesConnector, times(1))
-                .sendEmail(subject, body,to);
+                .sendEmail(subject, body, to);
 
         verifyNoMoreInteractions(awsSesConnector);
     }

@@ -69,7 +69,7 @@ class StationControllerTest {
     private static final String BASE_URL = "/stations";
     @Autowired
     protected MockMvc mvc;
-    private StationMapper mapper = Mappers.getMapper(StationMapper.class);
+    private final StationMapper mapper = Mappers.getMapper(StationMapper.class);
     @Autowired
     protected ObjectMapper objectMapper;
 
@@ -101,7 +101,7 @@ class StationControllerTest {
         stations.setStationsList(List.of(station));
         stations.setPageInfo(pageInfo);
 
-        when(apiConfigServiceMock.getStations(anyInt(), anyInt(), any(), any(), any(), any(), any()))
+        when(apiConfigServiceMock.getStations(anyInt(), anyInt(), any(), any(), any(), any()))
                 .thenReturn(stations);
         //when
         mvc.perform(get(BASE_URL)
@@ -117,7 +117,7 @@ class StationControllerTest {
                 .andExpect(jsonPath("$.stationsList[0].stationCode", notNullValue()));
         //then
         verify(apiConfigServiceMock, times(1))
-                .getStations(eq(limit), eq(page), eq(sort), isNull(), eq(creditorInstitutionCode), isNull(), anyString());
+                .getStations(eq(limit), eq(page), eq(sort), isNull(), eq(creditorInstitutionCode), isNull());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -126,7 +126,7 @@ class StationControllerTest {
         //given
         String stationId = "stationId";
         StationDetails station = mockInstance(new StationDetails());
-        when(apiConfigServiceMock.getStation(anyString(), anyString()))
+        when(apiConfigServiceMock.getStation(anyString()))
                 .thenReturn(station);
         //when
         mvc.perform(get(BASE_URL + "/details/{stationId}", stationId)
@@ -168,7 +168,7 @@ class StationControllerTest {
                 .andExpect(jsonPath("$.primitiveVersion", notNullValue()));
         //then
         verify(apiConfigServiceMock, times(1))
-                .getStation(eq(stationId), anyString());
+                .getStation(eq(stationId));
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -177,7 +177,7 @@ class StationControllerTest {
         // Given
         StationDetailsDto stationDetailsDto = objectMapper.readValue(dto.getInputStream(), StationDetailsDto.class);
         StationDetails stationDetails = mapper.fromDto(stationDetailsDto);
-        when(apiConfigServiceMock.createStation(any(), anyString())).thenReturn(stationDetails);
+        when(apiConfigServiceMock.createStation(any())).thenReturn(stationDetails);
 
         DummyWrapperEntity<StationDetails> wrapperEntity = mockInstance(new DummyWrapperEntity<>(stationDetails));
         wrapperEntity.setEntity(stationDetails);
@@ -214,7 +214,7 @@ class StationControllerTest {
         WrapperEntitiesList entitiesList = mockInstance(new WrapperEntitiesList());
         entitiesList.setWrapperEntities(new ArrayList<>());
 
-        when(apiConfigServiceMock.generateStationCode(anyString(), any()))
+        when(apiConfigServiceMock.generateStationCode(anyString()))
                 .thenReturn(stationCode);
         when(wrapperServiceMock.findByStatusAndTypeAndBrokerCodeAndIdLike(any(), any(), any(), anyString(), anyInt(), anyInt(), anyString()))
                 .thenReturn(entitiesList);
@@ -226,7 +226,7 @@ class StationControllerTest {
                 .andExpect(jsonPath("$.stationCode", is(stationCode)));
         //then
         verify(apiConfigServiceMock, times(1))
-                .generateStationCode(eq(ecCode), anyString());
+                .generateStationCode(eq(ecCode));
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
@@ -238,7 +238,7 @@ class StationControllerTest {
         CreditorInstitutionStationDto station = mockInstance(new CreditorInstitutionStationDto());
         CreditorInstitutionStationEdit response = mockInstance(new CreditorInstitutionStationEdit());
 
-        when(apiConfigServiceMock.createCreditorInstitutionStationRelation(anyString(), any(), anyString()))
+        when(apiConfigServiceMock.createCreditorInstitutionStationRelation(anyString(), any()))
                 .thenReturn(response);
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -250,7 +250,7 @@ class StationControllerTest {
         //then
         ArgumentCaptor<CreditorInstitutionStationEdit> stationArgumentCaptor = ArgumentCaptor.forClass(CreditorInstitutionStationEdit.class);
         verify(apiConfigServiceMock, times(1))
-                .createCreditorInstitutionStationRelation(eq(ecCode), stationArgumentCaptor.capture(), anyString());
+                .createCreditorInstitutionStationRelation(eq(ecCode), stationArgumentCaptor.capture());
         CreditorInstitutionStationEdit captured = stationArgumentCaptor.getValue();
         assertNotNull(captured);
         verifyNoMoreInteractions(apiConfigServiceMock);
@@ -374,7 +374,7 @@ class StationControllerTest {
         DummyWrapperEntity<StationDetails> wrapperEntityDto = new DummyWrapperEntity<>(stationDetails);
         wrapperEntities.getEntities().add(wrapperEntityDto);
 
-        when(apiConfigServiceMock.updateStation(anyString(), any(), anyString()))
+        when(apiConfigServiceMock.updateStation(anyString(), any()))
                 .thenReturn(stationDetails);
         when(wrapperServiceMock.updateWrapperStationDetails(any(), anyString(), anyString(), anyString()))
                 .thenReturn(wrapperEntities);
@@ -385,7 +385,7 @@ class StationControllerTest {
                         .content(dto.getInputStream().readAllBytes())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-Request-Id", String.valueOf(xRequestId)))
+                        .header("X-Request-Id", xRequestId))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.password", is(stationDetails.getPassword())))
@@ -410,7 +410,7 @@ class StationControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .updateStation(anyString(), any(), anyString());
+                .updateStation(anyString(), any());
 
         verify(wrapperServiceMock, times(1))
                 .updateWrapperStationDetails(any(), anyString(), anyString(), eq(null));
@@ -480,7 +480,7 @@ class StationControllerTest {
 
         when(wrapperServiceMock.findByIdLikeOrTypeOrBrokerCode(stationCode, wrapperType, brokerCode, page, size))
                 .thenReturn(mongoList);
-        when(apiConfigServiceMock.getStations(anyInt(), anyInt(), anyString(), anyString(), isNull(), anyString(), anyString()))
+        when(apiConfigServiceMock.getStations(anyInt(), anyInt(), anyString(), anyString(), isNull(), anyString()))
                 .thenReturn(stations);
         when(apiConfigServiceMock.mergeAndSortWrapperStations(any(), any(), anyString()))
                 .thenReturn(wrapperStations1);
@@ -502,7 +502,7 @@ class StationControllerTest {
         verify(wrapperServiceMock, times(1))
                 .findByIdLikeOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt());
         verify(apiConfigServiceMock, times(1))
-                .getStations(anyInt(), anyInt(), anyString(), anyString(), isNull(), anyString(), anyString());
+                .getStations(anyInt(), anyInt(), anyString(), anyString(), isNull(), anyString());
         verify(apiConfigServiceMock, times(1))
                 .mergeAndSortWrapperStations(any(), any(), anyString());
 
@@ -521,7 +521,7 @@ class StationControllerTest {
         stationDetailsList.setStationsDetailsList(List.of(stationDetails));
 
 
-        when(apiConfigSelfcareIntegrationService.getStationsDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt(), anyString()))
+        when(apiConfigSelfcareIntegrationService.getStationsDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt()))
                 .thenReturn(stationDetailsList);
         //when
         mvc.perform(get(BASE_URL + "/{brokerId}", brokerId)
@@ -566,7 +566,7 @@ class StationControllerTest {
                 .andExpect(jsonPath("$.stations[*].primitiveVersion", everyItem(notNullValue())));
 
         verify(apiConfigSelfcareIntegrationService, times(1))
-                .getStationsDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt(), anyString());
+                .getStationsDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt());
 
         verifyNoMoreInteractions(wrapperServiceMock);
 
@@ -637,7 +637,7 @@ class StationControllerTest {
 
         doThrow(ResourceNotFoundException.class).when(wrapperServiceMock).findById(stationId);
 
-        when(apiConfigServiceMock.getStation(anyString(), anyString()))
+        when(apiConfigServiceMock.getStation(anyString()))
                 .thenReturn(station);
         //when
         mvc.perform(get(BASE_URL + "/get-details/{stationId}", stationId)
@@ -679,7 +679,7 @@ class StationControllerTest {
                 .andExpect(jsonPath("$.primitiveVersion", notNullValue()));
         //then
         verify(apiConfigServiceMock, times(1))
-                .getStation(eq(stationId), anyString());
+                .getStation(eq(stationId));
         verifyNoMoreInteractions(apiConfigServiceMock);
      }
 
@@ -688,7 +688,7 @@ class StationControllerTest {
         // Given
         BrokerDto brokerDto = objectMapper.readValue(dto.getInputStream(), BrokerDto.class);
         BrokerDetails broker = BrokerMapper.fromDto(brokerDto);
-        when(apiConfigServiceMock.createBroker(any(), anyString())).thenReturn(broker);
+        when(apiConfigServiceMock.createBroker(any())).thenReturn(broker);
 
         // When
         mvc.perform(MockMvcRequestBuilders.post(BASE_URL + "/create-broker")
@@ -703,7 +703,7 @@ class StationControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .createBroker(any(), anyString());
+                .createBroker(any());
     }
 
     @Test
@@ -719,7 +719,7 @@ class StationControllerTest {
         creditorInstitutions.setCreditorInstitutionList(creditorInstitutionList);
 
 
-        when(apiConfigServiceMock.getCreditorInstitutionsByStation(anyString(), anyInt(), anyInt(), anyString()))
+        when(apiConfigServiceMock.getCreditorInstitutionsByStation(anyString(), anyInt(), anyInt()))
                 .thenReturn(creditorInstitutions);
 
         //when
@@ -730,7 +730,7 @@ class StationControllerTest {
                 .andExpect(jsonPath("$.creditor_institutions", notNullValue()));
         //then
         verify(apiConfigServiceMock, times(1))
-                .getCreditorInstitutionsByStation(anyString(), anyInt(), anyInt(), anyString());
+                .getCreditorInstitutionsByStation(anyString(), anyInt(), anyInt());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
@@ -743,18 +743,18 @@ class StationControllerTest {
         String xRequestId = "1";
         String stationcode = "stationcode";
 
-        doNothing().when(apiConfigServiceMock).deleteCreditorInstitutionStationRelationship(anyString(), anyString(), anyString());
+        doNothing().when(apiConfigServiceMock).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
 
         //when
         mvc.perform(MockMvcRequestBuilders
                         .delete(BASE_URL + "/{ecCode}/station/{stationcode}", ecCode, stationcode)
-                        .header("X-Request-Id", xRequestId)
+                        .header("X-Request-Id")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .deleteCreditorInstitutionStationRelationship(anyString(), anyString(), anyString());
+                .deleteCreditorInstitutionStationRelationship(anyString(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -796,11 +796,11 @@ class StationControllerTest {
 
         when(wrapperServiceMock.findByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, null, 0, 100))
                 .thenReturn(mongoList);
-        when(apiConfigServiceMock.getStations(eq(100), eq(0), eq("ASC"), eq(null), eq(null), eq(stationCode), any()))
+        when(apiConfigServiceMock.getStations(eq(100), eq(0), eq("ASC"), eq(null), eq(null), eq(stationCode)))
                 .thenReturn(stations);
         when(apiConfigServiceMock.mergeAndSortWrapperStations(any(), any(), anyString()))
                 .thenReturn(wrapperStations1);
-        when(apiConfigServiceMock.generateStationCodeV2(any(), anyString(), anyString()))
+        when(apiConfigServiceMock.generateStationCodeV2(any(), anyString()))
                 .thenReturn("stationCode_01");
 
         //when
@@ -813,11 +813,11 @@ class StationControllerTest {
         verify(wrapperServiceMock, times(1))
                 .findByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, null, 0, 100);
         verify(apiConfigServiceMock, times(1))
-                .getStations(eq(100), eq(0), eq("ASC"), eq(null), eq(null), eq(stationCode), any());
+                .getStations(eq(100), eq(0), eq("ASC"), eq(null), eq(null), eq(stationCode));
         verify(apiConfigServiceMock, times(1))
                 .mergeAndSortWrapperStations(any(), any(), anyString());
         verify(apiConfigServiceMock, times(1))
-                .generateStationCodeV2(any(), anyString(), anyString());
+                .generateStationCodeV2(any(), anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
@@ -836,7 +836,7 @@ class StationControllerTest {
         brokers.setBrokerList(new ArrayList<>());
         brokers.getBrokerList().add(broker);
 
-        when(apiConfigServiceMock.getBrokersEC( anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyString()))
+        when(apiConfigServiceMock.getBrokersEC( anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(brokers);
 
         //when
@@ -851,7 +851,7 @@ class StationControllerTest {
                 .andExpect(status().is2xxSuccessful());
         //then
         verify(apiConfigServiceMock, times(1))
-                .getBrokersEC( anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyString());
+                .getBrokersEC( anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }

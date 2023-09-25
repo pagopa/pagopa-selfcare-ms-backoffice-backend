@@ -117,8 +117,6 @@ public final class TestUtils {
                         m.invoke(o, ZonedDateTime.now());
                     } else if (OffsetDateTime.class.isAssignableFrom(type)) {
                         m.invoke(o, OffsetDateTime.now());
-                    } else if (UUID.class.isAssignableFrom(type)) {
-                        m.invoke(o, UUID.randomUUID());
                     } else {
                         try {
                             if (checkPrintLevel(printLevel, Level.INFO)) {
