@@ -58,10 +58,10 @@ public class GecController {
     @GetMapping("/bundles/touchpoints")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.gec.getBundlesByCI}")
-    public TouchpointsResource getTouchpoints(@ApiParam("${swagger.pageable.number}")
-                                          @RequestParam(required = false, defaultValue = "50") Integer limit,
+    public TouchpointsResource getTouchpoints(@ApiParam("${swagger.pageable.number.touchpoints}")
+                                          @RequestParam(required = false, defaultValue = "10") Integer limit,
                                           @ApiParam("${swagger.pageable.start}")
-                                          @RequestParam(required = false) Integer page) {
+                                          @RequestParam(required = false, defaultValue = "0") Integer page) {
         log.trace("getTouchpoints start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getTouchpoints xRequestId = {}", xRequestId);
@@ -80,7 +80,7 @@ public class GecController {
                                           @ApiParam("${swagger.model.gec.boundleType}")
                                           @RequestParam(required = false) ArrayList<BundleType> bundleType,
                                           @ApiParam("${swagger.pageable.start}")
-                                          @RequestParam(required = false) Integer page,
+                                          @RequestParam(required = false, defaultValue = "0") Integer page,
                                           @ApiParam("${swagger.model.gec.pspcode}")
                                           @PathVariable(required = true) String pspCode,
                                           @ApiParam("${swagger.model.gec.name}")
