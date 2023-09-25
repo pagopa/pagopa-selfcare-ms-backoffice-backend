@@ -123,8 +123,8 @@ public class LoggingAspect {
                     var isSecret = signature.getMethod().getParameters()[i].getAnnotation(Secret.class);
                     return isSecret != null ? "***" : arg;
                 })
-                .map(elem -> elem.replaceAll(" (\\w|\\d){32,}", "***"))
-                .map(elem -> elem.replaceAll("\\n", " "))
+                .map(elem -> elem.replace(" (\\w){32,}", "***"))
+                .map(elem -> elem.replace("\\n", " "))
                 .collect(Collectors.toList());
 
         log.debug("Start Method {} - args: {}", joinPoint.getSignature().toShortString(),
