@@ -39,9 +39,9 @@ import java.util.UUID;
 @Api(tags = "stations")
 public class StationController {
 
-    private CreditorInstitutionMapper creditorInstitutionMapper = Mappers.getMapper(CreditorInstitutionMapper.class);
+    private final CreditorInstitutionMapper creditorInstitutionMapper = Mappers.getMapper(CreditorInstitutionMapper.class);
 
-    private StationMapper stationMapper = Mappers.getMapper(StationMapper.class);
+    private final StationMapper stationMapper = Mappers.getMapper(StationMapper.class);
     private final ApiConfigService apiConfigService;
 
     private final WrapperService wrapperService;

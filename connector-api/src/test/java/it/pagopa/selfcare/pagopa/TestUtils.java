@@ -129,7 +129,7 @@ public final class TestUtils {
                                 if (e instanceof InvocationTargetException) {
                                     errorMessage = ((InvocationTargetException) e).getTargetException().getMessage();
                                 }
-                                System.out.println(String.format("[WARNING] Cannot mock using setter %s accepting type %s: %s - %s", m.getName(), type.getName(), e.getClass().getName(), errorMessage));
+                                System.out.printf("[WARNING] Cannot mock using setter %s accepting type %s: %s - %s%n", m.getName(), type.getName(), e.getClass().getName(), errorMessage);
                             }
                         }
                     }
@@ -209,11 +209,11 @@ public final class TestUtils {
                             checked.add(m1);
                         }
 
-                        Assertions.assertTrue(result, String.format("Invalid compare between methods%n%s = %s%n%s = %s", m1.toString(), v1, m2.toString(), v2));
+                        Assertions.assertTrue(result, String.format("Invalid compare between methods%n%s = %s%n%s = %s", m1, v1, m2, v2));
                     } catch (NoSuchMethodException e) {
-                        System.out.println(String.format("[WARNING] Method %s is not defined in %s%n%s", m1.toString(), o2.getClass().getName(), e.getMessage()));
+                        System.out.printf("[WARNING] Method %s is not defined in %s%n%s%n", m1, o2.getClass().getName(), e.getMessage());
                     } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new IllegalStateException(String.format("[ERROR] Something gone wrong comparing %s with %s%n%s", m1.toString(), m2.toString(), e.getMessage()));
+                        throw new IllegalStateException(String.format("[ERROR] Something gone wrong comparing %s with %s%n%s", m1, m2, e.getMessage()));
                     }
                 }
             }
