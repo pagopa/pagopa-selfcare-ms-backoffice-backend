@@ -3,7 +3,6 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.stations;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data

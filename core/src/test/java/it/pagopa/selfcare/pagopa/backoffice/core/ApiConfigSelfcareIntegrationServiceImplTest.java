@@ -1,33 +1,24 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
-import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigSelfcareIntegrationConnector;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAssociatedCodeList;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetailsList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static it.pagopa.selfcare.pagopa.TestUtils.reflectionEqualsByName;
-import static it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigServiceImpl.CREDITOR_INSTITUTION_CODE_IS_REQUIRED;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 

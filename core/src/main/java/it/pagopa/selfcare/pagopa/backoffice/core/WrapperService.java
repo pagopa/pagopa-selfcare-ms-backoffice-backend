@@ -7,9 +7,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntit
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 
-import java.util.List;
-import java.util.Optional;
-
 public interface WrapperService {
 
     WrapperEntitiesOperations<ChannelDetails> createWrapperChannelDetails(ChannelDetails channelDetails,String note,String status);

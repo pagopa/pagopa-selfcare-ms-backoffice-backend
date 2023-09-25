@@ -8,7 +8,6 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.BundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.BundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.TouchpointResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.TouchpointsResource;
-import springfox.documentation.swagger2.mappers.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -12,12 +12,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatu
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
 import org.junit.jupiter.api.AfterEach;
-
-import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.dao.DuplicateKeyException;
@@ -28,6 +22,11 @@ import org.springframework.security.test.context.TestSecurityContextHolder;
 
 import java.util.List;
 import java.util.Optional;
+
+import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 class WrapperConnectorImplTest {
 
