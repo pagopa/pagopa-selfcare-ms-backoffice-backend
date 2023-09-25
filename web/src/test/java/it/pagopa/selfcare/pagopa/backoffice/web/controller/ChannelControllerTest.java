@@ -8,10 +8,10 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntities
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyWrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Station;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannel;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperChannels;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.core.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
