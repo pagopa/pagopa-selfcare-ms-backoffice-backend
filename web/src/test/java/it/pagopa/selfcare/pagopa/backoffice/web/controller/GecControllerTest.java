@@ -2,8 +2,6 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channel;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.GecService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -23,10 +21,9 @@ import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

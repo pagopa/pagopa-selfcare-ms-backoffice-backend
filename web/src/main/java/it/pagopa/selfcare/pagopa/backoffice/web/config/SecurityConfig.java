@@ -2,7 +2,9 @@ package it.pagopa.selfcare.pagopa.backoffice.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.Problem;
-import it.pagopa.selfcare.pagopa.backoffice.web.security.*;
+import it.pagopa.selfcare.pagopa.backoffice.web.security.JwtAuthenticationFilter;
+import it.pagopa.selfcare.pagopa.backoffice.web.security.JwtAuthenticationProvider;
+import it.pagopa.selfcare.pagopa.backoffice.web.security.JwtAuthenticationStrategyFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.*;
 import org.springframework.http.HttpHeaders;

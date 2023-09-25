@@ -9,10 +9,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntit
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStation;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.*;
 
 import java.util.List;
