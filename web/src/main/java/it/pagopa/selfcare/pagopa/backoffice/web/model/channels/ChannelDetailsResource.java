@@ -7,8 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.Protocol;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
 import lombok.Data;
 import lombok.ToString;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+
 import java.time.Instant;
 import java.util.List;
 
