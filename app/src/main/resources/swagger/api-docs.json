@@ -3052,12 +3052,12 @@
         } ]
       }
     },
-    "/gec/psps/bundles" : {
+    "/gec/bundles/touchpoints" : {
       "get" : {
         "tags" : [ "gec" ],
-        "summary" : "getBundlesByPSP",
+        "summary" : "getTouchpoints",
         "description" : "Get paginated list of bundles",
-        "operationId" : "getBundlesByPSPUsingGET",
+        "operationId" : "getTouchpointsUsingGET",
         "parameters" : [ {
           "name" : "limit",
           "in" : "query",
@@ -3069,17 +3069,6 @@
             "format" : "int32"
           }
         }, {
-          "name" : "bundleType",
-          "in" : "query",
-          "description" : "Boundles's type",
-          "required" : false,
-          "style" : "form",
-          "explode" : true,
-          "schema" : {
-            "type" : "string",
-            "enum" : [ "GLOBAL", "PRIVATE", "PUBLIC" ]
-          }
-        }, {
           "name" : "page",
           "in" : "query",
           "description" : "Page number. Page value starts from 0",
@@ -3089,24 +3078,6 @@
             "type" : "integer",
             "format" : "int32"
           }
-        }, {
-          "name" : "pspcode",
-          "in" : "query",
-          "description" : "Fiscalcode of the payment service provider",
-          "required" : true,
-          "style" : "form",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "name",
-          "in" : "query",
-          "description" : "Boundle's name",
-          "required" : false,
-          "style" : "form",
-          "schema" : {
-            "type" : "string"
-          }
         } ],
         "responses" : {
           "200" : {
@@ -3114,7 +3085,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/BundlesResource"
+                  "$ref" : "#/components/schemas/TouchpointsResource"
                 }
               }
             }
@@ -3165,12 +3136,12 @@
         } ]
       }
     },
-    "/gec/touchpoints" : {
+    "/gec/{pspCode}/bundles" : {
       "get" : {
         "tags" : [ "gec" ],
-        "summary" : "getTouchpoints",
+        "summary" : "getBundlesByPSP",
         "description" : "Get paginated list of bundles",
-        "operationId" : "getTouchpointsUsingGET",
+        "operationId" : "getBundlesByPSPUsingGET",
         "parameters" : [ {
           "name" : "limit",
           "in" : "query",
@@ -3182,6 +3153,17 @@
             "format" : "int32"
           }
         }, {
+          "name" : "bundleType",
+          "in" : "query",
+          "description" : "Boundles's type",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "GLOBAL", "PRIVATE", "PUBLIC" ]
+          }
+        }, {
           "name" : "page",
           "in" : "query",
           "description" : "Page number. Page value starts from 0",
@@ -3191,6 +3173,24 @@
             "type" : "integer",
             "format" : "int32"
           }
+        }, {
+          "name" : "pspCode",
+          "in" : "path",
+          "description" : "Fiscalcode of the payment service provider",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "name",
+          "in" : "query",
+          "description" : "Boundle's name",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
         } ],
         "responses" : {
           "200" : {
@@ -3198,7 +3198,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TouchpointsResource"
+                  "$ref" : "#/components/schemas/BundlesResource"
                 }
               }
             }
