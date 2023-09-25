@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
-import feign.Headers;
 import feign.RequestLine;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.ApiConfigConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
