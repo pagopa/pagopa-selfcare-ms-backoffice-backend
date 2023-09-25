@@ -1,6 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.gec;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleType;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
@@ -22,6 +24,7 @@ public class BundleResource {
     private String description;
 
     @JsonProperty("payment_amount")
+    @Schema(description = "The fees of this bundle")
     private Integer paymentAmount;
 
     @JsonProperty("min_payment_amount")
@@ -37,7 +40,7 @@ public class BundleResource {
     private String touchpoint;
 
     @JsonProperty("type")
-    private String type;
+    private BundleType type;
 
     @JsonProperty("transfer_category_list")
     private List<String> transferCategoryList;
