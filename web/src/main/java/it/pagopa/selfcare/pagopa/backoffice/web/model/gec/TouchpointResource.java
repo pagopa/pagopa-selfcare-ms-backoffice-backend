@@ -12,6 +12,6 @@ public class TouchpointResource {
     @JsonProperty("name")
     private String name;
 
-    @JsonProperty("createdDate")
-    private OffsetDateTime created_date;
+    @JsonProperty("created_date")
+    private OffsetDateTime createdDate;
 }

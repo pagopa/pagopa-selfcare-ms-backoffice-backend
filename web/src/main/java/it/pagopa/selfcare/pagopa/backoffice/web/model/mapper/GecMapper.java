@@ -41,7 +41,7 @@ public class GecMapper {
 
         List<String> list = new ArrayList<>();
         if (bundle.getTransferCategoryList() != null) {
-            bundle.getTransferCategoryList().forEach(i -> list.add(i));
+            list.addAll(bundle.getTransferCategoryList());
         }
         response.setTransferCategoryList(list);
 
@@ -70,7 +70,7 @@ public class GecMapper {
 
         response.setId(touchpoints.getId());
         response.setName(touchpoints.getName());
-        response.setCreated_date(touchpoints.getCreatedDate());
+        response.setCreatedDate(touchpoints.getCreatedDate());
 
         return response;
     }
