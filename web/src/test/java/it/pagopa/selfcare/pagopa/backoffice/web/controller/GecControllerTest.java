@@ -103,7 +103,7 @@ class GecControllerTest {
                 .thenReturn(touchpoints);
         //when
         mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL+ "/touchpoints")
+                        .get(BASE_URL+ "/bundles/touchpoints")
                         .queryParam("limit", String.valueOf(limit))
                         .queryParam("page", String.valueOf(page))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -122,7 +122,7 @@ class GecControllerTest {
 
         Integer limit = 1;
         Integer page = 1;
-        String pspcode = "pspcode";
+        String pspCode = "pspCode";
         String xRequestId = "1";
         final ArrayList<BundleType> bundleType = new ArrayList<>();
         final String name = "name";
@@ -137,10 +137,9 @@ class GecControllerTest {
                 .thenReturn(bundles);
         //when
         mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL+ "/psps/bundles")
+                        .get(BASE_URL+ "/{pspCode}/bundles", pspCode)
                         .queryParam("limit", String.valueOf(limit))
                         .queryParam("page", String.valueOf(page))
-                        .queryParam("pspcode", pspcode)
                         .queryParam("name", name)
                         .queryParam("bundleType", "GLOBAL")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
