@@ -34,6 +34,10 @@
             <groupId>io.github.openfeign</groupId>
             <artifactId>feign-httpclient</artifactId>
         </dependency>
+        <dependency>
+            <groupId>it.pagopa.selfcare.pagopa</groupId>
+            <artifactId>pagopa-selfcare-ms-backoffice-core</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

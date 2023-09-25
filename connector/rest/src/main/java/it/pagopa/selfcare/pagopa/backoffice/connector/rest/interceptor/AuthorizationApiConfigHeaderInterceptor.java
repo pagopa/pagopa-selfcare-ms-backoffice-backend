@@ -5,7 +5,6 @@ import feign.RequestLine;
 import feign.RequestTemplate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.PermissionDeniedException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
-import it.pagopa.selfcare.pagopa.backoffice.core.Secret;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
