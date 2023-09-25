@@ -736,7 +736,6 @@ class StationControllerTest {
 
         //given
         String ecCode = "ecCode";
-        String xRequestId = "1";
         String stationcode = "stationcode";
 
         doNothing().when(apiConfigServiceMock).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
@@ -744,7 +743,7 @@ class StationControllerTest {
         //when
         mvc.perform(MockMvcRequestBuilders
                         .delete(BASE_URL + "/{ecCode}/station/{stationcode}", ecCode, stationcode)
-                        .header("X-Request-Id")
+                        .header("X-Request-Id", "1")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
 
