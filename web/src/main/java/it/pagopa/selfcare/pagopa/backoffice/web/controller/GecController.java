@@ -77,7 +77,7 @@ public class GecController {
     @ApiOperation(value = "", notes = "${swagger.api.gec.getBundlesByCI}")
     public BundlesResource getBundlesByPSP(@ApiParam("${swagger.pageable.number}")
                                           @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                          @ApiParam("${swagger.model.gec.boundleType}")
+                                          @ApiParam(value = "${swagger.model.gec.boundleType}", allowableValues = "GLOBAL, PUBLIC, PRIVATE")
                                           @RequestParam(required = false) ArrayList<BundleType> bundleType,
                                           @ApiParam("${swagger.pageable.start}")
                                           @RequestParam(required = false, defaultValue = "0") Integer page,

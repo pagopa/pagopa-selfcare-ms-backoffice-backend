@@ -5873,7 +5873,8 @@
             }
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "enum" : [ "GLOBAL", "PRIVATE", "PUBLIC" ]
           },
           "validity_date_from": {
             "type": "string",
