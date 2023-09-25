@@ -79,6 +79,7 @@ microservice-chart:
     EXTERNAL_API_SERVICE_URL: https://api.selfcare.pagopa.it
     PAGOPA_APIM_SERVICE_URL: https://api.uat.platform.pagopa.it
     PAGOPA_SELFCARE_INTEGRATION_APIM_SERVICE_URL: https://api.uat.platform.pagopa.it
+    GEC_SERVICE_URL: https://api.uat.platform.pagopa.it
     AZURE_RESOURCE_GROUP: pagopa-u-api-rg
     AZURE_SERVICE_NAME: pagopa-u-apim
     ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
