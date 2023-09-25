@@ -55,7 +55,7 @@ public class GecController {
 //        return resource;
 //    }
 
-    @GetMapping("/touchpoints")
+    @GetMapping("/bundles/touchpoints")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.gec.getBundlesByCI}")
     public TouchpointsResource getTouchpoints(@ApiParam("${swagger.pageable.number}")
@@ -72,7 +72,7 @@ public class GecController {
         return resource;
     }
 
-    @GetMapping("/psps/bundles")
+    @GetMapping("/{pspCode}/bundles")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.gec.getBundlesByCI}")
     public BundlesResource getBundlesByPSP(@ApiParam("${swagger.pageable.number}")
@@ -82,13 +82,13 @@ public class GecController {
                                           @ApiParam("${swagger.pageable.start}")
                                           @RequestParam(required = false) Integer page,
                                           @ApiParam("${swagger.model.gec.pspcode}")
-                                          @RequestParam(required = true) String pspcode,
+                                          @PathVariable(required = true) String pspCode,
                                           @ApiParam("${swagger.model.gec.name}")
                                           @RequestParam(required = false) String name) {
         log.trace("getBundlesByPSP start");
         String xRequestId = UUID.randomUUID().toString();
-        log.debug("getBundlesByPSP cifiscalcode = {}, xRequestId = {}", pspcode, xRequestId);
-        Bundles bundles = gecService.getBundlesByPSP(pspcode, bundleType, name, limit, page, xRequestId);
+        log.debug("getBundlesByPSP cifiscalcode = {}, xRequestId = {}", pspCode, xRequestId);
+        Bundles bundles = gecService.getBundlesByPSP(pspCode, bundleType, name, limit, page, xRequestId);
         BundlesResource resource = GecMapper.toResource(bundles);
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getBundlesByPSP result = {}", resource);
         log.trace("getBundlesByPSP end");
