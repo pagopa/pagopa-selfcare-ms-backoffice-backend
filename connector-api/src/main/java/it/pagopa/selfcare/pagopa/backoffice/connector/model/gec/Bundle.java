@@ -17,7 +17,7 @@ public class Bundle {
     private Integer maxPaymentAmount;
     private String paymentType;
     private String touchpoint;
-    private String type;
+    private BundleType type;
     private List<String> transferCategoryList;
     private OffsetDateTime validityDateFrom;
     private OffsetDateTime validityDateTo;
