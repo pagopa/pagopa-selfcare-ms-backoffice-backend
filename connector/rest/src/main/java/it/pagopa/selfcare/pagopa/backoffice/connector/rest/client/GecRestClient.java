@@ -4,6 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.GecConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
+import it.pagopa.selfcare.pagopa.backoffice.connector.rest.config.FeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 
-@FeignClient(name = "${rest-client.gec.serviceCode}", url = "${rest-client.gec.base-url}")
+@FeignClient(name = "${rest-client.gec.serviceCode}", url = "${rest-client.gec.base-url}", configuration = FeignConfig.class)
 public interface GecRestClient extends GecConnector {
 
     @GetMapping(value = "${rest-client.gec.getBundlesByCI.path}", produces = MediaType.APPLICATION_JSON_VALUE)
