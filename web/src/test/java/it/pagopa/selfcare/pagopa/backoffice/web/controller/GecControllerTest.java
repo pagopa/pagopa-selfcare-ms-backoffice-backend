@@ -54,7 +54,6 @@ class GecControllerTest {
 //        Integer limit = 1;
 //        Integer page = 1;
 //        String cifiscalcode = "cifiscalcode";
-//        String xRequestId = "1";
 //
 //        Bundle bundle = mockInstance(new Bundle());
 //        Bundles bundles = mockInstance(new Bundles());
@@ -88,7 +87,6 @@ class GecControllerTest {
 
         Integer limit = 1;
         Integer page = 1;
-        String xRequestId = "1";
 
         Touchpoint touchpoint = mockInstance(new Touchpoint());
         Touchpoints touchpoints = mockInstance(new Touchpoints());
@@ -96,7 +94,7 @@ class GecControllerTest {
         PageInfo pageInfo = mockInstance(new PageInfo());
         touchpoints.setPageInfo(pageInfo);
 
-        when(gecServiceMock.getTouchpoints(anyInt(), anyInt(),anyString()))
+        when(gecServiceMock.getTouchpoints(anyInt(), anyInt()))
                 .thenReturn(touchpoints);
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -109,7 +107,7 @@ class GecControllerTest {
                 .andExpect(jsonPath("$.touchpoints", not(empty())));
         //then
         verify(gecServiceMock, times(1))
-                .getTouchpoints(anyInt(), anyInt(), anyString());
+                .getTouchpoints(anyInt(), anyInt());
         verifyNoMoreInteractions(gecServiceMock);
     }
 
@@ -120,7 +118,6 @@ class GecControllerTest {
         Integer limit = 1;
         Integer page = 0;
         String pspCode = "pspCode";
-        String xRequestId = "1";
         final ArrayList<BundleType> bundleType = new ArrayList<>();
         final String name = "name";
 
@@ -130,7 +127,7 @@ class GecControllerTest {
         PageInfo pageInfo = mockInstance(new PageInfo());
         bundles.setPageInfo(pageInfo);
 
-        when(gecServiceMock.getBundlesByPSP(anyString(), any(), any(), anyInt(), anyInt(),anyString()))
+        when(gecServiceMock.getBundlesByPSP(anyString(), any(), any(), anyInt(), anyInt()))
                 .thenReturn(bundles);
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -147,7 +144,7 @@ class GecControllerTest {
                 .andExpect(jsonPath("$.bundles[0].description", notNullValue()));
         //then
         verify(gecServiceMock, times(1))
-                .getBundlesByPSP(anyString(), any(), any(), anyInt(), anyInt(), anyString());
+                .getBundlesByPSP(anyString(), any(), any(), anyInt(), anyInt());
         verifyNoMoreInteractions(gecServiceMock);
     }
 }

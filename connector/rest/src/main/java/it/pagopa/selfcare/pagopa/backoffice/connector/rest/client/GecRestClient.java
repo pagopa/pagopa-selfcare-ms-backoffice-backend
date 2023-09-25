@@ -21,14 +21,12 @@ public interface GecRestClient extends GecConnector {
     @ResponseBody
     Bundles getBundlesByCI(@RequestParam(required = true) String cifiscalcode,
                            @RequestParam(required = false) Integer limit,
-                           @RequestParam(required = false) Integer page,
-                           @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+                           @RequestParam(required = false) Integer page);
 
     @GetMapping(value = "${rest-client.gec.getTouchpoints.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     Touchpoints getTouchpoints(@RequestParam(required = false) Integer limit,
-                               @RequestParam(required = false) Integer page,
-                               @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+                               @RequestParam(required = false) Integer page);
 
     @GetMapping(value = "${rest-client.gec.getBundlesByPSP.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -36,6 +34,5 @@ public interface GecRestClient extends GecConnector {
                             @RequestParam(required = false) ArrayList<BundleType> bundleType,
                             @RequestParam(required = false) String name,
                             @RequestParam(required = false) Integer limit,
-                            @RequestParam(required = false) Integer page,
-                            @RequestHeader(name = "X-Request-Id", required = false) String xRequestId);
+                            @RequestParam(required = false) Integer page);
 }
