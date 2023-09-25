@@ -118,7 +118,7 @@ class GecControllerTest {
         //given
 
         Integer limit = 1;
-        Integer page = 1;
+        Integer page = 0;
         String pspCode = "pspCode";
         String xRequestId = "1";
         final ArrayList<BundleType> bundleType = new ArrayList<>();
@@ -134,7 +134,7 @@ class GecControllerTest {
                 .thenReturn(bundles);
         //when
         mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL+ "/{pspCode}/bundles", pspCode)
+                        .get(BASE_URL+ "/psp/{pspCode}/bundles", pspCode)
                         .queryParam("limit", String.valueOf(limit))
                         .queryParam("page", String.valueOf(page))
                         .queryParam("name", name)

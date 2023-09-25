@@ -3061,7 +3061,7 @@
         "parameters" : [ {
           "name" : "limit",
           "in" : "query",
-          "description" : "Number of elements on one page. Default = 50",
+          "description" : "Number of elements on one page. Default = 10",
           "required" : false,
           "style" : "form",
           "schema" : {
