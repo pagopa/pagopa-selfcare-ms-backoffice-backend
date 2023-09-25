@@ -1,7 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 public interface WrapperEntityOperations<T> {
 //

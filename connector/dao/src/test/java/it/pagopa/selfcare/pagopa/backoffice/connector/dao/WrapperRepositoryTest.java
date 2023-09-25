@@ -4,7 +4,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.dao.config.DaoTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.WrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +11,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.*;
+import java.util.Optional;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @DataMongoTest
 @EnableAutoConfiguration
