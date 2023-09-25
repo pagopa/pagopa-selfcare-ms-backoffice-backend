@@ -23,7 +23,7 @@
     "description" : "Api Config creditor institution's operations"
   }, {
     "name" : "gec",
-    "description" : "Gec Controller"
+    "description" : "All about commissional Bundles"
   }, {
     "name" : "institution",
     "description" : "Institution operations"
@@ -5952,6 +5952,7 @@
           },
           "payment_amount" : {
             "type" : "integer",
+            "description" : "The fees of this bundle",
             "format" : "int32"
           },
           "payment_type" : {
@@ -5967,7 +5968,8 @@
             }
           },
           "type" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "GLOBAL", "PRIVATE", "PUBLIC" ]
           },
           "validity_date_from" : {
             "type" : "string",
