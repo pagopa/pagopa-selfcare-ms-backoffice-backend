@@ -6,7 +6,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokersResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.StationsResource;
 
 import java.util.stream.Collectors;
 
