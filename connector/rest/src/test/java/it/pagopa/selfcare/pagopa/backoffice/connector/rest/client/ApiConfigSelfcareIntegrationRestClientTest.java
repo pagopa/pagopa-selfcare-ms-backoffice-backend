@@ -139,7 +139,7 @@ class ApiConfigSelfcareIntegrationRestClientTest {
         String stationId = "stationId";
         String xRequestId = "1";
         // when
-        StationDetailsList response = restClient.getStationsDetailsListByBroker(brokerCode,stationId,limit,page, xRequestId);
+        StationDetailsList response = restClient.getStationsDetailsListByBroker(brokerCode,stationId,limit,page);
         assertNotNull(response);
         assertNotNull(response.getStationsDetailsList());
         assertNotNull(response.getStationsDetailsList().get(0));
@@ -156,7 +156,7 @@ class ApiConfigSelfcareIntegrationRestClientTest {
         String stationId = "stationId";
         String xRequestId = "1";
         // when
-        StationDetailsList response = restClient.getStationsDetailsListByBroker(brokerCode,stationId,limit,page, xRequestId);
+        StationDetailsList response = restClient.getStationsDetailsListByBroker(brokerCode,stationId,limit,page);
         assertNotNull(response);
         assertNotNull(response.getStationsDetailsList());
         assertTrue(response.getStationsDetailsList().isEmpty());
@@ -173,7 +173,7 @@ class ApiConfigSelfcareIntegrationRestClientTest {
         String channelId = "channelId";
         String xRequestId = "1";
         // when
-        ChannelDetailsList response = restClient.getChannelDetailsListByBroker(brokerCode,channelId,limit,page, xRequestId);
+        ChannelDetailsList response = restClient.getChannelDetailsListByBroker(brokerCode,channelId,limit,page);
         assertNotNull(response);
         assertNotNull(response.getChannelDetailsList());
         assertNotNull(response.getChannelDetailsList().get(0));
@@ -190,7 +190,7 @@ class ApiConfigSelfcareIntegrationRestClientTest {
         String channelId = "channelId";
         String xRequestId = "1";
         // when
-        ChannelDetailsList response = restClient.getChannelDetailsListByBroker(brokerCode,channelId,limit,page, xRequestId);
+        ChannelDetailsList response = restClient.getChannelDetailsListByBroker(brokerCode,channelId,limit,page);
         assertNotNull(response);
         assertNotNull(response.getChannelDetailsList());
         assertTrue(response.getChannelDetailsList().isEmpty());

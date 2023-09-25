@@ -50,16 +50,15 @@ public class IbanController {
                                                      @ApiParam("${swagger.api.creditor-institutions.ibans.labels.name}")
                                                      @RequestParam(required = false) String labelName
                                                      ){
-        log.trace("getCreditorInstitutionsIbans start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getCreditorInstitutionsIbans ecCode = {}, xRequestId = {}", creditorinstitutioncode, xRequestId);
+        
+        
 
-        IbansEnhanced ibans = apiConfigService.getCreditorInstitutionIbans(creditorinstitutioncode,labelName, xRequestId);
+        IbansEnhanced ibans = apiConfigService.getCreditorInstitutionIbans(creditorinstitutioncode,labelName);
 
         IbansResource resource = mapper.toResource(ibans);
 
-        log.debug("getCreditorInstitutionsIbans result = {}", resource);
-        log.trace("getCreditorInstitutionsIbans end");
+        
+        
         return resource;
     }
 
@@ -67,17 +66,16 @@ public class IbanController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.create}")
     public IbanResource createCreditorInstitutionIbans(@RequestBody @NotNull IbanCreateRequestDto requestDto){
-        log.trace("createCreditorInstitutionIbans start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("createCreditorInstitutionIbans xRequestId = {}", xRequestId);
+        
+        
 
         IbanCreate ibanCreate = mapper.fromDto(requestDto);
-        IbanCreate ibans = apiConfigService.createCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate, xRequestId);
+        IbanCreate ibans = apiConfigService.createCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate);
 
         IbanResource resource = mapper.toResource(ibans);
 
-        log.debug("createCreditorInstitutionIbans result = {}", resource);
-        log.trace("createCreditorInstitutionIbans end");
+        
+        
         return resource;
     }
 
@@ -88,40 +86,38 @@ public class IbanController {
                                                @PathVariable("creditorinstitutioncode") String creditorinstitutioncode,
                                                @ApiParam("${swagger.request.pspCode}")
                                                @PathVariable("ibanValue") String ibanValue){
-        log.trace("deleteCreditorInstitutionIbans start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("deleteCreditorInstitutionIbans xRequestId = {}", xRequestId);
-        apiConfigService.deleteCreditorInstitutionIbans(creditorinstitutioncode, ibanValue, xRequestId);
-        log.trace("deleteCreditorInstitutionIbans end");
+        
+        
+        apiConfigService.deleteCreditorInstitutionIbans(creditorinstitutioncode, ibanValue);
+        
     }
 
     @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.ibans.put}")
     public IbanResource updateCreditorInstitutionIbans(@RequestBody @NotNull IbanCreateRequestDto requestDto){
-        log.trace("putCreditorInstitutionIbans start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("putCreditorInstitutionIbans xRequestId = {}", xRequestId);
+        
+        
 
         if (!isEmpty(requestDto.getLabels())) {
-            IbansEnhanced ibansEnhanced = apiConfigService.getCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), requestDto.getLabels().get(0).getName(), xRequestId);
+            IbansEnhanced ibansEnhanced = apiConfigService.getCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), requestDto.getLabels().get(0).getName());
             if (ibansEnhanced != null && !isEmpty(ibansEnhanced.getIbanList())) {
                 ibansEnhanced.getIbanList().forEach(iban -> {
                     IbanCreate ibanCreate = mapper.toIbanCreate(iban);
                     List<IbanLabel> ibanLabelList = ibanCreate.getLabels().stream().filter(f -> !(f.getName().equals(requestDto.getLabels().get(0).getName()))).collect(Collectors.toList());
                     ibanCreate.setLabels(ibanLabelList);
-                    apiConfigService.updateCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate, xRequestId);
+                    apiConfigService.updateCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate);
                 });
             }
         }
 
         IbanCreate ibanCreate = mapper.fromDto(requestDto);
-        IbanCreate ibans = apiConfigService.updateCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate, xRequestId);
+        IbanCreate ibans = apiConfigService.updateCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate);
 
         IbanResource resource = mapper.toResource(ibans);
 
-        log.debug("putCreditorInstitutionIbans result = {}", resource);
-        log.trace("putCreditorInstitutionIbans end");
+        
+        
         return resource;
     }
 

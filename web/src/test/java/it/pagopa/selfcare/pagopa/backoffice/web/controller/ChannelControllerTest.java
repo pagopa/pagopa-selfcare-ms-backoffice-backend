@@ -102,7 +102,7 @@ class ChannelControllerTest {
         PageInfo pageInfo = mockInstance(new PageInfo());
         channels.setPageInfo(pageInfo);
 
-        when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), anyString(), any(), anyString(), anyString()))
+        when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), anyString(), any(), anyString()))
                 .thenReturn(channels);
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -119,7 +119,7 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.channels[0].broker_description", notNullValue()));
         //then
         verify(apiConfigServiceMock, times(1))
-                .getChannels(eq(limit), eq(page), eq(code), eq(null), eq(sort), anyString());
+                .getChannels(eq(limit), eq(page), eq(code), eq(null), eq(sort));
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -133,10 +133,10 @@ class ChannelControllerTest {
         PspChannelPaymentTypes paymentTypes = mockInstance(new PspChannelPaymentTypes());
         paymentTypes.setPaymentTypeList(List.of("paymentType"));
 
-        when(apiConfigServiceMock.getChannelDetails(anyString(), anyString()))
+        when(apiConfigServiceMock.getChannelDetails(anyString()))
                 .thenReturn(channelDetails);
 
-        when(apiConfigServiceMock.getChannelPaymentTypes(anyString(), anyString()))
+        when(apiConfigServiceMock.getChannelPaymentTypes(anyString()))
                 .thenReturn(paymentTypes);
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -169,9 +169,9 @@ class ChannelControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .getChannelDetails(eq(channelcode), anyString());
+                .getChannelDetails(eq(channelcode));
         verify(apiConfigServiceMock, times(1))
-                .getChannelPaymentTypes(eq(channelcode), anyString());
+                .getChannelPaymentTypes(eq(channelcode));
         verifyNoMoreInteractions(apiConfigServiceMock);
 
     }
@@ -192,13 +192,13 @@ class ChannelControllerTest {
         DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
         wrapperEntities.setEntities(List.of(wrapperEntity));
 
-        when(apiConfigServiceMock.createChannel(any(), anyString()))
+        when(apiConfigServiceMock.createChannel(any()))
                 .thenReturn(channelDetails);
 
         when(wrapperServiceMock.updateWrapperChannelDetailsByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name()))
                 .thenReturn(wrapperEntities);
 
-        when(apiConfigServiceMock.createChannelPaymentType(any(), anyString(), anyString()))
+        when(apiConfigServiceMock.createChannelPaymentType(any(), anyString()))
                 .thenReturn(pspChannelPaymentTypes);
 
         //when
@@ -235,10 +235,10 @@ class ChannelControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .createChannel(eq(channelDetails), anyString());
+                .createChannel(eq(channelDetails));
 
         verify(apiConfigServiceMock, times(1))
-                .createChannelPaymentType(eq(pspChannelPaymentTypes), eq(channelCode), anyString());
+                .createChannelPaymentType(eq(pspChannelPaymentTypes), eq(channelCode));
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -257,7 +257,7 @@ class ChannelControllerTest {
         DummyWrapperEntities<ChannelDetails> wrapperEntities = mockInstance(new DummyWrapperEntities<>(wrapperEntity));
         wrapperEntities.setEntities(List.of(wrapperEntity));
 
-        when(apiConfigServiceMock.updateChannel(any(), anyString(), anyString()))
+        when(apiConfigServiceMock.updateChannel(any(), anyString()))
                 .thenReturn(channelDetails);
         when(wrapperServiceMock.updateWrapperChannelDetails(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), createdBy))
                 .thenReturn(wrapperEntities);
@@ -268,7 +268,7 @@ class ChannelControllerTest {
                         .content(dto.getInputStream().readAllBytes())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-Request-Id", String.valueOf(xRequestId)))
+                        .header("X-Request-Id", xRequestId))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.password", is(channelDetails.getPassword())))
@@ -296,7 +296,7 @@ class ChannelControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .updateChannel(any(), anyString(), anyString());
+                .updateChannel(any(), anyString());
         verify(wrapperServiceMock, times(1))
                 .updateWrapperChannelDetails(eq(channelDetails), anyString(), anyString(), any());
 
@@ -314,7 +314,7 @@ class ChannelControllerTest {
         PspChannelPaymentTypes dto = mockInstance(new PspChannelPaymentTypes());
         pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
 
-        when(apiConfigServiceMock.createChannelPaymentType(any(), anyString(), anyString()))
+        when(apiConfigServiceMock.createChannelPaymentType(any(), anyString()))
                 .thenReturn(pspChannelPaymentTypes);
 
         //when
@@ -330,7 +330,7 @@ class ChannelControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .createChannelPaymentType(any(), anyString(), anyString());
+                .createChannelPaymentType(any(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -347,12 +347,12 @@ class ChannelControllerTest {
         PspChannels pspChannels = mockInstance(new PspChannels(), "setchannelList");
         pspChannels.setChannelsList(List.of(pspChannel));
 
-        when(apiConfigServiceMock.getPspChannels(anyString(), anyString()))
+        when(apiConfigServiceMock.getPspChannels(anyString()))
                 .thenReturn(pspChannels);
         //when
         mvc.perform(MockMvcRequestBuilders
                         .get(BASE_URL + "/{pdpcode}", pspCode)
-                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .header("X-Request-Id", xRequestId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.channels[*].enabled", everyItem(notNullValue())))
@@ -360,7 +360,7 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.channels[*].payment_types", everyItem(notNullValue())));
         //then
         verify(apiConfigServiceMock, times(1))
-                .getPspChannels(eq(pspCode), anyString());
+                .getPspChannels(eq(pspCode));
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -376,12 +376,12 @@ class ChannelControllerTest {
         paymentTypes.setPaymentTypeList(List.of(paymentType));
 
 
-        when(apiConfigServiceMock.getPaymentTypes(anyString()))
+        when(apiConfigServiceMock.getPaymentTypes())
                 .thenReturn(paymentTypes);
         //when
         mvc.perform(MockMvcRequestBuilders
                         .get(BASE_URL + "/configuration/paymenttypes")
-                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .header("X-Request-Id", xRequestId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payment_types[*].description", everyItem(notNullValue())))
@@ -389,7 +389,7 @@ class ChannelControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .getPaymentTypes(anyString());
+                .getPaymentTypes();
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -403,19 +403,19 @@ class ChannelControllerTest {
         PspChannelPaymentTypes pspChannelPaymentTypes = mockInstance(new PspChannelPaymentTypes(), "setPaymentTypeList");
         pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
 
-        when(apiConfigServiceMock.getChannelPaymentTypes(anyString(), anyString()))
+        when(apiConfigServiceMock.getChannelPaymentTypes(anyString()))
                 .thenReturn(pspChannelPaymentTypes);
         //when
         mvc.perform(MockMvcRequestBuilders
                         .get(BASE_URL + "/paymenttypes/{channelcode}", channelCode)
-                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .header("X-Request-Id", xRequestId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.payment_types[*]", everyItem(notNullValue())));
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .getChannelPaymentTypes(anyString(), anyString());
+                .getChannelPaymentTypes(anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -427,18 +427,18 @@ class ChannelControllerTest {
         String xRequestId = "1";
         String paymentTypeCode = "paymenttypecode";
 
-        doNothing().when(apiConfigServiceMock).deleteChannelPaymentType(anyString(), anyString(), anyString());
+        doNothing().when(apiConfigServiceMock).deleteChannelPaymentType(anyString(), anyString());
 
         //when
         mvc.perform(MockMvcRequestBuilders
                         .delete(BASE_URL + "/{channelcode}/{paymenttypecode}", channelCode, paymentTypeCode)
-                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .header("X-Request-Id", xRequestId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .deleteChannelPaymentType(anyString(), anyString(), anyString());
+                .deleteChannelPaymentType(anyString(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -449,18 +449,18 @@ class ChannelControllerTest {
         String xRequestId = "1";
         String pspCode = "pspCode";
 
-        doNothing().when(apiConfigServiceMock).deletePaymentServiceProvidersChannels(anyString(), anyString(), anyString());
+        doNothing().when(apiConfigServiceMock).deletePaymentServiceProvidersChannels(anyString(), anyString());
 
         //when
         mvc.perform(MockMvcRequestBuilders
                         .delete(BASE_URL + "/psp/{channelcode}/{pspcode}", channelCode, pspCode)
-                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .header("X-Request-Id", xRequestId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .deletePaymentServiceProvidersChannels(anyString(), anyString(), anyString());
+                .deletePaymentServiceProvidersChannels(anyString(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -473,13 +473,13 @@ class ChannelControllerTest {
         //when
         mvc.perform(MockMvcRequestBuilders
                         .delete(BASE_URL + "/{channelcode}", channelCode)
-                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .header("X-Request-Id", xRequestId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .deleteChannel(anyString(), anyString());
+                .deleteChannel(anyString());
     }
 
     @Test
@@ -496,14 +496,14 @@ class ChannelControllerTest {
         paymentServiceProviders.setPaymentServiceProviderList(List.of(paymentServiceProvider));
 
 
-        when(apiConfigServiceMock.getPspBrokerPsp(anyInt(), anyInt(), anyString(), anyString()))
+        when(apiConfigServiceMock.getPspBrokerPsp(anyInt(), anyInt(), anyString()))
                 .thenReturn(paymentServiceProviders);
         //when
         mvc.perform(MockMvcRequestBuilders
                         .get(BASE_URL + "/{brokerpspcode}/paymentserviceproviders", brokerPspCode)
                         .param("page", "1")
                         .param("limit", "1")
-                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .header("X-Request-Id", xRequestId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page_info", notNullValue()))
@@ -511,7 +511,7 @@ class ChannelControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .getPspBrokerPsp(anyInt(), anyInt(), anyString(), anyString());
+                .getPspBrokerPsp(anyInt(), anyInt(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -525,13 +525,13 @@ class ChannelControllerTest {
 
         InputStream is = dto.getInputStream();
         PspChannelPaymentTypes pspChannelPaymentTypes = objectMapper.readValue(is, PspChannelPaymentTypes.class);
-        when(apiConfigServiceMock.updatePaymentServiceProvidersChannels(anyString(), anyString(), any(), anyString()))
+        when(apiConfigServiceMock.updatePaymentServiceProvidersChannels(anyString(), anyString(), any()))
                 .thenReturn(pspChannelPaymentTypes);
 
         //when
         mvc.perform(MockMvcRequestBuilders
                         .put(BASE_URL + "/psp/{channelcode}/{pspcode}", channelCode, pspCode)
-                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .header("X-Request-Id", xRequestId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(dto.getInputStream().readAllBytes()))
 
@@ -540,7 +540,7 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.payment_types[*]", everyItem(notNullValue())));
         //then
         verify(apiConfigServiceMock, times(1))
-                .updatePaymentServiceProvidersChannels(anyString(), anyString(), any(), anyString());
+                .updatePaymentServiceProvidersChannels(anyString(), anyString(), any());
 
     }
 
@@ -555,18 +555,18 @@ class ChannelControllerTest {
         String xRequestId = "1";
 
         Resource resource = mockInstance(new FileSystemResource(file));
-        when(apiConfigServiceMock.getChannelsCSV(anyString()))
+        when(apiConfigServiceMock.getChannelsCSV())
                 .thenReturn(resource);
 
         mvc.perform(MockMvcRequestBuilders
                         .get(BASE_URL + "/csv")
-                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .header("X-Request-Id", xRequestId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.TEXT_PLAIN_VALUE))
                 .andExpect(status().isOk());
 
         verify(apiConfigServiceMock, times(1))
-                .getChannelsCSV(anyString());
+                .getChannelsCSV();
         verifyNoMoreInteractions(apiConfigServiceMock);
 
     }
@@ -582,12 +582,12 @@ class ChannelControllerTest {
         pspChannelPaymentTypes.setPsp(List.of(channelPsp));
 
 
-        when(apiConfigServiceMock.getChannelPaymentServiceProviders(anyInt(), anyInt(), anyString(), anyString()))
+        when(apiConfigServiceMock.getChannelPaymentServiceProviders(anyInt(), anyInt(), anyString()))
                 .thenReturn(pspChannelPaymentTypes);
 
         mvc.perform(MockMvcRequestBuilders
                         .get(BASE_URL + "/{channelcode}/psp", channelCode)
-                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .header("X-Request-Id", xRequestId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .param("page", "1")
                         .param("limit", "1"))
@@ -595,7 +595,7 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.payment_service_providers[*]", everyItem(notNullValue())));
         //then
         verify(apiConfigServiceMock, times(1))
-                .getChannelPaymentServiceProviders(anyInt(), anyInt(), anyString(), anyString());
+                .getChannelPaymentServiceProviders(anyInt(), anyInt(), anyString());
 
 
     }
@@ -610,7 +610,7 @@ class ChannelControllerTest {
         InputStream is = dto.getInputStream();
         BrokerPspDetails brokerPspDetails = objectMapper.readValue(is, BrokerPspDetails.class);
 
-        when(apiConfigServiceMock.createBrokerPsp(any(), anyString()))
+        when(apiConfigServiceMock.createBrokerPsp(any()))
                 .thenReturn(brokerPspDetails);
 
         //when
@@ -628,7 +628,7 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.extended_fault_bean", is(brokerPspDetails.getExtendedFaultBean())));
         //then
         verify(apiConfigServiceMock, times(1))
-                .createBrokerPsp(any(), anyString());
+                .createBrokerPsp(any());
         verifyNoMoreInteractions(apiConfigServiceMock);
 
     }
@@ -643,7 +643,7 @@ class ChannelControllerTest {
 
         PaymentServiceProviderDetails paymentServiceProviderDetails = ChannelMapper.fromPaymentServiceProviderDetailsDto(paymentServiceProviderDetailsDto);
 
-        when(apiConfigServiceMock.createPaymentServiceProvider(any(), anyString()))
+        when(apiConfigServiceMock.createPaymentServiceProvider(any()))
                 .thenReturn(paymentServiceProviderDetails);
 
         //when
@@ -665,7 +665,7 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.enabled", is(paymentServiceProviderDetailsDto.getEnabled())));
         //then
         verify(apiConfigServiceMock, times(1))
-                .createPaymentServiceProvider(any(), anyString());
+                .createPaymentServiceProvider(any());
         verifyNoMoreInteractions(apiConfigServiceMock);
 
     }
@@ -684,10 +684,10 @@ class ChannelControllerTest {
         PaymentServiceProviderDetails paymentServiceProviderDetails = (PaymentServiceProviderDetails) res.get("psp");
 
 
-        when(apiConfigServiceMock.createPaymentServiceProvider(any(), anyString()))
+        when(apiConfigServiceMock.createPaymentServiceProvider(any()))
                 .thenReturn(paymentServiceProviderDetails);
 
-        when(apiConfigServiceMock.createBrokerPsp(any(), anyString()))
+        when(apiConfigServiceMock.createBrokerPsp(any()))
                 .thenReturn(brokerPspDetails);
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -708,9 +708,9 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.enabled", is(paymentServiceProviderDetailsDto.getEnabled())));
         //then
         verify(apiConfigServiceMock, times(1))
-                .createPaymentServiceProvider(any(), anyString());
+                .createPaymentServiceProvider(any());
         verify(apiConfigServiceMock, times(1))
-                .createBrokerPsp(any(), anyString());
+                .createBrokerPsp(any());
         verifyNoMoreInteractions(apiConfigServiceMock);
 
     }
@@ -721,7 +721,7 @@ class ChannelControllerTest {
         String pspCode = "pspCode";
         String channelCode = "channelCode";
 
-        when(apiConfigServiceMock.generateChannelCode(any(), anyString()))
+        when(apiConfigServiceMock.generateChannelCode(any()))
                 .thenReturn(channelCode);
 
         mvc.perform(MockMvcRequestBuilders
@@ -733,7 +733,7 @@ class ChannelControllerTest {
                 .andExpect(jsonPath("$.channel_code", is(channelCode)));
 
         verify(apiConfigServiceMock, times(1))
-                .generateChannelCode(any(), anyString());
+                .generateChannelCode(any());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
@@ -744,7 +744,7 @@ class ChannelControllerTest {
         String pspCode = "pspCode";
         PaymentServiceProviderDetails paymentServiceProviderDetails = mockInstance(new PaymentServiceProviderDetails());
 
-        when(apiConfigServiceMock.getPSPDetails(anyString(), anyString()))
+        when(apiConfigServiceMock.getPSPDetails(anyString()))
                 .thenReturn(paymentServiceProviderDetails);
 
         mvc.perform(MockMvcRequestBuilders
@@ -763,7 +763,7 @@ class ChannelControllerTest {
 
 
         verify(apiConfigServiceMock, times(1))
-                .getPSPDetails(any(), anyString());
+                .getPSPDetails(any());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
@@ -958,7 +958,7 @@ class ChannelControllerTest {
         WfespPluginConf wfespPluginConf = mockInstance(new WfespPluginConf());
 
         wfespPluginConfs.setWfespPluginConfList(List.of(wfespPluginConf));
-        when(apiConfigServiceMock.getWfespPlugins(anyString())).thenReturn(wfespPluginConfs);
+        when(apiConfigServiceMock.getWfespPlugins()).thenReturn(wfespPluginConfs);
 
         //when
         mvc.perform(
@@ -970,7 +970,7 @@ class ChannelControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .getWfespPlugins(anyString());
+                .getWfespPlugins();
 
         verifyNoMoreInteractions(apiConfigServiceMock);
 
@@ -1039,10 +1039,10 @@ class ChannelControllerTest {
 
         doThrow(ResourceNotFoundException.class).when(wrapperServiceMock).findById(channelcode);
 
-        when(apiConfigServiceMock.getChannelDetails(anyString(), anyString()))
+        when(apiConfigServiceMock.getChannelDetails(anyString()))
                 .thenReturn(channelDetails);
 
-        when(apiConfigServiceMock.getChannelPaymentTypes(anyString(), anyString()))
+        when(apiConfigServiceMock.getChannelPaymentTypes(anyString()))
                 .thenReturn(paymentTypes);
 
         //when
@@ -1076,9 +1076,9 @@ class ChannelControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .getChannelDetails(eq(channelcode), anyString());
+                .getChannelDetails(eq(channelcode));
         verify(apiConfigServiceMock, times(1))
-                .getChannelPaymentTypes(eq(channelcode), anyString());
+                .getChannelPaymentTypes(eq(channelcode));
         verifyNoMoreInteractions(apiConfigServiceMock);
 
     }
@@ -1119,7 +1119,7 @@ class ChannelControllerTest {
 
         when(wrapperServiceMock.findByIdLikeOrTypeOrBrokerCode(anyString(), any(), anyString(), anyInt(), anyInt()))
                 .thenReturn(mongoList);
-        when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), any(), any(), anyString(), anyString()))
+        when(apiConfigServiceMock.getChannels(anyInt(), anyInt(), any(), any(), anyString()))
                 .thenReturn(channels);
         when(apiConfigServiceMock.mergeAndSortWrapperChannels(any(), any(), anyString()))
                 .thenReturn(wrapperChannels);
@@ -1140,7 +1140,7 @@ class ChannelControllerTest {
         verify(wrapperServiceMock, times(1))
                 .findByIdLikeOrTypeOrBrokerCode(any(), any(), any(), anyInt(), anyInt());
         verify(apiConfigServiceMock, times(1))
-                .getChannels(anyInt(), anyInt(), any(), any(), anyString(), anyString());
+                .getChannels(anyInt(), anyInt(), any(), any(), anyString());
         verify(apiConfigServiceMock, times(1))
                 .mergeAndSortWrapperChannels(any(), any(), anyString());
 
@@ -1159,7 +1159,7 @@ class ChannelControllerTest {
         channelDetailsList.setChannelDetailsList(List.of(channelDetails));
 
 
-        when(apiConfigSelfcareIntegrationServiceMock.getChannelsDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt(), anyString()))
+        when(apiConfigSelfcareIntegrationServiceMock.getChannelsDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt()))
                 .thenReturn(channelDetailsList);
         //when
         mvc.perform(get(BASE_URL + "/{brokerId}/channels", brokerId)
@@ -1170,7 +1170,7 @@ class ChannelControllerTest {
                 .andExpect(status().is2xxSuccessful());
 
         verify(apiConfigSelfcareIntegrationServiceMock, times(1))
-                .getChannelsDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt(), anyString());
+                .getChannelsDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt());
 
         verifyNoMoreInteractions(wrapperServiceMock);
 
@@ -1191,7 +1191,7 @@ class ChannelControllerTest {
         BrokerPsp brokerPspMock = mockInstance(new BrokerPsp());
         brokersPspMock.setBrokerPspList(List.of(brokerPspMock));
 
-        when(apiConfigServiceMock.getBrokersPsp(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyString()))
+        when(apiConfigServiceMock.getBrokersPsp(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(brokersPspMock);
 
         //when
@@ -1205,7 +1205,7 @@ class ChannelControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful());
         verify(apiConfigServiceMock, times(1))
-                .getBrokersPsp(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString(), anyString());
+                .getBrokersPsp(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -1243,11 +1243,11 @@ class ChannelControllerTest {
 
         when(wrapperServiceMock.findByIdLikeOrTypeOrBrokerCode(channelCode, wrapperType, null, page, size))
                 .thenReturn(mongoList);
-        when(apiConfigServiceMock.getChannels(eq(size), eq(page), eq(channelCode), eq(null), eq(sorting), any()))
+        when(apiConfigServiceMock.getChannels(eq(size), eq(page), eq(channelCode), eq(null), eq(sorting)))
                 .thenReturn(channels);
         when(apiConfigServiceMock.mergeAndSortWrapperChannels(any(), any(), anyString()))
                 .thenReturn(wrapperChannels);
-        when(apiConfigServiceMock.generateChannelCodeV2(any(), anyString(), anyString()))
+        when(apiConfigServiceMock.generateChannelCodeV2(any(), anyString()))
                 .thenReturn("channelCode_01");
 
         //when
@@ -1260,11 +1260,11 @@ class ChannelControllerTest {
         verify(wrapperServiceMock, times(1))
                 .findByIdLikeOrTypeOrBrokerCode(channelCode, wrapperType, null, page, size);
         verify(apiConfigServiceMock, times(1))
-                .getChannels(eq(size), eq(page), eq(channelCode), eq(null), eq(sorting), any());
+                .getChannels(eq(size), eq(page), eq(channelCode), eq(null), eq(sorting));
         verify(apiConfigServiceMock, times(1))
                 .mergeAndSortWrapperChannels(any(), any(), anyString());
         verify(apiConfigServiceMock, times(1))
-                .generateChannelCodeV2(any(), anyString(), anyString());
+                .generateChannelCodeV2(any(), anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
@@ -1276,12 +1276,12 @@ class ChannelControllerTest {
         String xRequestId = "1";
         BrokerPspDetails brokerPspDetailsMock = mockInstance(new BrokerPspDetails());
 
-        when(apiConfigServiceMock.getBrokerPsp(anyString(), anyString()))
+        when(apiConfigServiceMock.getBrokerPsp(anyString()))
                 .thenReturn(brokerPspDetailsMock);
 
         //when
         mvc.perform(get(BASE_URL + "/brokerdetails")
-                        .header("X-Request-Id", String.valueOf(xRequestId))
+                        .header("X-Request-Id", xRequestId)
                         .queryParam("brokerpspcode", brokerpspcode)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
@@ -1292,7 +1292,7 @@ class ChannelControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .getBrokerPsp(anyString(), anyString());
+                .getBrokerPsp(anyString());
 
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
