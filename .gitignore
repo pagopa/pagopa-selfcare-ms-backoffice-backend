@@ -34,3 +34,4 @@ build/
 /helm/charts/
 *.lock
 *.lock.hcl
+/.cache_ggshield

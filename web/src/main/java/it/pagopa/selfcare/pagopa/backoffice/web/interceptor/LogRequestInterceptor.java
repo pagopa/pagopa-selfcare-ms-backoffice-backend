@@ -27,7 +27,7 @@ public class LogRequestInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object controller) {
-        HttpServletRequest httRequest = (HttpServletRequest) request;
+        HttpServletRequest httRequest = request;
 
         // get requestId from header or generate one
         String requestId = httRequest.getHeader(HEADER_REQUEST_ID);
