@@ -72,7 +72,7 @@ public class GecController {
         return resource;
     }
 
-    @GetMapping("/{pspCode}/bundles")
+    @GetMapping("/psp/{pspCode}/bundles")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.gec.getBundlesByCI}")
     public BundlesResource getBundlesByPSP(@ApiParam("${swagger.pageable.number}")
