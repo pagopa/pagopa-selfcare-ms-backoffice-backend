@@ -22,31 +22,19 @@ public class ApiConfigSelfcareIntegrationServiceImpl implements ApiConfigSelfcar
 
 
     @Override
-    public StationDetailsList getStationsDetailsListByBroker(String brokerId, String stationId, Integer limit, Integer page, String xRequestId) {
-        log.trace("getStationsDetailsListByBroker start");
-        log.debug("getStationsDetailsListByBroker  xRequestId = {}", xRequestId);
-        StationDetailsList response = apiConfigSelfcareIntegrationConnector.getStationsDetailsListByBroker(brokerId, stationId, limit, page, xRequestId);
-        log.debug("getStationsDetailsListByBroker result = {}", response);
-        log.trace("getStationsDetailsListByBroker end");
+    public StationDetailsList getStationsDetailsListByBroker(String brokerId, String stationId, Integer limit, Integer page) {
+        StationDetailsList response = apiConfigSelfcareIntegrationConnector.getStationsDetailsListByBroker(brokerId, stationId, limit, page);
         return response;
     }
 
     @Override
-    public ChannelDetailsList getChannelsDetailsListByBroker(String brokerId, String channelId, Integer limit, Integer page, String xRequestId) {
-        log.trace("getChannelsDetailsListByBroker start");
-        log.debug("getChannelsDetailsListByBroker  xRequestId = {}", xRequestId);
-        ChannelDetailsList response = apiConfigSelfcareIntegrationConnector.getChannelDetailsListByBroker(brokerId, channelId, limit, page, xRequestId);
-        log.debug("getChannelsDetailsListByBroker result = {}", response);
-        log.trace("getChannelsDetailsListByBroker end");
+    public ChannelDetailsList getChannelsDetailsListByBroker(String brokerId, String channelId, Integer limit, Integer page) {
+        ChannelDetailsList response = apiConfigSelfcareIntegrationConnector.getChannelDetailsListByBroker(brokerId, channelId, limit, page);
         return response;
     }
 
-    public CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationcodes(String ecCode, String xRequestId){
-        log.trace("getCreditorInstitutionSegregationcodes start");
-        log.debug("getCreditorInstitutionSegregationcodes  xRequestId = {}", xRequestId);
-        CreditorInstitutionAssociatedCodeList response = apiConfigSelfcareIntegrationConnector.getCreditorInstitutionSegregationcodes(ecCode, xRequestId);
-        log.debug("getChannelsDetailsListByBroker result = {}", response);
-        log.trace("getChannelsDetailsListByBroker end");
+    public CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationcodes(String ecCode){
+        CreditorInstitutionAssociatedCodeList response = apiConfigSelfcareIntegrationConnector.getCreditorInstitutionSegregationcodes(ecCode);
         return response;
     }
 

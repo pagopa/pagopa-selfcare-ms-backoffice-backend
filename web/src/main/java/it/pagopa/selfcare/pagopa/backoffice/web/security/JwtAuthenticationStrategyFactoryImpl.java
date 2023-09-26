@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.security;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import it.pagopa.selfcare.pagopa.backoffice.core.Secret;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class JwtAuthenticationStrategyFactoryImpl implements JwtAuthenticationSt
 
 
     @Override
-    public JwtAuthenticationStrategy create(final String jwt) {
+    public JwtAuthenticationStrategy create(@Secret final String jwt) {
         final JwtAuthenticationStrategy bean;
         final String issuer;
         try {

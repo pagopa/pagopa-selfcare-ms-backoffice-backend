@@ -35,13 +35,13 @@ class JiraServiceManagerServiceImplTest {
         String description = "description";
         String responseMock = "ticket TEST-1";
 
-        when(jiraServiceManagerConnectorMock.createTicket(anyString(),anyString())).thenReturn(responseMock);
+        when(jiraServiceManagerConnectorMock.createTicket(anyString(), anyString())).thenReturn(responseMock);
         //when
-        String response = jiraServiceManagerService.createTicket(summary,description);
+        String response = jiraServiceManagerService.createTicket(summary, description);
         //then
         assertEquals(response, responseMock);
         verify(jiraServiceManagerConnectorMock, times(1))
-                .createTicket(summary,description);
+                .createTicket(summary, description);
         verifyNoMoreInteractions(jiraServiceManagerConnectorMock);
 
     }

@@ -29,7 +29,7 @@ public class WrapperStationDetailsDto {
     private String redirectPath;
     @ApiModelProperty(value = "${swagger.model.station.redirectPort}", required = true)
     @JsonProperty(required = true)
-    private Long redirectPort = 2l;
+    private Long redirectPort = 2L;
     @ApiModelProperty(value = "${swagger.model.station.redirectQueryString}", required = true)
     @JsonProperty(required = true)
     private String redirectQueryString;

@@ -21,27 +21,18 @@ public class GecServiceImpl implements GecService {
     }
 
     @Override
-    public Bundles getBundlesByCI(String cifiscalcode, Integer limit, Integer page, String xRequestId) {
-        log.trace("getBundlesByCI start");
-        Bundles response = gecConnector.getBundlesByCI(cifiscalcode, limit, page, xRequestId);
-        log.debug("getBundlesByCI result = {}", response);
-        log.trace("getBundlesByCI end");
+    public Bundles getBundlesByCI(String cifiscalcode, Integer limit, Integer page) {
+        Bundles response = gecConnector.getBundlesByCI(cifiscalcode, limit, page);
         return response;
     }
     @Override
-    public Touchpoints getTouchpoints(Integer limit, Integer page, String xRequestId){
-        log.trace("getTouchpoints start");
-        Touchpoints response = gecConnector.getTouchpoints(limit, page, xRequestId);
-        log.debug("getTouchpoints result = {}", response);
-        log.trace("getTouchpoints end");
+    public Touchpoints getTouchpoints(Integer limit, Integer page){
+        Touchpoints response = gecConnector.getTouchpoints(limit, page);
         return response;
     }
     @Override
-    public Bundles getBundlesByPSP(String pspcode, ArrayList<BundleType> bundleType, String name, Integer limit, Integer page, String xRequestId){
-        log.trace("getBundlesByPSP start");
-        Bundles response = gecConnector.getBundlesByPSP(pspcode, bundleType, name, limit, page, xRequestId);
-        log.debug("getBundlesByPSP result = {}", response);
-        log.trace("getBundlesByPSP end");
+    public Bundles getBundlesByPSP(String pspcode, ArrayList<BundleType> bundleType, String name, Integer limit, Integer page){
+        Bundles response = gecConnector.getBundlesByPSP(pspcode, bundleType, name, limit, page);
         return response;
     }
 

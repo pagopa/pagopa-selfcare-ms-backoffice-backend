@@ -432,7 +432,6 @@ class AzureApiManagerClientTest {
         DummyKeyContract keyContract = mockInstance(new DummyKeyContract());
         InstitutionApiKeys apiKeys = mockInstance(new InstitutionApiKeys());
         List<InstitutionApiKeys> InstitutionApiKeysList = mockInstance(List.of(apiKeys));
-        ;
         PagedIterable<SubscriptionContract> subscriptionContractListMock = mockInstance(getPi(1));
 
 
@@ -481,7 +480,6 @@ class AzureApiManagerClientTest {
         DummyKeyContract keyContract = mockInstance(new DummyKeyContract());
         //InstitutionApiKeys apiKeys = mockInstance(new InstitutionApiKeys());
         List<InstitutionApiKeys> InstitutionApiKeysList = mockInstance(new ArrayList<>());
-        ;
         PagedIterable<SubscriptionContract> subscriptionContractListMock = mockInstance(getPi(1));
 
 

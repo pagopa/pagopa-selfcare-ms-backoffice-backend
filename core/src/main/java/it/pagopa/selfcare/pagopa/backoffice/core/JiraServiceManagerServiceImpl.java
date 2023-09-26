@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class JiraServiceManagerServiceImpl implements JiraServiceManagerService {
 
 
-    private  JiraServiceManagerConnector jiraServiceManagerConnector;
+    private final JiraServiceManagerConnector jiraServiceManagerConnector;
 
     @Autowired
     public JiraServiceManagerServiceImpl(JiraServiceManagerConnector jiraServiceManagerConnector) {

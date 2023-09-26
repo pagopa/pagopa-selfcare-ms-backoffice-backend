@@ -48,7 +48,7 @@ class CreditorInstitutionControllerTest {
     private static final String BASE_URL = "/creditor-institutions";
     @Autowired
     protected MockMvc mvc;
-    private CreditorInstitutionMapper mapper = Mappers.getMapper(CreditorInstitutionMapper.class);
+    private final CreditorInstitutionMapper mapper = Mappers.getMapper(CreditorInstitutionMapper.class);
     @Autowired
     protected ObjectMapper objectMapper;
 
@@ -67,7 +67,7 @@ class CreditorInstitutionControllerTest {
 
         CreditorInstitutionDetails response = mapper.fromDto(creditorInstitutionDto);
 
-        when(apiConfigServiceMock.createCreditorInstitution(any(), anyString()))
+        when(apiConfigServiceMock.createCreditorInstitution(any()))
                 .thenReturn(response);
 
         //when
@@ -90,7 +90,7 @@ class CreditorInstitutionControllerTest {
                 .andExpect(jsonPath("$.reportingFtp", is(response.getReportingFtp())));
         //then
         verify(apiConfigServiceMock, times(1))
-                .createCreditorInstitution(eq(response), any());
+                .createCreditorInstitution(eq(response));
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -103,15 +103,15 @@ class CreditorInstitutionControllerTest {
 
         CreditorInstitutionDetails response = mapper.fromDto(creditorInstitutionAndBrokerDto.getCreditorInstitutionDto());
 
-        when(apiConfigServiceMock.createCreditorInstitution(any(), anyString()))
+        when(apiConfigServiceMock.createCreditorInstitution(any()))
                 .thenReturn(response);
 
         //when
         mvc.perform(MockMvcRequestBuilders
                         .post(BASE_URL +"/creditor-institution-and-broker")
                         .content(dto.getInputStream().readAllBytes())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .accept(APPLICATION_JSON_VALUE))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.address.city", is(response.getAddress().getCity())))
@@ -126,9 +126,9 @@ class CreditorInstitutionControllerTest {
                 .andExpect(jsonPath("$.reportingFtp", is(response.getReportingFtp())));
         //then
         verify(apiConfigServiceMock, times(1))
-                .createCreditorInstitution(eq(response), any());
+                .createCreditorInstitution(eq(response));
         verify(apiConfigServiceMock, times(1))
-                .createBroker(eq(BrokerMapper.fromDto(creditorInstitutionAndBrokerDto.getBrokerDto())), any());
+                .createBroker(eq(BrokerMapper.fromDto(creditorInstitutionAndBrokerDto.getBrokerDto())));
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -137,7 +137,7 @@ class CreditorInstitutionControllerTest {
         //given
         String ecCode = "creditorInstitution1";
         CreditorInstitutionDetails creditorInstitutionDetails = objectMapper.readValue(resource.getInputStream(), CreditorInstitutionDetails.class);
-        when(apiConfigServiceMock.getCreditorInstitutionDetails(anyString(), anyString()))
+        when(apiConfigServiceMock.getCreditorInstitutionDetails(anyString()))
                 .thenReturn(creditorInstitutionDetails);
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -158,7 +158,7 @@ class CreditorInstitutionControllerTest {
                 .andExpect(jsonPath("$.reportingFtp", is(creditorInstitutionDetails.getReportingFtp())));
         //then
         verify(apiConfigServiceMock, times(1))
-                .getCreditorInstitutionDetails(eq(ecCode), anyString());
+                .getCreditorInstitutionDetails(eq(ecCode));
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -171,7 +171,7 @@ class CreditorInstitutionControllerTest {
 
         CreditorInstitutionDetails response = mapper.fromDto(creditorInstitutionDto);
 
-        when(apiConfigServiceMock.updateCreditorInstitutionDetails(anyString(), any(), anyString()))
+        when(apiConfigServiceMock.updateCreditorInstitutionDetails(anyString(), any()))
                 .thenReturn(response);
 
         //when
@@ -194,7 +194,7 @@ class CreditorInstitutionControllerTest {
                 .andExpect(jsonPath("$.reportingFtp", is(response.getReportingFtp())));
         //then
         verify(apiConfigServiceMock, times(1))
-                .updateCreditorInstitutionDetails(eq(ecCode),eq(response), any());
+                .updateCreditorInstitutionDetails(eq(ecCode),eq(response));
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -210,7 +210,7 @@ class CreditorInstitutionControllerTest {
         CreditorInstitutions creditorInstitutions = mock(CreditorInstitutions.class);
 
 
-        when(apiConfigServiceMock.getCreditorInstitutions(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString()))
+        when(apiConfigServiceMock.getCreditorInstitutions(anyInt(), anyInt(), anyString(), anyString(), anyString()))
                 .thenReturn(creditorInstitutions);
         //when
         mvc.perform(MockMvcRequestBuilders
@@ -229,7 +229,7 @@ class CreditorInstitutionControllerTest {
 
         //then
         verify(apiConfigServiceMock, times(1))
-                .getCreditorInstitutions(eq(size),eq(page),eq(ecCode),eq(name),eq(sorting), anyString());
+                .getCreditorInstitutions(eq(size),eq(page),eq(ecCode),eq(name),eq(sorting));
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -239,7 +239,7 @@ class CreditorInstitutionControllerTest {
         String ecCode = "ecCode";
         CreditorInstitutionAssociatedCodeList creditorInstitutionAssociatedCodeList = mockInstance(new CreditorInstitutionAssociatedCodeList());
 
-        when(apiConfigSelfcareIntegrationServiceMock.getCreditorInstitutionSegregationcodes(anyString(), anyString()))
+        when(apiConfigSelfcareIntegrationServiceMock.getCreditorInstitutionSegregationcodes(anyString()))
                 .thenReturn(creditorInstitutionAssociatedCodeList);
 
         //when
@@ -248,7 +248,7 @@ class CreditorInstitutionControllerTest {
                 .andExpect(status().is2xxSuccessful());
         //then
         verify(apiConfigSelfcareIntegrationServiceMock, times(1))
-                .getCreditorInstitutionSegregationcodes(anyString(), anyString());
+                .getCreditorInstitutionSegregationcodes(anyString());
 
         verifyNoMoreInteractions(apiConfigSelfcareIntegrationServiceMock);
     }
