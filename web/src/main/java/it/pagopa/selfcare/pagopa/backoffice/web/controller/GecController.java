@@ -3,7 +3,6 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
@@ -45,13 +44,9 @@ public class GecController {
 //                                        @RequestParam(required = true) Integer page,
 //                                        @ApiParam("${swagger.model.gec.cifiscalcode}")
 //                                        @RequestParam(required = false) String ciFiscalcode) {
-//        log.trace("getBundlesByCI start");
 //        String xRequestId = UUID.randomUUID().toString();
-//        log.debug("getBundlesByCI cifiscalcode = {}, xRequestId = {}", ciFiscalcode, xRequestId);
 //        Bundles bundles = gecService.getBundlesByCI(ciFiscalcode, limit, page, xRequestId);
 //        BundlesResource resource = GecMapper.toResource(bundles);
-//        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getBundlesByCI result = {}", resource);
-//        log.trace("getBundlesByCI end");
 //        return resource;
 //    }
 
@@ -62,13 +57,8 @@ public class GecController {
                                           @RequestParam(required = false, defaultValue = "10") Integer limit,
                                           @ApiParam("${swagger.pageable.start}")
                                           @RequestParam(required = false, defaultValue = "0") Integer page) {
-        log.trace("getTouchpoints start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getTouchpoints xRequestId = {}", xRequestId);
-        Touchpoints touchpoints = gecService.getTouchpoints(limit, page, xRequestId);
+        Touchpoints touchpoints = gecService.getTouchpoints(limit, page);
         TouchpointsResource resource = GecMapper.toResource(touchpoints);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getTouchpoints result = {}", resource);
-        log.trace("getTouchpoints end");
         return resource;
     }
 
@@ -85,13 +75,8 @@ public class GecController {
                                           @PathVariable(required = true) String pspCode,
                                           @ApiParam("${swagger.model.gec.name}")
                                           @RequestParam(required = false) String name) {
-        log.trace("getBundlesByPSP start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getBundlesByPSP cifiscalcode = {}, xRequestId = {}", pspCode, xRequestId);
-        Bundles bundles = gecService.getBundlesByPSP(pspCode, bundleType, name, limit, page, xRequestId);
+        Bundles bundles = gecService.getBundlesByPSP(pspCode, bundleType, name, limit, page);
         BundlesResource resource = GecMapper.toResource(bundles);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getBundlesByPSP result = {}", resource);
-        log.trace("getBundlesByPSP end");
         return resource;
     }
 

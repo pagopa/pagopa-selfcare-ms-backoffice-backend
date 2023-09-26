@@ -280,7 +280,7 @@ class ApiConfigRestClientTest {
         String brokercode = (String) testCaseChannelParamMap.get(testCase).get("brokercode");
         String xRequestId = "1";
         // when
-        Channels response = restClient.getChannels(limit, page, code, brokercode, ordering, xRequestId);
+        Channels response = restClient.getChannels(limit, page, code, brokercode, ordering);
         assertNotNull(response);
         assertNull(response.getChannelList());
         assertNull(response.getPageInfo());
@@ -296,9 +296,9 @@ class ApiConfigRestClientTest {
         String code = (String) testCaseChannelParamMap.get(testCase).get("code");
         String ordering = (String) testCaseChannelParamMap.get(testCase).get("ordering");
         String brokercode = (String) testCaseChannelParamMap.get(testCase).get("brokercode");
-        String requestId = UUID.randomUUID().toString();
+        
         // when
-        Channels response = restClient.getChannels(limit, page, code, brokercode, ordering, requestId);
+        Channels response = restClient.getChannels(limit, page, code, brokercode, ordering);
 
         //then
         assertNotNull(response);
@@ -325,7 +325,7 @@ class ApiConfigRestClientTest {
         String pspCode = testCasePspCodeMap.get(testCase);
         String xRequestId = "1";
         // when
-        PspChannels response = restClient.getPspChannels(pspCode, xRequestId);
+        PspChannels response = restClient.getPspChannels(pspCode);
         assertNotNull(response);
         assertNotNull(response.getChannelsList());
         assertNotNull(response.getChannelsList().get(0));
@@ -340,7 +340,7 @@ class ApiConfigRestClientTest {
         String pspCode = testCasePspCodeMap.get(testCase);
         String xRequestId = "1";
         // when
-        PspChannels response = restClient.getPspChannels(pspCode, xRequestId);
+        PspChannels response = restClient.getPspChannels(pspCode);
         assertNotNull(response);
         assertNotNull(response.getChannelsList());
         assertTrue(response.getChannelsList().isEmpty());
@@ -353,7 +353,7 @@ class ApiConfigRestClientTest {
         String pspCode = testCaseChannelCodeMap.get(testCase);
         String xRequestId = "1";
         // when
-        ChannelDetails response = restClient.getChannelDetails(pspCode, xRequestId);
+        ChannelDetails response = restClient.getChannelDetails(pspCode);
         assertNotNull(response);
         assertNotNull(response.getPassword());
         assertNotNull(response.getNewPassword());
@@ -381,7 +381,7 @@ class ApiConfigRestClientTest {
         String pspCode = testCaseChannelCodeMap.get(testCase);
         String xRequestId = "1";
         // when
-        ChannelDetails response = restClient.getChannelDetails(pspCode, xRequestId);
+        ChannelDetails response = restClient.getChannelDetails(pspCode);
         assertNotNull(response);
     }
 
@@ -391,9 +391,9 @@ class ApiConfigRestClientTest {
         // given
         TestCase testCase = TestCase.FULLY_VALUED;
         ChannelDetails channelDetails = (ChannelDetails) testCaseChannelDtoMap.get(testCase);
-        String requestId = UUID.randomUUID().toString();
+        
         // when
-        ChannelDetails response = restClient.createChannel(channelDetails, requestId);
+        ChannelDetails response = restClient.createChannel(channelDetails);
 
         //then
         assertNotNull(response);
@@ -407,9 +407,9 @@ class ApiConfigRestClientTest {
         TestCase testCase = TestCase.FULLY_VALUED;
         ChannelDetails channelDetails = (ChannelDetails) testCaseChannelDtoMap.get(testCase);
         String channelCode = (String) testCaseChannelParamMap.get(testCase).get("code");
-        String requestId = UUID.randomUUID().toString();
+        
         // when
-        ChannelDetails response = restClient.updateChannel(channelDetails, channelCode, requestId);
+        ChannelDetails response = restClient.updateChannel(channelDetails, channelCode);
 
         //then
         assertNotNull(response.getPassword());
@@ -438,9 +438,9 @@ class ApiConfigRestClientTest {
         String channelCode = testCasePspChannelPaymentTypesMap.get(testCase);
         PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
         pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
-        String requestId = UUID.randomUUID().toString();
+        
         // when
-        PspChannelPaymentTypes response = restClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode, requestId);
+        PspChannelPaymentTypes response = restClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
 
         //then
         assertNotNull(response);
@@ -455,9 +455,9 @@ class ApiConfigRestClientTest {
         String channelCode = testCasePspChannelPaymentTypesMap.get(testCase);
         PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
         pspChannelPaymentTypes.setPaymentTypeList(List.of("paymentType"));
-        String requestId = UUID.randomUUID().toString();
+        
         // when
-        PspChannelPaymentTypes response = restClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode, requestId);
+        PspChannelPaymentTypes response = restClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
 
         //then
         assertNotNull(response);
@@ -468,11 +468,11 @@ class ApiConfigRestClientTest {
     @Test
     void getChannelPaymentTypes_fullyValued() {
         // given
-        String requestId = UUID.randomUUID().toString();
+        
         TestCase testCase = TestCase.FULLY_VALUED;
         String channelCode = testCaseChannelCodeMap.get(testCase);
         // when
-        PspChannelPaymentTypes response = restClient.getChannelPaymentTypes(channelCode, requestId);
+        PspChannelPaymentTypes response = restClient.getChannelPaymentTypes(channelCode);
         //then
         assertNotNull(response);
         assertFalse(response.getPaymentTypeList().isEmpty());
@@ -481,12 +481,12 @@ class ApiConfigRestClientTest {
     @Test
     void getPspBrokerPsp_fullyValued() {
         // given
-        String requestId = UUID.randomUUID().toString();
+        
         TestCase testCase = TestCase.FULLY_VALUED;
         String brokerPspCode = testCaseBrokerPspCodeMap.get(testCase);
         // when
 
-        PaymentServiceProviders response = restClient.getPspBrokerPsp(1, 1, brokerPspCode, requestId);
+        PaymentServiceProviders response = restClient.getPspBrokerPsp(1, 1, brokerPspCode);
         //then
         assertNotNull(response);
         assertFalse(response.getPaymentServiceProviderList().isEmpty());
@@ -495,12 +495,12 @@ class ApiConfigRestClientTest {
     @Test
     void getPspBrokerPsp_EmptyValued() {
         // given
-        String requestId = UUID.randomUUID().toString();
+        
         TestCase testCase = TestCase.EMPTY_RESULT;
         String brokerPspCode = testCaseBrokerPspCodeMap.get(testCase);
         // when
 
-        PaymentServiceProviders response = restClient.getPspBrokerPsp(1, 1, brokerPspCode, requestId);
+        PaymentServiceProviders response = restClient.getPspBrokerPsp(1, 1, brokerPspCode);
         //then
         assertNotNull(response);
         assertTrue(response.getPaymentServiceProviderList().isEmpty());
@@ -509,9 +509,9 @@ class ApiConfigRestClientTest {
     @Test
     void getPaymentTypes_fullyValued() {
         // given
-        String requestId = UUID.randomUUID().toString();
+        
         // when
-        PaymentTypes response = restClient.getPaymentTypes(requestId);
+        PaymentTypes response = restClient.getPaymentTypes();
 
         //then
         assertNotNull(response);
@@ -521,12 +521,12 @@ class ApiConfigRestClientTest {
     @Test
     void getChannelPaymentServiceProviders_EmptyValued() {
         // given
-        String requestId = UUID.randomUUID().toString();
+        
         TestCase testCase = TestCase.EMPTY_RESULT;
         String channelCode = testCaseChannelCodeMap.get(testCase);
 
         // when
-        ChannelPspList response = restClient.getChannelPaymentServiceProviders(1, 0, channelCode, requestId);
+        ChannelPspList response = restClient.getChannelPaymentServiceProviders(1, 0, channelCode);
 
         //then
         assertNotNull(response);
@@ -536,11 +536,10 @@ class ApiConfigRestClientTest {
     @Test
     void getChannelPaymentServiceProviders_fullyValued() {
         // given
-        final String requestId = UUID.randomUUID().toString();
         final TestCase testCase = TestCase.FULLY_VALUED;
         final String channelCode = testCaseChannelCodeMap.get(testCase);
         // when
-        ChannelPspList response = restClient.getChannelPaymentServiceProviders(1, 0, channelCode, requestId);
+        ChannelPspList response = restClient.getChannelPaymentServiceProviders(1, 0, channelCode);
 
         //then
         assertNotNull(response);
@@ -559,7 +558,7 @@ class ApiConfigRestClientTest {
         final String creditorInstitutionCode = null;
         final String xRequestId = "1";
         //when
-        Stations stations = restClient.getStations(limit, page, ordering, brokerCode, creditorInstitutionCode, code, xRequestId);
+        Stations stations = restClient.getStations(limit, page, ordering, brokerCode, creditorInstitutionCode, code);
         //then
         assertNotNull(stations);
         assertNull(stations.getStationsList());
@@ -577,9 +576,8 @@ class ApiConfigRestClientTest {
         final String ordering = (String) testCaseChannelParamMap.get(testCase).get("ordering");
         final String creditorInstitutionCode = "creditorInstitutionCode";
         final String brokerCode = null;
-        final String xRequestId = UUID.randomUUID().toString();
         //when
-        final Stations stations = restClient.getStations(limit, page, ordering, brokerCode, creditorInstitutionCode, code, xRequestId);
+        final Stations stations = restClient.getStations(limit, page, ordering, brokerCode, creditorInstitutionCode, code);
         //then
         assertNotNull(stations);
         assertFalse(stations.getStationsList().isEmpty());
@@ -593,7 +591,7 @@ class ApiConfigRestClientTest {
         String ecCode = "ecCode";
         String xRequestId = "123";
         //when
-        CreditorInstitutionStations response = restClient.getEcStations(ecCode, xRequestId);
+        CreditorInstitutionStations response = restClient.getEcStations(ecCode);
         //then
         assertNotNull(response);
         assertFalse(response.getStationsList().isEmpty());
@@ -606,7 +604,7 @@ class ApiConfigRestClientTest {
         String ecCode = "ecCode2";
         String xRequestId = "123";
         //when
-        CreditorInstitutionStations response = restClient.getEcStations(ecCode, xRequestId);
+        CreditorInstitutionStations response = restClient.getEcStations(ecCode);
         //then
         assertNotNull(response);
         assertNull(response.getStationsList());
@@ -617,9 +615,9 @@ class ApiConfigRestClientTest {
         //given
         TestCase testCase = TestCase.EMPTY_RESULT;
         final String stationCode = testCaseStationCodeMap.get(testCase);
-        final String xRequestId = UUID.randomUUID().toString();
+        final 
         //when
-        StationDetails stationDetails = restClient.getStation(stationCode, xRequestId);
+        StationDetails stationDetails = restClient.getStation(stationCode);
         //then
         assertNotNull(stationDetails);
     }
@@ -629,9 +627,9 @@ class ApiConfigRestClientTest {
         //given
         TestCase testCase = TestCase.FULLY_VALUED;
         String stationCode = testCaseStationCodeMap.get(testCase);
-        String xRequestId = UUID.randomUUID().toString();
+        
         //when
-        StationDetails stationDetails = restClient.getStation(stationCode, xRequestId);
+        StationDetails stationDetails = restClient.getStation(stationCode);
         //then
         assertNotNull(stationDetails);
         assertNotNull(stationDetails.getBrokerCode());
@@ -642,9 +640,9 @@ class ApiConfigRestClientTest {
         //given
         TestCase testCase = TestCase.FULLY_VALUED;
         StationDetails stationDetailsDto = (StationDetails) testCaseStationDetailDtoMap.get(testCase);
-        String xRequestId = UUID.randomUUID().toString();
+        
         //when
-        StationDetails stationDetails = restClient.createStation(stationDetailsDto, xRequestId);
+        StationDetails stationDetails = restClient.createStation(stationDetailsDto);
         //then
         assertNotNull(stationDetails);
         checkNotNullFields(stationDetails, "brokerObjId","intermediarioPa", "wrapperStatus");
@@ -654,7 +652,7 @@ class ApiConfigRestClientTest {
     @Test
     void createBrokerPsp_fullyValued() {
         // given
-        String requestId = UUID.randomUUID().toString();
+        
         TestCase testCase = TestCase.FULLY_VALUED;
         BrokerPspDetails brokerPspDetails = new BrokerPspDetails();
         brokerPspDetails.setEnabled(true);
@@ -662,7 +660,7 @@ class ApiConfigRestClientTest {
         brokerPspDetails.setExtendedFaultBean(true);
         brokerPspDetails.setBrokerPspCode("pspcode1");
         // when
-        BrokerPspDetails response = restClient.createBrokerPsp(brokerPspDetails, requestId);
+        BrokerPspDetails response = restClient.createBrokerPsp(brokerPspDetails);
 
         //then
         assertNotNull(response);
@@ -673,7 +671,7 @@ class ApiConfigRestClientTest {
     @Test
     void createPaymentServiceProvider_fullyValued() {
         // given
-        String requestId = UUID.randomUUID().toString();
+        
         TestCase testCase = TestCase.FULLY_VALUED;
         PaymentServiceProviderDetails paymentServiceProviderDetails = new PaymentServiceProviderDetails();
 
@@ -688,7 +686,7 @@ class ApiConfigRestClientTest {
         paymentServiceProviderDetails.setTaxCode("1");
         paymentServiceProviderDetails.setBusinessName("test");
         // when
-        PaymentServiceProviderDetails response = restClient.createPaymentServiceProvider(paymentServiceProviderDetails, requestId);
+        PaymentServiceProviderDetails response = restClient.createPaymentServiceProvider(paymentServiceProviderDetails);
 
         //then
         assertNotNull(response);
@@ -700,9 +698,9 @@ class ApiConfigRestClientTest {
         //given
         TestCase testCase = TestCase.FULLY_VALUED;
         String pspCode = testCasePspCodeMap.get(testCase);
-        String xRequestId = UUID.randomUUID().toString();
+        
         //when
-        PaymentServiceProviderDetails paymentServiceProviderDetails = restClient.getPSPDetails(pspCode, xRequestId);
+        PaymentServiceProviderDetails paymentServiceProviderDetails = restClient.getPSPDetails(pspCode);
         //then
         assertNotNull(paymentServiceProviderDetails);
         assertNotNull(paymentServiceProviderDetails.getPspCode());
@@ -713,9 +711,9 @@ class ApiConfigRestClientTest {
         //given
         TestCase testCase = TestCase.FULLY_NULL;
         String pspCode = testCasePspCodeMap.get(testCase);
-        String xRequestId = UUID.randomUUID().toString();
+        
         //when
-        PaymentServiceProviderDetails paymentServiceProviderDetails = restClient.getPSPDetails(pspCode, xRequestId);
+        PaymentServiceProviderDetails paymentServiceProviderDetails = restClient.getPSPDetails(pspCode);
         //then
         assertNotNull(paymentServiceProviderDetails);
         assertNull(paymentServiceProviderDetails.getAbi());
@@ -725,10 +723,10 @@ class ApiConfigRestClientTest {
     void createCreditorInstitutionStationRelationship(){
         //given
         String ecCode = "ecCode";
-        String xRequestId = UUID.randomUUID().toString();
+        
         CreditorInstitutionStationEdit request = mockInstance(new CreditorInstitutionStationEdit());
         //when
-        CreditorInstitutionStationEdit response = restClient.createCreditorInstitutionStationRelationship(ecCode, request, xRequestId);
+        CreditorInstitutionStationEdit response = restClient.createCreditorInstitutionStationRelationship(ecCode, request);
         //then
         assertNotNull(response);
         checkNotNullFields(response);
@@ -739,9 +737,9 @@ class ApiConfigRestClientTest {
         //given
         TestCase testCase = TestCase.FULLY_VALUED;
         String creditorInstitutionCode = testCaseECCodeMap.get(testCase);
-        String xRequestId = UUID.randomUUID().toString();
+        
         //when
-        CreditorInstitutionDetails response = restClient.getCreditorInstitutionDetails(creditorInstitutionCode, xRequestId);
+        CreditorInstitutionDetails response = restClient.getCreditorInstitutionDetails(creditorInstitutionCode);
         //then
         assertNotNull(response);
         checkNotNullFields(response, "applicationCode", "auxDigit",
@@ -753,9 +751,9 @@ class ApiConfigRestClientTest {
         //given
         TestCase testCase = TestCase.FULLY_NULL;
         String creditorInstitutionCode = testCaseECCodeMap.get(testCase);
-        String xRequestId = UUID.randomUUID().toString();
+        
         //when
-        CreditorInstitutionDetails response = restClient.getCreditorInstitutionDetails(creditorInstitutionCode, xRequestId);
+        CreditorInstitutionDetails response = restClient.getCreditorInstitutionDetails(creditorInstitutionCode);
         //then
         assertNotNull(response);
         checkNullFields(response);
@@ -764,9 +762,9 @@ class ApiConfigRestClientTest {
     @Test
     void getWfespPlugins_fullyValued(){
         //given
-        String xRequestId = UUID.randomUUID().toString();
+        
         //when
-        WfespPluginConfs response = restClient.getWfespPlugins(xRequestId);
+        WfespPluginConfs response = restClient.getWfespPlugins();
         //then
         assertNotNull(response);
         checkNotNullFields(response);
@@ -775,10 +773,10 @@ class ApiConfigRestClientTest {
     @Test
     void createCreditorInstitution(){
         //given
-        String xRequestId = UUID.randomUUID().toString();
+        
         CreditorInstitutionDetails request = mockInstance(new CreditorInstitutionDetails());
         //when
-        CreditorInstitutionDetails response = restClient.createCreditorInstitution(request, xRequestId);
+        CreditorInstitutionDetails response = restClient.createCreditorInstitution(request);
         //then
         assertNotNull(response);
         checkNotNullFields(response, "applicationCode", "auxDigit",
@@ -788,11 +786,11 @@ class ApiConfigRestClientTest {
     @Test
     void updateCreditorInstitution(){
         //given
-        String xRequestId = UUID.randomUUID().toString();
+        
         String ecCode = "ecCode";
         CreditorInstitutionDetails request = mockInstance(new CreditorInstitutionDetails());
         //when
-        CreditorInstitutionDetails response = restClient.updateCreditorInstitutionDetails(ecCode, request, xRequestId);
+        CreditorInstitutionDetails response = restClient.updateCreditorInstitutionDetails(ecCode, request);
         //then
         assertNotNull(response);
         checkNotNullFields(response, "applicationCode", "auxDigit",
@@ -810,7 +808,7 @@ class ApiConfigRestClientTest {
         String sorting = "CODE";
         String xRequestId = "1";
 
-        BrokersPsp response = restClient.getBrokersPsp(limit,page,filterByCode,filterByName,orderBy,sorting, xRequestId);
+        BrokersPsp response = restClient.getBrokersPsp(limit,page,filterByCode,filterByName,orderBy,sorting);
         assertNotNull(response);
         checkNotNullFields(response);
 
@@ -821,7 +819,7 @@ class ApiConfigRestClientTest {
         String brokerpspcode = "code1";
         String xRequestId = "1";
 
-        BrokerPsp response = restClient.getBrokerPsp(brokerpspcode, xRequestId);
+        BrokerPsp response = restClient.getBrokerPsp(brokerpspcode);
         assertNotNull(response);
         checkNotNullFields(response);
 
@@ -858,9 +856,9 @@ class ApiConfigRestClientTest {
         TestCase testCase = TestCase.FULLY_VALUED;
         StationDetails stationDetails = (StationDetails) testCaseStationDetailDtoMap.get(testCase);
         String stationCode = testCaseStationCodeMap.get(testCase);
-        String requestId = UUID.randomUUID().toString();
+        
         // when
-        StationDetails response = restClient.updateStation(stationCode, stationDetails, requestId);
+        StationDetails response = restClient.updateStation(stationCode, stationDetails);
 
         //then
         assertNotNull(response.getPassword());

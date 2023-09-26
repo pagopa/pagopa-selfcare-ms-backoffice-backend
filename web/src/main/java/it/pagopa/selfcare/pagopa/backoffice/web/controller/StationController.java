@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.PermissionDeniedException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
-import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
@@ -40,9 +39,9 @@ import java.util.UUID;
 @Api(tags = "stations")
 public class StationController {
 
-    private CreditorInstitutionMapper creditorInstitutionMapper = Mappers.getMapper(CreditorInstitutionMapper.class);
+    private final CreditorInstitutionMapper creditorInstitutionMapper = Mappers.getMapper(CreditorInstitutionMapper.class);
 
-    private StationMapper stationMapper = Mappers.getMapper(StationMapper.class);
+    private final StationMapper stationMapper = Mappers.getMapper(StationMapper.class);
     private final ApiConfigService apiConfigService;
 
     private final WrapperService wrapperService;
@@ -65,21 +64,20 @@ public class StationController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.stations.createStation}")
     public WrapperEntityOperations<StationDetails> createStation(@RequestBody @NotNull StationDetailsDto stationDetailsDto) {
-        log.trace("createStation start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "createStation dto = {}, xRequestId = {}", stationDetailsDto, xRequestId);
+        
+        
 
         final String CREATE_STATION_SUBJECT = "Creazione Stazione";
         final String CREATE_STATION_EMAIL_BODY = String.format("Buongiorno %n%n la stazione %s è stata validata da un operatore e risulta essere attiva%n%nSaluti", stationDetailsDto.getStationCode());
 
         StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
-        apiConfigService.createStation(stationDetails, xRequestId);
-        log.trace("created station in apiConfig");
+        apiConfigService.createStation(stationDetails);
+        
         WrapperEntitiesOperations<StationDetails> response = wrapperService.updateWrapperStationDetailsByOpt(stationDetails, stationDetailsDto.getNote(), WrapperStatus.APPROVED.name());
         WrapperEntityOperations<StationDetails> result = response.getWrapperEntityOperationsSortedList().get(0);
         awsSesService.sendEmail(CREATE_STATION_SUBJECT, CREATE_STATION_EMAIL_BODY,stationDetailsDto.getEmail());
-        log.debug("createStation result = {}", result);
-        log.trace("createStation end");
+        
+        
         return result;
     }
 
@@ -89,8 +87,8 @@ public class StationController {
     public WrapperEntitiesOperations<StationDetails> createWrapperStationDetails(@RequestBody
                                                                                  @Valid
                                                                                  WrapperStationDetailsDto wrapperStationDetailsDto) {
-        log.trace("createWrapperStationDetails start");
-        log.debug("createWrapperStationDetails channelDetailsDto = {}", wrapperStationDetailsDto);
+        
+        
 
         final String CREATE_STATION_SUMMARY = " Validazione stazione - creazione: %s";
         final String CREATE_STATION_DESCRIPTION = "La stazione %s deve essere validata: %s";
@@ -98,12 +96,12 @@ public class StationController {
         WrapperEntitiesOperations<StationDetails> createdWrapperEntities = wrapperService.
                 createWrapperStationDetails(stationMapper.
                         fromWrapperStationDetailsDto(wrapperStationDetailsDto), wrapperStationDetailsDto.getNote(), wrapperStationDetailsDto.getStatus().name());
-        log.debug("createWrapperStationDetails result = {}", createdWrapperEntities);
-        log.debug("createWrapperStationDetails result = {}", createdWrapperEntities);
+        
+        
 
         jiraServiceManagerService.createTicket(String.format(CREATE_STATION_SUMMARY, wrapperStationDetailsDto.getStationCode()),
                 String.format(CREATE_STATION_DESCRIPTION, wrapperStationDetailsDto.getStationCode(),wrapperStationDetailsDto.getValidationUrl()));
-        log.trace("createWrapperStationDetails end");
+        
         return createdWrapperEntities;
 
     }
@@ -122,13 +120,12 @@ public class StationController {
                                         @RequestParam(required = false) String creditorInstitutionCode,
                                         @ApiParam("${swagger.model.sort.order}")
                                         @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort) {
-        log.trace("getStations start");
-        String uuid = UUID.randomUUID().toString();
-        log.debug("getStations ecCode = {}, stationCode = {}, X-Request-Id = {}", creditorInstitutionCode, stationCode, uuid);
-        Stations stations = apiConfigService.getStations(limit, page, sort, null, creditorInstitutionCode, stationCode, uuid);
+        
+        
+        Stations stations = apiConfigService.getStations(limit, page, sort, null, creditorInstitutionCode, stationCode);
         StationsResource resource = stationMapper.toResource(stations);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "StationController result = {}", resource);
-        log.trace("getStations end");
+        
+        
         return resource;
     }
 
@@ -137,13 +134,12 @@ public class StationController {
     @ApiOperation(value = "", notes = "${swagger.api.stations.getStation}")
     public StationDetailResource getStation(@ApiParam("${swagger.model.station.code}")
                                             @PathVariable("stationId") String stationCode) {
-        log.trace("getStation start");
-        String uuid = UUID.randomUUID().toString();
-        log.debug("getStation stationCode = {}, X-Request-Id = {}", stationCode, uuid);
-        StationDetails stationDetails = apiConfigService.getStation(stationCode, uuid);
+        
+        
+        StationDetails stationDetails = apiConfigService.getStation(stationCode);
         StationDetailResource resource = stationMapper.toResource(stationDetails);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStation result = {}", resource);
-        log.trace("getStation end");
+        
+        
         return resource;
     }
 
@@ -152,7 +148,7 @@ public class StationController {
     @ApiOperation(value = "", notes = "${swagger.api.stations.getStation}")
     public StationDetailResource getStationDetail(@ApiParam("${swagger.model.station.code}")
                                                   @PathVariable("stationId") String stationCode) {
-        log.trace("getStationDetail start");
+        
         StationDetails stationDetails;
         WrapperStatus status;
         String createdBy = "";
@@ -164,14 +160,13 @@ public class StationController {
             stationDetails = result.getWrapperEntityOperationsSortedList().get(0).getEntity();
             status = result.getStatus();
         } catch (ResourceNotFoundException e) {
-            String uuid = UUID.randomUUID().toString();
-            log.debug("getStationDetail stationCode = {}, X-Request-Id = {}", stationCode, uuid);
-            stationDetails = apiConfigService.getStation(stationCode, uuid);
+            
+            stationDetails = apiConfigService.getStation(stationCode);
             status = WrapperStatus.APPROVED;
         }
         StationDetailResource resource = stationMapper.toResource(stationDetails, status, createdBy, modifiedBy);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStation result = {}", resource);
-        log.trace("getStationDetail end");
+        
+        
         return resource;
     }
 
@@ -180,17 +175,16 @@ public class StationController {
     @ApiOperation(value = "", notes = "${swagger.api.stations.getStationCode}")
     public StationCodeResource getStationCode(@ApiParam("${swagger.request.ecCode}")
                                               @PathVariable("ecCode") String ecCode) {
-        log.trace("getStationCode start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getStationCode ecCode = {}, xRequestId = {}", ecCode, xRequestId);
+        
+        
         WrapperEntitiesList entitiesList = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_CHECK, WrapperType.STATION, null, ecCode,  0, 1, "ASC");
         WrapperEntitiesList entitiesList2 = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_FIX, WrapperType.STATION, null, ecCode,  0, 1, "ASC");
         if (!entitiesList.getWrapperEntities().isEmpty() || !entitiesList2.getWrapperEntities().isEmpty())
             throw new PermissionDeniedException("ERROR There is a Station not completed!");
-        String result = apiConfigService.generateStationCode(ecCode, xRequestId);
+        String result = apiConfigService.generateStationCode(ecCode);
         StationCodeResource stationCode = new StationCodeResource(result);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationCode result = {}", stationCode);
-        log.trace("getStationCode end");
+        
+        
         return stationCode;
     }
 
@@ -199,19 +193,18 @@ public class StationController {
     @ApiOperation(value = "", notes = "${swagger.api.stations.getStationCode}")
     public StationCodeResource getStationCodeV2(@ApiParam("${swagger.request.ecCode}")
                                               @PathVariable("ecCode") String ecCode) {
-        log.trace("getStationCode start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getStationCode ecCode = {}, xRequestId = {}", ecCode, xRequestId);
+        
+        
 
-        Stations stations = apiConfigService.getStations(100, 0, "ASC", null, null, ecCode, xRequestId);
+        Stations stations = apiConfigService.getStations(100, 0, "ASC", null, null, ecCode);
         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
         WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(ecCode, WrapperType.STATION, null, 0, 100);
         WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
         WrapperStations stationsMergedAndSorted = apiConfigService.mergeAndSortWrapperStations(responseApiConfig, responseMongo, "ASC");
-        String result = apiConfigService.generateStationCodeV2(stationsMergedAndSorted.getStationsList(), ecCode, xRequestId);
+        String result = apiConfigService.generateStationCodeV2(stationsMergedAndSorted.getStationsList(), ecCode);
         StationCodeResource stationCode = new StationCodeResource(result);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationCode result = {}", stationCode);
-        log.trace("getStationCode end");
+        
+        
         return stationCode;
     }
 
@@ -221,17 +214,17 @@ public class StationController {
     public WrapperEntitiesOperations updateWrapperStationDetails(@RequestBody
                                                                  @Valid
                                                                  StationDetailsDto stationDetailsDto) {
-        log.trace("updateWrapperStationDetails start");
+        
         final String UPDATE_STATION_SUMMARY = "Station creation validation: %s";
         final String UPDATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validated: %s";
-        log.debug("updateWrapperStationDetails stationDetailsDto = {}", stationDetailsDto);
+        
         WrapperEntitiesOperations createdWrapperEntities = wrapperService.
                 updateWrapperStationDetails(stationMapper.fromDto
                         (stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
-        log.debug("updateWrapperStationDetails result = {}", createdWrapperEntities);
+        
         jiraServiceManagerService.createTicket(String.format(UPDATE_STATION_SUMMARY, stationDetailsDto.getStationCode()),
                 String.format(UPDATE_STATION_DESCRIPTION, stationDetailsDto.getStationCode(), stationDetailsDto.getBrokerCode(),stationDetailsDto.getValidationUrl()));
-        log.trace("updateWrapperStationDetails end");
+        
         return createdWrapperEntities;
     }
 
@@ -241,13 +234,13 @@ public class StationController {
     public WrapperEntitiesOperations updateWrapperStationDetailsByOpt(@RequestBody
                                                                       @Valid
                                                                       StationDetailsDto stationDetailsDto) {
-        log.trace("updateWrapperStationDetailsByOpt start");
-        log.debug("updateWrapperStationDetailsByOpt stationDetailsDto = {}", stationDetailsDto);
+        
+        
         WrapperEntitiesOperations createdWrapperEntities = wrapperService.
                 updateWrapperStationDetailsByOpt(stationMapper.
                         fromDto(stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name());
-        log.debug("updateWrapperStationDetailsByOpt result = {}", createdWrapperEntities);
-        log.trace("updateWrapperStationDetailsByOpt end");
+        
+        
         return createdWrapperEntities;
     }
 
@@ -257,14 +250,13 @@ public class StationController {
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(@ApiParam("${swagger.request.ecCode}")
                                                                                         @PathVariable("ecCode") String ecCode,
                                                                                         @RequestBody @NotNull CreditorInstitutionStationDto dto) {
-        log.trace("associateStationToCreditorInstitution start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("associateStationToCreditorInstitution ecCode ={}, dto = {}, xRequestId = {}", ecCode, dto, xRequestId);
+        
+        
         CreditorInstitutionStationEdit station = creditorInstitutionMapper.fromDto(dto);
-        CreditorInstitutionStationEdit ecStation = apiConfigService.createCreditorInstitutionStationRelation(ecCode, station, xRequestId);
+        CreditorInstitutionStationEdit ecStation = apiConfigService.createCreditorInstitutionStationRelation(ecCode, station);
         CreditorInstitutionStationEditResource resource = creditorInstitutionMapper.toResource(ecStation);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "associateStationToCreditorInstitution result = {}", resource);
-        log.trace("associateStationToCreditorInstitution end");
+        
+        
         return resource;
     }
 
@@ -275,11 +267,10 @@ public class StationController {
                                                              @PathVariable("ecCode") String ecCode,
                                                              @ApiParam("${swagger.request.code}")
                                                              @PathVariable("stationcode") String stationcode) {
-        log.trace("deleteCreditorInstitutionStationRelationship start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("deleteCreditorInstitutionStationRelationship ecCode ={}, stationcode = {}, xRequestId = {}", ecCode, stationcode, xRequestId);
-        apiConfigService.deleteCreditorInstitutionStationRelationship(ecCode, stationcode, xRequestId);
-        log.trace("deleteCreditorInstitutionStationRelationship end");
+        
+        
+        apiConfigService.deleteCreditorInstitutionStationRelationship(ecCode, stationcode);
+        
     }
 
     @GetMapping(value = "/getCreditorInstitutions/{stationcode}")
@@ -288,14 +279,13 @@ public class StationController {
     public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(@ApiParam("${swagger.request.code}") @PathVariable("stationcode") String stationcode,
                                                                              @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                                              @RequestParam Integer page) {
-        log.trace("getCreditorInstitutionsByStationCode start");
-        log.debug("getCreditorInstitutionsByStationCode stationcode = {}", stationcode);
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getCreditorInstitutionsByStationCode xRequestId = {}", xRequestId);
-        CreditorInstitutions creditorInstitutions = apiConfigService.getCreditorInstitutionsByStation(stationcode, limit, page, xRequestId);
+        
+        
+        
+        CreditorInstitutions creditorInstitutions = apiConfigService.getCreditorInstitutionsByStation(stationcode, limit, page);
         CreditorInstitutionsResource resource = creditorInstitutionMapper.toResource(creditorInstitutions);
-        log.debug("getCreditorInstitutionsByStationCode result = {}", resource);
-        log.trace("getCreditorInstitutionsByStationCode end");
+        
+        
         return resource;
     }
 
@@ -306,20 +296,20 @@ public class StationController {
                                                @ApiParam("${swagger.model.station.code}")
                                                @PathVariable("stationcode") String stationCode) {
 
-        log.trace("updateStation start");
-        String uuid = UUID.randomUUID().toString();
-        log.debug("updateStation code stationDetailsDto = {} , uuid {}", stationDetailsDto, uuid);
+        
+        
+        
 
         final String UPDATE_STATION_SUBJECT = "Update Stazione";
         final String UPDATE_STATION_EMAIL_BODY = String.format("Buongiorno%n%n la modifica per la stazione %s è stata validata da un operatore e risulta essere attiva%n%nSaluti", stationDetailsDto.getStationCode());
 
         StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
-        StationDetails response = apiConfigService.updateStation(stationCode, stationDetails, uuid);
+        StationDetails response = apiConfigService.updateStation(stationCode, stationDetails);
         wrapperService.updateWrapperStationDetails(stationDetails, stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
         StationDetailResource resource = stationMapper.toResource(response);
         awsSesService.sendEmail(UPDATE_STATION_SUBJECT, UPDATE_STATION_EMAIL_BODY,stationDetailsDto.getEmail());
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "updateStation result = {}", resource);
-        log.trace("updateStation end");
+        
+        
         return resource;
     }
 
@@ -327,11 +317,11 @@ public class StationController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getWrapperEntities}")
     public WrapperEntitiesOperations getWrapperEntitiesStation(@ApiParam("${swagger.request.code}") @PathVariable("code") String code) {
-        log.trace("getWrapperEntities start");
-        log.debug("getWrapperEntities cCode = {}", code);
+        
+        
         WrapperEntitiesOperations result = wrapperService.findById(code);
-        log.debug("getWrapperEntities result = {}", result);
-        log.trace("getWrapperEntities end");
+        
+        
         return result;
     }
 
@@ -339,10 +329,9 @@ public class StationController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.stations.createBroker}")
     public BrokerResource createBroker(@RequestBody BrokerDto brokerDto){
-        log.trace("createBroker start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("createBroker xRequestId = {}", xRequestId);
-        BrokerDetails broker = apiConfigService.createBroker(BrokerMapper.fromDto(brokerDto), xRequestId);
+        
+        
+        BrokerDetails broker = apiConfigService.createBroker(BrokerMapper.fromDto(brokerDto));
         return BrokerMapper.toResource(broker);
     }
 
@@ -359,19 +348,18 @@ public class StationController {
                                                      @RequestParam Integer page,
                                                      @ApiParam("${swagger.request.sorting}")
                                                      @RequestParam(required = false, value = "sorting") String sorting) {
-        log.trace("getAllStationsMerged start");
-        log.debug("getAllStationsMerged page = {} limit = {}", page, limit);
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getchannels xRequestId = {}", xRequestId);
+        
+        
+        
 
-        Stations stations = apiConfigService.getStations(limit, page, sorting, brokerCode, null, stationCode, xRequestId);
+        Stations stations = apiConfigService.getStations(limit, page, sorting, brokerCode, null, stationCode);
         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
         WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, brokerCode, page, limit);
         WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
         WrapperStations stationsMergedAndSorted = apiConfigService.mergeAndSortWrapperStations(responseApiConfig, responseMongo, sorting);
         WrapperStationsResource response = stationMapper.toWrapperStationsResource(stationsMergedAndSorted);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getAllStationsMerged result = {}", response);
-        log.trace("getAllStationsMerged end");
+        
+        
 
         return response;
     }
@@ -383,15 +371,14 @@ public class StationController {
                                                                      @RequestParam(required = false) String stationId,
                                                                      @RequestParam(required = false, defaultValue = "10") Integer limit,
                                                                      @RequestParam(required = false, defaultValue = "0") Integer page) {
-        log.trace("getStationsDetailsListByBroker start");
-        log.debug("getStationsDetailsListByBroker page = {} limit = {}", page, limit);
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getStationsDetailsListByBroker xRequestId = {}", xRequestId);
-        StationDetailsList response = apiConfigSelfcareIntegrationService.getStationsDetailsListByBroker(brokerId, stationId, limit, page, xRequestId);
+        
+        
+        
+        StationDetailsList response = apiConfigSelfcareIntegrationService.getStationsDetailsListByBroker(brokerId, stationId, limit, page);
         StationDetailsResourceList resource = stationMapper.fromStationDetailsList(response);
 
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationsDetailsListByBroker result = {}", resource);
-        log.trace("getStationsDetailsListByBroker end");
+        
+        
         return resource;
     }
 
@@ -409,14 +396,13 @@ public class StationController {
                                @ApiParam(allowableValues = "ASC,DESC")
                                @RequestParam(required = false, defaultValue = "DESC") String ordering){
 
-        log.trace("getStationBroker start");
-        log.debug("getStationBroker page = {} limit = {}", page, limit);
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getStationBroker xRequestId = {}", xRequestId);
-        Brokers response = apiConfigService.getBrokersEC(limit, page, code, name, orderby, ordering, xRequestId);
+        
+        
+        
+        Brokers response = apiConfigService.getBrokersEC(limit, page, code, name, orderby, ordering);
         BrokersResource resource = BrokerMapper.toResource(response);
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getStationBroker result = {}", resource);
-        log.trace("getStationBroker end");
+        
+        
         return resource;
     }
 

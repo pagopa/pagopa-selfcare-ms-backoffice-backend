@@ -56,7 +56,7 @@ class AzureManagementExceptionHandlerTest {
     
     
     private static class MockHttpResponse extends HttpResponse{
-        private int statusCode;
+        private final int statusCode;
         /**
          * Creates an instance of {@link HttpResponse}.
          *

@@ -3,7 +3,6 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.BrokerPspDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentServiceProviderDetails;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
@@ -37,22 +36,21 @@ public class UtilsController {
     @ApiOperation(value = "", notes = "${swagger.api.channels.getBrokerPsp}")
     public BrokerOrPspDetailsResource getBrokerOrPspDetails(@ApiParam("swagger.request.brokerpspcode")
                                                  @RequestParam(required = false, name = "brokerpspcode") String brokerPspCode) {
-        log.trace("getBrokerOrPspDetails start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getBrokerOrPspDetails brokerPspCode = {} , xRequestId:  {}", brokerPspCode, xRequestId);
+        
+        
 
-        BrokerPspDetails brokerPspDetails = apiConfigService.getBrokerPsp(brokerPspCode, xRequestId);
+        BrokerPspDetails brokerPspDetails = apiConfigService.getBrokerPsp(brokerPspCode);
         BrokerPspDetailsResource brokerPspDetailsResource = ChannelMapper.toResource(brokerPspDetails);
 
-        PaymentServiceProviderDetails paymentServiceProviderDetails = apiConfigService.getPSPDetails(brokerPspCode, xRequestId);
+        PaymentServiceProviderDetails paymentServiceProviderDetails = apiConfigService.getPSPDetails(brokerPspCode);
         PaymentServiceProviderDetailsResource paymentServiceProviderDetailsResource = ChannelMapper.toResource(paymentServiceProviderDetails);
 
         BrokerOrPspDetailsResource resource = new BrokerOrPspDetailsResource();
         resource.setBrokerPspDetailsResource(brokerPspDetailsResource);
         resource.setPaymentServiceProviderDetailsResource(paymentServiceProviderDetailsResource);
 
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getBrokerPsp result = {}", resource);
-        log.trace("getBrokerOrPspDetails end");
+        
+        
 
         return resource;
     }

@@ -45,14 +45,13 @@ public class CreditorInstitutionController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.createCreditorInstitution}")
     public CreditorInstitutionDetailsResource createCreditorInstitution(@RequestBody @NotNull CreditorInstitutionDto dto){
-        log.trace("createCreditorInstitution start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("createCreditorInstitution dto = {}, xRequestId = {}", dto, xRequestId);
+        
+        
         CreditorInstitutionDetails creditorInstitution = mapper.fromDto(dto);
-        CreditorInstitutionDetails created = apiConfigService.createCreditorInstitution(creditorInstitution, xRequestId);
+        CreditorInstitutionDetails created = apiConfigService.createCreditorInstitution(creditorInstitution);
         CreditorInstitutionDetailsResource result = mapper.toResource(created);
-        log.debug("createCreditorInstitution result = {}", result);
-        log.trace("createCreditorInstitution end");
+        
+        
         return result;
     }
 
@@ -60,17 +59,16 @@ public class CreditorInstitutionController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.createCreditorInstitutionAndBroker}")
     public CreditorInstitutionDetailsResource createCreditorInstitutionAndBroker(@RequestBody @NotNull CreditorInstitutionAndBrokerDto dto){
-        log.trace("createCreditorInstitutionAndBroker start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("createCreditorInstitutionAndBroker dto = {}, xRequestId = {}", dto, xRequestId);
+        
+        
         CreditorInstitutionDto creditorInstitutionDto = dto.getCreditorInstitutionDto();
         BrokerDto brokerDto = dto.getBrokerDto();
         CreditorInstitutionDetails creditorInstitution = mapper.fromDto(creditorInstitutionDto);
-        CreditorInstitutionDetails created = apiConfigService.createCreditorInstitution(creditorInstitution, xRequestId);
-        apiConfigService.createBroker(BrokerMapper.fromDto(brokerDto), xRequestId);
+        CreditorInstitutionDetails created = apiConfigService.createCreditorInstitution(creditorInstitution);
+        apiConfigService.createBroker(BrokerMapper.fromDto(brokerDto));
         CreditorInstitutionDetailsResource result = mapper.toResource(created);
-        log.debug("createCreditorInstitution result = {}", result);
-        log.trace("createCreditorInstitution end");
+        
+        
         return result;
     }
 
@@ -79,13 +77,12 @@ public class CreditorInstitutionController {
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.getCreditorInstitutionDetails}")
     public CreditorInstitutionDetailsResource getCreditorInstitutionDetails(@ApiParam("${swagger.request.ecCode}")
                                                                                 @PathVariable("ecCode")String ecCode){
-        log.trace("getCreditorInstitutionDetails start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getCreditorInstitutionDetails ecCode = {}, xRequestId = {}", ecCode, xRequestId);
-        CreditorInstitutionDetails creditorInstitutionDetails = apiConfigService.getCreditorInstitutionDetails(ecCode, xRequestId);
+        
+        
+        CreditorInstitutionDetails creditorInstitutionDetails = apiConfigService.getCreditorInstitutionDetails(ecCode);
         CreditorInstitutionDetailsResource result = mapper.toResource(creditorInstitutionDetails);
-        log.debug("getCreditorInstitutionDetails result = {}", result);
-        log.trace("getCreditorInstitutionDetails end");
+        
+        
         return result;
     }
 
@@ -102,13 +99,12 @@ public class CreditorInstitutionController {
                                                                           @RequestParam(required = false, value = "name") String name,
                                                                       @ApiParam("${swagger.request.sorting}")
                                                                           @RequestParam(required = false, value = "sorting") String sorting){
-        log.trace("getCreditorInstitutionDetails start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getCreditorInstitutionDetails ecCode = {}, xRequestId = {}", ecCode, xRequestId);
-        CreditorInstitutions creditorInstitutions = apiConfigService.getCreditorInstitutions(limit, page, ecCode, name, sorting, xRequestId);
+        
+        
+        CreditorInstitutions creditorInstitutions = apiConfigService.getCreditorInstitutions(limit, page, ecCode, name, sorting);
         CreditorInstitutionsResource result = mapper.toResource(creditorInstitutions);
-        log.debug("getCreditorInstitutionDetails result = {}", result);
-        log.trace("getCreditorInstitutionDetails end");
+        
+        
         return result;
     }
 
@@ -119,14 +115,13 @@ public class CreditorInstitutionController {
                                                      @PathVariable("ecCode") String ecCode,
                                                  @RequestBody @Valid UpdateCreditorInstitutionDto dto
                                                  ){
-        log.trace("updateCreditorInstitutionDetails start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("updateCreditorInstitutionDetails dto = {}, xRequestId = {}", dto, xRequestId);
+        
+        
         CreditorInstitutionDetails creditorInstitution = mapper.fromDto(dto);
-        CreditorInstitutionDetails created = apiConfigService.updateCreditorInstitutionDetails(ecCode, creditorInstitution, xRequestId);
+        CreditorInstitutionDetails created = apiConfigService.updateCreditorInstitutionDetails(ecCode, creditorInstitution);
         CreditorInstitutionDetailsResource result = mapper.toResource(created);
-        log.debug("updateCreditorInstitutionDetails result = {}", result);
-        log.trace("updateCreditorInstitutionDetails end");
+        
+        
         return result;
     }
 
@@ -135,11 +130,10 @@ public class CreditorInstitutionController {
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.getCreditorInstitutionSegregationcodes}")
     public CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationcodes(@ApiParam("${swagger.request.ecCode}")
                                                                             @PathVariable("ecCode")String ecCode){
-        log.trace("getCreditorInstitutionSegregationcodes start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getCreditorInstitutionSegregationcodes ecCode = {}, xRequestId = {}", ecCode, xRequestId);
-        CreditorInstitutionAssociatedCodeList result = apiConfigSelfcareIntegrationService.getCreditorInstitutionSegregationcodes(ecCode, xRequestId);
-        log.trace("getCreditorInstitutionSegregationcodes end");
+        
+        
+        CreditorInstitutionAssociatedCodeList result = apiConfigSelfcareIntegrationService.getCreditorInstitutionSegregationcodes(ecCode);
+        
         return result;
     }
 
