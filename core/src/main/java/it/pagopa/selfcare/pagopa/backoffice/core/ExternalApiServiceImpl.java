@@ -29,42 +29,27 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
     @Override
     public Institution getInstitution(String institutionId) {
-        log.trace("getInstitution start");
-        log.debug("getInstitution institutionId = {}", institutionId);
         Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
         Institution institution = externalApiConnector.getInstitution(institutionId);
-        log.debug("getInstitution result = {}", institution);
-        log.trace("getInstitution end");
         return institution;
     }
 
     @Override
     public Collection<InstitutionInfo> getInstitutions(String userIdForAuth) {
-        log.trace("getInstitutions start");
         List<InstitutionInfo> institutions = externalApiConnector.getInstitutions(userIdForAuth);
-        log.debug("getInstitutions result = {}", institutions);
-        log.trace("getInstitutions end");
         return institutions;
     }
 
     @Override
     public List<Product> getInstitutionUserProducts(String institutionId, String userIdForAuth) {
-        log.trace("getInstitutionUserProducts start");
-        log.debug("getInstitutionUserProducts institutionId = {}", institutionId);
         Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
         List<Product> userProducts = externalApiConnector.getInstitutionUserProducts(institutionId, userIdForAuth);
-        log.debug("getInstitutionUserProducts result = {}", userProducts);
-        log.trace("getInstitutionUserProducts end");
         return userProducts;
     }
 
     @Override
     public List<Delegation> getBrokerDelegation(String institutionId, String brokerId, String productId, String mode) {
-        log.trace("getBrokerDelegation start");
-        log.debug("getBrokerDelegation institutionId = {},  brokerId = {},  productId = {}", institutionId, brokerId, productId);
         List<Delegation> delegations = externalApiConnector.getBrokerDelegation(institutionId, brokerId, productId, mode);
-        log.debug("getBrokerDelegation result = {}", delegations);
-        log.trace("getBrokerDelegation end");
         return delegations;
     }
 

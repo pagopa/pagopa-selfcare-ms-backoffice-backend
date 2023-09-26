@@ -42,20 +42,20 @@ class ApiConfigSelfcareIntegrationServiceImplTest {
         final String xRequestId = "xRequestId";
 
         StationDetailsList stationDetailsListMock = mockInstance(new StationDetailsList());
-        StationDetails stationDetailsMock =mockInstance(new StationDetails());
+        StationDetails stationDetailsMock = mockInstance(new StationDetails());
         stationDetailsListMock.setStationsDetailsList(List.of(stationDetailsMock));
 
-        when(apiConfigConnectorMock.getStationsDetailsListByBroker(anyString(),anyString(),anyInt(),anyInt(),any()))
+        when(apiConfigConnectorMock.getStationsDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt()))
                 .thenReturn(stationDetailsListMock);
 
         //when
-        StationDetailsList response = apiConfigSelfcareIntegrationService.getStationsDetailsListByBroker(broker, station, limit,page, xRequestId);
+        StationDetailsList response = apiConfigSelfcareIntegrationService.getStationsDetailsListByBroker(broker, station, limit, page);
         //then
         assertNotNull(response);
         assertEquals(response, stationDetailsListMock);
         reflectionEqualsByName(response, stationDetailsListMock);
         verify(apiConfigConnectorMock, times(1))
-                .getStationsDetailsListByBroker(broker, station, limit,page, xRequestId);
+                .getStationsDetailsListByBroker(broker, station, limit, page);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
@@ -69,20 +69,20 @@ class ApiConfigSelfcareIntegrationServiceImplTest {
         final String xRequestId = "xRequestId";
 
         ChannelDetailsList channelDetailsListMock = mockInstance(new ChannelDetailsList());
-        ChannelDetails channelDetailsMock =mockInstance(new ChannelDetails());
+        ChannelDetails channelDetailsMock = mockInstance(new ChannelDetails());
         channelDetailsListMock.setChannelDetailsList(List.of(channelDetailsMock));
 
-        when(apiConfigConnectorMock.getChannelDetailsListByBroker(anyString(),anyString(),anyInt(),anyInt(),any()))
+        when(apiConfigConnectorMock.getChannelDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt()))
                 .thenReturn(channelDetailsListMock);
 
         //when
-        ChannelDetailsList response = apiConfigSelfcareIntegrationService.getChannelsDetailsListByBroker(broker, station, limit,page, xRequestId);
+        ChannelDetailsList response = apiConfigSelfcareIntegrationService.getChannelsDetailsListByBroker(broker, station, limit, page);
         //then
         assertNotNull(response);
         assertEquals(response, channelDetailsListMock);
         reflectionEqualsByName(response, channelDetailsListMock);
         verify(apiConfigConnectorMock, times(1))
-                .getChannelDetailsListByBroker(broker, station, limit,page, xRequestId);
+                .getChannelDetailsListByBroker(broker, station, limit, page);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
@@ -93,14 +93,14 @@ class ApiConfigSelfcareIntegrationServiceImplTest {
         String xRequestId = "xRequestId";
         CreditorInstitutionAssociatedCodeList creditorInstitutionAssociatedCodeList = mockInstance(new CreditorInstitutionAssociatedCodeList());
 
-        when(apiConfigConnectorMock.getCreditorInstitutionSegregationcodes(anyString(), anyString()))
+        when(apiConfigConnectorMock.getCreditorInstitutionSegregationcodes(anyString()))
                 .thenReturn(creditorInstitutionAssociatedCodeList);
 
-        CreditorInstitutionAssociatedCodeList response = apiConfigSelfcareIntegrationService.getCreditorInstitutionSegregationcodes(ecCode, xRequestId);
+        CreditorInstitutionAssociatedCodeList response = apiConfigSelfcareIntegrationService.getCreditorInstitutionSegregationcodes(ecCode);
         //then
         assertNotNull(response);
         verify(apiConfigConnectorMock, times(1))
-                .getCreditorInstitutionSegregationcodes(ecCode, xRequestId);
+                .getCreditorInstitutionSegregationcodes(ecCode);
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 }

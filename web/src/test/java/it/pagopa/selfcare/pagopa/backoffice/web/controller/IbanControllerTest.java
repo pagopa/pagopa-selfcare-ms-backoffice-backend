@@ -59,7 +59,7 @@ public class IbanControllerTest {
         ibanDetails.setLabels(new ArrayList<>());
         ibansDetails.setIbanList(List.of(ibanDetails));
 
-        when(apiConfigServiceMock.getCreditorInstitutionIbans(anyString(), anyString(), anyString()))
+        when(apiConfigServiceMock.getCreditorInstitutionIbans(anyString(), anyString()))
                 .thenReturn(ibansDetails);
 
         mvc.perform(MockMvcRequestBuilders
@@ -72,7 +72,7 @@ public class IbanControllerTest {
 
 
         verify(apiConfigServiceMock, times(1))
-                .getCreditorInstitutionIbans(anyString(), anyString(), anyString());
+                .getCreditorInstitutionIbans(anyString(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -82,7 +82,7 @@ public class IbanControllerTest {
         IbanCreate ibanCreate = mockInstance(new IbanCreate());
         ibanCreate.setLabels(new ArrayList<>());
 
-        when(apiConfigServiceMock.createCreditorInstitutionIbans(anyString(), any(), anyString()))
+        when(apiConfigServiceMock.createCreditorInstitutionIbans(anyString(), any()))
                 .thenReturn(ibanCreate);
 
         mvc.perform(MockMvcRequestBuilders
@@ -95,7 +95,7 @@ public class IbanControllerTest {
 
 
         verify(apiConfigServiceMock, times(1))
-                .createCreditorInstitutionIbans(anyString(), any(), anyString());
+                .createCreditorInstitutionIbans(anyString(), any());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
@@ -107,7 +107,7 @@ public class IbanControllerTest {
         ibanCreate.setIban("IT12L12312311111");
 
 
-        when(apiConfigServiceMock.updateCreditorInstitutionIbans(anyString(), any(), anyString()))
+        when(apiConfigServiceMock.updateCreditorInstitutionIbans(anyString(), any()))
                 .thenReturn(ibanCreate);
 
         mvc.perform(MockMvcRequestBuilders
@@ -120,7 +120,7 @@ public class IbanControllerTest {
 
 
         verify(apiConfigServiceMock, times(1))
-                .updateCreditorInstitutionIbans(anyString(), any(), anyString());
+                .updateCreditorInstitutionIbans(anyString(), any());
 
     }
 
@@ -132,7 +132,7 @@ public class IbanControllerTest {
         ibanCreate.setIban("IT12L12312311111");
 
 
-        when(apiConfigServiceMock.updateCreditorInstitutionIbans(anyString(), any(), anyString()))
+        when(apiConfigServiceMock.updateCreditorInstitutionIbans(anyString(), any()))
                 .thenReturn(ibanCreate);
 
         mvc.perform(MockMvcRequestBuilders
@@ -145,7 +145,7 @@ public class IbanControllerTest {
 
 
         verify(apiConfigServiceMock, times(1))
-                .updateCreditorInstitutionIbans(anyString(), any(), anyString());
+                .updateCreditorInstitutionIbans(anyString(), any());
 
     }
 
@@ -167,9 +167,9 @@ public class IbanControllerTest {
         ibansEnhanced.getIbanList().add(ibanEnhanced);
 
 
-        when(apiConfigServiceMock.updateCreditorInstitutionIbans(anyString(), any(), anyString()))
+        when(apiConfigServiceMock.updateCreditorInstitutionIbans(anyString(), any()))
                 .thenReturn(ibanCreate);
-        when(apiConfigServiceMock.getCreditorInstitutionIbans(anyString(), any(), anyString()))
+        when(apiConfigServiceMock.getCreditorInstitutionIbans(anyString(), any()))
                 .thenReturn(ibansEnhanced);
 
 
@@ -183,9 +183,9 @@ public class IbanControllerTest {
 
 
         verify(apiConfigServiceMock, times(2))
-                .updateCreditorInstitutionIbans(anyString(), any(), anyString());
+                .updateCreditorInstitutionIbans(anyString(), any());
         verify(apiConfigServiceMock, times(1))
-                .getCreditorInstitutionIbans(anyString(), any(), anyString());
+                .getCreditorInstitutionIbans(anyString(), any());
 
     }
 
@@ -197,7 +197,7 @@ public class IbanControllerTest {
         IbanCreate ibanCreate = mockInstance(new IbanCreate());
         ibanCreate.setLabels(new ArrayList<>());
 
-        doNothing().when(apiConfigServiceMock).deleteCreditorInstitutionIbans(anyString(), any(), anyString());
+        doNothing().when(apiConfigServiceMock).deleteCreditorInstitutionIbans(anyString(), any());
 
         mvc.perform(MockMvcRequestBuilders
                         .delete(BASE_URL + "/{creditorinstitutioncode}/delete/{ibanValue}", ecCode, iban)
@@ -207,7 +207,7 @@ public class IbanControllerTest {
 
 
         verify(apiConfigServiceMock, times(1))
-                .deleteCreditorInstitutionIbans(anyString(), any(), anyString());
+                .deleteCreditorInstitutionIbans(anyString(), any());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }
