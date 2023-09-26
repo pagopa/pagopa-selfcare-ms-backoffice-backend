@@ -24,7 +24,7 @@ public enum Subscription {
         return scope;
     }
 
-    private Subscription(String scope, String displayName, String prefixId) {
+    Subscription(String scope, String displayName, String prefixId) {
         this.scope = scope;
         this.displayName = displayName;
         this.prefixId = prefixId;

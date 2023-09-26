@@ -34,7 +34,7 @@ public class StringUtils {
         String newCode = retrievedCode.concat("_").concat("01");
         if (codes.isEmpty()) return newCode;
         Comparator<String> comparator = Comparator.comparingInt(s -> Integer.parseInt(s.split("_")[1]));
-        Collections.sort(codes, comparator.reversed());
+        codes.sort(comparator.reversed());
         String code = codes.get(0);
 
         Matcher matcher = pattern.matcher(code);

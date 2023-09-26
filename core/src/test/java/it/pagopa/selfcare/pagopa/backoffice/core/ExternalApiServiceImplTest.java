@@ -28,15 +28,15 @@ import static org.mockito.Mockito.*;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = ExternalApiServiceImpl.class)
 class ExternalApiServiceImplTest {
-    
+
     @Autowired
     private ExternalApiServiceImpl externalApiService;
-    
+
     @MockBean
     private ExternalApiConnector externalApiConnectorMock;
-    
+
     @Test
-    void getInstitution_nullInstitutionId(){
+    void getInstitution_nullInstitutionId() {
         //given
         final String institutionId = null;
         //when
@@ -46,9 +46,9 @@ class ExternalApiServiceImplTest {
         assertEquals(AN_INSTITUTION_ID_IS_REQUIRED, e.getMessage());
         verifyNoInteractions(externalApiConnectorMock);
     }
-    
+
     @Test
-    void getInstitution(){
+    void getInstitution() {
         //given
         final String institutionId = "institutionId";
         Institution institutionMock = mockInstance(new Institution());
@@ -65,10 +65,10 @@ class ExternalApiServiceImplTest {
                 .getInstitution(institutionId);
         verifyNoMoreInteractions(externalApiConnectorMock);
     }
-    
-    
+
+
     @Test
-    void getInstitutions(){
+    void getInstitutions() {
         //given
         String userIdForAuth = "prod-userIdForAuth";
         InstitutionInfo institutionInfo = mockInstance(new InstitutionInfo());
@@ -85,56 +85,56 @@ class ExternalApiServiceImplTest {
                 .getInstitutions(userIdForAuth);
         verifyNoMoreInteractions(externalApiConnectorMock);
     }
-    
+
     @Test
-    void getInstitutionUserProducts_nullInstitutionId(){
+    void getInstitutionUserProducts_nullInstitutionId() {
         //given
         String institutionId = null;
         String userId = "userId";
         //when
-        Executable executable = () -> externalApiService.getInstitutionUserProducts(institutionId,userId);
+        Executable executable = () -> externalApiService.getInstitutionUserProducts(institutionId, userId);
         //then
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, executable);
         assertEquals(AN_INSTITUTION_ID_IS_REQUIRED, e.getMessage());
         verifyNoInteractions(externalApiConnectorMock);
     }
-    
+
     @Test
-    void getInstitutionUserProducts(){
+    void getInstitutionUserProducts() {
         //given
         String institutionId = "institutionId";
         String userId = "userId";
         Product productMock = mockInstance(new Product());
-        when(externalApiConnectorMock.getInstitutionUserProducts(any(),anyString()))
+        when(externalApiConnectorMock.getInstitutionUserProducts(any(), anyString()))
                 .thenReturn(List.of(productMock));
         //when
-        List<Product> products = externalApiService.getInstitutionUserProducts(institutionId,userId);
+        List<Product> products = externalApiService.getInstitutionUserProducts(institutionId, userId);
         //then
         assertNotNull(products);
         products.forEach(TestUtils::checkNotNullFields);
         products.forEach(product -> TestUtils.reflectionEqualsByName(productMock, product));
         verify(externalApiConnectorMock, times(1))
-                .getInstitutionUserProducts(institutionId,userId);
+                .getInstitutionUserProducts(institutionId, userId);
     }
 
 
     @Test
-    void getBrokerDelegation(){
+    void getBrokerDelegation() {
         //given
         String institutionId = "institutionId";
         String brokerId = "brokerId";
         String productId = "productId";
         Delegation delegationMock = mockInstance(new Delegation());
-        when(externalApiConnectorMock.getBrokerDelegation(anyString(),anyString(),anyString(),anyString()))
+        when(externalApiConnectorMock.getBrokerDelegation(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(List.of(delegationMock));
         //when
-        List<Delegation> delegations = externalApiService.getBrokerDelegation(institutionId,brokerId,productId, "FULL");
+        List<Delegation> delegations = externalApiService.getBrokerDelegation(institutionId, brokerId, productId, "FULL");
         //then
         assertNotNull(delegations);
         delegations.forEach(TestUtils::checkNotNullFields);
         delegations.forEach(product -> TestUtils.reflectionEqualsByName(delegationMock, delegations));
         verify(externalApiConnectorMock, times(1))
-                .getBrokerDelegation(institutionId,brokerId,productId, "FULL");
+                .getBrokerDelegation(institutionId, brokerId, productId, "FULL");
     }
 
 }

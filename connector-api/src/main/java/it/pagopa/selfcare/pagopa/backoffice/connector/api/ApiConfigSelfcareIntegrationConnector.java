@@ -6,10 +6,10 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetai
 
 public interface ApiConfigSelfcareIntegrationConnector {
 
-    StationDetailsList getStationsDetailsListByBroker(String brokerId, String stationId, Integer limit, Integer page, String xRequestId);
+    StationDetailsList getStationsDetailsListByBroker(String brokerId, String stationId, Integer limit, Integer page);
 
-    ChannelDetailsList getChannelDetailsListByBroker(String brokerId, String chennelId, Integer limit, Integer page, String xRequestId);
+    ChannelDetailsList getChannelDetailsListByBroker(String brokerId, String chennelId, Integer limit, Integer page);
 
-    CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationcodes(String ecCode, String xRequestId);
+    CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationcodes(String ecCode);
 
 }
