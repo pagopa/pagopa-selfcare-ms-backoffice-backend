@@ -9,7 +9,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.BrokerPspDet
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentServiceProviderDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.Problem;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.BrokerOrPspDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.BrokerPspDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PaymentServiceProviderDetailsResource;
@@ -73,24 +72,26 @@ public class UtilsController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getBrokerPsp}")
     public BrokerAndEcDetailsResource getBrokerAndEcDetails(@ApiParam("swagger.request.brokerpspcode")
-                                                            @RequestParam(required = false, name = "brokercode") String brokercode) throws Exception {
+                                                            @PathVariable(required = true, name = "code") String code) throws Exception {
         log.trace("getBrokerOrEcDetails start");
         String xRequestId = UUID.randomUUID().toString();
-        log.debug("getBrokerOrEcDetails brokerPspCode = {} , xRequestId:  {}", brokercode, xRequestId);
+        log.debug("getBrokerOrEcDetails brokerPspCode = {} , xRequestId:  {}", code, xRequestId);
 
         BrokersResource brokersResource = null;
         CreditorInstitutionDetailsResource creditorInstitutionDetailsResource = null;
+        Brokers brokers;
+        CreditorInstitutionDetails creditorInstitutionDetails;
 
         try {
-            Brokers brokers = apiConfigService.getBrokersEC(1, 0, brokercode, null, null, "ASC", xRequestId);
+            brokers = apiConfigService.getBrokersEC(1, 0, code, null, null, "ASC", xRequestId);
             brokersResource = BrokerMapper.toResource(brokers);
         }catch (Exception e){
             log.trace("getBrokerOrEcDetails - Not BrokerEC found");
         }
 
         try {
-            CreditorInstitutionDetails creditorInstitutionDetails = apiConfigService.getCreditorInstitutionDetails(brokercode, xRequestId);
-             creditorInstitutionDetailsResource = mapper.toResource(creditorInstitutionDetails);
+            creditorInstitutionDetails = apiConfigService.getCreditorInstitutionDetails(code, xRequestId);
+            creditorInstitutionDetailsResource = mapper.toResource(creditorInstitutionDetails);
         }catch (Exception e){
             log.trace("getBrokerOrEcDetails - Not CreditorInstitution found");
         }

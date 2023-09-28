@@ -1,8 +1,11 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Broker;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.BrokerPspDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentServiceProviderDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.JiraServiceManagerService;
@@ -19,6 +22,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.ArrayList;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -77,6 +82,35 @@ public class UtilsControllerTest {
                 .getBrokerPsp(anyString(), anyString());
         verify(apiConfigServiceMock, times(1))
                 .getPSPDetails(anyString(), anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getBrokerAndEcDetails() throws Exception {
+        //given
+        String brokerECcode = "brokerECcode";
+
+        Broker broker = new Broker();
+        broker.setBrokerCode(brokerECcode);
+        Brokers brokers = mockInstance(new Brokers());
+        brokers.setBrokerList(new ArrayList<>());
+        brokers.getBrokerList().add(broker);
+        CreditorInstitutionDetails creditorInstitutionDetails = mockInstance(new CreditorInstitutionDetails());
+
+
+        when(apiConfigServiceMock.getBrokersEC(anyInt(), anyInt(), anyString(), eq(null), eq(null), anyString(), anyString()))
+                .thenReturn(brokers);
+        when(apiConfigServiceMock.getCreditorInstitutionDetails(anyString(), anyString()))
+                .thenReturn(creditorInstitutionDetails);
+        //when
+        mvc.perform(get(BASE_URL+"/ec-brokers/{code}/details", brokerECcode)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getBrokersEC(anyInt(), anyInt(), anyString(), any(), any(), anyString(), anyString());
+        verify(apiConfigServiceMock, times(1))
+                .getCreditorInstitutionDetails(anyString(), anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
