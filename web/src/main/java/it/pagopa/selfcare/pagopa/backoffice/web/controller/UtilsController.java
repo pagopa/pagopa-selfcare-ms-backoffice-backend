@@ -7,14 +7,17 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.logging.LogUtils;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.BrokerPspDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentServiceProviderDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.Problem;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.BrokerOrPspDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.BrokerPspDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PaymentServiceProviderDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerOrEcDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerAndEcDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokersResource;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
@@ -32,6 +35,8 @@ import java.util.UUID;
 public class UtilsController {
 
     private final ApiConfigService apiConfigService;
+
+    CreditorInstitutionMapper mapper = Mappers.getMapper(CreditorInstitutionMapper.class);
 
 
     @Autowired
@@ -64,26 +69,38 @@ public class UtilsController {
         return resource;
     }
 
-    @GetMapping(value = "/broker-or-ec-details", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/ec-brokers/{code}/details", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getBrokerPsp}")
-    public BrokerOrEcDetailsResource getBrokerOrEcDetails(@ApiParam("swagger.request.brokerpspcode")
-                                                            @RequestParam(required = false, name = "brokercode") String brokercode) {
+    public BrokerAndEcDetailsResource getBrokerAndEcDetails(@ApiParam("swagger.request.brokerpspcode")
+                                                            @RequestParam(required = false, name = "brokercode") String brokercode) throws Exception {
         log.trace("getBrokerOrEcDetails start");
         String xRequestId = UUID.randomUUID().toString();
         log.debug("getBrokerOrEcDetails brokerPspCode = {} , xRequestId:  {}", brokercode, xRequestId);
 
-        Brokers brokers = apiConfigService.getBrokersEC(1, 0, brokercode, null, null, "ASC", xRequestId);
-        BrokersResource brokersResource = BrokerMapper.toResource(brokers);
+        BrokersResource brokersResource = null;
+        CreditorInstitutionDetailsResource creditorInstitutionDetailsResource = null;
 
+        try {
+            Brokers brokers = apiConfigService.getBrokersEC(1, 0, brokercode, null, null, "ASC", xRequestId);
+            brokersResource = BrokerMapper.toResource(brokers);
+        }catch (Exception e){
+            log.trace("getBrokerOrEcDetails - Not BrokerEC found");
+        }
 
-        ----
-        PaymentServiceProviderDetails paymentServiceProviderDetails = apiConfigService.getPSPDetails(brokercode, xRequestId);
-        PaymentServiceProviderDetailsResource paymentServiceProviderDetailsResource = ChannelMapper.toResource(paymentServiceProviderDetails);
+        try {
+            CreditorInstitutionDetails creditorInstitutionDetails = apiConfigService.getCreditorInstitutionDetails(brokercode, xRequestId);
+             creditorInstitutionDetailsResource = mapper.toResource(creditorInstitutionDetails);
+        }catch (Exception e){
+            log.trace("getBrokerOrEcDetails - Not CreditorInstitution found");
+        }
 
-        BrokerOrPspDetailsResource resource = new BrokerOrPspDetailsResource();
-        resource.setBrokerPspDetailsResource(brokerPspDetailsResource);
-        resource.setPaymentServiceProviderDetailsResource(paymentServiceProviderDetailsResource);
+        if(brokersResource == null && creditorInstitutionDetailsResource == null){
+            throw new Exception("Nessun dato trovato per il broker o per il creditorInstitution");
+        }
+        BrokerAndEcDetailsResource resource = new BrokerAndEcDetailsResource();
+        resource.setBrokerDetailsResource(brokersResource);
+        resource.setCreditorInstitutionDetailsResource(creditorInstitutionDetailsResource);
 
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getBrokerOrEcDetails result = {}", resource);
         log.trace("getBrokerOrEcDetails end");
