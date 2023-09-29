@@ -72,8 +72,7 @@ public class UtilsControllerTest {
         when(apiConfigServiceMock.getPSPDetails(anyString(), anyString()))
                 .thenReturn(paymentServiceProviderDetails);
         //when
-        mvc.perform(get(BASE_URL+"/broker-or-psp-details")
-                        .queryParam("brokerpspcode", brokerpspcode)
+        mvc.perform(get(BASE_URL+"/psp-brokers/{code}/details", brokerpspcode)
 
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
