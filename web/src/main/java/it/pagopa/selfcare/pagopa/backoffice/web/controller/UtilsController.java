@@ -67,7 +67,7 @@ public class UtilsController {
 
         try {
             paymentServiceProviderDetails = apiConfigService.getPSPDetails(brokerPspCode, xRequestId);
-            paymentServiceProviderDetailsResource = ChannelMapper.toRegsource(paymentServiceProviderDetails);
+            paymentServiceProviderDetailsResource = ChannelMapper.toResource(paymentServiceProviderDetails);
         } catch (Exception e) {
             log.trace("getBrokerAndPspDetails - Not PaymentServiceProvider found");
         }
