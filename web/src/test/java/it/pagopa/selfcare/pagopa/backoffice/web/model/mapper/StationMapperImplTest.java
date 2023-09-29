@@ -19,7 +19,7 @@ import static it.pagopa.selfcare.pagopa.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class StationMapperImplTest {
-    private StationMapper mapper = Mappers.getMapper(StationMapper.class);
+    private final StationMapper mapper = Mappers.getMapper(StationMapper.class);
 
     @Test
     void toStationsResource() {

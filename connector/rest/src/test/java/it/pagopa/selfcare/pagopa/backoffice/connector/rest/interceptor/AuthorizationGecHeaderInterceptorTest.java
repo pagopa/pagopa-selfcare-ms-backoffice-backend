@@ -44,5 +44,17 @@ class AuthorizationGecHeaderInterceptorTest {
         interceptor.apply(template);
     }
 
+    @Test
+    void testApply_auth_null() {
+        RequestTemplate template = new RequestTemplate();
+
+        user = mock(SelfCareUser.class);
+
+        ReflectionTestUtils.setField(interceptor, "gecSubscriptionKey", "sub-key");
+        when(user.getId()).thenReturn("user-id");
+
+        interceptor.apply(template);
+    }
+
 
 }

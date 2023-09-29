@@ -42,7 +42,7 @@ public class UtilsControllerTest {
     private static final String BASE_URL = "/utils";
     @Autowired
     protected MockMvc mvc;
-    private StationMapper mapper = Mappers.getMapper(StationMapper.class);
+    private final StationMapper mapper = Mappers.getMapper(StationMapper.class);
     @Autowired
     protected ObjectMapper objectMapper;
 
@@ -67,9 +67,9 @@ public class UtilsControllerTest {
         PaymentServiceProviderDetails paymentServiceProviderDetails = mockInstance(new PaymentServiceProviderDetails());
 
 
-        when(apiConfigServiceMock.getBrokerPsp(anyString(), anyString()))
+        when(apiConfigServiceMock.getBrokerPsp(anyString()))
                 .thenReturn(brokerPspDetails);
-        when(apiConfigServiceMock.getPSPDetails(anyString(), anyString()))
+        when(apiConfigServiceMock.getPSPDetails(anyString()))
                 .thenReturn(paymentServiceProviderDetails);
         //when
         mvc.perform(get(BASE_URL+"/psp-brokers/{code}/details", brokerpspcode)
@@ -78,9 +78,9 @@ public class UtilsControllerTest {
                 .andExpect(status().isOk());
         //then
         verify(apiConfigServiceMock, times(1))
-                .getBrokerPsp(anyString(), anyString());
+                .getBrokerPsp(anyString());
         verify(apiConfigServiceMock, times(1))
-                .getPSPDetails(anyString(), anyString());
+                .getPSPDetails(anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 

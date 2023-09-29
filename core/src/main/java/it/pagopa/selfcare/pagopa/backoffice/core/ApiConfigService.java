@@ -21,95 +21,94 @@ import java.util.List;
 public interface ApiConfigService {
 
 
-    BrokersPsp getBrokersPsp(Integer limit, Integer page, String filterByCode, String filterByName,String orderBy,String sorting, String xRequestId);
+    BrokersPsp getBrokersPsp(Integer limit, Integer page, String filterByCode, String filterByName,String orderBy,String sorting);
 
-    BrokerPspDetails getBrokerPsp(String brokerpspcode, String xRequestId);
+    BrokerPspDetails getBrokerPsp(String brokerpspcode);
 
-    Channels getChannels(Integer limit, Integer page, String code, String brokerCode, String sort, String xRequestId);
+    Channels getChannels(Integer limit, Integer page, String code, String brokerCode, String sort);
 
 
-    ChannelDetails createChannel(ChannelDetails channelDetails, String xRequestId);
+    ChannelDetails createChannel(ChannelDetails channelDetails);
 
-    ChannelDetails updateChannel(ChannelDetails channelDetails, String channelCode, String xRequestId);
+    ChannelDetails updateChannel(ChannelDetails channelDetails, String channelCode);
 
-    PspChannels getPspChannels(String pspCode, String xRequestId);
+    PspChannels getPspChannels(String pspCode);
 
-    ChannelDetails getChannelDetails(String channelCode, String xRequestId);
+    ChannelDetails getChannelDetails(String channelCode);
 
-    PspChannelPaymentTypes createChannelPaymentType(PspChannelPaymentTypes pspChannelPaymentTypes, String channelCode, String xRequestId);
+    PspChannelPaymentTypes createChannelPaymentType(PspChannelPaymentTypes pspChannelPaymentTypes, String channelCode);
 
-    PaymentTypes getPaymentTypes(String xRequestId);
+    PaymentTypes getPaymentTypes();
 
-    void deleteChannelPaymentType(String channelCode, String paymentTypeCode, String xRequestId);
+    void deleteChannelPaymentType(String channelCode, String paymentTypeCode);
 
-    PspChannelPaymentTypes getChannelPaymentTypes(String channelCode, String xRequestId);
+    PspChannelPaymentTypes getChannelPaymentTypes(String channelCode);
 
-    void deletePaymentServiceProvidersChannels(String pspCode, String channelCode, String xRequestId);
+    void deletePaymentServiceProvidersChannels(String pspCode, String channelCode);
 
-    PspChannelPaymentTypes updatePaymentServiceProvidersChannels(String pspCode, String channelCode, PspChannelPaymentTypes pspChannelPaymentTypes, String xRequestId);
+    PspChannelPaymentTypes updatePaymentServiceProvidersChannels(String pspCode, String channelCode, PspChannelPaymentTypes pspChannelPaymentTypes);
 
-    void deleteChannel(String channelCode, String xRequestId);
+    void deleteChannel(String channelCode);
 
-    PaymentServiceProviders getPspBrokerPsp(Integer limit, Integer page, String brokerPspCode, String xRequestId);
+    PaymentServiceProviders getPspBrokerPsp(Integer limit, Integer page, String brokerPspCode);
 
-    Resource getChannelsCSV(String uuid);
+    Resource getChannelsCSV();
 
-    ChannelPspList getChannelPaymentServiceProviders(Integer limit, Integer page, String channelCode, String xRequestId);
+    ChannelPspList getChannelPaymentServiceProviders(Integer limit, Integer page, String channelCode);
 
-    BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails, String xRequestId);
+    BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails);
 
-    BrokerDetails createBroker(BrokerDetails request, String xRequestId);
+    BrokerDetails createBroker(BrokerDetails request);
 
-    PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails, String xRequestId);
+    PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails);
 
-    Stations getStations(Integer limit, Integer page, String sort, String brokerCode, String ecCode, String stationCode, String xRequestId);
+    Stations getStations(Integer limit, Integer page, String sort, String brokerCode, String ecCode, String stationCode);
 
-    StationDetails getStation(String stationCode, String xRequestId);
+    StationDetails getStation(String stationCode);
 
-    StationDetails createStation(StationDetails stationDetails, String xRequestId);
+    StationDetails createStation(StationDetails stationDetails);
 
-    String generateChannelCode(String pspCode, String xRequestId);
+    String generateChannelCode(String pspCode);
 
-    String generateStationCode(String ecCode, String xRequestId);
+    String generateStationCode(String ecCode);
 
-    PaymentServiceProviderDetails getPSPDetails(String pspCode, String xRequestId);
+    PaymentServiceProviderDetails getPSPDetails(String pspCode);
 
-    CreditorInstitutionStationEdit createCreditorInstitutionStationRelation(String ecCode, CreditorInstitutionStationEdit station, String xRequestId);
+    CreditorInstitutionStationEdit createCreditorInstitutionStationRelation(String ecCode, CreditorInstitutionStationEdit station);
 
-    CreditorInstitutionDetails createCreditorInstitution(CreditorInstitutionDetails dto, String xRequestId);
+    CreditorInstitutionDetails createCreditorInstitution(CreditorInstitutionDetails dto);
 
-    CreditorInstitutionDetails getCreditorInstitutionDetails(String ecCode, String xRequestId);
+    CreditorInstitutionDetails getCreditorInstitutionDetails(String ecCode);
 
-    CreditorInstitutions getCreditorInstitutions(Integer limit, Integer page, String ecCode, String name, String sorting, String xRequestId);
+    CreditorInstitutions getCreditorInstitutions(Integer limit, Integer page, String ecCode, String name, String sorting);
 
     CreditorInstitutionDetails updateCreditorInstitutionDetails(String creditorInstitutionCode,
-                                                                CreditorInstitutionDetails request,
-                                                                String xRequestId);
-    StationDetails updateStation(String stationCode, StationDetails stationDetails, String xRequestId);
+                                                                CreditorInstitutionDetails request);
+    StationDetails updateStation(String stationCode, StationDetails stationDetails);
 
 
     WrapperStations mergeAndSortWrapperStations(WrapperStations wrapperStationsApiConfig,WrapperStations wrapperStationsMongo, String sorting);
 
     WrapperChannels mergeAndSortWrapperChannels(WrapperChannels wrapperChannelsApiConfig, WrapperChannels wrapperChannelsMongo, String sorting);
 
-    WfespPluginConfs getWfespPlugins(String xRequestId);
+    WfespPluginConfs getWfespPlugins();
 
-    CreditorInstitutions getCreditorInstitutionsByStation(String stationcode, Integer limit, Integer page, String xRequestId);
+    CreditorInstitutions getCreditorInstitutionsByStation(String stationcode, Integer limit, Integer page);
 
-    void deleteCreditorInstitutionStationRelationship(String ecCode, String stationcode, String xRequestId);
+    void deleteCreditorInstitutionStationRelationship(String ecCode, String stationcode);
 
-    IbansEnhanced getCreditorInstitutionIbans(String ecCode, String label, String xRequestId);
+    IbansEnhanced getCreditorInstitutionIbans(String ecCode, String label);
 
-    IbanCreate createCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId);
+    IbanCreate createCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate);
 
-    void deleteCreditorInstitutionIbans(String ecCode, String iban, String xRequestId);
+    void deleteCreditorInstitutionIbans(String ecCode, String iban);
 
-    IbanCreate updateCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate, String xRequestId);
+    IbanCreate updateCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate);
 
-    String generateStationCodeV2(List<WrapperStation> stationList, String ecCode, String xRequestId);
+    String generateStationCodeV2(List<WrapperStation> stationList, String ecCode);
 
-    String generateChannelCodeV2(List<WrapperChannel> channelList, String ecCode, String xRequestId);
+    String generateChannelCodeV2(List<WrapperChannel> channelList, String ecCode);
 
-    Brokers getBrokersEC(Integer limit, Integer page, String code, String name, String orderby, String ordering, String xRequestId);
+    Brokers getBrokersEC(Integer limit, Integer page, String code, String name, String orderby, String ordering);
 
     }

@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.security;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
+import it.pagopa.selfcare.pagopa.backoffice.core.Secret;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
@@ -11,13 +12,13 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     private final String token;
     private Object principal;
     
-    public JwtAuthenticationToken(final String token) {
+    public JwtAuthenticationToken(@Secret final String token) {
         super(null);
         setAuthenticated(false);
         this.token = token;
     }
 
-    JwtAuthenticationToken(final String token, final SelfCareUser user, Collection<GrantedAuthority> authorities) {
+    JwtAuthenticationToken(@Secret final String token, final SelfCareUser user, Collection<GrantedAuthority> authorities) {
         super(authorities);
         this.token = token;
         principal = user;

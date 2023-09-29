@@ -338,9 +338,9 @@ class ApiManagementServiceImplTest {
         verifyNoInteractions(externalApiConnectorMock);
         verifyNoMoreInteractions(apiManagerConnectorMock);
     }
-    
+
     @Test
-    void getInstitutionApiKeys(){
+    void getInstitutionApiKeys() {
         //given
         String institutionId = "institutionId";
         List<InstitutionApiKeys> apiKeys = mockInstance(List.of(new InstitutionApiKeys()));
@@ -356,9 +356,9 @@ class ApiManagementServiceImplTest {
         verifyNoInteractions(externalApiConnectorMock);
         verifyNoMoreInteractions(apiManagerConnectorMock);
     }
-    
+
     @Test
-    void regeneratePrimaryKey_nullInstitutionId(){
+    void regeneratePrimaryKey_nullInstitutionId() {
         //given
         String institutionId = null;
         //when
@@ -366,11 +366,11 @@ class ApiManagementServiceImplTest {
         //then
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, executable);
         assertEquals(AN_INSTITUTION_ID_IS_REQUIRED, e.getMessage());
-        verifyNoInteractions(apiManagerConnectorMock,externalApiConnectorMock);
+        verifyNoInteractions(apiManagerConnectorMock, externalApiConnectorMock);
     }
-    
+
     @Test
-    void regeneratePrimaryKey(){
+    void regeneratePrimaryKey() {
         //given
         String institutionId = "institutionId";
         //when
@@ -382,9 +382,9 @@ class ApiManagementServiceImplTest {
         verifyNoInteractions(externalApiConnectorMock);
         verifyNoMoreInteractions(apiManagerConnectorMock);
     }
-    
+
     @Test
-    void regenerateSecondaryKey_nullInstitutionId(){
+    void regenerateSecondaryKey_nullInstitutionId() {
         //given
         String institutionId = null;
         //when
@@ -394,9 +394,9 @@ class ApiManagementServiceImplTest {
         assertEquals(AN_INSTITUTION_ID_IS_REQUIRED, e.getMessage());
         verifyNoInteractions(apiManagerConnectorMock, externalApiConnectorMock);
     }
-    
+
     @Test
-    void regenerateSecondaryKey(){
+    void regenerateSecondaryKey() {
         //given
         String institutionId = "institutionId";
         //when

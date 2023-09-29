@@ -31,7 +31,7 @@ class JwtAuthenticationFilterTest {
     private final AuthenticationManager authenticationManagerMock;
     private final ObjectMapper objectMapperSpy;
 
-    private ArgumentCaptor<JwtAuthenticationToken> jwtAuthenticationTokenCaptor;
+    private final ArgumentCaptor<JwtAuthenticationToken> jwtAuthenticationTokenCaptor;
 
 
     public JwtAuthenticationFilterTest() {

@@ -397,8 +397,8 @@ class InstitutionControllerTest {
         mvc.perform(MockMvcRequestBuilders
                         .get(BASE_URL + "/delegations", institutionId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .queryParam("institutionId", String.valueOf(institutionId))
-                        .queryParam("brokerId", String.valueOf(brokerId)))
+                        .queryParam("institutionId", institutionId)
+                        .queryParam("brokerId", brokerId))
                 .andExpect(status().isOk())
                .andExpect(jsonPath("$[*].brokerId",everyItem(notNullValue())))
                 .andExpect(jsonPath("$[*].brokerName", everyItem(notNullValue())))
