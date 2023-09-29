@@ -97,9 +97,9 @@ public class UtilsControllerTest {
         CreditorInstitutionDetails creditorInstitutionDetails = mockInstance(new CreditorInstitutionDetails());
 
 
-        when(apiConfigServiceMock.getBrokersEC(anyInt(), anyInt(), anyString(), eq(null), eq(null), anyString(), anyString()))
+        when(apiConfigServiceMock.getBrokersEC(anyInt(), anyInt(), anyString(), eq(null), eq(null), anyString()))
                 .thenReturn(brokers);
-        when(apiConfigServiceMock.getCreditorInstitutionDetails(anyString(), anyString()))
+        when(apiConfigServiceMock.getCreditorInstitutionDetails(anyString()))
                 .thenReturn(creditorInstitutionDetails);
         //when
         mvc.perform(get(BASE_URL+"/ec-brokers/{code}/details", brokerECcode)
@@ -107,9 +107,9 @@ public class UtilsControllerTest {
                 .andExpect(status().isOk());
         //then
         verify(apiConfigServiceMock, times(1))
-                .getBrokersEC(anyInt(), anyInt(), anyString(), any(), any(), anyString(), anyString());
+                .getBrokersEC(anyInt(), anyInt(), anyString(), any(), any(), anyString());
         verify(apiConfigServiceMock, times(1))
-                .getCreditorInstitutionDetails(anyString(), anyString());
+                .getCreditorInstitutionDetails(anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
