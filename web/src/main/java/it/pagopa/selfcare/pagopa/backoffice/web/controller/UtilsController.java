@@ -67,13 +67,13 @@ public class UtilsController {
 
         try {
             paymentServiceProviderDetails = apiConfigService.getPSPDetails(brokerPspCode, xRequestId);
-            paymentServiceProviderDetailsResource = ChannelMapper.toResource(paymentServiceProviderDetails);
+            paymentServiceProviderDetailsResource = ChannelMapper.toRegsource(paymentServiceProviderDetails);
         } catch (Exception e) {
             log.trace("getBrokerAndPspDetails - Not PaymentServiceProvider found");
         }
 
         if (brokerPspDetailsResource == null && paymentServiceProviderDetailsResource == null) {
-            throw new Exception("Nessun dato trovato per il broker o per il creditorInstitution");
+            throw new ResourceNotFoundException("Nessun dato trovato per il broker o per il creditorInstitution");
         }
 
         BrokerOrPspDetailsResource resource = new BrokerOrPspDetailsResource();
