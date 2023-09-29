@@ -59,14 +59,14 @@ public class UtilsController {
         BrokerPspDetails brokerPspDetails;
         PaymentServiceProviderDetails paymentServiceProviderDetails;
         try {
-            brokerPspDetails = apiConfigService.getBrokerPsp(brokerPspCode, xRequestId);
+            brokerPspDetails = apiConfigService.getBrokerPsp(brokerPspCode);
             brokerPspDetailsResource = ChannelMapper.toResource(brokerPspDetails);
         } catch (Exception e) {
             log.trace("getBrokerAndPspDetails - Not BrokerPSP found");
         }
 
         try {
-            paymentServiceProviderDetails = apiConfigService.getPSPDetails(brokerPspCode, xRequestId);
+            paymentServiceProviderDetails = apiConfigService.getPSPDetails(brokerPspCode);
             paymentServiceProviderDetailsResource = ChannelMapper.toResource(paymentServiceProviderDetails);
         } catch (Exception e) {
             log.trace("getBrokerAndPspDetails - Not PaymentServiceProvider found");
@@ -102,14 +102,14 @@ public class UtilsController {
         CreditorInstitutionDetails creditorInstitutionDetails;
 
         try {
-            brokers = apiConfigService.getBrokersEC(1, 0, brokerEcCode, null, null, "ASC", xRequestId);
+            brokers = apiConfigService.getBrokersEC(1, 0, brokerEcCode, null, null, "ASC");
             brokersResource = BrokerMapper.toResource(brokers);
         } catch (Exception e) {
             log.trace("getBrokerOrEcDetails - Not BrokerEC found");
         }
 
         try {
-            creditorInstitutionDetails = apiConfigService.getCreditorInstitutionDetails(brokerEcCode, xRequestId);
+            creditorInstitutionDetails = apiConfigService.getCreditorInstitutionDetails(brokerEcCode);
             creditorInstitutionDetailsResource = mapper.toResource(creditorInstitutionDetails);
         } catch (Exception e) {
             log.trace("getBrokerOrEcDetails - Not CreditorInstitution found");
