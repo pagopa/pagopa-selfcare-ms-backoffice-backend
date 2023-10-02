@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class BrokerAndEcDetailsResource {
 
-    private BrokersResource brokerDetailsResource;
+    private BrokerResource brokerDetailsResource;
 
     private CreditorInstitutionDetailsResource creditorInstitutionDetailsResource;
 }

@@ -141,7 +141,7 @@ public class UtilsControllerTest {
         String brokerECcode = "brokerECcode";
 
         when(apiConfigServiceMock.getBrokersEC(anyInt(), anyInt(), anyString(), eq(null), eq(null), anyString()))
-                .thenReturn(new Brokers());
+                .thenReturn(null);
         when(apiConfigServiceMock.getCreditorInstitutionDetails(anyString()))
                 .thenReturn(null);
 

@@ -5832,7 +5832,7 @@
         "type" : "object",
         "properties" : {
           "brokerDetailsResource" : {
-            "$ref" : "#/components/schemas/BrokersResource"
+            "$ref" : "#/components/schemas/BrokerResource"
           },
           "creditorInstitutionDetailsResource" : {
             "$ref" : "#/components/schemas/CreditorInstitutionDetailsResource"

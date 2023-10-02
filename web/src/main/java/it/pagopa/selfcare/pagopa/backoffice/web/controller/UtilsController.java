@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
+import feign.FeignException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -18,6 +19,7 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerAndEcDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokersResource;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
@@ -49,10 +51,8 @@ public class UtilsController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getBrokerPsp}")
     public BrokerOrPspDetailsResource getBrokerAndPspDetails(@ApiParam("swagger.request.brokerpspcode")
-                                                                 @PathVariable(required = true, name = "code") String brokerPspCode) throws Exception {
+                                                             @PathVariable(required = true, name = "code") String brokerPspCode) throws Exception {
         log.trace("getBrokerAndPspDetails start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getBrokerAndPspDetails brokerPspCode = {} , xRequestId:  {}", brokerPspCode, xRequestId);
 
         BrokerPspDetailsResource brokerPspDetailsResource = null;
         PaymentServiceProviderDetailsResource paymentServiceProviderDetailsResource = null;
@@ -61,14 +61,14 @@ public class UtilsController {
         try {
             brokerPspDetails = apiConfigService.getBrokerPsp(brokerPspCode);
             brokerPspDetailsResource = ChannelMapper.toResource(brokerPspDetails);
-        } catch (Exception e) {
+        } catch (FeignException.NotFound e) {
             log.trace("getBrokerAndPspDetails - Not BrokerPSP found");
         }
 
         try {
             paymentServiceProviderDetails = apiConfigService.getPSPDetails(brokerPspCode);
             paymentServiceProviderDetailsResource = ChannelMapper.toResource(paymentServiceProviderDetails);
-        } catch (Exception e) {
+        } catch (FeignException.NotFound e) {
             log.trace("getBrokerAndPspDetails - Not PaymentServiceProvider found");
         }
 
@@ -92,34 +92,33 @@ public class UtilsController {
     public BrokerAndEcDetailsResource getBrokerAndEcDetails(@ApiParam("swagger.request.brokerEcCode")
                                                             @PathVariable(required = true, name = "code") String brokerEcCode) throws Exception {
         log.trace("getBrokerOrEcDetails start");
-        String xRequestId = UUID.randomUUID().toString();
-        log.debug("getBrokerOrEcDetails brokerPspCode = {} , xRequestId:  {}", brokerEcCode, xRequestId);
 
-        BrokersResource brokersResource = new BrokersResource();
-        brokersResource.setBrokers(new ArrayList<>());
+        BrokerResource brokerResource = null;
         CreditorInstitutionDetailsResource creditorInstitutionDetailsResource = null;
         Brokers brokers;
         CreditorInstitutionDetails creditorInstitutionDetails;
 
         try {
             brokers = apiConfigService.getBrokersEC(1, 0, brokerEcCode, null, null, "ASC");
-            brokersResource = BrokerMapper.toResource(brokers);
-        } catch (Exception e) {
+            if(brokers != null && !brokers.getBrokerList().isEmpty()) {
+                brokerResource = BrokerMapper.toResource(brokers.getBrokerList().get(0));
+            }
+        } catch (FeignException.NotFound e) {
             log.trace("getBrokerOrEcDetails - Not BrokerEC found");
         }
 
         try {
             creditorInstitutionDetails = apiConfigService.getCreditorInstitutionDetails(brokerEcCode);
             creditorInstitutionDetailsResource = mapper.toResource(creditorInstitutionDetails);
-        } catch (Exception e) {
+        } catch (FeignException.NotFound e) {
             log.trace("getBrokerOrEcDetails - Not CreditorInstitution found");
         }
 
-        if (brokersResource.getBrokers().isEmpty()  && creditorInstitutionDetailsResource == null) {
+        if (brokerResource==null  && creditorInstitutionDetailsResource == null) {
             throw new ResourceNotFoundException("Nessun dato trovato per il broker o per il creditorInstitution");
         }
         BrokerAndEcDetailsResource resource = new BrokerAndEcDetailsResource();
-        resource.setBrokerDetailsResource(brokersResource);
+        resource.setBrokerDetailsResource(brokerResource);
         resource.setCreditorInstitutionDetailsResource(creditorInstitutionDetailsResource);
 
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getBrokerOrEcDetails result = {}", resource);
