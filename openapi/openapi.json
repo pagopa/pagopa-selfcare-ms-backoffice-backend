@@ -30,7 +30,7 @@
     },
     {
       "name": "gec",
-      "description": "Gec Controller"
+      "description": "All about commissional Bundles"
     },
     {
       "name": "institution",
@@ -5576,21 +5576,102 @@
         ]
       }
     },
-    "/utils/broker-or-psp-details": {
+    "/utils/ec-brokers/{code}/details": {
       "get": {
         "tags": [
           "Utils"
         ],
-        "summary": "getBrokerOrPspDetails",
+        "summary": "getBrokerAndEcDetails",
         "description": "Get PSP broker details",
-        "operationId": "getBrokerOrPspDetailsUsingGET",
+        "operationId": "getBrokerAndEcDetailsUsingGET",
         "parameters": [
           {
-            "name": "brokerpspcode",
-            "in": "query",
+            "name": "code",
+            "in": "path",
+            "description": "swagger.request.brokerEcCode",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrokerAndEcDetailsResource"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [
+              "global"
+            ]
+          }
+        ]
+      }
+    },
+    "/utils/psp-brokers/{code}/details": {
+      "get": {
+        "tags": [
+          "Utils"
+        ],
+        "summary": "getBrokerAndPspDetails",
+        "description": "Get PSP broker details",
+        "operationId": "getBrokerAndPspDetailsUsingGET",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
             "description": "swagger.request.brokerpspcode",
-            "required": false,
-            "style": "form",
+            "required": true,
+            "style": "simple",
             "schema": {
               "type": "string"
             }
@@ -5660,6 +5741,18 @@
   },
   "components": {
     "schemas": {
+      "BrokerAndEcDetailsResource": {
+        "title": "BrokerAndEcDetailsResource",
+        "type": "object",
+        "properties": {
+          "brokerDetailsResource": {
+            "$ref": "#/components/schemas/BrokerResource"
+          },
+          "creditorInstitutionDetailsResource": {
+            "$ref": "#/components/schemas/CreditorInstitutionDetailsResource"
+          }
+        }
+      },
       "BrokerDetails": {
         "title": "BrokerDetails",
         "type": "object",
@@ -5858,6 +5951,7 @@
           },
           "payment_amount": {
             "type": "integer",
+            "description": "The fees of this bundle",
             "format": "int32"
           },
           "payment_type": {
