@@ -20,7 +20,6 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerAndEcDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokersResource;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.UUID;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Slf4j
 @RestController
@@ -100,7 +98,7 @@ public class UtilsController {
 
         try {
             brokers = apiConfigService.getBrokersEC(1, 0, brokerEcCode, null, null, "ASC");
-            if(brokers != null && !brokers.getBrokerList().isEmpty()) {
+            if(brokers != null && !isEmpty(brokers.getBrokerList())) {
                 brokerResource = BrokerMapper.toResource(brokers.getBrokerList().get(0));
             }
         } catch (FeignException.NotFound e) {
