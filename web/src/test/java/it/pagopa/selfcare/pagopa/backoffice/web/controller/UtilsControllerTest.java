@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Broker;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.BrokerPspDetails;
@@ -155,6 +156,52 @@ public class UtilsControllerTest {
                 .getBrokersEC(anyInt(), anyInt(), anyString(), any(), any(), anyString());
         verify(apiConfigServiceMock, times(1))
                 .getCreditorInstitutionDetails(anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getBrokerAndEcDetails_throwsException() throws Exception {
+        // given
+        String brokerECcode = "brokerECcode";
+
+        when(apiConfigServiceMock.getBrokersEC(anyInt(), anyInt(), anyString(), eq(null), eq(null), anyString()))
+                .thenThrow(FeignException.NotFound.class);
+        when(apiConfigServiceMock.getCreditorInstitutionDetails(anyString()))
+                .thenThrow(FeignException.NotFound.class);
+
+        // when
+        mvc.perform(get(BASE_URL + "/ec-brokers/{code}/details", brokerECcode)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNotFound());
+
+        // then
+        verify(apiConfigServiceMock, times(1))
+                .getBrokersEC(anyInt(), anyInt(), anyString(), any(), any(), anyString());
+        verify(apiConfigServiceMock, times(1))
+                .getCreditorInstitutionDetails(anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getBrokerAndPspDetails_throwsException() throws Exception {
+        // given
+        String brokerPspCode = "brokerPspCode";
+
+        when(apiConfigServiceMock.getBrokerPsp(anyString()))
+                .thenThrow(FeignException.NotFound.class);
+        when(apiConfigServiceMock.getPSPDetails(anyString()))
+                .thenThrow(FeignException.NotFound.class);
+
+        // when
+        mvc.perform(get(BASE_URL+"/psp-brokers/{code}/details", brokerPspCode)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNotFound());
+
+        // then
+        verify(apiConfigServiceMock, times(1))
+                .getBrokerPsp(anyString());
+        verify(apiConfigServiceMock, times(1))
+                .getPSPDetails(anyString());
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 
