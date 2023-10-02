@@ -5,7 +5,7 @@
     <parent>
         <artifactId>pagopa-selfcare-ms-backoffice-connector</artifactId>
         <groupId>it.pagopa.selfcare.pagopa</groupId>
-        <version>0.4.15</version>
+        <version>0.4.16</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
