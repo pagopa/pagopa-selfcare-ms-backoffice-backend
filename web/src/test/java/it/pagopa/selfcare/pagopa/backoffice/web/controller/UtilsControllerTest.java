@@ -1,8 +1,12 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Broker;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.BrokerPspDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentServiceProviderDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.core.JiraServiceManagerService;
@@ -19,6 +23,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.ArrayList;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -67,12 +73,131 @@ public class UtilsControllerTest {
         when(apiConfigServiceMock.getPSPDetails(anyString()))
                 .thenReturn(paymentServiceProviderDetails);
         //when
-        mvc.perform(get(BASE_URL+"/broker-or-psp-details")
-                        .queryParam("brokerpspcode", brokerpspcode)
-
+        mvc.perform(get(BASE_URL+"/psp-brokers/{code}/details", brokerpspcode)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
         //then
+        verify(apiConfigServiceMock, times(1))
+                .getBrokerPsp(anyString());
+        verify(apiConfigServiceMock, times(1))
+                .getPSPDetails(anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getBrokerAndPspDetails_NoDataFound() throws Exception {
+        // given
+        String brokerPspCode = "brokerPspCode";
+
+        when(apiConfigServiceMock.getBrokerPsp(anyString()))
+                .thenReturn(null);
+        when(apiConfigServiceMock.getPSPDetails(anyString()))
+                .thenReturn(null);
+
+        // when
+        mvc.perform(get(BASE_URL+"/psp-brokers/{code}/details", brokerPspCode)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNotFound());
+
+        // then
+        verify(apiConfigServiceMock, times(1))
+                .getBrokerPsp(anyString());
+        verify(apiConfigServiceMock, times(1))
+                .getPSPDetails(anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getBrokerAndEcDetails() throws Exception {
+        //given
+        String brokerECcode = "brokerECcode";
+
+        Broker broker = new Broker();
+        broker.setBrokerCode(brokerECcode);
+        Brokers brokers = mockInstance(new Brokers());
+        brokers.setBrokerList(new ArrayList<>());
+        brokers.getBrokerList().add(broker);
+        CreditorInstitutionDetails creditorInstitutionDetails = mockInstance(new CreditorInstitutionDetails());
+
+
+        when(apiConfigServiceMock.getBrokersEC(anyInt(), anyInt(), anyString(), eq(null), eq(null), anyString()))
+                .thenReturn(brokers);
+        when(apiConfigServiceMock.getCreditorInstitutionDetails(anyString()))
+                .thenReturn(creditorInstitutionDetails);
+        //when
+        mvc.perform(get(BASE_URL+"/ec-brokers/{code}/details", brokerECcode)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .getBrokersEC(anyInt(), anyInt(), anyString(), any(), any(), anyString());
+        verify(apiConfigServiceMock, times(1))
+                .getCreditorInstitutionDetails(anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getBrokerAndEcDetails_NoDataFound() throws Exception {
+        // given
+        String brokerECcode = "brokerECcode";
+
+        when(apiConfigServiceMock.getBrokersEC(anyInt(), anyInt(), anyString(), eq(null), eq(null), anyString()))
+                .thenReturn(null);
+        when(apiConfigServiceMock.getCreditorInstitutionDetails(anyString()))
+                .thenReturn(null);
+
+        // when
+        mvc.perform(get(BASE_URL + "/ec-brokers/{code}/details", brokerECcode)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNotFound());
+
+        // then
+        verify(apiConfigServiceMock, times(1))
+                .getBrokersEC(anyInt(), anyInt(), anyString(), any(), any(), anyString());
+        verify(apiConfigServiceMock, times(1))
+                .getCreditorInstitutionDetails(anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getBrokerAndEcDetails_throwsException() throws Exception {
+        // given
+        String brokerECcode = "brokerECcode";
+
+        when(apiConfigServiceMock.getBrokersEC(anyInt(), anyInt(), anyString(), eq(null), eq(null), anyString()))
+                .thenThrow(FeignException.NotFound.class);
+        when(apiConfigServiceMock.getCreditorInstitutionDetails(anyString()))
+                .thenThrow(FeignException.NotFound.class);
+
+        // when
+        mvc.perform(get(BASE_URL + "/ec-brokers/{code}/details", brokerECcode)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNotFound());
+
+        // then
+        verify(apiConfigServiceMock, times(1))
+                .getBrokersEC(anyInt(), anyInt(), anyString(), any(), any(), anyString());
+        verify(apiConfigServiceMock, times(1))
+                .getCreditorInstitutionDetails(anyString());
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
+
+    @Test
+    void getBrokerAndPspDetails_throwsException() throws Exception {
+        // given
+        String brokerPspCode = "brokerPspCode";
+
+        when(apiConfigServiceMock.getBrokerPsp(anyString()))
+                .thenThrow(FeignException.NotFound.class);
+        when(apiConfigServiceMock.getPSPDetails(anyString()))
+                .thenThrow(FeignException.NotFound.class);
+
+        // when
+        mvc.perform(get(BASE_URL+"/psp-brokers/{code}/details", brokerPspCode)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNotFound());
+
+        // then
         verify(apiConfigServiceMock, times(1))
                 .getBrokerPsp(anyString());
         verify(apiConfigServiceMock, times(1))
