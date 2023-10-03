@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.stream.StreamSupport;
 
@@ -41,7 +42,11 @@ public class LoggingAspect {
     @Value("${info.env}")
     private String environment;
 
-    @Autowired HttpServletRequest httRequest;
+    @Autowired
+    HttpServletRequest httRequest;
+
+    @Autowired
+    HttpServletResponse httpResponse;
 
     @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
     public void restController() {
@@ -89,24 +94,18 @@ public class LoggingAspect {
                 .forEach(prop -> log.debug("{}: {}", prop, env.getProperty(prop)));
     }
 
-    @Before(value = "restController()")
-    public void logApiInvocation(JoinPoint joinPoint) {
+    @Around(value = "restController()")
+    public Object logService(ProceedingJoinPoint joinPoint) throws Throwable {
         MDC.put(METHOD, joinPoint.getSignature().getName());
         MDC.put(START_TIME, String.valueOf(System.currentTimeMillis()));
         log.info("{} {}", httRequest.getMethod(), httRequest.getRequestURI());
-        log.info(
-                "Invoking API operation {} - args: {}",
-                joinPoint.getSignature().getName(),
-                joinPoint.getArgs());
-    }
-
-    @AfterReturning(value = "restController()", returning = "result")
-    public void returnApiInvocation(JoinPoint joinPoint, ResponseEntity<?> result) {
+        log.info("Invoking API operation {} - args: {}", joinPoint.getSignature().getName(), joinPoint.getArgs());
+        Object result = joinPoint.proceed();
         MDC.put(STATUS, "OK");
-        MDC.put(CODE, String.valueOf(result.getStatusCodeValue()));
+        MDC.put(CODE, String.valueOf(httpResponse.getStatus()));
         MDC.put(RESPONSE_TIME, getExecutionTime());
-        log.info(
-                "Successful API operation {} - result: {}", joinPoint.getSignature().getName(), result);
+        log.info("Successful API operation {} - result: {}", joinPoint.getSignature().getName(), result);
+        return result;
     }
 
     @AfterReturning(
