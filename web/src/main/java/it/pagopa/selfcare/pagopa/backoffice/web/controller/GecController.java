@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -89,7 +90,7 @@ public class GecController {
     public String createBundle(@ApiParam("${swagger.model.gec.pspcode}")
                                                        @PathVariable("pspCode") String pspCode,
                                                        @ApiParam("${swagger.model.gec.bundle}")
-                                                       @RequestBody BundleDto bundleDto) {
+                                                       @RequestBody @NotNull BundleDto bundleDto) {
 
         return gecService.createPSPBundle(pspCode, GecMapper.fromDto(bundleDto));
     }
