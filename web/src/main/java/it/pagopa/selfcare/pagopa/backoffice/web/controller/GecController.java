@@ -3,12 +3,17 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PspChannelPaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.core.GecService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PspChannelPaymentTypesResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.BundleDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.BundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.TouchpointsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.GecMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,8 +63,7 @@ public class GecController {
                                           @ApiParam("${swagger.pageable.start}")
                                           @RequestParam(required = false, defaultValue = "0") Integer page) {
         Touchpoints touchpoints = gecService.getTouchpoints(limit, page);
-        TouchpointsResource resource = GecMapper.toResource(touchpoints);
-        return resource;
+        return GecMapper.toResource(touchpoints);
     }
 
     @GetMapping("/psp/{pspCode}/bundles")
@@ -76,9 +80,18 @@ public class GecController {
                                           @ApiParam("${swagger.model.gec.name}")
                                           @RequestParam(required = false) String name) {
         Bundles bundles = gecService.getBundlesByPSP(pspCode, bundleType, name, limit, page);
-        BundlesResource resource = GecMapper.toResource(bundles);
-        return resource;
+        return GecMapper.toResource(bundles);
     }
 
+    @PostMapping(value = "/psp/{pspCode}/bundles", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.createChannelPaymentType}")
+    public String createBundle(@ApiParam("${swagger.model.gec.pspcode}")
+                                                       @PathVariable("pspCode") String pspCode,
+                                                       @ApiParam("${swagger.model.gec.bundle}")
+                                                       @RequestBody BundleDto bundleDto) {
+
+        return gecService.createPSPBundle(pspCode, GecMapper.fromDto(bundleDto));
+    }
 
 }
