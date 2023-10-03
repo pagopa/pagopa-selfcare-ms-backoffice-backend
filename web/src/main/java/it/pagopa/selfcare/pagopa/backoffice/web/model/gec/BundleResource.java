@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleType;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -46,16 +48,16 @@ public class BundleResource {
     private List<String> transferCategoryList;
 
     @JsonProperty("validity_date_from")
-    private OffsetDateTime validityDateFrom;
+    private LocalDate validityDateFrom;
 
     @JsonProperty("validity_date_to")
-    private OffsetDateTime validityDateTo;
+    private LocalDate validityDateTo;
 
     @JsonProperty("inserted_date")
-    private OffsetDateTime insertedDate;
+    private LocalDateTime insertedDate;
 
     @JsonProperty("last_updated_date")
-    private OffsetDateTime lastUpdatedDate;
+    private LocalDateTime lastUpdatedDate;
 
     @JsonProperty("id_bundle")
     private String idBundle;
