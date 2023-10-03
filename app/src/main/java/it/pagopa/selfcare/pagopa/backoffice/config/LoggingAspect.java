@@ -84,7 +84,8 @@ public class LoggingAspect {
                                 !(prop.toLowerCase().contains("credentials")
                                         || prop.toLowerCase().contains("password")
                                         || prop.toLowerCase().contains("pass")
-                                        || prop.toLowerCase().contains("pwd")))
+                                        || prop.toLowerCase().contains("pwd")
+                                        || prop.toLowerCase().contains("key") || prop.toLowerCase().contains("secret")))
                 .forEach(prop -> log.debug("{}: {}", prop, env.getProperty(prop)));
     }
 
