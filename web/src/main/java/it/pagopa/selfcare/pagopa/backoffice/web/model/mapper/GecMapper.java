@@ -3,7 +3,6 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.*;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

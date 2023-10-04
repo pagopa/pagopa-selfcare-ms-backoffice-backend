@@ -1,8 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.GecConnector;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleCreate;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.config.FeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;

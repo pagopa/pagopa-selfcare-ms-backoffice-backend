@@ -1,7 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.GecConnector;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.*;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleCreate;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
