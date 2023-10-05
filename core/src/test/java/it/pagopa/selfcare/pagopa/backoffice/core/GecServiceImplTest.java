@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.GecConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleCreate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
@@ -92,6 +93,26 @@ class GecServiceImplTest {
         reflectionEqualsByName(bundlesMock, bundles);
         verify(gecConnectorMock, times(1))
                 .getBundlesByPSP(pspcode, boundleType, name, limit, page);
+        verifyNoMoreInteractions(gecConnectorMock);
+    }
+
+    @Test
+    void createPSPBundle() {
+        //given
+        final String pspcode = "pspcode";
+        final BundleCreate bundleCreateMock = mock(BundleCreate.class);
+        final String idBundleMock = "idBundle";
+
+        when(gecConnectorMock.createPSPBundle(any(), any()))
+                .thenReturn(idBundleMock);
+        //when
+        String idBundle = gecService.createPSPBundle(pspcode, bundleCreateMock);
+        //then
+        assertNotNull(idBundle);
+        assertEquals(idBundleMock, idBundle);
+        reflectionEqualsByName(idBundleMock, idBundle);
+        verify(gecConnectorMock, times(1))
+                .createPSPBundle(pspcode, bundleCreateMock);
         verifyNoMoreInteractions(gecConnectorMock);
     }
 }

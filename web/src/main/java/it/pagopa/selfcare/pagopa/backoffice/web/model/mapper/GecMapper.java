@@ -1,13 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundle;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoint;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.BundleResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.BundlesResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.TouchpointResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.TouchpointsResource;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.*;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,5 +80,40 @@ public class GecMapper {
                 .collect(Collectors.toList()));
 
         return bundlesResource;
+    }
+
+    public static BundleCreate fromDto(BundleDto bundleDto){
+
+        if(bundleDto == null){
+            return null;
+        }
+
+        BundleCreate bundleCreate = new BundleCreate();
+
+        bundleCreate.setAbi(bundleDto.getAbi());
+        bundleCreate.setIdCdi(bundleDto.getIdCdi());
+        bundleCreate.setIdBrokerPsp(bundleDto.getIdBrokerPsp());
+        bundleCreate.setIdChannel(bundleDto.getIdChannel());
+        bundleCreate.setName(bundleDto.getName());
+        bundleCreate.setDescription(bundleDto.getDescription());
+        bundleCreate.setPspBusinessName(bundleDto.getPspBusinessName());
+        bundleCreate.setPaymentAmount(bundleDto.getPaymentAmount());
+        bundleCreate.setMinPaymentAmount(bundleDto.getMinPaymentAmount());
+        bundleCreate.setMaxPaymentAmount(bundleDto.getMaxPaymentAmount());
+        bundleCreate.setPaymentType(bundleDto.getPaymentType());
+        bundleCreate.setDigitalStamp(bundleDto.getDigitalStamp());
+        bundleCreate.setDigitalStampRestriction(bundleDto.getDigitalStampRestriction());
+        bundleCreate.setTouchpoint(bundleDto.getTouchpoint());
+        bundleCreate.setType(bundleDto.getType());
+        bundleCreate.setValidityDateFrom(bundleDto.getValidityDateFrom());
+        bundleCreate.setValidityDateTo(bundleDto.getValidityDateTo());
+
+        List<String> list = new ArrayList<>();
+        if (bundleDto.getTransferCategoryList() != null) {
+            list.addAll(bundleDto.getTransferCategoryList());
+        }
+        bundleCreate.setTransferCategoryList(list);
+
+        return bundleCreate;
     }
 }
