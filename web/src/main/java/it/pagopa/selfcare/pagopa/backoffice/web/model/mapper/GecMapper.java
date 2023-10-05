@@ -116,4 +116,33 @@ public class GecMapper {
 
         return bundleCreate;
     }
+
+    public static BundlePaymentTypeResource toResource(BundlePaymentType bundlePaymentType){
+        if(bundlePaymentType == null){
+            return null;
+        }
+        BundlePaymentTypeResource response = new BundlePaymentTypeResource();
+
+        response.setUsed(bundlePaymentType.getUsed());
+        response.setPaymentType(bundlePaymentType.getPaymentType());
+
+        return response;
+    }
+
+    public static BundlePaymentTypesResource toResource(BundlePaymentTypes bundlePaymentTypes){
+        if(bundlePaymentTypes == null){
+            return null;
+        }
+
+        BundlePaymentTypesResource response = new BundlePaymentTypesResource();
+
+        response.setBundlePaymentTypeResources(bundlePaymentTypes.getBundlePaymentTypeList().stream()
+                .map(GecMapper::toResource)
+                .collect(Collectors.toList()));
+
+        response.setPageInfo(bundlePaymentTypes.getPageInfo());
+
+        return response;
+    }
+
 }

@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.4.18"
+    "version" : "0.4.19"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -3002,6 +3002,90 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/CreditorInstitutionAssociatedCodeList"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/gec/bundles/paymenttypes" : {
+      "get" : {
+        "tags" : [ "gec" ],
+        "summary" : "getPaymenttypes",
+        "description" : "Get paginated list of bundles",
+        "operationId" : "getPaymenttypesUsingGET",
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of elements on one page. Default = 50",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number. Page value starts from 0",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BundlePaymentTypesResource"
                 }
               }
             }
@@ -6147,6 +6231,33 @@
           "validityDateTo" : {
             "type" : "string",
             "format" : "date"
+          }
+        }
+      },
+      "BundlePaymentTypeResource" : {
+        "title" : "BundlePaymentTypeResource",
+        "type" : "object",
+        "properties" : {
+          "paymentType" : {
+            "type" : "string"
+          },
+          "used" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "BundlePaymentTypesResource" : {
+        "title" : "BundlePaymentTypesResource",
+        "type" : "object",
+        "properties" : {
+          "pageInfo" : {
+            "$ref" : "#/components/schemas/PageInfo"
+          },
+          "paymentTypes" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/BundlePaymentTypeResource"
+            }
           }
         }
       },
