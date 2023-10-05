@@ -3,11 +3,13 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundlePaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.core.GecService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.BundleDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.BundlePaymentTypesResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.BundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.TouchpointsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.GecMapper;
@@ -88,6 +90,18 @@ public class GecController {
                                                        @RequestBody @NotNull BundleDto bundleDto) {
 
         return gecService.createPSPBundle(pspCode, GecMapper.fromDto(bundleDto));
+    }
+
+    @GetMapping("/bundles/paymenttypes")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.gec.getBundlesByCI}")
+    public BundlePaymentTypesResource getPaymenttypes(@ApiParam("${swagger.pageable.number.paymenttypes}")
+                                              @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                      @ApiParam("${swagger.pageable.start}")
+                                              @RequestParam(required = false, defaultValue = "0") Integer page) {
+        
+        BundlePaymentTypes bundlePymentTypes = gecService.getPaymenttypes(limit, page);
+        return GecMapper.toResource(bundlePymentTypes);
     }
 
 }

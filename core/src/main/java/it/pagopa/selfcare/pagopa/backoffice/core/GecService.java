@@ -1,9 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleCreate;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleType;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.*;
 
 import java.util.ArrayList;
 
@@ -16,5 +13,7 @@ public interface GecService {
     Touchpoints getTouchpoints(Integer limit, Integer page);
 
     String createPSPBundle(String idpsp, BundleCreate bundle);
+
+    BundlePaymentTypes getPaymenttypes(Integer limit, Integer page);
 
     }
