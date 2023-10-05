@@ -16,4 +16,5 @@ public interface TaxonomyRestClient extends TaxonomyConnector {
     @GetMapping(value = "${rest-client.taxonomy.getTaxonomies.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     List<Taxonomy> getTaxonomies();
+    
 }
