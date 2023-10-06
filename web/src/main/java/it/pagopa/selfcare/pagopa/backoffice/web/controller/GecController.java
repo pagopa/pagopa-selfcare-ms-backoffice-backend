@@ -99,7 +99,7 @@ public class GecController {
                                               @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                       @ApiParam("${swagger.pageable.start}")
                                               @RequestParam(required = false, defaultValue = "0") Integer page) {
-        
+
         BundlePaymentTypes bundlePymentTypes = gecService.getPaymenttypes(limit, page);
         return GecMapper.toResource(bundlePymentTypes);
     }
