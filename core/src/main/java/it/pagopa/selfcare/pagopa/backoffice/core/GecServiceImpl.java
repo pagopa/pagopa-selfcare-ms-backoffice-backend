@@ -45,10 +45,5 @@ public class GecServiceImpl implements GecService {
         BundlePaymentTypes response = gecConnector.getPaymenttypes(limit, page);
         return response;
     }
-    @Override
-    @Cacheable(value = "GecPaymentTypes")
-    public double getPaymenttypestest(){
-        return Math.random();
-    }
 
 }
