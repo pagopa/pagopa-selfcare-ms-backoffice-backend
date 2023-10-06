@@ -64,6 +64,8 @@ class SwaggerConfigTest {
     @MockBean
     private ExternalApiService externalApiService;
 
+    @MockBean
+    private TaxonomyService taxonomyService;
     @Autowired
     WebApplicationContext context;
 

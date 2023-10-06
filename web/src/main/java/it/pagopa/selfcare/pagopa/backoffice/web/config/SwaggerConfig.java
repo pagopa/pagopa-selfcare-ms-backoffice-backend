@@ -119,7 +119,8 @@ class SwaggerConfig {
                         new Tag("channels", environment.getProperty("swagger.tag.channels.description")),
                         new Tag("creditor-institutions", environment.getProperty("swagger.tag.creditor-institutions.description")),
                         new Tag("stations", environment.getProperty("swagger.tag.stations.description")),
-                        new Tag("gec", environment.getProperty("swagger.tag.gec.description"))
+                        new Tag("gec", environment.getProperty("swagger.tag.gec.description")),
+                        new Tag("taxonomy", environment.getProperty("swagger.tag.taxonomy.description"))
                 )
                 .directModelSubstitute(LocalTime.class, String.class)
                 .useDefaultResponseMessages(false)

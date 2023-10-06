@@ -30,6 +30,9 @@
   }, {
     "name" : "stations",
     "description" : "Api config stations operations"
+  }, {
+    "name" : "taxonomy",
+    "description" : "All about taxonomy "
   } ],
   "paths" : {
     "/channels" : {
@@ -5786,6 +5789,135 @@
         } ]
       }
     },
+    "/taxonomy" : {
+      "get" : {
+        "tags" : [ "taxonomy" ],
+        "summary" : "getTaxonomy",
+        "description" : "Get list of taxonomy",
+        "operationId" : "getTaxonomyUsingGET",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/TaxonomyResource"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/taxonomy/test" : {
+      "get" : {
+        "tags" : [ "taxonomy" ],
+        "summary" : "test",
+        "operationId" : "testUsingGET",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "number",
+                  "format" : "double"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/utils/ec-brokers/{code}/details" : {
       "get" : {
         "tags" : [ "Utils" ],
@@ -8581,6 +8713,65 @@
             "items" : {
               "$ref" : "#/components/schemas/StationResource"
             }
+          }
+        }
+      },
+      "TaxonomyResource" : {
+        "title" : "TaxonomyResource",
+        "required" : [ "ecType", "ecTypeCode", "endDate", "legalReasonCollection", "macroAreaDescription", "macroAreaEcProgressive", "macroAreaName", "serviceType", "serviceTypeCode", "serviceTypeDescription", "specificBuiltInData", "startDate", "taxonomyVersion" ],
+        "type" : "object",
+        "properties" : {
+          "ecType" : {
+            "type" : "string",
+            "description" : "Entity creditor type"
+          },
+          "ecTypeCode" : {
+            "type" : "string",
+            "description" : "Entity creditor type code"
+          },
+          "endDate" : {
+            "type" : "string",
+            "description" : "End date of validity"
+          },
+          "legalReasonCollection" : {
+            "type" : "string",
+            "description" : "Legal reason for collection"
+          },
+          "macroAreaDescription" : {
+            "type" : "string",
+            "description" : "Macro area description"
+          },
+          "macroAreaEcProgressive" : {
+            "type" : "string",
+            "description" : "Macro Area Progressive"
+          },
+          "macroAreaName" : {
+            "type" : "string",
+            "description" : "Macro area name"
+          },
+          "serviceType" : {
+            "type" : "string",
+            "description" : "Service type"
+          },
+          "serviceTypeCode" : {
+            "type" : "string",
+            "description" : "Service type code"
+          },
+          "serviceTypeDescription" : {
+            "type" : "string",
+            "description" : "Service description"
+          },
+          "specificBuiltInData" : {
+            "type" : "string",
+            "description" : "Specific collection data"
+          },
+          "startDate" : {
+            "type" : "string",
+            "description" : "Start date of validity"
+          },
+          "taxonomyVersion" : {
+            "type" : "string",
+            "description" : "Taxonomy version"
           }
         }
       },
