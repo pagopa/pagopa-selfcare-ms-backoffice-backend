@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.taxonomy.Taxonomies;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.taxonomy.Taxonomy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,8 +21,13 @@ public class TaxonomyServiceImpl implements TaxonomyService {
     }
 
     @Override
+    @Cacheable(value = "taxonomy")
     public List<Taxonomy> getTaxonomies() {
         List<Taxonomy> response = taxonomyConnector.getTaxonomies();
         return response;
     }
+
+
+
+
 }

@@ -23,3 +23,9 @@ info:
 logging:
   level:
     it.pagopa.selfcare.pagopa: ${PAGOPA_BACKOFFICE_LOG_LEVEL:DEBUG}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
