@@ -4,6 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.api.GecConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -39,9 +40,15 @@ public class GecServiceImpl implements GecService {
         return response;
     }
     @Override
+    @Cacheable(value = "GecPaymentTypes")
     public BundlePaymentTypes getPaymenttypes(Integer limit, Integer page){
         BundlePaymentTypes response = gecConnector.getPaymenttypes(limit, page);
         return response;
+    }
+    @Override
+    @Cacheable(value = "GecPaymentTypes")
+    public double getPaymenttypestest(){
+        return Math.random();
     }
 
 }

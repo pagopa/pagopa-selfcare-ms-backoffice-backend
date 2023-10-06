@@ -16,4 +16,6 @@ public interface GecService {
 
     BundlePaymentTypes getPaymenttypes(Integer limit, Integer page);
 
+     double getPaymenttypestest();
+
     }

@@ -103,5 +103,9 @@ public class GecController {
         BundlePaymentTypes bundlePymentTypes = gecService.getPaymenttypes(limit, page);
         return GecMapper.toResource(bundlePymentTypes);
     }
+    @GetMapping("/bundles/test")
+    public double getTest(){
+        return gecService.getPaymenttypestest();
+    }
 
 }
