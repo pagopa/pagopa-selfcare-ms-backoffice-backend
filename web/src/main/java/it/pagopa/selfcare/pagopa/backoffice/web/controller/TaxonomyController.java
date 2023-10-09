@@ -36,9 +36,8 @@ public class TaxonomyController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.taxonomy.getTaxonomy}")
     public List<TaxonomyResource> getTaxonomy() {
-        List<Taxonomy> taxonomies = taxonomyService.getTaxonomies();
-        List<TaxonomyResource> resource = TaxonomyMapper.toResource(taxonomies);
-        return resource;
+
+        return TaxonomyMapper.toResource(taxonomyService.getTaxonomies());
     }
 
 }
