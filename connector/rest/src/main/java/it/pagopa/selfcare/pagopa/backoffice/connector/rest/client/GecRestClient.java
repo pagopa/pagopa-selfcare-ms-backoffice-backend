@@ -1,10 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.rest.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.GecConnector;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleCreate;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleType;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.rest.config.FeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -39,4 +36,9 @@ public interface GecRestClient extends GecConnector {
     @ResponseBody
     String createPSPBundle(@PathVariable(required = true) String idpsp,
                            @RequestBody @NotNull BundleCreate bundle);
+
+    @GetMapping(value = "${rest-client.gec.getPaymenttypes.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    BundlePaymentTypes getPaymenttypes(@RequestParam(required = false) Integer limit,
+                                       @RequestParam(required = false) Integer page);
 }
