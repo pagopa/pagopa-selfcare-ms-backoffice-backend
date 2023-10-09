@@ -40,7 +40,7 @@ public class GecServiceImpl implements GecService {
         return response;
     }
     @Override
-    @Cacheable(value = "GecPaymentTypes")
+    @Cacheable(value = "GecPaymentTypes", key = "#limit.toString() + '-' + #page.toString()")
     public BundlePaymentTypes getPaymenttypes(Integer limit, Integer page){
         BundlePaymentTypes response = gecConnector.getPaymenttypes(limit, page);
         return response;
