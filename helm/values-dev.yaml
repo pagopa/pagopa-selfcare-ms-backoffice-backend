@@ -88,6 +88,11 @@ microservice-chart:
     AUTHORIZATION_FLAG: 'true'
     ENV: 'DEV'
     AWS_REGION: 'eu-south-1'
+    OTEL_SERVICE_NAME: "pagopa-selfcare-backoffice-backend"
+    OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=dev"
+    OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
+    OTEL_LOGS_EXPORTER: none
+    OTEL_TRACES_SAMPLER: "always_on"
   envSecret:
     AWS_ACCESS_KEY_ID: pagopa-d-aws-access-key-id
     AWS_SECRET_ACCESS_KEY: pagopa-d-aws-secret-access-key
@@ -110,6 +115,7 @@ microservice-chart:
     JIRA_PASSWORD: jira-d-token
     JIRA_PROJECT_KEY: jira-d-project-key
     JIRA_REQ_TYPE_TASKID: jira-d-req-task-id
+    OTEL_EXPORTER_OTLP_HEADERS: elastic-apm-secret-token
   keyvault:
     name: "pagopa-d-selfcare-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
