@@ -2,7 +2,6 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.taxonomy.Taxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.core.TaxonomyService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.TaxonomyMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.taxonomies.TaxonomyResource;
