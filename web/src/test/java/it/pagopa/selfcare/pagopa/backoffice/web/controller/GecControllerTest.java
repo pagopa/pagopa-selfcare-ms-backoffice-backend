@@ -178,4 +178,33 @@ class GecControllerTest {
         verifyNoMoreInteractions(gecServiceMock);
     }
 
+    @Test
+    void getPaymenttypes() throws Exception {
+        //given
+
+        Integer limit = 1;
+        Integer page = 1;
+
+        BundlePaymentType bundlePaymentType = mockInstance(new BundlePaymentType());
+        BundlePaymentTypes bundlePaymentTypes = mockInstance(new BundlePaymentTypes());
+        bundlePaymentTypes.setBundlePaymentTypeList(List.of(bundlePaymentType));
+        PageInfo pageInfo = mockInstance(new PageInfo());
+        bundlePaymentTypes.setPageInfo(pageInfo);
+
+        when(gecServiceMock.getPaymenttypes(anyInt(), anyInt()))
+                .thenReturn(bundlePaymentTypes);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL+ "/bundles/paymenttypes")
+                        .queryParam("limit", String.valueOf(limit))
+                        .queryParam("page", String.valueOf(page))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.paymentTypes", notNullValue()))
+                .andExpect(jsonPath("$.paymentTypes", not(empty())));
+        //then
+        verify(gecServiceMock, times(1))
+                .getPaymenttypes(anyInt(), anyInt());
+        verifyNoMoreInteractions(gecServiceMock);
+    }
 }

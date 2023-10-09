@@ -1,10 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.GecConnector;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleCreate;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleType;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,4 +112,25 @@ class GecServiceImplTest {
                 .createPSPBundle(pspcode, bundleCreateMock);
         verifyNoMoreInteractions(gecConnectorMock);
     }
+
+    @Test
+    void getPaymenttypes() {
+        //given
+        final Integer limit = 1;
+        final Integer page = 1;
+
+        BundlePaymentTypes bundlePaymentTypesMock = mock(BundlePaymentTypes.class);
+        when(gecConnectorMock.getPaymenttypes( any(), any()))
+                .thenReturn(bundlePaymentTypesMock);
+        //when
+        BundlePaymentTypes bundlePaymentTypes = gecService.getPaymenttypes(limit, page);
+        //then
+        assertNotNull(bundlePaymentTypes);
+        assertEquals(bundlePaymentTypesMock, bundlePaymentTypes);
+        reflectionEqualsByName(bundlePaymentTypesMock, bundlePaymentTypes);
+        verify(gecConnectorMock, times(1))
+                .getPaymenttypes(limit, page);
+        verifyNoMoreInteractions(gecConnectorMock);
+    }
+
 }
