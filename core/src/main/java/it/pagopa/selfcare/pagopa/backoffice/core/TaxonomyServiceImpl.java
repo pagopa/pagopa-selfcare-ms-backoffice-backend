@@ -1,7 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.TaxonomyConnector;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.taxonomy.Taxonomies;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.taxonomy.Taxonomy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

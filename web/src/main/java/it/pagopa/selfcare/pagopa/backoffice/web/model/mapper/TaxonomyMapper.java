@@ -1,8 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.taxonomy.Taxonomies;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.taxonomy.Taxonomy;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.taxonomies.TaxonomiesResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.taxonomies.TaxonomyResource;
 
 import java.util.ArrayList;
