@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.GecConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleCreate;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
@@ -33,6 +34,11 @@ public class GecServiceImpl implements GecService {
     @Override
     public Bundles getBundlesByPSP(String pspcode, ArrayList<BundleType> bundleType, String name, Integer limit, Integer page){
         Bundles response = gecConnector.getBundlesByPSP(pspcode, bundleType, name, limit, page);
+        return response;
+    }
+    @Override
+    public String createPSPBundle(String idpsp, BundleCreate bundle){
+        String response = gecConnector.createPSPBundle(idpsp, bundle);
         return response;
     }
 

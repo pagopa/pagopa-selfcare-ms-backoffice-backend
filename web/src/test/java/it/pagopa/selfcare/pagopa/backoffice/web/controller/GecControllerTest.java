@@ -6,16 +6,21 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.GecService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.gec.BundleDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.GecMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +29,8 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = {GecController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 @ContextConfiguration(classes = {
@@ -147,4 +152,30 @@ class GecControllerTest {
                 .getBundlesByPSP(anyString(), any(), any(), anyInt(), anyInt());
         verifyNoMoreInteractions(gecServiceMock);
     }
+
+    @Test
+    void createBundle(@Value("classpath:stubs/boundleDto.json") Resource dto) throws Exception {
+        //given
+        String pspCode = "pspCode";
+        String idBoundle= "idBoundle";
+        InputStream is = dto.getInputStream();
+        BundleDto bundleDto = objectMapper.readValue(is, BundleDto.class);
+        BundleCreate bundleCreate = GecMapper.fromDto(bundleDto);
+
+        when(gecServiceMock.createPSPBundle(anyString(), any()))
+                .thenReturn(idBoundle);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .post(BASE_URL + "/psp/{pspCode}/bundles", pspCode)
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(APPLICATION_JSON));
+        //then
+        verify(gecServiceMock, times(1))
+                .createPSPBundle(anyString(), any());
+        verifyNoMoreInteractions(gecServiceMock);
+    }
+
 }
