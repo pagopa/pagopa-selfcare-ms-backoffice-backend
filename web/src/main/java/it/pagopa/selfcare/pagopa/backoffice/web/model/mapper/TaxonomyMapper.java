@@ -8,12 +8,14 @@ import java.util.List;
 
 public class TaxonomyMapper {
 
+    private TaxonomyMapper(){
+    }
+
     public static TaxonomyResource toResource(Taxonomy model) {
-        TaxonomyResource resource = null;
         if (model == null) {
             return null;
         }
-        resource = new TaxonomyResource();
+        TaxonomyResource resource = new TaxonomyResource();
 
         resource.setEcType(model.getEcType());
         resource.setEndDate(model.getEndDate());
@@ -34,12 +36,11 @@ public class TaxonomyMapper {
     }
 
     public static List<TaxonomyResource> toResource(List<Taxonomy> models) {
-        List<TaxonomyResource> resource = null;
 
         if (models == null) {
             return null;
         }
-        resource = new ArrayList<>();
+        List<TaxonomyResource> resource = new ArrayList<>();
 
         for (Taxonomy t : models) {
             resource.add(toResource(t));
