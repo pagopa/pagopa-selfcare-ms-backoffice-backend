@@ -30,7 +30,6 @@ public class TaxonomyMapper {
         resource.setServiceTypeCode(model.getServiceTypeCode());
         resource.setServiceTypeDescription(model.getServiceTypeDescription());
 
-        ;
         return resource;
     }
 

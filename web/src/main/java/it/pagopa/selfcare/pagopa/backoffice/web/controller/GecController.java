@@ -77,8 +77,8 @@ public class GecController {
                                           @PathVariable(required = true) String pspCode,
                                           @ApiParam("${swagger.model.gec.name}")
                                           @RequestParam(required = false) String name) {
-        Bundles bundles = gecService.getBundlesByPSP(pspCode, bundleType, name, limit, page);
-        return GecMapper.toResource(bundles);
+
+        return GecMapper.toResource(gecService.getBundlesByPSP(pspCode, bundleType, name, limit, page));
     }
 
     @PostMapping(value = "/psp/{pspCode}/bundles", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -100,8 +100,7 @@ public class GecController {
                                                       @ApiParam("${swagger.pageable.start}")
                                               @RequestParam(required = false, defaultValue = "0") Integer page) {
 
-        BundlePaymentTypes bundlePymentTypes = gecService.getPaymenttypes(limit, page);
-        return GecMapper.toResource(bundlePymentTypes);
+        return GecMapper.toResource(gecService.getPaymenttypes(limit, page));
     }
 
 }
