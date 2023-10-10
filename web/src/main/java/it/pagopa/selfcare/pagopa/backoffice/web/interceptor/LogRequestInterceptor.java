@@ -49,7 +49,7 @@ public class LogRequestInterceptor implements HandlerInterceptor {
             }
             log.info("Requested {} {}{}", request.getMethod(), request.getRequestURI(), query);
         }
-
+        response.setHeader(HEADER_REQUEST_ID, requestId);
         return true;
     }
 
