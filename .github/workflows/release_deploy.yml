@@ -121,7 +121,7 @@ jobs:
           tag: ${{ needs.release.outputs.version }}
 
   deploy_aks:
-    name: Deploy on AKS DEV
+    name: Deploy on AKS
     needs: [ setup, release, image ]
     if: ${{ always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
     uses: ./.github/workflows/deploy_with_github_runner.yml
