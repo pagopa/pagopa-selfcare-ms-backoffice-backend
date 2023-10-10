@@ -3393,7 +3393,7 @@
           "gec"
         ],
         "summary": "getPaymenttypes",
-        "description": "Get paginated list of bundles",
+        "description": "Get payment types of bundle",
         "operationId": "getPaymenttypesUsingGET",
         "parameters": [
           {
