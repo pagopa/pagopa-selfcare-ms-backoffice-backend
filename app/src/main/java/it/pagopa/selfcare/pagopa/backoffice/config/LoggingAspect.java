@@ -1,12 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.config;
 
+import it.pagopa.selfcare.pagopa.backoffice.web.security.JwtAuthenticationException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -133,6 +131,21 @@ public class LoggingAspect {
         MDC.remove(START_TIME);
     }
 
+    @AfterThrowing(pointcut = "execution(* *..web.security..*(..))", throwing = "error")
+    public void afterThrowingAdvice(JoinPoint jp, JwtAuthenticationException error){
+        MDC.put(STATUS, "KO");
+        MDC.put(CODE, "401");
+        MDC.put(RESPONSE_TIME, getExecutionTime());
+        String method = httRequest.getMethod() + httRequest.getRequestURI();
+        MDC.put(METHOD, method);
+        log.info("{} {}", httRequest.getMethod(), httRequest.getRequestURI());
+        log.info("Failed API operation {} - error: {}", method, error.getMessage());
+        MDC.remove(STATUS);
+        MDC.remove(CODE);
+        MDC.remove(RESPONSE_TIME);
+        MDC.remove(START_TIME);
+    }
+
     @Around(value = "repository() || service()")
     public Object logTrace(ProceedingJoinPoint joinPoint) throws Throwable {
         log.debug("Call method {} - args: {}", joinPoint.getSignature().toShortString(), joinPoint.getArgs());
@@ -143,8 +156,12 @@ public class LoggingAspect {
 
     private static String getExecutionTime() {
         long endTime = System.currentTimeMillis();
-        long startTime = Long.parseLong(MDC.get(START_TIME));
+        long startTime = Long.parseLong(deNull(MDC.get(START_TIME)));
         long executionTime = endTime - startTime;
         return String.valueOf(executionTime);
+    }
+
+    private static String deNull(String s) {
+        return s == null ? String.valueOf(System.currentTimeMillis()) : s;
     }
 }
