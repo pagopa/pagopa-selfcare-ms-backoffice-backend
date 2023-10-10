@@ -93,7 +93,7 @@ public class GecController {
     @GetMapping("/bundles/paymenttypes")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.gec.getPaymenttypes}")
-    public BundlePaymentTypesResource getPaymenttypes(@ApiParam("${swagger.pageable.number.paymenttypes}")
+    public BundlePaymentTypesResource getBundlesPaymenttypes(@ApiParam("${swagger.pageable.number.paymenttypes}")
                                               @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                       @ApiParam("${swagger.pageable.start}")
                                               @RequestParam(required = false, defaultValue = "0") Integer page) {

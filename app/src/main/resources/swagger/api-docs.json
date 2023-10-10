@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.4.19"
+    "version" : "0.4.27"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -3058,9 +3058,9 @@
     "/gec/bundles/paymenttypes" : {
       "get" : {
         "tags" : [ "gec" ],
-        "summary" : "getPaymenttypes",
+        "summary" : "getBundlesPaymenttypes",
         "description" : "Get payment types of bundle",
-        "operationId" : "getPaymenttypesUsingGET",
+        "operationId" : "getBundlesPaymenttypesUsingGET",
         "parameters" : [ {
           "name" : "limit",
           "in" : "query",

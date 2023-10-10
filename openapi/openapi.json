@@ -3392,9 +3392,9 @@
         "tags": [
           "gec"
         ],
-        "summary": "getPaymenttypes",
+        "summary": "getBundlesPaymenttypes",
         "description": "Get payment types of bundle",
-        "operationId": "getPaymenttypesUsingGET",
+        "operationId": "getBundlesPaymenttypesUsingGET",
         "parameters": [
           {
             "name": "limit",
