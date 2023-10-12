@@ -36,7 +36,6 @@ public class PaymentServiceProviderController {
                                                            @PathVariable("pspcode") String pspcode,
                                                            @RequestBody @NotNull PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto) {
 
-
         PaymentServiceProviderDetails paymentServiceProviderDetails = ChannelMapper.fromPaymentServiceProviderDetailsDto(paymentServiceProviderDetailsDto);
         PaymentServiceProviderDetails response = apiConfigService.updatePSP(pspcode, paymentServiceProviderDetails);
         return ChannelMapper.toResource(response);

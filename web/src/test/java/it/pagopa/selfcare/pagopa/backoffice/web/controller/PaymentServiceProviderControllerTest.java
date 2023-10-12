@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         RestExceptionsHandler.class,
         WebTestConfig.class,
 })
-public class PaymentServiceProviderControllerTest {
+class PaymentServiceProviderControllerTest {
 
     private static final String BASE_URL = "/payment-service-provider";
 
