@@ -7747,6 +7747,7 @@
       },
       "PaymentServiceProviderDetailsDto" : {
         "title" : "PaymentServiceProviderDetailsDto",
+        "required" : [ "business_name", "enabled", "psp_code" ],
         "type" : "object",
         "properties" : {
           "abi" : {
