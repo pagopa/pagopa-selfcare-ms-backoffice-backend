@@ -539,6 +539,4 @@ public class ChannelController {
         return resource;
     }
 
-
-
 }

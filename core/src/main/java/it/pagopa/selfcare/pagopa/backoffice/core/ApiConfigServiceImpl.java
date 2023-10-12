@@ -376,4 +376,9 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return response;
     }
 
+    public PaymentServiceProviderDetails updatePSP(String pspcode, PaymentServiceProviderDetails paymentServiceProviderDetails){
+        PaymentServiceProviderDetails response = apiConfigConnector.updatePSP(pspcode, paymentServiceProviderDetails);
+        return response;
+    }
+
 }
