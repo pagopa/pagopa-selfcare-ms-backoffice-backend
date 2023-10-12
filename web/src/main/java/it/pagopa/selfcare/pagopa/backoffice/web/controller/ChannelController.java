@@ -298,10 +298,7 @@ public class ChannelController {
         BrokerPspDetails brokerPspDetails = ChannelMapper.fromBrokerPspDetailsDto(brokerPspDetailsDto);
         BrokerPspDetails response = apiConfigService.createBrokerPsp(brokerPspDetails);
 
-
-        BrokerPspDetailsResource resource = ChannelMapper.toResource(response);
-
-        return resource;
+        return ChannelMapper.toResource(response);
     }
 
     @PostMapping(value = "/psp", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -313,10 +310,7 @@ public class ChannelController {
         PaymentServiceProviderDetails paymentServiceProviderDetails = ChannelMapper.fromPaymentServiceProviderDetailsDto(paymentServiceProviderDetailsDto);
         PaymentServiceProviderDetails response = apiConfigService.createPaymentServiceProvider(paymentServiceProviderDetails);
 
-
-        PaymentServiceProviderDetailsResource resource = ChannelMapper.toResource(response);
-
-        return resource;
+        return ChannelMapper.toResource(response);
     }
 
     @PostMapping(value = "/pspdirect", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -332,10 +326,7 @@ public class ChannelController {
         apiConfigService.createBrokerPsp(brokerPspDetails);
         PaymentServiceProviderDetails responsePSP = apiConfigService.createPaymentServiceProvider(paymentServiceProviderDetails);
 
-
-        PaymentServiceProviderDetailsResource resource = ChannelMapper.toResource(responsePSP);
-
-        return resource;
+        return ChannelMapper.toResource(responsePSP);
     }
 
     @GetMapping(value = "/{pspcode}/generate", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -344,8 +335,7 @@ public class ChannelController {
     public ChannelCodeResource getChannelCode(@ApiParam("${swagger.request.pspCode}")
                                               @PathVariable("pspcode") String pspCode) {
         String result = apiConfigService.generateChannelCode(pspCode);
-        ChannelCodeResource channelCode = new ChannelCodeResource(result);
-        return channelCode;
+        return new ChannelCodeResource(result);
     }
 
     @GetMapping(value = "/{pspcode}/generateV2", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -361,8 +351,7 @@ public class ChannelController {
         WrapperChannels channelsMergedAndSorted = apiConfigService.mergeAndSortWrapperChannels(responseApiConfig, responseMongo, "ASC");
         String result = apiConfigService.generateChannelCodeV2(channelsMergedAndSorted.getChannelList(), pspCode);
 
-        ChannelCodeResource channelCode = new ChannelCodeResource(result);
-        return channelCode;
+        return new ChannelCodeResource(result);
     }
 
     @GetMapping(value = "/psp/{pspcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -371,8 +360,7 @@ public class ChannelController {
     public PaymentServiceProviderDetailsResource getPSPDetails(@ApiParam("${swagger.request.pspCode}")
                                                                @PathVariable("pspcode") String pspCode) {
         PaymentServiceProviderDetails paymentServiceProviderDetails = apiConfigService.getPSPDetails(pspCode);
-        PaymentServiceProviderDetailsResource resource = ChannelMapper.toResource(paymentServiceProviderDetails);
-        return resource;
+        return ChannelMapper.toResource(paymentServiceProviderDetails);
     }
 
 
@@ -412,8 +400,7 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getWrapperEntities}")
     public WrapperEntitiesOperations getWrapperEntities(@ApiParam("${swagger.request.code}") @PathVariable("code") String code) {
-        WrapperEntitiesOperations result = wrapperService.findById(code);
-        return result;
+        return wrapperService.findById(code);
     }
 
     @PutMapping(value = "/update-wrapperChannelByOpt", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -422,10 +409,9 @@ public class ChannelController {
     public WrapperEntitiesOperations updateWrapperChannelDetailsByOpt(@RequestBody
                                                                       @Valid
                                                                       ChannelDetailsDto channelDetailsDto) {
-        WrapperEntitiesOperations createdWrapperEntities = wrapperService.
+        return wrapperService.
                 updateWrapperChannelDetailsByOpt(ChannelMapper.
                         fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
-        return createdWrapperEntities;
     }
 
     @GetMapping(value = "/wfespplugins", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -453,10 +439,9 @@ public class ChannelController {
                                                          @RequestParam(required = false, value = "idLike") String idLike,
                                                          @ApiParam("${swagger.request.sorting}")
                                                          @RequestParam(required = false, value = "sorting") String sorting) {
-        WrapperEntitiesList response = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(wrapperStatus, wrapperType, brokerCode, idLike, page, limit, sorting);
 
 
-        return response;
+        return wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(wrapperStatus, wrapperType, brokerCode, idLike, page, limit, sorting);
     }
 
     @GetMapping(value = "getAllChannels", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -479,9 +464,8 @@ public class ChannelController {
 
         WrapperChannels responseMongo = ChannelMapper.toWrapperChannels(mongoList);
         WrapperChannels channelsMergedAndSorted = apiConfigService.mergeAndSortWrapperChannels(responseApiConfig, responseMongo, sorting);
-        WrapperChannelsResource response = ChannelMapper.toWrapperChannelsResource(channelsMergedAndSorted);
 
-        return response;
+        return ChannelMapper.toWrapperChannelsResource(channelsMergedAndSorted);
     }
 
     @GetMapping(value = "{brokerId}/channels", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -492,9 +476,8 @@ public class ChannelController {
                                                                     @RequestParam(required = false, defaultValue = "10") Integer limit,
                                                                     @RequestParam(required = false, defaultValue = "0") Integer page) {
         ChannelDetailsList response = apiConfigSelfcareIntegrationService.getChannelsDetailsListByBroker(brokerId, channelId, limit, page);
-        ChannelDetailsResourceList resource = ChannelMapper.fromChannelDetailsList(response);
 
-        return resource;
+        return ChannelMapper.fromChannelDetailsList(response);
     }
 
 
@@ -519,9 +502,7 @@ public class ChannelController {
         BrokersPsp response = apiConfigService.getBrokersPsp(limit, page, filterByCode, filterByName, orderBy, sorting);
 
 
-        BrokersPspResource resource = ChannelMapper.toResource(response);
-
-        return resource;
+        return ChannelMapper.toResource(response);
     }
 
     @GetMapping(value = "/brokerdetails", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -533,12 +514,8 @@ public class ChannelController {
 
         BrokerPspDetails response = apiConfigService.getBrokerPsp(brokerPspCode);
 
-        BrokerPspDetailsResource resource = ChannelMapper.toResource(response);
 
-
-        return resource;
+        return ChannelMapper.toResource(response);
     }
-
-
 
 }

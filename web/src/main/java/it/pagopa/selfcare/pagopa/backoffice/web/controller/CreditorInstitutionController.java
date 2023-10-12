@@ -48,10 +48,8 @@ public class CreditorInstitutionController {
         
         CreditorInstitutionDetails creditorInstitution = mapper.fromDto(dto);
         CreditorInstitutionDetails created = apiConfigService.createCreditorInstitution(creditorInstitution);
-        CreditorInstitutionDetailsResource result = mapper.toResource(created);
-        
-        
-        return result;
+
+        return mapper.toResource(created);
     }
 
     @PostMapping(value = "creditor-institution-and-broker", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -65,10 +63,8 @@ public class CreditorInstitutionController {
         CreditorInstitutionDetails creditorInstitution = mapper.fromDto(creditorInstitutionDto);
         CreditorInstitutionDetails created = apiConfigService.createCreditorInstitution(creditorInstitution);
         apiConfigService.createBroker(BrokerMapper.fromDto(brokerDto));
-        CreditorInstitutionDetailsResource result = mapper.toResource(created);
-        
-        
-        return result;
+
+        return mapper.toResource(created);
     }
 
     @GetMapping(value = "/{ecCode}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -79,10 +75,8 @@ public class CreditorInstitutionController {
         
         
         CreditorInstitutionDetails creditorInstitutionDetails = apiConfigService.getCreditorInstitutionDetails(ecCode);
-        CreditorInstitutionDetailsResource result = mapper.toResource(creditorInstitutionDetails);
-        
-        
-        return result;
+
+        return mapper.toResource(creditorInstitutionDetails);
     }
 
     @GetMapping(value = "/get-creditor-institutions", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -101,10 +95,8 @@ public class CreditorInstitutionController {
         
         
         CreditorInstitutions creditorInstitutions = apiConfigService.getCreditorInstitutions(limit, page, ecCode, name, sorting);
-        CreditorInstitutionsResource result = mapper.toResource(creditorInstitutions);
-        
-        
-        return result;
+
+        return mapper.toResource(creditorInstitutions);
     }
 
     @PutMapping(value = "/{ecCode}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -118,10 +110,8 @@ public class CreditorInstitutionController {
         
         CreditorInstitutionDetails creditorInstitution = mapper.fromDto(dto);
         CreditorInstitutionDetails created = apiConfigService.updateCreditorInstitutionDetails(ecCode, creditorInstitution);
-        CreditorInstitutionDetailsResource result = mapper.toResource(created);
-        
-        
-        return result;
+
+        return mapper.toResource(created);
     }
 
     @GetMapping(value = "/{ecCode}/segregationcodes", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -129,11 +119,8 @@ public class CreditorInstitutionController {
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.getCreditorInstitutionSegregationcodes}")
     public CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationcodes(@ApiParam("${swagger.request.ecCode}")
                                                                             @PathVariable("ecCode")String ecCode){
-        
-        
-        CreditorInstitutionAssociatedCodeList result = apiConfigSelfcareIntegrationService.getCreditorInstitutionSegregationcodes(ecCode);
-        
-        return result;
+
+        return apiConfigSelfcareIntegrationService.getCreditorInstitutionSegregationcodes(ecCode);
     }
 
 }

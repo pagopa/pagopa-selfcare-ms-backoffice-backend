@@ -57,10 +57,8 @@ public class InstitutionController {
         
         
         List<InstitutionApiKeys> institutionApiKeysList = apiManagementService.getInstitutionApiKeys(institutionId);
-        List<ApiKeysResource> apiKeysResource = ApiManagerMapper.toApikeysResourceList(institutionApiKeysList);
-        
-        
-        return apiKeysResource;
+
+        return ApiManagerMapper.toApikeysResourceList(institutionApiKeysList);
     }
 
     @PostMapping("/{institutionId}/api-keys")
@@ -75,10 +73,8 @@ public class InstitutionController {
         
         Subscription subscriptionEnum = Subscription.valueOf(subscriptionCode);
         List<InstitutionApiKeys> institutionKeys = apiManagementService.createSubscriptionKeys(institutionId, subscriptionEnum.getScope(), subscriptionEnum.getPrefixId(), subscriptionEnum.getDisplayName());
-        List<ApiKeysResource> apiKeysResourceList = ApiManagerMapper.toApikeysResourceList(institutionKeys);
-        
-        
-        return apiKeysResourceList;
+
+        return ApiManagerMapper.toApikeysResourceList(institutionKeys);
     }
 
     @PostMapping("/{subscriptionid}/api-keys/primary/regenerate")
@@ -117,12 +113,10 @@ public class InstitutionController {
         }
 
         Collection<InstitutionInfo> institutions = externalApiService.getInstitutions(userIdForAuth);
-        List<InstitutionResource> resources = institutions.stream()
+
+        return institutions.stream()
                 .map(InstitutionMapper::toResource)
                 .collect(Collectors.toList());
-        
-        
-        return resources;
     }
 
     @GetMapping("/{institutionId}")
@@ -133,10 +127,8 @@ public class InstitutionController {
         
         
         Institution institution = externalApiService.getInstitution(institutionId);
-        InstitutionDetailResource resource = InstitutionMapper.toResource(institution);
-        
-        
-        return resource;
+
+        return InstitutionMapper.toResource(institution);
     }
 
     @GetMapping("/{institutionId}/products")
@@ -155,12 +147,10 @@ public class InstitutionController {
         }
 
         List<Product> products = externalApiService.getInstitutionUserProducts(institutionId, userIdForAuth);
-        List<ProductsResource> resource = products.stream()
+
+        return products.stream()
                 .map(ProductMapper::toResource)
                 .collect(Collectors.toList());
-        
-        
-        return resource;
     }
 
     @GetMapping("/delegations")
@@ -177,11 +167,9 @@ public class InstitutionController {
         final String mode = "FULL";
 
         List<Delegation> delegations = externalApiService.getBrokerDelegation(institutionId, brokerId, productId, mode);
-        List<DelegationResource> resource = delegations.stream()
+
+        return delegations.stream()
                 .map(DelegationMapper::toResource)
                 .collect(Collectors.toList());
-        
-        
-        return resource;
     }
 }

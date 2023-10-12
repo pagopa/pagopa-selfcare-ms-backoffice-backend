@@ -225,4 +225,9 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                          @RequestParam(required = false, defaultValue = "CODE") String orderby,
                          @RequestParam(required = false, defaultValue = "DESC") String ordering);
 
+    @PutMapping(value = "${rest-client.api-config.updatePSP.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    PaymentServiceProviderDetails updatePSP(@PathVariable("pspcode") String pspcode,
+                                            @RequestBody PaymentServiceProviderDetails paymentServiceProviderDetails);
+
 }

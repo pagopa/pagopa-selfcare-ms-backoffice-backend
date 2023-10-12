@@ -51,11 +51,8 @@ public class IbanController {
 
         IbansEnhanced ibans = apiConfigService.getCreditorInstitutionIbans(creditorinstitutioncode,labelName);
 
-        IbansResource resource = mapper.toResource(ibans);
 
-        
-        
-        return resource;
+        return mapper.toResource(ibans);
     }
 
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -68,11 +65,7 @@ public class IbanController {
         IbanCreate ibanCreate = mapper.fromDto(requestDto);
         IbanCreate ibans = apiConfigService.createCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate);
 
-        IbanResource resource = mapper.toResource(ibans);
-
-        
-        
-        return resource;
+        return mapper.toResource(ibans);
     }
 
     @DeleteMapping(value = "/{creditorinstitutioncode}/delete/{ibanValue}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -110,11 +103,7 @@ public class IbanController {
         IbanCreate ibanCreate = mapper.fromDto(requestDto);
         IbanCreate ibans = apiConfigService.updateCreditorInstitutionIbans(requestDto.getCreditorInstitutionCode(), ibanCreate);
 
-        IbanResource resource = mapper.toResource(ibans);
-
-        
-        
-        return resource;
+        return mapper.toResource(ibans);
     }
 
 }
