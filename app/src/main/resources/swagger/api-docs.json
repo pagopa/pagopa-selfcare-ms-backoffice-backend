@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.4.27"
+    "version" : "0.4.29"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -12,6 +12,9 @@
   "tags" : [ {
     "name" : "Ibans",
     "description" : "Iban Controller"
+  }, {
+    "name" : "PSP",
+    "description" : "Payment Service Provider Controller"
   }, {
     "name" : "Utils",
     "description" : "Utils Controller"
@@ -4298,6 +4301,88 @@
         } ]
       }
     },
+    "/payment-service-provider/{pspcode}" : {
+      "put" : {
+        "tags" : [ "PSP" ],
+        "summary" : "updatePSP",
+        "description" : "Create a channel",
+        "operationId" : "updatePSPUsingPUT",
+        "parameters" : [ {
+          "name" : "pspcode",
+          "in" : "path",
+          "description" : "Code of the payment service provider",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PaymentServiceProviderDetailsDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentServiceProviderDetailsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/stations" : {
       "get" : {
         "tags" : [ "stations" ],
@@ -7662,6 +7747,7 @@
       },
       "PaymentServiceProviderDetailsDto" : {
         "title" : "PaymentServiceProviderDetailsDto",
+        "required" : [ "business_name", "enabled", "psp_code" ],
         "type" : "object",
         "properties" : {
           "abi" : {

@@ -122,10 +122,9 @@ public class StationController {
         
         
         Stations stations = apiConfigService.getStations(limit, page, sort, null, creditorInstitutionCode, stationCode);
-        StationsResource resource = stationMapper.toResource(stations);
-        
-        
-        return resource;
+
+
+        return stationMapper.toResource(stations);
     }
 
     @GetMapping(value = "/details/{stationId}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -133,13 +132,10 @@ public class StationController {
     @ApiOperation(value = "", notes = "${swagger.api.stations.getStation}")
     public StationDetailResource getStation(@ApiParam("${swagger.model.station.code}")
                                             @PathVariable("stationId") String stationCode) {
-        
-        
+
         StationDetails stationDetails = apiConfigService.getStation(stationCode);
-        StationDetailResource resource = stationMapper.toResource(stationDetails);
-        
-        
-        return resource;
+
+        return stationMapper.toResource(stationDetails);
     }
 
     @GetMapping(value = "/get-details/{stationId}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -163,10 +159,8 @@ public class StationController {
             stationDetails = apiConfigService.getStation(stationCode);
             status = WrapperStatus.APPROVED;
         }
-        StationDetailResource resource = stationMapper.toResource(stationDetails, status, createdBy, modifiedBy);
-        
-        
-        return resource;
+
+        return stationMapper.toResource(stationDetails, status, createdBy, modifiedBy);
     }
 
     @GetMapping(value = "/{ecCode}/generate", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -181,10 +175,8 @@ public class StationController {
         if (!entitiesList.getWrapperEntities().isEmpty() || !entitiesList2.getWrapperEntities().isEmpty())
             throw new PermissionDeniedException("ERROR There is a Station not completed!");
         String result = apiConfigService.generateStationCode(ecCode);
-        StationCodeResource stationCode = new StationCodeResource(result);
-        
-        
-        return stationCode;
+
+        return new StationCodeResource(result);
     }
 
     @GetMapping(value = "/{ecCode}/generateV2", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -201,10 +193,8 @@ public class StationController {
         WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
         WrapperStations stationsMergedAndSorted = apiConfigService.mergeAndSortWrapperStations(responseApiConfig, responseMongo, "ASC");
         String result = apiConfigService.generateStationCodeV2(stationsMergedAndSorted.getStationsList(), ecCode);
-        StationCodeResource stationCode = new StationCodeResource(result);
-        
-        
-        return stationCode;
+
+        return new StationCodeResource(result);
     }
 
     @PutMapping(value = "/update-wrapperStation", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -233,14 +223,11 @@ public class StationController {
     public WrapperEntitiesOperations updateWrapperStationDetailsByOpt(@RequestBody
                                                                       @Valid
                                                                       StationDetailsDto stationDetailsDto) {
-        
-        
-        WrapperEntitiesOperations createdWrapperEntities = wrapperService.
+
+
+        return wrapperService.
                 updateWrapperStationDetailsByOpt(stationMapper.
                         fromDto(stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name());
-        
-        
-        return createdWrapperEntities;
     }
 
     @PostMapping(value = "/{ecCode}/station", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -253,10 +240,8 @@ public class StationController {
         
         CreditorInstitutionStationEdit station = creditorInstitutionMapper.fromDto(dto);
         CreditorInstitutionStationEdit ecStation = apiConfigService.createCreditorInstitutionStationRelation(ecCode, station);
-        CreditorInstitutionStationEditResource resource = creditorInstitutionMapper.toResource(ecStation);
-        
-        
-        return resource;
+
+        return creditorInstitutionMapper.toResource(ecStation);
     }
 
     @DeleteMapping(value = "/{ecCode}/station/{stationcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -282,10 +267,8 @@ public class StationController {
         
         
         CreditorInstitutions creditorInstitutions = apiConfigService.getCreditorInstitutionsByStation(stationcode, limit, page);
-        CreditorInstitutionsResource resource = creditorInstitutionMapper.toResource(creditorInstitutions);
-        
-        
-        return resource;
+
+        return creditorInstitutionMapper.toResource(creditorInstitutions);
     }
 
     @PutMapping(value = "/{stationcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -308,7 +291,6 @@ public class StationController {
         StationDetailResource resource = stationMapper.toResource(response);
         awsSesService.sendEmail(UPDATE_STATION_SUBJECT, UPDATE_STATION_EMAIL_BODY,stationDetailsDto.getEmail());
         
-        
         return resource;
     }
 
@@ -316,12 +298,8 @@ public class StationController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.stations.getWrapperEntities}")
     public WrapperEntitiesOperations getWrapperEntitiesStation(@ApiParam("${swagger.request.code}") @PathVariable("code") String code) {
-        
-        
-        WrapperEntitiesOperations result = wrapperService.findById(code);
-        
-        
-        return result;
+
+        return wrapperService.findById(code);
     }
 
     @PostMapping(value = "/create-broker")
@@ -356,11 +334,8 @@ public class StationController {
         WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, brokerCode, page, limit);
         WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
         WrapperStations stationsMergedAndSorted = apiConfigService.mergeAndSortWrapperStations(responseApiConfig, responseMongo, sorting);
-        WrapperStationsResource response = stationMapper.toWrapperStationsResource(stationsMergedAndSorted);
-        
-        
 
-        return response;
+        return stationMapper.toWrapperStationsResource(stationsMergedAndSorted);
     }
 
     @GetMapping(value = "{brokerId}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -370,15 +345,10 @@ public class StationController {
                                                                      @RequestParam(required = false) String stationId,
                                                                      @RequestParam(required = false, defaultValue = "10") Integer limit,
                                                                      @RequestParam(required = false, defaultValue = "0") Integer page) {
-        
-        
-        
-        StationDetailsList response = apiConfigSelfcareIntegrationService.getStationsDetailsListByBroker(brokerId, stationId, limit, page);
-        StationDetailsResourceList resource = stationMapper.fromStationDetailsList(response);
 
-        
-        
-        return resource;
+        StationDetailsList response = apiConfigSelfcareIntegrationService.getStationsDetailsListByBroker(brokerId, stationId, limit, page);
+
+        return stationMapper.fromStationDetailsList(response);
     }
 
     @GetMapping(value = "/brokers-EC", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -394,15 +364,10 @@ public class StationController {
                                @RequestParam(required = false, defaultValue = "CODE") String orderby,
                                @ApiParam(allowableValues = "ASC,DESC")
                                @RequestParam(required = false, defaultValue = "DESC") String ordering){
-
-        
-        
         
         Brokers response = apiConfigService.getBrokersEC(limit, page, code, name, orderby, ordering);
-        BrokersResource resource = BrokerMapper.toResource(response);
-        
-        
-        return resource;
+
+        return BrokerMapper.toResource(response);
     }
 
 }

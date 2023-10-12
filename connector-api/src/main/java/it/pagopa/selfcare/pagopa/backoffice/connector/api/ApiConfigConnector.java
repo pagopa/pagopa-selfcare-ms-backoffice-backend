@@ -92,7 +92,8 @@ public interface ApiConfigConnector {
 
     IbanCreate updateCreditorInstitutionIbans(String ecCode, String ibanId, IbanCreate ibanCreate);
 
-
      Brokers getBrokersEC(Integer limit, Integer page, String code, String name, String orderby, String ordering);
+
+    PaymentServiceProviderDetails updatePSP(String pspcode, PaymentServiceProviderDetails paymentServiceProviderDetails);
 
 }

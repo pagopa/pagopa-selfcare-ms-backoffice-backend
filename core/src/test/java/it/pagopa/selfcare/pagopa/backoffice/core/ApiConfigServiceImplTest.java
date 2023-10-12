@@ -1146,4 +1146,22 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
+    @Test
+    void updatePSP() {
+        //given
+        String pspcode = "pspcode";
+
+        PaymentServiceProviderDetails paymentServiceProviderDetails = mockInstance(new PaymentServiceProviderDetails());
+
+        when(apiConfigConnectorMock.updatePSP(anyString(), any()))
+                .thenReturn(paymentServiceProviderDetails);
+        //when
+        PaymentServiceProviderDetails response = apiConfigService.updatePSP(anyString(), any());
+        //then
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .updatePSP(anyString(), any());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
 }

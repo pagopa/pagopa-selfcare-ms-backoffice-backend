@@ -303,7 +303,7 @@ class ChannelMapperTest {
     @Test
     void fromPaymentServiceProviderDetailsDto() {
         //given
-        PaymentServiceProviderDetailsDto dto = mockInstance(new PaymentServiceProviderDetailsDto());
+        PaymentServiceProviderDetailsDto dto = mockInstance(new PaymentServiceProviderDetailsDto("pspcode", true, "businessName"));
         //when
         PaymentServiceProviderDetails model = ChannelMapper.fromPaymentServiceProviderDetailsDto(dto);
         //then
@@ -324,7 +324,7 @@ class ChannelMapperTest {
     @Test
     void fromPaymentServiceProviderDetailsDtoToMap() {
         //given
-        PaymentServiceProviderDetailsDto dto = mockInstance(new PaymentServiceProviderDetailsDto());
+        PaymentServiceProviderDetailsDto dto = mockInstance(new PaymentServiceProviderDetailsDto("pspcode", true, "businessName"));
         //when
         Map<String,Object> res = ChannelMapper.fromPaymentServiceProviderDetailsDtoToMap(dto);
         BrokerPspDetails brokerPspDetails = (BrokerPspDetails) res.get("broker");
