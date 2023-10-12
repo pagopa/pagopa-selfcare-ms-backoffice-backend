@@ -1,12 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentServiceProviderDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoint;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.gec.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
-import it.pagopa.selfcare.pagopa.backoffice.core.GecService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PaymentServiceProviderDetailsDto;
@@ -24,14 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.InputStream;
-import java.util.List;
 
-import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = {PaymentServiceProviderController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)

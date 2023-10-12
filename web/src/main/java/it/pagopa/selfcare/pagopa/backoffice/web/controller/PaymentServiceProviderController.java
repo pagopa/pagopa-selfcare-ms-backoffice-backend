@@ -39,7 +39,6 @@ public class PaymentServiceProviderController {
 
         PaymentServiceProviderDetails paymentServiceProviderDetails = ChannelMapper.fromPaymentServiceProviderDetailsDto(paymentServiceProviderDetailsDto);
         PaymentServiceProviderDetails response = apiConfigService.updatePSP(pspcode, paymentServiceProviderDetails);
-
         return ChannelMapper.toResource(response);
     }
 }
