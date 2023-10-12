@@ -96,4 +96,6 @@ public interface ApiConfigConnector {
 
     PaymentServiceProviderDetails updatePSP(String pspcode, PaymentServiceProviderDetails paymentServiceProviderDetails);
 
+    BrokerPspDetails updateBrokerPSP(String brokercode, BrokerPspDetails brokerPspDetails);
+
 }

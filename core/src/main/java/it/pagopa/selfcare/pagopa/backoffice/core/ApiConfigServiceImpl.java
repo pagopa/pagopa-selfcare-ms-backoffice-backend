@@ -343,4 +343,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return apiConfigConnector.updatePSP(pspcode, paymentServiceProviderDetails);
     }
 
+    public BrokerPspDetails updateBrokerPSP(String brokercode, BrokerPspDetails brokerPspDetails){
+        return apiConfigConnector.updateBrokerPSP(brokercode, brokerPspDetails);
+    }
 }
