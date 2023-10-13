@@ -1146,4 +1146,21 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
+
+    @Test
+    void updateBrokerEc() {
+        //given
+        String brokerEcCode = "brokerEcode";
+
+        BrokerDetails request = mockInstance(new BrokerDetails());
+        when(apiConfigConnectorMock.updateBrokerEc(any(),anyString()))
+                .thenReturn(request);
+        //when
+        BrokerDetails response = apiConfigService.updateBrokerEc(brokerEcCode, request);
+        //then
+        assertSame(request, response);
+        verify(apiConfigConnectorMock, times(1)).updateBrokerEc(request, brokerEcCode);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
 }

@@ -1,15 +1,30 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.utils.StringUtils;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.*;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerDetailsResource;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper {
+
+    @Override
+    public BrokerDetails fromDto(BrokerEcDto dto) {
+        BrokerDetails brokerDetails = null;
+        if (dto != null){
+            brokerDetails = new BrokerDetails();
+            brokerDetails.setExtendedFaultBean(dto.getExtendedFaultBean());
+            brokerDetails.setDescription(dto.getDescription());
+            brokerDetails.setEnabled(dto.getEnabled());
+            brokerDetails.setBrokerCode(dto.getBrokerCode());
+         }
+        return brokerDetails;
+    }
 
     @Override
     public CreditorInstitutionStationEdit fromDto(CreditorInstitutionStationDto dto) {
@@ -58,6 +73,20 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         creditorInstitutionDetails.setReportingZip(dto.getReportingZip());
 
         return creditorInstitutionDetails;
+    }
+
+    @Override
+    public BrokerDetailsResource toResource(BrokerDetails model) {
+        if (model == null) {
+            return null;
+        }
+        BrokerDetailsResource brokerDetailsResource= new BrokerDetailsResource();
+        brokerDetailsResource.setBrokerCode(model.getBrokerCode());
+        brokerDetailsResource.setEnabled(model.getEnabled());
+        brokerDetailsResource.setExtendedFaultBean(model.getExtendedFaultBean());
+        brokerDetailsResource.setDescription(model.getDescription());
+
+        return brokerDetailsResource;
     }
 
     @Override
