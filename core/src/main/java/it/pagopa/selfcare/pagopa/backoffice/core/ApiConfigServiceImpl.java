@@ -52,55 +52,46 @@ public class ApiConfigServiceImpl implements ApiConfigService {
 
     @Override
     public BrokersPsp getBrokersPsp(Integer limit, Integer page, String filterByCode, String filterByName, String orderBy, String sorting) {
-        BrokersPsp brokersPsp = apiConfigConnector.getBrokersPsp(limit, page, filterByCode, filterByName, orderBy, sorting);
-        return brokersPsp;
+        return apiConfigConnector.getBrokersPsp(limit, page, filterByCode, filterByName, orderBy, sorting);
     }
 
     @Override
     public BrokerPspDetails getBrokerPsp(String brokerpspcode) {
-        BrokerPspDetails brokersPsp = apiConfigConnector.getBrokerPsp(brokerpspcode);
-        return brokersPsp;
+        return apiConfigConnector.getBrokerPsp(brokerpspcode);
     }
 
     @Override
     public Channels getChannels(Integer limit, Integer page, String code, String brokerCode, String sort) {
-        Channels channels = apiConfigConnector.getChannels(limit, page, code, brokerCode, sort);
-        return channels;
+        return apiConfigConnector.getChannels(limit, page, code, brokerCode, sort);
     }
 
     @Override
     public ChannelDetails createChannel(ChannelDetails channelDetails) {
-        ChannelDetails response = apiConfigConnector.createChannel(channelDetails);
-        return response;
+        return apiConfigConnector.createChannel(channelDetails);
     }
 
     @Override
     public ChannelDetails updateChannel(ChannelDetails channelDetails, String channelCode) {
-        ChannelDetails response = apiConfigConnector.updateChannel(channelDetails, channelCode);
-        return response;
+        return apiConfigConnector.updateChannel(channelDetails, channelCode);
     }
 
     @Override
     public PspChannels getPspChannels(String pspCode) {
-        PspChannels response = apiConfigConnector.getPspChannels(pspCode);
-        return response;
+        return apiConfigConnector.getPspChannels(pspCode);
     }
 
     @Override
     public ChannelDetails getChannelDetails(String channelCode) {
-        ChannelDetails response = apiConfigConnector.getChannelDetails(channelCode);
-        return response;
+        return apiConfigConnector.getChannelDetails(channelCode);
     }
 
     public PspChannelPaymentTypes createChannelPaymentType(PspChannelPaymentTypes pspChannelPaymentTypes, String channelCode) {
-        PspChannelPaymentTypes response = apiConfigConnector.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
-        return response;
+        return apiConfigConnector.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
     }
 
     @Override
     public PaymentTypes getPaymentTypes() {
-        PaymentTypes response = apiConfigConnector.getPaymentTypes();
-        return response;
+        return apiConfigConnector.getPaymentTypes();
     }
 
     @Override
@@ -110,8 +101,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
 
     @Override
     public PspChannelPaymentTypes getChannelPaymentTypes(String channelCode) {
-        PspChannelPaymentTypes response = apiConfigConnector.getChannelPaymentTypes(channelCode);
-        return response;
+        return apiConfigConnector.getChannelPaymentTypes(channelCode);
     }
 
     @Override
@@ -121,8 +111,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
 
     @Override
     public PspChannelPaymentTypes updatePaymentServiceProvidersChannels(String pspCode, String channelCode, PspChannelPaymentTypes pspChannelPaymentTypes) {
-        PspChannelPaymentTypes response = apiConfigConnector.updatePaymentServiceProvidersChannels(pspCode, channelCode, pspChannelPaymentTypes);
-        return response;
+        return apiConfigConnector.updatePaymentServiceProvidersChannels(pspCode, channelCode, pspChannelPaymentTypes);
     }
 
     @Override
@@ -132,8 +121,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
 
     @Override
     public PaymentServiceProviders getPspBrokerPsp(Integer limit, Integer page, String brokerPspCode) {
-        PaymentServiceProviders response = apiConfigConnector.getPspBrokerPsp(limit, page, brokerPspCode);
-        return response;
+        return apiConfigConnector.getPspBrokerPsp(limit, page, brokerPspCode);
     }
 
     @Override
@@ -160,14 +148,12 @@ public class ApiConfigServiceImpl implements ApiConfigService {
 
     @Override
     public StationDetails getStation(String stationCode) {
-        StationDetails response = apiConfigConnector.getStation(stationCode);
-        return response;
+        return apiConfigConnector.getStation(stationCode);
     }
 
     @Override
     public StationDetails createStation(StationDetails stationDetails) {
-        StationDetails response = apiConfigConnector.createStation(stationDetails);
-        return response;
+        return apiConfigConnector.createStation(stationDetails);
     }
 
     @Override
@@ -177,8 +163,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         List<String> codes = codeList.stream().map(Channel::getChannelCode)
                 .filter(s -> s.matches(REGEX_GENERATE)) // String_nn
                 .collect(Collectors.toList());
-        String newChannelCode = generator(codes, pspCode);
-        return newChannelCode;
+        return generator(codes, pspCode);
     }
 
     @Override
@@ -188,8 +173,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         List<String> codes = stationsList.stream().map(Station::getStationCode)
                 .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toList());
-        String newStationCode = generator(codes, ecCode);
-        return newStationCode;
+        return generator(codes, ecCode);
     }
 
     @Override
@@ -197,8 +181,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         List<String> codes = stationList.stream().map(WrapperStation::getStationCode)
                 .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toList());
-        String newStationCode = generator(codes, ecCode);
-        return newStationCode;
+        return generator(codes, ecCode);
     }
 
     @Override
@@ -206,89 +189,75 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         List<String> codes = stationList.stream().map(WrapperChannel::getChannelCode)
                 .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toList());
-        String newStationCode = generator(codes, ecCode);
-        return newStationCode;
+        return generator(codes, ecCode);
     }
 
 
     @Override
     public PaymentServiceProviderDetails getPSPDetails(String pspCode) {
-        PaymentServiceProviderDetails response = apiConfigConnector.getPSPDetails(pspCode);
-        return response;
+        return apiConfigConnector.getPSPDetails(pspCode);
     }
 
     @Override
     public CreditorInstitutionStationEdit createCreditorInstitutionStationRelation(String ecCode, CreditorInstitutionStationEdit station) {
-        CreditorInstitutionStationEdit result = apiConfigConnector.createCreditorInstitutionStationRelationship(ecCode, station);
-        return result;
+        return apiConfigConnector.createCreditorInstitutionStationRelationship(ecCode, station);
     }
 
     @Override
     public CreditorInstitutionDetails createCreditorInstitution(CreditorInstitutionDetails dto) {
-        CreditorInstitutionDetails result = apiConfigConnector.createCreditorInstitution(dto);
-        return result;
+        return apiConfigConnector.createCreditorInstitution(dto);
     }
 
     @Override
     public CreditorInstitutionDetails getCreditorInstitutionDetails(String ecCode) {
         Assert.hasText(ecCode, CREDITOR_INSTITUTION_CODE_IS_REQUIRED);
-        CreditorInstitutionDetails result = apiConfigConnector.getCreditorInstitutionDetails(ecCode);
-        return result;
+        return apiConfigConnector.getCreditorInstitutionDetails(ecCode);
     }
 
     @Override
     public CreditorInstitutions getCreditorInstitutions(Integer limit, Integer page, String ecCode, String name, String sorting) {
         Assert.hasText(ecCode, CREDITOR_INSTITUTION_CODE_IS_REQUIRED);
-        CreditorInstitutions result = apiConfigConnector.getCreditorInstitutions(limit, page, ecCode, name, sorting);
-        return result;
+        return apiConfigConnector.getCreditorInstitutions(limit, page, ecCode, name, sorting);
     }
 
     @Override
     public CreditorInstitutionDetails updateCreditorInstitutionDetails(String creditorInstitutionCode, CreditorInstitutionDetails request) {
         Assert.hasText(creditorInstitutionCode, CREDITOR_INSTITUTION_CODE_IS_REQUIRED);
-        CreditorInstitutionDetails result = apiConfigConnector.updateCreditorInstitutionDetails(creditorInstitutionCode, request);
-        return result;
+        return apiConfigConnector.updateCreditorInstitutionDetails(creditorInstitutionCode, request);
     }
 
     @Override
     public StationDetails updateStation(String stationCode, StationDetails stationDetails) {
-        StationDetails response = apiConfigConnector.updateStation(stationCode, stationDetails);
-        return response;
+        return apiConfigConnector.updateStation(stationCode, stationDetails);
     }
 
     @Override
     public WfespPluginConfs getWfespPlugins() {
-        WfespPluginConfs response = apiConfigConnector.getWfespPlugins();
-        return response;
+        return apiConfigConnector.getWfespPlugins();
     }
 
     @Override
     public Resource getChannelsCSV() {
-        Resource response = apiConfigConnector.getChannelsCSV();
-        return response;
+        return apiConfigConnector.getChannelsCSV();
     }
 
     public ChannelPspList getChannelPaymentServiceProviders(Integer limit, Integer page, String channelCode) {
-        ChannelPspList response = apiConfigConnector.getChannelPaymentServiceProviders(limit, page, channelCode);
-        return response;
+        return apiConfigConnector.getChannelPaymentServiceProviders(limit, page, channelCode);
     }
 
     @Override
     public BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails) {
-        BrokerPspDetails response = apiConfigConnector.createBrokerPsp(brokerPspDetails);
-        return response;
+        return apiConfigConnector.createBrokerPsp(brokerPspDetails);
     }
 
     @Override
     public BrokerDetails createBroker(BrokerDetails request) {
-        BrokerDetails response = apiConfigConnector.createBroker(request);
-        return response;
+        return apiConfigConnector.createBroker(request);
     }
 
     @Override
     public PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails) {
-        PaymentServiceProviderDetails response = apiConfigConnector.createPaymentServiceProvider(paymentServiceProviderDetails);
-        return response;
+        return apiConfigConnector.createPaymentServiceProvider(paymentServiceProviderDetails);
     }
 
     public WrapperStations mergeAndSortWrapperStations(WrapperStations wrapperStationsApiConfig, WrapperStations wrapperStationsMongo, String sorting) {
@@ -346,9 +315,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
 
     public CreditorInstitutions getCreditorInstitutionsByStation(String stationcode, Integer limit, Integer page) {
 
-        CreditorInstitutions response = apiConfigConnector.getCreditorInstitutionsByStation(stationcode, limit, page);
-
-        return response;
+        return apiConfigConnector.getCreditorInstitutionsByStation(stationcode, limit, page);
     }
 
     public void deleteCreditorInstitutionStationRelationship(String ecCode, String stationcode) {
@@ -356,15 +323,13 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     public IbansEnhanced getCreditorInstitutionIbans(String ecCode, String label) {
-        IbansEnhanced response = apiConfigConnector.getCreditorInstitutionIbans(ecCode, label);
 
-        return response;
+        return apiConfigConnector.getCreditorInstitutionIbans(ecCode, label);
     }
 
     public IbanCreate createCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate) {
-        IbanCreate response = apiConfigConnector.createCreditorInstitutionIbans(ecCode, ibanCreate);
 
-        return response;
+        return apiConfigConnector.createCreditorInstitutionIbans(ecCode, ibanCreate);
     }
 
     public void deleteCreditorInstitutionIbans(String ecCode, String iban){
@@ -372,13 +337,15 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     public IbanCreate updateCreditorInstitutionIbans(String ecCode, IbanCreate ibanCreate) {
-        IbanCreate response = apiConfigConnector.updateCreditorInstitutionIbans(ecCode, ibanCreate.getIban(), ibanCreate);
-        return response;
+        return apiConfigConnector.updateCreditorInstitutionIbans(ecCode, ibanCreate.getIban(), ibanCreate);
     }
 
     public Brokers getBrokersEC(Integer limit, Integer page, String code, String name, String orderby, String ordering){
-        Brokers response = apiConfigConnector.getBrokersEC(limit, page, code, name, orderby, ordering);
-        return response;
+        return apiConfigConnector.getBrokersEC(limit, page, code, name, orderby, ordering);
+    }
+
+    public PaymentServiceProviderDetails updatePSP(String pspcode, PaymentServiceProviderDetails paymentServiceProviderDetails){
+        return apiConfigConnector.updatePSP(pspcode, paymentServiceProviderDetails);
     }
 
 }

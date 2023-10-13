@@ -56,7 +56,7 @@ class ApiConfigServiceImplTest {
         final String code = "code";
         final String brokercode = "brokercode";
         final String sort = "sort";
-        
+
         //when
         apiConfigService.getChannels(limit, page, code, brokercode, sort);
         //then
@@ -73,7 +73,7 @@ class ApiConfigServiceImplTest {
         final String code = "code";
         final String brokercode = "brokercode";
         final String sort = "sort";
-        
+
         Channels channelsMock = mock(Channels.class);
         when(apiConfigConnectorMock.getChannels(any(), any(), any(), any(), any()))
                 .thenReturn(channelsMock);
@@ -93,7 +93,7 @@ class ApiConfigServiceImplTest {
         //given
 
         final String pspcode = "pspcode";
-        
+
         PspChannels pspChannels = mock(PspChannels.class);
         when(apiConfigConnectorMock.getPspChannels(any()))
                 .thenReturn(pspChannels);
@@ -112,7 +112,7 @@ class ApiConfigServiceImplTest {
     void createChannel() {
         //given
 
-        
+
         ChannelDetails channelDetailsMock = mock(ChannelDetails.class);
 
         when(apiConfigConnectorMock.createChannel(any()))
@@ -133,7 +133,7 @@ class ApiConfigServiceImplTest {
         //given
 
         final String channelCode = "channelCode";
-        
+
         ChannelDetails channelDetailsMock = mock(ChannelDetails.class);
 
 
@@ -154,7 +154,7 @@ class ApiConfigServiceImplTest {
     @Test
     void UpdateChannel() {
         //given
-        
+
         ChannelDetails channelDetailsMock = mock(ChannelDetails.class);
         String channelCode = "channelCode";
 
@@ -174,7 +174,7 @@ class ApiConfigServiceImplTest {
     @Test
     void createChannelPaymentType() {
         //given
-        
+
         final String channelCode = "channelCode";
 
         PspChannelPaymentTypes pspChannelPaymentTypesMock = mock(PspChannelPaymentTypes.class);
@@ -195,7 +195,7 @@ class ApiConfigServiceImplTest {
     @Test
     void getPaymentTypes() {
         //given
-        
+
 
         PaymentTypes paymentTypes = mock(PaymentTypes.class);
         when(apiConfigConnectorMock.getPaymentTypes())
@@ -216,7 +216,7 @@ class ApiConfigServiceImplTest {
     @Test
     void getChannelPaymentTypes() {
         //given
-        
+
         final String channelCode = "channelCode";
 
         PspChannelPaymentTypes pspChannelPaymentTypes = mock(PspChannelPaymentTypes.class);
@@ -237,7 +237,7 @@ class ApiConfigServiceImplTest {
     @Test
     void deleteChannelPaymentType() {
         //given
-        
+
         final String channelCode = "channelCode";
         final String paymentType = "paymentType";
 
@@ -253,7 +253,7 @@ class ApiConfigServiceImplTest {
 
     @Test
     void deletePaymentServiceProvidersChannels() {
-        
+
         final String channelCode = "channelCode";
         final String pspCode = "pspCode";
 
@@ -291,7 +291,7 @@ class ApiConfigServiceImplTest {
     @Test
     void deleteChannel() {
         //given
-        
+
         final String channelCode = "channelCode";
 
         doNothing().when(apiConfigConnectorMock).deleteChannel(anyString());
@@ -308,7 +308,7 @@ class ApiConfigServiceImplTest {
     @Test
     void getPspBrokerPsp() {
         //given
-        
+
         final String brokerPspCode = "brokerPspCode";
         final Integer limit = 1;
         final Integer page = 1;
@@ -337,7 +337,7 @@ class ApiConfigServiceImplTest {
         final String ecCode = "ecCode";
         final String stationCode = "stationCode";
         final String sort = "sort";
-        
+
         Stations stationsMock = mockInstance(new Stations());
         when(apiConfigConnectorMock.getStations(any(), any(), any(), any(), any(), any()))
                 .thenReturn(stationsMock);
@@ -362,7 +362,7 @@ class ApiConfigServiceImplTest {
         final String ecCode = "ecCode";
         final String stationCode = "stationCode";
         final String sort = "sort";
-        
+
         Stations stationsMock = mockInstance(new Stations());
 
         when(apiConfigConnectorMock.getStations(any(), any(), any(), any(), any(), any()))
@@ -381,7 +381,7 @@ class ApiConfigServiceImplTest {
     void getStation() {
         //given
         final String stationCode = "stationCode";
-        
+
         StationDetails stationDetailsMock = mock(StationDetails.class);
         when(apiConfigConnectorMock.getStation(any()))
                 .thenReturn(stationDetailsMock);
@@ -401,7 +401,7 @@ class ApiConfigServiceImplTest {
     @Test
     void createStation() {
         //given
-        
+
         StationDetails stationDetails = mockInstance(new StationDetails());
 
         when(apiConfigConnectorMock.createStation(any()))
@@ -418,7 +418,7 @@ class ApiConfigServiceImplTest {
     @Test
     void getChannelsCSV() throws IOException {
         //given
-        
+
 
         File file = File.createTempFile("channels", ".csv");
         FileWriter writer = new FileWriter(file);
@@ -443,7 +443,7 @@ class ApiConfigServiceImplTest {
     @Test
     void getChannelPaymentServiceProviders() {
         //given
-        
+
         final String channelCode = "channelCode";
         final Integer limit = 1;
         final Integer page = 1;
@@ -469,7 +469,7 @@ class ApiConfigServiceImplTest {
     @Test
     void createBrokerPsp() {
         //given
-        
+
         BrokerPspDetails brokerPspDetails = mockInstance(new BrokerPspDetails());
 
         when(apiConfigConnectorMock.createBrokerPsp(any()))
@@ -487,7 +487,7 @@ class ApiConfigServiceImplTest {
     @Test
     void createPaymentServiceProvider() {
         //given
-        
+
         PaymentServiceProviderDetails paymentServiceProviderDetails = mockInstance(new PaymentServiceProviderDetails());
 
         when(apiConfigConnectorMock.createPaymentServiceProvider(any()))
@@ -503,7 +503,7 @@ class ApiConfigServiceImplTest {
     @Test
     void generateChannelCode() {
         //given
-        
+
         final String pspCode = "pspCode";
         final String sorting = "ASC";
         final Integer limit = 100;
@@ -529,7 +529,7 @@ class ApiConfigServiceImplTest {
     @Test
     void generateChannelCode_noRegexMatcher() {
         //given
-        
+
         final String pspCode = "TEST";
         final String sorting = "ASC";
         final Integer limit = 100;
@@ -556,7 +556,7 @@ class ApiConfigServiceImplTest {
     @Test
     void generateStationCode() {
         //given
-        
+
         final Integer limit = 100;
         final Integer page = 0;
         final String sort = "ASC";
@@ -615,7 +615,7 @@ class ApiConfigServiceImplTest {
     @Test
     void generateStationCode_noRegexMatcher() {
         //given
-        
+
         final Integer limit = 100;
         final Integer page = 0;
         final String sort = "ASC";
@@ -643,7 +643,7 @@ class ApiConfigServiceImplTest {
     void getPSPDetails() {
         //given
         final String pspCode = "pspCode";
-        
+
 
         PaymentServiceProviderDetails paymentServiceProviderDetails = mockInstance(new PaymentServiceProviderDetails());
 
@@ -663,7 +663,7 @@ class ApiConfigServiceImplTest {
     void createCreditorInstitutionStationRelationship() {
         //given
         String ecCode = "ecCode";
-        
+
         CreditorInstitutionStationEdit station = mockInstance(new CreditorInstitutionStationEdit());
         CreditorInstitutionStationEdit responseMock = mockInstance(new CreditorInstitutionStationEdit());
         when(apiConfigConnectorMock.createCreditorInstitutionStationRelationship(anyString(), any()))
@@ -752,7 +752,7 @@ class ApiConfigServiceImplTest {
     @Test
     void updateStation() {
         //given
-        
+
         StationDetails stationDetailsMock = mock(StationDetails.class);
         String stationCode = "stationCode";
 
@@ -886,7 +886,7 @@ class ApiConfigServiceImplTest {
     @Test
     void getWfespPlugins() {
         //given
-        
+
         WfespPluginConfs wfespPluginConfsMock = mock(WfespPluginConfs.class);
 
         when(apiConfigConnectorMock.getWfespPlugins())
@@ -905,7 +905,7 @@ class ApiConfigServiceImplTest {
     @Test
     void createBroker() {
         //given
-        
+
         BrokerDetails brokerDetails = mock(BrokerDetails.class);
         when(apiConfigConnectorMock.createBroker(any()))
                 .thenReturn(brokerDetails);
@@ -924,7 +924,7 @@ class ApiConfigServiceImplTest {
     void getCreditorInstitutionsByStation() {
         //given
         String stationCode = "stationCode";
-        
+
         Integer page = 0;
 
         CreditorInstitution creditorInstitution = mockInstance(new CreditorInstitution());
@@ -948,7 +948,7 @@ class ApiConfigServiceImplTest {
     void deleteCreditorInstitutionStationRelationship() {
         //given
         String ecCode = "ecCode";
-        
+
         String stationcode = "stationcode";
 
         doNothing().when(apiConfigConnectorMock).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
@@ -967,7 +967,7 @@ class ApiConfigServiceImplTest {
     void getCreditorInstitutionIbans() {
         //given
         String ecCode = "ecCode";
-        
+
         String label = "label";
 
         IbansEnhanced ibansDetails = mockInstance(new IbansEnhanced());
@@ -991,7 +991,7 @@ class ApiConfigServiceImplTest {
     void getBrokerPsp() {
         //given
         String brokerpspcode = "brokerpspcode";
-        
+
         BrokerPspDetails brokerPspDetailsMock = mockInstance(new BrokerPspDetails());
 
         when(apiConfigConnectorMock.getBrokerPsp(anyString()))
@@ -1057,7 +1057,7 @@ class ApiConfigServiceImplTest {
     @Test
     void generateStationCodeV2() {
         //given
-        
+
         final String stationCode = "stationCode";
 
         List<WrapperStation> stationList = new ArrayList<>();
@@ -1075,7 +1075,7 @@ class ApiConfigServiceImplTest {
     @Test
     void generateChannelCodeV2() {
         //given
-        
+
         final String channelCode = "channelCode";
 
         List<WrapperChannel> channelList = new ArrayList<>();
@@ -1132,7 +1132,7 @@ class ApiConfigServiceImplTest {
         String name = "name";
         String orderby = "NAME";
         String ordering = "DESC";
-        
+
         Brokers brokers = mockInstance(new Brokers());
 
         when(apiConfigConnectorMock.getBrokersEC(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString()))
@@ -1153,14 +1153,32 @@ class ApiConfigServiceImplTest {
         String brokerEcCode = "brokerEcode";
 
         BrokerDetails request = mockInstance(new BrokerDetails());
-        when(apiConfigConnectorMock.updateBrokerEc(any(),anyString()))
+        when(apiConfigConnectorMock.updateBrokerEc(any(), anyString()))
                 .thenReturn(request);
         //when
         BrokerDetails response = apiConfigService.updateBrokerEc(brokerEcCode, request);
         //then
         assertSame(request, response);
         verify(apiConfigConnectorMock, times(1)).updateBrokerEc(request, brokerEcCode);
-        verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
+    @Test
+    void updatePSP() {
+        //given
+        String pspcode = "pspcode";
+
+        PaymentServiceProviderDetails paymentServiceProviderDetails = mockInstance(new PaymentServiceProviderDetails());
+
+        when(apiConfigConnectorMock.updatePSP(anyString(), any()))
+                .thenReturn(paymentServiceProviderDetails);
+        //when
+        PaymentServiceProviderDetails response = apiConfigService.updatePSP(anyString(), any());
+        //then
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .updatePSP(anyString(), any());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+
+
+    }
 }

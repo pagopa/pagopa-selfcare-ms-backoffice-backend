@@ -111,4 +111,6 @@ public interface ApiConfigService {
 
     Brokers getBrokersEC(Integer limit, Integer page, String code, String name, String orderby, String ordering);
 
+    PaymentServiceProviderDetails updatePSP(String pspcode, PaymentServiceProviderDetails paymentServiceProviderDetails);
+
     }
