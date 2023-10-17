@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "0.4.37" #improve
+    tag: "0.4.38" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -41,6 +41,8 @@ microservice-chart:
     host: "weuprod.selfcare.internal.platform.pagopa.it"
     path: "/selfcare/pagopa/v1/(.*)"
     servicePort: 8080
+    annotations:
+      nginx.ingress.kubernetes.io/cors-allow-origin: "https://api.platform.pagopa.it"
   serviceAccount:
     create: false
     annotations: {}
