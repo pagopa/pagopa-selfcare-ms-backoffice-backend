@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
@@ -132,6 +133,11 @@ class ApiConfigRestClientTest {
         put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "brokerpspcode2");
     }};
 
+    private static final Map<ApiConfigRestClientTest.TestCase, String> testCaseBrokerEcCodeMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
+        put(ApiConfigRestClientTest.TestCase.FULLY_VALUED, "brokerEcCode1");
+        put(ApiConfigRestClientTest.TestCase.EMPTY_RESULT, "brokerEcCode1");
+    }};
+
     private static final Map<ApiConfigRestClientTest.TestCase, String> testCaseStationCodeMap = new EnumMap<>(ApiConfigRestClientTest.TestCase.class) {{
         put(TestCase.FULLY_VALUED, "stationCode1");
         put(TestCase.EMPTY_RESULT, "stationCode2");
@@ -222,6 +228,17 @@ class ApiConfigRestClientTest {
             stationDetails.setTargetPath("targetPath");
             stationDetails.setPrimitiveVersion(1);
             put(TestCase.FULLY_VALUED, stationDetails);
+        }
+    };
+
+    private static final Map<TestCase, Map<String, Object>> testCaseBrokerDetailsDtoMap = new EnumMap(TestCase.class) {
+        {
+            BrokerDetails brokerDetails = new BrokerDetails();
+            brokerDetails.setBrokerCode("brokerCode");
+            brokerDetails.setDescription("description");
+            brokerDetails.setExtendedFaultBean(false);
+            brokerDetails.setEnabled(false);
+            put(TestCase.FULLY_VALUED, brokerDetails);
         }
     };
 
@@ -877,5 +894,23 @@ class ApiConfigRestClientTest {
         assertNotNull(response.getTargetPath());
         assertNotNull(response.getThreadNumber());
         assertNotNull(response.getTimeoutA());
+    }
+
+    @Test
+    void updateBrokerEc_fullyValued() {
+        // given
+        TestCase testCase = TestCase.FULLY_VALUED;
+        BrokerDetails brokerDetails = (BrokerDetails) testCaseBrokerDetailsDtoMap.get(testCase);
+        String brokerEcCode = testCaseBrokerEcCodeMap.get(testCase);
+
+        // when
+        BrokerDetails response = restClient.updateBrokerEc(brokerDetails, brokerEcCode);
+
+        //then
+        assertNotNull(response.getBrokerCode());
+        assertNotNull(response.getEnabled());
+        assertNotNull(response.getDescription());
+        assertNotNull(response.getExtendedFaultBean());
+
     }
 }

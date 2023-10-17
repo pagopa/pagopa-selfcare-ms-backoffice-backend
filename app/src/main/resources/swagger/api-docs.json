@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.4.29"
+    "version" : "0.4.36"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -30,6 +30,9 @@
   }, {
     "name" : "institution",
     "description" : "Institution operations"
+  }, {
+    "name" : "institution-controller",
+    "description" : "Institution Controller"
   }, {
     "name" : "stations",
     "description" : "Api config stations operations"
@@ -2721,6 +2724,88 @@
         } ]
       }
     },
+    "/creditor-institutions/ec-broker/{code}" : {
+      "put" : {
+        "tags" : [ "creditor-institutions" ],
+        "summary" : "updateBrokerEc",
+        "description" : "Service to update specific ec broker",
+        "operationId" : "updateBrokerEcUsingPUT",
+        "parameters" : [ {
+          "name" : "code",
+          "in" : "path",
+          "description" : "Broker code filter for search",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BrokerEcDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BrokerDetailsResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/creditor-institutions/get-creditor-institutions" : {
       "get" : {
         "tags" : [ "creditor-institutions" ],
@@ -3712,7 +3797,7 @@
     },
     "/institutions" : {
       "get" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "getInstitutions",
         "description" : "Retrieves all the onboarded institutions related to the logged user",
         "operationId" : "getInstitutionsUsingGET",
@@ -3778,7 +3863,7 @@
     },
     "/institutions/delegations" : {
       "get" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "getBrokerDelegation",
         "description" : "retrieve all active products for given institution and logged user",
         "operationId" : "getBrokerDelegationUsingGET",
@@ -3863,7 +3948,7 @@
     },
     "/institutions/{institutionId}" : {
       "get" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "getInstitution",
         "description" : "Retrieves an institution's details",
         "operationId" : "getInstitutionUsingGET",
@@ -3936,7 +4021,7 @@
     },
     "/institutions/{institutionId}/api-keys" : {
       "get" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "getInstitutionApiKeys",
         "description" : "Retrieve an institution's primary and secondary keys",
         "operationId" : "getInstitutionApiKeysUsingGET",
@@ -4010,7 +4095,7 @@
         } ]
       },
       "post" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "createInstitutionApiKeys",
         "description" : "Creates a new subscription for a given Institution and returns its primary and secondary keys",
         "operationId" : "createInstitutionApiKeysUsingPOST",
@@ -4095,7 +4180,7 @@
     },
     "/institutions/{institutionId}/products" : {
       "get" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "getInstitutionProducts",
         "description" : "retrieve all active products for given institution and logged user",
         "operationId" : "getInstitutionProductsUsingGET",
@@ -4171,7 +4256,7 @@
     },
     "/institutions/{subscriptionid}/api-keys/primary/regenerate" : {
       "post" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "regeneratePrimaryKey",
         "description" : "Regenerates the subscription's primary key",
         "operationId" : "regeneratePrimaryKeyUsingPOST",
@@ -4237,7 +4322,7 @@
     },
     "/institutions/{subscriptionid}/api-keys/secondary/regenerate" : {
       "post" : {
-        "tags" : [ "institution" ],
+        "tags" : [ "institution-controller" ],
         "summary" : "regenerateSecondaryKey",
         "description" : "Regenerates the subscription's secondary key",
         "operationId" : "regenerateSecondaryKeyUsingPOST",
@@ -6188,6 +6273,9 @@
           "broker_details" : {
             "type" : "string"
           },
+          "description" : {
+            "type" : "string"
+          },
           "enabled" : {
             "type" : "boolean"
           },
@@ -6205,6 +6293,31 @@
           },
           "description" : {
             "type" : "string"
+          }
+        }
+      },
+      "BrokerEcDto" : {
+        "title" : "BrokerEcDto",
+        "required" : [ "brokerCode", "description", "enabled", "extendedFaultBean" ],
+        "type" : "object",
+        "properties" : {
+          "brokerCode" : {
+            "type" : "string",
+            "description" : "broker code"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "broker code"
+          },
+          "enabled" : {
+            "type" : "boolean",
+            "description" : "Creditor Institution activation state on ApiConfig",
+            "example" : false
+          },
+          "extendedFaultBean" : {
+            "type" : "boolean",
+            "description" : "xxx",
+            "example" : false
           }
         }
       },
