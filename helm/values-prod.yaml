@@ -41,6 +41,8 @@ microservice-chart:
     host: "weuprod.selfcare.internal.platform.pagopa.it"
     path: "/selfcare/pagopa/v1/(.*)"
     servicePort: 8080
+    annotations:
+      nginx.ingress.kubernetes.io/cors-allow-origin: "https://api.platform.pagopa.it"
   serviceAccount:
     create: false
     annotations: {}
