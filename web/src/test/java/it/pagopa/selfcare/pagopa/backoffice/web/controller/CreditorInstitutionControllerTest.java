@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
@@ -8,9 +9,10 @@ import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationSer
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionAndBrokerDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.UpdateCreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.BrokerEcDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.CreditorInstitutionAndBrokerDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.CreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.UpdateCreditorInstitutionDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import org.junit.jupiter.api.Test;
@@ -253,4 +255,32 @@ class CreditorInstitutionControllerTest {
         verifyNoMoreInteractions(apiConfigSelfcareIntegrationServiceMock);
     }
 
+    @Test
+    void updateBrokerEc(@Value("classpath:stubs/brokerEcDto.json") Resource dto) throws Exception{
+        //given
+        InputStream resource = dto.getInputStream();
+        String brokerCode = "creditorInstitution1";
+        BrokerEcDto brokerEcDto = objectMapper.readValue(resource, BrokerEcDto.class);
+
+        BrokerDetails response = mapper.fromDto(brokerEcDto);
+
+        when(apiConfigServiceMock.updateBrokerEc(anyString(), any()))
+                .thenReturn(response);
+
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .put(BASE_URL + "/ec-broker/" + brokerCode)
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.broker_code", is(response.getBrokerCode())))
+                .andExpect(jsonPath("$.description", is(response.getDescription())))
+                .andExpect(jsonPath("$.enabled", is(response.getEnabled()))) ;
+        //then
+        verify(apiConfigServiceMock, times(1))
+                .updateBrokerEc(brokerCode,response);
+        verifyNoMoreInteractions(apiConfigServiceMock);
+    }
 }

@@ -1,4 +1,4 @@
-package it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions;
+package it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

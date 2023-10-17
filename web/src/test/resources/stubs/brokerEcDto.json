@@ -1,0 +1,6 @@
+{
+  "brokerCode": "brokerCode",
+  "description": "description",
+  "enabled": false,
+  "extendedFaultBean": false
+}

@@ -19,4 +19,7 @@ public class BrokerDetailsResource {
 
     @JsonProperty("broker_details")
     private String brokerDetails;
+
+    @JsonProperty("description")
+    private String description;
 }

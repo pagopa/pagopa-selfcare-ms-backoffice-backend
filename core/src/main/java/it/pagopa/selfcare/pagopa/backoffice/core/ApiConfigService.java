@@ -20,7 +20,7 @@ import java.util.List;
 
 public interface ApiConfigService {
 
-
+    BrokerDetails updateBrokerEc(String brokerCode,BrokerDetails brokerDetails);
     BrokersPsp getBrokersPsp(Integer limit, Integer page, String filterByCode, String filterByName,String orderBy,String sorting);
 
     BrokerPspDetails getBrokerPsp(String brokerpspcode);
