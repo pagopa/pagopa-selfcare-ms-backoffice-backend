@@ -24,6 +24,11 @@ import javax.validation.constraints.NotNull;
 @FeignClient(name = "${rest-client.api-config.serviceCode}", url = "${rest-client.api-config.base-url}", configuration = FeignConfig.class)
 public interface ApiConfigRestClient extends ApiConfigConnector {
 
+    @PutMapping(value = "${rest-client.api-config.updateBroker.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    BrokerDetails updateBrokerEc( @RequestBody BrokerDetails brokerDetails, @PathVariable("brokercode") String brokerCode);
+
+
     @GetMapping(value = "${rest-client.api-config.getBrokersPsp.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @RequestLine("getBrokersPsp")

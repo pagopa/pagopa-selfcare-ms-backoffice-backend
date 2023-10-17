@@ -3,7 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionAddress;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.*;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.*;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 

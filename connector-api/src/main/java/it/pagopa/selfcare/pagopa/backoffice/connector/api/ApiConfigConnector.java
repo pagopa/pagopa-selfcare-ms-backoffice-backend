@@ -15,6 +15,7 @@ import org.springframework.core.io.Resource;
 
 public interface ApiConfigConnector {
 
+    BrokerDetails updateBrokerEc(BrokerDetails brokerDetails, String brokerCode);
     BrokersPsp getBrokersPsp(Integer limit, Integer page, String filterByCode, String filterByName, String orderBy, String sorting);
 
     BrokerPspDetails getBrokerPsp(String brokerpspcode);

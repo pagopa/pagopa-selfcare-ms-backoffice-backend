@@ -46,6 +46,11 @@ public class ApiConfigServiceImpl implements ApiConfigService {
     }
 
     @Override
+    public BrokerDetails updateBrokerEc(String brokerCode, BrokerDetails brokerDetails) {
+        return apiConfigConnector.updateBrokerEc(brokerDetails,brokerCode);
+    }
+
+    @Override
     public BrokersPsp getBrokersPsp(Integer limit, Integer page, String filterByCode, String filterByName, String orderBy, String sorting) {
         return apiConfigConnector.getBrokersPsp(limit, page, filterByCode, filterByName, orderBy, sorting);
     }

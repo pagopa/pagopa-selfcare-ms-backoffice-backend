@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "PUT",
+    "urlPath": "/apiconfig/auth/api/v1/brokers/brokerEcCode1"
+  },
+  "response": {
+    "status": "200",
+    "jsonBody":{
+      "extended_fault_bean": false,
+      "broker_code": "broker_code",
+      "enabled": false,
+      "description": "description"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

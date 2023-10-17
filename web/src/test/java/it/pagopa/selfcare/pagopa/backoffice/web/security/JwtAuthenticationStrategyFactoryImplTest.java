@@ -70,7 +70,7 @@ public class JwtAuthenticationStrategyFactoryImplTest {
     private static Stream<Arguments> getJwtAuthenticationStrategyArgumentsProvider() {
         return Stream.of(
                 Arguments.of(PagopaAuthenticationStrategy.class, "SPID"),
-                Arguments.of(PagopaPRODAuthenticationStrategy.class, "https://api.prod.platform.pagopa.it")
+                Arguments.of(PagopaPRODAuthenticationStrategy.class, "https://api.platform.pagopa.it")
         );
     }
 

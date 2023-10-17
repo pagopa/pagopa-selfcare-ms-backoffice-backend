@@ -7,9 +7,9 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbansEnhanced;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanCreateRequestDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbansResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.IbanCreateRequestDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.IbanResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.IbansResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
