@@ -9,7 +9,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.*;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerDetailsResource;
@@ -123,7 +123,7 @@ public class CreditorInstitutionController {
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.getCreditorInstitutionSegregationcodes}")
     public CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationcodes(@ApiParam("${swagger.request.ecCode}")
 
-                                                                            @PathVariable("ecCode")String ecCode){
+                                                                                        @PathVariable("ecCode") String ecCode) {
 
         return apiConfigSelfcareIntegrationService.getCreditorInstitutionSegregationcodes(ecCode);
     }
@@ -138,7 +138,6 @@ public class CreditorInstitutionController {
 
         BrokerDetails brokerDetails = mapper.fromDto(dto);
         BrokerDetails created = apiConfigService.updateBrokerEc(brokerCode, brokerDetails);
-        BrokerDetailsResource result = mapper.toResource(created);
-        return result;
+        return mapper.toResource(created);
     }
 }

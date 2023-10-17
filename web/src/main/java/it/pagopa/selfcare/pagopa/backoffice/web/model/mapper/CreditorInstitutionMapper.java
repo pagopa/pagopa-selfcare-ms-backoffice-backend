@@ -4,7 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.broker.BrokerDetails
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.*;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerDetailsResource;
 
 //@Mapper
@@ -30,6 +30,6 @@ public interface CreditorInstitutionMapper {
     IbanResource toResource(IbanCreate model);
     IbanCreate toIbanCreate(IbanEnhanced ibanEnhanced);
 
-    IbanLabel fromDto(it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel dto);
-    it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel toResource(IbanLabel model);
+    IbanLabel fromDto(it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.IbanLabel dto);
+    it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.IbanLabel toResource(IbanLabel model);
 }

@@ -1,4 +1,4 @@
-package it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions;
+package it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CreditorInstitutionDetailsResourceTest {
+class CreditorInstitutionResourceTest {
     private Validator validator;
 
 
@@ -34,16 +34,11 @@ class CreditorInstitutionDetailsResourceTest {
         //given
         HashMap<String, Class<? extends Annotation>> toCheckMap = new HashMap<>();
         toCheckMap.put("enabled", NotNull.class);
-        toCheckMap.put("address", NotNull.class);
-        toCheckMap.put("pspPayment", NotNull.class);
-        toCheckMap.put("reportingFtp", NotNull.class);
-        toCheckMap.put("reportingZip", NotNull.class);
         toCheckMap.put("creditorInstitutionCode", NotBlank.class);
         toCheckMap.put("businessName", NotBlank.class);
 
 
-
-        CreditorInstitutionDetailsResource model = new CreditorInstitutionDetailsResource();
+        CreditorInstitutionResource model = new CreditorInstitutionResource();
         model.setCreditorInstitutionCode("");
         model.setBusinessName("");
         model.setEnabled(null);
@@ -63,7 +58,7 @@ class CreditorInstitutionDetailsResourceTest {
     @Test
     void validateNotNullFields() {
         //given
-        CreditorInstitutionDetailsResource creditorInstitutionResource = mockInstance(new CreditorInstitutionDetailsResource());
+        CreditorInstitutionResource creditorInstitutionResource = mockInstance(new CreditorInstitutionResource());
         //when
         Set<ConstraintViolation<Object>> violations = validator.validate(creditorInstitutionResource);
         //then
