@@ -3,8 +3,11 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.BrokerPspDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentServiceProviderDetails;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.BrokerPspDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.BrokerPspDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PaymentServiceProviderDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PaymentServiceProviderDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
@@ -31,7 +34,7 @@ public class PaymentServiceProviderController {
 
     @PutMapping(value = "/{pspcode}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "", notes = "${swagger.api.channels.createChannel}")
+    @ApiOperation(value = "", notes = "${swagger.api.payment-service-provider.updatePSP}")
     public PaymentServiceProviderDetailsResource updatePSP(@ApiParam("${swagger.request.pspCode}")
                                                            @PathVariable("pspcode") String pspcode,
                                                            @RequestBody @NotNull PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto) {
@@ -40,4 +43,17 @@ public class PaymentServiceProviderController {
         PaymentServiceProviderDetails response = apiConfigService.updatePSP(pspcode, paymentServiceProviderDetails);
         return ChannelMapper.toResource(response);
     }
+
+    @PutMapping(value = "/brokerpsp/{brokercode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.payment-service-provider.updateBrokerPSP}")
+    public BrokerPspDetailsResource updateBrokerPSP(@ApiParam("${swagger.request.brokercode}")
+                                                           @PathVariable("brokercode") String brokercode,
+                                                           @RequestBody @NotNull BrokerPspDetailsDto brokerPspDetailsDto) {
+
+        BrokerPspDetails brokerPspDetails = ChannelMapper.fromBrokerPspDetailsDto(brokerPspDetailsDto);
+        BrokerPspDetails response = apiConfigService.updateBrokerPSP(brokercode, brokerPspDetails);
+        return ChannelMapper.toResource(response);
+    }
+
 }

@@ -235,4 +235,9 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
     PaymentServiceProviderDetails updatePSP(@PathVariable("pspcode") String pspcode,
                                             @RequestBody PaymentServiceProviderDetails paymentServiceProviderDetails);
 
+    @PutMapping(value = "${rest-client.api-config.updateBrokerPSP.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    BrokerPspDetails updateBrokerPSP(@PathVariable("brokerpspcode") String brokerpspcode,
+                                     @RequestBody BrokerPspDetails brokerPspDetails);
+
 }

@@ -1178,7 +1178,24 @@ class ApiConfigServiceImplTest {
         verify(apiConfigConnectorMock, times(1))
                 .updatePSP(anyString(), any());
         verifyNoMoreInteractions(apiConfigConnectorMock);
-
-
     }
+
+    @Test
+    void updateBrokerPSP() {
+        //given
+        String pspcode = "pspcode";
+
+        BrokerPspDetails brokerPspDetails = mockInstance(new BrokerPspDetails());
+
+        when(apiConfigConnectorMock.updateBrokerPSP(anyString(), any()))
+                .thenReturn(brokerPspDetails);
+        //when
+        BrokerPspDetails response = apiConfigService.updateBrokerPSP(anyString(), any());
+        //then
+        assertNotNull(response);
+        verify(apiConfigConnectorMock, times(1))
+                .updateBrokerPSP(anyString(), any());
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
 }

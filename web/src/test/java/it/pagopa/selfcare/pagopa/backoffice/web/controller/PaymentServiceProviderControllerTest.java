@@ -1,10 +1,12 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.BrokerPspDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentServiceProviderDetails;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.BrokerPspDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PaymentServiceProviderDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import org.junit.jupiter.api.Test;
@@ -63,6 +65,29 @@ class PaymentServiceProviderControllerTest {
         //then
         verify(apiConfigService, times(1))
                 .updatePSP(anyString(), any());
+        verifyNoMoreInteractions(apiConfigService);
+    }
+
+    @Test
+    void updateBrokerPSP(@Value("classpath:stubs/brokerDto.json") Resource dto) throws Exception {
+        //given
+        String pspcode = "pspcode";
+        InputStream is = dto.getInputStream();
+        BrokerPspDetailsDto brokerPspDetailsDto = objectMapper.readValue(is, BrokerPspDetailsDto.class);
+        BrokerPspDetails brokerPspDetails = ChannelMapper.fromBrokerPspDetailsDto(brokerPspDetailsDto);
+
+        when(apiConfigService.updateBrokerPSP(anyString(), any()))
+                .thenReturn(brokerPspDetails);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .put(BASE_URL+ "/brokerpsp/{brokercode}", pspcode)
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        //then
+        verify(apiConfigService, times(1))
+                .updateBrokerPSP(anyString(), any());
         verifyNoMoreInteractions(apiConfigService);
     }
 
