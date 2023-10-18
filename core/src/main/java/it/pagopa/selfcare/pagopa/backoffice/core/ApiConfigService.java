@@ -113,4 +113,6 @@ public interface ApiConfigService {
 
     PaymentServiceProviderDetails updatePSP(String pspcode, PaymentServiceProviderDetails paymentServiceProviderDetails);
 
+    BrokerPspDetails updateBrokerPSP(String brokercode, BrokerPspDetails brokerPspDetails);
+
     }
