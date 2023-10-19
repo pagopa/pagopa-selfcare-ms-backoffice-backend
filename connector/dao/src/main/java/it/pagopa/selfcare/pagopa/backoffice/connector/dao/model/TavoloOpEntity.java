@@ -51,7 +51,10 @@ public class TavoloOpEntity implements TavoloOpOperations, Persistable<String> {
     }
 
     public static class Fields {
-        public static String id = org.springframework.data.mongodb.core.aggregation.Fields.UNDERSCORE_ID;
+
+        private Fields(){
+        }
+        protected static String id = org.springframework.data.mongodb.core.aggregation.Fields.UNDERSCORE_ID;
     }
 
 }

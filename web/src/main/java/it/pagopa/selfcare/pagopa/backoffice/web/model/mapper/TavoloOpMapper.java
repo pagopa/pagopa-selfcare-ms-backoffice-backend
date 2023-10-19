@@ -3,10 +3,12 @@ package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloOp.TavoloOp;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloOp.TavoloOpOperations;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloOp.TavoloOpDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloOp.TavoloOpResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloop.TavoloOpDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloop.TavoloOpResource;
 
 public class TavoloOpMapper {
+
+    private TavoloOpMapper(){}
 
     public static TavoloOpResource toResource(TavoloOpOperations tavoloOpOperations) {
         if (tavoloOpOperations == null) {
