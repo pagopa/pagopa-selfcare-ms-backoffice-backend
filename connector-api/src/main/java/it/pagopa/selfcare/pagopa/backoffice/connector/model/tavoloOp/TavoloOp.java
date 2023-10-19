@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloOp;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.time.Instant;

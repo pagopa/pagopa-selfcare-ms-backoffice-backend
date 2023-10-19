@@ -13,9 +13,7 @@ import org.springframework.security.test.context.TestSecurityContextHolder;
 
 import java.util.Optional;
 
-import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class TavoloOpConnectorImplTest {
