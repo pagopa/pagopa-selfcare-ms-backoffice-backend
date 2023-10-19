@@ -280,7 +280,7 @@ class CreditorInstitutionControllerTest {
                 .andExpect(jsonPath("$.enabled", is(response.getEnabled()))) ;
         //then
         verify(apiConfigServiceMock, times(1))
-                .updateBrokerEc(brokerCode,response);
+                .updateBrokerEc(eq(brokerCode),eq(response));
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }

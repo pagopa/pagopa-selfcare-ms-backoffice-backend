@@ -122,19 +122,18 @@ public class CreditorInstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institutions.getCreditorInstitutionSegregationcodes}")
     public CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationcodes(@ApiParam("${swagger.request.ecCode}")
-
                                                                                         @PathVariable("ecCode") String ecCode) {
 
-        return apiConfigSelfcareIntegrationService.getCreditorInstitutionSegregationcodes(ecCode);
-    }
+            return apiConfigSelfcareIntegrationService.getCreditorInstitutionSegregationcodes(ecCode);
+        }
 
 
     @PutMapping(value = "/ec-broker/{code}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.creditor-institution.updateBrokerEc}")
-    public BrokerDetailsResource updateBrokerEc(@RequestBody @Valid BrokerEcDto dto, @ApiParam("${swagger.request.brokerCode}") @PathVariable("code") String brokerCode
-
-    ) {
+    public BrokerDetailsResource updateBrokerEc(@RequestBody @Valid BrokerEcDto dto,
+                                                @ApiParam("${swagger.request.brokerCode}")
+                                                @PathVariable("code") String brokerCode) {
 
         BrokerDetails brokerDetails = mapper.fromDto(dto);
         BrokerDetails created = apiConfigService.updateBrokerEc(brokerCode, brokerDetails);
