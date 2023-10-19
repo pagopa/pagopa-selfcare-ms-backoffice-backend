@@ -34,6 +34,9 @@
     "name" : "stations",
     "description" : "Api config stations operations"
   }, {
+    "name" : "tavoloop",
+    "description" : "Tavolo Op Controller"
+  }, {
     "name" : "taxonomy",
     "description" : "All about taxonomy "
   } ],
@@ -6038,6 +6041,79 @@
         } ]
       }
     },
+    "/tavoloop/{ecCode}" : {
+      "get" : {
+        "tags" : [ "tavoloop" ],
+        "summary" : "getTavoloOpDetails",
+        "description" : "Get tavolo operativo details",
+        "operationId" : "getTavoloOpDetailsUsingGET",
+        "parameters" : [ {
+          "name" : "ecCode",
+          "in" : "path",
+          "description" : "Creditor institution code",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TavoloOpResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/taxonomy" : {
       "get" : {
         "tags" : [ "taxonomy" ],
@@ -8928,6 +9004,44 @@
             "items" : {
               "$ref" : "#/components/schemas/StationResource"
             }
+          }
+        }
+      },
+      "TavoloOpResource" : {
+        "title" : "TavoloOpResource",
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "createdBy" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "modifiedBy" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "referent" : {
+            "type" : "string"
+          },
+          "taxCode" : {
+            "type" : "string"
+          },
+          "telephone" : {
+            "type" : "string"
           }
         }
       },

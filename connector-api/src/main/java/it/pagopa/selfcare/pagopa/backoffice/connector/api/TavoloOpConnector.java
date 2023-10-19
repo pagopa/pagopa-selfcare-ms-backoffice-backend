@@ -11,4 +11,6 @@ public interface TavoloOpConnector {
     Optional<? extends TavoloOpOperations> findByName(String name);
 
     TavoloOpOperations insert(TavoloOpOperations tavoloOpOperations);
+
+    TavoloOpOperations findByTaxCode(String code);
  }

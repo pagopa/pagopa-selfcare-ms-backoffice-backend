@@ -37,4 +37,11 @@ public class TavoloOpConnectorImpl implements TavoloOpConnector {
         return tavoloOpRepository.insert( (TavoloOp) tavoloOpOperations);
 
     }
+
+    @Override
+    public TavoloOpOperations findByTaxCode(String code) {
+        //todo get one element
+        return tavoloOpRepository.findAll().get(0);
+
+    }
 }

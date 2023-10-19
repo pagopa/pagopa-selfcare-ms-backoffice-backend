@@ -22,4 +22,9 @@ public class TavoloOpServiceImpl implements  TavoloOpService{
     public TavoloOpOperations insert(TavoloOpOperations tavoloOpOperations) {
         return tavoloOpConnector.insert(tavoloOpOperations);
     }
+
+    @Override
+    public TavoloOpOperations findByTaxCode(String code) {
+        return tavoloOpConnector.findByTaxCode(code);
+    }
 }

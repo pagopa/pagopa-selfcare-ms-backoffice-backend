@@ -34,6 +34,8 @@ public interface TavoloOpOperations {
 
     void setTelephone(String telephone);
 
+    void setTaxCode(String taxCode);
+
 
     String getId();
 
@@ -53,6 +55,8 @@ public interface TavoloOpOperations {
     String getEmail();
 
     String getTelephone();
+
+    String getTaxCode();
 
 
 }

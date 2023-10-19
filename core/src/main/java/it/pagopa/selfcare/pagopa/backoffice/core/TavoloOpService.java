@@ -5,4 +5,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloOp.TavoloOpOpe
 public interface TavoloOpService {
 
     TavoloOpOperations insert(TavoloOpOperations tavoloOpOperations);
+
+    TavoloOpOperations findByTaxCode(String code);
 }
