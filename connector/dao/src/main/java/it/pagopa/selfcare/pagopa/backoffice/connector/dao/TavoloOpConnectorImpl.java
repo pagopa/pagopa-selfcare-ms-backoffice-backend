@@ -47,8 +47,6 @@ public class TavoloOpConnectorImpl implements TavoloOpConnector {
 
     @Override
     public TavoloOpOperations findByTaxCode(String code) {
-        //todo get one element
-        return tavoloOpRepository.findAll().get(0);
-
+        return tavoloOpRepository.findByTaxCode(code);
     }
 }

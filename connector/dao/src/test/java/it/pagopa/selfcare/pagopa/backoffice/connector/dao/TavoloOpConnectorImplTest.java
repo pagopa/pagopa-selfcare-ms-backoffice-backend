@@ -115,5 +115,28 @@ class TavoloOpConnectorImplTest {
         verifyNoMoreInteractions(repositoryMock);
     }
 
+    @Test
+    void get_tavoloOp() {
+        // given
+        String taxCode = "taxCode";
+
+        TavoloOpEntity entity = new TavoloOpEntity();
+        entity.setReferent("setReferent");
+        entity.setEmail("setEmail");
+        entity.setName("setName");
+        entity.setTaxCode("TaxCode");
+
+        when(repositoryMock
+                .findByTaxCode(anyString())).thenReturn(entity);
+
+        // when
+        TavoloOpEntity saved = (TavoloOpEntity) tavoloOpConnector.findByTaxCode(taxCode);
+        // then
+        assertEquals(entity, saved);
+        verify(repositoryMock, times(1))
+                .findByTaxCode(taxCode);
+        verifyNoMoreInteractions(repositoryMock);
+    }
+
 
 }
