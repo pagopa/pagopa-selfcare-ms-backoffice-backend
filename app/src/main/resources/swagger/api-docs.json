@@ -6041,6 +6041,78 @@
         } ]
       }
     },
+    "/tavoloop/create" : {
+      "post" : {
+        "tags" : [ "tavoloop" ],
+        "summary" : "insert",
+        "description" : "Insert Tavolo operativo",
+        "operationId" : "insertUsingPOST",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TavoloOpDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TavoloOpOperations"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/tavoloop/{ecCode}" : {
       "get" : {
         "tags" : [ "tavoloop" ],
@@ -9007,8 +9079,34 @@
           }
         }
       },
-      "TavoloOpResource" : {
-        "title" : "TavoloOpResource",
+      "TavoloOpDto" : {
+        "title" : "TavoloOpDto",
+        "required" : [ "email", "name", "referent", "taxCode", "telephone" ],
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "description" : "contact person's email address"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Psp"
+          },
+          "referent" : {
+            "type" : "string",
+            "description" : "referent"
+          },
+          "taxCode" : {
+            "type" : "string",
+            "description" : "Fiscal code"
+          },
+          "telephone" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TavoloOpOperations" : {
+        "title" : "TavoloOpOperations",
         "type" : "object",
         "properties" : {
           "createdAt" : {
@@ -9039,6 +9137,50 @@
           },
           "taxCode" : {
             "type" : "string"
+          },
+          "telephone" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TavoloOpResource" : {
+        "title" : "TavoloOpResource",
+        "required" : [ "createdAt", "createdBy", "email", "modifiedAt", "modifiedBy", "name", "referent", "taxCode", "telephone" ],
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "description" : "Date of insert",
+            "format" : "date-time"
+          },
+          "createdBy" : {
+            "type" : "string",
+            "description" : "Person who made the change"
+          },
+          "email" : {
+            "type" : "string",
+            "description" : "contact person's email address"
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "description" : "Date of update",
+            "format" : "date-time"
+          },
+          "modifiedBy" : {
+            "type" : "string",
+            "description" : "person who made the change"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Psp"
+          },
+          "referent" : {
+            "type" : "string",
+            "description" : "referent"
+          },
+          "taxCode" : {
+            "type" : "string",
+            "description" : "Fiscal code"
           },
           "telephone" : {
             "type" : "string"

@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.core;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.TavoloOpConnector;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloOp.TavoloOp;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloOp.TavoloOpOperations;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,8 @@ public class TavoloOpServiceImpl implements  TavoloOpService{
     }
 
     @Override
-    public TavoloOpOperations insert(TavoloOpOperations tavoloOpOperations) {
-        return tavoloOpConnector.insert(tavoloOpOperations);
+    public TavoloOpOperations insert(TavoloOp tavoloOp) {
+        return tavoloOpConnector.insert(tavoloOp);
     }
 
     @Override

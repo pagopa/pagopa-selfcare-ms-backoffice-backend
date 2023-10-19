@@ -1,27 +1,16 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.dao;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.auditing.SpringSecurityAuditorAware;
-import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.TavoloOp;
-import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.WrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.WrapperEntity;
-import it.pagopa.selfcare.pagopa.backoffice.connector.exception.ResourceNotFoundException;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.ChannelDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.WrapperEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperEntitiesOperations;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperStatus;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.TavoloOpEntity;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloOp.TavoloOp;
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.test.context.TestSecurityContextHolder;
 
-import java.util.List;
 import java.util.Optional;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
@@ -45,7 +34,7 @@ class TavoloOpConnectorImplTest {
         TestSecurityContextHolder.setAuthentication(authenticationToken);
         this.repositoryMock = mock(TavoloOpRepository.class);
         this.mongoTemplateMock = mock(MongoTemplate.class);
-        this.tavoloOpConnector = new TavoloOpConnectorImpl(new SpringSecurityAuditorAware(),repositoryMock);
+        this.tavoloOpConnector = new TavoloOpConnectorImpl(new SpringSecurityAuditorAware(), repositoryMock);
     }
 
 
@@ -59,21 +48,34 @@ class TavoloOpConnectorImplTest {
     void insert_tavoloOp_duplicateKey() {
         // given
 
-        TavoloOp entity = mockInstance(new TavoloOp());
+        TavoloOp dto = new TavoloOp();
+        dto.setReferent("setReferent");
+        dto.setEmail("setEmail");
+        dto.setName("setName");
+        dto.setTaxCode("setTaxCode");
+        dto.setCreatedBy("id");
 
-        Optional<TavoloOp> opt = Optional.of(entity);
+
+        TavoloOpEntity entity = new TavoloOpEntity();
+        entity.setReferent("setReferent");
+        entity.setEmail("setEmail");
+        entity.setName("setName");
+        entity.setTaxCode("setTaxCode");
+        entity.setCreatedBy(dto.getCreatedBy());
+        entity.setModifiedAt(dto.getModifiedAt());
+
+        Optional<TavoloOpEntity> opt = Optional.of(entity);
 
 
         doThrow(DuplicateKeyException.class)
                 .when(repositoryMock)
-                .insert(any(TavoloOp.class));
+                .insert(any(TavoloOpEntity.class));
 
 
-
-              when(repositoryMock
-                      .insert(any(TavoloOp.class))).thenReturn(entity);
+        when(repositoryMock
+                .insert(any(TavoloOpEntity.class))).thenReturn(entity);
         // when
-        TavoloOp saved = (TavoloOp) tavoloOpConnector.insert(entity);
+        TavoloOpEntity saved = (TavoloOpEntity) tavoloOpConnector.insert(dto);
         // then
         assertEquals(entity, saved);
         verify(repositoryMock, times(1))
@@ -84,15 +86,28 @@ class TavoloOpConnectorImplTest {
     @Test
     void insert_tavoloOp() {
         // given
+        TavoloOp tavoloOp = new TavoloOp();
+        tavoloOp.setReferent("setReferent");
+        tavoloOp.setEmail("setEmail");
+        tavoloOp.setName("setName");
+        tavoloOp.setTaxCode("setTaxCode");
+        tavoloOp.setCreatedBy("id");
 
-        TavoloOp entity = mockInstance(new TavoloOp());
+
+        TavoloOpEntity entity = new TavoloOpEntity();
+        entity.setReferent("setReferent");
+        entity.setEmail("setEmail");
+        entity.setName("setName");
+        entity.setTaxCode("setTaxCode");
+        entity.setCreatedBy(tavoloOp.getCreatedBy());
+        entity.setModifiedAt(tavoloOp.getModifiedAt());
 
 
         when(repositoryMock
-                .insert(any(TavoloOp.class))).thenReturn(entity);
+                .insert(any(TavoloOpEntity.class))).thenReturn(entity);
 
         // when
-        TavoloOp saved = (TavoloOp) tavoloOpConnector.insert(entity);
+        TavoloOpEntity saved = (TavoloOpEntity) tavoloOpConnector.insert(tavoloOp);
         // then
         assertEquals(entity, saved);
         verify(repositoryMock, times(1))
