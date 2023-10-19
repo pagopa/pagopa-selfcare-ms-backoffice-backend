@@ -1,4 +1,4 @@
-package it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloOp;
+package it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop;
 
 import lombok.Data;
 

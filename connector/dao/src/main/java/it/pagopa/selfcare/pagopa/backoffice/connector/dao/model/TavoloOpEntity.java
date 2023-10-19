@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.dao.model;
 
 
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloOp.TavoloOpOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOperations;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -51,7 +51,10 @@ public class TavoloOpEntity implements TavoloOpOperations, Persistable<String> {
     }
 
     public static class Fields {
-        public static String id = org.springframework.data.mongodb.core.aggregation.Fields.UNDERSCORE_ID;
+
+        private Fields(){
+        }
+        protected static String id = org.springframework.data.mongodb.core.aggregation.Fields.UNDERSCORE_ID;
     }
 
 }
