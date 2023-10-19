@@ -17,7 +17,7 @@ import java.time.Instant;
 @EqualsAndHashCode(of = "id")
 @Document("tavoloOp")
 @FieldNameConstants(onlyExplicitlyIncluded = true)
-public class TavoloOp implements TavoloOpOperations, Persistable<String> {
+public class TavoloOpEntity implements TavoloOpOperations, Persistable<String> {
 
     @Id
     private String id;
@@ -49,9 +49,6 @@ public class TavoloOp implements TavoloOpOperations, Persistable<String> {
     public boolean isNew() {
         return false;
     }
-
-
-
 
     public static class Fields {
         public static String id = org.springframework.data.mongodb.core.aggregation.Fields.UNDERSCORE_ID;

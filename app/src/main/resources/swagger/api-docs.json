@@ -34,6 +34,9 @@
     "name" : "stations",
     "description" : "Api config stations operations"
   }, {
+    "name" : "tavoloop",
+    "description" : "Tavolo Op Controller"
+  }, {
     "name" : "taxonomy",
     "description" : "All about taxonomy "
   } ],
@@ -5956,6 +5959,78 @@
         } ]
       }
     },
+    "/tavoloop/create" : {
+      "post" : {
+        "tags" : [ "tavoloop" ],
+        "summary" : "insert",
+        "description" : "Insert Tavolo operativo",
+        "operationId" : "insertUsingPOST",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TavoloOpDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TavoloOpOperations"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/taxonomy" : {
       "get" : {
         "tags" : [ "taxonomy" ],
@@ -8846,6 +8921,70 @@
             "items" : {
               "$ref" : "#/components/schemas/StationResource"
             }
+          }
+        }
+      },
+      "TavoloOpDto" : {
+        "title" : "TavoloOpDto",
+        "required" : [ "email", "name", "referent", "taxCode", "telephone" ],
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "description" : "contact person's email address"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Psp"
+          },
+          "referent" : {
+            "type" : "string",
+            "description" : "referent"
+          },
+          "taxCode" : {
+            "type" : "string",
+            "description" : "Fiscal code"
+          },
+          "telephone" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TavoloOpOperations" : {
+        "title" : "TavoloOpOperations",
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "createdBy" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "modifiedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "modifiedBy" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "referent" : {
+            "type" : "string"
+          },
+          "taxCode" : {
+            "type" : "string"
+          },
+          "telephone" : {
+            "type" : "string"
           }
         }
       },

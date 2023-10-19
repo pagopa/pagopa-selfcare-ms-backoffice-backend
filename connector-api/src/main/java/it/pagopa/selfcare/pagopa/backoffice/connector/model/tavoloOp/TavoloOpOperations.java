@@ -6,17 +6,7 @@ public interface TavoloOpOperations {
 
     void setId(String id);
 
-    /**
-     * private String name;
-     * <p>
-     * private String referent;
-     * <p>
-     * private String email;
-     * <p>
-     * private String telephone;
-     *
-     * @param modifiedAt
-     */
+    void setTaxCode(String taxCode);
 
     void setModifiedAt(Instant modifiedAt);
 
@@ -48,11 +38,13 @@ public interface TavoloOpOperations {
     String getCreatedBy();
 
     String getName();
+
     String getReferent();
 
     String getEmail();
 
     String getTelephone();
 
+    String getTaxCode();
 
 }
