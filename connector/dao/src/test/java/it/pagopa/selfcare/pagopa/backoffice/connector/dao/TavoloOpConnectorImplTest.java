@@ -2,7 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.dao;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.auditing.SpringSecurityAuditorAware;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.TavoloOpEntity;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloOp.TavoloOp;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOp;
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
