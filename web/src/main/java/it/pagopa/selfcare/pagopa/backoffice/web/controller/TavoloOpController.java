@@ -6,7 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOp;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOperations;
 import it.pagopa.selfcare.pagopa.backoffice.core.TavoloOpService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.TavoloOpMapper;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloOp.TavoloOpDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloop.TavoloOpDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
