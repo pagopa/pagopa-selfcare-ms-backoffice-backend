@@ -6,9 +6,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOpe
 import java.util.Optional;
 
 public interface TavoloOpConnector {
-
-
-    Optional<? extends TavoloOpOperations> findByName(String name);
-
+ 
     TavoloOpOperations insert(TavoloOp tavoloOp);
  }
