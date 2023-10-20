@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOperations;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.taxonomy.Taxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationService;
 import it.pagopa.selfcare.pagopa.backoffice.core.TavoloOpService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
@@ -16,6 +17,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
 import static org.hamcrest.Matchers.everyItem;
@@ -65,6 +68,28 @@ class TavoloOpControllerTest {
                 .insert(any());
         verifyNoMoreInteractions(tavoloOpService);
     }
+
+    @Test
+    void getTavoloOpDetails() throws Exception {
+        //given
+        String taxCode = "taxCode";
+        TavoloOpOperations tavoloOp = mock(TavoloOpOperations.class);
+
+
+        when(tavoloOpService.findByTaxCode(anyString()))
+                .thenReturn(tavoloOp);
+        //when
+        mvc.perform(get(BASE_URL + "/{ecCode}", taxCode))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[*]", everyItem(notNullValue()))
+                );
+        //then
+        verify(tavoloOpService, times(1))
+                .findByTaxCode(anyString());
+        verifyNoMoreInteractions(tavoloOpService);
+    }
+
+
 }
 
 

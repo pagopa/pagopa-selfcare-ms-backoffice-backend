@@ -34,7 +34,7 @@ public class TavoloOpController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.tavoloOp.getTavoloOpDetails}")
     public TavoloOpResource getTavoloOpDetails(@ApiParam("${swagger.request.ecCode}")
-                                                                 @PathVariable("ecCode") String ecCode) {
+                                               @PathVariable("ecCode") String ecCode) {
 
         TavoloOpOperations tavoloOpOperations = tavoloOpService.findByTaxCode(ecCode);
         return TavoloOpMapper.toResource(tavoloOpOperations);
