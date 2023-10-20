@@ -9,10 +9,10 @@ import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigSelfcareIntegrationSer
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.BrokerEcDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionAndBrokerDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.UpdateCreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.BrokerEcDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.CreditorInstitutionAndBrokerDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.CreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.UpdateCreditorInstitutionDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import org.junit.jupiter.api.Test;
@@ -280,7 +280,8 @@ class CreditorInstitutionControllerTest {
                 .andExpect(jsonPath("$.enabled", is(response.getEnabled()))) ;
         //then
         verify(apiConfigServiceMock, times(1))
-                .updateBrokerEc(eq(brokerCode),eq(response));
+
+                .updateBrokerEc(brokerCode,response);
         verifyNoMoreInteractions(apiConfigServiceMock);
     }
 }

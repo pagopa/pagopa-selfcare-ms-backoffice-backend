@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "0.4.36" #improve
+    tag: "0.4.44" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -41,6 +41,8 @@ microservice-chart:
     host: "weuprod.selfcare.internal.platform.pagopa.it"
     path: "/selfcare/pagopa/v1/(.*)"
     servicePort: 8080
+    annotations:
+      nginx.ingress.kubernetes.io/cors-allow-origin: "https://api.platform.pagopa.it"
   serviceAccount:
     create: false
     annotations: {}
@@ -107,7 +109,7 @@ microservice-chart:
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-p-connection-string'
     AZURE_TENANT_ID: pagopa-selfcare-prod-tenant-id
     AZURE_SUBSCRIPTION_ID: pagopa-selfcare-p-subscription-id
-    JWT_TOKEN_PUBLIC_KEY: pagopa-p-weu-selfcare-jwt-pub-key
+    JWT_TOKEN_PUBLIC_KEY_PROD: pagopa-p-weu-selfcare-jwt-pub-key
     TEST_EMAIL: pagopa-p-env-test-email
     MONGODB_CONNECTION_URI: cosmodbmongo-p-bopagopa-connection-string
     JIRA_URL: jira-p-url

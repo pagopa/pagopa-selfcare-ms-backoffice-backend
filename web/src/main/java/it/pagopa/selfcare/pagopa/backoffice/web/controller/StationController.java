@@ -15,9 +15,9 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.StationDetai
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.core.*;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionStationEditResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.CreditorInstitutionStationDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.CreditorInstitutionStationEditResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.StationMapper;

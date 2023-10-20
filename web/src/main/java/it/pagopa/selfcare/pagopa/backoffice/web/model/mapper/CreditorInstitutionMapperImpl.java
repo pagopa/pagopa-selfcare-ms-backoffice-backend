@@ -5,7 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.creditorInstitution.*;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.connector.utils.StringUtils;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.*;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.stations.BrokerDetailsResource;
 
 import java.util.ArrayList;
@@ -286,7 +286,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
     }
 
     @Override
-    public IbanLabel fromDto(it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel dto) {
+    public IbanLabel fromDto(it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.IbanLabel dto) {
         if(dto == null){
             return null;
         }
@@ -297,16 +297,15 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         return response;
     }
 
-    public it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel toResource(IbanLabel model) {
+    public it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.IbanLabel toResource(IbanLabel model) {
         if(model == null){
             return null;
         }
-        it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel response = new it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.IbanLabel();
+        it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.IbanLabel response = new it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.IbanLabel();
 
         response.setDescription(model.getDescription());
         response.setName(model.getName());
         return response;
     }
-
 
 }

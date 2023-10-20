@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.stations;
 
 
-import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorInstituions.CreditorInstitutionDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.creditorinstituions.CreditorInstitutionDetailsResource;
 import lombok.Data;
 
 @Data
