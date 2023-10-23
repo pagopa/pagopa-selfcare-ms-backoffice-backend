@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         WebTestConfig.class,
 })
 class TavoloOpControllerTest {
-    private static final String BASE_URL = "/tavoloop";
+    private static final String BASE_URL = "/tavolo-operativo";
     @Autowired
     protected MockMvc mvc;
 
@@ -52,7 +52,7 @@ class TavoloOpControllerTest {
         when(tavoloOpService.insert(any()))
                 .thenReturn(tavoloOp);
         //when
-        mvc.perform(post(BASE_URL + "/create")
+        mvc.perform(post(BASE_URL)
                         .content(dto.getInputStream().readAllBytes())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE))

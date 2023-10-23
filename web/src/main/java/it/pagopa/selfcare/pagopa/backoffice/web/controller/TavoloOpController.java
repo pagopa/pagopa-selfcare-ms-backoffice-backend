@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/tavoloop", produces = MediaType.APPLICATION_JSON_VALUE)
-@Api(tags = "tavoloop")
+@RequestMapping(value = "/tavolo-operativo", produces = MediaType.APPLICATION_JSON_VALUE)
+@Api(tags = "Tavolo Operativo")
 public class TavoloOpController {
 
     private final TavoloOpService tavoloOpService;
@@ -40,7 +40,7 @@ public class TavoloOpController {
         return TavoloOpMapper.toResource(tavoloOpOperations);
     }
 
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "", notes = "${swagger.api.tavoloop.insert}")
     public TavoloOpOperations insert(@RequestBody TavoloOpDto dto) {

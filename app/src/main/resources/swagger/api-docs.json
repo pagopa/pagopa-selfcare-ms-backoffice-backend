@@ -34,7 +34,7 @@
     "name" : "stations",
     "description" : "Api config stations operations"
   }, {
-    "name" : "tavoloop",
+    "name" : "tavolo-operativo",
     "description" : "Tavolo Op Controller"
   }, {
     "name" : "taxonomy",
@@ -6041,9 +6041,9 @@
         } ]
       }
     },
-    "/tavoloop/create" : {
+    "/tavolo-operativo" : {
       "post" : {
-        "tags" : [ "tavoloop" ],
+        "tags" : [ "tavolo-operativo" ],
         "summary" : "insert",
         "description" : "Insert Tavolo operativo",
         "operationId" : "insertUsingPOST",
@@ -6113,9 +6113,9 @@
         } ]
       }
     },
-    "/tavoloop/{ecCode}" : {
+    "/tavolo-operativo/{ecCode}" : {
       "get" : {
-        "tags" : [ "tavoloop" ],
+        "tags" : [ "tavolo-operativo" ],
         "summary" : "getTavoloOpDetails",
         "description" : "Get tavolo operativo details",
         "operationId" : "getTavoloOpDetailsUsingGET",
