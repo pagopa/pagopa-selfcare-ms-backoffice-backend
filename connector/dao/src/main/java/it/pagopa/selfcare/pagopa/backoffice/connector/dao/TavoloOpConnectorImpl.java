@@ -25,10 +25,7 @@ public class TavoloOpConnectorImpl implements TavoloOpConnector {
         this.tavoloOpRepository = tavoloOpRepository;
     }
 
-    @Override
-    public Optional<? extends TavoloOpOperations> findByName(String name) {
-        return tavoloOpRepository.findById(name);
-    }
+
 
     @Override
     public TavoloOpOperations insert(TavoloOp tavoloOp) {

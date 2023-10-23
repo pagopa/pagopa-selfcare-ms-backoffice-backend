@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-
 @Data
 public class TavoloOpDto {
-
 
     @ApiModelProperty(value = "${swagger.model.tavoloOp.taxCode}", required = true)
     @JsonProperty(required = true)
@@ -28,7 +26,5 @@ public class TavoloOpDto {
     @ApiModelProperty(value = "${swagger.model.tavoloOp.telephone}", required = true)
     @JsonProperty(required = true)
     private String telephone;
-
-
 
 }

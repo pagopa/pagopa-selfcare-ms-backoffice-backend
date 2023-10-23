@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface TavoloOpConnector {
 
-
-    Optional<? extends TavoloOpOperations> findByName(String name);
+    //Optional<? extends TavoloOpOperations> findByName(String name);
 
     TavoloOpOperations findByTaxCode(String code);
+
     TavoloOpOperations insert(TavoloOp tavoloOp);
  }
