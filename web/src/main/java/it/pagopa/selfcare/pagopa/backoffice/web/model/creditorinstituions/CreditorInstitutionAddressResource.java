@@ -17,6 +17,6 @@ public class CreditorInstitutionAddressResource {
     @ApiModelProperty(value = "${swagger.creditor-institutions.model.address.countryCode}", required = true)
     private String countryCode;
 
-    @ApiModelProperty(value = "${swagger.creditor-institutions.model.address.taxDomicile}", required = true)
+    @ApiModelProperty(value = "${swagger.creditor-institutions.model.address.taxDomicile}")
     private String taxDomicile;
 }
