@@ -308,5 +308,4 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         return response;
     }
 
-
 }
