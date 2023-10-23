@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.4.44"
+    "version" : "0.4.45"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -15,6 +15,9 @@
   }, {
     "name" : "PSP",
     "description" : "Payment Service Provider Controller"
+  }, {
+    "name" : "Tavolo Operativo",
+    "description" : "Tavolo Op Controller"
   }, {
     "name" : "Utils",
     "description" : "Utils Controller"
@@ -33,9 +36,6 @@
   }, {
     "name" : "stations",
     "description" : "Api config stations operations"
-  }, {
-    "name" : "tavolo-operativo",
-    "description" : "Tavolo Op Controller"
   }, {
     "name" : "taxonomy",
     "description" : "All about taxonomy "
@@ -6043,7 +6043,7 @@
     },
     "/tavolo-operativo" : {
       "post" : {
-        "tags" : [ "tavolo-operativo" ],
+        "tags" : [ "Tavolo Operativo" ],
         "summary" : "insert",
         "description" : "Insert Tavolo operativo",
         "operationId" : "insertUsingPOST",
@@ -6115,7 +6115,7 @@
     },
     "/tavolo-operativo/{ecCode}" : {
       "get" : {
-        "tags" : [ "tavolo-operativo" ],
+        "tags" : [ "Tavolo Operativo" ],
         "summary" : "getTavoloOpDetails",
         "description" : "Get tavolo operativo details",
         "operationId" : "getTavoloOpDetailsUsingGET",
@@ -7423,7 +7423,7 @@
       },
       "CreditorInstitutionAddressResource" : {
         "title" : "CreditorInstitutionAddressResource",
-        "required" : [ "city", "countryCode", "location", "taxDomicile", "zipCode" ],
+        "required" : [ "city", "countryCode", "location", "zipCode" ],
         "type" : "object",
         "properties" : {
           "city" : {
