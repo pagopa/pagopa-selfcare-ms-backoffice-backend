@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "@project.parent.artifactId@",
+    "title": "pagopa-selfcare-ms-backoffice",
     "description": "PagoPa backoffice API documentation",
-    "version": "@project.version@"
+    "version": "0.4.44"
   },
   "servers": [
     {
@@ -19,6 +19,10 @@
     {
       "name": "PSP",
       "description": "Payment Service Provider Controller"
+    },
+    {
+      "name": "Tavolo Operativo",
+      "description": "Tavolo Op Controller"
     },
     {
       "name": "Utils",
@@ -43,10 +47,6 @@
     {
       "name": "stations",
       "description": "Api config stations operations"
-    },
-    {
-      "name": "tavoloop",
-      "description": "Tavolo Op Controller"
     },
     {
       "name": "taxonomy",
@@ -6039,10 +6039,10 @@
         ]
       }
     },
-    "/tavoloop/create": {
+    "/tavolo-operativo": {
       "post": {
         "tags": [
-          "tavoloop"
+          "Tavolo Operativo"
         ],
         "summary": "insert",
         "description": "Insert Tavolo operativo",
@@ -6117,10 +6117,10 @@
         ]
       }
     },
-    "/tavoloop/{ecCode}": {
+    "/tavolo-operativo/{ecCode}": {
       "get": {
         "tags": [
-          "tavoloop"
+          "Tavolo Operativo"
         ],
         "summary": "getTavoloOpDetails",
         "description": "Get tavolo operativo details",
