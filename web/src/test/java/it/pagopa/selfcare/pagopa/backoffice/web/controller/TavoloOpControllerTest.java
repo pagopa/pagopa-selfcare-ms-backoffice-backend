@@ -97,7 +97,7 @@ class TavoloOpControllerTest {
         when(tavoloOpService.findAll())
                 .thenReturn(tavoloOpEntitiesList);
         //when
-        mvc.perform(get(BASE_URL + "/all"))
+        mvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*]", everyItem(notNullValue())));
         //then
