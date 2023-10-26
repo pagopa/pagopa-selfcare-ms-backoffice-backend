@@ -41,7 +41,6 @@ public class TavoloOpMapper {
         response.setTavoloOpResourceList(tavoloOpOperations.getTavoloOpOperationsList().stream()
                 .map(TavoloOpMapper::toResource)
                 .collect(Collectors.toList()));
-        //response.setPageInfo(model.getPageInfo());
 
         return response;
     }

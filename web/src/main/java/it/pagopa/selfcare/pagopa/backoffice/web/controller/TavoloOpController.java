@@ -51,7 +51,7 @@ public class TavoloOpController {
 
     }
 
-    @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.tavoloOp.getAllTavoloOpDetails}")
     public TavoloOpResourceList getAllTavoloOpDetails() {
