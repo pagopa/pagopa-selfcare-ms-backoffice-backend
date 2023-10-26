@@ -4,7 +4,6 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.dao.auditing.SpringSecurit
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.TavoloOpEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOp;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.cglib.core.TypeUtils.add;
 
 class TavoloOpConnectorImplTest {
 

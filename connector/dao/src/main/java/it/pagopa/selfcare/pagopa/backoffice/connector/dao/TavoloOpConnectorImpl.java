@@ -8,15 +8,10 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOpe
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.AuditorAware;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-
-import static com.fasterxml.jackson.databind.ser.std.NumberSerializers.addAll;
-import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service

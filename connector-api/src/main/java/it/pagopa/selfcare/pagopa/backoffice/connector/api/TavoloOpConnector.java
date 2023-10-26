@@ -3,8 +3,6 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.api;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOp;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOperations;
-import java.util.List;
-import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOperations;
 
 public interface TavoloOpConnector {
 
