@@ -61,6 +61,8 @@ class TavoloOpConnectorImplTest {
         entity.setTaxCode("setTaxCode");
         entity.setCreatedBy(dto.getCreatedBy());
         entity.setModifiedAt(dto.getModifiedAt());
+        entity.setModifiedBy("id");
+        entity.setId("setTaxCode");
 
         Optional<TavoloOpEntity> opt = Optional.of(entity);
 
