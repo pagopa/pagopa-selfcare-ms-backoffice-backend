@@ -4,11 +4,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOp;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOperations;
 import it.pagopa.selfcare.pagopa.backoffice.core.TavoloOpService;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.TavoloOpMapper;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloop.TavoloOpDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloop.TavoloOpResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloop.TavoloOpResourceList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,5 +49,14 @@ public class TavoloOpController {
         TavoloOp tavoloOp = TavoloOpMapper.fromDto(dto);
         return tavoloOpService.insert(tavoloOp);
 
+    }
+
+    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.tavoloOp.getAllTavoloOpDetails}")
+    public TavoloOpResourceList getAllTavoloOpDetails() {
+
+        TavoloOpEntitiesList tavoloOpResourceList = tavoloOpService.findAll();
+        return TavoloOpMapper.toResource(tavoloOpResourceList);
     }
 }

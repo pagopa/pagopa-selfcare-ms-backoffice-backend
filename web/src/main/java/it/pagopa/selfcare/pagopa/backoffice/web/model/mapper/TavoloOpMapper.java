@@ -1,9 +1,13 @@
 package it.pagopa.selfcare.pagopa.backoffice.web.model.mapper;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOp;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOperations;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloop.TavoloOpDto;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloop.TavoloOpResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloop.TavoloOpResourceList;
+
+import java.util.stream.Collectors;
 
 public class TavoloOpMapper {
 
@@ -24,6 +28,19 @@ public class TavoloOpMapper {
         response.setModifiedBy(tavoloOpOperations.getModifiedBy());
         response.setTelephone(tavoloOpOperations.getTelephone());
         response.setTaxCode(tavoloOpOperations.getTaxCode());
+
+        return response;
+    }
+
+    public static TavoloOpResourceList toResource(TavoloOpEntitiesList tavoloOpOperations) {
+        if (tavoloOpOperations == null) {
+            return null;
+        }
+        TavoloOpResourceList response = new TavoloOpResourceList();
+
+        response.setTavoloOpResourceList(tavoloOpOperations.getTavoloOpOperationsList().stream()
+                .map(TavoloOpMapper::toResource)
+                .collect(Collectors.toList()));
 
         return response;
     }
