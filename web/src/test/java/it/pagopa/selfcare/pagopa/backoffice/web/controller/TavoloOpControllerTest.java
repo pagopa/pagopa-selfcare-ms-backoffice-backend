@@ -20,8 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -85,6 +84,25 @@ class TavoloOpControllerTest {
         verifyNoMoreInteractions(tavoloOpService);
     }
 
+    @Test
+    void update(@Value("classpath:stubs/tavoloOpDto.json") Resource dto) throws Exception {
+        TavoloOpOperations tavoloOp = mock(TavoloOpOperations.class);
+
+        when(tavoloOpService.update(any()))
+                .thenReturn(tavoloOp);
+        //when
+        mvc.perform(put(BASE_URL)
+                        .content(dto.getInputStream().readAllBytes())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[*]", everyItem(notNullValue()))
+                );
+        //then
+        verify(tavoloOpService, times(1))
+                .update(any());
+        verifyNoMoreInteractions(tavoloOpService);
+    }
 
 }
 

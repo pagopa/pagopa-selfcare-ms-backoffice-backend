@@ -36,8 +36,26 @@ public class TavoloOpConnectorImpl implements TavoloOpConnector {
         tavoloOpEntity.setCreatedBy(auditorAware.getCurrentAuditor().orElse(null));
         tavoloOpEntity.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
 
+        tavoloOpEntity.setId(tavoloOp.getTaxCode());
+
         return tavoloOpRepository.insert(tavoloOpEntity);
 
+    }
+
+    @Override
+    public TavoloOpOperations update(TavoloOp tavoloOp) {
+        TavoloOpEntity tavoloOpEntity = new TavoloOpEntity();
+        tavoloOpEntity.setName(tavoloOp.getName());
+        tavoloOpEntity.setEmail(tavoloOp.getEmail());
+        tavoloOpEntity.setTaxCode(tavoloOp.getTaxCode());
+        tavoloOpEntity.setTelephone(tavoloOp.getTelephone());
+        tavoloOpEntity.setReferent(tavoloOp.getReferent());
+        tavoloOpEntity.setCreatedBy(auditorAware.getCurrentAuditor().orElse(null));
+        tavoloOpEntity.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
+
+        tavoloOpEntity.setId(tavoloOp.getTaxCode());
+
+        return tavoloOpRepository.save(tavoloOpEntity);
     }
 
     @Override

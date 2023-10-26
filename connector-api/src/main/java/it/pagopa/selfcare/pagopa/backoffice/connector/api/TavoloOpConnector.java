@@ -8,4 +8,6 @@ public interface TavoloOpConnector {
     TavoloOpOperations findByTaxCode(String code);
 
     TavoloOpOperations insert(TavoloOp tavoloOp);
+
+    TavoloOpOperations update(TavoloOp tavoloOp);
  }

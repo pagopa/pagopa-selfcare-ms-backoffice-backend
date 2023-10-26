@@ -7,4 +7,7 @@ public interface TavoloOpService {
 
     TavoloOpOperations findByTaxCode(String code);
     TavoloOpOperations insert(TavoloOp tavoloOp);
+
+    TavoloOpOperations update(TavoloOp tavoloOp);
+
 }

@@ -90,6 +90,7 @@ class TavoloOpConnectorImplTest {
         tavoloOp.setName("setName");
         tavoloOp.setTaxCode("setTaxCode");
         tavoloOp.setCreatedBy("id");
+        tavoloOp.setId("setTaxCode");
 
 
         TavoloOpEntity entity = new TavoloOpEntity();
@@ -99,7 +100,7 @@ class TavoloOpConnectorImplTest {
         entity.setTaxCode("setTaxCode");
         entity.setCreatedBy(tavoloOp.getCreatedBy());
         entity.setModifiedAt(tavoloOp.getModifiedAt());
-
+        entity.setId("setTaxCode");
 
         when(repositoryMock
                 .insert(any(TavoloOpEntity.class))).thenReturn(entity);

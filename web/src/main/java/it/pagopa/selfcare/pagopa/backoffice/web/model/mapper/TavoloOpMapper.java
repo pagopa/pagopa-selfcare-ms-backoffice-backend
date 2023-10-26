@@ -36,7 +36,7 @@ public class TavoloOpMapper {
         tavoloOp.setName(dto.getName());
         tavoloOp.setReferent(dto.getReferent());
         tavoloOp.setTelephone(dto.getTelephone());
-        tavoloOp.setTaxCode(dto.getTelephone());
+        tavoloOp.setTaxCode(dto.getTaxCode());
         tavoloOp.setEmail(dto.getEmail());
         return tavoloOp;
     }
