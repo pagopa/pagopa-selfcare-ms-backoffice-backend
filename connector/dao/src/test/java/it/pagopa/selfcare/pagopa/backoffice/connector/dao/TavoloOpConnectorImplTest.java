@@ -139,5 +139,37 @@ class TavoloOpConnectorImplTest {
         verifyNoMoreInteractions(repositoryMock);
     }
 
+    @Test
+    void update_tavoloOp() {
+        // given
+        TavoloOp tavoloOp = new TavoloOp();
+        tavoloOp.setReferent("setReferent");
+        tavoloOp.setEmail("setEmail");
+        tavoloOp.setName("setName");
+        tavoloOp.setTaxCode("setTaxCode");
+        tavoloOp.setCreatedBy("id");
+        tavoloOp.setId("setTaxCode");
+
+
+        TavoloOpEntity entity = new TavoloOpEntity();
+        entity.setReferent("setReferent");
+        entity.setEmail("setEmail");
+        entity.setName("setName");
+        entity.setTaxCode("setTaxCode");
+        entity.setCreatedBy(tavoloOp.getCreatedBy());
+        entity.setModifiedAt(tavoloOp.getModifiedAt());
+        entity.setId("setTaxCode");
+
+        when(repositoryMock
+                .save(any(TavoloOpEntity.class))).thenReturn(entity);
+
+        // when
+        TavoloOpEntity saved = (TavoloOpEntity) tavoloOpConnector.update(tavoloOp);
+        // then
+        assertEquals(entity, saved);
+        verify(repositoryMock, times(1))
+                .save(entity);
+        verifyNoMoreInteractions(repositoryMock);
+    }
 
 }
