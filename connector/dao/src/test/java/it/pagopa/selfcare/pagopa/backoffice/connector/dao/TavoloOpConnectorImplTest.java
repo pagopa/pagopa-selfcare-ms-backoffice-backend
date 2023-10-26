@@ -3,6 +3,8 @@ package it.pagopa.selfcare.pagopa.backoffice.connector.dao;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.auditing.SpringSecurityAuditorAware;
 import it.pagopa.selfcare.pagopa.backoffice.connector.dao.model.TavoloOpEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOp;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOperations;
 import it.pagopa.selfcare.pagopa.backoffice.connector.security.SelfCareUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -11,10 +13,13 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.test.context.TestSecurityContextHolder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.springframework.cglib.core.TypeUtils.add;
 
 class TavoloOpConnectorImplTest {
 
@@ -133,6 +138,29 @@ class TavoloOpConnectorImplTest {
         assertEquals(entity, saved);
         verify(repositoryMock, times(1))
                 .findByTaxCode(taxCode);
+        verifyNoMoreInteractions(repositoryMock);
+    }
+
+    @Test
+    void findAll() {
+        // given
+        TavoloOpEntity entity = new TavoloOpEntity();
+        entity.setReferent("setReferent");
+        entity.setEmail("setEmail");
+        entity.setName("setName");
+        entity.setTaxCode("TaxCode");
+        List<TavoloOpEntity> tavoloOpOperationsList = new ArrayList<>();
+        tavoloOpOperationsList.add(entity);
+
+        when(repositoryMock
+                .findAll()).thenReturn(tavoloOpOperationsList);
+
+        // when
+        TavoloOpEntitiesList saved = tavoloOpConnector.findAll();
+        // then
+        assertEquals(tavoloOpOperationsList, saved.getTavoloOpOperationsList());
+        verify(repositoryMock, times(1))
+                .findAll();
         verifyNoMoreInteractions(repositoryMock);
     }
 
