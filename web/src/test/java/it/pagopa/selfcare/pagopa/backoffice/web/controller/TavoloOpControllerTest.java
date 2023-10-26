@@ -105,8 +105,6 @@ class TavoloOpControllerTest {
                 .findAll();
         verifyNoMoreInteractions(tavoloOpService);
     }
-
-
 }
 
 

@@ -83,4 +83,5 @@ class TavoloOpServiceImplTest {
                 .findAll();
         verifyNoMoreInteractions(tavolConnectorMock);
     }
+
 }

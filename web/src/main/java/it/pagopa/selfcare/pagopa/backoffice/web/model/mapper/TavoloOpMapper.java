@@ -9,6 +9,9 @@ import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloop.TavoloOpResourceL
 
 import java.util.List;
 import java.util.stream.Collectors;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOperations;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloop.TavoloOpDto;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.tavoloop.TavoloOpResource;
 
 public class TavoloOpMapper {
 

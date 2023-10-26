@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import static com.fasterxml.jackson.databind.ser.std.NumberSerializers.addAll;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -61,8 +62,5 @@ public class TavoloOpConnectorImpl implements TavoloOpConnector {
         tavoloOpOperations.setTavoloOpOperationsList(tavoloOpOperationsList);
         return tavoloOpOperations;
     }
-
-
-
 
 }
