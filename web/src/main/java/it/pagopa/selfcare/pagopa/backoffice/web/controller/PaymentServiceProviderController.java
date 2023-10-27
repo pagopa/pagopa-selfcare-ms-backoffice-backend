@@ -57,7 +57,7 @@ public class PaymentServiceProviderController {
     @GetMapping(value = "/paymentserviceproviders", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getPspBrokerPsp}")
-    public PaymentServiceProvidersResource getPspBrokerPsp(@ApiParam("${swagger.request.limit}")
+    public PaymentServiceProvidersResource getPaymentServiceProviders(@ApiParam("${swagger.request.limit}")
                                                            @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                            @ApiParam("${swagger.request.page}")
                                                            @RequestParam Integer page,
