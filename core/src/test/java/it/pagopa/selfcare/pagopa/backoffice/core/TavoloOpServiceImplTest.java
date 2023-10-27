@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.core;
 import it.pagopa.selfcare.pagopa.backoffice.connector.api.TavoloOpConnector;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.DummyTavoloOpEntity;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOp;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOperations;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -80,13 +81,25 @@ class TavoloOpServiceImplTest {
 
         when(tavolConnectorMock.update(any())).thenReturn(dummyTavoloOpEntity);
         //when
-        TavoloOpOperations response =  tavoloOpService.update(tavoloOpMock);
+        TavoloOpOperations response = tavoloOpService.update(tavoloOpMock);
         //then
         verify(tavolConnectorMock, times(1))
                 .update(any());
         assertEquals(response.getName(), name);
         reflectionEqualsByName(tavoloOpMock, response);
-        verifyNoMoreInteractions(tavolConnectorMock);
+    }
+         @Test
+    void findAll() {
+        //given
+        TavoloOpEntitiesList tavoloOpMock = mockInstance(new TavoloOpEntitiesList());
+
+        when(tavolConnectorMock.findAll()).thenReturn(tavoloOpMock);
+        //when
+        TavoloOpEntitiesList tavoloOp =  tavoloOpService.findAll();
+        //then
+        verify(tavolConnectorMock, times(1))
+                .findAll();
+         verifyNoMoreInteractions(tavolConnectorMock);
     }
 
 }

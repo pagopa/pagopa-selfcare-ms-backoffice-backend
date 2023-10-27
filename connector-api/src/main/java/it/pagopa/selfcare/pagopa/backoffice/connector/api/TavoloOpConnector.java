@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.connector.api;
 
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOp;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOperations;
 
 public interface TavoloOpConnector {
@@ -9,5 +10,7 @@ public interface TavoloOpConnector {
 
     TavoloOpOperations insert(TavoloOp tavoloOp);
 
-    TavoloOpOperations update(TavoloOp tavoloOp);
+     TavoloOpOperations update(TavoloOp tavoloOp);
+     TavoloOpEntitiesList findAll();
+
  }

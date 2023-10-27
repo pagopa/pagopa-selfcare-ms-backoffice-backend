@@ -8,6 +8,4 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface TavoloOpRepository extends MongoRepository<TavoloOpEntity,String> {
 
     TavoloOpOperations findByTaxCode(String id);
-
-
 }
