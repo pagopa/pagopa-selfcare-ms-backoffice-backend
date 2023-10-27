@@ -5,11 +5,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.BrokerPspDetails;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentServiceProviderDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentServiceProviders;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.BrokerPspDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.BrokerPspDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PaymentServiceProviderDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.PaymentServiceProviderDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.web.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.web.model.mapper.ChannelMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +51,25 @@ public class PaymentServiceProviderController {
 
         BrokerPspDetails brokerPspDetails = ChannelMapper.fromBrokerPspDetailsDto(brokerPspDetailsDto);
         BrokerPspDetails response = apiConfigService.updateBrokerPSP(brokercode, brokerPspDetails);
+        return ChannelMapper.toResource(response);
+    }
+
+    @GetMapping(value = "/paymentserviceproviders", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.channels.getPspBrokerPsp}")
+    public PaymentServiceProvidersResource getPspBrokerPsp(@ApiParam("${swagger.request.limit}")
+                                                           @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                           @ApiParam("${swagger.request.page}")
+                                                           @RequestParam Integer page,
+                                                           @ApiParam("${swagger.request.pspCode}")
+                                                           @RequestParam(required = false) String pspCode,
+                                                           @ApiParam("${swagger.request.taxCode}")
+                                                           @RequestParam(required = false) String taxCode,
+                                                           @ApiParam("${swagger.request.name}")
+                                                           @RequestParam(required = false) String name) {
+
+        PaymentServiceProviders response = apiConfigService.getPaymentServiceProviders(limit, page, pspCode, name, taxCode);
+
         return ChannelMapper.toResource(response);
     }
 

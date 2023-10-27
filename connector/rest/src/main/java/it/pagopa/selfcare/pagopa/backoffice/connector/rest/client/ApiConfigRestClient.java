@@ -134,6 +134,13 @@ public interface ApiConfigRestClient extends ApiConfigConnector {
                                                      @RequestParam Integer page,
                                                      @PathVariable("channelcode") String channelcode);
 
+    @GetMapping(value = "${rest-client.api-config.getPaymentServiceProvider.path}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    PaymentServiceProviders getPaymentServiceProviders(@RequestParam(required = false, defaultValue = "50") Integer limit,
+                                              @RequestParam(required = false) Integer page,
+                                              @RequestParam(required = false) String code,
+                                              @RequestParam(required = false) String name,
+                                              @RequestParam(required = false) String taxCode);
     @PostMapping(value = "${rest-client.api-config.createBrokerPsp.path}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     BrokerPspDetails createBrokerPsp(@RequestBody BrokerPspDetails brokerPspDetails);
