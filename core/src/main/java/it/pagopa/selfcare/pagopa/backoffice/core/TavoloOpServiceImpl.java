@@ -26,6 +26,11 @@ public class TavoloOpServiceImpl implements  TavoloOpService{
     }
 
     @Override
+    public TavoloOpOperations update(TavoloOp tavoloOp) {
+        return tavoloOpConnector.update(tavoloOp);
+    }
+
+    @Override
     public TavoloOpOperations findByTaxCode(String code) {
         return tavoloOpConnector.findByTaxCode(code);
     }

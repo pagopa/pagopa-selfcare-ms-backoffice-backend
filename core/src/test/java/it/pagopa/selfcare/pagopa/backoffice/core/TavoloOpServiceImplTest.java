@@ -71,6 +71,24 @@ class TavoloOpServiceImplTest {
     }
 
     @Test
+    void update() {
+        //given
+        TavoloOp tavoloOpMock = mockInstance(new TavoloOp());
+        DummyTavoloOpEntity dummyTavoloOpEntity = mockInstance(new DummyTavoloOpEntity());
+        dummyTavoloOpEntity.setName("name");
+        String name = "name";
+        tavoloOpMock.setName(name);
+
+        when(tavolConnectorMock.update(any())).thenReturn(dummyTavoloOpEntity);
+        //when
+        TavoloOpOperations response = tavoloOpService.update(tavoloOpMock);
+        //then
+        verify(tavolConnectorMock, times(1))
+                .update(any());
+        assertEquals(response.getName(), name);
+        reflectionEqualsByName(tavoloOpMock, response);
+    }
+         @Test
     void findAll() {
         //given
         TavoloOpEntitiesList tavoloOpMock = mockInstance(new TavoloOpEntitiesList());
@@ -81,7 +99,7 @@ class TavoloOpServiceImplTest {
         //then
         verify(tavolConnectorMock, times(1))
                 .findAll();
-        verifyNoMoreInteractions(tavolConnectorMock);
+         verifyNoMoreInteractions(tavolConnectorMock);
     }
 
 }
