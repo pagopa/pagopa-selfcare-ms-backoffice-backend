@@ -4471,9 +4471,9 @@
     "/payment-service-provider/paymentserviceproviders" : {
       "get" : {
         "tags" : [ "PSP" ],
-        "summary" : "getPspBrokerPsp",
+        "summary" : "getPaymentServiceProviders",
         "description" : "Get the PSP list of a broker",
-        "operationId" : "getPspBrokerPspUsingGET_1",
+        "operationId" : "getPaymentServiceProvidersUsingGET",
         "parameters" : [ {
           "name" : "limit",
           "in" : "query",
