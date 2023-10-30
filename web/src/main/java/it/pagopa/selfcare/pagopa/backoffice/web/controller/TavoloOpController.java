@@ -51,6 +51,14 @@ public class TavoloOpController {
 
     }
 
+    @PutMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "", notes = "${swagger.api.tavoloop.update}")
+    public TavoloOpOperations update(@RequestBody TavoloOpDto dto) {
+        TavoloOp tavoloOp = TavoloOpMapper.fromDto(dto);
+        return tavoloOpService.update(tavoloOp);
+    }
+
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.tavoloOp.getAllTavoloOpDetails}")
