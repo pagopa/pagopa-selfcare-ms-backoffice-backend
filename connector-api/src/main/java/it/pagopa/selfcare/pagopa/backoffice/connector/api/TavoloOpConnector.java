@@ -10,6 +10,7 @@ public interface TavoloOpConnector {
 
     TavoloOpOperations insert(TavoloOp tavoloOp);
 
-    TavoloOpEntitiesList findAll();
+     TavoloOpOperations update(TavoloOp tavoloOp);
+     TavoloOpEntitiesList findAll();
 
  }

@@ -7,6 +7,10 @@ import it.pagopa.selfcare.pagopa.backoffice.connector.model.tavoloop.TavoloOpOpe
 public interface TavoloOpService {
 
     TavoloOpOperations findByTaxCode(String code);
+
     TavoloOpOperations insert(TavoloOp tavoloOp);
+
+    TavoloOpOperations update(TavoloOp tavoloOp);
+
     TavoloOpEntitiesList findAll();
 }
