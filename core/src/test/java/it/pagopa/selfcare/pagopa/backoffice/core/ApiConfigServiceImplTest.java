@@ -1198,4 +1198,28 @@ class ApiConfigServiceImplTest {
         verifyNoMoreInteractions(apiConfigConnectorMock);
     }
 
+    @Test
+    void getPaymentServiceProviders() {
+        //given
+        Integer page = 0;
+        Integer limit = 50;
+        String code = "code";
+        String name = "name";
+        String taxCode = "taxCode";
+
+        PaymentServiceProviders paymentServiceProvidersMock = mockInstance(new PaymentServiceProviders(), "setPaymentServiceProviderList");
+        PaymentServiceProvider paymentServiceProvider = mockInstance(new PaymentServiceProvider());
+        paymentServiceProvidersMock.setPaymentServiceProviderList(List.of(paymentServiceProvider));
+
+        when(apiConfigConnectorMock.getPaymentServiceProviders(anyInt(), anyInt(), anyString(), anyString(), anyString()))
+                .thenReturn(paymentServiceProvidersMock);
+        //when
+        PaymentServiceProviders paymentServiceProviders = apiConfigService.getPaymentServiceProviders(limit, page, code, name, taxCode);
+        //then
+        assertNotNull(paymentServiceProviders);
+        verify(apiConfigConnectorMock, times(1))
+                .getPaymentServiceProviders(limit, page, code, name, taxCode);
+        verifyNoMoreInteractions(apiConfigConnectorMock);
+    }
+
 }

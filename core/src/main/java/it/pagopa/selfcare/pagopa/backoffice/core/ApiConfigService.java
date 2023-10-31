@@ -56,6 +56,8 @@ public interface ApiConfigService {
 
     ChannelPspList getChannelPaymentServiceProviders(Integer limit, Integer page, String channelCode);
 
+    PaymentServiceProviders getPaymentServiceProviders(Integer limit, Integer page, String code, String name, String taxCode);
+
     BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails);
 
     BrokerDetails createBroker(BrokerDetails request);
