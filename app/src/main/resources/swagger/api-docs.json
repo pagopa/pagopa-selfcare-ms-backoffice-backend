@@ -3,7 +3,7 @@
   "info" : {
     "title" : "pagopa-selfcare-ms-backoffice",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.4.48"
+    "version" : "0.4.50"
   },
   "servers" : [ {
     "url" : "http://localhost:80",
@@ -8195,7 +8195,7 @@
           "institutionType" : {
             "type" : "string",
             "description" : "Institution's type",
-            "enum" : [ "GSP", "PA", "PSP", "PT", "SCP" ]
+            "enum" : [ "GSP", "PA", "PSP", "PT", "SA", "SCP" ]
           },
           "origin" : {
             "type" : "string",
@@ -8251,7 +8251,7 @@
           "institutionType" : {
             "type" : "string",
             "description" : "Institution's type",
-            "enum" : [ "GSP", "PA", "PSP", "PT", "SCP" ]
+            "enum" : [ "GSP", "PA", "PSP", "PT", "SA", "SCP" ]
           },
           "mailAddress" : {
             "type" : "string",
