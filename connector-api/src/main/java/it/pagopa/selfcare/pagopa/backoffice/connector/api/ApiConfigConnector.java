@@ -56,6 +56,8 @@ public interface ApiConfigConnector {
 
     ChannelPspList getChannelPaymentServiceProviders(Integer limit, Integer page, String channelCode);
 
+    PaymentServiceProviders getPaymentServiceProviders(Integer limit, Integer page, String code, String name, String taxCode);
+
     PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails);
 
     BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails);

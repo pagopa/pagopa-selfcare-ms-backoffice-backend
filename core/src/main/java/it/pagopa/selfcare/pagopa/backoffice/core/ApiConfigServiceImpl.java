@@ -245,6 +245,10 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         return apiConfigConnector.getChannelPaymentServiceProviders(limit, page, channelCode);
     }
 
+    public PaymentServiceProviders getPaymentServiceProviders(Integer limit, Integer page, String code, String name, String taxCode) {
+        return apiConfigConnector.getPaymentServiceProviders(limit, page, code, name, taxCode);
+    }
+
     @Override
     public BrokerPspDetails createBrokerPsp(BrokerPspDetails brokerPspDetails) {
         return apiConfigConnector.createBrokerPsp(brokerPspDetails);
