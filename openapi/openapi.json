@@ -9326,17 +9326,6 @@
       },
       "TavoloOpResource": {
         "title": "TavoloOpResource",
-        "required": [
-          "createdAt",
-          "createdBy",
-          "email",
-          "modifiedAt",
-          "modifiedBy",
-          "name",
-          "referent",
-          "taxCode",
-          "telephone"
-        ],
         "type": "object",
         "properties": {
           "createdAt": {
