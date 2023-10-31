@@ -88,6 +88,25 @@ class TavoloOpControllerTest {
     }
 
     @Test
+    void getTavoloOpDetails_NoDataFound() throws Exception {
+        // given
+        String code = "code";
+
+        when(tavoloOpService.findByTaxCode(anyString()))
+                .thenReturn(null);
+
+        // when
+        mvc.perform(get(BASE_URL + "/{ecCode}", code)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNotFound());
+
+        // then
+        verify(tavoloOpService, times(1))
+                .findByTaxCode(anyString());
+        verifyNoMoreInteractions(tavoloOpService);
+    }
+
+    @Test
     void update(@Value("classpath:stubs/tavoloOpDto.json") Resource dto) throws Exception {
         TavoloOpOperations tavoloOp = mock(TavoloOpOperations.class);
 
