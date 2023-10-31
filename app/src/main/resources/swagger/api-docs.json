@@ -9387,6 +9387,7 @@
       },
       "TavoloOpResource" : {
         "title" : "TavoloOpResource",
+        "required" : [ "createdBy", "email", "modifiedAt", "modifiedBy", "name", "referent", "taxCode", "telephone" ],
         "type" : "object",
         "properties" : {
           "createdAt" : {
