@@ -10,39 +10,31 @@ import java.time.Instant;
 public class TavoloOpResource {
 
 
-    @ApiModelProperty(value = "${swagger.model.tavoloOp.taxCode}", required = true)
-    @JsonProperty(required = true)
+    @ApiModelProperty(value = "${swagger.model.tavoloOp.taxCode}")
     private String taxCode;
 
-    @ApiModelProperty(value = "${swagger.model.tavoloOp.name}", required = true)
-    @JsonProperty(required = true)
+    @ApiModelProperty(value = "${swagger.model.tavoloOp.name}")
     private String name;
 
-    @ApiModelProperty(value = "${swagger.model.tavoloOp.referent}", required = true)
-    @JsonProperty(required = true)
+    @ApiModelProperty(value = "${swagger.model.tavoloOp.referent}")
     private String referent;
 
-    @ApiModelProperty(value = "${swagger.model.tavoloOp.email}", required = true)
-    @JsonProperty(required = true)
+    @ApiModelProperty(value = "${swagger.model.tavoloOp.email}")
     private String email;
 
-    @ApiModelProperty(value = "${swagger.model.tavoloOp.telephone}", required = true)
-    @JsonProperty(required = true)
+    @ApiModelProperty(value = "${swagger.model.tavoloOp.telephone}")
     private String telephone;
 
-    @ApiModelProperty(value = "${swagger.model.tavoloOp.modifiedAt}", required = true)
-    @JsonProperty(required = true)
+    @ApiModelProperty(value = "${swagger.model.tavoloOp.modifiedAt}")
     private Instant modifiedAt;
 
-    @ApiModelProperty(value = "${swagger.model.tavoloOp.modifiedBy}", required = true)
-    @JsonProperty(required = true)
+    @ApiModelProperty(value = "${swagger.model.tavoloOp.modifiedBy}")
     private String modifiedBy;
 
     @ApiModelProperty(value = "${swagger.model.tavoloOp.createdAt}")
     private Instant createdAt;
 
-    @ApiModelProperty(value = "${swagger.model.tavoloOp.createdBy}", required = true)
-    @JsonProperty(required = true)
+    @ApiModelProperty(value = "${swagger.model.tavoloOp.createdBy}")
     private String createdBy;
 
 }
