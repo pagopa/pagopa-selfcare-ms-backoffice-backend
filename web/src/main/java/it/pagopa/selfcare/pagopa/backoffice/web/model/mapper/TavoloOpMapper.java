@@ -14,10 +14,10 @@ public class TavoloOpMapper {
     private TavoloOpMapper(){}
 
     public static TavoloOpResource toResource(TavoloOpOperations tavoloOpOperations) {
-        if (tavoloOpOperations == null) {
-            return null;
-        }
         TavoloOpResource response = new TavoloOpResource();
+        if (tavoloOpOperations == null) {
+            return response;
+        }
 
         response.setName(tavoloOpOperations.getName());
         response.setEmail(tavoloOpOperations.getEmail());
