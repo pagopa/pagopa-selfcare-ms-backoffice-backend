@@ -9327,7 +9327,6 @@
       "TavoloOpResource": {
         "title": "TavoloOpResource",
         "required": [
-          "createdAt",
           "createdBy",
           "email",
           "modifiedAt",
