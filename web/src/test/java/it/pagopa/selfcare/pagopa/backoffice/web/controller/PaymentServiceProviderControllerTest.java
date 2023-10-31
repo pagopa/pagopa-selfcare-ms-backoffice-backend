@@ -109,7 +109,7 @@ class PaymentServiceProviderControllerTest {
                 .thenReturn(paymentServiceProviders);
         //when
         mvc.perform(MockMvcRequestBuilders
-                        .get(BASE_URL + "/paymentserviceproviders")
+                        .get(BASE_URL)
                         .param("page", "1")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());

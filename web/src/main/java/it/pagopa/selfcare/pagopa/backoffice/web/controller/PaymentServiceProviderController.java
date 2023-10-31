@@ -54,7 +54,7 @@ public class PaymentServiceProviderController {
         return ChannelMapper.toResource(response);
     }
 
-    @GetMapping(value = "/paymentserviceproviders", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "${swagger.api.channels.getPspBrokerPsp}")
     public PaymentServiceProvidersResource getPaymentServiceProviders(@ApiParam("${swagger.request.limit}")
