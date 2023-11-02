@@ -112,7 +112,7 @@ class TavoloOpControllerTest {
         //given
         TavoloOpEntitiesList tavoloOpEntitiesList = mock(TavoloOpEntitiesList.class);
         tavoloOpEntitiesList.setTavoloOpOperationsList(new ArrayList<>());
- 
+
         when(tavoloOpService.findAll())
                 .thenReturn(tavoloOpEntitiesList);
         //when
