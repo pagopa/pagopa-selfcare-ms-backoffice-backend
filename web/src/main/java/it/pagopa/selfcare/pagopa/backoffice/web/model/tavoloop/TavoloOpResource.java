@@ -38,8 +38,7 @@ public class TavoloOpResource {
     @JsonProperty(required = true)
     private String modifiedBy;
 
-    @ApiModelProperty(value = "${swagger.model.tavoloOp.createdAt}", required = true)
-    @JsonProperty(required = true)
+    @ApiModelProperty(value = "${swagger.model.tavoloOp.createdAt}")
     private Instant createdAt;
 
     @ApiModelProperty(value = "${swagger.model.tavoloOp.createdBy}", required = true)

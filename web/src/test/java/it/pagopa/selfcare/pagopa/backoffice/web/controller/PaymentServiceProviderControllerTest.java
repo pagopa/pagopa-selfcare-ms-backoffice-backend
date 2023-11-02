@@ -2,7 +2,9 @@ package it.pagopa.selfcare.pagopa.backoffice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.BrokerPspDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentServiceProvider;
 import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentServiceProviderDetails;
+import it.pagopa.selfcare.pagopa.backoffice.connector.model.channel.PaymentServiceProviders;
 import it.pagopa.selfcare.pagopa.backoffice.core.ApiConfigService;
 import it.pagopa.selfcare.pagopa.backoffice.web.config.WebTestConfig;
 import it.pagopa.selfcare.pagopa.backoffice.web.handler.RestExceptionsHandler;
@@ -22,8 +24,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.InputStream;
+import java.util.List;
 
+import static it.pagopa.selfcare.pagopa.TestUtils.mockInstance;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = {PaymentServiceProviderController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
@@ -88,6 +95,28 @@ class PaymentServiceProviderControllerTest {
         //then
         verify(apiConfigService, times(1))
                 .updateBrokerPSP(anyString(), any());
+        verifyNoMoreInteractions(apiConfigService);
+    }
+
+    @Test
+    void getPaymentServiceProviders() throws Exception {
+        //given
+        PaymentServiceProviders paymentServiceProviders = mockInstance(new PaymentServiceProviders(), "setPaymentServiceProviderList");
+        PaymentServiceProvider paymentServiceProvider = mockInstance(new PaymentServiceProvider());
+        paymentServiceProviders.setPaymentServiceProviderList(List.of(paymentServiceProvider));
+
+        when(apiConfigService.getPaymentServiceProviders(anyInt(), anyInt(), any(), any(), any()))
+                .thenReturn(paymentServiceProviders);
+        //when
+        mvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL)
+                        .param("page", "1")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+        //then
+        verify(apiConfigService, times(1))
+                .getPaymentServiceProviders(anyInt(), anyInt(), any(), any(), any());
         verifyNoMoreInteractions(apiConfigService);
     }
 
