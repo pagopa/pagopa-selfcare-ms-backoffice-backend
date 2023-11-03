@@ -13,7 +13,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.Instant;
 
 @Data
-@NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Document("tavoloOp")
 @FieldNameConstants(onlyExplicitlyIncluded = true)
@@ -44,11 +43,15 @@ public class TavoloOpEntity implements TavoloOpOperations, Persistable<String> {
     @CreatedBy
     private String createdBy;
 
+    public TavoloOpEntity(){
+        createdAt =Instant.now();
+    }
 
     @Override
     public boolean isNew() {
         return false;
     }
+
 
     public static class Fields {
 
