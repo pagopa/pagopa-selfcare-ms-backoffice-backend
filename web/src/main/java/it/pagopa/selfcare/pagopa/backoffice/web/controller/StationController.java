@@ -317,8 +317,8 @@ public class StationController {
     @ApiOperation(value = "", notes = "${swagger.api.stations.getAllStationsMerged}")
     public WrapperStationsResource getAllStationsMerged(@ApiParam("${swagger.request.limit}")
                                                      @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                                     @ApiParam("${swagger.model.station.code}")
-                                                     @RequestParam(required = false, value = "stationcodefilter") String stationCode,
+                                                     @ApiParam("${swagger.model.station.stationcodefilter}")
+                                                     @RequestParam(required = false, value = "stationcodefilter") String stationcodefilter,
                                                      @ApiParam("${swagger.request.brokerCode}")
                                                      @RequestParam("brokerCode") String brokerCode,
                                                      @ApiParam("${swagger.request.page}")
@@ -329,9 +329,9 @@ public class StationController {
         
         
 
-        Stations stations = apiConfigService.getStations(limit, page, sorting, brokerCode, null, stationCode);
+        Stations stations = apiConfigService.getStations(limit, page, sorting, brokerCode, null, stationcodefilter);
         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
-        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, brokerCode, page, limit);
+        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(stationcodefilter, WrapperType.STATION, brokerCode, page, limit);
         WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
         WrapperStations stationsMergedAndSorted = apiConfigService.mergeAndSortWrapperStations(responseApiConfig, responseMongo, sorting);
 

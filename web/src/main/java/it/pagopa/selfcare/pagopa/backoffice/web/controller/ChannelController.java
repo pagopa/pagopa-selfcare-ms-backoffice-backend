@@ -449,8 +449,8 @@ public class ChannelController {
     @ApiOperation(value = "", notes = "${swagger.api.channels.getAllChannelsMerged}")
     public WrapperChannelsResource getAllChannelsMerged(@ApiParam("${swagger.request.limit}")
                                                         @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                                        @ApiParam("${swagger.model.channel.code}")
-                                                        @RequestParam(required = false, value = "channelcodefilter") String channelcode,
+                                                        @ApiParam("${swagger.model.channel.channelcodefilter}")
+                                                        @RequestParam(required = false, value = "channelcodefilter") String channelcodefilter,
                                                         @ApiParam("${swagger.request.brokerCode}")
                                                         @RequestParam(required = false, value = "brokerCode") String brokerCode,
                                                         @ApiParam("${swagger.request.page}")
@@ -458,9 +458,9 @@ public class ChannelController {
                                                         @ApiParam("${swagger.request.sorting}")
                                                         @RequestParam(required = false, value = "sorting") String sorting) {
 
-        Channels channels = apiConfigService.getChannels(limit, page, channelcode, brokerCode, sorting);
+        Channels channels = apiConfigService.getChannels(limit, page, channelcodefilter, brokerCode, sorting);
         WrapperChannels responseApiConfig = ChannelMapper.toWrapperChannels(channels);
-        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(channelcode, WrapperType.CHANNEL, brokerCode, page, limit);
+        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(channelcodefilter, WrapperType.CHANNEL, brokerCode, page, limit);
 
         WrapperChannels responseMongo = ChannelMapper.toWrapperChannels(mongoList);
         WrapperChannels channelsMergedAndSorted = apiConfigService.mergeAndSortWrapperChannels(responseApiConfig, responseMongo, sorting);
