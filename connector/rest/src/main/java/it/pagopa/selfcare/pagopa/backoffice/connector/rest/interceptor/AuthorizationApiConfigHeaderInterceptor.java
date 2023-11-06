@@ -54,10 +54,18 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
     }
 
     void check(String paramName, RequestTemplate template, SelfCareUser user) {
+
+        if(template.queries().containsKey("code") && paramName.equals("code")) {
+            List<String> codeValues = (List<String>) template.queries().get("code");
+            if (codeValues.isEmpty()) {
+                return;
+            }
+        }
+
         if((template.queries().containsKey(paramName) && !(template.queries().get(paramName).contains(user.getOrgVat())))) {
             log.debug("Request bloked= {} in method= {}", template.url(), template.method());
             log.info("ERROR - Org_vat = {}\nParamName = {}", user.getOrgVat(), paramName);
-            throw new PermissionDeniedException("This action is not permitted by current user\nOrg_vat = { " + user.getOrgVat() + " }\nParamName = { " + paramName + " }");
+            throw new PermissionDeniedException("This action is not permitted by current user! ParamName = { " + paramName + " }");
         }
     }
 
