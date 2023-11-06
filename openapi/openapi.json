@@ -5274,7 +5274,7 @@
           {
             "name": "stationcodefilter",
             "in": "query",
-            "description": "Station's unique identifier",
+            "description": "Station code",
             "required": false,
             "style": "form",
             "schema": {
