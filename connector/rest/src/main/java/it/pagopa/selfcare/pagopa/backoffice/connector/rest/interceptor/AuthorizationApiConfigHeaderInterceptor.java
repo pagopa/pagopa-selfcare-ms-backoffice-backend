@@ -28,8 +28,8 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
             "stefano.bafaro@pagopa.it", "giovanna94@libero.it", "aaron77@poste.it");
 
     private static final List<String> PARAMS_NAME = List.of(
-            "stationId", "ecCode", "stationcode", "code", "brokerId", "stationCode", "creditorInstitutionCode",
-            "brokerCode", "pspcode", "channelcode", "brokerpspcode", "channelId");
+            "stationcode", "code", "creditorinstitutioncode",
+            "brokercode", "pspcode", "channelcode", "brokerpspcode");
 
     @Override
     public void apply(RequestTemplate template) {
@@ -65,7 +65,7 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
         if((template.queries().containsKey(paramName) && !(template.queries().get(paramName).contains(user.getOrgVat())))) {
             log.debug("Request bloked= {} in method= {}", template.url(), template.method());
             log.info("ERROR - Org_vat = {}\nParamName = {}", user.getOrgVat(), paramName);
-            throw new PermissionDeniedException("This action is not permitted by current user! ParamName = { " + paramName + " }");
+            throw new PermissionDeniedException("This action is not permitted by current user! ParamName = { " + paramName + user.getOrgVat() + " }");
         }
     }
 
