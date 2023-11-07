@@ -1,0 +1,17 @@
+- Avviare lo script
+
+- caricare il csv dei dati esportati seguendo la struttura e nomi delle colonne del csv di esempio "export_tavoli_operativi"
+
+- cliccare sul tasto "Genera" per generare il nuovo csv con il formato data corretto e le nuove colonne
+
+- caricare il csv da mongo compass
+
+-----------------------------------------------------------------------------------------------------------
+
+Se lo script non sui avvia potrebbero non essere presenti le librerie
+
+- Avviare lo script dal terminale
+
+- individuare nei log le librerie mancanti
+
+- installare le librerie con il comando "pip istall nome_libreria"
