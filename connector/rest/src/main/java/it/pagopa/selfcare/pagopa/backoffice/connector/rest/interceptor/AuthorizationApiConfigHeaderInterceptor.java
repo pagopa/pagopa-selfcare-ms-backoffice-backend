@@ -28,8 +28,8 @@ public class AuthorizationApiConfigHeaderInterceptor implements RequestIntercept
             "stefano.bafaro@pagopa.it", "giovanna94@libero.it", "aaron77@poste.it");
 
     private static final List<String> PARAMS_NAME = List.of(
-            "stationId", "ecCode", "stationcode", "code", "brokerId", "stationCode", "creditorInstitutionCode",
-            "brokerCode", "pspcode", "channelcode", "brokerpspcode", "channelId");
+            "stationcode", "code", "creditorinstitutioncode",
+            "brokercode", "pspcode", "channelcode", "brokerpspcode");
 
     @Override
     public void apply(RequestTemplate template) {

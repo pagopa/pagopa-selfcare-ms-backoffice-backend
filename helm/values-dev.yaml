@@ -85,7 +85,7 @@ microservice-chart:
     AZURE_SERVICE_NAME: pagopa-d-apim
     ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
     MONGODB_NAME: pagopaBackoffice
-    AUTHORIZATION_FLAG: 'true'
+    AUTHORIZATION_FLAG: 'false'
     ENV: 'DEV'
     AWS_REGION: 'eu-south-1'
     OTEL_SERVICE_NAME: "pagopa-selfcare-backoffice-backend"
