@@ -312,7 +312,7 @@ class ApiConfigRestClientTest {
         String sortBy = (String) testCaseChannelParamMap.get(testCase).get("sortBy");
         String code = (String) testCaseChannelParamMap.get(testCase).get("code");
         String ordering = (String) testCaseChannelParamMap.get(testCase).get("ordering");
-        String brokercode = (String) testCaseChannelParamMap.get(testCase).get("brokercode");
+        String brokercode = (String) testCaseChannelParamMap.get(testCase).get("code1");
         
         // when
         Channels response = restClient.getChannels(limit, page, code, brokercode, ordering);
@@ -591,10 +591,10 @@ class ApiConfigRestClientTest {
         final String sortBy = (String) testCaseChannelParamMap.get(testCase).get("sortBy");
         final String code = (String) testCaseChannelParamMap.get(testCase).get("code");
         final String ordering = (String) testCaseChannelParamMap.get(testCase).get("ordering");
-        final String creditorInstitutionCode = "creditorInstitutionCode";
+        final String creditorInstitutionCode = "code1";
         final String brokerCode = null;
         //when
-        final Stations stations = restClient.getStations(limit, page, ordering, brokerCode, creditorInstitutionCode, code);
+        Stations stations = restClient.getStations(limit, page, ordering, brokerCode, creditorInstitutionCode, code);
         //then
         assertNotNull(stations);
         assertFalse(stations.getStationsList().isEmpty());

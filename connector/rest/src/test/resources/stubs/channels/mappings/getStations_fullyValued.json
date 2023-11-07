@@ -16,7 +16,7 @@
         "equalTo": "16"
       },
       "creditorinstitutioncode": {
-        "equalTo": "creditorInstitutionCode"
+        "equalTo": "code1"
       }
     }
   },
