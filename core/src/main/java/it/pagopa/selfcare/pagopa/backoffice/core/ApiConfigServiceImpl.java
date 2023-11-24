@@ -138,6 +138,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
                 pageInfo.setTotalPages(0);
                 pageInfo.setLimit(50);
                 pageInfo.setItemsFound(0);
+                pageInfo.setTotalItems(0L);
                 response.setPageInfo(pageInfo);
             } else {
                 throw e;
@@ -286,6 +287,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         pageInfo.setTotalPages(wrapperStationsApiConfig.getPageInfo().getTotalPages());
         pageInfo.setPage(wrapperStationsApiConfig.getPageInfo().getPage());
         pageInfo.setItemsFound(mergedList.size());
+        pageInfo.setTotalItems(wrapperStationsApiConfig.getPageInfo().getTotalItems());
         result.setPageInfo(pageInfo);
         return result;
     }
@@ -313,6 +315,7 @@ public class ApiConfigServiceImpl implements ApiConfigService {
         pageInfo.setTotalPages(wrapperChannelsApiConfig.getPageInfo().getTotalPages());
         pageInfo.setPage(wrapperChannelsApiConfig.getPageInfo().getPage());
         pageInfo.setItemsFound(mergedList.size());
+        pageInfo.setTotalItems(wrapperChannelsApiConfig.getPageInfo().getTotalItems());
         result.setPageInfo(pageInfo);
         return result;
     }
