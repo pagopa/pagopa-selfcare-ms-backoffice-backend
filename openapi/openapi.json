@@ -3,7 +3,7 @@
   "info": {
     "title": "pagopa-selfcare-ms-backoffice",
     "description": "PagoPa backoffice API documentation",
-    "version": "0.5.0"
+    "version": "0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato"
   },
   "servers": [
     {
