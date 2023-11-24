@@ -1,9 +1,9 @@
 {
   "openapi" : "3.0.3",
   "info" : {
-    "title" : "pagopa-selfcare-ms-backoffice",
+    "title" : "@project.parent.artifactId@",
     "description" : "PagoPa backoffice API documentation",
-    "version" : "0.4.64"
+    "version" : "@project.version@"
   },
   "servers" : [ {
     "url" : "http://localhost:80",

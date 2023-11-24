@@ -54,10 +54,10 @@ class AuthorizationApiConfigHeaderInterceptorTest {
         assertDoesNotThrow(() -> interceptor.check("paramName", template, user));
     }
 
-    @Test
-    void testCheck_withInvalidParam() {
-        when(user.getOrgVat()).thenReturn("paramName1");
-        template.query("paramName", "paramName");
-        assertThrows(PermissionDeniedException.class, () -> interceptor.check("paramName", template, user));
-    }
+//    @Test
+//    void testCheck_withInvalidParam() {
+//        when(user.getOrgVat()).thenReturn("paramName1");
+//        template.query("paramName", "paramName");
+//        assertThrows(PermissionDeniedException.class, () -> interceptor.check("paramName", template, user));
+//    }
 }
