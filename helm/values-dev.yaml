@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "0.5.2"
+    tag: "0.5.2-1-PASELC-623-be-errore-di-validazione-campi-institution"
     pullPolicy: Always
   livenessProbe:
     httpGet:
