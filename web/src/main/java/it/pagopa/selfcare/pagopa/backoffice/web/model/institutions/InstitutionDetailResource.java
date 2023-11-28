@@ -29,11 +29,9 @@ public class InstitutionDetailResource {
     private String description;
     @ApiModelProperty(value = "${swagger.model.institution.digitalAddress}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
     private String digitalAddress;
     @ApiModelProperty(value = "${swagger.model.institution.address}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
     private String address;
     @ApiModelProperty(value = "${swagger.model.institution.zipCode}", required = true)
     @JsonProperty(required = true)
