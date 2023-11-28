@@ -4,7 +4,7 @@
     <parent>
         <artifactId>pagopa-selfcare-ms-backoffice</artifactId>
         <groupId>it.pagopa.selfcare.pagopa</groupId>
-        <version>0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato</version>
+        <version>0.5.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -23,25 +23,41 @@
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-connector-jira-servicemanager</artifactId>
+<<<<<<< HEAD
             <version>0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato</version>
+=======
+            <version>0.5.1</version>
+>>>>>>> main
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-connector-aws-ses</artifactId>
+<<<<<<< HEAD
             <version>0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato</version>
+=======
+            <version>0.5.1</version>
+>>>>>>> main
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-connector-rest</artifactId>
+<<<<<<< HEAD
             <version>0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato</version>
+=======
+            <version>0.5.1</version>
+>>>>>>> main
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>it.pagopa.selfcare.pagopa</groupId>
             <artifactId>pagopa-selfcare-connector-dao</artifactId>
+<<<<<<< HEAD
             <version>0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato</version>
+=======
+            <version>0.5.1</version>
+>>>>>>> main
             <scope>runtime</scope>
         </dependency>
     </dependencies>
