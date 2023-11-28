@@ -11,7 +11,11 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <artifactId>pagopa-selfcare-ms-backoffice</artifactId>
+<<<<<<< HEAD
+    <version>0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato</version>
+=======
     <version>0.5.1</version>
+>>>>>>> main
     <name>pagopa-selfcare-ms-backoffice</name>
     <description>Microservice to manage PagoPA Backoffice</description>
 
@@ -44,43 +48,75 @@
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-connector-azure-apim</artifactId>
+<<<<<<< HEAD
+                <version>0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato</version>
+=======
                 <version>0.5.1</version>
+>>>>>>> main
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-connector-jira-servicemanager</artifactId>
+<<<<<<< HEAD
+                <version>0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato</version>
+=======
                 <version>0.5.1</version>
+>>>>>>> main
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-connector-aws-ses</artifactId>
+<<<<<<< HEAD
+                <version>0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato</version>
+=======
                 <version>0.5.1</version>
+>>>>>>> main
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-connector-dao</artifactId>
+<<<<<<< HEAD
+                <version>0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato</version>
+=======
                 <version>0.5.1</version>
+>>>>>>> main
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-ms-backoffice-connector</artifactId>
+<<<<<<< HEAD
+                <version>0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato</version>
+=======
                 <version>0.5.1</version>
+>>>>>>> main
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-ms-backoffice-connector-api</artifactId>
+<<<<<<< HEAD
+                <version>0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato</version>
+=======
                 <version>0.5.1</version>
+>>>>>>> main
                 <type>test-jar</type>
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-ms-backoffice-core</artifactId>
+<<<<<<< HEAD
+                <version>0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato</version>
+=======
                 <version>0.5.1</version>
+>>>>>>> main
             </dependency>
             <dependency>
                 <groupId>it.pagopa.selfcare.pagopa</groupId>
                 <artifactId>pagopa-selfcare-ms-backoffice-web</artifactId>
+<<<<<<< HEAD
+                <version>0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato</version>
+=======
                 <version>0.5.1</version>
+>>>>>>> main
             </dependency>
             <dependency>
                 <groupId>io.springfox</groupId>
