@@ -46,19 +46,16 @@ public class InstitutionResource {
     @NotBlank
     private String fiscalCode;
 
-    @ApiModelProperty(value = "${swagger.model.institution.digitalAddress}", required = true)
-    @JsonProperty(required = true)
-    @NotBlank
+    @ApiModelProperty(value = "${swagger.model.institution.digitalAddress}")
+    @JsonProperty()
     private String mailAddress;
 
-    @ApiModelProperty(value = "${swagger.model.institution.status}", required = true)
-    @JsonProperty(required = true)
-    @NotBlank
+    @ApiModelProperty(value = "${swagger.model.institution.status}")
+    @JsonProperty()
     private String status;
 
-    @ApiModelProperty(value = "${swagger.model.institution.address}", required = true)
-    @JsonProperty(required = true)
-    @NotBlank
+    @ApiModelProperty(value = "${swagger.model.institution.address}")
+    @JsonProperty()
     private String address;
 
     @ApiModelProperty(value = "${swagger.model.institution.productRoles}", required = true)
