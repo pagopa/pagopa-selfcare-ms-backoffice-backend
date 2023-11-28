@@ -3,11 +3,7 @@ name: pagopa-selfcare-ms-backoffice
 description: Microservice that manage api keys for pagopa product from selfcare
 type: application
 version: 0.114.0
-<<<<<<< HEAD
-appVersion: "0.5.0-1-PASELC-595-conteggio-ec-psp-nella-form-di-riepilogo-della-stazione-canale-errato"
-=======
 appVersion: "0.5.1"
->>>>>>> main
 dependencies:
   - name: microservice-chart
     version: 2.4.0
