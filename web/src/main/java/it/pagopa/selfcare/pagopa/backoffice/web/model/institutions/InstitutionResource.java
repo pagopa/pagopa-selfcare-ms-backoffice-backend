@@ -48,17 +48,14 @@ public class InstitutionResource {
 
     @ApiModelProperty(value = "${swagger.model.institution.digitalAddress}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
     private String mailAddress;
 
     @ApiModelProperty(value = "${swagger.model.institution.status}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
     private String status;
 
     @ApiModelProperty(value = "${swagger.model.institution.address}", required = true)
     @JsonProperty(required = true)
-    @NotBlank
     private String address;
 
     @ApiModelProperty(value = "${swagger.model.institution.productRoles}", required = true)
