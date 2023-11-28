@@ -39,7 +39,7 @@ public class ApiManagementServiceImpl implements ApiManagementService {
         Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
 
         Institution institution = externalApiConnector.getInstitution(institutionId);
-        if (institution != null) {
+        if(institution != null) {
 
             try {
                 apiManagerConnector.createInstitutionSubscription(institutionId, institution.getDescription(), "/apis", SUBSCRIPTION_APIS_ID.concat(institutionId), SUBSCRIPTION_APIS_DISPLAY);
@@ -47,7 +47,7 @@ public class ApiManagementServiceImpl implements ApiManagementService {
                 CreateInstitutionApiKeyDto dto = new CreateInstitutionApiKeyDto();
                 dto.setDescription(institution.getDescription());
                 dto.setFiscalCode(institution.getTaxCode());
-                if (!testEmail.isBlank())
+                if(!testEmail.isBlank())
                     dto.setEmail(institutionId.concat(testEmail));
                 else
                     dto.setEmail(institution.getDigitalAddress());
@@ -72,14 +72,14 @@ public class ApiManagementServiceImpl implements ApiManagementService {
 
     private void createSubscription(String institutionId, String scope, String subscriptionId, String subscriptionName) {
         Institution institution = externalApiConnector.getInstitution(institutionId);
-        if (institution != null) {
+        if(institution != null) {
             try {
-                apiManagerConnector.createInstitutionSubscription(institutionId, institution.getDescription(), scope, subscriptionId, subscriptionName);
+                apiManagerConnector.createInstitutionSubscription(institutionId, institution.getDescription(), scope, subscriptionId, subscriptionName + " " + institution.getDescription());
             } catch (RuntimeException e) {
                 CreateInstitutionApiKeyDto dto = new CreateInstitutionApiKeyDto();
                 dto.setDescription(institution.getDescription());
                 dto.setFiscalCode(institution.getTaxCode());
-                if (!testEmail.isBlank())
+                if(!testEmail.isBlank())
                     dto.setEmail(institutionId.concat(testEmail));
                 else
                     dto.setEmail(institution.getDigitalAddress());
