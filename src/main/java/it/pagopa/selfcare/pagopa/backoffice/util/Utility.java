@@ -20,7 +20,7 @@ public class Utility {
     public static String extractUserIdFromAuth(Authentication authentication) {
         String userIdForAuth = "";
         if (authentication != null && authentication.getPrincipal() instanceof SelfCareUser) {
-            var user = (SelfCareUser) authentication.getPrincipal().;
+            var user = (SelfCareUser) authentication.getPrincipal();
             userIdForAuth = user.getId();
         }
         return userIdForAuth;
