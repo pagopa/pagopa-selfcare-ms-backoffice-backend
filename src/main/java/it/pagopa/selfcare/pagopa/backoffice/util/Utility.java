@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Utility {
 
@@ -18,7 +19,8 @@ public class Utility {
 
     public static String extractUserIdFromAuth(Authentication authentication) {
         String userIdForAuth = "";
-        if (authentication != null && authentication.getPrincipal() instanceof SelfCareUser user) {
+        if (authentication != null && authentication.getPrincipal() instanceof SelfCareUser) {
+            var user = (SelfCareUser) authentication.getPrincipal().;
             userIdForAuth = user.getId();
         }
         return userIdForAuth;
@@ -31,7 +33,7 @@ public class Utility {
                 channelFromApiConfig.getChannelList().stream()
                         .filter(obj2 -> channelFromLocal.getChannelList().stream()
                                 .noneMatch(obj1 -> Objects.equals(obj1.getChannelCode(), obj2.getChannelCode())))
-                        .toList()
+                        .collect(Collectors.toList())
         );
 
         if ("asc".equalsIgnoreCase(sorting)) {

@@ -52,7 +52,7 @@ public class PagopaBackofficeControllerResponseValidator {
     }
 
 
-    @Pointcut("execution(* it.pagopa.selfcare.pagopa.backoffice.web.controller.*.*(..))")
+    @Pointcut("execution(* it.pagopa.selfcare.pagopa.backoffice.controller.*.*(..))")
     public void controllersPointcut() {
         // Do nothing because is a pointcut
     }
