@@ -5407,7 +5407,7 @@
         }
       },
       "Institution" : {
-        "required" : [ "address", "attributes", "description", "digital_address", "external_id", "id", "institution_type", "origin", "origin_id", "tax_code", "zip_code" ],
+        "required" : [ "attributes", "description", "external_id", "id", "institution_type", "origin", "origin_id", "tax_code", "zip_code" ],
         "type" : "object",
         "properties" : {
           "address" : {
@@ -5433,7 +5433,7 @@
           },
           "institution_type" : {
             "type" : "string",
-            "enum" : [ "PA", "GSP", "PT", "SCP", "PSP", "SA" ]
+            "enum" : [ "AS", "PA", "GSP", "PT", "PG", "SCP", "PSP", "SA" ]
           },
           "origin" : {
             "type" : "string"
@@ -5468,7 +5468,7 @@
         }
       },
       "InstitutionDetail" : {
-        "required" : [ "address", "external_id", "fiscal_code", "id", "mail_address", "name", "origin", "origin_id", "status", "user_product_roles" ],
+        "required" : [ "external_id", "id", "name", "origin", "origin_id", "status", "tax_code", "user_product_roles" ],
         "type" : "object",
         "properties" : {
           "address" : {
@@ -5486,15 +5486,12 @@
           "external_id" : {
             "type" : "string"
           },
-          "fiscal_code" : {
-            "type" : "string"
-          },
           "id" : {
             "type" : "string"
           },
           "institution_type" : {
             "type" : "string",
-            "enum" : [ "PA", "GSP", "PT", "SCP", "PSP", "SA" ]
+            "enum" : [ "AS", "PA", "GSP", "PT", "PG", "SCP", "PSP", "SA" ]
           },
           "mail_address" : {
             "type" : "string"
@@ -5515,6 +5512,9 @@
             "type" : "string"
           },
           "status" : {
+            "type" : "string"
+          },
+          "tax_code" : {
             "type" : "string"
           },
           "user_product_roles" : {
@@ -5539,6 +5539,10 @@
           "page" : {
             "type" : "integer",
             "format" : "int32"
+          },
+          "total_items" : {
+            "type" : "integer",
+            "format" : "int64"
           },
           "total_pages" : {
             "type" : "integer",
