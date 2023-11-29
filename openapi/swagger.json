@@ -1,0 +1,7786 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Microservice to manage PagoPA Backoffice",
+    "termsOfService": "https://www.pagopa.gov.it/",
+    "title": "pagopa-selfcare-ms-backoffice",
+    "version": "0.4.66"
+  },
+  "host": "localhost:8080",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/brokers": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BrokerDto"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/BrokerResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institution's Brokers"
+        ],
+        "operationId": "createBroker_1",
+        "summary": "Create a Broker"
+      }
+    },
+    "/brokers/": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 50,
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Page number. Page value starts from 0",
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "code",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "default": "CODE",
+            "description": "order by name or code, default = CODE",
+            "in": "query",
+            "name": "orderby",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "default": "DESC",
+            "in": "query",
+            "name": "ordering",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/BrokersResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institution's Brokers"
+        ],
+        "operationId": "getBrokersEC",
+        "summary": "Get paginated list of creditor brokers"
+      }
+    },
+    "/brokers/{broker-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Broker code",
+            "in": "path",
+            "name": "broker-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BrokerEcDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/BrokerDetailsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institution's Brokers"
+        ],
+        "operationId": "updateBroker",
+        "summary": "Update an existing EC broker"
+      }
+    },
+    "/brokers/{broker-code}/stations": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "broker-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "stationId",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "default": 10,
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "default": 0,
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/StationDetailsResourceList"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institution's Brokers"
+        ],
+        "operationId": "getStationsDetailsListByBroker",
+        "summary": "Get paginated list of stations given brokerid code"
+      }
+    },
+    "/bundles/payment-service-providers/{psp-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 50,
+            "description": "Number of elements on one page. Default = 50",
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "collectionFormat": "multi",
+            "description": "Commissional bundle's type",
+            "in": "query",
+            "items": {
+              "enum": [
+                "GLOBAL",
+                "PUBLIC",
+                "PRIVATE"
+              ],
+              "type": "string"
+            },
+            "name": "bundle-type",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "default": 0,
+            "description": "Page number. Page value starts from 0",
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Fiscal code of the payment service provider",
+            "in": "path",
+            "name": "psp-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Commissional bundle's name",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Bundles"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Commission bundles"
+        ],
+        "operationId": "getBundlesByPSP",
+        "summary": "Get a paginated list of bundles related to PSP"
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Fiscal code of the payment service provider",
+            "in": "path",
+            "name": "psp-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BundleCreate"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Commission bundles"
+        ],
+        "operationId": "createBundle",
+        "summary": "Create a commissional bundle related to PSP"
+      }
+    },
+    "/bundles/payment-types": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 50,
+            "description": "Number of elements on one page. Default = 50",
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "default": 0,
+            "description": "Page number. Page value starts from 0",
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/BundlePaymentTypes"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Commission bundles"
+        ],
+        "operationId": "getBundlesPaymentTypes",
+        "summary": "Get a paginated list of payment types"
+      }
+    },
+    "/bundles/touchpoints": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 10,
+            "description": "Number of elements on one page. Default = 10",
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "default": 0,
+            "description": "Page number. Page value starts from 0",
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Touchpoints"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Commission bundles"
+        ],
+        "operationId": "getTouchpoints",
+        "summary": "Get a paginated list of touchpoints"
+      }
+    },
+    "/channels": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 50,
+            "description": "Number of elements on one page. Default = 50",
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Page number. Page value starts from 0",
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Filter channel by code",
+            "in": "query",
+            "name": "code",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "default": "DESC",
+            "description": "Sort Direction ordering",
+            "in": "query",
+            "name": "ordering",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ChannelsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "getChannels",
+        "summary": "Get paginated list of channels"
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChannelDetailsDto"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/WrapperChannelDetailsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "createChannel",
+        "summary": "Create a channel, validating the creation request previously inserted by user"
+      }
+    },
+    "/channels/csv": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json",
+          "text/plain"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "format": "binary",
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "getChannelsCSV",
+        "summary": "Download the list of channels as CSV file"
+      }
+    },
+    "/channels/merged": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 50,
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Channel code",
+            "in": "query",
+            "name": "channelcodefilter",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Broker code filter for search",
+            "in": "query",
+            "name": "brokerCode",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Page number. Page value starts from 0",
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Method of sorting",
+            "in": "query",
+            "name": "sorting",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/WrapperChannelsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "getAllChannelsMerged",
+        "summary": "Get All Channels from cosmos db merged whit apiConfig"
+      }
+    },
+    "/channels/merged/{channel-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Code of the payment channel",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ChannelDetailsResource"
+            }
+          }
+        },
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "getChannelDetail"
+      }
+    },
+    "/channels/wrapper": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WrapperChannelDetailsDto"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/WrapperEntitiesOperations"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "createWrapperChannelDetails",
+        "summary": "Request the creation of a channel that will be validated by an operator"
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChannelDetailsDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/WrapperEntitiesOperations"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "updateWrapperChannelDetails",
+        "summary": "Request the update of a channel that will be validated by an operator"
+      }
+    },
+    "/channels/wrapper/operator": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChannelDetailsDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/WrapperEntitiesOperations"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "updateWrapperChannelDetailsByOpt",
+        "summary": "Execute the update as operator in the channel request that must be validated"
+      }
+    },
+    "/channels/wrapper/{channel-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Channel code",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/WrapperEntitiesOperations"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "getGenericWrapperEntities",
+        "summary": "Get a channel that is currently in hold for operator validation"
+      }
+    },
+    "/channels/{channel-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "delete": {
+        "parameters": [
+          {
+            "description": "Code of the payment channel",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "deleteChannel",
+        "summary": "delete channel"
+      },
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Code of the payment channel",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ChannelDetailsResource"
+            }
+          }
+        },
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "getChannelDetails"
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Channel's unique identifier",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChannelDetailsDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ChannelDetailsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "updateChannel",
+        "summary": "Update a channel, validating the update request previously inserted by user"
+      }
+    },
+    "/channels/{channel-code}/payment-service-providers": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 50,
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Page number. Page value starts from 0",
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Code of the payment channel",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ChannelPspListResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "getChannelPaymentServiceProviders",
+        "summary": "Get paginated list of PSPs associated with the channel"
+      }
+    },
+    "/channels/{channel-code}/payment-types": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Channel's unique identifier",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/PspChannelPaymentTypesResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "getChannelPaymentTypes",
+        "summary": "Get list of payment type of a channel"
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Channel's unique identifier",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PspChannelPaymentTypes"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/PspChannelPaymentTypesResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "createChannelPaymentType",
+        "summary": "Create a payment types of a channel"
+      }
+    },
+    "/channels/{channel-code}/payment-types/{payment-type-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "delete": {
+        "parameters": [
+          {
+            "description": "Channel's unique identifier",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Code of the payment type",
+            "in": "path",
+            "name": "payment-type-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "operationId": "deleteChannelPaymentType",
+        "summary": "delete payment type of a channel"
+      }
+    },
+    "/configurations/payment-types": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/PaymentTypes"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Configuration"
+        ],
+        "operationId": "getPaymentTypes",
+        "summary": "Get list of payment type"
+      }
+    },
+    "/configurations/wfesp-plugins": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/WfespPluginConfs"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Configuration"
+        ],
+        "operationId": "getWfespPlugins",
+        "summary": "Update a WrapperChannel on Cosmodb"
+      }
+    },
+    "/configurations/wrapper/{wrapper-type}/status/{wrapper-status}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Type of Wrapper like CHANNEL or STATION",
+            "enum": [
+              "CHANNEL",
+              "STATION"
+            ],
+            "in": "path",
+            "name": "wrapper-type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Validation Status of a CHANNEL or STATION",
+            "enum": [
+              "APPROVED",
+              "TO_CHECK",
+              "TO_FIX",
+              "TO_CHECK_UPDATE",
+              "TO_FIX_UPDATE"
+            ],
+            "in": "path",
+            "name": "wrapper-status",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "default": 50,
+            "description": "Number of elements on one page. Default = 50",
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Page number. Page value starts from 0",
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Broker code filter for search",
+            "in": "query",
+            "name": "broker-code",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Query with sql like parameter for field id search",
+            "in": "query",
+            "name": "id-like",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Method of sorting",
+            "in": "query",
+            "name": "sorting",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/WrapperEntitiesList"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Configuration"
+        ],
+        "operationId": "getWrapperByTypeAndStatus",
+        "summary": "Get Wrapper Channel Details from cosmos db"
+      }
+    },
+    "/creditor-institutions": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 50,
+            "description": "Number of elements on one page. Default = 50",
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Page number. Page value starts from 0",
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Creditor institution code",
+            "in": "query",
+            "name": "ci-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Creditor institution name",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Sorting method for paginated result",
+            "in": "query",
+            "name": "sorting",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/CreditorInstitutionsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institutions"
+        ],
+        "operationId": "getCreditorInstitutions",
+        "summary": "Get paginated list of creditor institutions"
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreditorInstitutionDto"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/CreditorInstitutionDetailsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institutions"
+        ],
+        "operationId": "createCreditorInstitution",
+        "summary": "Create a new creditor institution"
+      }
+    },
+    "/creditor-institutions/{ci-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/CreditorInstitutionDetailsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institutions"
+        ],
+        "operationId": "getCreditorInstitutionDetails",
+        "summary": "Get the detail of specific creditor institution"
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateCreditorInstitutionDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/CreditorInstitutionDetailsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institutions"
+        ],
+        "operationId": "updateCreditorInstitutionDetails",
+        "summary": "Update an existing creditor institution"
+      }
+    },
+    "/creditor-institutions/{ci-code}/full": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Broker code of an EC",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/BrokerAndEcDetailsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institutions"
+        ],
+        "operationId": "getBrokerAndEcDetails",
+        "summary": "Get PSP broker details"
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreditorInstitutionAndBrokerDto"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/CreditorInstitutionDetailsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institutions"
+        ],
+        "operationId": "createCreditorInstitutionAndBroker",
+        "summary": "Create a new creditor institution that can intermediate as a broker"
+      }
+    },
+    "/creditor-institutions/{ci-code}/ibans": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Label to be used as search filter for associated IBANs",
+            "in": "query",
+            "name": "labelName",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Ibans"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Ibans"
+        ],
+        "operationId": "getCreditorInstitutionIbans",
+        "summary": "Get all IBANs related to creditor institution, filtering by specific label"
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/IbanCreate"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Iban"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Ibans"
+        ],
+        "operationId": "createCreditorInstitutionIbans",
+        "summary": "Create an IBAN owned by creditor institution"
+      }
+    },
+    "/creditor-institutions/{ci-code}/ibans/{iban-value}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "delete": {
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "IBAN identification value",
+            "in": "path",
+            "name": "iban-value",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Ibans"
+        ],
+        "operationId": "deleteCreditorInstitutionIbans",
+        "summary": "Delete a specific IBAN owned by creditor institution"
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "IBAN identification value",
+            "in": "path",
+            "name": "iban-value",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/IbanCreate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Iban"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Ibans"
+        ],
+        "operationId": "updateCreditorInstitutionIbans",
+        "summary": "Update a specific IBAN owned by creditor institution"
+      }
+    },
+    "/creditor-institutions/{ci-code}/segregation-codes": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/CreditorInstitutionAssociatedCodeList"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institutions"
+        ],
+        "operationId": "getCreditorInstitutionSegregationcodes",
+        "summary": "Get segregation code associations with creditor institution"
+      }
+    },
+    "/creditor-institutions/{ci-code}/station": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreditorInstitutionStationDto"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/CreditorInstitutionStationEditResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institutions"
+        ],
+        "operationId": "associateStationToCreditorInstitution",
+        "summary": "Creates the relationship between the created station and the creditorInstitution"
+      }
+    },
+    "/creditor-institutions/{ci-code}/station/{station-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "delete": {
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Channlecode or StationCode",
+            "in": "path",
+            "name": "station-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institutions"
+        ],
+        "operationId": "deleteCreditorInstitutionStationRelationship",
+        "summary": "delete the relationship between the created station and the creditorInstitution"
+      }
+    },
+    "/institutions": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/InstitutionDetail"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Institutions"
+        ],
+        "operationId": "getInstitutions",
+        "summary": "Retrieves all the onboarded institutions related to the logged user"
+      }
+    },
+    "/institutions/{institution-id}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Institution's unique internal identifier",
+            "in": "path",
+            "name": "institution-id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Institution"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Institutions"
+        ],
+        "operationId": "getInstitution",
+        "summary": "Retrieves the details of an institution"
+      }
+    },
+    "/institutions/{institution-id}/api-keys": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Institution's unique internal identifier",
+            "in": "path",
+            "name": "institution-id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/InstitutionApiKeys"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Institutions"
+        ],
+        "operationId": "getInstitutionApiKeys",
+        "summary": "Retrieve an institution's key pair, including primary and secondary keys"
+      },
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Institution's unique internal identifier",
+            "in": "path",
+            "name": "institution-id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subscription's unique internal identifier",
+            "in": "query",
+            "name": "subscription-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/InstitutionApiKeys"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Institutions"
+        ],
+        "operationId": "createInstitutionApiKeys",
+        "summary": "Creates a new subscription for a given Institution and returns its primary and secondary keys"
+      }
+    },
+    "/institutions/{institution-id}/delegations": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Institution's unique internal identifier",
+            "in": "path",
+            "name": "institution-id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Broker's unique id",
+            "in": "query",
+            "name": "brokerId",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Delegation"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Institutions"
+        ],
+        "operationId": "getBrokerDelegation",
+        "summary": "Retrieve all active delegations for given institution broker and logged user"
+      }
+    },
+    "/institutions/{institution-id}/products": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Institution's unique internal identifier",
+            "in": "path",
+            "name": "institution-id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Product"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Institutions"
+        ],
+        "operationId": "getInstitutionProducts",
+        "summary": "Retrieve all active products for given institution and logged user"
+      }
+    },
+    "/institutions/{subscription-id}/api-keys/primary/regenerate": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "post": {
+        "parameters": [
+          {
+            "description": "Institution's subscription id",
+            "in": "path",
+            "name": "subscription-id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Institutions"
+        ],
+        "operationId": "regeneratePrimaryKey",
+        "summary": "Regenerates the subscription's primary key"
+      }
+    },
+    "/institutions/{subscription-id}/api-keys/secondary/regenerate": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "post": {
+        "parameters": [
+          {
+            "description": "Institution's subscription id",
+            "in": "path",
+            "name": "subscription-id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Institutions"
+        ],
+        "operationId": "regenerateSecondaryKey",
+        "summary": "Regenerates the subscription's secondary key"
+      }
+    },
+    "/operative-tables": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/TavoloOpResourceList"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Operative Tables"
+        ],
+        "operationId": "getOperativeTables",
+        "summary": "Get All operative tables"
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/octet-stream"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TavoloOpDto"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/TavoloOpOperations"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Operative Tables"
+        ],
+        "operationId": "insertOperativeTable",
+        "summary": "Insert a new operative table"
+      }
+    },
+    "/operative-tables/{ci-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Creditor Institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/TavoloOpResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Operative Tables"
+        ],
+        "operationId": "getOperativeTable",
+        "summary": "Get operative table details"
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/octet-stream"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TavoloOpDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/TavoloOpOperations"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Operative Tables"
+        ],
+        "operationId": "updateOperativeTable",
+        "summary": "Update an existent operative table"
+      }
+    },
+    "/payment-service-providers": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 50,
+            "description": "Number of elements on one page. Default = 50",
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Page number. Page value starts from 0",
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Payment service provider code",
+            "in": "query",
+            "name": "psp-code",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Tax Code of the payment service provider",
+            "in": "query",
+            "name": "tax-code",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Payment service provider name",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/PaymentServiceProvidersResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Payment Service Providers"
+        ],
+        "operationId": "getPaymentServiceProviders",
+        "summary": "Get the list of payment service providers"
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": false,
+            "description": "If true the PSP will also be signed up as a broker",
+            "in": "query",
+            "name": "direct",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PaymentServiceProviderDetailsDto"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/PaymentServiceProviderDetailsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Payment Service Providers"
+        ],
+        "operationId": "createPSP",
+        "summary": "Create a payment service provider"
+      }
+    },
+    "/payment-service-providers/{psp-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "PSP code",
+            "in": "path",
+            "name": "psp-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/BrokerOrPspDetailsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Payment Service Providers"
+        ],
+        "operationId": "getBrokerAndPspDetails",
+        "summary": "Get payment service provider's details"
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "code of the Payment Service Provider",
+            "in": "path",
+            "name": "psp-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PaymentServiceProviderDetailsDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/PaymentServiceProviderDetailsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Payment Service Providers"
+        ],
+        "operationId": "updatePSP",
+        "summary": "Update payment service provider"
+      }
+    },
+    "/payment-service-providers/{psp-code}/channels": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Code of the payment service provider",
+            "in": "path",
+            "name": "psp-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/PspChannelsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Payment Service Providers"
+        ],
+        "operationId": "getPspChannels",
+        "summary": "Get the channels of the PSP"
+      }
+    },
+    "/payment-service-providers/{psp-code}/channels/available-code": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Code of the payment service provider",
+            "in": "path",
+            "name": "psp-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "default": false,
+            "description": "is true if the channel is V2",
+            "in": "query",
+            "name": "v2",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ChannelCodeResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Payment Service Providers"
+        ],
+        "operationId": "getFirstValidChannelCode",
+        "summary": "Get a valid code for the passed PSP that is not used yet for existing channels"
+      }
+    },
+    "/payment-service-providers/{psp-code}/channels/{channel-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "delete": {
+        "parameters": [
+          {
+            "description": "Code of the payment service provider",
+            "in": "path",
+            "name": "psp-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Channel's unique identifier",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Payment Service Providers"
+        ],
+        "operationId": "deletePSPChannels",
+        "summary": "Delete a relation between a PSP and a channel"
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/octet-stream"
+        ],
+        "parameters": [
+          {
+            "description": "Code of the payment service provider",
+            "in": "path",
+            "name": "psp-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Channel's unique identifier",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PspChannelPaymentTypes"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/PspChannelPaymentTypesResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Payment Service Providers"
+        ],
+        "operationId": "updatePaymentServiceProvidersChannels",
+        "summary": "Update a relation between a PSP and a channel"
+      }
+    },
+    "/psp-brokers": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 50,
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Page number. Page value starts from 0",
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Broker's code",
+            "in": "query",
+            "name": "broker-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Broker's name",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "default": "CODE",
+            "description": "Order by column name",
+            "in": "query",
+            "name": "orderby",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "default": "DESC",
+            "description": "Method of sorting",
+            "in": "query",
+            "name": "sorting",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/BrokersPspResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Payment Service Provider's Brokers"
+        ],
+        "operationId": "getBrokersPsp",
+        "summary": "Get the list of all PSP brokers"
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BrokerPspDetailsDto"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/BrokerPspDetailsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Payment Service Provider's Brokers"
+        ],
+        "operationId": "createBroker",
+        "summary": "Create a new PSP broker"
+      }
+    },
+    "/psp-brokers/{broker-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Broker's code",
+            "in": "path",
+            "name": "broker-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/BrokerPspDetailsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Payment Service Provider's Brokers"
+        ],
+        "operationId": "getBrokerPsp",
+        "summary": "Get the detail of a PSP broker"
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Broker code",
+            "in": "path",
+            "name": "broker-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BrokerPspDetailsDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/BrokerPspDetailsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Payment Service Provider's Brokers"
+        ],
+        "operationId": "updateBrokerPSP",
+        "summary": "Update Broker payment service provider"
+      }
+    },
+    "/psp-brokers/{broker-code}/channels": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "broker-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "channelId",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "default": 10,
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "default": 0,
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ChannelDetailsResourceList"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Payment Service Provider's Brokers"
+        ],
+        "operationId": "getChannelListByBroker",
+        "summary": "Get paginated list of PSP channels by given broker"
+      }
+    },
+    "/psp-brokers/{broker-code}/payment-service-providers": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 50,
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Page number. Page value starts from 0",
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Broker code of a PSP",
+            "in": "path",
+            "name": "broker-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/PaymentServiceProvidersResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Payment Service Provider's Brokers"
+        ],
+        "operationId": "getPspBrokerPsp",
+        "summary": "Get the list of payment service providers related to a broker"
+      }
+    },
+    "/stations": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/octet-stream"
+        ],
+        "parameters": [
+          {
+            "default": 50,
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Page number. Page value starts from 0",
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Station's unique identifier",
+            "in": "query",
+            "name": "stationCode",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Creditor institution associated to given station",
+            "in": "query",
+            "name": "creditorInstitutionCode",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "default": "DESC",
+            "description": "Sort Direction ordering",
+            "in": "query",
+            "name": "ordering",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/StationsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Stations"
+        ],
+        "operationId": "getStations",
+        "summary": "Get paginated list of stations"
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StationDetailsDto"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/WrapperEntityOperationsStationDetails"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Stations"
+        ],
+        "operationId": "createStation",
+        "summary": "Create new station"
+      }
+    },
+    "/stations/merged": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 50,
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Station's unique identifier",
+            "in": "query",
+            "name": "stationcodefilter",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Broker code filter for search",
+            "in": "query",
+            "name": "brokerCode",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Page number. Page value starts from 0",
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Method of sorting",
+            "in": "query",
+            "name": "sorting",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/WrapperStationsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Stations"
+        ],
+        "operationId": "getAllStationsMerged",
+        "summary": "Get All Stations from cosmos db merged whit apiConfig"
+      }
+    },
+    "/stations/station-code": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "query",
+            "name": "ec-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/StationCodeResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Stations"
+        ],
+        "operationId": "getStationCode",
+        "summary": "Generate a station code given the creditor institution's code"
+      }
+    },
+    "/stations/station-code/v2": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "query",
+            "name": "ec-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/StationCodeResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Stations"
+        ],
+        "operationId": "getStationCodeV2",
+        "summary": "Generate a station code given the creditor institution's code"
+      }
+    },
+    "/stations/wrapper": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/octet-stream"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WrapperStationDetailsDto"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/WrapperEntitiesOperationsStationDetails"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Stations"
+        ],
+        "operationId": "createWrapperStationDetails",
+        "summary": "Create a WrapperChannel on Cosmodb"
+      }
+    },
+    "/stations/wrapper/operator": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/octet-stream"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StationDetailsDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/WrapperEntitiesOperations"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Stations"
+        ],
+        "operationId": "updateWrapperStationDetailsByOpt",
+        "summary": "Update a WrapperStation on Cosmodb"
+      }
+    },
+    "/stations/wrapper/{station-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/octet-stream"
+        ],
+        "parameters": [
+          {
+            "description": "Channlecode or StationCode",
+            "in": "path",
+            "name": "station-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/WrapperEntitiesOperations"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Stations"
+        ],
+        "operationId": "getWrapperEntitiesStation_1",
+        "summary": "Get station's details"
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/octet-stream"
+        ],
+        "parameters": [
+          {
+            "description": "Station code",
+            "in": "path",
+            "name": "station-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StationDetailsDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/WrapperEntitiesOperations"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Stations"
+        ],
+        "operationId": "updateWrapperStationDetails",
+        "summary": "Update WrapperStationDetails"
+      }
+    },
+    "/stations/{station-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Station's unique identifier",
+            "in": "path",
+            "name": "station-code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/StationDetailResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Stations"
+        ],
+        "operationId": "getStation",
+        "summary": "Get station's details"
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Station's unique identifier",
+            "in": "path",
+            "name": "station-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StationDetailsDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/StationDetailResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Stations"
+        ],
+        "operationId": "updateStation",
+        "summary": "Update a station"
+      }
+    },
+    "/stations/{station-code}/creditor-institutions": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/octet-stream"
+        ],
+        "parameters": [
+          {
+            "description": "Station Code",
+            "in": "path",
+            "name": "station-code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "default": 50,
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/CreditorInstitutionsResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Stations"
+        ],
+        "operationId": "getCreditorInstitutionsByStationCode",
+        "summary": "Get Creditor Institutions By Station Code"
+      }
+    },
+    "/taxonomies": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/octet-stream"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Taxonomies"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Taxonomy"
+        ],
+        "operationId": "getTaxonomies",
+        "summary": "Get a list of taxonomies"
+      }
+    }
+  },
+  "definitions": {
+    "AssistanceContact": {
+      "properties": {
+        "support_email": {
+          "type": "string"
+        },
+        "support_phone": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Attribute": {
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "origin": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "description",
+        "origin"
+      ],
+      "type": "object"
+    },
+    "BrokerAndEcDetailsResource": {
+      "properties": {
+        "brokerDetailsResource": {
+          "$ref": "#/definitions/BrokerResource"
+        },
+        "creditorInstitutionDetailsResource": {
+          "$ref": "#/definitions/CreditorInstitutionDetailsResource"
+        }
+      },
+      "type": "object"
+    },
+    "BrokerDetails": {
+      "properties": {
+        "broker_code": {
+          "type": "string"
+        },
+        "broker_details": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "extended_fault_bean": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "BrokerDetailsResource": {
+      "properties": {
+        "broker_code": {
+          "type": "string"
+        },
+        "broker_details": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "extended_fault_bean": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "extended_fault_bean"
+      ],
+      "type": "object"
+    },
+    "BrokerDto": {
+      "properties": {
+        "broker_code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "BrokerEcDto": {
+      "properties": {
+        "brokerCode": {
+          "maxLength": 30,
+          "minLength": 0,
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 30,
+          "minLength": 0,
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "extendedFaultBean": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "brokerCode"
+      ],
+      "type": "object"
+    },
+    "BrokerOrPspDetailsResource": {
+      "properties": {
+        "brokerPspDetailsResource": {
+          "$ref": "#/definitions/BrokerPspDetailsResource"
+        },
+        "paymentServiceProviderDetailsResource": {
+          "$ref": "#/definitions/PaymentServiceProviderDetailsResource"
+        }
+      },
+      "type": "object"
+    },
+    "BrokerPspDetailsDto": {
+      "properties": {
+        "broker_psp_code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "extended_fault_bean": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "broker_psp_code",
+        "description",
+        "enabled",
+        "extended_fault_bean"
+      ],
+      "type": "object"
+    },
+    "BrokerPspDetailsResource": {
+      "properties": {
+        "broker_psp_code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "extended_fault_bean": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "broker_psp_code",
+        "description",
+        "enabled",
+        "extended_fault_bean"
+      ],
+      "type": "object"
+    },
+    "BrokerPspResource": {
+      "properties": {
+        "broker_psp_code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "broker_psp_code",
+        "description",
+        "enabled"
+      ],
+      "type": "object"
+    },
+    "BrokerResource": {
+      "properties": {
+        "broker_code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "extended_fault_bean": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "BrokersPspResource": {
+      "properties": {
+        "brokers_psp": {
+          "items": {
+            "$ref": "#/definitions/BrokerPspResource"
+          },
+          "type": "array"
+        },
+        "page_info": {
+          "$ref": "#/definitions/PageInfo"
+        }
+      },
+      "type": "object"
+    },
+    "BrokersResource": {
+      "properties": {
+        "brokers": {
+          "items": {
+            "$ref": "#/definitions/BrokerResource"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "Bundle": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id_bundle": {
+          "type": "string"
+        },
+        "id_ci_bundle": {
+          "type": "string"
+        },
+        "id_psp": {
+          "type": "string"
+        },
+        "inserted_date": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "last_updated_date": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "max_payment_amount": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "min_payment_amount": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "payment_amount": {
+          "description": "The fees of this bundle",
+          "format": "int32",
+          "type": "integer"
+        },
+        "payment_type": {
+          "type": "string"
+        },
+        "touchpoint": {
+          "type": "string"
+        },
+        "transfer_category_list": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "enum": [
+            "GLOBAL",
+            "PUBLIC",
+            "PRIVATE"
+          ],
+          "type": "string"
+        },
+        "validity_date_from": {
+          "format": "date",
+          "type": "string"
+        },
+        "validity_date_to": {
+          "format": "date",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "BundleCreate": {
+      "description": "Commissional bundle related to PSP to be created",
+      "properties": {
+        "abi": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "digital_stamp": {
+          "type": "boolean"
+        },
+        "digital_stamp_restriction": {
+          "type": "boolean"
+        },
+        "id_broker_psp": {
+          "type": "string"
+        },
+        "id_cdi": {
+          "type": "string"
+        },
+        "id_channel": {
+          "type": "string"
+        },
+        "max_payment_amount": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "min_payment_amount": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "payment_amount": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "payment_type": {
+          "type": "string"
+        },
+        "psp_business_name": {
+          "type": "string"
+        },
+        "touchpoint": {
+          "type": "string"
+        },
+        "transfer_categories": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "enum": [
+            "GLOBAL",
+            "PUBLIC",
+            "PRIVATE"
+          ],
+          "type": "string"
+        },
+        "validity_date_from": {
+          "format": "date",
+          "type": "string"
+        },
+        "validity_date_to": {
+          "format": "date",
+          "type": "string"
+        }
+      },
+      "required": [
+        "abi",
+        "id_broker_psp",
+        "id_channel",
+        "psp_business_name"
+      ],
+      "type": "object"
+    },
+    "BundlePaymentType": {
+      "properties": {
+        "created_date": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "BundlePaymentTypes": {
+      "properties": {
+        "page_info": {
+          "$ref": "#/definitions/PageInfo"
+        },
+        "payment_types": {
+          "items": {
+            "$ref": "#/definitions/BundlePaymentType"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "page_info",
+        "payment_types"
+      ],
+      "type": "object"
+    },
+    "Bundles": {
+      "properties": {
+        "bundles": {
+          "items": {
+            "$ref": "#/definitions/Bundle"
+          },
+          "type": "array"
+        },
+        "page_info": {
+          "$ref": "#/definitions/PageInfo"
+        }
+      },
+      "type": "object"
+    },
+    "ChannelCodeResource": {
+      "properties": {
+        "channel_code": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ChannelDetailsDto": {
+      "properties": {
+        "agid": {
+          "type": "boolean"
+        },
+        "broker_description": {
+          "type": "string"
+        },
+        "broker_psp_code": {
+          "type": "string"
+        },
+        "card_chart": {
+          "type": "boolean"
+        },
+        "channel_code": {
+          "type": "string"
+        },
+        "digital_stamp_brand": {
+          "type": "boolean"
+        },
+        "email": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "flagPspCp": {
+          "type": "boolean"
+        },
+        "flag_io": {
+          "type": "boolean"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "new_fault_code": {
+          "type": "boolean"
+        },
+        "new_password": {
+          "type": "string"
+        },
+        "nmp_service": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "on_us": {
+          "type": "boolean"
+        },
+        "password": {
+          "type": "string"
+        },
+        "payment_model": {
+          "enum": [
+            "IMMEDIATE",
+            "IMMEDIATE_MULTIBENEFICIARY",
+            "DEFERRED",
+            "ACTIVATED_AT_PSP"
+          ],
+          "type": "string"
+        },
+        "payment_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "primitive_version": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "protocol": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "proxy_enabled": {
+          "type": "boolean"
+        },
+        "proxy_host": {
+          "type": "string"
+        },
+        "proxy_password": {
+          "type": "string"
+        },
+        "proxy_port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "proxy_username": {
+          "type": "string"
+        },
+        "psp_email": {
+          "type": "string"
+        },
+        "recovery": {
+          "type": "boolean"
+        },
+        "redirect_ip": {
+          "type": "string"
+        },
+        "redirect_path": {
+          "type": "string"
+        },
+        "redirect_port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "redirect_protocol": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "redirect_query_string": {
+          "type": "string"
+        },
+        "rt_push": {
+          "type": "boolean"
+        },
+        "serv_plugin": {
+          "type": "string"
+        },
+        "service": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        },
+        "target_host": {
+          "type": "string"
+        },
+        "target_path": {
+          "type": "string"
+        },
+        "target_port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "thread_number": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeout_a": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeout_b": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeout_c": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "validationUrl": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "validationUrl"
+      ],
+      "type": "object"
+    },
+    "ChannelDetailsResource": {
+      "properties": {
+        "agid": {
+          "type": "boolean"
+        },
+        "broker_description": {
+          "type": "string"
+        },
+        "broker_psp_code": {
+          "type": "string"
+        },
+        "card_chart": {
+          "type": "boolean"
+        },
+        "channel_code": {
+          "type": "string"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "digital_stamp_brand": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "flag_io": {
+          "type": "boolean"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "modifiedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "modifiedBy": {
+          "type": "string"
+        },
+        "new_fault_code": {
+          "type": "boolean"
+        },
+        "new_password": {
+          "type": "string"
+        },
+        "nmp_service": {
+          "type": "string"
+        },
+        "on_us": {
+          "type": "boolean"
+        },
+        "password": {
+          "type": "string"
+        },
+        "payment_model": {
+          "enum": [
+            "IMMEDIATE",
+            "IMMEDIATE_MULTIBENEFICIARY",
+            "DEFERRED",
+            "ACTIVATED_AT_PSP"
+          ],
+          "type": "string"
+        },
+        "payment_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "primitive_version": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "protocol": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "proxy_enabled": {
+          "type": "boolean"
+        },
+        "proxy_host": {
+          "type": "string"
+        },
+        "proxy_password": {
+          "type": "string"
+        },
+        "proxy_port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "proxy_username": {
+          "type": "string"
+        },
+        "recovery": {
+          "type": "boolean"
+        },
+        "redirect_ip": {
+          "type": "string"
+        },
+        "redirect_path": {
+          "type": "string"
+        },
+        "redirect_port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "redirect_protocol": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "redirect_query_string": {
+          "type": "string"
+        },
+        "rt_push": {
+          "type": "boolean"
+        },
+        "serv_plugin": {
+          "type": "string"
+        },
+        "service": {
+          "type": "string"
+        },
+        "target_host": {
+          "type": "string"
+        },
+        "target_host_nmp": {
+          "type": "string"
+        },
+        "target_path": {
+          "type": "string"
+        },
+        "target_path_nmp": {
+          "type": "string"
+        },
+        "target_port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "target_port_nmp": {
+          "type": "string"
+        },
+        "thread_number": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeout_a": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeout_b": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeout_c": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "wrapperStatus": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "channel_code"
+      ],
+      "type": "object"
+    },
+    "ChannelDetailsResourceList": {
+      "properties": {
+        "channels": {
+          "items": {
+            "$ref": "#/definitions/ChannelDetailsResource"
+          },
+          "type": "array"
+        },
+        "page_info": {
+          "$ref": "#/definitions/PageInfo"
+        }
+      },
+      "type": "object"
+    },
+    "ChannelPspListResource": {
+      "properties": {
+        "page_info": {
+          "$ref": "#/definitions/PageInfo"
+        },
+        "payment_service_providers": {
+          "items": {
+            "$ref": "#/definitions/ChannelPspResource"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "ChannelPspResource": {
+      "properties": {
+        "business_name": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "payment_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "psp_code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "business_name",
+        "enabled",
+        "payment_types",
+        "psp_code"
+      ],
+      "type": "object"
+    },
+    "ChannelResource": {
+      "properties": {
+        "broker_description": {
+          "type": "string"
+        },
+        "channel_code": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "channel_code"
+      ],
+      "type": "object"
+    },
+    "ChannelsResource": {
+      "properties": {
+        "channels": {
+          "items": {
+            "$ref": "#/definitions/ChannelResource"
+          },
+          "type": "array"
+        },
+        "page_info": {
+          "$ref": "#/definitions/PageInfo"
+        }
+      },
+      "type": "object"
+    },
+    "CompanyInformation": {
+      "properties": {
+        "business_register_place": {
+          "type": "string"
+        },
+        "rea": {
+          "type": "string"
+        },
+        "share_capital": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "CreditorInstitutionAddressDto": {
+      "properties": {
+        "city": {
+          "type": "string"
+        },
+        "countryCode": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "taxDomicile": {
+          "type": "string"
+        },
+        "zipCode": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "city",
+        "countryCode",
+        "location",
+        "taxDomicile",
+        "zipCode"
+      ],
+      "type": "object"
+    },
+    "CreditorInstitutionAddressResource": {
+      "properties": {
+        "city": {
+          "type": "string"
+        },
+        "countryCode": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "taxDomicile": {
+          "type": "string"
+        },
+        "zipCode": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "CreditorInstitutionAndBrokerDto": {
+      "properties": {
+        "brokerDto": {
+          "$ref": "#/definitions/BrokerDto"
+        },
+        "creditorInstitutionDto": {
+          "$ref": "#/definitions/CreditorInstitutionDto"
+        }
+      },
+      "required": [
+        "brokerDto",
+        "creditorInstitutionDto"
+      ],
+      "type": "object"
+    },
+    "CreditorInstitutionAssociatedCode": {
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "CreditorInstitutionAssociatedCodeList": {
+      "properties": {
+        "unused": {
+          "items": {
+            "$ref": "#/definitions/CreditorInstitutionAssociatedCode"
+          },
+          "type": "array"
+        },
+        "used": {
+          "items": {
+            "$ref": "#/definitions/CreditorInstitutionAssociatedCode"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "CreditorInstitutionDetailsResource": {
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/CreditorInstitutionAddressResource"
+        },
+        "applicationCode": {
+          "type": "string"
+        },
+        "auxDigit": {
+          "type": "string"
+        },
+        "broadcast": {
+          "type": "boolean"
+        },
+        "businessName": {
+          "type": "string"
+        },
+        "creditorInstitutionCode": {
+          "maxLength": 30,
+          "minLength": 0,
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "mod4": {
+          "type": "string"
+        },
+        "pspPayment": {
+          "type": "boolean"
+        },
+        "reportingFtp": {
+          "type": "boolean"
+        },
+        "reportingZip": {
+          "type": "boolean"
+        },
+        "segregationCode": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "businessName",
+        "creditorInstitutionCode",
+        "enabled"
+      ],
+      "type": "object"
+    },
+    "CreditorInstitutionDto": {
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/CreditorInstitutionAddressDto"
+        },
+        "businessName": {
+          "type": "string"
+        },
+        "creditorInstitutionCode": {
+          "maxLength": 30,
+          "minLength": 0,
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "pspPayment": {
+          "type": "boolean"
+        },
+        "reportingFtp": {
+          "type": "boolean"
+        },
+        "reportingZip": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "address",
+        "businessName",
+        "creditorInstitutionCode",
+        "enabled",
+        "pspPayment",
+        "reportingFtp",
+        "reportingZip"
+      ],
+      "type": "object"
+    },
+    "CreditorInstitutionResource": {
+      "properties": {
+        "applicationCode": {
+          "type": "string"
+        },
+        "auxDigit": {
+          "type": "string"
+        },
+        "broadcast": {
+          "type": "boolean"
+        },
+        "businessName": {
+          "type": "string"
+        },
+        "creditorInstitutionCode": {
+          "maxLength": 30,
+          "minLength": 0,
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "mod4": {
+          "type": "string"
+        },
+        "segregationCode": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "businessName",
+        "creditorInstitutionCode",
+        "enabled"
+      ],
+      "type": "object"
+    },
+    "CreditorInstitutionStationDto": {
+      "properties": {
+        "applicationCode": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "auxDigit": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "broadcast": {
+          "type": "boolean"
+        },
+        "mod4": {
+          "type": "boolean"
+        },
+        "segregationCode": {
+          "type": "string"
+        },
+        "stationCode": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "auxDigit",
+        "broadcast",
+        "segregationCode",
+        "stationCode"
+      ],
+      "type": "object"
+    },
+    "CreditorInstitutionStationEditResource": {
+      "properties": {
+        "applicationCode": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "auxDigit": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "broadcast": {
+          "type": "boolean"
+        },
+        "mod4": {
+          "type": "boolean"
+        },
+        "segregationCode": {
+          "type": "string"
+        },
+        "stationCode": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "stationCode"
+      ],
+      "type": "object"
+    },
+    "CreditorInstitutionsResource": {
+      "properties": {
+        "creditor_institutions": {
+          "items": {
+            "$ref": "#/definitions/CreditorInstitutionResource"
+          },
+          "type": "array"
+        },
+        "page_info": {
+          "$ref": "#/definitions/PageInfo"
+        }
+      },
+      "type": "object"
+    },
+    "Delegation": {
+      "properties": {
+        "broker_id": {
+          "type": "string"
+        },
+        "broker_name": {
+          "type": "string"
+        },
+        "broker_tax_code": {
+          "type": "string"
+        },
+        "broker_type": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "institution_id": {
+          "type": "string"
+        },
+        "institution_name": {
+          "type": "string"
+        },
+        "institution_root_name": {
+          "type": "string"
+        },
+        "institution_type": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string"
+        },
+        "tax_code": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "DpoData": {
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "pec": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "address",
+        "email",
+        "pec"
+      ],
+      "type": "object"
+    },
+    "Iban": {
+      "properties": {
+        "ci_owner": {
+          "type": "string"
+        },
+        "company_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "due_date": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "iban": {
+          "type": "string"
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "labels": {
+          "items": {
+            "$ref": "#/definitions/IbanLabel"
+          },
+          "type": "array"
+        },
+        "publication_date": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "validity_date": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "IbanCreate": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "due_date": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "iban": {
+          "type": "string"
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "labels": {
+          "items": {
+            "$ref": "#/definitions/IbanLabel"
+          },
+          "type": "array"
+        },
+        "validity_date": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "IbanLabel": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Ibans": {
+      "properties": {
+        "ibans_enhanced": {
+          "items": {
+            "$ref": "#/definitions/Iban"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "ibans_enhanced"
+      ],
+      "type": "object"
+    },
+    "Institution": {
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "attributes": {
+          "items": {
+            "$ref": "#/definitions/Attribute"
+          },
+          "type": "array"
+        },
+        "description": {
+          "type": "string"
+        },
+        "digital_address": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "institution_type": {
+          "enum": [
+            "PA",
+            "GSP",
+            "PT",
+            "SCP",
+            "PSP",
+            "SA"
+          ],
+          "type": "string"
+        },
+        "origin": {
+          "type": "string"
+        },
+        "origin_id": {
+          "type": "string"
+        },
+        "tax_code": {
+          "type": "string"
+        },
+        "zip_code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "address",
+        "attributes",
+        "description",
+        "digital_address",
+        "external_id",
+        "id",
+        "institution_type",
+        "origin",
+        "origin_id",
+        "tax_code",
+        "zip_code"
+      ],
+      "type": "object"
+    },
+    "InstitutionApiKeys": {
+      "properties": {
+        "displayName": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "primaryKey": {
+          "type": "string"
+        },
+        "secondaryKey": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "displayName",
+        "id",
+        "primaryKey",
+        "secondaryKey"
+      ],
+      "type": "object"
+    },
+    "InstitutionDetail": {
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "assistance_contacts": {
+          "$ref": "#/definitions/AssistanceContact"
+        },
+        "company_informations": {
+          "$ref": "#/definitions/CompanyInformation"
+        },
+        "dpo_data": {
+          "$ref": "#/definitions/DpoData"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "fiscal_code": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "institution_type": {
+          "enum": [
+            "PA",
+            "GSP",
+            "PT",
+            "SCP",
+            "PSP",
+            "SA"
+          ],
+          "type": "string"
+        },
+        "mail_address": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "origin": {
+          "type": "string"
+        },
+        "origin_id": {
+          "type": "string"
+        },
+        "psp_data": {
+          "$ref": "#/definitions/PspData"
+        },
+        "recipient_code": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "user_product_roles": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "address",
+        "external_id",
+        "fiscal_code",
+        "id",
+        "mail_address",
+        "name",
+        "origin",
+        "origin_id",
+        "status",
+        "user_product_roles"
+      ],
+      "type": "object"
+    },
+    "PageInfo": {
+      "properties": {
+        "items_found": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "limit": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "page": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "total_pages": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "PaymentServiceProviderDetailsDto": {
+      "properties": {
+        "abi": {
+          "type": "string"
+        },
+        "agid_psp": {
+          "type": "boolean"
+        },
+        "bic": {
+          "type": "string"
+        },
+        "business_name": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "my_bank_code": {
+          "type": "string"
+        },
+        "psp_code": {
+          "type": "string"
+        },
+        "stamp": {
+          "type": "boolean"
+        },
+        "tax_code": {
+          "type": "string"
+        },
+        "vat_number": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "business_name",
+        "enabled",
+        "psp_code"
+      ],
+      "type": "object"
+    },
+    "PaymentServiceProviderDetailsResource": {
+      "properties": {
+        "abi": {
+          "type": "string"
+        },
+        "agid_psp": {
+          "type": "boolean"
+        },
+        "bic": {
+          "type": "string"
+        },
+        "business_name": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "my_bank_code": {
+          "type": "string"
+        },
+        "psp_code": {
+          "type": "string"
+        },
+        "stamp": {
+          "type": "boolean"
+        },
+        "tax_code": {
+          "type": "string"
+        },
+        "vat_number": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "business_name",
+        "enabled",
+        "psp_code"
+      ],
+      "type": "object"
+    },
+    "PaymentServiceProviderResource": {
+      "properties": {
+        "business_name": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "psp_code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "business_name",
+        "enabled",
+        "psp_code"
+      ],
+      "type": "object"
+    },
+    "PaymentServiceProvidersResource": {
+      "properties": {
+        "page_info": {
+          "$ref": "#/definitions/PageInfo"
+        },
+        "payment_service_providers": {
+          "items": {
+            "$ref": "#/definitions/PaymentServiceProviderResource"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "page_info",
+        "payment_service_providers"
+      ],
+      "type": "object"
+    },
+    "PaymentType": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "payment_type": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "PaymentTypes": {
+      "properties": {
+        "payment_types": {
+          "items": {
+            "$ref": "#/definitions/PaymentType"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "Product": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "url_bo": {
+          "type": "string"
+        },
+        "url_public": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "description",
+        "id",
+        "title",
+        "url_bo"
+      ],
+      "type": "object"
+    },
+    "PspChannelPaymentTypes": {
+      "description": " List of payment types",
+      "properties": {
+        "payment_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "payment_types"
+      ],
+      "type": "object"
+    },
+    "PspChannelPaymentTypesResource": {
+      "properties": {
+        "payment_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "PspChannelResource": {
+      "properties": {
+        "channel_code": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "payment_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "channel_code",
+        "enabled"
+      ],
+      "type": "object"
+    },
+    "PspChannelsResource": {
+      "properties": {
+        "channels": {
+          "items": {
+            "$ref": "#/definitions/PspChannelResource"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "channels"
+      ],
+      "type": "object"
+    },
+    "PspData": {
+      "properties": {
+        "abi_code": {
+          "type": "string"
+        },
+        "business_register_number": {
+          "type": "string"
+        },
+        "legal_register_name": {
+          "type": "string"
+        },
+        "legal_register_number": {
+          "type": "string"
+        },
+        "vat_number_group": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "abi_code",
+        "business_register_number",
+        "legal_register_name",
+        "legal_register_number",
+        "vat_number_group"
+      ],
+      "type": "object"
+    },
+    "StationCodeResource": {
+      "properties": {
+        "stationCode": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "stationCode"
+      ],
+      "type": "object"
+    },
+    "StationDetailResource": {
+      "properties": {
+        "activationDate": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "associatedCreditorInstitutions": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "brokerCode": {
+          "type": "string"
+        },
+        "brokerDescription": {
+          "type": "string"
+        },
+        "brokerDetails": {
+          "$ref": "#/definitions/BrokerDetailsResource"
+        },
+        "brokerObjId": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "flagOnline": {
+          "type": "boolean"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "ip4Mod": {
+          "type": "string"
+        },
+        "modifiedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "modifiedBy": {
+          "type": "string"
+        },
+        "newPassword": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "pofService": {
+          "type": "string"
+        },
+        "port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "port4Mod": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "primitiveVersion": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "protocol": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "protocol4Mod": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "proxyEnabled": {
+          "type": "boolean"
+        },
+        "proxyHost": {
+          "type": "string"
+        },
+        "proxyPassword": {
+          "type": "string"
+        },
+        "proxyPort": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "proxyUsername": {
+          "type": "string"
+        },
+        "redirectIp": {
+          "type": "string"
+        },
+        "redirectPath": {
+          "type": "string"
+        },
+        "redirectPort": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "redirectProtocol": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "redirectQueryString": {
+          "type": "string"
+        },
+        "rtInstantaneousDispatch": {
+          "type": "boolean"
+        },
+        "service": {
+          "type": "string"
+        },
+        "service4Mod": {
+          "type": "string"
+        },
+        "stationCode": {
+          "type": "string"
+        },
+        "targetHost": {
+          "type": "string"
+        },
+        "targetHostPof": {
+          "type": "string"
+        },
+        "targetPath": {
+          "type": "string"
+        },
+        "targetPathPof": {
+          "type": "string"
+        },
+        "targetPort": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "targetPortPof": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "threadNumber": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeoutA": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeoutB": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeoutC": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "version": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "wrapperStatus": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "associatedCreditorInstitutions",
+        "enabled",
+        "password",
+        "primitiveVersion",
+        "stationCode",
+        "version"
+      ],
+      "type": "object"
+    },
+    "StationDetails": {
+      "properties": {
+        "broker_code": {
+          "type": "string"
+        },
+        "broker_description": {
+          "type": "string"
+        },
+        "broker_details": {
+          "$ref": "#/definitions/BrokerDetails"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "flag_online": {
+          "type": "boolean"
+        },
+        "invio_rt_istantaneo": {
+          "type": "boolean"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "ip_4mod": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "pof_service": {
+          "type": "string"
+        },
+        "port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "port_4mod": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "primitive_version": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "protocol": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "protocol_4mod": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "proxy_enabled": {
+          "type": "boolean"
+        },
+        "proxy_host": {
+          "type": "string"
+        },
+        "proxy_password": {
+          "type": "string"
+        },
+        "proxy_port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "proxy_username": {
+          "type": "string"
+        },
+        "redirect_ip": {
+          "type": "string"
+        },
+        "redirect_path": {
+          "type": "string"
+        },
+        "redirect_port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "redirect_protocol": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "redirect_query_string": {
+          "type": "string"
+        },
+        "service": {
+          "type": "string"
+        },
+        "service_4mod": {
+          "type": "string"
+        },
+        "station_code": {
+          "type": "string"
+        },
+        "target_host": {
+          "type": "string"
+        },
+        "target_host_pof": {
+          "type": "string"
+        },
+        "target_path": {
+          "type": "string"
+        },
+        "target_path_pof": {
+          "type": "string"
+        },
+        "target_port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "target_port_pof": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "thread_number": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeout_a": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeout_b": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeout_c": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "version": {
+          "format": "int64",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "broker_code",
+        "broker_details",
+        "enabled",
+        "port",
+        "protocol",
+        "station_code",
+        "thread_number",
+        "timeout_a",
+        "timeout_b",
+        "timeout_c",
+        "version"
+      ],
+      "type": "object"
+    },
+    "StationDetailsDto": {
+      "properties": {
+        "brokerCode": {
+          "type": "string"
+        },
+        "brokerDescription": {
+          "type": "string"
+        },
+        "brokerObjId": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "ec_email": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "flagOnline": {
+          "type": "boolean"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "ip4Mod": {
+          "type": "string"
+        },
+        "newPassword": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "pofService": {
+          "type": "string"
+        },
+        "port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "port4Mod": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "primitiveVersion": {
+          "format": "int32",
+          "maximum": 2,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "protocol": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "protocol4Mod": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "proxyEnabled": {
+          "type": "boolean"
+        },
+        "proxyHost": {
+          "type": "string"
+        },
+        "proxyPassword": {
+          "type": "string"
+        },
+        "proxyPort": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "proxyUsername": {
+          "type": "string"
+        },
+        "redirectIp": {
+          "type": "string"
+        },
+        "redirectPath": {
+          "type": "string"
+        },
+        "redirectPort": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "redirectProtocol": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "redirectQueryString": {
+          "type": "string"
+        },
+        "rtInstantaneousDispatch": {
+          "type": "boolean"
+        },
+        "service": {
+          "type": "string"
+        },
+        "service4Mod": {
+          "type": "string"
+        },
+        "stationCode": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        },
+        "targetHost": {
+          "type": "string"
+        },
+        "targetHostPof": {
+          "type": "string"
+        },
+        "targetPath": {
+          "type": "string"
+        },
+        "targetPathPof": {
+          "type": "string"
+        },
+        "targetPort": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "targetPortPof": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "threadNumber": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeoutA": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeoutB": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeoutC": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "validationUrl": {
+          "type": "string"
+        },
+        "version": {
+          "format": "int64",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "brokerCode",
+        "primitiveVersion",
+        "redirectIp",
+        "redirectPath",
+        "redirectPort",
+        "redirectProtocol",
+        "redirectQueryString",
+        "stationCode",
+        "validationUrl",
+        "version"
+      ],
+      "type": "object"
+    },
+    "StationDetailsResourceList": {
+      "properties": {
+        "page_info": {
+          "$ref": "#/definitions/PageInfo"
+        },
+        "stations": {
+          "items": {
+            "$ref": "#/definitions/StationDetailResource"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "StationResource": {
+      "properties": {
+        "activationDate": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "associatedCreditorInstitutions": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "brokerDescription": {
+          "type": "string"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "modifiedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "stationCode": {
+          "type": "string"
+        },
+        "version": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "wrapperStatus": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "associatedCreditorInstitutions",
+        "enabled",
+        "stationCode",
+        "version"
+      ],
+      "type": "object"
+    },
+    "StationsResource": {
+      "properties": {
+        "pageInfo": {
+          "$ref": "#/definitions/PageInfo"
+        },
+        "stationsList": {
+          "items": {
+            "$ref": "#/definitions/StationResource"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "pageInfo",
+        "stationsList"
+      ],
+      "type": "object"
+    },
+    "TavoloOpDto": {
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "referent": {
+          "type": "string"
+        },
+        "taxCode": {
+          "type": "string"
+        },
+        "telephone": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "email",
+        "name",
+        "referent",
+        "taxCode",
+        "telephone"
+      ],
+      "type": "object"
+    },
+    "TavoloOpOperations": {
+      "properties": {
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "modifiedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "modifiedBy": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "referent": {
+          "type": "string"
+        },
+        "taxCode": {
+          "type": "string"
+        },
+        "telephone": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "TavoloOpResource": {
+      "properties": {
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "modifiedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "modifiedBy": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "referent": {
+          "type": "string"
+        },
+        "taxCode": {
+          "type": "string"
+        },
+        "telephone": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "createdBy",
+        "email",
+        "modifiedAt",
+        "modifiedBy",
+        "name",
+        "referent",
+        "taxCode",
+        "telephone"
+      ],
+      "type": "object"
+    },
+    "TavoloOpResourceList": {
+      "properties": {
+        "tavoloOpResourceList": {
+          "items": {
+            "$ref": "#/definitions/TavoloOpResource"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "tavoloOpResourceList"
+      ],
+      "type": "object"
+    },
+    "Taxonomies": {
+      "properties": {
+        "taxonomies": {
+          "items": {
+            "$ref": "#/definitions/Taxonomy"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "taxonomies"
+      ],
+      "type": "object"
+    },
+    "Taxonomy": {
+      "properties": {
+        "ci_type": {
+          "type": "string"
+        },
+        "ci_type_code": {
+          "type": "string"
+        },
+        "end_date": {
+          "type": "string"
+        },
+        "legal_reason_collection": {
+          "type": "string"
+        },
+        "macro_area_ci_progressive": {
+          "type": "string"
+        },
+        "macro_area_description": {
+          "type": "string"
+        },
+        "macro_area_name": {
+          "type": "string"
+        },
+        "service_type": {
+          "type": "string"
+        },
+        "service_type_code": {
+          "type": "string"
+        },
+        "service_type_description": {
+          "type": "string"
+        },
+        "specific_built_in_data": {
+          "type": "string"
+        },
+        "start_date": {
+          "type": "string"
+        },
+        "taxonomy_version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ci_type",
+        "ci_type_code",
+        "end_date",
+        "legal_reason_collection",
+        "macro_area_ci_progressive",
+        "macro_area_description",
+        "macro_area_name",
+        "service_type",
+        "service_type_code",
+        "service_type_description",
+        "specific_built_in_data",
+        "start_date",
+        "taxonomy_version"
+      ],
+      "type": "object"
+    },
+    "Touchpoint": {
+      "properties": {
+        "created_date": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Touchpoints": {
+      "properties": {
+        "pageInfo": {
+          "$ref": "#/definitions/PageInfo"
+        },
+        "touchpoints": {
+          "items": {
+            "$ref": "#/definitions/Touchpoint"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "UpdateCreditorInstitutionDto": {
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/CreditorInstitutionAddressDto"
+        },
+        "businessName": {
+          "type": "string"
+        },
+        "creditorInstitutionCode": {
+          "maxLength": 30,
+          "minLength": 0,
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "pspPayment": {
+          "type": "boolean"
+        },
+        "reportingFtp": {
+          "type": "boolean"
+        },
+        "reportingZip": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "address",
+        "businessName",
+        "creditorInstitutionCode",
+        "enabled",
+        "pspPayment",
+        "reportingFtp",
+        "reportingZip"
+      ],
+      "type": "object"
+    },
+    "WfespPluginConf": {
+      "properties": {
+        "id_bean": {
+          "maxLength": 255,
+          "minLength": 0,
+          "type": "string"
+        },
+        "id_serv_plugin": {
+          "maxLength": 35,
+          "minLength": 0,
+          "type": "string"
+        },
+        "pag_const_string_profile": {
+          "maxLength": 150,
+          "minLength": 0,
+          "type": "string"
+        },
+        "pag_rpt_xpath_profile": {
+          "maxLength": 150,
+          "minLength": 0,
+          "type": "string"
+        },
+        "pag_soap_rule_profile": {
+          "maxLength": 150,
+          "minLength": 0,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id_serv_plugin"
+      ],
+      "type": "object"
+    },
+    "WfespPluginConfs": {
+      "properties": {
+        "wfesp_plugin_confs": {
+          "items": {
+            "$ref": "#/definitions/WfespPluginConf"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "wfesp_plugin_confs"
+      ],
+      "type": "object"
+    },
+    "WrapperChannelDetailsDto": {
+      "properties": {
+        "broker_description": {
+          "type": "string"
+        },
+        "broker_psp_code": {
+          "type": "string"
+        },
+        "channel_code": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "payment_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "redirect_ip": {
+          "type": "string"
+        },
+        "redirect_path": {
+          "type": "string"
+        },
+        "redirect_port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "redirect_protocol": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "redirect_query_string": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        },
+        "target_host": {
+          "type": "string"
+        },
+        "target_path": {
+          "type": "string"
+        },
+        "target_port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "validationUrl": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "broker_description",
+        "broker_psp_code",
+        "channel_code",
+        "payment_types",
+        "redirect_protocol",
+        "target_host",
+        "target_path",
+        "target_port",
+        "validationUrl"
+      ],
+      "type": "object"
+    },
+    "WrapperChannelDetailsResource": {
+      "properties": {
+        "agid": {
+          "type": "boolean"
+        },
+        "broker_description": {
+          "type": "string"
+        },
+        "broker_psp_code": {
+          "type": "string"
+        },
+        "card_chart": {
+          "type": "boolean"
+        },
+        "channel_code": {
+          "type": "string"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "digital_stamp_brand": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "flag_io": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "modified_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "modified_by": {
+          "type": "string"
+        },
+        "modified_by_opt": {
+          "type": "string"
+        },
+        "new_fault_code": {
+          "type": "boolean"
+        },
+        "new_password": {
+          "type": "string"
+        },
+        "nmp_service": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "on_us": {
+          "type": "boolean"
+        },
+        "password": {
+          "type": "string"
+        },
+        "payment_model": {
+          "enum": [
+            "IMMEDIATE",
+            "IMMEDIATE_MULTIBENEFICIARY",
+            "DEFERRED",
+            "ACTIVATED_AT_PSP"
+          ],
+          "type": "string"
+        },
+        "payment_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "primitive_version": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "protocol": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "proxy_enabled": {
+          "type": "boolean"
+        },
+        "proxy_host": {
+          "type": "string"
+        },
+        "proxy_password": {
+          "type": "string"
+        },
+        "proxy_port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "proxy_username": {
+          "type": "string"
+        },
+        "recovery": {
+          "type": "boolean"
+        },
+        "redirect_ip": {
+          "type": "string"
+        },
+        "redirect_path": {
+          "type": "string"
+        },
+        "redirect_port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "redirect_protocol": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "redirect_query_string": {
+          "type": "string"
+        },
+        "rt_push": {
+          "type": "boolean"
+        },
+        "serv_plugin": {
+          "type": "string"
+        },
+        "service": {
+          "type": "string"
+        },
+        "target_host": {
+          "type": "string"
+        },
+        "target_host_nmp": {
+          "type": "string"
+        },
+        "target_path": {
+          "type": "string"
+        },
+        "target_path_nmp": {
+          "type": "string"
+        },
+        "target_port": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "target_port_nmp": {
+          "type": "string"
+        },
+        "thread_number": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeout_a": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeout_b": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "timeout_c": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "type": {
+          "enum": [
+            "CHANNEL",
+            "STATION"
+          ],
+          "type": "string"
+        },
+        "wrapperStatus": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "channel_code"
+      ],
+      "type": "object"
+    },
+    "WrapperChannelResource": {
+      "properties": {
+        "broker_description": {
+          "type": "string"
+        },
+        "channel_code": {
+          "type": "string"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "modifiedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "wrapperStatus": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "channel_code",
+        "wrapperStatus"
+      ],
+      "type": "object"
+    },
+    "WrapperChannelsResource": {
+      "properties": {
+        "channels": {
+          "items": {
+            "$ref": "#/definitions/WrapperChannelResource"
+          },
+          "type": "array"
+        },
+        "page_info": {
+          "$ref": "#/definitions/PageInfo"
+        }
+      },
+      "type": "object"
+    },
+    "WrapperEntitiesList": {
+      "properties": {
+        "page_info": {
+          "$ref": "#/definitions/PageInfo"
+        },
+        "wrapper_entities": {
+          "items": {
+            "$ref": "#/definitions/WrapperEntitiesOperationsObject"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "page_info",
+        "wrapper_entities"
+      ],
+      "type": "object"
+    },
+    "WrapperEntitiesOperations": {
+      "properties": {
+        "brokerCode": {
+          "type": "string"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "modifiedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "modifiedBy": {
+          "type": "string"
+        },
+        "modifiedByOpt": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "CHANNEL",
+            "STATION"
+          ],
+          "type": "string"
+        },
+        "wrapperEntityOperationsSortedList": {
+          "items": {
+            "$ref": "#/definitions/WrapperEntityOperationsObject"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "WrapperEntitiesOperationsObject": {
+      "properties": {
+        "brokerCode": {
+          "type": "string"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "modifiedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "modifiedBy": {
+          "type": "string"
+        },
+        "modifiedByOpt": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "CHANNEL",
+            "STATION"
+          ],
+          "type": "string"
+        },
+        "wrapperEntityOperationsSortedList": {
+          "items": {
+            "$ref": "#/definitions/WrapperEntityOperationsObject"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "WrapperEntitiesOperationsStationDetails": {
+      "properties": {
+        "brokerCode": {
+          "type": "string"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "modifiedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "modifiedBy": {
+          "type": "string"
+        },
+        "modifiedByOpt": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "CHANNEL",
+            "STATION"
+          ],
+          "type": "string"
+        },
+        "wrapperEntityOperationsSortedList": {
+          "items": {
+            "$ref": "#/definitions/WrapperEntityOperationsStationDetails"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "WrapperEntityOperationsObject": {
+      "properties": {
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "entity": {
+          "type": "object"
+        },
+        "id": {
+          "type": "string"
+        },
+        "modifiedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "modifiedBy": {
+          "type": "string"
+        },
+        "modifiedByOpt": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "CHANNEL",
+            "STATION"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "WrapperEntityOperationsStationDetails": {
+      "properties": {
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "entity": {
+          "$ref": "#/definitions/StationDetails"
+        },
+        "id": {
+          "type": "string"
+        },
+        "modifiedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "modifiedBy": {
+          "type": "string"
+        },
+        "modifiedByOpt": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "CHANNEL",
+            "STATION"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "WrapperStationDetailsDto": {
+      "properties": {
+        "brokerCode": {
+          "type": "string"
+        },
+        "broker_description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string"
+        },
+        "pofService": {
+          "type": "string"
+        },
+        "primitiveVersion": {
+          "format": "int32",
+          "maximum": 2,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "redirectIp": {
+          "type": "string"
+        },
+        "redirectPath": {
+          "type": "string"
+        },
+        "redirectPort": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "redirectProtocol": {
+          "enum": [
+            "HTTPS",
+            "HTTP"
+          ],
+          "type": "string"
+        },
+        "redirectQueryString": {
+          "type": "string"
+        },
+        "service": {
+          "type": "string"
+        },
+        "stationCode": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        },
+        "targetHost": {
+          "type": "string"
+        },
+        "targetHostPof": {
+          "type": "string"
+        },
+        "targetPath": {
+          "type": "string"
+        },
+        "targetPathPof": {
+          "type": "string"
+        },
+        "targetPort": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "targetPortPof": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "validationUrl": {
+          "type": "string"
+        },
+        "version": {
+          "format": "int64",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "primitiveVersion",
+        "redirectIp",
+        "redirectPath",
+        "redirectPort",
+        "redirectProtocol",
+        "redirectQueryString",
+        "stationCode",
+        "validationUrl"
+      ],
+      "type": "object"
+    },
+    "WrapperStationResource": {
+      "properties": {
+        "activationDate": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "associatedCreditorInstitutions": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "brokerDescription": {
+          "type": "string"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "modifiedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "pofService": {
+          "type": "string"
+        },
+        "service": {
+          "type": "string"
+        },
+        "stationCode": {
+          "type": "string"
+        },
+        "targetHost": {
+          "type": "string"
+        },
+        "targetHostPof": {
+          "type": "string"
+        },
+        "targetPath": {
+          "type": "string"
+        },
+        "targetPathPof": {
+          "type": "string"
+        },
+        "targetPort": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "targetPortPof": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "version": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "wrapperStatus": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "associatedCreditorInstitutions",
+        "enabled",
+        "stationCode",
+        "version",
+        "wrapperStatus"
+      ],
+      "type": "object"
+    },
+    "WrapperStationsResource": {
+      "properties": {
+        "pageInfo": {
+          "$ref": "#/definitions/PageInfo"
+        },
+        "stationsList": {
+          "items": {
+            "$ref": "#/definitions/WrapperStationResource"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "pageInfo",
+        "stationsList"
+      ],
+      "type": "object"
+    }
+  },
+  "securityDefinitions": {
+    "JWT": {
+      "description": "JWT token get after Login",
+      "in": "header",
+      "name": "Authorization",
+      "type": "apiKey"
+    },
+    "SubKey": {
+      "description": "The Azure Subscription Key to access this API.",
+      "in": "header",
+      "name": "Ocp-Apim-Subscription-Key",
+      "type": "apiKey"
+    }
+  },
+  "x-components": {}
+}
