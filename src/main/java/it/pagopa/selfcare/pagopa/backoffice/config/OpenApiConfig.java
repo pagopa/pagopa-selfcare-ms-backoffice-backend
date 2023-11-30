@@ -27,7 +27,7 @@ public class OpenApiConfig {
 
     @Bean
   OpenAPI customOpenAPI(
-      @Value("${info.application.artifactId}") String appName,
+      @Value("${info.application.name}") String appName,
       @Value("${info.application.description}") String appDescription,
       @Value("${info.application.version}") String appVersion) {
     return new OpenAPI()
