@@ -131,7 +131,7 @@ microservice-chart:
                 values:
                   - user
   canaryDelivery:
-    create: false
+    create: true
     ingress:
       create: true
       canary:
@@ -145,7 +145,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 0.4.2
+        tag: 0.4.66-2-reengineering
         pullPolicy: Always
       envConfig: {}
       envSecret: {}
