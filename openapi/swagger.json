@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "pagopa-selfcare-ms-backoffice",
-    "version": "0.4.66"
+    "version": "0.4.66-2-reengineering"
   },
   "host": "localhost:8080",
   "basePath": "/",
@@ -5621,11 +5621,9 @@
         },
         "institution_type": {
           "enum": [
-            "AS",
             "PA",
             "GSP",
             "PT",
-            "PG",
             "SCP",
             "PSP",
             "SA"
@@ -5646,8 +5644,10 @@
         }
       },
       "required": [
+        "address",
         "attributes",
         "description",
+        "digital_address",
         "external_id",
         "id",
         "institution_type",
@@ -5698,16 +5698,17 @@
         "external_id": {
           "type": "string"
         },
+        "fiscal_code": {
+          "type": "string"
+        },
         "id": {
           "type": "string"
         },
         "institution_type": {
           "enum": [
-            "AS",
             "PA",
             "GSP",
             "PT",
-            "PG",
             "SCP",
             "PSP",
             "SA"
@@ -5735,9 +5736,6 @@
         "status": {
           "type": "string"
         },
-        "tax_code": {
-          "type": "string"
-        },
         "user_product_roles": {
           "items": {
             "type": "string"
@@ -5746,13 +5744,15 @@
         }
       },
       "required": [
+        "address",
         "external_id",
+        "fiscal_code",
         "id",
+        "mail_address",
         "name",
         "origin",
         "origin_id",
         "status",
-        "tax_code",
         "user_product_roles"
       ],
       "type": "object"
@@ -5769,10 +5769,6 @@
         },
         "page": {
           "format": "int32",
-          "type": "integer"
-        },
-        "total_items": {
-          "format": "int64",
           "type": "integer"
         },
         "total_pages": {
