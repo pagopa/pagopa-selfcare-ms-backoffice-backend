@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.REGEX_GENERATE;
 import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
@@ -127,14 +128,14 @@ public class PaymentServiceProviderService {
         List<Channel> codeList = response.getChannelList();
         List<String> codes = codeList.stream().map(Channel::getChannelCode)
                 .filter(s -> s.matches(REGEX_GENERATE)) // String_nn
-                .toList();
+                .collect(Collectors.toList());
         return generator(codes, pspCode);
     }
 
     private String generateChannelCodeV2(List<WrapperChannel> stationList, String ecCode) {
         List<String> codes = stationList.stream().map(WrapperChannel::getChannelCode)
                 .filter(s -> s.matches(REGEX_GENERATE))
-                .toList();
+                .collect(Collectors.toList());
         return generator(codes, ecCode);
     }
 

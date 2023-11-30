@@ -23,6 +23,7 @@ import org.springframework.util.Assert;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -52,7 +53,7 @@ public class ApiManagementService {
         Collection<InstitutionInfo> institutions = externalApiClient.getInstitutions(Utility.extractUserIdFromAuth(authentication));
         return institutions.stream()
                 .map(institution -> modelMapper.map(institution, InstitutionDetail.class))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public Institution getInstitution(String institutionId) {
