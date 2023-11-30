@@ -3,7 +3,7 @@ name: pagopa-selfcare-ms-backoffice
 description: Microservice that manage api keys for pagopa product from selfcare
 type: application
 version: 0.118.0
-appVersion: "0.5.3-1-PASELC-622-errore-durante-la-creazione-ec-gia-censito"
+appVersion: "0.5.4"
 dependencies:
   - name: microservice-chart
     version: 2.4.0

@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "0.5.3-1-PASELC-622-errore-durante-la-creazione-ec-gia-censito"
+    tag: "0.5.4"
     pullPolicy: Always
   livenessProbe:
     httpGet:

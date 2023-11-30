@@ -3,7 +3,7 @@
   "info": {
     "title": "pagopa-selfcare-ms-backoffice",
     "description": "PagoPa backoffice API documentation",
-    "version": "0.5.3-1-PASELC-622-errore-durante-la-creazione-ec-gia-censito"
+    "version": "0.5.4"
   },
   "servers": [
     {
