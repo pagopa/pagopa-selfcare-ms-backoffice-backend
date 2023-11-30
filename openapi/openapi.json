@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "pagopa-selfcare-ms-backoffice",
-    "version": "0.4.66-1-reengineering"
+    "version": "0.4.66-2-reengineering"
   },
   "servers": [
     {

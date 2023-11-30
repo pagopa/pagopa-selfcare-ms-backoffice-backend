@@ -145,7 +145,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 0.4.66-1-reengineering
+        tag: 0.4.66-2-reengineering
         pullPolicy: Always
       envConfig: {}
       envSecret: {}
