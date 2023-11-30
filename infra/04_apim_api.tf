@@ -12,7 +12,7 @@ locals {
 
 }
 
-resource "azurerm_api_management_api_version_set" "api_backoffice_apiConfig_api" {
+resource "azurerm_api_management_api_version_set" "api_backoffice_api" {
   name                = format("%s-${local.repo_name}", var.env_short)
   resource_group_name = local.apim.rg
   api_management_name = local.apim.name
@@ -20,7 +20,7 @@ resource "azurerm_api_management_api_version_set" "api_backoffice_apiConfig_api"
   versioning_scheme   = "Segment"
 }
 
-module "apim_api_backoffice_apiConfig_api_v1" {
+module "apim_api_backoffice_api_v1" {
   source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v6.7.0"
 
   name                  = format("%s-${local.repo_name}", var.env_short)
@@ -29,7 +29,7 @@ module "apim_api_backoffice_apiConfig_api_v1" {
   product_ids           = [local.apim.product_id]
   subscription_required = false
 
-  version_set_id = azurerm_api_management_api_version_set.api_backoffice_apiConfig_api.id
+  version_set_id = azurerm_api_management_api_version_set.api_backoffice_api.id
   api_version    = "v1"
 
   description  = local.description
