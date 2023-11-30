@@ -4,7 +4,7 @@
     "description" : "Microservice to manage PagoPA Backoffice",
     "termsOfService" : "https://www.pagopa.gov.it/",
     "title" : "pagopa-selfcare-ms-backoffice",
-    "version" : "0.4.66"
+    "version" : "0.4.66-3-reengineering"
   },
   "servers" : [ {
     "url" : "http://localhost:8080"
@@ -2175,7 +2175,7 @@
         "responses" : {
           "200" : {
             "content" : {
-              "application/json" : {
+              "*/*" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/AppInfo"
                 }
@@ -2190,79 +2190,10 @@
                 }
               }
             }
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description" : "Bad Request",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          },
-          "403" : {
-            "description" : "Forbidden",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description" : "Service unavailable",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
           }
         },
         "security" : [ {
-          "ApiKey" : [ ]
+          "JWT" : [ ]
         } ],
         "summary" : "health check",
         "tags" : [ "Home" ]
@@ -5647,18 +5578,6 @@
           }
         }
       },
-      "InvalidParam" : {
-        "required" : [ "name", "reason" ],
-        "type" : "object",
-        "properties" : {
-          "name" : {
-            "type" : "string"
-          },
-          "reason" : {
-            "type" : "string"
-          }
-        }
-      },
       "PageInfo" : {
         "type" : "object",
         "properties" : {
@@ -5805,36 +5724,6 @@
             "items" : {
               "$ref" : "#/components/schemas/PaymentType"
             }
-          }
-        }
-      },
-      "Problem" : {
-        "required" : [ "title" ],
-        "type" : "object",
-        "properties" : {
-          "detail" : {
-            "type" : "string"
-          },
-          "instance" : {
-            "type" : "string"
-          },
-          "invalidParams" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/InvalidParam"
-            }
-          },
-          "status" : {
-            "maximum" : 599,
-            "minimum" : 100,
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "title" : {
-            "type" : "string"
-          },
-          "type" : {
-            "type" : "string"
           }
         }
       },

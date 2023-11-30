@@ -1,8 +1,8 @@
 locals {
   repo_name = "pagopa-selfcare-ms-backoffice-backend"
 
-  display_name = "PagoPA backoffice"
-  description  = "API to manage PSP and EC configurations"
+  display_name = "Selfcare Backoffice"
+  description  = "API to manage pagoPA Selcare Backoffice"
   path  = "backoffice"
 
   host         = "api.${var.apim_dns_zone_prefix}.${var.external_domain}"
