@@ -37,7 +37,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/error",
             "/actuator/**",
             "/channels/getBrokersPsp/**",
-            "/stations/brokers-EC/**"
+            "/stations/brokers-EC/**",
+            "/info"
     };
 
     private final ObjectMapper objectMapper;

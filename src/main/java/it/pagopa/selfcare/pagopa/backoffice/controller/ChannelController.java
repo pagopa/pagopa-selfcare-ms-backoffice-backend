@@ -46,6 +46,7 @@ public class ChannelController {
 
     @GetMapping(value = "/{channel-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get channel's details", security = {@SecurityRequirement(name = "JWT")})
     public ChannelDetailsResource getChannelDetails(@Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode) {
 
         return channelService.getChannel(channelCode);
@@ -135,6 +136,7 @@ public class ChannelController {
 
     @GetMapping(value = "/merged/{channel-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get channel's details from cosmos db merged whit apiConfig", security = {@SecurityRequirement(name = "JWT")})
     public ChannelDetailsResource getChannelDetail(@Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode) {
 
         return channelService.getChannelToBeValidated(channelCode);
