@@ -34,8 +34,7 @@ public class Product {
     @JsonProperty(value = "url_public")
     private String urlPublic;
 
-    @ApiModelProperty(value = "URL that redirects to the back-office section, where is possible to manage the product", required = true)
+    @ApiModelProperty(value = "URL that redirects to the back-office section, where is possible to manage the product")
     @JsonProperty(value = "url_bo")
-    @NotBlank
     private String urlBO;
 }
