@@ -3,14 +3,10 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -57,7 +53,7 @@ public class ApiManagementService {
     }
 
     public Institution getInstitution(String institutionId) {
-        return externalApiClient.getInstitution(institutionId);
+        return modelMapper.map(externalApiClient.getInstitution(institutionId), Institution.class);
     }
 
     public List<Product> getInstitutionProducts(String institutionId) {
@@ -76,12 +72,12 @@ public class ApiManagementService {
     public List<InstitutionApiKeys> createSubscriptionKeys(String institutionId, String subscriptionCode) {
         Subscription subscriptionEnum = Subscription.valueOf(subscriptionCode);
         String scope = subscriptionEnum.getScope();
-        String subscriptionId = subscriptionEnum.getPrefixId();
         String subscriptionName = subscriptionEnum.getDisplayName();
-        Institution institution = externalApiClient.getInstitution(institutionId);
-        if (institution != null) {
+        InstitutionResponse institution = externalApiClient.getInstitution(institutionId);
+        if(institution != null) {
+            String subscriptionId = subscriptionEnum.getPrefixId() + institution.getTaxCode();
             try {
-                apimClient.createInstitutionSubscription(institutionId, institution.getDescription(), scope, subscriptionId, subscriptionName + " "+ institution.getDescription());
+                apimClient.createInstitutionSubscription(institutionId, institution.getDescription(), scope, subscriptionId, subscriptionName + " " + institution.getDescription());
             } catch (RuntimeException e) {
                 CreateInstitutionApiKeyDto dto = new CreateInstitutionApiKeyDto();
                 dto.setDescription(institution.getDescription());
@@ -99,8 +95,8 @@ public class ApiManagementService {
     public List<InstitutionApiKeys> createInstitutionKeys(String institutionId) {
         Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
 
-        Institution institution = externalApiClient.getInstitution(institutionId);
-        if (institution != null) {
+        InstitutionResponse institution = externalApiClient.getInstitution(institutionId);
+        if(institution != null) {
 
             try {
                 apimClient.createInstitutionSubscription(institutionId, institution.getDescription(), "/apis", SUBSCRIPTION_APIS_ID.concat(institutionId), SUBSCRIPTION_APIS_DISPLAY);

@@ -1,0 +1,9 @@
+Open MongoDB Compass, use the MongoSH terminal and execute the following scripts:
+
+use pagopaBackoffice
+
+db.getCollection("wrappers").updateMany({}, { $set: { "_class":"it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities"} })
+
+db.getCollection("wrappers").updateMany({type : 'STATION'}, { $set: { "entities.$[].entity._class":"it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails"} })
+
+db.getCollection("wrappers").updateMany({type : 'CHANNEL'}, { $set: { "entities.$[].entity._class":"it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails"} })
