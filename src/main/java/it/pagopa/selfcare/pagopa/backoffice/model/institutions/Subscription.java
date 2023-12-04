@@ -4,9 +4,9 @@ public enum Subscription {
 
     NODOAUTH("/products/nodo-auth", "Connessione con nodo", "nodauth-"),
     GPD("/products/debt-positions", "Integrazione Asincrona - Posizioni Debitorie", "gdp-"),
-    BIZ("/products/bizevents", "Recupero Ricevuta", "bes-"),
+    BIZ("/products/bizevents", "Recupero Ricevuta", "biz-"),
     GPD_REP("/products/product-gpd-reporting", "Integrazione Asincrona - Gestione flussi di rendicontazione", "gpdrep-"),
-    GPD_PAY("/products/gpd-payments-rest-aks", "Integrazione Asincrona - Ricevute", "gpdpayra-");
+    GPD_PAY("/products/gpd-payments-rest-aks", "Integrazione Asincrona - Ricevute", "gpdpay-");
 
     private final String scope;
     private final String displayName;
