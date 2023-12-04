@@ -38,3 +38,4 @@ build/
 
 *.env*
 **/**/.java-version
+infra/.terraform/
