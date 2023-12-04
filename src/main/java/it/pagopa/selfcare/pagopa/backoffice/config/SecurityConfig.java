@@ -20,6 +20,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Configuration
@@ -95,7 +99,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 })
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .cors().and()
+                .cors().configurationSource(request -> {
+                    CorsConfiguration corsConfiguration = new CorsConfiguration();
+                    corsConfiguration.setAllowedOrigins(List.of("*"));
+                    corsConfiguration.setAllowedMethods(List.of("*"));
+                    corsConfiguration.setAllowedHeaders(List.of("*"));
+                    return corsConfiguration;
+                })
+                .and()
                 .csrf().disable()
                 .formLogin().disable()
                 .logout().disable()
