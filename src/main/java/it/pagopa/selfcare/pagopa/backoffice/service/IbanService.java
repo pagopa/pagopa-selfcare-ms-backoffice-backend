@@ -46,7 +46,7 @@ public class IbanService {
                             .filter(f -> !(f.getName().equals(dto.getLabels().get(0).getName())))
                             .collect(Collectors.toList());
                     ibanCreate.setLabels(ibanLabelList);
-                    apiConfigClient.updateCreditorInstitutionIbans(ciCode, ibanValue, ibanCreate);
+                    apiConfigClient.updateCreditorInstitutionIbans(ciCode, iban.getIban(), ibanCreate);
                 });
             }
         }
