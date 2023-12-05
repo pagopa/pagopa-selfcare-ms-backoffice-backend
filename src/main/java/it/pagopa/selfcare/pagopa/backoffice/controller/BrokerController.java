@@ -32,7 +32,7 @@ public class BrokerController {
         return brokerService.createBroker(brokerDto);
     }
 
-    @GetMapping(value = "/", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get paginated list of creditor brokers", security = {@SecurityRequirement(name = "JWT")})
     public BrokersResource getBrokersEC(@Parameter(description = "") @RequestParam(required = false, defaultValue = "50") Integer limit,
