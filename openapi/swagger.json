@@ -21,58 +21,6 @@
           "type": "string"
         }
       ],
-      "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/BrokerDto"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "type": "string"
-              }
-            },
-            "schema": {
-              "$ref": "#/definitions/BrokerResource"
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "tags": [
-          "Creditor institution's Brokers"
-        ],
-        "operationId": "createBroker_1",
-        "summary": "Create a Broker"
-      }
-    },
-    "/brokers/": {
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "type": "string"
-        }
-      ],
       "get": {
         "produces": [
           "application/json"
@@ -146,6 +94,48 @@
         ],
         "operationId": "getBrokersEC",
         "summary": "Get paginated list of creditor brokers"
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BrokerDto"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/BrokerResource"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institution's Brokers"
+        ],
+        "operationId": "createBroker_1",
+        "summary": "Create a Broker"
       }
     },
     "/brokers/{broker-code}": {
@@ -4553,6 +4543,9 @@
             "$ref": "#/definitions/BrokerResource"
           },
           "type": "array"
+        },
+        "page_info": {
+          "$ref": "#/definitions/PageInfo"
         }
       },
       "type": "object"
