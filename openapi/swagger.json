@@ -2286,6 +2286,64 @@
         "summary": "Retrieves all the onboarded institutions related to the logged user"
       }
     },
+    "/institutions/delegations": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Institution's unique internal identifier",
+            "in": "query",
+            "name": "institution-id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Broker's unique id",
+            "in": "query",
+            "name": "brokerId",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Delegation"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Institutions"
+        ],
+        "operationId": "getBrokerDelegation",
+        "summary": "Retrieve all active delegations for given institution broker and logged user"
+      }
+    },
     "/institutions/{institution-id}": {
       "parameters": [
         {
@@ -2431,64 +2489,6 @@
         ],
         "operationId": "createInstitutionApiKeys",
         "summary": "Creates a new subscription for a given Institution and returns its primary and secondary keys"
-      }
-    },
-    "/institutions/{institution-id}/delegations": {
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "type": "string"
-        }
-      ],
-      "get": {
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "description": "Institution's unique internal identifier",
-            "in": "path",
-            "name": "institution-id",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "Broker's unique id",
-            "in": "query",
-            "name": "brokerId",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "type": "string"
-              }
-            },
-            "schema": {
-              "items": {
-                "$ref": "#/definitions/Delegation"
-              },
-              "type": "array"
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "tags": [
-          "Institutions"
-        ],
-        "operationId": "getBrokerDelegation",
-        "summary": "Retrieve all active delegations for given institution broker and logged user"
       }
     },
     "/institutions/{institution-id}/products": {

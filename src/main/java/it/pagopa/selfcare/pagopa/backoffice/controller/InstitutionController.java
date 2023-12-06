@@ -37,6 +37,15 @@ public class InstitutionController {
         return apiManagementService.getInstitutions();
     }
 
+    @GetMapping("/delegations")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Retrieve all active delegations for given institution broker and logged user", security = {@SecurityRequirement(name = "JWT")})
+    public List<Delegation> getBrokerDelegation(@Parameter(description = "Institution's unique internal identifier") @RequestParam(required = false, value = "institution-id") String institutionId,
+                                                @Parameter(description = "Broker's unique id") @RequestParam(required = false, value = "brokerId") String brokerId) {
+
+        return apiManagementService.getBrokerDelegation(institutionId, brokerId);
+    }
+
     @GetMapping("/{institution-id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieves the details of an institution", security = {@SecurityRequirement(name = "JWT")})
@@ -51,15 +60,6 @@ public class InstitutionController {
     public List<Product> getInstitutionProducts(@Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId) {
 
         return apiManagementService.getInstitutionProducts(institutionId);
-    }
-
-    @GetMapping("/{institution-id}/delegations")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Retrieve all active delegations for given institution broker and logged user", security = {@SecurityRequirement(name = "JWT")})
-    public List<Delegation> getBrokerDelegation(@Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") String institutionId,
-                                                @Parameter(description = "Broker's unique id") @RequestParam(required = false, value = "brokerId") String brokerId) {
-
-        return apiManagementService.getBrokerDelegation(institutionId, brokerId);
     }
 
     @GetMapping("/{institution-id}/api-keys")
