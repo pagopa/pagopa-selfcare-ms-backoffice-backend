@@ -2253,7 +2253,7 @@
           "description" : "Institution's unique internal identifier",
           "in" : "query",
           "name" : "institution-id",
-          "required" : true,
+          "required" : false,
           "schema" : {
             "type" : "string"
           }

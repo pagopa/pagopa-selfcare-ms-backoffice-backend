@@ -40,7 +40,7 @@ public class InstitutionController {
     @GetMapping("/delegations")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve all active delegations for given institution broker and logged user", security = {@SecurityRequirement(name = "JWT")})
-    public List<Delegation> getBrokerDelegation(@Parameter(description = "Institution's unique internal identifier") @RequestParam("institution-id") String institutionId,
+    public List<Delegation> getBrokerDelegation(@Parameter(description = "Institution's unique internal identifier") @RequestParam(required = false, value = "institution-id") String institutionId,
                                                 @Parameter(description = "Broker's unique id") @RequestParam(required = false, value = "brokerId") String brokerId) {
 
         return apiManagementService.getBrokerDelegation(institutionId, brokerId);
