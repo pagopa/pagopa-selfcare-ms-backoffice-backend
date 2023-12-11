@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "spring-boot-starter-parent",
-    "version": "1.1.4"
+    "version": "1.1.5"
   },
   "host": "localhost:8080",
   "basePath": "/",
