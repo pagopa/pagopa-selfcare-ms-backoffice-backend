@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import lombok.Data;
 
 import java.util.List;
+
 @Data
 public class WrapperStationsResource {
     @ApiModelProperty(value = "List of ec stations", required = true)

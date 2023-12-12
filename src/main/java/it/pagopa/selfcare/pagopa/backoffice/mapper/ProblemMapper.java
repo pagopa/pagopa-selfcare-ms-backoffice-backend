@@ -5,8 +5,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
-
 public class ProblemMapper {
 
     public static ResponseEntity<Problem> toResponseEntity(Problem problem) {

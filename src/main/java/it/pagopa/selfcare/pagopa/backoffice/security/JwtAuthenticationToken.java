@@ -11,7 +11,7 @@ import java.util.Collection;
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     private final String token;
     private Object principal;
-    
+
     public JwtAuthenticationToken(@Secret final String token) {
         super(null);
         setAuthenticated(false);
@@ -24,7 +24,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         principal = user;
         super.setAuthenticated(true); // must use super, as we override
     }
-    
+
     @Override
     public String getCredentials() {
         return token;

@@ -1,11 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.ExternalFeignConfig;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionResponse;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +31,7 @@ public interface ExternalApiClient {
 
     @GetMapping(value = "/delegations", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    List<Delegation> getBrokerDelegation(@RequestParam String institutionId, @RequestParam String brokerId, @RequestParam String productId, @RequestParam String mode);
+    List<DelegationExternal> getBrokerDelegation(@RequestParam String institutionId, @RequestParam String brokerId, @RequestParam String productId, @RequestParam String mode);
 
 
 }

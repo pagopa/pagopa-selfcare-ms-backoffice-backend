@@ -1,9 +1,9 @@
 package it.pagopa.selfcare.pagopa.backoffice.util;
 
+import it.pagopa.selfcare.pagopa.backoffice.model.SelfCareUser;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannel;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
-import it.pagopa.selfcare.pagopa.backoffice.model.SelfCareUser;
 import org.springframework.security.core.Authentication;
 
 import java.util.ArrayList;
@@ -14,12 +14,13 @@ import java.util.stream.Collectors;
 
 public class Utility {
 
-    private Utility() {}
+    private Utility() {
+    }
 
 
     public static String extractUserIdFromAuth(Authentication authentication) {
         String userIdForAuth = "";
-        if (authentication != null && authentication.getPrincipal() instanceof SelfCareUser) {
+        if(authentication != null && authentication.getPrincipal() instanceof SelfCareUser) {
             var user = (SelfCareUser) authentication.getPrincipal();
             userIdForAuth = user.getId();
         }
@@ -36,9 +37,9 @@ public class Utility {
                         .collect(Collectors.toList())
         );
 
-        if ("asc".equalsIgnoreCase(sorting)) {
+        if("asc".equalsIgnoreCase(sorting)) {
             mergedList.sort(Comparator.comparing(WrapperChannel::getChannelCode));
-        } else if ("desc".equalsIgnoreCase(sorting)) {
+        } else if("desc".equalsIgnoreCase(sorting)) {
             mergedList.sort(Comparator.comparing(WrapperChannel::getChannelCode, Comparator.reverseOrder()));
         }
         WrapperChannels result = new WrapperChannels();

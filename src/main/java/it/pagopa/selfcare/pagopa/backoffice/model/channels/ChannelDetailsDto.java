@@ -197,8 +197,8 @@ public class ChannelDetailsDto {
     @ApiModelProperty(value = "Represents the authorization to carry out the transfer of the information present in additional payment information in the tags relating to payment by card for the PA in V1")
     private Boolean flagPspCp = false;
 
-    public String getEmail(){
-        String environment = System.getenv("env")!=null?System.getenv("env"):"local";
-        return environment.equals("prod")? getPspEmail():System.getenv("TEST_EMAIL") ;
+    public String getEmail() {
+        String environment = System.getenv("env") != null ? System.getenv("env") : "local";
+        return environment.equals("prod") ? getPspEmail() : System.getenv("TEST_EMAIL");
     }
 }

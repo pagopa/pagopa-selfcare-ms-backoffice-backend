@@ -7,16 +7,19 @@ import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.PermissionDeniedException;
 import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.*;
+import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
+import it.pagopa.selfcare.pagopa.backoffice.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStation;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStations;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
-import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
-import it.pagopa.selfcare.pagopa.backoffice.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +33,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.REGEX_GENERATE;
+import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
 
 @Service
 public class StationService {
@@ -197,7 +200,6 @@ public class StationService {
     }
 
 
-
     public WrapperStationsResource getAllStationsMerged(Integer limit, String stationCode, String brokerCode, Integer page, String sorting) {
 
         Stations stations = getStations(limit, page, sorting, brokerCode, null, stationCode);
@@ -210,13 +212,12 @@ public class StationService {
     }
 
 
-
     private Stations getStations(Integer limit, Integer page, String sort, String brokerCode, String ecCode, String stationCode) {
         Stations response = null;
         try {
             response = apiConfigClient.getStations(limit, page, sort, brokerCode, ecCode, stationCode);
         } catch (Exception e) {
-            if (e.getMessage().contains("[404 Not Found]")) {
+            if(e.getMessage().contains("[404 Not Found]")) {
                 response = new Stations();
                 response.setStationsList(new ArrayList<>());
                 PageInfo pageInfo = new PageInfo();
@@ -253,9 +254,9 @@ public class StationService {
                         .collect(Collectors.toList())
         );
 
-        if ("asc".equalsIgnoreCase(sorting)) {
+        if("asc".equalsIgnoreCase(sorting)) {
             mergedList.sort(Comparator.comparing(WrapperStation::getStationCode));
-        } else if ("desc".equalsIgnoreCase(sorting)) {
+        } else if("desc".equalsIgnoreCase(sorting)) {
             mergedList.sort(Comparator.comparing(WrapperStation::getStationCode, Comparator.reverseOrder()));
         }
         WrapperStations result = new WrapperStations();
@@ -271,13 +272,12 @@ public class StationService {
     }
 
 
-    private String generateStationCodeV2( List<WrapperStation> stationList, String ecCode) {
+    private String generateStationCodeV2(List<WrapperStation> stationList, String ecCode) {
         List<String> codes = stationList.stream().map(WrapperStation::getStationCode)
                 .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toList());
         return generator(codes, ecCode);
     }
-
 
 
 }

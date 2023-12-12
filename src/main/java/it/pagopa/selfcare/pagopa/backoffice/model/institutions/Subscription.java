@@ -12,6 +12,12 @@ public enum Subscription {
     private final String displayName;
     private final String prefixId;
 
+    Subscription(String scope, String displayName, String prefixId) {
+        this.scope = scope;
+        this.displayName = displayName;
+        this.prefixId = prefixId;
+    }
+
     public String getPrefixId() {
         return prefixId;
     }
@@ -22,11 +28,5 @@ public enum Subscription {
 
     public String getScope() {
         return scope;
-    }
-
-    Subscription(String scope, String displayName, String prefixId) {
-        this.scope = scope;
-        this.displayName = displayName;
-        this.prefixId = prefixId;
     }
 }

@@ -4,48 +4,44 @@ import java.time.Instant;
 
 public interface TavoloOpOperations {
 
-    void setId(String id);
-
-    void setTaxCode(String taxCode);
-
-    void setModifiedAt(Instant modifiedAt);
-
-    void setModifiedBy(String modifiedBy);
-
-    void setCreatedAt(Instant createdAt);
-
-    void setCreatedBy(String createdBy);
-
-    void setName(String name);
-
-    void setReferent(String referent);
-
-    void setEmail(String email);
-
-    void setTelephone(String telephone);
-
-
-
     String getId();
 
+    void setId(String id);
 
     Instant getModifiedAt();
 
+    void setModifiedAt(Instant modifiedAt);
+
     String getModifiedBy();
 
+    void setModifiedBy(String modifiedBy);
 
     Instant getCreatedAt();
 
+    void setCreatedAt(Instant createdAt);
+
     String getCreatedBy();
+
+    void setCreatedBy(String createdBy);
 
     String getName();
 
+    void setName(String name);
+
     String getReferent();
+
+    void setReferent(String referent);
 
     String getEmail();
 
+    void setEmail(String email);
+
     String getTelephone();
 
+    void setTelephone(String telephone);
+
     String getTaxCode();
+
+    void setTaxCode(String taxCode);
 
 }

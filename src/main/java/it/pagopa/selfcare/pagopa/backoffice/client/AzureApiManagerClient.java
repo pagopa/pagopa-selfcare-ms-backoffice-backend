@@ -27,10 +27,18 @@ import java.util.stream.Collectors;
 @Service
 public class AzureApiManagerClient {
 
+    private final static Function<UserContract, it.pagopa.selfcare.pagopa.backoffice.model.connector.UserContract> AZURE_USER_CONTRACT_TO_PAGOPA_USER_CONTRACT = userContract -> {
+        it.pagopa.selfcare.pagopa.backoffice.model.connector.UserContract contract = new it.pagopa.selfcare.pagopa.backoffice.model.connector.UserContract();
+        contract.setId(userContract.id());
+        contract.setEmail(userContract.email());
+        contract.setName(userContract.lastName());
+        contract.setFullName(userContract.name());
+        contract.setTaxCode(userContract.firstName());
+        return contract;
+    };
     private final ApiManagementManager manager;
     private final String serviceName;
     private final String resourceGroupName;
-
 
     public AzureApiManagerClient(@Value("${azure.resource-manager.api-manager.service-name}") String serviceName,
                                  @Value("${azure.resource-manager.api-manager.resource-group}") String resourceGroupName,
@@ -48,16 +56,6 @@ public class AzureApiManagerClient {
 
     }
 
-    private final static Function<UserContract, it.pagopa.selfcare.pagopa.backoffice.model.connector.UserContract> AZURE_USER_CONTRACT_TO_PAGOPA_USER_CONTRACT = userContract -> {
-        it.pagopa.selfcare.pagopa.backoffice.model.connector.UserContract contract = new it.pagopa.selfcare.pagopa.backoffice.model.connector.UserContract();
-        contract.setId(userContract.id());
-        contract.setEmail(userContract.email());
-        contract.setName(userContract.lastName());
-        contract.setFullName(userContract.name());
-        contract.setTaxCode(userContract.firstName());
-        return contract;
-    };
-
     public it.pagopa.selfcare.pagopa.backoffice.model.connector.UserContract createInstitution(String institutionId, CreateInstitutionApiKeyDto dto) {
         log.trace("createInstitution start");
         log.debug("createInstitution userId = {}, dto = {}", institutionId, dto);
@@ -67,7 +65,7 @@ public class AzureApiManagerClient {
                 .withExistingService(resourceGroupName, serviceName)
                 .withEmail(dto.getEmail())
                 .withFirstName(dto.getTaxCode())
-                .withLastName(StringUtils.truncateString(StringUtils.validateAndReplace(dto.getDescription(), "-"),100))
+                .withLastName(StringUtils.truncateString(StringUtils.validateAndReplace(dto.getDescription(), "-"), 100))
                 .withConfirmation(Confirmation.SIGNUP)
                 .create();
         it.pagopa.selfcare.pagopa.backoffice.model.connector.UserContract contract = AZURE_USER_CONTRACT_TO_PAGOPA_USER_CONTRACT.apply(userContract);
@@ -136,7 +134,7 @@ public class AzureApiManagerClient {
         log.debug("getApiSubscriptions institutionId = {}", institutionId);
 
         PagedIterable<SubscriptionContract> subscriptionContractList = null;
-        List<InstitutionApiKeys> institutionApiKeysList =null;
+        List<InstitutionApiKeys> institutionApiKeysList = null;
         try {
             subscriptionContractList = manager.userSubscriptions().list(resourceGroupName, serviceName, institutionId);
 
@@ -144,7 +142,7 @@ public class AzureApiManagerClient {
                     .map(contract -> {
                         InstitutionApiKeys apiKeys = new InstitutionApiKeys();
                         Response<SubscriptionKeysContract> response = manager.subscriptions().listSecretsWithResponse(resourceGroupName, serviceName, contract.name(), Context.NONE);
-                        if (response.getValue() != null) {
+                        if(response.getValue() != null) {
                             apiKeys = new InstitutionApiKeys();
                             apiKeys.setPrimaryKey(response.getValue().primaryKey());
                             apiKeys.setSecondaryKey(response.getValue().secondaryKey());
@@ -153,7 +151,7 @@ public class AzureApiManagerClient {
                         }
                         return apiKeys;
                     }).collect(Collectors.toList());
-        }catch (ManagementException e){
+        } catch (ManagementException e) {
             institutionApiKeysList = new ArrayList<>();
         }
         log.debug(Constants.CONFIDENTIAL_MARKER, "getApiSubscriptions response = {}", subscriptionContractList);

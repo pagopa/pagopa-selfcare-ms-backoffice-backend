@@ -24,6 +24,6 @@ public class JiraServiceManagerConfig {
 
     @Bean
     public JiraRestClient jiraRestClient() throws URISyntaxException {
-        return new AsynchronousJiraRestClientFactory().createWithBasicHttpAuthentication( URI.create(jiraUrl), username, password);
+        return new AsynchronousJiraRestClientFactory().createWithBasicHttpAuthentication(URI.create(jiraUrl), username, password);
     }
 }

@@ -10,10 +10,10 @@ import java.util.List;
 @Data
 public class StationDetailsList {
 
-        @JsonProperty("stations")
-        private List<StationDetails> stationsDetailsList;
+    @JsonProperty("stations")
+    private List<StationDetails> stationsDetailsList;
 
-        @JsonProperty("page_info")
-        @NotNull
-        private PageInfo pageInfo;
+    @JsonProperty("page_info")
+    @NotNull
+    private PageInfo pageInfo;
 }

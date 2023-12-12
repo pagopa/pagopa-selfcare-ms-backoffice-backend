@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class PaymentServiceProviderDetails extends  PaymentServiceProvider{
+public class PaymentServiceProviderDetails extends PaymentServiceProvider {
 
     @JsonProperty("abi")
     private String abi;

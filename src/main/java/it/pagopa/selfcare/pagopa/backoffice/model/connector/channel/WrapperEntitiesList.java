@@ -1,8 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.connector.channel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntitiesOperations;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

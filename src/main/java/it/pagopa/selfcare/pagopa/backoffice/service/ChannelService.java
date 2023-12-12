@@ -3,14 +3,14 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
+import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
-import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,7 +118,7 @@ public class ChannelService {
         String modifiedBy = "";
         PspChannelPaymentTypes ptResponse = new PspChannelPaymentTypes();
         try {
-            WrapperEntitiesOperations<ChannelDetails> result =  wrapperService.findById(channelcode);
+            WrapperEntitiesOperations<ChannelDetails> result = wrapperService.findById(channelcode);
             createdBy = result.getCreatedBy();
             modifiedBy = result.getModifiedBy();
             channelDetail = result.getWrapperEntityOperationsSortedList().get(0).getEntity();
@@ -131,7 +131,6 @@ public class ChannelService {
         }
         return ChannelMapper.toResource(channelDetail, ptResponse, status, createdBy, modifiedBy);
     }
-
 
 
     public ChannelsResource getChannels(Integer limit, Integer page, String code, String sort) {

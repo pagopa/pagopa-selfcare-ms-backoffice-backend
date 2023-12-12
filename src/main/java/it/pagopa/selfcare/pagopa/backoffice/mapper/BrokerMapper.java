@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 
 public class BrokerMapper {
 
-    public static BrokerDetails fromDto(BrokerDto brokerDto){
-        if(brokerDto == null){
+    public static BrokerDetails fromDto(BrokerDto brokerDto) {
+        if(brokerDto == null) {
             return null;
         }
         BrokerDetails response = new BrokerDetails();
@@ -25,8 +25,8 @@ public class BrokerMapper {
         return response;
     }
 
-    public static BrokerResource toResource(BrokerDetails broker){
-        if(broker == null){
+    public static BrokerResource toResource(BrokerDetails broker) {
+        if(broker == null) {
             return null;
         }
         BrokerResource response = new BrokerResource();
@@ -39,8 +39,8 @@ public class BrokerMapper {
         return response;
     }
 
-    public static BrokerResource toResource(Broker broker){
-        if(broker == null){
+    public static BrokerResource toResource(Broker broker) {
+        if(broker == null) {
             return null;
         }
         BrokerResource response = new BrokerResource();
@@ -52,8 +52,8 @@ public class BrokerMapper {
         return response;
     }
 
-    public static BrokersResource toResource(Brokers brokers){
-        if(brokers == null){
+    public static BrokersResource toResource(Brokers brokers) {
+        if(brokers == null) {
             return null;
         }
 

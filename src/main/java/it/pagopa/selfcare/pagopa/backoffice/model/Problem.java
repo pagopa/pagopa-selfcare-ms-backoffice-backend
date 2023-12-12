@@ -59,7 +59,7 @@ public class Problem implements Serializable {
         this.title = httpStatus.getReasonPhrase();
         this.status = httpStatus.value();
         final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        if (requestAttributes != null && ServletRequestAttributes.class.isAssignableFrom(requestAttributes.getClass())) {
+        if(requestAttributes != null && ServletRequestAttributes.class.isAssignableFrom(requestAttributes.getClass())) {
             this.instance = ((ServletRequestAttributes) requestAttributes).getRequest().getRequestURI();
         }
     }

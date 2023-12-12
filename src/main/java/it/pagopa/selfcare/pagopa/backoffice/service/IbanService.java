@@ -1,8 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Iban;
+import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
 import lombok.extern.slf4j.Slf4j;
@@ -37,9 +37,9 @@ public class IbanService {
 
     public Iban updateIban(String ciCode, String ibanValue, IbanCreate dto) {
         // updating labels, owned by other CI, related to the passed IBAN
-        if (!isEmpty(dto.getLabels())) {
+        if(!isEmpty(dto.getLabels())) {
             Ibans ibansEnhanced = apiConfigClient.getCreditorInstitutionIbans(ciCode, dto.getLabels().get(0).getName());
-            if (ibansEnhanced != null && !ObjectUtils.isEmpty(ibansEnhanced.getIbanList())) {
+            if(ibansEnhanced != null && !ObjectUtils.isEmpty(ibansEnhanced.getIbanList())) {
                 ibansEnhanced.getIbanList().forEach(iban -> {
                     IbanCreate ibanCreate = modelMapper.map(iban, IbanCreate.class);
                     List<IbanLabel> ibanLabelList = ibanCreate.getLabels().stream()

@@ -1,11 +1,11 @@
 package it.pagopa.selfcare.pagopa.backoffice.mapper;
 
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannel;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -23,11 +23,11 @@ public class ChannelMapper {
     public static BrokersPspResource toResource(BrokersPsp model) {
         BrokersPspResource resource = null;
         List<BrokerPspResource> list = new ArrayList<>();
-        if (model != null) {
+        if(model != null) {
             resource = new BrokersPspResource();
             resource.setPageInfo(model.getPageInfo());
-            model.getBrokerPspList().forEach(i->{
-               list.add(toResource(i));
+            model.getBrokerPspList().forEach(i -> {
+                list.add(toResource(i));
             });
             resource.setBrokerPspResources(list);
 
@@ -38,7 +38,7 @@ public class ChannelMapper {
 
     public static BrokerPspResource toResource(BrokerPsp model) {
         BrokerPspResource resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new BrokerPspResource();
             resource.setDescription(model.getDescription());
             resource.setEnabled(model.getEnabled());
@@ -50,7 +50,7 @@ public class ChannelMapper {
 
     public static ChannelResource toResource(Channel model) {
         ChannelResource resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new ChannelResource();
             resource.setChannelCode(model.getChannelCode());
             resource.setEnabled(model.getEnabled());
@@ -61,7 +61,7 @@ public class ChannelMapper {
 
     public static ChannelsResource toResource(Channels model) {
         ChannelsResource resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new ChannelsResource();
             List<ChannelResource> channelResourceList = new ArrayList<>();
             for (Channel c : model.getChannelList()) {
@@ -75,7 +75,7 @@ public class ChannelMapper {
 
     public static WrapperChannelDetailsResource toResource(WrapperEntityOperations<ChannelDetails> wrapperModel, PspChannelPaymentTypes listModel) {
         WrapperChannelDetailsResource resource = null;
-        if (wrapperModel != null) {
+        if(wrapperModel != null) {
             ChannelDetails model = wrapperModel.getEntity();
             resource = new WrapperChannelDetailsResource();
             resource.setPassword(model.getPassword());
@@ -132,7 +132,7 @@ public class ChannelMapper {
 
     public static ChannelDetailsResource toResource(ChannelDetails model, PspChannelPaymentTypes listModel) {
         ChannelDetailsResource resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new ChannelDetailsResource();
             resource.setPassword(model.getPassword());
             resource.setNewPassword(model.getNewPassword());
@@ -183,7 +183,7 @@ public class ChannelMapper {
 
     public static ChannelDetailsResource toResource(ChannelDetails model, PspChannelPaymentTypes listModel, WrapperStatus status, String createdBy, String modifiedBy) {
         ChannelDetailsResource resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new ChannelDetailsResource();
             resource.setPassword(model.getPassword());
             resource.setNewPassword(model.getNewPassword());
@@ -239,7 +239,7 @@ public class ChannelMapper {
 
     public static ChannelDetailsResource toResource(ChannelDetails model) {
         ChannelDetailsResource resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new ChannelDetailsResource();
             resource.setPassword(model.getPassword());
             resource.setNewPassword(model.getNewPassword());
@@ -288,7 +288,7 @@ public class ChannelMapper {
 
     public static ChannelDetails fromChannelDetailsDto(ChannelDetailsDto model) {
         ChannelDetails resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new ChannelDetails();
             resource.setPassword(model.getPassword());
             resource.setNewPassword(model.getNewPassword());
@@ -337,7 +337,7 @@ public class ChannelMapper {
 
     public static ChannelDetails fromWrapperChannelDetailsDto(WrapperChannelDetailsDto model) {
         ChannelDetails resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new ChannelDetails();
             resource.setBrokerPspCode(model.getBrokerPspCode());
             resource.setTargetHost(model.getTargetHost());
@@ -362,7 +362,7 @@ public class ChannelMapper {
 
     public static PspChannelResource toResource(PspChannel model) {
         PspChannelResource resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new PspChannelResource();
             resource.setChannelCode(model.getChannelCode());
             resource.setEnabled(model.getEnabled());
@@ -374,7 +374,7 @@ public class ChannelMapper {
     public static PspChannelsResource toResource(PspChannels model) {
         List<PspChannelResource> channelResourceList = new ArrayList<>();
         PspChannelsResource resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new PspChannelsResource();
             List<PspChannel> channels = model.getChannelsList();
             channels.forEach(pspChannel ->
@@ -387,7 +387,7 @@ public class ChannelMapper {
 
     public static PspChannelPaymentTypesResource toResource(PspChannelPaymentTypes model) {
         PspChannelPaymentTypesResource resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new PspChannelPaymentTypesResource();
             resource.setPaymentTypeList(model.getPaymentTypeList());
         }
@@ -396,7 +396,7 @@ public class ChannelMapper {
 
     public static PaymentServiceProviderResource toResource(PaymentServiceProvider model) {
         PaymentServiceProviderResource resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new PaymentServiceProviderResource();
             resource.setEnabled(model.getEnabled());
             resource.setBusinessName(model.getBusinessName());
@@ -408,10 +408,10 @@ public class ChannelMapper {
     public static PaymentServiceProvidersResource toResource(PaymentServiceProviders model) {
         PaymentServiceProvidersResource resource = null;
         List<PaymentServiceProviderResource> paymentServiceProviderResourceList = new ArrayList<>();
-        if (model != null) {
+        if(model != null) {
             resource = new PaymentServiceProvidersResource();
             resource.setPageInfo(model.getPageInfo());
-            if (model.getPaymentServiceProviderList() != null) {
+            if(model.getPaymentServiceProviderList() != null) {
                 model.getPaymentServiceProviderList().forEach(i -> paymentServiceProviderResourceList.add(toResource(i)));
             }
             resource.setPageInfo(model.getPageInfo());
@@ -424,9 +424,9 @@ public class ChannelMapper {
     public static ChannelPspResource toResource(ChannelPsp model) {
         ChannelPspResource resource = null;
         List<String> list = new ArrayList<>();
-        if (model != null) {
+        if(model != null) {
             resource = new ChannelPspResource();
-            if (model.getPaymentTypeList() != null) {
+            if(model.getPaymentTypeList() != null) {
                 model.getPaymentTypeList().forEach(i -> list.add(i));
             }
             resource.setEnabled(model.getEnabled());
@@ -440,9 +440,9 @@ public class ChannelMapper {
     public static ChannelPspListResource toResource(ChannelPspList model) {
         ChannelPspListResource resource = null;
         List<ChannelPspResource> list = new ArrayList<>();
-        if (model != null) {
+        if(model != null) {
             resource = new ChannelPspListResource();
-            if (model.getPsp() != null) {
+            if(model.getPsp() != null) {
                 model.getPsp().forEach(i -> list.add(toResource(i)));
             }
             resource.setPageInfo(model.getPageInfo());
@@ -454,7 +454,7 @@ public class ChannelMapper {
 
     public static BrokerPspDetailsResource toResource(BrokerPspDetails model) {
         BrokerPspDetailsResource resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new BrokerPspDetailsResource();
 
             resource.setDescription(model.getDescription());
@@ -467,7 +467,7 @@ public class ChannelMapper {
 
     public static BrokerPspDetails fromBrokerPspDetailsDto(BrokerPspDetailsDto dto) {
         BrokerPspDetails model = null;
-        if (dto != null) {
+        if(dto != null) {
             model = new BrokerPspDetails();
 
 
@@ -482,7 +482,7 @@ public class ChannelMapper {
 
     public static PaymentServiceProviderDetails fromPaymentServiceProviderDetailsDto(PaymentServiceProviderDetailsDto dto) {
         PaymentServiceProviderDetails model = null;
-        if (dto != null) {
+        if(dto != null) {
             model = new PaymentServiceProviderDetails();
             model.setAbi(dto.getAbi());
             model.setBic(dto.getBic());
@@ -501,9 +501,8 @@ public class ChannelMapper {
 
     public static BrokerPspDetails fromPaymentServiceProviderDetailsDtoToMap(PaymentServiceProviderDetailsDto dto) {
         BrokerPspDetails modelBrokerPsp = null;
-        if (dto != null) {
+        if(dto != null) {
             modelBrokerPsp = new BrokerPspDetails();
-
 
 
             modelBrokerPsp.setBrokerPspCode(dto.getTaxCode());
@@ -518,7 +517,7 @@ public class ChannelMapper {
     public static PaymentServiceProviderDetailsResource toResource(PaymentServiceProviderDetails model) {
         PaymentServiceProviderDetailsResource resource = null;
 
-        if (model != null) {
+        if(model != null) {
             resource = new PaymentServiceProviderDetailsResource();
 
             resource.setAbi(model.getAbi());
@@ -539,7 +538,7 @@ public class ChannelMapper {
     }
 
     public static WrapperChannel toWrapperChannel(Channel model) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
 
@@ -560,7 +559,7 @@ public class ChannelMapper {
     }
 
     public static WrapperChannels toWrapperChannels(Channels model) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
 
@@ -576,7 +575,7 @@ public class ChannelMapper {
 
 
     public static WrapperChannel toWrapperChannel(WrapperEntityOperations<ChannelDetails> wrapperEntityOperations) {
-        if (wrapperEntityOperations == null) {
+        if(wrapperEntityOperations == null) {
             return null;
         }
 
@@ -595,7 +594,7 @@ public class ChannelMapper {
     }
 
     public static WrapperChannels toWrapperChannels(WrapperEntitiesList wrapperEntitiesList) {
-        if (wrapperEntitiesList == null) {
+        if(wrapperEntitiesList == null) {
             return null;
         }
 
@@ -613,7 +612,7 @@ public class ChannelMapper {
     }
 
     public static WrapperChannelsResource toWrapperChannelsResource(WrapperChannels wrapperChannels) {
-        if (wrapperChannels == null) {
+        if(wrapperChannels == null) {
             return null;
         }
 
@@ -628,7 +627,7 @@ public class ChannelMapper {
     }
 
     public static WrapperChannelResource toWrapperChannelResource(WrapperChannel wrapperChannel) {
-        if (wrapperChannel == null) {
+        if(wrapperChannel == null) {
             return null;
         }
 
@@ -647,7 +646,7 @@ public class ChannelMapper {
 
 
     public static ChannelDetailsResourceList fromChannelDetailsList(ChannelDetailsList model) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
         ChannelDetailsResourceList resource = new ChannelDetailsResourceList();

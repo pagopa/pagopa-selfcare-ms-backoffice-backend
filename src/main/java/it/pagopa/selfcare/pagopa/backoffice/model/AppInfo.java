@@ -11,7 +11,7 @@ import lombok.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AppInfo {
 
-  private String name;
-  private String version;
-  private String environment;
+    private String name;
+    private String version;
+    private String environment;
 }

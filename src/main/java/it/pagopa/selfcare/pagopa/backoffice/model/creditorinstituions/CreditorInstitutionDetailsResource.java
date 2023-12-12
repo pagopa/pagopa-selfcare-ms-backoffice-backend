@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.validation.Valid;
 
 @Data
-public class CreditorInstitutionDetailsResource extends CreditorInstitutionResource{
+public class CreditorInstitutionDetailsResource extends CreditorInstitutionResource {
 
 
     @ApiModelProperty(value = "Creditor Institution's address object", required = true)

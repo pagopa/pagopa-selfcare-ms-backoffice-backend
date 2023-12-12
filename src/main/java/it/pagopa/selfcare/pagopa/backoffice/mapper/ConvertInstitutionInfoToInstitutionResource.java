@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.pagopa.backoffice.mapper;
 
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.*;
 import org.modelmapper.Converter;
@@ -11,7 +10,7 @@ public class ConvertInstitutionInfoToInstitutionResource implements Converter<In
 
     private static AssistanceContact convertSupportContact(SupportContact model) {
         AssistanceContact resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new AssistanceContact();
             resource.setSupportEmail(model.getSupportEmail());
             resource.setSupportPhone(model.getSupportPhone());
@@ -21,7 +20,7 @@ public class ConvertInstitutionInfoToInstitutionResource implements Converter<In
 
     private static CompanyInformation convertBusinessData(BusinessData model) {
         CompanyInformation resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new CompanyInformation();
             resource.setRea(model.getRea());
             resource.setShareCapital(model.getShareCapital());
@@ -32,7 +31,7 @@ public class ConvertInstitutionInfoToInstitutionResource implements Converter<In
 
     private static PspData convertPaymentServiceProvider(PaymentServiceProvider model) {
         PspData resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new PspData();
             resource.setBusinessRegisterNumber(model.getBusinessRegisterNumber());
             resource.setLegalRegisterName(model.getLegalRegisterName());
@@ -45,7 +44,7 @@ public class ConvertInstitutionInfoToInstitutionResource implements Converter<In
 
     private static DpoData convertDataProtectionOfficer(DataProtectionOfficer model) {
         DpoData resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new DpoData();
             resource.setAddress(model.getAddress());
             resource.setPec(model.getPec());
@@ -58,7 +57,7 @@ public class ConvertInstitutionInfoToInstitutionResource implements Converter<In
     public InstitutionDetail convert(MappingContext<InstitutionInfo, InstitutionDetail> context) {
         InstitutionInfo model = context.getSource();
         InstitutionDetail resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new InstitutionDetail();
             resource.setId(model.getId());
             resource.setDescription(model.getDescription());
@@ -69,7 +68,7 @@ public class ConvertInstitutionInfoToInstitutionResource implements Converter<In
             resource.setOriginId(model.getOriginId());
             resource.setTaxCode(model.getTaxCode());
             resource.setUserProductRoles(model.getUserProductRoles());
-            if (model.getBilling() != null) {
+            if(model.getBilling() != null) {
                 resource.setRecipientCode(model.getBilling().getRecipientCode());
             }
             resource.setCompanyInformations(convertBusinessData(model.getBusinessData()));

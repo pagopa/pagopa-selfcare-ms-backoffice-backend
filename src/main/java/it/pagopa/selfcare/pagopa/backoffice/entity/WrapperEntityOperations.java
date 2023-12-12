@@ -9,26 +9,39 @@ public interface WrapperEntityOperations<T> {
 //
 //    WrapperEntityOperations<T> createWrapperEntity(T entity);
 
-     void setId(String id);
-     void setType(WrapperType type);
-     void setCreatedAt(Instant createdAt);
+    void setEntity();
 
-     void setModifiedAt(Instant createdAt);
-     void setNote(String note);
-     void setEntity();
+    WrapperStatus getStatus();
 
-     void setModifiedBy(String modifiedBy);
-     void setModifiedByOpt(String modifiedBy);
-     void setStatus(WrapperStatus status);
+    void setStatus(WrapperStatus status);
 
-     WrapperStatus getStatus();
-     String getNote();
-     String getId();
-     WrapperType getType();
-     Instant getCreatedAt();
-     T getEntity();
+    String getNote();
 
-     String getModifiedBy();
-     Instant getModifiedAt();
-     String getModifiedByOpt();
+    void setNote(String note);
+
+    String getId();
+
+    void setId(String id);
+
+    WrapperType getType();
+
+    void setType(WrapperType type);
+
+    Instant getCreatedAt();
+
+    void setCreatedAt(Instant createdAt);
+
+    T getEntity();
+
+    String getModifiedBy();
+
+    void setModifiedBy(String modifiedBy);
+
+    Instant getModifiedAt();
+
+    void setModifiedAt(Instant createdAt);
+
+    String getModifiedByOpt();
+
+    void setModifiedByOpt(String modifiedBy);
 }

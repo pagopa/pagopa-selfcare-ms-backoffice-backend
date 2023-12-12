@@ -13,14 +13,14 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class WrapperStationDetailsDto {
+    @JsonProperty("broker_description")
+    protected String brokerDescription = "";
     @ApiModelProperty(value = "Station's unique identifier", required = true)
     @JsonProperty(required = true)
     @NotBlank
     private String stationCode;
     @ApiModelProperty("Station's broker code")
     private String brokerCode;
-    @JsonProperty("broker_description")
-    protected String brokerDescription="";
     @ApiModelProperty(value = "Station's redirect Ip", required = true)
     @JsonProperty(required = true)
     private String redirectIp;

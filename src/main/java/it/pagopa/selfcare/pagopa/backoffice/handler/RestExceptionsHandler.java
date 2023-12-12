@@ -2,8 +2,8 @@ package it.pagopa.selfcare.pagopa.backoffice.handler;
 
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
-import it.pagopa.selfcare.pagopa.backoffice.model.Problem;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ProblemMapper;
+import it.pagopa.selfcare.pagopa.backoffice.model.Problem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,7 +85,7 @@ public class RestExceptionsHandler {
         HttpStatus httpStatus = Optional.ofNullable(HttpStatus.resolve(e.status()))
                 .filter(status -> !status.is2xxSuccessful())
                 .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
-        if (httpStatus.is4xxClientError()) {
+        if(httpStatus.is4xxClientError()) {
             log.warn(e.toString());
         } else {
             log.error(UNHANDLED_EXCEPTION, e);

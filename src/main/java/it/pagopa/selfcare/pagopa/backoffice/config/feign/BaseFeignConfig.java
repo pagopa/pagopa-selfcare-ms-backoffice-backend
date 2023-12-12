@@ -9,17 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public abstract class BaseFeignConfig {
 
-    private static final String HEADER_REQUEST_ID = "X-Request-Id";
     public static final String SELFCARE_UID = "X-Selfcare-UID";
-
-
-    @Bean
-    public RequestInterceptor commonHeaderInterceptor() {
-        String uid = getSelfcareUserUid();
-        return requestTemplate -> requestTemplate
-                .header(HEADER_REQUEST_ID, MDC.get("requestId"))
-                .header(SELFCARE_UID, uid);
-    }
+    private static final String HEADER_REQUEST_ID = "X-Request-Id";
 
     /**
      * @return the uid from the security context
@@ -28,12 +19,20 @@ public abstract class BaseFeignConfig {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String uid;
         if(auth != null && auth.getPrincipal() != null) {
-                SelfCareUser user = (SelfCareUser) auth.getPrincipal();
-                uid = user.getId();
+            SelfCareUser user = (SelfCareUser) auth.getPrincipal();
+            uid = user.getId();
         } else {
             uid = "";
         }
         return uid;
+    }
+
+    @Bean
+    public RequestInterceptor commonHeaderInterceptor() {
+        String uid = getSelfcareUserUid();
+        return requestTemplate -> requestTemplate
+                .header(HEADER_REQUEST_ID, MDC.get("requestId"))
+                .header(SELFCARE_UID, uid);
     }
 
 }

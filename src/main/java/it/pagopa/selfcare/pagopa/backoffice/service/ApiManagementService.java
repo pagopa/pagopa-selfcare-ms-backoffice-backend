@@ -62,7 +62,10 @@ public class ApiManagementService {
     }
 
     public List<Delegation> getBrokerDelegation(String institutionId, String brokerId) {
-        return externalApiClient.getBrokerDelegation(institutionId, brokerId, "prod-pagopa", "FULL");
+        var response = externalApiClient.getBrokerDelegation(institutionId, brokerId, "prod-pagopa", "FULL");
+        return response.stream()
+                .map(elem -> modelMapper.map(elem, Delegation.class))
+                .collect(Collectors.toList());
     }
 
     public List<InstitutionApiKeys> getInstitutionApiKeys(String institutionId) {

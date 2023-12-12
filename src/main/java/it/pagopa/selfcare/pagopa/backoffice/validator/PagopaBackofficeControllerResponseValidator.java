@@ -12,6 +12,7 @@ import org.springframework.util.Assert;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.*;
+
 @Slf4j
 @Aspect
 @Component
@@ -29,8 +30,8 @@ public class PagopaBackofficeControllerResponseValidator {
 
     @AfterReturning(pointcut = "controllersPointcut()", returning = "result")
     public void validateResponse(JoinPoint joinPoint, Object result) {
-        if (result != null) {
-            if (Collection.class.isAssignableFrom(result.getClass())) {
+        if(result != null) {
+            if(Collection.class.isAssignableFrom(result.getClass())) {
                 ((Collection<?>) result).forEach(this::validate);
             } else {
                 validate(result);
@@ -40,7 +41,7 @@ public class PagopaBackofficeControllerResponseValidator {
 
     private void validate(Object result) {
         Set<ConstraintViolation<Object>> validationResults = validator.validate(result);
-        if (!validationResults.isEmpty()) {
+        if(!validationResults.isEmpty()) {
             Map<String, List<String>> errorMessage = new HashMap<>();
             validationResults.forEach(error -> {
                 String fieldName = error.getPropertyPath().toString();

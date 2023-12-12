@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class PaymentServiceProviderDetailsResource extends  PaymentServiceProviderResource{
+public class PaymentServiceProviderDetailsResource extends PaymentServiceProviderResource {
 
     @JsonProperty("abi")
     @ApiModelProperty(value = "abi of the payment service provider")
