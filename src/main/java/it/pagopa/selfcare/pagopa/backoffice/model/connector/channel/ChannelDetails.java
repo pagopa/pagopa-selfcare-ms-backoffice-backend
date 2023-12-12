@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-public class ChannelDetails extends  Channel{
+public class ChannelDetails extends Channel {
 
 
     @JsonProperty("password")

@@ -12,10 +12,9 @@ import java.util.List;
 public class ChannelDetailsResourceList {
 
 
+    @JsonProperty("page_info")
+    PageInfo pageInfo;
     @ApiModelProperty(value = "List of psp channels", required = true)
     @JsonProperty("channels")
     private List<ChannelDetailsResource> channelDetailsResources;
-
-    @JsonProperty("page_info")
-    PageInfo pageInfo;
 }

@@ -89,6 +89,7 @@ microservice-chart:
     MONGODB_NAME: pagopaBackoffice
     AUTHORIZATION_FLAG: 'false'
     ENV: 'PROD'
+    REST_CLIENT_LOGGER_LEVEL: 'NONE'
     AWS_REGION: 'eu-south-1'
     OTEL_SERVICE_NAME: "pagopa-selfcare-backoffice-backend"
     OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=prod"

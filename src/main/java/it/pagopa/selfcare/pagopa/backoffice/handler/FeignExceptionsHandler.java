@@ -1,8 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.handler;
 
 import feign.FeignException;
-import it.pagopa.selfcare.pagopa.backoffice.model.Problem;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ProblemMapper;
+import it.pagopa.selfcare.pagopa.backoffice.model.Problem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.core.Ordered;
@@ -33,7 +33,7 @@ public class FeignExceptionsHandler {
         HttpStatus httpStatus = Optional.ofNullable(HttpStatus.resolve(e.status()))
                 .filter(status -> !status.is2xxSuccessful())
                 .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
-        if (httpStatus.is4xxClientError()) {
+        if(httpStatus.is4xxClientError()) {
             log.warn(e.toString());
         } else {
             log.error(UNHANDLED_EXCEPTION, e);

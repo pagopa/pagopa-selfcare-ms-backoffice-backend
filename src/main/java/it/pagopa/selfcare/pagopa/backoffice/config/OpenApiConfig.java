@@ -26,65 +26,65 @@ public class OpenApiConfig {
     public static final String BASE_PATH = "/backoffice/v1";
 
     @Bean
-  OpenAPI customOpenAPI(
-      @Value("${info.application.name}") String appName,
-      @Value("${info.application.description}") String appDescription,
-      @Value("${info.application.version}") String appVersion) {
-    return new OpenAPI()
-      .servers(List.of(new Server().url("http://localhost:8080"),
-          new Server().url("https://{host}{basePath}")
-              .variables(new ServerVariables()
-                .addServerVariable("host",
-                  new ServerVariable()._enum(List.of("api.dev.platform.pagopa.it","api.uat.platform.pagopa.it","api.platform.pagopa.it"))
-                      ._default("api.dev.platform.pagopa.it"))
-                .addServerVariable("basePath", new ServerVariable()._default(BASE_PATH))
-              )))
-        .components(
-            new Components()
-                .addSecuritySchemes(
-                    "SubKey",
-                    new SecurityScheme()
-                        .type(SecurityScheme.Type.APIKEY)
-                        .description("The Azure Subscription Key to access this API.")
-                        .name("Ocp-Apim-Subscription-Key")
-                        .in(SecurityScheme.In.HEADER))
-                .addSecuritySchemes(
-                    "JWT",
-                    new SecurityScheme()
-                        .type(SecurityScheme.Type.HTTP)
-                        .description("JWT token get after Login")
-                        .scheme("bearer")
-                        .bearerFormat("JWT")))
-        .info(
-            new Info()
-                .title(appName)
-                .version(appVersion)
-                .description(appDescription)
-                .termsOfService("https://www.pagopa.gov.it/"));
-  }
+    OpenAPI customOpenAPI(
+            @Value("${info.application.name}") String appName,
+            @Value("${info.application.description}") String appDescription,
+            @Value("${info.application.version}") String appVersion) {
+        return new OpenAPI()
+                .servers(List.of(new Server().url("http://localhost:8080"),
+                        new Server().url("https://{host}{basePath}")
+                                .variables(new ServerVariables()
+                                        .addServerVariable("host",
+                                                new ServerVariable()._enum(List.of("api.dev.platform.pagopa.it", "api.uat.platform.pagopa.it", "api.platform.pagopa.it"))
+                                                        ._default("api.dev.platform.pagopa.it"))
+                                        .addServerVariable("basePath", new ServerVariable()._default(BASE_PATH))
+                                )))
+                .components(
+                        new Components()
+                                .addSecuritySchemes(
+                                        "SubKey",
+                                        new SecurityScheme()
+                                                .type(SecurityScheme.Type.APIKEY)
+                                                .description("The Azure Subscription Key to access this API.")
+                                                .name("Ocp-Apim-Subscription-Key")
+                                                .in(SecurityScheme.In.HEADER))
+                                .addSecuritySchemes(
+                                        "JWT",
+                                        new SecurityScheme()
+                                                .type(SecurityScheme.Type.HTTP)
+                                                .description("JWT token get after Login")
+                                                .scheme("bearer")
+                                                .bearerFormat("JWT")))
+                .info(
+                        new Info()
+                                .title(appName)
+                                .version(appVersion)
+                                .description(appDescription)
+                                .termsOfService("https://www.pagopa.gov.it/"));
+    }
 
 
-  @Bean
-  public OpenApiCustomiser addCommonHeaders() {
-    return openApi ->
-        openApi.getPaths().forEach(
-                (key, value) -> {
-                  // add Request-ID as request header
-                    value.addParametersItem(new Parameter()
-                            .in("header")
-                            .name(HEADER_REQUEST_ID)
-                            .schema(new StringSchema())
-                            .description("This header identifies the call, if not passed it is self-generated. This ID is returned in the response."));
+    @Bean
+    public OpenApiCustomiser addCommonHeaders() {
+        return openApi ->
+                openApi.getPaths().forEach(
+                        (key, value) -> {
+                            // add Request-ID as request header
+                            value.addParametersItem(new Parameter()
+                                    .in("header")
+                                    .name(HEADER_REQUEST_ID)
+                                    .schema(new StringSchema())
+                                    .description("This header identifies the call, if not passed it is self-generated. This ID is returned in the response."));
 
-                  // add Request-ID as response header
-                  value.readOperations().forEach(
-                          operation -> operation
-                                  .getResponses()
-                                  .values()
-                                  .forEach(response -> response.addHeaderObject(HEADER_REQUEST_ID, new Header()
-                                                  .schema(new StringSchema())
-                                                  .description(
-                                                      "This header identifies the call"))));
-                });
-  }
+                            // add Request-ID as response header
+                            value.readOperations().forEach(
+                                    operation -> operation
+                                            .getResponses()
+                                            .values()
+                                            .forEach(response -> response.addHeaderObject(HEADER_REQUEST_ID, new Header()
+                                                    .schema(new StringSchema())
+                                                    .description(
+                                                            "This header identifies the call"))));
+                        });
+    }
 }

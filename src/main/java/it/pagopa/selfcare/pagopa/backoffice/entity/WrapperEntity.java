@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
 import java.time.Instant;
+
 @Data
 @NoArgsConstructor
 @FieldNameConstants(onlyExplicitlyIncluded = true)
@@ -30,17 +31,17 @@ public class WrapperEntity<T> implements WrapperEntityOperations<T> {
     @FieldNameConstants.Include
     private WrapperStatus status;
 
-    public WrapperEntity(T entity){
+    public WrapperEntity(T entity) {
         this.createdAt = Instant.now();
-        if (entity instanceof ChannelDetails) {
+        if(entity instanceof ChannelDetails) {
             this.id = ((ChannelDetails) entity).getChannelCode();
             this.type = WrapperType.CHANNEL;
-        } else if (entity instanceof StationDetails) {
+        } else if(entity instanceof StationDetails) {
             this.id = ((StationDetails) entity).getStationCode();
             this.type = WrapperType.STATION;
         }
 
-        this.entity= entity;
+        this.entity = entity;
     }
 
     @Override

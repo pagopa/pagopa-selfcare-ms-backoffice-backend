@@ -1,12 +1,12 @@
 package it.pagopa.selfcare.pagopa.backoffice.mapper;
 
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStation;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
@@ -24,7 +24,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationDetailResource toResource(StationDetails model) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
 
@@ -77,7 +77,7 @@ public class StationMapperImpl implements StationMapper {
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
         BrokerDetails brokerDetails = model.getIntermediarioPa();
-        if(brokerDetails!=null){
+        if(brokerDetails != null) {
             brokerDetailsResource.setBrokerDetails(brokerDetails.getBrokerDetails());
             brokerDetailsResource.setExtendedFaultBean(brokerDetails.getExtendedFaultBean());
             brokerDetailsResource.setEnabled(brokerDetails.getEnabled());
@@ -90,7 +90,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
 
@@ -146,7 +146,7 @@ public class StationMapperImpl implements StationMapper {
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
         BrokerDetails brokerDetails = model.getIntermediarioPa();
-        if(brokerDetails!=null){
+        if(brokerDetails != null) {
             brokerDetailsResource.setBrokerDetails(brokerDetails.getBrokerDetails());
             brokerDetailsResource.setExtendedFaultBean(brokerDetails.getExtendedFaultBean());
             brokerDetailsResource.setEnabled(brokerDetails.getEnabled());
@@ -159,7 +159,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationsResource toResource(Stations model) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
 
@@ -175,7 +175,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationResource toStationsResource(StationDetails model) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
 
@@ -196,7 +196,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public Station fromStationDetails(StationDetails stationDetails) {
-        if (stationDetails == null) {
+        if(stationDetails == null) {
             return null;
         }
 
@@ -214,7 +214,7 @@ public class StationMapperImpl implements StationMapper {
     @Override
     public Stations fromWrapperEntitiesList(WrapperEntitiesList wrapperEntitiesList) {
 
-        if (wrapperEntitiesList == null || wrapperEntitiesList.getWrapperEntities() == null) {
+        if(wrapperEntitiesList == null || wrapperEntitiesList.getWrapperEntities() == null) {
             return null;
         }
 
@@ -231,7 +231,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationDetailsResourceList fromStationDetailsList(StationDetailsList model) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
         StationDetailsResourceList resource = new StationDetailsResourceList();
@@ -243,7 +243,7 @@ public class StationMapperImpl implements StationMapper {
     }
 
     public WrapperStation toWrapperStation(Station model) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
 
@@ -267,7 +267,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public WrapperStations toWrapperStations(Stations model) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
 
@@ -283,7 +283,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public WrapperStations toWrapperStations(WrapperEntitiesList wrapperEntitiesList) {
-        if (wrapperEntitiesList == null) {
+        if(wrapperEntitiesList == null) {
             return null;
         }
 
@@ -302,7 +302,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public WrapperStation toWrapperStation(WrapperEntityOperations<StationDetails> wrapperEntityOperations) {
-        if (wrapperEntityOperations == null) {
+        if(wrapperEntityOperations == null) {
             return null;
         }
 
@@ -325,7 +325,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public WrapperStationsResource toWrapperStationsResource(WrapperStations wrapperStations) {
-        if (wrapperStations == null) {
+        if(wrapperStations == null) {
             return null;
         }
 
@@ -341,7 +341,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public WrapperStationResource toWrapperStationResource(WrapperStation wrapperStation) {
-        if (wrapperStation == null) {
+        if(wrapperStation == null) {
             return null;
         }
 
@@ -363,7 +363,7 @@ public class StationMapperImpl implements StationMapper {
     @Override
     public List<StationResource> toResourceList(WrapperEntitiesList wrapperEntitiesList) {
 
-        if (wrapperEntitiesList == null || wrapperEntitiesList.getWrapperEntities() == null) {
+        if(wrapperEntitiesList == null || wrapperEntitiesList.getWrapperEntities() == null) {
             return null;
         }
 
@@ -381,7 +381,7 @@ public class StationMapperImpl implements StationMapper {
     @Override
     public List<StationResource> toResourceList(Stations stations) {
 
-        if (stations == null || stations.getStationsList() == null) {
+        if(stations == null || stations.getStationsList() == null) {
             return null;
         }
 
@@ -393,7 +393,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationResource toResource(Station model) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
 
@@ -413,7 +413,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationDetails fromDto(StationDetailsDto model) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
 
@@ -465,7 +465,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationDetails fromWrapperStationDetailsDto(WrapperStationDetailsDto model) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
 

@@ -41,8 +41,8 @@ public class TavoloOpEntity implements TavoloOpOperations, Persistable<String> {
     @CreatedBy
     private String createdBy;
 
-    public TavoloOpEntity(){
-        createdAt =Instant.now();
+    public TavoloOpEntity() {
+        createdAt = Instant.now();
     }
 
     @Override
@@ -53,9 +53,10 @@ public class TavoloOpEntity implements TavoloOpOperations, Persistable<String> {
 
     public static class Fields {
 
-        private Fields(){
-        }
         protected static String id = org.springframework.data.mongodb.core.aggregation.Fields.UNDERSCORE_ID;
+
+        private Fields() {
+        }
     }
 
 }

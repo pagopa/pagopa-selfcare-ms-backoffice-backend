@@ -20,7 +20,7 @@ public class TaxonomyService {
     private ModelMapper modelMapper;
 
     public Taxonomies getTaxonomies() {
-         List<Taxonomy> taxonomies = taxonomyClient.getTaxonomies().stream()
+        List<Taxonomy> taxonomies = taxonomyClient.getTaxonomies().stream()
                 .map(elem -> modelMapper.map(elem, Taxonomy.class))
                 .collect(Collectors.toList());
         return Taxonomies.builder()

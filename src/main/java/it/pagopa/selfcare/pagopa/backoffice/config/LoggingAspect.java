@@ -25,21 +25,27 @@ public class LoggingAspect {
     public static final String STATUS = "status";
     public static final String CODE = "httpCode";
     public static final String RESPONSE_TIME = "responseTime";
-
+    @Autowired
+    HttpServletRequest httRequest;
+    @Autowired
+    HttpServletResponse httpResponse;
     @Value("${info.application.name}")
     private String name;
-
     @Value("${info.application.version}")
     private String version;
-
     @Value("${info.properties.environment}")
     private String environment;
 
-    @Autowired
-    HttpServletRequest httRequest;
+    private static String getExecutionTime() {
+        long endTime = System.currentTimeMillis();
+        long startTime = Long.parseLong(deNull(MDC.get(START_TIME)));
+        long executionTime = endTime - startTime;
+        return String.valueOf(executionTime);
+    }
 
-    @Autowired
-    HttpServletResponse httpResponse;
+    private static String deNull(String s) {
+        return s == null ? String.valueOf(System.currentTimeMillis()) : s;
+    }
 
     @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
     public void restController() {
@@ -97,7 +103,7 @@ public class LoggingAspect {
     }
 
     @AfterThrowing(pointcut = "execution(* *..web.security..*(..))", throwing = "error")
-    public void afterThrowingAdvice(JoinPoint jp, JwtAuthenticationException error){
+    public void afterThrowingAdvice(JoinPoint jp, JwtAuthenticationException error) {
         MDC.put(STATUS, "KO");
         MDC.put(CODE, "401");
         MDC.put(RESPONSE_TIME, getExecutionTime());
@@ -117,16 +123,5 @@ public class LoggingAspect {
         Object result = joinPoint.proceed();
         log.debug("Return method {} - result: {}", joinPoint.getSignature().toShortString(), result);
         return result;
-    }
-
-    private static String getExecutionTime() {
-        long endTime = System.currentTimeMillis();
-        long startTime = Long.parseLong(deNull(MDC.get(START_TIME)));
-        long executionTime = endTime - startTime;
-        return String.valueOf(executionTime);
-    }
-
-    private static String deNull(String s) {
-        return s == null ? String.valueOf(System.currentTimeMillis()) : s;
     }
 }

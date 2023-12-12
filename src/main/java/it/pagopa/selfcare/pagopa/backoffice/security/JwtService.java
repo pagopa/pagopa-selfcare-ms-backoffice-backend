@@ -21,12 +21,12 @@ import java.util.Base64;
 public class JwtService {
 
     /**
-     *  the public key for dev or uat
+     * the public key for dev or uat
      */
     private final PublicKey jwtSigningKey;
 
     /**
-     *  the public key for production (we need both because we can accept both on the same environment)
+     * the public key for production (we need both because we can accept both on the same environment)
      */
     private final PublicKey jwtSigningKeyProd;
 
@@ -40,13 +40,13 @@ public class JwtService {
      * The application can accept JWT that they are signed by PROD or UAT issuers.
      * To use the right public key we need to check the issuer and pass as flag {@code isProd}
      *
-     * @param token the JWT from the request
+     * @param token  the JWT from the request
      * @param isProd true if the issuer is PROD
      * @return the claim from the JWT
      */
     public Claims getClaims(String token, boolean isProd) {
         PublicKey publicKey;
-        if (isProd) {
+        if(isProd) {
             publicKey = jwtSigningKeyProd;
         } else {
             publicKey = jwtSigningKey;

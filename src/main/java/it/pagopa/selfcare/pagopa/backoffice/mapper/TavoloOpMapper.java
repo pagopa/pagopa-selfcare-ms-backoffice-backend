@@ -1,8 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.mapper;
 
+import it.pagopa.selfcare.pagopa.backoffice.entity.TavoloOpOperations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.tavoloop.TavoloOp;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.tavoloop.TavoloOpEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.entity.TavoloOpOperations;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResourceList;
@@ -11,10 +11,11 @@ import java.util.stream.Collectors;
 
 public class TavoloOpMapper {
 
-    private TavoloOpMapper(){}
+    private TavoloOpMapper() {
+    }
 
     public static TavoloOpResource toResource(TavoloOpOperations tavoloOpOperations) {
-        if (tavoloOpOperations == null) {
+        if(tavoloOpOperations == null) {
             return null;
         }
         TavoloOpResource response = new TavoloOpResource();
@@ -33,7 +34,7 @@ public class TavoloOpMapper {
     }
 
     public static TavoloOpResourceList toResource(TavoloOpEntitiesList tavoloOpOperations) {
-        if (tavoloOpOperations == null) {
+        if(tavoloOpOperations == null) {
             return null;
         }
         TavoloOpResourceList response = new TavoloOpResourceList();
@@ -47,7 +48,7 @@ public class TavoloOpMapper {
 
     public static TavoloOp fromDto(TavoloOpDto dto) {
         TavoloOp tavoloOp = null;
-        if (dto == null)
+        if(dto == null)
             return null;
         tavoloOp = new TavoloOp();
         tavoloOp.setName(dto.getName());
@@ -60,7 +61,7 @@ public class TavoloOpMapper {
 
     public static TavoloOpResource toResource(TavoloOp model) {
         TavoloOpResource resource = null;
-        if (model == null)
+        if(model == null)
             return null;
         resource = new TavoloOpResource();
         resource.setName(model.getName());

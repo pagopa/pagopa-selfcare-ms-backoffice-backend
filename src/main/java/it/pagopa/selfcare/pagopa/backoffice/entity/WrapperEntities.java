@@ -58,18 +58,18 @@ public class WrapperEntities<T> implements WrapperEntitiesOperations<T>, Persist
         this();
         this.createdAt = Instant.now();
         Object obj = wrapperEntity.getEntity();
-        if (obj instanceof ChannelDetails) {
+        if(obj instanceof ChannelDetails) {
 
             this.id = ((ChannelDetails) obj).getChannelCode();
             this.type = WrapperType.CHANNEL;
             this.brokerCode = ((ChannelDetails) obj).getBrokerPspCode();
-        } else if (obj instanceof StationDetails) {
+        } else if(obj instanceof StationDetails) {
             this.id = ((StationDetails) obj).getStationCode();
             this.type = WrapperType.STATION;
             this.brokerCode = ((StationDetails) obj).getBrokerCode();
         }
         this.status = wrapperEntity.getStatus();
-        if (entities == null) {
+        if(entities == null) {
             entities = new ArrayList<>();
         }
         entities.add(wrapperEntity);
@@ -81,14 +81,14 @@ public class WrapperEntities<T> implements WrapperEntitiesOperations<T>, Persist
     }
 
 
-    public void sortEntitesByCreatedAt(){
-        this.entities.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt,Comparator.reverseOrder()));
+    public void sortEntitesByCreatedAt() {
+        this.entities.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
     }
 
     @Override
     public List<WrapperEntityOperations<T>> getWrapperEntityOperationsSortedList() {
         List<WrapperEntityOperations<T>> list = new ArrayList<>(this.entities);
-        list.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt,Comparator.reverseOrder()));
+        list.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
         return list;
 
     }
@@ -96,7 +96,7 @@ public class WrapperEntities<T> implements WrapperEntitiesOperations<T>, Persist
 
     @Override
     public void updateCurrentWrapperEntity(WrapperEntityOperations<T> wrapperEntity, String status, String note, String modifiedByOpt) {
-        this.entities.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt,Comparator.reverseOrder()));
+        this.entities.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
         WrapperEntity<T> wrapper = this.entities.get(0);
         this.status = WrapperStatus.valueOf(status);
         wrapper.setEntity(wrapperEntity.getEntity());
@@ -107,7 +107,6 @@ public class WrapperEntities<T> implements WrapperEntitiesOperations<T>, Persist
         wrapper.setModifiedByOpt(modifiedByOpt);
         wrapper.setStatus(WrapperStatus.valueOf(status));
     }
-
 
 
     public static class Fields {

@@ -40,6 +40,17 @@ public class PagopaAuthenticationStrategy {
         this.authoritiesRetriever = authoritiesRetriever;
     }
 
+    /**
+     * @param authentication the JWT from the request
+     * @return true if the issuer is equals to 'https://api.platform.pagopa.it'
+     */
+    @SuppressWarnings("java:S5659")
+    private static boolean isProdIssuerFromJWT(JwtAuthenticationToken authentication) {
+        String jwt = authentication.getCredentials();
+        String issuer = ((DefaultClaims) (Jwts.parser().parse(jwt.substring(0, jwt.lastIndexOf('.') + 1)).getBody())).getIssuer();
+        return JWT_PROD_ISSUER.equals(issuer);
+    }
+
     public JwtAuthenticationToken authenticate(JwtAuthenticationToken authentication) throws AuthenticationException {
         log.trace("authenticate start");
         log.debug(Constants.CONFIDENTIAL_MARKER, "authenticate authentication = {}", authentication);
@@ -81,16 +92,5 @@ public class PagopaAuthenticationStrategy {
         log.debug(Constants.CONFIDENTIAL_MARKER, "authenticate result = {}", authentication);
         log.trace("authenticate end");
         return authenticationToken;
-    }
-
-    /**
-     * @param authentication the JWT from the request
-     * @return true if the issuer is equals to 'https://api.platform.pagopa.it'
-     */
-    @SuppressWarnings("java:S5659")
-    private static boolean isProdIssuerFromJWT(JwtAuthenticationToken authentication) {
-        String jwt = authentication.getCredentials();
-        String issuer = ((DefaultClaims) (Jwts.parser().parse(jwt.substring(0, jwt.lastIndexOf('.') + 1)).getBody())).getIssuer();
-        return JWT_PROD_ISSUER.equals(issuer);
     }
 }

@@ -42,7 +42,7 @@ public class LogRequestInterceptor implements HandlerInterceptor {
 
             String query = "";
             if(!request.getParameterMap().isEmpty()) {
-                query = "?"+request.getParameterMap().entrySet()
+                query = "?" + request.getParameterMap().entrySet()
                         .stream()
                         .map(elem -> elem.getKey() + "=" + String.join("", elem.getValue()))
                         .collect(Collectors.joining("&"));

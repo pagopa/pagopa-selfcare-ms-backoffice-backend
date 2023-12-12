@@ -13,6 +13,6 @@ import lombok.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AppCorsConfiguration {
 
-  private String[] origins;
-  private String[] methods;
+    private String[] origins;
+    private String[] methods;
 }

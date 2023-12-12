@@ -4,7 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.ses.SesClient;
-import software.amazon.awssdk.services.ses.model.*;
+import software.amazon.awssdk.services.ses.model.SendEmailRequest;
+import software.amazon.awssdk.services.ses.model.SendEmailResponse;
 
 import java.util.Arrays;
 
@@ -32,7 +33,7 @@ public class AwsSesClient {
     private String sendEmailAux(String subject, String body, String... to) {
         SendEmailRequest request = SendEmailRequest.builder()
                 .source(from)
-                .destination(d-> d.toAddresses(to).build())
+                .destination(d -> d.toAddresses(to).build())
                 .message(m -> m.subject(c -> c.data(subject).build())
                         .body(b -> b.text(c -> c.data(body).build()).build())
                         .build())

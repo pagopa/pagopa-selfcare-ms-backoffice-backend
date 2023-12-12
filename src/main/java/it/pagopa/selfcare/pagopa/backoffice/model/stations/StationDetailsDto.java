@@ -30,7 +30,7 @@ public class StationDetailsDto {
     private Long version;
     @ApiModelProperty(value = "Station broker's description")
     private String brokerDescription;
-    @ApiModelProperty(value = "Station's broker code", required = true )
+    @ApiModelProperty(value = "Station's broker code", required = true)
     @JsonProperty(required = true)
     @NotBlank
     private String brokerCode;
@@ -121,8 +121,8 @@ public class StationDetailsDto {
     @ApiModelProperty(value = "Url jira for StationDetail validation")
     private String validationUrl;
 
-    public String getEmail(){
-        String environment = System.getenv("env")!=null?System.getenv("env"):"local";
-        return environment.equals("prod")? getEcEmail():System.getenv("TEST_EMAIL") ;
+    public String getEmail() {
+        String environment = System.getenv("env") != null ? System.getenv("env") : "local";
+        return environment.equals("prod") ? getEcEmail() : System.getenv("TEST_EMAIL");
     }
 }

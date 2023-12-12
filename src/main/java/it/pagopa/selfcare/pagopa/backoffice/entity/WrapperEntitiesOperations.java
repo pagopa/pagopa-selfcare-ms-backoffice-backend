@@ -8,45 +8,45 @@ import java.util.List;
 
 public interface WrapperEntitiesOperations<T> {
 
-    void setId(String id);
-
-    void setType(WrapperType wrapperType);
-
-    void setStatus(WrapperStatus status);
-
-    void setModifiedAt(Instant modifiedAt);
-
-    void setModifiedBy(String modifiedBy);
-
-    void setModifiedByOpt(String modifiedByOpt);
-
-    void setCreatedAt(Instant createdAt);
-
-    void setCreatedBy(String createdBy);
-
-    void setBrokerCode(String brokerCode);
-
-    void setNote(String note);
-
     String getId();
+
+    void setId(String id);
 
     String getBrokerCode();
 
+    void setBrokerCode(String brokerCode);
+
     WrapperType getType();
+
+    void setType(WrapperType wrapperType);
 
     WrapperStatus getStatus();
 
+    void setStatus(WrapperStatus status);
+
     Instant getModifiedAt();
+
+    void setModifiedAt(Instant modifiedAt);
 
     String getModifiedBy();
 
+    void setModifiedBy(String modifiedBy);
+
     String getModifiedByOpt();
+
+    void setModifiedByOpt(String modifiedByOpt);
 
     Instant getCreatedAt();
 
+    void setCreatedAt(Instant createdAt);
+
     String getCreatedBy();
 
+    void setCreatedBy(String createdBy);
+
     String getNote();
+
+    void setNote(String note);
 
     List<WrapperEntityOperations<T>> getWrapperEntityOperationsSortedList();
 

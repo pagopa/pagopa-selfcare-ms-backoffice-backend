@@ -27,10 +27,9 @@ import java.util.TimeZone;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    private final Collection<HandlerInterceptor> interceptors;
     @Value("${cors.configuration}")
     private String corsConfiguration;
-
-    private final Collection<HandlerInterceptor> interceptors;
 
 
     public WebConfig(Collection<HandlerInterceptor> interceptors) {
@@ -52,7 +51,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        if (interceptors != null) {
+        if(interceptors != null) {
             interceptors.forEach(registry::addInterceptor);
         }
     }

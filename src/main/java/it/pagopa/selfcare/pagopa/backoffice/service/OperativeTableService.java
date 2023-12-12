@@ -1,10 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import it.pagopa.selfcare.pagopa.backoffice.entity.TavoloOpEntity;
+import it.pagopa.selfcare.pagopa.backoffice.entity.TavoloOpOperations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.TavoloOpMapper;
-import it.pagopa.selfcare.pagopa.backoffice.entity.TavoloOpEntity;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.tavoloop.TavoloOpEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.entity.TavoloOpOperations;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResourceList;
@@ -56,7 +56,6 @@ public class OperativeTableService {
         TavoloOpEntity tavoloOpEntity = mapTavoloOpEntity(tavoloOp);
         return tavoloOpRepository.save(tavoloOpEntity);
     }
-
 
 
     // Private Methods

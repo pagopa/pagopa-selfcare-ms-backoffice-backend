@@ -1,11 +1,14 @@
 package it.pagopa.selfcare.pagopa.backoffice.mapper;
 
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitution;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionAddress;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
-import it.pagopa.selfcare.pagopa.backoffice.util.StringUtils;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.util.StringUtils;
 
 import java.util.stream.Collectors;
 
@@ -14,20 +17,20 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
     @Override
     public BrokerDetails fromDto(BrokerEcDto dto) {
         BrokerDetails brokerDetails = null;
-        if (dto != null){
+        if(dto != null) {
             brokerDetails = new BrokerDetails();
             brokerDetails.setExtendedFaultBean(dto.getExtendedFaultBean());
             brokerDetails.setDescription(dto.getDescription());
             brokerDetails.setEnabled(dto.getEnabled());
             brokerDetails.setBrokerCode(dto.getBrokerCode());
-         }
+        }
         return brokerDetails;
     }
 
     @Override
     public CreditorInstitutionStationEdit fromDto(CreditorInstitutionStationDto dto) {
         CreditorInstitutionStationEdit station = null;
-        if (dto != null) {
+        if(dto != null) {
             station = new CreditorInstitutionStationEdit();
             station.setStationCode(dto.getStationCode());
             station.setMod4(dto.getMod4());
@@ -42,7 +45,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
     @Override
     public CreditorInstitutionStationEditResource toResource(CreditorInstitutionStationEdit model) {
         CreditorInstitutionStationEditResource resource = null;
-        if (model != null) {
+        if(model != null) {
             resource = new CreditorInstitutionStationEditResource();
             resource.setStationCode(model.getStationCode());
             resource.setSegregationCode(model.getSegregationCode());
@@ -56,7 +59,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
     @Override
     public CreditorInstitutionDetails fromDto(CreditorInstitutionDto dto) {
-        if (dto == null) {
+        if(dto == null) {
             return null;
         }
 
@@ -64,7 +67,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
         creditorInstitutionDetails.setCreditorInstitutionCode(dto.getCreditorInstitutionCode());
         creditorInstitutionDetails.setEnabled(dto.getEnabled());
-        creditorInstitutionDetails.setBusinessName(StringUtils.truncateString(dto.getBusinessName(),70));
+        creditorInstitutionDetails.setBusinessName(StringUtils.truncateString(dto.getBusinessName(), 70));
         creditorInstitutionDetails.setAddress(fromDto(dto.getAddress()));
         creditorInstitutionDetails.setPspPayment(dto.getPspPayment());
         creditorInstitutionDetails.setReportingFtp(dto.getReportingFtp());
@@ -75,10 +78,10 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
     @Override
     public BrokerDetailsResource toResource(BrokerDetails model) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
-        BrokerDetailsResource brokerDetailsResource= new BrokerDetailsResource();
+        BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
         brokerDetailsResource.setBrokerCode(model.getBrokerCode());
         brokerDetailsResource.setEnabled(model.getEnabled());
         brokerDetailsResource.setExtendedFaultBean(model.getExtendedFaultBean());
@@ -89,7 +92,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
     @Override
     public CreditorInstitutionDetailsResource toResource(CreditorInstitutionDetails model) {
-        if (model == null) {
+        if(model == null) {
             return null;
         }
 
@@ -108,7 +111,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
     @Override
     public CreditorInstitutionAddressResource toResource(CreditorInstitutionAddress creditorInstitutionAddress) {
-        if (creditorInstitutionAddress == null) {
+        if(creditorInstitutionAddress == null) {
             return null;
         }
 
@@ -125,7 +128,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
     @Override
     public CreditorInstitutionAddress fromDto(CreditorInstitutionAddressDto creditorInstitutionAddressDto) {
-        if (creditorInstitutionAddressDto == null) {
+        if(creditorInstitutionAddressDto == null) {
             return null;
         }
 
@@ -144,7 +147,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
     public CreditorInstitutionDetails fromDto(UpdateCreditorInstitutionDto dto) {
         CreditorInstitutionDetails creditorInstitutionDetails = null;
 
-        if (dto != null) {
+        if(dto != null) {
             creditorInstitutionDetails = new CreditorInstitutionDetails();
             creditorInstitutionDetails.setCreditorInstitutionCode(dto.getCreditorInstitutionCode());
             creditorInstitutionDetails.setEnabled(dto.getEnabled());
@@ -160,7 +163,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
     @Override
     public CreditorInstitutionResource toResorce(CreditorInstitution model) {
-        if(model == null){
+        if(model == null) {
             return null;
         }
         CreditorInstitutionResource creditorInstitutionResource = new CreditorInstitutionResource();
@@ -179,7 +182,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
     @Override
     public CreditorInstitutionsResource toResource(CreditorInstitutions model) {
-        if(model == null){
+        if(model == null) {
             return null;
         }
 

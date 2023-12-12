@@ -67,7 +67,7 @@ public class WrapperService {
     public WrapperEntitiesOperations<ChannelDetails> update(ChannelDetails channelDetails, String note, String status, String createdBy) {
         String channelCode = channelDetails.getChannelCode();
         Optional<WrapperEntities> opt = repository.findById(channelCode);
-        if (opt.isEmpty()) {
+        if(opt.isEmpty()) {
             throw new ResourceNotFoundException();
         }
         WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) opt.get();
@@ -78,7 +78,7 @@ public class WrapperService {
         wrapperEntity.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
         wrapperEntities.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.getEntities().add(wrapperEntity);
-        if (createdBy != null)
+        if(createdBy != null)
             wrapperEntities.setCreatedBy(createdBy);
         return repository.save(wrapperEntities);
 
@@ -88,7 +88,7 @@ public class WrapperService {
     public WrapperEntitiesOperations<ChannelDetails> updateByOpt(ChannelDetails channelDetails, String note, String status) {
         String channelCode = channelDetails.getChannelCode();
         Optional<WrapperEntities> opt = repository.findById(channelCode);
-        if (opt.isEmpty()) {
+        if(opt.isEmpty()) {
             throw new ResourceNotFoundException();
         }
         WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) opt.get();
@@ -103,7 +103,7 @@ public class WrapperService {
     public WrapperEntitiesOperations<StationDetails> updateByOpt(StationDetails stationDetails, String note, String status) {
         String stationCode = stationDetails.getStationCode();
         Optional<WrapperEntities> opt = repository.findById(stationCode);
-        if (opt.isEmpty()) {
+        if(opt.isEmpty()) {
             throw new ResourceNotFoundException();
         }
         WrapperEntities<StationDetails> wrapperEntities = (WrapperEntities) opt.get();
@@ -118,7 +118,7 @@ public class WrapperService {
     public WrapperEntitiesOperations<StationDetails> update(StationDetails stationDetails, String note, String status, String createdBy) {
         String stationCode = stationDetails.getStationCode();
         Optional<WrapperEntities> opt = repository.findById(stationCode);
-        if (opt.isEmpty()) {
+        if(opt.isEmpty()) {
             throw new ResourceNotFoundException();
         }
         WrapperEntities<StationDetails> wrapperEntities = (WrapperEntities) opt.get();
@@ -127,7 +127,7 @@ public class WrapperService {
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.getEntities().add(wrapperEntity);
-        if (createdBy != null)
+        if(createdBy != null)
             wrapperEntities.setCreatedBy(createdBy);
         return repository.save(wrapperEntities);
     }
@@ -136,7 +136,7 @@ public class WrapperService {
     public WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus status, WrapperType wrapperType, String brokerCode, String idLike, Integer page, Integer size, String sorting) {
 
         Sort sort;
-        if ("DESC".equalsIgnoreCase(sorting)) {
+        if("DESC".equalsIgnoreCase(sorting)) {
             sort = Sort.by(Sort.Order.desc("id"));
         } else {
             sort = Sort.by(Sort.Order.asc("id"));
@@ -146,7 +146,7 @@ public class WrapperService {
         Page<WrapperEntitiesOperations<?>> response = null;
 
         int switchCase = (brokerCode != null ? 1 : 0) | (idLike != null ? 2 : 0);
-        if (status != null) {
+        if(status != null) {
             switch (switchCase) {
                 case 0:
                     response = repository.findByStatusAndType(status, wrapperType, paging);
@@ -209,11 +209,11 @@ public class WrapperService {
         Pageable paging = PageRequest.of(page, size);
         Page<WrapperEntitiesOperations<?>> response;
 
-        if (brokerCode == null && idLike == null) {
+        if(brokerCode == null && idLike == null) {
             response = repository.findByType(wrapperType, paging);
-        } else if (brokerCode == null) {
+        } else if(brokerCode == null) {
             response = repository.findByIdLikeAndType(idLike, wrapperType, paging);
-        } else if (idLike == null) {
+        } else if(idLike == null) {
             response = repository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
         } else {
             response = repository.findByIdLikeAndTypeAndBrokerCode(idLike, wrapperType, brokerCode, paging);
