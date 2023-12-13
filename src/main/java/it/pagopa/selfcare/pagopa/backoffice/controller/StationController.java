@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntitiesOperations;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
@@ -76,7 +76,7 @@ public class StationController {
     @GetMapping(value = "/wrapper/{station-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get wrapper station from mongo DB", security = {@SecurityRequirement(name = "JWT")})
-    public WrapperEntitiesOperations getWrapperEntitiesStation(@Parameter(description = "Channlecode or StationCode") @PathVariable("station-code") String code) {
+    public WrapperEntities getWrapperEntitiesStation(@Parameter(description = "Channlecode or StationCode") @PathVariable("station-code") String code) {
         return stationService.getWrapperEntitiesStation(code);
     }
 
@@ -101,9 +101,9 @@ public class StationController {
     @PostMapping(value = "/wrapper", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a WrapperChannel on Cosmodb", security = {@SecurityRequirement(name = "JWT")})
-    public WrapperEntitiesOperations<StationDetails> createWrapperStationDetails(@RequestBody
-                                                                                 @Valid
-                                                                                 WrapperStationDetailsDto wrapperStationDetailsDto) {
+    public WrapperEntities<StationDetails> createWrapperStationDetails(@RequestBody
+                                                                       @Valid
+                                                                       WrapperStationDetailsDto wrapperStationDetailsDto) {
         return stationService.createWrapperStationDetails(wrapperStationDetailsDto);
     }
 
@@ -133,8 +133,8 @@ public class StationController {
     @PutMapping(value = "/wrapper/{station-code}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update WrapperStationDetails", security = {@SecurityRequirement(name = "JWT")})
-    public WrapperEntitiesOperations updateWrapperStationDetails(@Parameter(description = "Station code") @PathVariable(value = "station-code") String stationCode,
-                                                                 @RequestBody @Valid StationDetailsDto stationDetailsDto) {
+    public WrapperEntities updateWrapperStationDetails(@Parameter(description = "Station code") @PathVariable(value = "station-code") String stationCode,
+                                                       @RequestBody @Valid StationDetailsDto stationDetailsDto) {
 
         // TODO use station code
         return stationService.updateWrapperStationDetails(stationDetailsDto);
@@ -145,7 +145,7 @@ public class StationController {
     @PutMapping(value = "/wrapper/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a WrapperStation on Cosmodb", security = {@SecurityRequirement(name = "JWT")})
-    public WrapperEntitiesOperations updateWrapperStationDetailsByOpt(@RequestBody @Valid StationDetailsDto stationDetailsDto) {
+    public WrapperEntities updateWrapperStationDetailsByOpt(@RequestBody @Valid StationDetailsDto stationDetailsDto) {
         return stationService.updateWrapperStationDetailsByOpt(stationDetailsDto);
 
     }

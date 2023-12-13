@@ -3,7 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntitiesOperations;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+
+import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 
 @Slf4j
 @Service
@@ -44,10 +46,10 @@ public class ChannelService {
         return ChannelMapper.toWrapperChannelsResource(channelsMergedAndSorted);
     }
 
-    public WrapperEntitiesOperations createChannelToBeValidated(WrapperChannelDetailsDto wrapperChannelDetailsDto) {
+    public WrapperEntities createChannelToBeValidated(WrapperChannelDetailsDto wrapperChannelDetailsDto) {
         final String CREATE_CHANNEL_SUMMARY = "Validazione canale creazione: %s";
         final String CREATE_CHANEL_DESCRIPTION = "Il canale %s deve essere validato: %s";
-        WrapperEntitiesOperations createdWrapperEntities = wrapperService.insert(
+        WrapperEntities createdWrapperEntities = wrapperService.insert(
                 ChannelMapper.fromWrapperChannelDetailsDto(wrapperChannelDetailsDto),
                 wrapperChannelDetailsDto.getNote(),
                 wrapperChannelDetailsDto.getStatus().name());
@@ -62,10 +64,10 @@ public class ChannelService {
         return createdWrapperEntities;
     }
 
-    public WrapperEntitiesOperations updateChannelToBeValidated(ChannelDetailsDto channelDetailsDto) {
+    public WrapperEntities updateChannelToBeValidated(ChannelDetailsDto channelDetailsDto) {
         final String CREATE_CHANNEL_SUMMARY = "Validazione modifica canale: %s";
         final String CREATE_CHANEL_DESCRIPTION = "Il canale %s modificato dal broker %s deve essere validato: %s";
-        WrapperEntitiesOperations createdWrapperEntities = wrapperService.update(ChannelMapper.fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
+        WrapperEntities createdWrapperEntities = wrapperService.update(ChannelMapper.fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
         jsmClient.createTicket(
                 String.format(
                         CREATE_CHANNEL_SUMMARY,
@@ -90,9 +92,9 @@ public class ChannelService {
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         apiConfigClient.createChannel(channelDetails);
 
-        WrapperEntitiesOperations<ChannelDetails> response = wrapperService.updateByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
+        WrapperEntities<ChannelDetails> response = wrapperService.updateByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
         PspChannelPaymentTypes paymentType = apiConfigClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
-        WrapperChannelDetailsResource resource = ChannelMapper.toResource(response.getWrapperEntityOperationsSortedList().get(0), paymentType);
+        WrapperChannelDetailsResource resource = ChannelMapper.toResource(getWrapperEntityOperationsSortedList(response).get(0), paymentType);
 
         awsSesClient.sendEmail(CREATE_CHANEL_SUBJECT, CREATE_CHANEL_EMAIL_BODY, channelDetailsDto.getEmail());
         return resource;
@@ -118,12 +120,12 @@ public class ChannelService {
         String modifiedBy = "";
         PspChannelPaymentTypes ptResponse = new PspChannelPaymentTypes();
         try {
-            WrapperEntitiesOperations<ChannelDetails> result = wrapperService.findById(channelcode);
+            WrapperEntities<ChannelDetails> result = wrapperService.findById(channelcode);
             createdBy = result.getCreatedBy();
             modifiedBy = result.getModifiedBy();
-            channelDetail = result.getWrapperEntityOperationsSortedList().get(0).getEntity();
+            channelDetail = (ChannelDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
             status = result.getStatus();
-            ptResponse.setPaymentTypeList(result.getWrapperEntityOperationsSortedList().get(0).getEntity().getPaymentTypeList());
+            ptResponse.setPaymentTypeList(channelDetail.getPaymentTypeList());
         } catch (ResourceNotFoundException e) {
             channelDetail = apiConfigClient.getChannelDetails(channelcode);
             ptResponse = apiConfigClient.getChannelPaymentTypes(channelcode);

@@ -3,7 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntitiesOperations;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.PermissionDeniedException;
 import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.REGEX_GENERATE;
 import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
 
@@ -64,17 +65,17 @@ public class StationService {
         StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
         apiConfigClient.createStation(stationDetails);
 
-        WrapperEntitiesOperations<StationDetails> response = wrapperService.updateByOpt(stationDetails, stationDetailsDto.getNote(), WrapperStatus.APPROVED.name());
-        WrapperEntityOperations<StationDetails> result = response.getWrapperEntityOperationsSortedList().get(0);
+        WrapperEntities<StationDetails> response = wrapperService.updateByOpt(stationDetails, stationDetailsDto.getNote(), WrapperStatus.APPROVED.name());
+        WrapperEntityOperations<StationDetails> result = getWrapperEntityOperationsSortedList(response).get(0);
         awsSesClient.sendEmail(CREATE_STATION_SUBJECT, CREATE_STATION_EMAIL_BODY, stationDetailsDto.getEmail());
         return result;
     }
 
-    public WrapperEntitiesOperations<StationDetails> createWrapperStationDetails(@Valid WrapperStationDetailsDto wrapperStationDetailsDto) {
+    public WrapperEntities<StationDetails> createWrapperStationDetails(@Valid WrapperStationDetailsDto wrapperStationDetailsDto) {
         final String CREATE_STATION_SUMMARY = " Validazione stazione - creazione: %s";
         final String CREATE_STATION_DESCRIPTION = "La stazione %s deve essere validata: %s";
 
-        WrapperEntitiesOperations<StationDetails> createdWrapperEntities = wrapperService.
+        WrapperEntities<StationDetails> createdWrapperEntities = wrapperService.
                 insert(stationMapper.
                         fromWrapperStationDetailsDto(wrapperStationDetailsDto), wrapperStationDetailsDto.getNote(), wrapperStationDetailsDto.getStatus().name());
 
@@ -112,10 +113,10 @@ public class StationService {
         String createdBy = "";
         String modifiedBy = "";
         try {
-            WrapperEntitiesOperations<StationDetails> result = wrapperService.findById(stationCode);
+            WrapperEntities<StationDetails> result = wrapperService.findById(stationCode);
             createdBy = result.getCreatedBy();
             modifiedBy = result.getModifiedBy();
-            stationDetails = result.getWrapperEntityOperationsSortedList().get(0).getEntity();
+            stationDetails = (StationDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
             status = result.getStatus();
         } catch (ResourceNotFoundException e) {
 
@@ -147,14 +148,14 @@ public class StationService {
         return new StationCodeResource(result);
     }
 
-    public WrapperEntitiesOperations updateWrapperStationDetails(
+    public WrapperEntities updateWrapperStationDetails(
             @Valid
             StationDetailsDto stationDetailsDto) {
 
         final String UPDATE_STATION_SUMMARY = "Station creation validation: %s";
         final String UPDATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validated: %s";
 
-        WrapperEntitiesOperations createdWrapperEntities = wrapperService.
+        WrapperEntities createdWrapperEntities = wrapperService.
                 update(stationMapper.fromDto
                         (stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
 
@@ -164,7 +165,7 @@ public class StationService {
         return createdWrapperEntities;
     }
 
-    public WrapperEntitiesOperations updateWrapperStationDetailsByOpt(
+    public WrapperEntities updateWrapperStationDetailsByOpt(
             @Valid
             StationDetailsDto stationDetailsDto) {
 
@@ -194,7 +195,7 @@ public class StationService {
         return resource;
     }
 
-    public WrapperEntitiesOperations getWrapperEntitiesStation(String code) {
+    public WrapperEntities getWrapperEntitiesStation(String code) {
 
         return wrapperService.findById(code);
     }

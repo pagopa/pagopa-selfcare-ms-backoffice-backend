@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
+
 public class ChannelMapper {
 
     private ChannelMapper() {
@@ -603,7 +605,7 @@ public class ChannelMapper {
 
         wrapperEntitiesList.getWrapperEntities().forEach(
                 ent -> channelList.add(toWrapperChannel(
-                        (WrapperEntityOperations<ChannelDetails>) ent.getWrapperEntityOperationsSortedList().get(0))));
+                        (WrapperEntityOperations<ChannelDetails>) getWrapperEntityOperationsSortedList(ent).get(0))));
 
         wrapperChannels.setChannelList(channelList);
         wrapperChannels.setPageInfo(wrapperEntitiesList.getPageInfo());

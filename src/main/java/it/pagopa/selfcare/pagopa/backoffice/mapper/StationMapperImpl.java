@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
+
 
 public class StationMapperImpl implements StationMapper {
 
@@ -222,7 +224,7 @@ public class StationMapperImpl implements StationMapper {
         List<Station> stationList = new ArrayList<>();
         wrapperEntitiesList.getWrapperEntities().forEach(
                 ent -> stationList.add(fromStationDetails(
-                        (StationDetails) ent.getWrapperEntityOperationsSortedList().get(0).getEntity())));
+                        (StationDetails) getWrapperEntityOperationsSortedList(ent).get(0).getEntity())));
 
         stations.setStationsList(stationList);
         stations.setPageInfo(wrapperEntitiesList.getPageInfo());
@@ -292,7 +294,7 @@ public class StationMapperImpl implements StationMapper {
 
         wrapperEntitiesList.getWrapperEntities().forEach(
                 ent -> stationList.add(toWrapperStation(
-                        (WrapperEntityOperations<StationDetails>) ent.getWrapperEntityOperationsSortedList().get(0))));
+                        (WrapperEntityOperations<StationDetails>) getWrapperEntityOperationsSortedList(ent).get(0))));
 
         wrapperStations.setStationsList(stationList);
         wrapperStations.setPageInfo(wrapperEntitiesList.getPageInfo());
@@ -372,7 +374,7 @@ public class StationMapperImpl implements StationMapper {
         wrapperEntitiesList.getWrapperEntities()
                 .forEach(ent -> stationResourceList
                         .add(toStationsResource(
-                                (StationDetails) ent.getWrapperEntityOperationsSortedList().get(0).getEntity())));
+                                (StationDetails) getWrapperEntityOperationsSortedList(ent).get(0).getEntity())));
 
         return stationResourceList;
 

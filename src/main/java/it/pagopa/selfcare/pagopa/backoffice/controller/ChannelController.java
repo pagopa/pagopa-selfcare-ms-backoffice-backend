@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntitiesOperations;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
@@ -145,7 +145,7 @@ public class ChannelController {
     @GetMapping(value = "/wrapper/{channel-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a channel that is currently in hold for operator validation", security = {@SecurityRequirement(name = "JWT")})
-    public WrapperEntitiesOperations getGenericWrapperEntities(@Parameter(description = "Channel code") @PathVariable("channel-code") String channelCode) {
+    public WrapperEntities getGenericWrapperEntities(@Parameter(description = "Channel code") @PathVariable("channel-code") String channelCode) {
 
         return wrapperService.findById(channelCode);
     }
@@ -153,7 +153,7 @@ public class ChannelController {
     @PostMapping(value = "/wrapper", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Request the creation of a channel that will be validated by an operator", security = {@SecurityRequirement(name = "JWT")})
-    public WrapperEntitiesOperations createWrapperChannelDetails(@RequestBody @Valid WrapperChannelDetailsDto wrapperChannelDetailsDto) {
+    public WrapperEntities createWrapperChannelDetails(@RequestBody @Valid WrapperChannelDetailsDto wrapperChannelDetailsDto) {
 
         return channelService.createChannelToBeValidated(wrapperChannelDetailsDto);
     }
@@ -161,7 +161,7 @@ public class ChannelController {
     @PutMapping(value = "/wrapper", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Request the update of a channel that will be validated by an operator", security = {@SecurityRequirement(name = "JWT")})
-    public WrapperEntitiesOperations updateWrapperChannelDetails(@RequestBody @Valid ChannelDetailsDto channelDetailsDto) {
+    public WrapperEntities updateWrapperChannelDetails(@RequestBody @Valid ChannelDetailsDto channelDetailsDto) {
 
         return channelService.updateChannelToBeValidated(channelDetailsDto);
     }
@@ -169,7 +169,7 @@ public class ChannelController {
     @PutMapping(value = "/wrapper/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Execute the update as operator in the channel request that must be validated", security = {@SecurityRequirement(name = "JWT")})
-    public WrapperEntitiesOperations updateWrapperChannelDetailsByOpt(@RequestBody @Valid ChannelDetailsDto channelDetailsDto) {
+    public WrapperEntities updateWrapperChannelDetailsByOpt(@RequestBody @Valid ChannelDetailsDto channelDetailsDto) {
 
         return wrapperService.updateByOpt(ChannelMapper.fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
     }
