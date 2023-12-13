@@ -841,7 +841,7 @@
               }
             },
             "schema": {
-              "$ref": "#/definitions/WrapperEntitiesOperations"
+              "$ref": "#/definitions/WrapperEntities"
             }
           }
         },
@@ -883,7 +883,7 @@
               }
             },
             "schema": {
-              "$ref": "#/definitions/WrapperEntitiesOperations"
+              "$ref": "#/definitions/WrapperEntities"
             }
           }
         },
@@ -935,7 +935,7 @@
               }
             },
             "schema": {
-              "$ref": "#/definitions/WrapperEntitiesOperations"
+              "$ref": "#/definitions/WrapperEntities"
             }
           }
         },
@@ -983,7 +983,7 @@
               }
             },
             "schema": {
-              "$ref": "#/definitions/WrapperEntitiesOperations"
+              "$ref": "#/definitions/WrapperEntities"
             }
           }
         },
@@ -3981,7 +3981,7 @@
               }
             },
             "schema": {
-              "$ref": "#/definitions/WrapperEntitiesOperations"
+              "$ref": "#/definitions/WrapperEntities"
             }
           }
         },
@@ -4029,7 +4029,7 @@
               }
             },
             "schema": {
-              "$ref": "#/definitions/WrapperEntitiesOperations"
+              "$ref": "#/definitions/WrapperEntities"
             }
           }
         },
@@ -4078,7 +4078,7 @@
               }
             },
             "schema": {
-              "$ref": "#/definitions/WrapperEntitiesOperations"
+              "$ref": "#/definitions/WrapperEntities"
             }
           }
         },
@@ -7384,7 +7384,7 @@
       ],
       "type": "object"
     },
-    "WrapperEntitiesOperations": {
+    "WrapperEntities": {
       "properties": {
         "brokerCode": {
           "type": "string"

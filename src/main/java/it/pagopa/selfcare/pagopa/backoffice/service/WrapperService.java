@@ -1,8 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntitiesOperations;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails;
@@ -16,6 +16,10 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +31,26 @@ public class WrapperService {
     @Autowired
     private AuditorAware<String> auditorAware;
 
+    public static List<WrapperEntityOperations> getWrapperEntityOperationsSortedList(WrapperEntities wrapperEntities) {
+        List<WrapperEntityOperations> list = new ArrayList<>(wrapperEntities.getEntities());
+        list.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
+        return list;
+
+    }
+
+    public static void updateCurrentWrapperEntity(WrapperEntities wrapperEntities, WrapperEntityOperations wrapperEntity, String status, String note, String modifiedByOpt) {
+        wrapperEntities.getEntities().sort(Comparator.comparing((WrapperEntityOperations t) -> t.getCreatedAt(), Comparator.reverseOrder()));
+
+        WrapperEntity wrapper = (WrapperEntity) wrapperEntities.getEntities().get(0);
+        wrapperEntities.setStatus(WrapperStatus.valueOf(status));
+        wrapper.setEntity(wrapperEntity.getEntity());
+        wrapperEntities.setModifiedAt(Instant.now());
+        wrapperEntities.setModifiedByOpt(modifiedByOpt);
+        wrapper.setNote(note);
+        wrapper.setModifiedAt(Instant.now());
+        wrapper.setModifiedByOpt(modifiedByOpt);
+        wrapper.setStatus(WrapperStatus.valueOf(status));
+    }
 
     public WrapperEntities<ChannelDetails> insert(ChannelDetails channelDetails, String note, String status) {
         WrapperEntity<ChannelDetails> wrapperEntity = new WrapperEntity<>(channelDetails);
@@ -40,11 +64,10 @@ public class WrapperService {
             wrapperEntities.setCreatedBy(auditorAware.getCurrentAuditor().orElse(null));
             response = repository.insert(wrapperEntities);
         } catch (DuplicateKeyException e) {
-            response = (WrapperEntities<ChannelDetails>) update(channelDetails, note, status, createdBy);
+            response = update(channelDetails, note, status, createdBy);
         }
         return response;
     }
-
 
     public WrapperEntities<StationDetails> insert(StationDetails stationDetails, String note, String status) {
         WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetails);
@@ -58,13 +81,12 @@ public class WrapperService {
             wrapperEntities.setCreatedBy(auditorAware.getCurrentAuditor().orElse(null));
             response = repository.insert(wrapperEntities);
         } catch (DuplicateKeyException e) {
-            response = (WrapperEntities<StationDetails>) update(stationDetails, note, status, createdBy);
+            response = update(stationDetails, note, status, createdBy);
         }
         return response;
     }
 
-
-    public WrapperEntitiesOperations<ChannelDetails> update(ChannelDetails channelDetails, String note, String status, String createdBy) {
+    public WrapperEntities<ChannelDetails> update(ChannelDetails channelDetails, String note, String status, String createdBy) {
         String channelCode = channelDetails.getChannelCode();
         Optional<WrapperEntities> opt = repository.findById(channelCode);
         if(opt.isEmpty()) {
@@ -84,8 +106,7 @@ public class WrapperService {
 
     }
 
-
-    public WrapperEntitiesOperations<ChannelDetails> updateByOpt(ChannelDetails channelDetails, String note, String status) {
+    public WrapperEntities<ChannelDetails> updateByOpt(ChannelDetails channelDetails, String note, String status) {
         String channelCode = channelDetails.getChannelCode();
         Optional<WrapperEntities> opt = repository.findById(channelCode);
         if(opt.isEmpty()) {
@@ -95,12 +116,11 @@ public class WrapperService {
         String modifiedByOpt = auditorAware.getCurrentAuditor().orElse(null);
         WrapperEntity<ChannelDetails> wrapperEntity = new WrapperEntity<>(channelDetails);
         wrapperEntity.setModifiedByOpt(modifiedByOpt);
-        wrapperEntities.updateCurrentWrapperEntity(new WrapperEntity<>(channelDetails), status, note, modifiedByOpt);
+        updateCurrentWrapperEntity(wrapperEntities, new WrapperEntity<>(channelDetails), status, note, modifiedByOpt);
         return repository.save(wrapperEntities);
     }
 
-
-    public WrapperEntitiesOperations<StationDetails> updateByOpt(StationDetails stationDetails, String note, String status) {
+    public WrapperEntities<StationDetails> updateByOpt(StationDetails stationDetails, String note, String status) {
         String stationCode = stationDetails.getStationCode();
         Optional<WrapperEntities> opt = repository.findById(stationCode);
         if(opt.isEmpty()) {
@@ -110,12 +130,11 @@ public class WrapperService {
         String modifiedByOpt = auditorAware.getCurrentAuditor().orElse(null);
         WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetails);
         wrapperEntity.setModifiedByOpt(modifiedByOpt);
-        wrapperEntities.updateCurrentWrapperEntity(wrapperEntity, status, note, modifiedByOpt);
+        updateCurrentWrapperEntity(wrapperEntities, wrapperEntity, status, note, modifiedByOpt);
         return repository.save(wrapperEntities);
     }
 
-
-    public WrapperEntitiesOperations<StationDetails> update(StationDetails stationDetails, String note, String status, String createdBy) {
+    public WrapperEntities<StationDetails> update(StationDetails stationDetails, String note, String status, String createdBy) {
         String stationCode = stationDetails.getStationCode();
         Optional<WrapperEntities> opt = repository.findById(stationCode);
         if(opt.isEmpty()) {
@@ -132,7 +151,6 @@ public class WrapperService {
         return repository.save(wrapperEntities);
     }
 
-
     public WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus status, WrapperType wrapperType, String brokerCode, String idLike, Integer page, Integer size, String sorting) {
 
         Sort sort;
@@ -143,7 +161,7 @@ public class WrapperService {
         }
 
         Pageable paging = PageRequest.of(page, size, sort);
-        Page<WrapperEntitiesOperations<?>> response = null;
+        Page<WrapperEntities<?>> response = null;
 
         int switchCase = (brokerCode != null ? 1 : 0) | (idLike != null ? 2 : 0);
         if(status != null) {
@@ -195,19 +213,17 @@ public class WrapperService {
                 .build();
     }
 
-
-    public <T> WrapperEntitiesOperations<T> findById(String id) {
+    public <T> WrapperEntities<T> findById(String id) {
         var response = repository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
         response.sortEntitesByCreatedAt();
         return response;
     }
 
-
     public WrapperEntitiesList findByIdLikeOrTypeOrBrokerCode(String idLike, WrapperType wrapperType, String brokerCode, Integer page, Integer size) {
 
         Pageable paging = PageRequest.of(page, size);
-        Page<WrapperEntitiesOperations<?>> response;
+        Page<WrapperEntities<?>> response;
 
         if(brokerCode == null && idLike == null) {
             response = repository.findByType(wrapperType, paging);

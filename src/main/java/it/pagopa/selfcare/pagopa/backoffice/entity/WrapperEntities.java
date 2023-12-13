@@ -23,7 +23,7 @@ import java.util.List;
 @EqualsAndHashCode(of = "id")
 @Document("wrappers")
 @FieldNameConstants(onlyExplicitlyIncluded = true)
-public class WrapperEntities<T> implements WrapperEntitiesOperations<T>, Persistable<String> {
+public class WrapperEntities<T> implements Persistable<String> {
 
     @Id
     private String id;
@@ -83,29 +83,6 @@ public class WrapperEntities<T> implements WrapperEntitiesOperations<T>, Persist
 
     public void sortEntitesByCreatedAt() {
         this.entities.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
-    }
-
-    @Override
-    public List<WrapperEntityOperations<T>> getWrapperEntityOperationsSortedList() {
-        List<WrapperEntityOperations<T>> list = new ArrayList<>(this.entities);
-        list.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
-        return list;
-
-    }
-
-
-    @Override
-    public void updateCurrentWrapperEntity(WrapperEntityOperations<T> wrapperEntity, String status, String note, String modifiedByOpt) {
-        this.entities.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
-        WrapperEntity<T> wrapper = this.entities.get(0);
-        this.status = WrapperStatus.valueOf(status);
-        wrapper.setEntity(wrapperEntity.getEntity());
-        this.setModifiedAt(Instant.now());
-        this.setModifiedByOpt(modifiedByOpt);
-        wrapper.setNote(note);
-        wrapper.setModifiedAt(Instant.now());
-        wrapper.setModifiedByOpt(modifiedByOpt);
-        wrapper.setStatus(WrapperStatus.valueOf(status));
     }
 
 
