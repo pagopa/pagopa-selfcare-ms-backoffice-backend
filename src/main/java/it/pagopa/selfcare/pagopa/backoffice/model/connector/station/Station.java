@@ -29,10 +29,10 @@ public class Station {
     @JsonIgnore
     private Integer associatedCreditorInstitutions = 0;
     @JsonIgnore
-    private Instant activationDate = Instant.now();
+    private Instant activationDate;
     @JsonIgnore
-    private Instant createdAt = Instant.now(); //FIXME when these fields will be available from apiConfig
+    private Instant createdAt;
     @JsonIgnore
-    private Instant modifiedAt = Instant.now(); //FIXME remove instantiation after apiConfig has modified their entities
+    private Instant modifiedAt;
 
 }
