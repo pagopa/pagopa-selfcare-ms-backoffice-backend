@@ -12,9 +12,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStati
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -259,10 +256,6 @@ public class StationMapperImpl implements StationMapper {
         wrapperStation.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
         //default per gli ogetti di apiconfig poiche non hanno questi campi
         wrapperStation.setWrapperStatus(WrapperStatus.APPROVED);
-        LocalDate dateTime = LocalDate.of(2000, 1, 1);
-        Instant instant = dateTime.atStartOfDay(ZoneOffset.UTC).toInstant();
-        wrapperStation.setCreatedAt(instant);
-        wrapperStation.setModifiedAt(instant);
 
         return wrapperStation;
     }
