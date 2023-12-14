@@ -73,12 +73,12 @@ public class Utility {
     /**
      * @param headers header of the CSV file
      * @param rows    data of the CSV file
-     * @return byte array of the CSV using commas (,) as separator
+     * @return byte array of the CSV using commas (;) as separator
      */
     public static byte[] createCsv(List<String> headers, List<List<String>> rows) {
         var csv = new StringBuilder();
-        csv.append(String.join(",", headers));
-        rows.forEach(row -> csv.append(System.lineSeparator()).append(String.join(",", row)));
+        csv.append(String.join(";", headers));
+        rows.forEach(row -> csv.append(System.lineSeparator()).append(String.join(";", row)));
         return csv.toString().getBytes();
     }
 

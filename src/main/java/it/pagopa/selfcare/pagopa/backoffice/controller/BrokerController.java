@@ -7,10 +7,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.BrokerEcDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 import it.pagopa.selfcare.pagopa.backoffice.service.BrokerService;
+import it.pagopa.selfcare.pagopa.backoffice.service.IbanService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,6 +28,9 @@ public class BrokerController {
 
     @Autowired
     private BrokerService brokerService;
+
+    @Autowired
+    private IbanService ibanService;
 
 
     @PostMapping(value = "")
@@ -62,5 +70,18 @@ public class BrokerController {
                                                                      @RequestParam(required = false, defaultValue = "10") Integer limit,
                                                                      @RequestParam(required = false, defaultValue = "0") Integer page) {
         return brokerService.getStationsDetailsListByBroker(brokerCode, stationId, limit, page);
+    }
+
+    @GetMapping(value = "/export", produces = "text/csv")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Export all IBANs of all creditor institutions handled by a broker EC to CSV", security = {@SecurityRequirement(name = "JWT")})
+    public ResponseEntity<Resource> exportIbansToCsv(@Parameter(description = "Broker code") @RequestParam("broker_code") String brokerCode) {
+
+        byte[] file = ibanService.exportIbansToCsv(brokerCode);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=iban-export.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(new ByteArrayResource(file));
     }
 }
