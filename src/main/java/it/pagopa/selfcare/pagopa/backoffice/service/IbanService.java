@@ -156,7 +156,6 @@ public class IbanService {
                         .map(CompletableFuture::join)
                         .flatMap(Collection::stream)
                         .collect(Collectors.toList()))
-                .exceptionally(err -> new ArrayList<>())
                 .join();
     }
 
@@ -169,7 +168,7 @@ public class IbanService {
      */
 
     private int getNumberOfPages(List<String> partition, int limit) {
-        var pageInfo = apiConfigSelfcareIntegrationClient.getIbans(0, 0, partition);
+        var pageInfo = apiConfigSelfcareIntegrationClient.getIbans(1, 0, partition);
         return (int) Math.floor((double) pageInfo.getPageInfo().getTotalItems() / limit);
     }
 
