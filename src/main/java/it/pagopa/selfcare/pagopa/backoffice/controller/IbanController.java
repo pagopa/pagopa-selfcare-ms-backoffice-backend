@@ -10,8 +10,12 @@ import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
 import it.pagopa.selfcare.pagopa.backoffice.service.IbanService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
@@ -60,6 +64,20 @@ public class IbanController {
                                                @Parameter(description = "IBAN identification value") @PathVariable("iban-value") String ibanValue) {
 
         ibanService.deleteIban(ciCode, ibanValue);
+    }
+
+
+    @GetMapping(value = "/export", produces = "text/csv")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Export all IBANs of all creditor institutions handled by a broker EC to CSV", security = {@SecurityRequirement(name = "JWT")})
+    public ResponseEntity<Resource> exportIbansToCsv(@Parameter(description = "Broker code") @RequestParam("broker_code") String brokerCode) {
+
+        byte[] file = ibanService.exportIbansToCsv(brokerCode);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=iban-export.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(new ByteArrayResource(file));
     }
 
 }

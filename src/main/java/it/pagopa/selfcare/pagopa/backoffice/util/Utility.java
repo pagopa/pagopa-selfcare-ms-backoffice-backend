@@ -6,10 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChann
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
 import org.springframework.security.core.Authentication;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Utility {
@@ -30,12 +27,7 @@ public class Utility {
     public static WrapperChannels mergeAndSortWrapperChannels(WrapperChannels channelFromApiConfig, WrapperChannels channelFromLocal, String sorting) {
         List<WrapperChannel> mergedList = new ArrayList<>();
         mergedList.addAll(channelFromLocal.getChannelList());
-        mergedList.addAll(
-                channelFromApiConfig.getChannelList().stream()
-                        .filter(obj2 -> channelFromLocal.getChannelList().stream()
-                                .noneMatch(obj1 -> Objects.equals(obj1.getChannelCode(), obj2.getChannelCode())))
-                        .collect(Collectors.toList())
-        );
+        mergedList.addAll(channelFromApiConfig.getChannelList().stream().filter(obj2 -> channelFromLocal.getChannelList().stream().noneMatch(obj1 -> Objects.equals(obj1.getChannelCode(), obj2.getChannelCode()))).collect(Collectors.toList()));
 
         if("asc".equalsIgnoreCase(sorting)) {
             mergedList.sort(Comparator.comparing(WrapperChannel::getChannelCode));
@@ -53,4 +45,42 @@ public class Utility {
         result.setPageInfo(pageInfo);
         return result;
     }
+
+    /**
+     * @param value value to deNullify.
+     * @return return empty string if value is null
+     */
+    public static String deNull(String value) {
+        return Optional.ofNullable(value).orElse("");
+    }
+
+    /**
+     * @param value value to deNullify.
+     * @return return empty string if value is null
+     */
+    public static String deNull(Object value) {
+        return Optional.ofNullable(value).orElse("").toString();
+    }
+
+    /**
+     * @param value value to deNullify.
+     * @return return false if value is null
+     */
+    public static Boolean deNull(Boolean value) {
+        return Optional.ofNullable(value).orElse(false);
+    }
+
+    /**
+     * @param headers header of the CSV file
+     * @param rows    data of the CSV file
+     * @return byte array of the CSV using commas (,) as separator
+     */
+    public static byte[] createCsv(List<String> headers, List<List<String>> rows) {
+        var csv = new StringBuilder();
+        csv.append(String.join(",", headers));
+        rows.forEach(row -> csv.append(System.lineSeparator()).append(String.join(",", row)));
+        return csv.toString().getBytes();
+    }
+
+
 }
