@@ -47,6 +47,9 @@ public class PagopaAuthenticationStrategy {
     @SuppressWarnings("java:S5659")
     private static boolean isProdIssuerFromJWT(JwtAuthenticationToken authentication) {
         String jwt = authentication.getCredentials();
+        if(jwt == null) {
+            return false;
+        }
         String issuer = ((DefaultClaims) (Jwts.parser().parse(jwt.substring(0, jwt.lastIndexOf('.') + 1)).getBody())).getIssuer();
         return JWT_PROD_ISSUER.equals(issuer);
     }

@@ -4,12 +4,15 @@ import it.pagopa.selfcare.pagopa.backoffice.config.feign.ApiConfigSelfcareIntFei
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
+import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 @FeignClient(name = "api-config-selfcare-integration", url = "${rest-client.api-config-selfcare-integration.base-url}", configuration = ApiConfigSelfcareIntFeignConfig.class)
 public interface ApiConfigSelfcareIntegrationClient {
@@ -36,4 +39,11 @@ public interface ApiConfigSelfcareIntegrationClient {
     CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationcodes(
             @PathVariable("creditorInstitutionCode") String creditorInstitutionCode);
 
+
+    @GetMapping(value = "/ibans", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    IbansList getIbans(
+            @RequestParam(defaultValue = "10") Integer limit,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(name = "ci_list") List<String> ecList);
 }
