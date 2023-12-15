@@ -40,30 +40,6 @@ public class IbanService {
     @Autowired
     private ModelMapper modelMapper;
 
-    private static String isEnabled(IbanDetails elem) {
-        return OffsetDateTime.now().isBefore(elem.getDueDate()) ? "ATTIVO" : "DISATTIVO";
-    }
-
-    /**
-     * The mapToCsvRow method takes an instance of IbanDetails as input, maps its properties to an instance of IbanCsv and returns it.
-     *
-     * @param elem an instance of IbanDetails
-     * @return an instance of IbanCsv with its attributes mapped from the provided IbanDetails
-     */
-    private static IbanCsv mapToCsvRow(IbanDetails elem) {
-        return IbanCsv.builder()
-                .denominazioneEnte(elem.getCiName())
-                .codiceFiscale(elem.getCiFiscalCode())
-                .stato(isEnabled(elem))
-                .dataScadenza(String.valueOf(elem.getDueDate()))
-                .dataAttivazioneIban(String.valueOf(elem.getValidityDate()))
-                .descrizione(elem.getDescription())
-                .iban(elem.getIban())
-                .etichetta(elem.getLabels().stream()
-                        .map(IbanLabel::getName)
-                        .collect(Collectors.joining(" - ")))
-                .build();
-    }
 
     public Ibans getIban(String ciCode, String labelName) {
         return apiConfigClient.getCreditorInstitutionIbans(ciCode, labelName);
@@ -137,6 +113,7 @@ public class IbanService {
             // we divide the taxCodes in partitions (the list can have a size > 1000)
             List<String> partition = taxCodes.subList(i, Math.min(i + limit, taxCodes.size()));
 
+            // foreach partition we create parallel requests
             CompletableFuture<List<IbanCsv>> future = CompletableFuture.supplyAsync(() -> {
                 int numberOfPages = getNumberOfPages(partition, limit);
 
@@ -192,4 +169,28 @@ public class IbanService {
                 .collect(Collectors.toList());
     }
 
+    private static String isEnabled(IbanDetails elem) {
+        return OffsetDateTime.now().isBefore(elem.getDueDate()) ? "ATTIVO" : "DISATTIVO";
+    }
+
+    /**
+     * The mapToCsvRow method takes an instance of IbanDetails as input, maps its properties to an instance of IbanCsv and returns it.
+     *
+     * @param elem an instance of IbanDetails
+     * @return an instance of IbanCsv with its attributes mapped from the provided IbanDetails
+     */
+    private static IbanCsv mapToCsvRow(IbanDetails elem) {
+        return IbanCsv.builder()
+                .denominazioneEnte(elem.getCiName())
+                .codiceFiscale(elem.getCiFiscalCode())
+                .stato(isEnabled(elem))
+                .dataScadenza(String.valueOf(elem.getDueDate()))
+                .dataAttivazioneIban(String.valueOf(elem.getValidityDate()))
+                .descrizione(elem.getDescription())
+                .iban(elem.getIban())
+                .etichetta(elem.getLabels().stream()
+                        .map(IbanLabel::getName)
+                        .collect(Collectors.joining(" - ")))
+                .build();
+    }
 }
