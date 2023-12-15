@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "spring-boot-starter-parent",
-    "version": "1.3.2"
+    "version": "1.3.2-1-PASELC-657-be-bo-nuova-api-get-per-download-csv-iban"
   },
   "host": "localhost:8080",
   "basePath": "/",
@@ -136,6 +136,55 @@
         ],
         "operationId": "createBroker_1",
         "summary": "Create a Broker"
+      }
+    },
+    "/brokers/export": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "description": "Broker code",
+            "in": "query",
+            "name": "broker_code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "format": "binary",
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Creditor institution's Brokers"
+        ],
+        "operationId": "exportIbansToCsv",
+        "summary": "Export all IBANs of all creditor institutions handled by a broker EC to CSV"
       }
     },
     "/brokers/{broker-code}": {
@@ -3929,7 +3978,7 @@
               }
             },
             "schema": {
-              "$ref": "#/definitions/WrapperEntitiesOperationsStationDetails"
+              "$ref": "#/definitions/WrapperEntitiesStationDetails"
             }
           }
         },
@@ -7366,24 +7415,6 @@
       },
       "type": "object"
     },
-    "WrapperEntitiesList": {
-      "properties": {
-        "page_info": {
-          "$ref": "#/definitions/PageInfo"
-        },
-        "wrapper_entities": {
-          "items": {
-            "$ref": "#/definitions/WrapperEntitiesOperationsObject"
-          },
-          "type": "array"
-        }
-      },
-      "required": [
-        "page_info",
-        "wrapper_entities"
-      ],
-      "type": "object"
-    },
     "WrapperEntities": {
       "properties": {
         "brokerCode": {
@@ -7396,6 +7427,12 @@
         "createdBy": {
           "type": "string"
         },
+        "entities": {
+          "items": {
+            "$ref": "#/definitions/WrapperEntityObject"
+          },
+          "type": "array"
+        },
         "id": {
           "type": "string"
         },
@@ -7408,6 +7445,9 @@
         },
         "modifiedByOpt": {
           "type": "string"
+        },
+        "new": {
+          "type": "boolean"
         },
         "note": {
           "type": "string"
@@ -7428,17 +7468,29 @@
             "STATION"
           ],
           "type": "string"
-        },
-        "wrapperEntityOperationsSortedList": {
-          "items": {
-            "$ref": "#/definitions/WrapperEntityOperationsObject"
-          },
-          "type": "array"
         }
       },
       "type": "object"
     },
-    "WrapperEntitiesOperationsObject": {
+    "WrapperEntitiesList": {
+      "properties": {
+        "page_info": {
+          "$ref": "#/definitions/PageInfo"
+        },
+        "wrapper_entities": {
+          "items": {
+            "$ref": "#/definitions/WrapperEntitiesObject"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "page_info",
+        "wrapper_entities"
+      ],
+      "type": "object"
+    },
+    "WrapperEntitiesObject": {
       "properties": {
         "brokerCode": {
           "type": "string"
@@ -7450,6 +7502,12 @@
         "createdBy": {
           "type": "string"
         },
+        "entities": {
+          "items": {
+            "$ref": "#/definitions/WrapperEntityObject"
+          },
+          "type": "array"
+        },
         "id": {
           "type": "string"
         },
@@ -7462,6 +7520,9 @@
         },
         "modifiedByOpt": {
           "type": "string"
+        },
+        "new": {
+          "type": "boolean"
         },
         "note": {
           "type": "string"
@@ -7482,17 +7543,11 @@
             "STATION"
           ],
           "type": "string"
-        },
-        "wrapperEntityOperationsSortedList": {
-          "items": {
-            "$ref": "#/definitions/WrapperEntityOperationsObject"
-          },
-          "type": "array"
         }
       },
       "type": "object"
     },
-    "WrapperEntitiesOperationsStationDetails": {
+    "WrapperEntitiesStationDetails": {
       "properties": {
         "brokerCode": {
           "type": "string"
@@ -7504,6 +7559,12 @@
         "createdBy": {
           "type": "string"
         },
+        "entities": {
+          "items": {
+            "$ref": "#/definitions/WrapperEntityStationDetails"
+          },
+          "type": "array"
+        },
         "id": {
           "type": "string"
         },
@@ -7516,6 +7577,9 @@
         },
         "modifiedByOpt": {
           "type": "string"
+        },
+        "new": {
+          "type": "boolean"
         },
         "note": {
           "type": "string"
@@ -7536,17 +7600,11 @@
             "STATION"
           ],
           "type": "string"
-        },
-        "wrapperEntityOperationsSortedList": {
-          "items": {
-            "$ref": "#/definitions/WrapperEntityOperationsStationDetails"
-          },
-          "type": "array"
         }
       },
       "type": "object"
     },
-    "WrapperEntityOperationsObject": {
+    "WrapperEntityObject": {
       "properties": {
         "createdAt": {
           "format": "date-time",
@@ -7592,6 +7650,51 @@
       "type": "object"
     },
     "WrapperEntityOperationsStationDetails": {
+      "properties": {
+        "createdAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "entity": {
+          "$ref": "#/definitions/StationDetails"
+        },
+        "id": {
+          "type": "string"
+        },
+        "modifiedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "modifiedBy": {
+          "type": "string"
+        },
+        "modifiedByOpt": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "APPROVED",
+            "TO_CHECK",
+            "TO_FIX",
+            "TO_CHECK_UPDATE",
+            "TO_FIX_UPDATE"
+          ],
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "CHANNEL",
+            "STATION"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "WrapperEntityStationDetails": {
       "properties": {
         "createdAt": {
           "format": "date-time",
