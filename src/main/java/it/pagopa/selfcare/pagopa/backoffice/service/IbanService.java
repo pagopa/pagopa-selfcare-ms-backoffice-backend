@@ -91,7 +91,7 @@ public class IbanService {
                 .collect(Collectors.toList());
 
         List<IbanCsv> ibans = retrieveIbans(taxCodes);
-        List<String> headers = Arrays.asList("denominazioneEnte", "codiceFiscale", "iban", "stato", "dataAttivazioneIban", "dataScadenzaIban", "descrizione", "etichetta");
+        List<String> headers = Arrays.asList("denominazioneEnte", "codiceFiscale", "iban", "stato", "dataAttivazioneIban", "descrizione", "etichetta");
         return Utility.createCsv(headers, mapToCsv(ibans));
     }
 
@@ -166,7 +166,6 @@ public class IbanService {
                         deNull(elem.getIban()),
                         deNull(elem.getStato()),
                         deNull(elem.getDataAttivazioneIban()),
-                        deNull(elem.getDataScadenza()),
                         deNull(elem.getDescrizione()),
                         deNull(elem.getEtichetta())
                 ))
