@@ -28,17 +28,21 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 @Service
 public class IbanService {
 
-    @Autowired
-    private ApiConfigClient apiConfigClient;
+    private final ApiConfigClient apiConfigClient;
+
+    private final ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
+
+    private final ExternalApiClient externalApiClient;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
-
-    @Autowired
-    private ExternalApiClient externalApiClient;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, ExternalApiClient externalApiClient, ModelMapper modelMapper) {
+        this.apiConfigClient = apiConfigClient;
+        this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
+        this.externalApiClient = externalApiClient;
+        this.modelMapper = modelMapper;
+    }
 
 
     public Ibans getIban(String ciCode, String labelName) {
@@ -129,7 +133,7 @@ public class IbanService {
         }
         var allFuturesResult = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
         return allFuturesResult
-                .thenApply(__ -> futures.stream()
+                .thenApply(ignored -> futures.stream()
                         .map(CompletableFuture::join)
                         .flatMap(Collection::stream)
                         .collect(Collectors.toList()))
