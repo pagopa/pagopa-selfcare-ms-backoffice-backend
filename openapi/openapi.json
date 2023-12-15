@@ -1,7 +1,7 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "description" : "@project.description@",
+    "description" : "Microservice to manage PagoPA Backoffice",
     "termsOfService" : "https://www.pagopa.gov.it/",
     "title" : "spring-boot-starter-parent",
     "version" : "1.3.2"
@@ -203,6 +203,54 @@
         "summary" : "Update an existing EC broker",
         "tags" : [ "Creditor institution's Brokers" ]
       }
+    },
+    "/brokers/{broker-code}/ibans/export" : {
+      "get" : {
+        "operationId" : "exportIbansToCsv",
+        "parameters" : [ {
+          "description" : "Broker code",
+          "in" : "path",
+          "name" : "broker-code",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "text/csv" : {
+                "schema" : {
+                  "type" : "string",
+                  "format" : "binary"
+                }
+              }
+            },
+            "description" : "OK",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "JWT" : [ ]
+        } ],
+        "summary" : "Export all IBANs of all creditor institutions handled by a broker EC to CSV",
+        "tags" : [ "Creditor institution's Brokers" ]
+      },
+      "parameters" : [ {
+        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+        "in" : "header",
+        "name" : "X-Request-Id",
+        "schema" : {
+          "type" : "string"
+        }
+      } ]
     },
     "/brokers/{broker-code}/stations" : {
       "get" : {
@@ -1910,54 +1958,6 @@
         "summary" : "Create an IBAN owned by creditor institution",
         "tags" : [ "Ibans" ]
       }
-    },
-    "/creditor-institutions/{ci-code}/ibans/export" : {
-      "get" : {
-        "operationId" : "exportIbansToCsv",
-        "parameters" : [ {
-          "description" : "Broker code",
-          "in" : "query",
-          "name" : "broker_code",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "text/csv" : {
-                "schema" : {
-                  "type" : "string",
-                  "format" : "binary"
-                }
-              }
-            },
-            "description" : "OK",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "JWT" : [ ]
-        } ],
-        "summary" : "Export all IBANs of all creditor institutions handled by a broker EC to CSV",
-        "tags" : [ "Ibans" ]
-      },
-      "parameters" : [ {
-        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-        "in" : "header",
-        "name" : "X-Request-Id",
-        "schema" : {
-          "type" : "string"
-        }
-      } ]
     },
     "/creditor-institutions/{ci-code}/ibans/{iban-value}" : {
       "delete" : {

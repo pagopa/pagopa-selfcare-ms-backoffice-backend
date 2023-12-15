@@ -72,10 +72,10 @@ public class BrokerController {
         return brokerService.getStationsDetailsListByBroker(brokerCode, stationId, limit, page);
     }
 
-    @GetMapping(value = "/export", produces = "text/csv")
+    @GetMapping(value = "/{broker-code}/ibans/export", produces = "text/csv")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Export all IBANs of all creditor institutions handled by a broker EC to CSV", security = {@SecurityRequirement(name = "JWT")})
-    public ResponseEntity<Resource> exportIbansToCsv(@Parameter(description = "Broker code") @RequestParam("broker_code") String brokerCode) {
+    public ResponseEntity<Resource> exportIbansToCsv(@Parameter(description = "Broker code") @PathVariable("broker-code") String brokerCode) {
 
         byte[] file = ibanService.exportIbansToCsv(brokerCode);
 
