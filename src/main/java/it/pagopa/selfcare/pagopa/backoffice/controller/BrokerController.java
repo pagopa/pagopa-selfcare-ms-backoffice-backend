@@ -26,11 +26,15 @@ import javax.validation.Valid;
 @Tag(name = "Creditor institution's Brokers")
 public class BrokerController {
 
-    @Autowired
-    private BrokerService brokerService;
+    private final BrokerService brokerService;
+
+    private final IbanService ibanService;
 
     @Autowired
-    private IbanService ibanService;
+    public BrokerController(BrokerService brokerService, IbanService ibanService) {
+        this.brokerService = brokerService;
+        this.ibanService = ibanService;
+    }
 
 
     @PostMapping(value = "")
