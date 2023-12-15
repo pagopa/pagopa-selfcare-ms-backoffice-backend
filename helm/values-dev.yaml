@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "1.3.2-1-PASELC-657-be-bo-nuova-api-get-per-download-csv-iban"
+    tag: "1.3.3"
     pullPolicy: Always
   livenessProbe:
     httpGet:
