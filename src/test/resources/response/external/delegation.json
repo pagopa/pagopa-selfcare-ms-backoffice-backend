@@ -1,0 +1,16 @@
+[
+  {
+    "id": "id_237f2cf9b3f1",
+    "brokerId": "987654321",
+    "brokerName": "PIPPO SRL",
+    "institutionId": "institutionId_2b926952c38c",
+    "institutionRootName": "institutionRootName_5347f214be4f",
+    "institutionName": "institutionName_80ee0aa0b344",
+    "productId": "productId_569651f36161",
+    "type": "PT",
+    "brokerTaxCode": "brokerTaxCode_e5a13cdbe45b",
+    "brokerType": "brokerType_51188f3d12df",
+    "institutionType": "institutionType_37e40fbf6215",
+    "taxCode": "1234567890"
+  }
+]
