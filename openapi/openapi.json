@@ -1,10 +1,10 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "description" : "Microservice to manage PagoPA Backoffice",
+    "description" : "@project.description@",
     "termsOfService" : "https://www.pagopa.gov.it/",
-    "title" : "SelfCare Backoffice",
-    "version" : "1.3.2"
+    "title" : "@project.name@",
+    "version" : "1.3.3"
   },
   "servers" : [ {
     "url" : "http://localhost:8080"
@@ -204,54 +204,6 @@
         "tags" : [ "Creditor institution's Brokers" ]
       }
     },
-    "/brokers/{broker-code}/ibans/export" : {
-      "get" : {
-        "operationId" : "exportIbansToCsv",
-        "parameters" : [ {
-          "description" : "Broker code",
-          "in" : "path",
-          "name" : "broker-code",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "text/csv" : {
-                "schema" : {
-                  "type" : "string",
-                  "format" : "binary"
-                }
-              }
-            },
-            "description" : "OK",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "JWT" : [ ]
-        } ],
-        "summary" : "Export all IBANs of all creditor institutions handled by a broker EC to CSV",
-        "tags" : [ "Creditor institution's Brokers" ]
-      },
-      "parameters" : [ {
-        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-        "in" : "header",
-        "name" : "X-Request-Id",
-        "schema" : {
-          "type" : "string"
-        }
-      } ]
-    },
     "/brokers/{broker-code}/stations" : {
       "get" : {
         "operationId" : "getStationsDetailsListByBroker",
@@ -312,6 +264,54 @@
           "JWT" : [ ]
         } ],
         "summary" : "Get paginated list of stations given brokerid code",
+        "tags" : [ "Creditor institution's Brokers" ]
+      },
+      "parameters" : [ {
+        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+        "in" : "header",
+        "name" : "X-Request-Id",
+        "schema" : {
+          "type" : "string"
+        }
+      } ]
+    },
+    "/brokers/{broker-id}/ibans/export" : {
+      "get" : {
+        "operationId" : "exportIbansToCsv",
+        "parameters" : [ {
+          "description" : "SelfCare Broker Id. it's an UUID",
+          "in" : "path",
+          "name" : "broker-id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "text/csv" : {
+                "schema" : {
+                  "type" : "string",
+                  "format" : "binary"
+                }
+              }
+            },
+            "description" : "OK",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "JWT" : [ ]
+        } ],
+        "summary" : "Export all IBANs of all creditor institutions handled by a broker EC to CSV",
         "tags" : [ "Creditor institution's Brokers" ]
       },
       "parameters" : [ {

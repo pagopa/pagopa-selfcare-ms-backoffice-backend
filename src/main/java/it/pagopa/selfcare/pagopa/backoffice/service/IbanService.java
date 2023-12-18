@@ -81,11 +81,11 @@ public class IbanService {
      * First, the system gets all the delegations for the input brokerCode.
      * IBAN details are formatted into a CSV row structure.
      *
-     * @param brokerCode The broker code used to retrieve delegations and hence the IBANs.
+     * @param brokerId The broker code used to retrieve delegations and hence the IBANs.
      * @return The byte array representation of the generated CSV file.
      */
-    public byte[] exportIbansToCsv(String brokerCode) {
-        var delegations = externalApiClient.getBrokerDelegation(null, brokerCode, "prod-pagopa", "FULL");
+    public byte[] exportIbansToCsv(String brokerId) {
+        var delegations = externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
         List<String> taxCodes = delegations.stream()
                 .map(DelegationExternal::getTaxCode)
                 .collect(Collectors.toList());
