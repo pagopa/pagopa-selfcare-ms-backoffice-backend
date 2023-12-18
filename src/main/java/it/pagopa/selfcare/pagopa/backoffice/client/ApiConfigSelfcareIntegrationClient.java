@@ -7,10 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,10 +37,10 @@ public interface ApiConfigSelfcareIntegrationClient {
             @PathVariable("creditorInstitutionCode") String creditorInstitutionCode);
 
 
-    @GetMapping(value = "/ibans", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/ibans", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     IbansList getIbans(
             @RequestParam(defaultValue = "10") Integer limit,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(name = "ci_list") List<String> ecList);
+            @RequestBody List<String> ecList);
 }

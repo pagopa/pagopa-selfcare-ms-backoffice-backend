@@ -8,15 +8,13 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExterna
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -112,17 +110,19 @@ public class IbanService {
      */
     private List<IbanCsv> retrieveIbans(List<String> taxCodes) {
         List<CompletableFuture<List<IbanCsv>>> futures = new ArrayList<>();
-        int limit = 100;
+        int limit = taxCodes.size();
         for (int i = 0; i < taxCodes.size(); i += limit) {
             // we divide the taxCodes in partitions (the list can have a size > 1000)
             List<String> partition = taxCodes.subList(i, Math.min(i + limit, taxCodes.size()));
 
             // foreach partition we create parallel requests
+            Map<String, String> previous = MDC.getCopyOfContextMap();
             CompletableFuture<List<IbanCsv>> future = CompletableFuture.supplyAsync(() -> {
-                int numberOfPages = getNumberOfPages(partition, limit);
+                MDC.setContextMap(previous);
+//                int numberOfPages = getNumberOfPages(partition, limit);
 
                 // we iterate all the pages and then transforming and collecting them into a list of "IbanCsv" objects.
-                return IntStream.rangeClosed(0, numberOfPages)
+                return IntStream.rangeClosed(0, 0)
                         .parallel()
                         .mapToObj(j -> apiConfigSelfcareIntegrationClient.getIbans(limit, j, partition))
                         .flatMap(elem -> elem.getIbans().stream())

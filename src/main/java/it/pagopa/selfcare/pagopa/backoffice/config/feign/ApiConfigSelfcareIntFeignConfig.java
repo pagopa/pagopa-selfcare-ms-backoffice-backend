@@ -14,7 +14,7 @@ public class ApiConfigSelfcareIntFeignConfig extends BaseFeignConfig {
 
     @Bean
     public RequestInterceptor subscriptionKey() {
-        return requestTemplate -> requestTemplate.header(APIM_SUBSCRIPTION_KEY, apiConfigSubscriptionKey);
+        return requestTemplate -> requestTemplate.header(APIM_SUBSCRIPTION_KEY, apiConfigSubscriptionKey).header("X-Canary", "canary");
     }
 
 }
