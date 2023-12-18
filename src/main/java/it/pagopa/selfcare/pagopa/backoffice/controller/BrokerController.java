@@ -76,12 +76,12 @@ public class BrokerController {
         return brokerService.getStationsDetailsListByBroker(brokerCode, stationId, limit, page);
     }
 
-    @GetMapping(value = "/{broker-code}/ibans/export", produces = "text/csv")
+    @GetMapping(value = "/{broker-id}/ibans/export", produces = "text/csv")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Export all IBANs of all creditor institutions handled by a broker EC to CSV", security = {@SecurityRequirement(name = "JWT")})
-    public ResponseEntity<Resource> exportIbansToCsv(@Parameter(description = "Broker code") @PathVariable("broker-code") String brokerCode) {
+    public ResponseEntity<Resource> exportIbansToCsv(@Parameter(description = "SelfCare Broker Id. it's an UUID") @PathVariable("broker-id") String brokerId) {
 
-        byte[] file = ibanService.exportIbansToCsv(brokerCode);
+        byte[] file = ibanService.exportIbansToCsv(brokerId);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=iban-export.csv")
