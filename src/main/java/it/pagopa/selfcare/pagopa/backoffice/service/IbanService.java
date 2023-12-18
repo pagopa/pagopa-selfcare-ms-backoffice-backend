@@ -118,7 +118,9 @@ public class IbanService {
             // foreach partition we create parallel requests
             Map<String, String> previous = MDC.getCopyOfContextMap();
             CompletableFuture<List<IbanCsv>> future = CompletableFuture.supplyAsync(() -> {
-                MDC.setContextMap(previous);
+                if(previous != null) {
+                    MDC.setContextMap(previous);
+                }
 //                int numberOfPages = getNumberOfPages(partition, limit);
 
                 // we iterate all the pages and then transforming and collecting them into a list of "IbanCsv" objects.
