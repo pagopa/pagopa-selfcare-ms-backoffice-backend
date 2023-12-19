@@ -110,8 +110,8 @@ public class IbanService {
      */
     private List<IbanCsv> retrieveIbans(List<String> taxCodes) {
         List<CompletableFuture<List<IbanCsv>>> futures = new ArrayList<>();
-        int limit = taxCodes.size();
-        for (int i = 0; i < taxCodes.size(); i += limit) {
+        int limit = 10;
+        for (int i = 0; i < 1; i += limit) {
             // we divide the taxCodes in partitions (the list can have a size > 1000)
             List<String> partition = taxCodes.subList(i, Math.min(i + limit, taxCodes.size()));
 
@@ -121,10 +121,10 @@ public class IbanService {
                 if(previous != null) {
                     MDC.setContextMap(previous);
                 }
-//                int numberOfPages = getNumberOfPages(partition, limit);
+                int numberOfPages = getNumberOfPages(partition, limit);
 
                 // we iterate all the pages and then transforming and collecting them into a list of "IbanCsv" objects.
-                return IntStream.rangeClosed(0, 0)
+                return IntStream.rangeClosed(0, numberOfPages)
                         .parallel()
                         .mapToObj(j -> apiConfigSelfcareIntegrationClient.getIbans(limit, j, partition))
                         .flatMap(elem -> elem.getIbans().stream())
