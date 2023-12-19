@@ -147,7 +147,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 1.3.5-3-export-iban
+        tag: 1.3.5-4-export-iban
         pullPolicy: Always
       envConfig: {}
       envSecret: {}
