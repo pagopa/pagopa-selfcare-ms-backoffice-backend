@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -33,6 +34,9 @@ public class IbanService {
     private final ExternalApiClient externalApiClient;
 
     private final ModelMapper modelMapper;
+
+    @Value("${ibans.export-csv.preview_size}")
+    private Integer ibanExportCSVPreviewSize;
 
     @Autowired
     public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, ExternalApiClient externalApiClient, ModelMapper modelMapper) {
@@ -83,9 +87,10 @@ public class IbanService {
      * @return The byte array representation of the generated CSV file.
      */
     public byte[] exportIbansToCsv(String brokerId) {
-        var delegations = externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
+        List<DelegationExternal> delegations = externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
         List<String> taxCodes = delegations.stream()
                 .map(DelegationExternal::getTaxCode)
+                .limit(ibanExportCSVPreviewSize) // TODO this limit must be removed when preview of IBAN export is done
                 .collect(Collectors.toList());
 
         List<IbanCsv> ibans = retrieveIbans(taxCodes);
@@ -110,8 +115,8 @@ public class IbanService {
      */
     private List<IbanCsv> retrieveIbans(List<String> taxCodes) {
         List<CompletableFuture<List<IbanCsv>>> futures = new ArrayList<>();
-        int limit = 10;
-        for (int i = 0; i < 1; i += limit) {
+        int limit = 100;
+        for (int i = 0; i < taxCodes.size(); i += limit) {
             // we divide the taxCodes in partitions (the list can have a size > 1000)
             List<String> partition = taxCodes.subList(i, Math.min(i + limit, taxCodes.size()));
 
@@ -126,7 +131,7 @@ public class IbanService {
                 // we iterate all the pages and then transforming and collecting them into a list of "IbanCsv" objects.
                 return IntStream.rangeClosed(0, numberOfPages)
                         .parallel()
-                        .mapToObj(j -> apiConfigSelfcareIntegrationClient.getIbans(limit, j, partition))
+                        .mapToObj(j -> apiConfigSelfcareIntegrationClient.getIbans(limit, j, "canary", partition))
                         .flatMap(elem -> elem.getIbans().stream())
                         .map(IbanService::mapToCsvRow)
                         .collect(Collectors.toList());
@@ -151,7 +156,7 @@ public class IbanService {
      */
 
     private int getNumberOfPages(List<String> partition, int limit) {
-        var pageInfo = apiConfigSelfcareIntegrationClient.getIbans(1, 0, partition);
+        var pageInfo = apiConfigSelfcareIntegrationClient.getIbans(1, 0, "canary", partition);
         return (int) Math.floor((double) pageInfo.getPageInfo().getTotalItems() / limit);
     }
 

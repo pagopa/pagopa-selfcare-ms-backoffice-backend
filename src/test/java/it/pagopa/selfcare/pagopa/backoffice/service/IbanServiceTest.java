@@ -45,9 +45,9 @@ class IbanServiceTest {
 
         String ibans = TestUtil.readJsonFromFile("response/apiconfigintegration/ibans.json");
 
-        when(apiConfigSelfcareIntegrationClient.getIbans(1, 0, List.of("1234567890")))
+        when(apiConfigSelfcareIntegrationClient.getIbans(1, 0, "canary", List.of("1234567890")))
                 .thenReturn(TestUtil.toObject(ibans, IbansList.class));
-        when(apiConfigSelfcareIntegrationClient.getIbans(100, 0, List.of("1234567890")))
+        when(apiConfigSelfcareIntegrationClient.getIbans(100, 0, "canary", List.of("1234567890")))
                 .thenReturn(TestUtil.toObject(ibans, IbansList.class));
 
         byte[] result = ibanService.exportIbansToCsv("1111");

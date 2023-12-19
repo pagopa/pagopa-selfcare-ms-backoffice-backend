@@ -1,10 +1,10 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "description": "@project.description@",
+    "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "title": "@project.name@",
-    "version": "1.3.5-2-export-iban"
+    "title": "SelfCare Backoffice",
+    "version": "1.3.5-8-export-iban"
   },
   "servers": [
     {
@@ -17,12 +17,12 @@
           "default": "/backoffice/v1"
         },
         "host": {
+          "default": "api.dev.platform.pagopa.it",
           "enum": [
             "api.dev.platform.pagopa.it",
             "api.uat.platform.pagopa.it",
             "api.platform.pagopa.it"
-          ],
-          "default": "api.dev.platform.pagopa.it"
+          ]
         }
       }
     }
