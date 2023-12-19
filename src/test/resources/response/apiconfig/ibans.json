@@ -1,0 +1,295 @@
+{
+  "ibans_enhanced": [
+    {
+      "iban": "IT22T0103002818000008600053",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT43M0760102800000000007500",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT70J0760102800000011899580",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT20Y0760102800000000001503",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT36D0760102800000012222576",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT11B0760102800000027748508",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT84T0760102800000000109504",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT41G0760102800000026730507",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT98G0760102800000025228503",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT57O0760102800000018805507",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT87P0760102800000006750946",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT20L0760102800000030030506",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT41X0760102800001031581018",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT07N0503402801000000000665",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "description": "Consiglio Regionale",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT72V0760102800000000344507",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "description": "Donazione alla Scuola Nazionale Cani Guida per Ciechi",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT46B0760102800000075060889",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "description": "conto tecnico spese istruttoria sismica",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT89O0760102800001031575820",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "description": "Bolli SIDIT",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT88Z0760102800001020546857",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "description": "Bolli FSE",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT54U0503402801000000005561",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT13N0760102800001038752109",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT90I0760102800001038752885",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT86L0760102800001031577016",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT17Q0760102800000032468530",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "description": "interruzione dell'obbligo del pagamento tassa automobilistica",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT72D0760102800001003018049",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "description": "fitosanitario",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT40C0760102800001045292123",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "description": "Oneri L.R. 39/2005",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT65B0760101600001057882449",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "description": "REGIONE TOSCANA ONERI LR 39/05 ART 23 SEPTIES C1 T",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT66N0760101600001060819388",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "description": "Sanzioni Amministrative Direzione Difesa del Suolo e Protezione Civile",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    },
+    {
+      "iban": "IT59T0760101600001062292212",
+      "ci_owner": "01386030488",
+      "company_name": "Regione Toscana",
+      "description": "CONTRIBUTO L.R. 39/2005 ART. 23 SEPTIES C. 1 BIS",
+      "is_active": false,
+      "validity_date": "2023-03-14T00:00:00.000Z",
+      "publication_date": "2023-03-10T00:00:00.000Z",
+      "due_date": "2024-12-05T17:09:12.000Z",
+      "labels": []
+    }
+  ]
+}

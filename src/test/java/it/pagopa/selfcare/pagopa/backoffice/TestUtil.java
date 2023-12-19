@@ -50,6 +50,16 @@ public class TestUtil {
                 .readValue(json, typeReference);
     }
 
+    public <T> T fileToObject(String relativePath, Class<T> tClass) throws IOException {
+        var string = readJsonFromFile(relativePath);
+        return toObject(string, tClass);
+    }
+
+    public <T> T fileToObject(String relativePath, TypeReference<T> typeReference) throws IOException {
+        var string = readJsonFromFile(relativePath);
+        return toObject(string, typeReference);
+    }
+
     /**
      * @param relativePath Path from source root of the file
      * @return the requested file
