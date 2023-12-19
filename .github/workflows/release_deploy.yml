@@ -93,7 +93,7 @@ jobs:
   release:
     name: Create a New Release
     runs-on: ubuntu-latest
-    needs: [setup]
+    needs: [ setup ]
     outputs:
       version: ${{ steps.release.outputs.version }}
     steps:
@@ -110,7 +110,7 @@ jobs:
     needs: [ setup, release ]
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
-    if: ${{ inputs.semver != 'skip' }}
+    if: ${{ needs.setup.outputs.semver != 'skip' }}
     steps:
       - name: Build and Push
         id: semver
