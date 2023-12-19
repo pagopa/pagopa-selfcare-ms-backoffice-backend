@@ -115,8 +115,8 @@ public class IbanService {
      */
     private List<IbanCsv> retrieveIbans(List<String> taxCodes) {
         List<CompletableFuture<List<IbanCsv>>> futures = new ArrayList<>();
-        int limit = 10;
-        for (int i = 0; i < 1; i += limit) {
+        int limit = 100;
+        for (int i = 0; i < taxCodes.size(); i += limit) {
             // we divide the taxCodes in partitions (the list can have a size > 1000)
             List<String> partition = taxCodes.subList(i, Math.min(i + limit, taxCodes.size()));
 
