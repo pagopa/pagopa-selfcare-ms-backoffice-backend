@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "1.3.6" #improve
+    tag: "1.3.6-1-export-iban" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -94,6 +94,7 @@ microservice-chart:
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
+    IBANS_EXPORT_CVS_PREVIEW_SIZE: '10'
   envSecret:
     AWS_ACCESS_KEY_ID: pagopa-u-aws-access-key-id
     AWS_SECRET_ACCESS_KEY: pagopa-u-aws-secret-access-key
@@ -147,7 +148,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 0.4.66-4-reengineering
+        tag: 1.3.5-5-export-iban
         pullPolicy: Always
       envConfig: {}
       envSecret: {}

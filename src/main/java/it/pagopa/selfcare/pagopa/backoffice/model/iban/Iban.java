@@ -2,18 +2,16 @@ package it.pagopa.selfcare.pagopa.backoffice.model.iban;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Iban {
 
     @ApiModelProperty(value = "Fiscal code of the Creditor Institution who owns the IBAN")
@@ -30,7 +28,7 @@ public class Iban {
 
     @ApiModelProperty(value = "The date on which the IBAN will expire", required = true)
     @JsonProperty("due_date")
-    private OffsetDateTime dueDate;
+    private LocalDate dueDate;
 
     @ApiModelProperty(value = "The IBAN code", required = true)
     @JsonProperty("iban")
@@ -46,9 +44,9 @@ public class Iban {
 
     @ApiModelProperty(value = "The date the Creditor Institution wants the IBAN to be used for its payments", required = true)
     @JsonProperty("validity_date")
-    private OffsetDateTime validityDate;
+    private LocalDate validityDate;
 
     @ApiModelProperty(value = "The date on which the IBAN has been inserted in the system")
     @JsonProperty("publication_date")
-    private OffsetDateTime publicationDate;
+    private LocalDate publicationDate;
 }

@@ -13,7 +13,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInst
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreate;
+import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.io.Resource;
@@ -213,15 +213,15 @@ public interface ApiConfigClient {
 
     @PostMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/ibans", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    IbanCreate createCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
-                                              @RequestBody IbanCreate ibanCreate);
+    IbanCreateApiconfig createCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
+                                                       @RequestBody IbanCreateApiconfig ibanCreate);
 
 
     @PutMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/ibans/{ibanId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    IbanCreate updateCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
-                                              @PathVariable("ibanId") String ibanId,
-                                              @RequestBody IbanCreate ibanCreate);
+    IbanCreateApiconfig updateCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
+                                                       @PathVariable("ibanId") String ibanId,
+                                                       @RequestBody IbanCreateApiconfig ibanCreate);
 
 
     @DeleteMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/ibans/{ibanValue}", produces = MediaType.APPLICATION_JSON_VALUE)

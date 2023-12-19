@@ -8,15 +8,14 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExterna
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -36,6 +35,9 @@ public class IbanService {
 
     private final ModelMapper modelMapper;
 
+    @Value("${ibans.export-csv.preview_size}")
+    private Integer ibanExportCSVPreviewSize;
+
     @Autowired
     public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, ExternalApiClient externalApiClient, ModelMapper modelMapper) {
         this.apiConfigClient = apiConfigClient;
@@ -50,7 +52,8 @@ public class IbanService {
     }
 
     public Iban createIban(String ciCode, IbanCreate requestDto) {
-        IbanCreate dto = apiConfigClient.createCreditorInstitutionIbans(ciCode, requestDto);
+        var body = modelMapper.map(requestDto, IbanCreateApiconfig.class);
+        var dto = apiConfigClient.createCreditorInstitutionIbans(ciCode, body);
         return modelMapper.map(dto, Iban.class);
     }
 
@@ -60,15 +63,18 @@ public class IbanService {
             Ibans ibansEnhanced = apiConfigClient.getCreditorInstitutionIbans(ciCode, dto.getLabels().get(0).getName());
             if(ibansEnhanced != null && !ObjectUtils.isEmpty(ibansEnhanced.getIbanList())) {
                 ibansEnhanced.getIbanList().forEach(iban -> {
-                    IbanCreate ibanCreate = modelMapper.map(iban, IbanCreate.class);
-                    List<IbanLabel> ibanLabelList = ibanCreate.getLabels().stream().filter(f -> !(f.getName().equals(dto.getLabels().get(0).getName()))).collect(Collectors.toList());
+                    IbanCreateApiconfig ibanCreate = modelMapper.map(iban, IbanCreateApiconfig.class);
+                    List<IbanLabel> ibanLabelList = ibanCreate.getLabels()
+                            .stream()
+                            .filter(f -> !(f.getName().equals(dto.getLabels().get(0).getName())))
+                            .collect(Collectors.toList());
                     ibanCreate.setLabels(ibanLabelList);
                     apiConfigClient.updateCreditorInstitutionIbans(ciCode, iban.getIban(), ibanCreate);
                 });
             }
         }
         // update IBAN values
-        IbanCreate updatedDto = apiConfigClient.updateCreditorInstitutionIbans(ciCode, ibanValue, dto);
+        IbanCreateApiconfig updatedDto = apiConfigClient.updateCreditorInstitutionIbans(ciCode, ibanValue, modelMapper.map(dto, IbanCreateApiconfig.class));
         return modelMapper.map(updatedDto, Iban.class);
     }
 
@@ -85,9 +91,10 @@ public class IbanService {
      * @return The byte array representation of the generated CSV file.
      */
     public byte[] exportIbansToCsv(String brokerId) {
-        var delegations = externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
+        List<DelegationExternal> delegations = externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
         List<String> taxCodes = delegations.stream()
                 .map(DelegationExternal::getTaxCode)
+                .limit(ibanExportCSVPreviewSize) // TODO this limit must be removed when preview of IBAN export is done
                 .collect(Collectors.toList());
 
         List<IbanCsv> ibans = retrieveIbans(taxCodes);
@@ -118,7 +125,11 @@ public class IbanService {
             List<String> partition = taxCodes.subList(i, Math.min(i + limit, taxCodes.size()));
 
             // foreach partition we create parallel requests
+            Map<String, String> previous = MDC.getCopyOfContextMap();
             CompletableFuture<List<IbanCsv>> future = CompletableFuture.supplyAsync(() -> {
+                if(previous != null) {
+                    MDC.setContextMap(previous);
+                }
                 int numberOfPages = getNumberOfPages(partition, limit);
 
                 // we iterate all the pages and then transforming and collecting them into a list of "IbanCsv" objects.
