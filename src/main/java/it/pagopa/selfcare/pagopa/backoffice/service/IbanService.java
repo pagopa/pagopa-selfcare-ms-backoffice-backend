@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -33,6 +34,9 @@ public class IbanService {
     private final ExternalApiClient externalApiClient;
 
     private final ModelMapper modelMapper;
+
+    @Value("${ibans.export-csv.preview_size}")
+    private Integer ibanExportCSVPreviewSize;
 
     @Autowired
     public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, ExternalApiClient externalApiClient, ModelMapper modelMapper) {
@@ -83,9 +87,10 @@ public class IbanService {
      * @return The byte array representation of the generated CSV file.
      */
     public byte[] exportIbansToCsv(String brokerId) {
-        var delegations = externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
+        List<DelegationExternal> delegations = externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
         List<String> taxCodes = delegations.stream()
                 .map(DelegationExternal::getTaxCode)
+                .limit(ibanExportCSVPreviewSize) // TODO this limit must be removed when preview of IBAN export is done
                 .collect(Collectors.toList());
 
         List<IbanCsv> ibans = retrieveIbans(taxCodes);
