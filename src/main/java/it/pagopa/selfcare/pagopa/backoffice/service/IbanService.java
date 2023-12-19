@@ -156,7 +156,7 @@ public class IbanService {
      */
 
     private int getNumberOfPages(List<String> partition, int limit) {
-        var pageInfo = apiConfigSelfcareIntegrationClient.getIbans(1, 0, partition);
+        var pageInfo = apiConfigSelfcareIntegrationClient.getIbans(1, 0, "canary", partition);
         return (int) Math.floor((double) pageInfo.getPageInfo().getTotalItems() / limit);
     }
 
