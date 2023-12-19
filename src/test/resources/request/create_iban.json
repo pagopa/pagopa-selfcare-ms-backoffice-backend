@@ -1,0 +1,9 @@
+{
+  "description": "my iban",
+  "due_date": "2024-12-05T17:09:12.000Z",
+  "iban": "ITA0000000001234",
+  "is_active": true,
+  "labels": [
+  ],
+  "validity_date": "2023-12-05T17:09:12.000Z"
+}
