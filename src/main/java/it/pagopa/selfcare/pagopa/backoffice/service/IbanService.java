@@ -131,7 +131,7 @@ public class IbanService {
                 // we iterate all the pages and then transforming and collecting them into a list of "IbanCsv" objects.
                 return IntStream.rangeClosed(0, numberOfPages)
                         .parallel()
-                        .mapToObj(j -> apiConfigSelfcareIntegrationClient.getIbans(limit, j, partition))
+                        .mapToObj(j -> apiConfigSelfcareIntegrationClient.getIbans(limit, j, "canary", partition))
                         .flatMap(elem -> elem.getIbans().stream())
                         .map(IbanService::mapToCsvRow)
                         .collect(Collectors.toList());

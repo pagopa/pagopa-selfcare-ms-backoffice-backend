@@ -42,5 +42,6 @@ public interface ApiConfigSelfcareIntegrationClient {
     IbansList getIbans(
             @RequestParam(defaultValue = "10") Integer limit,
             @RequestParam(defaultValue = "0") Integer page,
+            @RequestHeader(name = "X-Canary") String canary,
             @RequestBody List<String> ecList);
 }
