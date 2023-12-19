@@ -7,14 +7,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class IbanCreate {
+public class IbanCreateApiconfig {
 
     @ApiModelProperty(value = "The description the Creditor Institution gives to the iban about its usage")
     @JsonProperty("description")
@@ -22,7 +22,7 @@ public class IbanCreate {
 
     @ApiModelProperty(value = "The date on which the iban will expire", required = true)
     @JsonProperty("due_date")
-    private LocalDate dueDate;
+    private OffsetDateTime dueDate;
 
     @ApiModelProperty(value = "the iban code", required = true)
     @JsonProperty("iban")
@@ -38,5 +38,5 @@ public class IbanCreate {
 
     @ApiModelProperty(value = "The date the Creditor Institution wants the iban to be used for its payments", required = true)
     @JsonProperty("validity_date")
-    private LocalDate validityDate;
+    private OffsetDateTime validityDate;
 }
