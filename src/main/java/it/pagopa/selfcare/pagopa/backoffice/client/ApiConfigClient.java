@@ -175,7 +175,7 @@ public interface ApiConfigClient {
     void deleteCreditorInstitutionStationRelationship(@PathVariable("creditorinstitutioncode") String ecCode,
                                                       @PathVariable(required = false, name = "stationcode") String stationcode);
 
-    @GetMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/ibans/enhanced")
+    @GetMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/ibans/list")
     Ibans getCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
                                       @RequestParam String label);
 
