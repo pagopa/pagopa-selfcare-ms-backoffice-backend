@@ -13,11 +13,11 @@ import javax.validation.constraints.NotNull;
 public class StationDetails extends Station {
 
     @JsonProperty("broker_details")
-    @NotBlank
     private BrokerDetails intermediarioPa;
 
     @JsonProperty("ip")
     private String ip;
+
     @JsonProperty("new_password")
     private String newPassword;
 
@@ -25,11 +25,9 @@ public class StationDetails extends Station {
     private String password;
 
     @JsonProperty("port")
-    @NotNull
     private Long port;
 
     @JsonProperty("protocol")
-    @NotNull
     private Protocol protocol;
 
     @JsonProperty("redirect_ip")
