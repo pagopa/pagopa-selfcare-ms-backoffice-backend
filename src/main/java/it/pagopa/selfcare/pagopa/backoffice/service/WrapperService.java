@@ -1,13 +1,18 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channel;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperRepository;
@@ -17,13 +22,17 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.REGEX_GENERATE;
+import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
 
 @Service
 public class WrapperService {
+
+    @Autowired
+    private ApiConfigClient apiConfigClient;
 
     @Autowired
     private WrapperRepository repository;
@@ -244,5 +253,23 @@ public class WrapperService {
         wrapperEntitiesList.setPageInfo(pi);
 
         return wrapperEntitiesList;
+    }
+
+    public String getFirstValidCodeV2(String entityCode) {
+        Channels channels = apiConfigClient.getChannels(100, 0, entityCode, null, "DESC");
+        Stations stations = apiConfigClient.getStations(100, 0 , "DESC", null, null, entityCode);
+        WrapperEntitiesList channelMongoList = findByIdLikeOrTypeOrBrokerCode(entityCode, WrapperType.CHANNEL, null, 0, 100);
+        WrapperEntitiesList stationMongoList = findByIdLikeOrTypeOrBrokerCode(entityCode, WrapperType.STATION, null, 0, 100);
+
+        List<String> channelAndStationCodes = new LinkedList<>();
+        channelAndStationCodes.addAll(channelMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).collect(Collectors.toList()));
+        channelAndStationCodes.addAll(stationMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).collect(Collectors.toList()));
+        channelAndStationCodes.addAll(channels.getChannelList().stream().map(Channel::getChannelCode).collect(Collectors.toList()));
+        channelAndStationCodes.addAll(stations.getStationsList().stream().map(Station::getStationCode).collect(Collectors.toList()));
+
+        Set<String> validCodes = channelAndStationCodes.stream()
+                .filter(s -> s.matches(REGEX_GENERATE))
+                .collect(Collectors.toSet());
+        return generator(validCodes, entityCode);
     }
 }

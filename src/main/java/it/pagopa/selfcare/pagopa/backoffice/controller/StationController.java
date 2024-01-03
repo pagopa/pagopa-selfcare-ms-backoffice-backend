@@ -120,14 +120,14 @@ public class StationController {
     @Operation(summary = "Generate a station code given the creditor institution's code", security = {@SecurityRequirement(name = "JWT")})
     public StationCodeResource getStationCode(@Parameter(description = "Creditor institution code")
                                               @RequestParam(value = "ec-code") String ecCode) {
-        return stationService.getStationCode(ecCode);
+        return stationService.getStationCode(ecCode, false);
     }
 
     @GetMapping(value = "/station-code/v2", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Generate a station code given the creditor institution's code", security = {@SecurityRequirement(name = "JWT")})
     public StationCodeResource getStationCodeV2(@Parameter(description = "Creditor institution code") @RequestParam(value = "ec-code") String ecCode) {
-        return stationService.getStationCodeV2(ecCode);
+        return stationService.getStationCode(ecCode, true);
     }
 
     @PutMapping(value = "/wrapper/{station-code}", consumes = MediaType.APPLICATION_JSON_VALUE)

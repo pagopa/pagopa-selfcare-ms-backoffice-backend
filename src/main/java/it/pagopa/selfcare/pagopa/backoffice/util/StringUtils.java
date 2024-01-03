@@ -1,9 +1,12 @@
 package it.pagopa.selfcare.pagopa.backoffice.util;
 
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 public class StringUtils {
 
@@ -28,21 +31,14 @@ public class StringUtils {
         return str.replaceAll("[^a-zA-Z0-9- ]", replace);
     }
 
-
-    public static String generator(List<String> codes, String retrievedCode) {
-        Pattern pattern = Pattern.compile("^(.*?)(_\\d+)$"); // String_nn
-        String newCode = retrievedCode.concat("_").concat("01");
-        if(codes.isEmpty()) return newCode;
-        Comparator<String> comparator = Comparator.comparingInt(s -> Integer.parseInt(s.split("_")[1]));
-        codes.sort(comparator.reversed());
-        String code = codes.get(0);
-
-        Matcher matcher = pattern.matcher(code);
-        if(matcher.matches()) {
-            String prefix = matcher.group(1);
-            int number = Integer.parseInt(matcher.group(2).substring(1)) + 1;
-            newCode = String.format("%s_%02d", prefix, number);
-        }
-        return newCode;
+    public static String generator(Set<String> codes, String entityCode) {
+        List<String> validCodes = new LinkedList<>();
+        IntStream.range(1, 100).forEach(i -> {
+            String newCode = entityCode.concat("_").concat(i <= 9 ? "0" + i : "" + i);
+            if (!codes.contains(newCode)) {
+                validCodes.add(newCode);
+            }
+        });
+        return validCodes.get(0);
     }
 }

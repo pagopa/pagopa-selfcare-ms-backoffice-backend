@@ -9,7 +9,10 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.PermissionDeniedException;
 import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.StationMapper;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelCodeResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channel;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
@@ -27,10 +30,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
@@ -127,26 +127,22 @@ public class StationService {
         return stationMapper.toResource(stationDetails, status, createdBy, modifiedBy);
     }
 
-    public StationCodeResource getStationCode(String ecCode) {
+    public StationCodeResource getStationCode(String ecCode, Boolean v2) {
+        if(Boolean.TRUE.equals(v2)) {
+            return new StationCodeResource(wrapperService.getFirstValidCodeV2(ecCode));
+        } else {
+            return new StationCodeResource(getFirstValidStationCodeAux(ecCode));
+        }
+    }
+
+    private String getFirstValidStationCodeAux(String ecCode) {
         WrapperEntitiesList entitiesList = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_CHECK, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
         WrapperEntitiesList entitiesList2 = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_FIX, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
         if(!entitiesList.getWrapperEntities().isEmpty() || !entitiesList2.getWrapperEntities().isEmpty())
             throw new PermissionDeniedException("ERROR There is a Station not completed!");
-        String result = generateStationCode(ecCode);
-
-        return new StationCodeResource(result);
+        return generateStationCode(ecCode);
     }
 
-    public StationCodeResource getStationCodeV2(String ecCode) {
-        Stations stations = getStations(100, 0, "ASC", null, null, ecCode);
-        WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
-        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(ecCode, WrapperType.STATION, null, 0, 100);
-        WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
-        WrapperStations stationsMergedAndSorted = mergeAndSortWrapperStations(responseApiConfig, responseMongo, "ASC");
-        String result = generateStationCodeV2(stationsMergedAndSorted.getStationsList(), ecCode);
-
-        return new StationCodeResource(result);
-    }
 
     public WrapperEntities updateWrapperStationDetails(
             @Valid
@@ -238,9 +234,9 @@ public class StationService {
     private String generateStationCode(String ecCode) {
         Stations stations = apiConfigClient.getStations(100, 0, "ASC", null, null, ecCode);
         List<Station> stationsList = stations.getStationsList();
-        List<String> codes = stationsList.stream().map(Station::getStationCode)
+        Set<String> codes = stationsList.stream().map(Station::getStationCode)
                 .filter(s -> s.matches(REGEX_GENERATE))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         return generator(codes, ecCode);
     }
 
@@ -271,14 +267,5 @@ public class StationService {
         result.setPageInfo(pageInfo);
         return result;
     }
-
-
-    private String generateStationCodeV2(List<WrapperStation> stationList, String ecCode) {
-        List<String> codes = stationList.stream().map(WrapperStation::getStationCode)
-                .filter(s -> s.matches(REGEX_GENERATE))
-                .collect(Collectors.toList());
-        return generator(codes, ecCode);
-    }
-
 
 }
