@@ -2,21 +2,23 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannel;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
-import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.REGEX_GENERATE;
@@ -105,38 +107,18 @@ public class PaymentServiceProviderService {
 
     public ChannelCodeResource getFirstValidChannelCode(String pspCode, Boolean v2) {
         if(Boolean.TRUE.equals(v2)) {
-            return getFirstValidChannelCodeV2(pspCode);
+            return new ChannelCodeResource(wrapperService.getFirstValidCodeV2(pspCode));
         } else {
             return new ChannelCodeResource(getFirstValidChannelCodeAux(pspCode));
         }
     }
 
-    public ChannelCodeResource getFirstValidChannelCodeV2(String pspCode) {
-        Channels channels = apiConfigClient.getChannels(1, 0, pspCode, null, "DESC");
-        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(pspCode, WrapperType.CHANNEL, null, 0, 100);
-        WrapperChannels channelsMergedAndSorted = Utility.mergeAndSortWrapperChannels(
-                ChannelMapper.toWrapperChannels(channels),
-                ChannelMapper.toWrapperChannels(mongoList),
-                "ASC");
-        String result = generateChannelCodeV2(channelsMergedAndSorted.getChannelList(), pspCode);
-        return new ChannelCodeResource(result);
-    }
-
-
     private String getFirstValidChannelCodeAux(String pspCode) {
         Channels response = apiConfigClient.getChannels(1, 0, pspCode, null, "DESC");
         List<Channel> codeList = response.getChannelList();
-        List<String> codes = codeList.stream().map(Channel::getChannelCode)
+        Set<String> codes = codeList.stream().map(Channel::getChannelCode)
                 .filter(s -> s.matches(REGEX_GENERATE)) // String_nn
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         return generator(codes, pspCode);
     }
-
-    private String generateChannelCodeV2(List<WrapperChannel> stationList, String ecCode) {
-        List<String> codes = stationList.stream().map(WrapperChannel::getChannelCode)
-                .filter(s -> s.matches(REGEX_GENERATE))
-                .collect(Collectors.toList());
-        return generator(codes, ecCode);
-    }
-
 }
