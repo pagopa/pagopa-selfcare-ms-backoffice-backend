@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -28,7 +27,7 @@ public class Iban {
 
     @ApiModelProperty(value = "The date on which the IBAN will expire", required = true)
     @JsonProperty("due_date")
-    private LocalDate dueDate;
+    private String dueDate;
 
     @ApiModelProperty(value = "The IBAN code", required = true)
     @JsonProperty("iban")
@@ -44,9 +43,9 @@ public class Iban {
 
     @ApiModelProperty(value = "The date the Creditor Institution wants the IBAN to be used for its payments", required = true)
     @JsonProperty("validity_date")
-    private LocalDate validityDate;
+    private String validityDate;
 
     @ApiModelProperty(value = "The date on which the IBAN has been inserted in the system")
     @JsonProperty("publication_date")
-    private LocalDate publicationDate;
+    private String publicationDate;
 }

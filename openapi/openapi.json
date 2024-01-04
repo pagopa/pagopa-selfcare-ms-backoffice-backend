@@ -1,10 +1,10 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "description": "Microservice to manage PagoPA Backoffice",
+    "description": "@project.description@",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "1.3.8"
+    "version": "1.3.8-1-iban-test"
   },
   "servers": [
     {
@@ -6204,8 +6204,7 @@
             "type": "string"
           },
           "due_date": {
-            "type": "string",
-            "format": "date"
+            "type": "string"
           },
           "iban": {
             "type": "string"
@@ -6220,12 +6219,10 @@
             }
           },
           "publication_date": {
-            "type": "string",
-            "format": "date"
+            "type": "string"
           },
           "validity_date": {
-            "type": "string",
-            "format": "date"
+            "type": "string"
           }
         }
       },
