@@ -52,8 +52,8 @@ public class IbanService {
     }
 
     public Iban createIban(String ciCode, IbanCreate requestDto) {
-        var body = modelMapper.map(requestDto, IbanCreateApiconfig.class);
-        var dto = apiConfigClient.createCreditorInstitutionIbans(ciCode, body);
+        IbanCreateApiconfig body = modelMapper.map(requestDto, IbanCreateApiconfig.class);
+        IbanCreateApiconfig dto = apiConfigClient.createCreditorInstitutionIbans(ciCode, body);
         return modelMapper.map(dto, Iban.class);
     }
 
