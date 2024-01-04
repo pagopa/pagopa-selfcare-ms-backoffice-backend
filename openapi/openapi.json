@@ -17,12 +17,12 @@
           "default": "/backoffice/v1"
         },
         "host": {
+          "default": "api.dev.platform.pagopa.it",
           "enum": [
             "api.dev.platform.pagopa.it",
             "api.uat.platform.pagopa.it",
             "api.platform.pagopa.it"
-          ],
-          "default": "api.dev.platform.pagopa.it"
+          ]
         }
       }
     }
@@ -6924,10 +6924,7 @@
       "StationDetails": {
         "required": [
           "broker_code",
-          "broker_details",
           "enabled",
-          "port",
-          "protocol",
           "station_code",
           "thread_number",
           "timeout_a",
