@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "1.3.7-2-iban-test" #improve
+    tag: "1.3.9" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -135,7 +135,7 @@ microservice-chart:
                 values:
                   - user
   canaryDelivery:
-    create: true
+    create: false
     ingress:
       create: true
       canary:
