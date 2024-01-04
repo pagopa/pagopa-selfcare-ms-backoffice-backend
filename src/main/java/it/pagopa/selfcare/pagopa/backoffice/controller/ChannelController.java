@@ -55,11 +55,12 @@ public class ChannelController {
     @GetMapping(value = "/{channel-code}/payment-service-providers", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get paginated list of PSPs associated with the channel", security = {@SecurityRequirement(name = "JWT")})
-    public ChannelPspListResource getChannelPaymentServiceProviders(@Parameter(description = "") @RequestParam(required = false, defaultValue = "50") Integer limit,
+    public ChannelPspListResource getChannelPaymentServiceProviders(@Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode,
+                                                                    @Parameter(description = "") @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                                     @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = true) Integer page,
-                                                                    @Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode) {
+                                                                    @Parameter(description = "Filter by PSP name") @RequestParam(name = "psp-name") String pspName) {
 
-        return channelService.getPSPsByChannel(limit, page, channelCode);
+        return channelService.getPSPsByChannel(limit, page, channelCode, pspName);
     }
 
     @GetMapping(value = "/csv", produces = {MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE})

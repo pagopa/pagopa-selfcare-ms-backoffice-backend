@@ -170,8 +170,8 @@ public class ChannelService {
         return apiConfigClient.getChannelsCSV();
     }
 
-    public ChannelPspListResource getPSPsByChannel(Integer limit, Integer page, String channelCode) {
-        ChannelPspList dto = apiConfigClient.getChannelPaymentServiceProviders(limit, page, channelCode);
+    public ChannelPspListResource getPSPsByChannel(Integer limit, Integer page, String channelCode, String pspName) {
+        ChannelPspList dto = apiConfigClient.getChannelPaymentServiceProviders(channelCode, limit, page, pspName);
         return ChannelMapper.toResource(dto);
     }
 

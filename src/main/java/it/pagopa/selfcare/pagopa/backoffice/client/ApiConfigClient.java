@@ -110,9 +110,10 @@ public interface ApiConfigClient {
 
 
     @GetMapping(value = "/channels/{channelcode}/paymentserviceproviders", produces = MediaType.APPLICATION_JSON_VALUE)
-    ChannelPspList getChannelPaymentServiceProviders(@RequestParam(required = false, defaultValue = "50") Integer limit,
+    ChannelPspList getChannelPaymentServiceProviders(@PathVariable("channelcode") String channelcode,
+                                                     @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                      @RequestParam Integer page,
-                                                     @PathVariable("channelcode") String channelcode);
+                                                     @RequestParam("pspName") String pspName);
 
     @GetMapping(value = "/paymentserviceproviders", produces = MediaType.APPLICATION_JSON_VALUE)
     PaymentServiceProviders getPaymentServiceProviders(@RequestParam(required = false, defaultValue = "50") Integer limit,
@@ -169,7 +170,8 @@ public interface ApiConfigClient {
     @GetMapping(value = "/stations/{stationcode}/creditorinstitutions", produces = MediaType.APPLICATION_JSON_VALUE)
     CreditorInstitutions getCreditorInstitutionsByStation(@PathVariable(required = false, name = "stationcode") String stationcode,
                                                           @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                                          @RequestParam Integer page);
+                                                          @RequestParam Integer page,
+                                                          @RequestParam String ciName);
 
     @DeleteMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/stations/{stationcode}", produces = MediaType.APPLICATION_JSON_VALUE)
     void deleteCreditorInstitutionStationRelationship(@PathVariable("creditorinstitutioncode") String ecCode,
