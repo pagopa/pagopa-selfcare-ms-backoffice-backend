@@ -72,13 +72,12 @@ public class ApiManagementService {
         return apimClient.getInstitutionApiKeys(institutionId);
     }
 
-    public List<InstitutionApiKeys> createSubscriptionKeys(String institutionId, String subscriptionCode) {
-        Subscription subscriptionEnum = Subscription.valueOf(subscriptionCode);
-        String scope = subscriptionEnum.getScope();
-        String subscriptionName = subscriptionEnum.getDisplayName();
+    public List<InstitutionApiKeys> createSubscriptionKeys(String institutionId, Subscription subscriptionCode) {
+        String scope = subscriptionCode.getScope();
+        String subscriptionName = subscriptionCode.getDisplayName();
         InstitutionResponse institution = externalApiClient.getInstitution(institutionId);
         if(institution != null) {
-            String subscriptionId = subscriptionEnum.getPrefixId() + institution.getTaxCode();
+            String subscriptionId = subscriptionCode.getPrefixId() + institution.getTaxCode();
             try {
                 apimClient.createInstitutionSubscription(institutionId, institution.getDescription(), scope, subscriptionId, subscriptionName + " " + institution.getDescription());
             } catch (RuntimeException e) {
