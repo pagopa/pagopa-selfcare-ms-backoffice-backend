@@ -2,7 +2,8 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
-import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
@@ -85,7 +86,7 @@ public class ApiManagementService {
             createUserIfNotExist(institutionId, dto);
             apimClient.createInstitutionSubscription(institutionId, institution.getDescription(), scope, subscriptionId, subscriptionName);
         } else {
-            throw new ResourceNotFoundException(String.format("The institution %s was not found", institutionId));
+            throw new AppException(AppError.APIM_USER_NOT_FOUND, institutionId);
         }
         return apimClient.getApiSubscriptions(institutionId);
     }
@@ -116,7 +117,7 @@ public class ApiManagementService {
                 apimClient.createInstitutionSubscription(institutionId, institution.getDescription(), "/apis", SUBSCRIPTION_APIS_ID.concat(institutionId), SUBSCRIPTION_APIS_DISPLAY);
             }
         } else {
-            throw new ResourceNotFoundException(String.format("The institution %s was not found", institutionId));
+            throw new AppException(AppError.APIM_USER_NOT_FOUND, institutionId);
         }
         return apimClient.getApiSubscriptions(institutionId);
     }

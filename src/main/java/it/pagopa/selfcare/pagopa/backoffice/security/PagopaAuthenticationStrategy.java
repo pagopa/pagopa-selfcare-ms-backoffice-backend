@@ -1,8 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.security;
 
 import io.jsonwebtoken.Claims;
-import it.pagopa.selfcare.pagopa.backoffice.exception.AuthoritiesRetrieverException;
-import it.pagopa.selfcare.pagopa.backoffice.exception.JwtAuthenticationException;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.SelfCareUser;
 import it.pagopa.selfcare.pagopa.backoffice.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -26,13 +26,9 @@ public class PagopaAuthenticationStrategy {
     private static final String CLAIM_NAME = "name";
     private static final String CLAIM_SURNAME = "family_name";
     private static final String CLAIM_ORG_VAT = "org_vat";
-    private final JwtUtil jwtUtil;
-
 
     @Autowired
-    public PagopaAuthenticationStrategy(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
+    private JwtUtil jwtUtil;
 
 
     public JwtAuthenticationToken authenticate(JwtAuthenticationToken authentication) throws AuthenticationException {
@@ -53,7 +49,7 @@ public class PagopaAuthenticationStrategy {
 
         } catch (Exception e) {
             MDC.remove(MDC_UID);
-            throw new JwtAuthenticationException(e.getMessage(), e);
+            throw new AppException(AppError.UNAUTHORIZED, e);
         }
 
         final Collection<GrantedAuthority> authorities;
@@ -61,7 +57,7 @@ public class PagopaAuthenticationStrategy {
             authorities = null;
         } catch (Exception e) {
             MDC.remove(MDC_UID);
-            throw new AuthoritiesRetrieverException("An error occurred during authorities retrieval", e);
+            throw new AppException(AppError.UNAUTHORIZED, e);
         }
         JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authentication.getCredentials(), user, authorities);
         authenticationToken.setDetails(authentication.getDetails());

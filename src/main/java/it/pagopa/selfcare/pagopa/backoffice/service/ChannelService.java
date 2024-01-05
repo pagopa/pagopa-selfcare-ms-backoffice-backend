@@ -4,7 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
@@ -126,7 +126,7 @@ public class ChannelService {
             channelDetail = (ChannelDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
             status = result.getStatus();
             ptResponse.setPaymentTypeList(channelDetail.getPaymentTypeList());
-        } catch (ResourceNotFoundException e) {
+        } catch (AppException e) {
             channelDetail = apiConfigClient.getChannelDetails(channelcode);
             ptResponse = apiConfigClient.getChannelPaymentTypes(channelcode);
             status = WrapperStatus.APPROVED;

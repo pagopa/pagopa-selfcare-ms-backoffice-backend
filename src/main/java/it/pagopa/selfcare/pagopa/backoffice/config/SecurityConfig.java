@@ -1,15 +1,13 @@
 package it.pagopa.selfcare.pagopa.backoffice.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.backoffice.model.Problem;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.security.JwtAuthenticationFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -32,14 +30,9 @@ public class SecurityConfig {
             "/favicon.ico",
             "/error",
             "/actuator/**",
-            "/channels/getBrokersPsp/**",
-            "/stations/brokers-EC/**",
             "/info"
     };
 
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -58,19 +51,11 @@ public class SecurityConfig {
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    log.warn("{} to resource {}", accessDeniedException.getMessage(), request.getRequestURI());
-                    response.setStatus(HttpStatus.FORBIDDEN.value());
-                    response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
-                    final Problem problem = new Problem(HttpStatus.FORBIDDEN, accessDeniedException.getMessage());
-                    response.getOutputStream().print(objectMapper.writeValueAsString(problem));
+                    throw new AppException(AppError.FORBIDDEN, accessDeniedException);
                 })
                 .authenticationEntryPoint((request, response, authException) -> {
-                    log.warn("{} {}", authException.getMessage(), request.getRequestURI());
                     response.addHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer realm=\"selfcare\"");
-                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                    response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
-                    final Problem problem = new Problem(HttpStatus.UNAUTHORIZED, authException.getMessage());
-                    response.getOutputStream().print(objectMapper.writeValueAsString(problem));
+                    throw new AppException(AppError.UNAUTHORIZED, authException);
                 })
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()

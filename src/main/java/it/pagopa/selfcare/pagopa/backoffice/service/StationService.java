@@ -5,14 +5,11 @@ import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
-import it.pagopa.selfcare.pagopa.backoffice.exception.PermissionDeniedException;
-import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.StationMapper;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelCodeResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channel;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
@@ -118,7 +115,7 @@ public class StationService {
             modifiedBy = result.getModifiedBy();
             stationDetails = (StationDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
             status = result.getStatus();
-        } catch (ResourceNotFoundException e) {
+        } catch (AppException e) {
 
             stationDetails = apiConfigClient.getStation(stationCode);
             status = WrapperStatus.APPROVED;
@@ -139,7 +136,7 @@ public class StationService {
         WrapperEntitiesList entitiesList = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_CHECK, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
         WrapperEntitiesList entitiesList2 = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_FIX, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
         if(!entitiesList.getWrapperEntities().isEmpty() || !entitiesList2.getWrapperEntities().isEmpty())
-            throw new PermissionDeniedException("ERROR There is a Station not completed!");
+            throw new AppException(AppError.STATION_CONFLICT);
         return generateStationCode(ecCode);
     }
 
