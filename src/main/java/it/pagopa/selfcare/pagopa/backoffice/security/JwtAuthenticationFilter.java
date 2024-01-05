@@ -2,13 +2,11 @@ package it.pagopa.selfcare.pagopa.backoffice.security;
 
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
+import it.pagopa.selfcare.pagopa.backoffice.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -20,15 +18,13 @@ import java.io.IOException;
 import static it.pagopa.selfcare.pagopa.backoffice.util.JwtUtil.getJwtFromRequest;
 
 @Slf4j
-@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private PagopaAuthenticationStrategy pagopaAuthenticationStrategy;
+    private final JwtUtil jwtUtil;
 
-    @Value("${info.properties.environment}")
-    private String env;
-
+    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
     public void doFilterInternal(final HttpServletRequest request,
@@ -36,15 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                  final FilterChain filterChain) throws ServletException, IOException {
 
         try {
-            // skip jwt-check during junit test
-            // the user in the security context is mocked
-            if("test".equals(env)) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-            
             final JwtAuthenticationToken authRequest = new JwtAuthenticationToken(getJwtFromRequest(request));
-            final JwtAuthenticationToken jwtAuthenticationToken = pagopaAuthenticationStrategy.authenticate(authRequest);
+            final JwtAuthenticationToken jwtAuthenticationToken = new PagopaAuthenticationStrategy(jwtUtil).authenticate(authRequest);
 
             jwtAuthenticationToken.setDetails(authRequest.getDetails());
             SecurityContextHolder.getContext().setAuthentication(jwtAuthenticationToken);

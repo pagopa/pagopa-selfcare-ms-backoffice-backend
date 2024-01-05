@@ -3,8 +3,10 @@ package it.pagopa.selfcare.pagopa.backoffice.config;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.security.JwtAuthenticationFilter;
+import it.pagopa.selfcare.pagopa.backoffice.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -33,14 +35,21 @@ public class SecurityConfig {
             "/info"
     };
 
+    @Value("${info.properties.environment}")
+    private String env;
 
     @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-
+    private JwtUtil jwtUtil;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers(AUTH_WHITELIST);
+        // skip jwt-check during junit test
+        // the user in the security context is mocked
+        if("test".equals(env)) {
+            return (web) -> web.ignoring().antMatchers("/**");
+        } else {
+            return (web) -> web.ignoring().antMatchers(AUTH_WHITELIST);
+        }
     }
 
 
@@ -74,7 +83,7 @@ public class SecurityConfig {
                 .anonymous().disable()
                 .rememberMe().disable()
                 .x509().disable()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

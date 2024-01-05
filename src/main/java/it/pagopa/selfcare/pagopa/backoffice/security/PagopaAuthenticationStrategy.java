@@ -7,16 +7,13 @@ import it.pagopa.selfcare.pagopa.backoffice.model.SelfCareUser;
 import it.pagopa.selfcare.pagopa.backoffice.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Optional;
 
 @Slf4j
-@Component
 public class PagopaAuthenticationStrategy {
 
 
@@ -26,10 +23,11 @@ public class PagopaAuthenticationStrategy {
     private static final String CLAIM_NAME = "name";
     private static final String CLAIM_SURNAME = "family_name";
     private static final String CLAIM_ORG_VAT = "org_vat";
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
+    public PagopaAuthenticationStrategy(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     public JwtAuthenticationToken authenticate(JwtAuthenticationToken authentication) throws AuthenticationException {
         SelfCareUser user;
