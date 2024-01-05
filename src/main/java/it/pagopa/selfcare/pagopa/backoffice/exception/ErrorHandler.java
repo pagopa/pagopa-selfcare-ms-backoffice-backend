@@ -162,12 +162,11 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
             log.warn("App Exception raised: {}", ex.getMessage());
             log.debug("Trace error: ", ex);
         }
-        var errorResponse =
-                ProblemJson.builder()
-                        .status(ex.getHttpStatus().value())
-                        .title(ex.getTitle())
-                        .detail(ex.getMessage())
-                        .build();
+        var errorResponse = ProblemJson.builder()
+                .status(ex.getHttpStatus().value())
+                .title(ex.getTitle())
+                .detail(ex.getMessage())
+                .build();
         return new ResponseEntity<>(errorResponse, ex.getHttpStatus());
     }
 
