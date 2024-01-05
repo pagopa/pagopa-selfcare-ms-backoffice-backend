@@ -20,22 +20,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class AzureApiManagerClient {
 
-    private final static Function<UserContract, it.pagopa.selfcare.pagopa.backoffice.model.connector.UserContract> AZURE_USER_CONTRACT_TO_PAGOPA_USER_CONTRACT = userContract -> {
-        it.pagopa.selfcare.pagopa.backoffice.model.connector.UserContract contract = new it.pagopa.selfcare.pagopa.backoffice.model.connector.UserContract();
-        contract.setId(userContract.id());
-        contract.setEmail(userContract.email());
-        contract.setName(userContract.lastName());
-        contract.setFullName(userContract.name());
-        contract.setTaxCode(userContract.firstName());
-        return contract;
-    };
     private final ApiManagementManager manager;
     private final String serviceName;
     private final String resourceGroupName;
@@ -56,10 +46,13 @@ public class AzureApiManagerClient {
 
     }
 
-    public it.pagopa.selfcare.pagopa.backoffice.model.connector.UserContract createInstitution(String institutionId, CreateInstitutionApiKeyDto dto) {
-        log.trace("createInstitution start");
-        log.debug("createInstitution userId = {}, dto = {}", institutionId, dto);
-        UserContract userContract = manager
+    public UserContract getInstitution(String institutionId) {
+        return manager.users()
+                .getById(institutionId);
+    }
+
+    public UserContract createInstitution(String institutionId, CreateInstitutionApiKeyDto dto) {
+        return manager
                 .users()
                 .define(institutionId)
                 .withExistingService(resourceGroupName, serviceName)
@@ -68,10 +61,6 @@ public class AzureApiManagerClient {
                 .withLastName(StringUtils.truncateString(StringUtils.validateAndReplace(dto.getDescription(), "-"), 100))
                 .withConfirmation(Confirmation.SIGNUP)
                 .create();
-        it.pagopa.selfcare.pagopa.backoffice.model.connector.UserContract contract = AZURE_USER_CONTRACT_TO_PAGOPA_USER_CONTRACT.apply(userContract);
-        log.debug(Constants.CONFIDENTIAL_MARKER, "createInstitution userContract = {}", userContract);
-        log.trace("createInstitution end");
-        return contract;
     }
 
     public List<InstitutionApiKeys> createInstitutionSubscription(String institutionId, String institutionName) {
