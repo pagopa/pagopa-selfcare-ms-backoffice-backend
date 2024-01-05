@@ -5942,7 +5942,7 @@
         }
       },
       "StationDetailResource" : {
-        "required" : [ "associatedCreditorInstitutions", "enabled", "password", "primitiveVersion", "stationCode", "version" ],
+        "required" : [ "associatedCreditorInstitutions", "enabled", "primitiveVersion", "stationCode", "version" ],
         "type" : "object",
         "properties" : {
           "activationDate" : {
