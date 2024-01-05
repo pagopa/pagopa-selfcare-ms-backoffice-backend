@@ -108,7 +108,7 @@ public class StationController {
         return stationService.createWrapperStationDetails(wrapperStationDetailsDto);
     }
 
-    @GetMapping(value = "/wrapper/{station-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/merged/{station-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get station's details", security = {@SecurityRequirement(name = "JWT")})
     public StationDetailResource getStationDetail(@Parameter(description = "Station's unique identifier")
