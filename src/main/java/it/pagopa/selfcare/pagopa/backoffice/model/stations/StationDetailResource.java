@@ -16,7 +16,6 @@ public class StationDetailResource extends StationResource {
     @ApiModelProperty("Station's new password")
     private String newPassword;
     @ApiModelProperty("Station's password")
-    @JsonProperty(required = true)
     private String password;
     @ApiModelProperty("Station's port")
     private Long port;
