@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.pagopa.backoffice.config;
 
-import it.pagopa.selfcare.pagopa.backoffice.exception.JwtAuthenticationException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -103,7 +102,7 @@ public class LoggingAspect {
     }
 
     @AfterThrowing(pointcut = "execution(* *..web.security..*(..))", throwing = "error")
-    public void afterThrowingAdvice(JoinPoint jp, JwtAuthenticationException error) {
+    public void afterThrowingAdvice(JoinPoint jp, Exception error) {
         MDC.put(STATUS, "KO");
         MDC.put(CODE, "401");
         MDC.put(RESPONSE_TIME, getExecutionTime());

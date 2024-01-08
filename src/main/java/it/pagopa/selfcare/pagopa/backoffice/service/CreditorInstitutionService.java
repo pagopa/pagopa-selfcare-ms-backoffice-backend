@@ -3,7 +3,8 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
-import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
@@ -103,7 +104,7 @@ public class CreditorInstitutionService {
         }
 
         if(brokerResource == null && creditorInstitutionDetailsResource == null) {
-            throw new ResourceNotFoundException("Nessun dato trovato per il broker o per il creditorInstitution");
+            throw new AppException(AppError.ACTOR_NOT_FOUND, brokerEcCode);
         }
         BrokerAndEcDetailsResource resource = new BrokerAndEcDetailsResource();
         resource.setBrokerDetailsResource(brokerResource);

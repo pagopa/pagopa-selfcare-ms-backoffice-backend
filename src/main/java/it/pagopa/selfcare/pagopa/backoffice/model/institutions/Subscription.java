@@ -12,8 +12,8 @@ public enum Subscription {
     GPD("/products/debt-positions", "Integrazione Asincrona - Posizioni Debitorie", "gdp-"),
     GPD_REP("/products/product-gpd-reporting", "Integrazione Asincrona - Gestione flussi di rendicontazione", "gpdrep-"),
     GPD_PAY("/products/gpd-payments-rest-aks", "Integrazione Asincrona - Ricevute", "gpdpay-"),
-    FDR_ORG("/products/fdr-org", "FdR [ORG]", "fdrorg-"),
-    FDR_PSP("/products/fdr-psp", "FdR [PSP]", "fdrpsp-");
+    FDR_ORG("/products/fdr-org", "FdR - Flussi di rendicontazione ORG", "fdrorg-"),
+    FDR_PSP("/products/fdr-psp", "FdR - Flussi di rendicontazione PSP", "fdrpsp-");
 
     private final String scope;
     private final String displayName;
