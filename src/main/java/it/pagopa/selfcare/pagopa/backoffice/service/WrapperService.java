@@ -4,7 +4,8 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
-import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channel;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails;
@@ -99,7 +100,7 @@ public class WrapperService {
         String channelCode = channelDetails.getChannelCode();
         Optional<WrapperEntities> opt = repository.findById(channelCode);
         if(opt.isEmpty()) {
-            throw new ResourceNotFoundException();
+            throw new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode);
         }
         WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) opt.get();
         wrapperEntities.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
@@ -119,7 +120,7 @@ public class WrapperService {
         String channelCode = channelDetails.getChannelCode();
         Optional<WrapperEntities> opt = repository.findById(channelCode);
         if(opt.isEmpty()) {
-            throw new ResourceNotFoundException();
+            throw new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode);
         }
         WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) opt.get();
         String modifiedByOpt = auditorAware.getCurrentAuditor().orElse(null);
@@ -133,7 +134,7 @@ public class WrapperService {
         String stationCode = stationDetails.getStationCode();
         Optional<WrapperEntities> opt = repository.findById(stationCode);
         if(opt.isEmpty()) {
-            throw new ResourceNotFoundException();
+            throw new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode);
         }
         WrapperEntities<StationDetails> wrapperEntities = (WrapperEntities) opt.get();
         String modifiedByOpt = auditorAware.getCurrentAuditor().orElse(null);
@@ -147,7 +148,7 @@ public class WrapperService {
         String stationCode = stationDetails.getStationCode();
         Optional<WrapperEntities> opt = repository.findById(stationCode);
         if(opt.isEmpty()) {
-            throw new ResourceNotFoundException();
+            throw new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode);
         }
         WrapperEntities<StationDetails> wrapperEntities = (WrapperEntities) opt.get();
         WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetails);
@@ -224,7 +225,7 @@ public class WrapperService {
 
     public <T> WrapperEntities<T> findById(String id) {
         var response = repository.findById(id)
-                .orElseThrow(ResourceNotFoundException::new);
+                .orElseThrow(() -> new AppException(AppError.WRAPPER_NOT_FOUND, id));
         response.sortEntitesByCreatedAt();
         return response;
     }
@@ -257,7 +258,7 @@ public class WrapperService {
 
     public String getFirstValidCodeV2(String entityCode) {
         Channels channels = apiConfigClient.getChannels(100, 0, entityCode, null, "DESC");
-        Stations stations = apiConfigClient.getStations(100, 0 , "DESC", null, null, entityCode);
+        Stations stations = apiConfigClient.getStations(100, 0, "DESC", null, null, entityCode);
         WrapperEntitiesList channelMongoList = findByIdLikeOrTypeOrBrokerCode(entityCode, WrapperType.CHANNEL, null, 0, 100);
         WrapperEntitiesList stationMongoList = findByIdLikeOrTypeOrBrokerCode(entityCode, WrapperType.STATION, null, 0, 100);
 

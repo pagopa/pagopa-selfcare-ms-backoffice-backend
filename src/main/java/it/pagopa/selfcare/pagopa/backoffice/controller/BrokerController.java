@@ -68,7 +68,7 @@ public class BrokerController {
 
     @GetMapping(value = "/{broker-code}/stations", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get paginated list of stations given brokerid code", security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Get paginated list of stations given a broker code", security = {@SecurityRequirement(name = "JWT")})
     public StationDetailsResourceList getStationsDetailsListByBroker(@PathVariable("broker-code") String brokerCode,
                                                                      @RequestParam(required = false) String stationId,
                                                                      @RequestParam(required = false, defaultValue = "10") Integer limit,
@@ -78,7 +78,11 @@ public class BrokerController {
 
     @GetMapping(value = "/{broker-id}/ibans/export", produces = "text/csv")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Export all IBANs of all creditor institutions handled by a broker EC to CSV", security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Export all IBANs of all creditor institutions handled by a broker EC to CSV", security = {@SecurityRequirement(name = "JWT")},
+            description = "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n" +
+                    "-|-|-|-|-|-|-|-|-|-\n" +
+                    "Y | N | Y | JWT | JWT | 1 min | Y | Y | Read | Y\n" +
+                    "The CSV file contains the following columns: `denominazioneEnte, codiceFiscale, iban, stato, dataAttivazioneIban, descrizione, etichetta`")
     public ResponseEntity<Resource> exportIbansToCsv(@Parameter(description = "SelfCare Broker Id. it's an UUID") @PathVariable("broker-id") String brokerId) {
 
         byte[] file = ibanService.exportIbansToCsv(brokerId);

@@ -2,7 +2,8 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.entity.TavoloOpEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.TavoloOpOperations;
-import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.TavoloOpMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.tavoloop.TavoloOpEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpDto;
@@ -34,7 +35,7 @@ public class OperativeTableService {
         TavoloOpOperations tavoloOpOperations = tavoloOpRepository.findByTaxCode(ecCode);
         TavoloOpResource response = TavoloOpMapper.toResource(tavoloOpOperations);
         if(response == null) {
-            throw new ResourceNotFoundException("Nessun dato trovato per il tavolo operativo");
+            throw new AppException(AppError.OPERATIVE_TABLE_NOT_FOUND, ecCode);
         }
         return response;
     }

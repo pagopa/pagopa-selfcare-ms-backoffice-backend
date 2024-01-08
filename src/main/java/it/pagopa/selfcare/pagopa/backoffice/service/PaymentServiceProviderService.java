@@ -2,21 +2,17 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.exception.ResourceNotFoundException;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -79,7 +75,7 @@ public class PaymentServiceProviderService {
         }
 
         if(brokerPspDetailsResource == null && paymentServiceProviderDetailsResource == null) {
-            throw new ResourceNotFoundException("Nessun dato trovato per il broker o per il creditorInstitution");
+            throw new AppException(AppError.ACTOR_NOT_FOUND, brokerPspCode);
         }
 
         BrokerOrPspDetailsResource resource = new BrokerOrPspDetailsResource();

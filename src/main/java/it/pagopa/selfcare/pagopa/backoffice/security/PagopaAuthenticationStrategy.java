@@ -1,22 +1,17 @@
 package it.pagopa.selfcare.pagopa.backoffice.security;
 
 import io.jsonwebtoken.Claims;
-import it.pagopa.selfcare.pagopa.backoffice.exception.AuthoritiesRetrieverException;
-import it.pagopa.selfcare.pagopa.backoffice.exception.JwtAuthenticationException;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.SelfCareUser;
 import it.pagopa.selfcare.pagopa.backoffice.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.Optional;
 
 @Slf4j
-@Component
 public class PagopaAuthenticationStrategy {
 
 
@@ -28,12 +23,9 @@ public class PagopaAuthenticationStrategy {
     private static final String CLAIM_ORG_VAT = "org_vat";
     private final JwtUtil jwtUtil;
 
-
-    @Autowired
     public PagopaAuthenticationStrategy(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
-
 
     public JwtAuthenticationToken authenticate(JwtAuthenticationToken authentication) throws AuthenticationException {
         SelfCareUser user;
@@ -53,17 +45,10 @@ public class PagopaAuthenticationStrategy {
 
         } catch (Exception e) {
             MDC.remove(MDC_UID);
-            throw new JwtAuthenticationException(e.getMessage(), e);
+            throw new AppException(AppError.UNAUTHORIZED, e);
         }
 
-        final Collection<GrantedAuthority> authorities;
-        try {
-            authorities = null;
-        } catch (Exception e) {
-            MDC.remove(MDC_UID);
-            throw new AuthoritiesRetrieverException("An error occurred during authorities retrieval", e);
-        }
-        JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authentication.getCredentials(), user, authorities);
+        JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authentication.getCredentials(), user, null);
         authenticationToken.setDetails(authentication.getDetails());
 
         return authenticationToken;
