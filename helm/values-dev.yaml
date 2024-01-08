@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "1.3.10-2-app-exception"
+    tag: "1.3.12"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -94,7 +94,7 @@ microservice-chart:
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
-    IBANS_EXPORT_CVS_PREVIEW_SIZE: '10'
+    IBANS_EXPORT_CVS_PREVIEW_SIZE: '1000'
   envSecret:
     AWS_ACCESS_KEY_ID: pagopa-d-aws-access-key-id
     AWS_SECRET_ACCESS_KEY: pagopa-d-aws-secret-access-key

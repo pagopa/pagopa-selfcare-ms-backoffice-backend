@@ -1,10 +1,10 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "description": "@project.description@",
+    "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "title": "@project.name@",
-    "version": "1.3.10-2-app-exception"
+    "title": "SelfCare Backoffice",
+    "version": "1.3.12"
   },
   "servers": [
     {
@@ -17,12 +17,12 @@
           "default": "/backoffice/v1"
         },
         "host": {
+          "default": "api.dev.platform.pagopa.it",
           "enum": [
             "api.dev.platform.pagopa.it",
             "api.uat.platform.pagopa.it",
             "api.platform.pagopa.it"
-          ],
-          "default": "api.dev.platform.pagopa.it"
+          ]
         }
       }
     }
@@ -1347,6 +1347,15 @@
         "operationId": "getChannelPaymentServiceProviders",
         "parameters": [
           {
+            "description": "Code of the payment channel",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "in": "query",
             "name": "limit",
             "required": false,
@@ -1367,9 +1376,9 @@
             }
           },
           {
-            "description": "Code of the payment channel",
-            "in": "path",
-            "name": "channel-code",
+            "description": "Filter by PSP name",
+            "in": "query",
+            "name": "psp-name",
             "required": true,
             "schema": {
               "type": "string"
@@ -2847,16 +2856,7 @@
             "name": "subscription-code",
             "required": true,
             "schema": {
-              "type": "string",
-              "enum": [
-                "NODOAUTH",
-                "BIZ",
-                "GPD",
-                "GPD_REP",
-                "GPD_PAY",
-                "FDR_ORG",
-                "FDR_PSP"
-              ]
+              "type": "string"
             }
           }
         ],
@@ -4376,6 +4376,61 @@
         }
       ]
     },
+    "/stations/merged/{station-code}": {
+      "get": {
+        "operationId": "getStationDetail",
+        "parameters": [
+          {
+            "description": "Station's unique identifier",
+            "in": "path",
+            "name": "station-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StationDetailResource"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Get station's details",
+        "tags": [
+          "Stations"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
     "/stations/station-code": {
       "get": {
         "operationId": "getStationCode",
@@ -4596,7 +4651,7 @@
     },
     "/stations/wrapper/{station-code}": {
       "get": {
-        "operationId": "getWrapperEntitiesStation_1",
+        "operationId": "getWrapperEntitiesStation",
         "parameters": [
           {
             "description": "Channlecode or StationCode",
@@ -4633,7 +4688,7 @@
             "JWT": []
           }
         ],
-        "summary": "Get station's details",
+        "summary": "Get wrapper station from mongo DB",
         "tags": [
           "Stations"
         ]
@@ -4840,6 +4895,15 @@
             "schema": {
               "type": "integer",
               "format": "int32"
+            }
+          },
+          {
+            "description": "Filter by creditor institution name",
+            "in": "query",
+            "name": "ci-name",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -6741,7 +6805,6 @@
         "required": [
           "associatedCreditorInstitutions",
           "enabled",
-          "password",
           "primitiveVersion",
           "stationCode",
           "version"
