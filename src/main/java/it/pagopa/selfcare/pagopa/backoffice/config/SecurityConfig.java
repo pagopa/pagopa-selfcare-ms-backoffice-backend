@@ -3,22 +3,17 @@ package it.pagopa.selfcare.pagopa.backoffice.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.Problem;
 import it.pagopa.selfcare.pagopa.backoffice.security.JwtAuthenticationFilter;
-import it.pagopa.selfcare.pagopa.backoffice.security.JwtAuthenticationProvider;
-import it.pagopa.selfcare.pagopa.backoffice.security.PagopaAuthenticationStrategy;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -26,9 +21,7 @@ import java.util.List;
 
 @Slf4j
 @Configuration
-@Import(WebConfig.class)
-@EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
             "/swagger-resources/**",
@@ -44,39 +37,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/info"
     };
 
-    private final ObjectMapper objectMapper;
-    private final PagopaAuthenticationStrategy jwtAuthenticationStrategyFactory;
 
-    public SecurityConfig(ObjectMapper objectMapper, PagopaAuthenticationStrategy jwtAuthenticationStrategyFactory) {
-        this.objectMapper = objectMapper;
-        this.jwtAuthenticationStrategyFactory = jwtAuthenticationStrategyFactory;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    }
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
 
-    @Override
     @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().antMatchers(AUTH_WHITELIST);
     }
 
 
-    @Override
-    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) {
-        JwtAuthenticationProvider authenticationProvider = new JwtAuthenticationProvider(jwtAuthenticationStrategyFactory);
-        authenticationManagerBuilder.authenticationProvider(authenticationProvider);
-        authenticationManagerBuilder.eraseCredentials(false);
-    }
-
-
-    @Override
-    public void configure(WebSecurity web) {
-        web.ignoring().antMatchers(AUTH_WHITELIST);
-    }
-
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .anyRequest().fullyAuthenticated()
                 .and()
@@ -113,7 +89,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anonymous().disable()
                 .rememberMe().disable()
                 .x509().disable()
-                .addFilterBefore(new JwtAuthenticationFilter(getApplicationContext().getBean(AuthenticationManager.class), objectMapper), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
     }
+
 
 }
