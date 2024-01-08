@@ -72,27 +72,31 @@ public class ApiManagementService {
         return apimClient.getInstitutionApiKeys(institutionId);
     }
 
-    public List<InstitutionApiKeys> createSubscriptionKeys(String institutionId, String subscriptionCode) {
-        Subscription subscriptionEnum = Subscription.valueOf(subscriptionCode);
-        String scope = subscriptionEnum.getScope();
-        String subscriptionName = subscriptionEnum.getDisplayName();
+    public List<InstitutionApiKeys> createSubscriptionKeys(String institutionId, Subscription subscriptionCode) {
+        String scope = subscriptionCode.getScope();
         InstitutionResponse institution = externalApiClient.getInstitution(institutionId);
         if(institution != null) {
-            String subscriptionId = subscriptionEnum.getPrefixId() + institution.getTaxCode();
-            try {
-                apimClient.createInstitutionSubscription(institutionId, institution.getDescription(), scope, subscriptionId, subscriptionName + " " + institution.getDescription());
-            } catch (RuntimeException e) {
-                CreateInstitutionApiKeyDto dto = new CreateInstitutionApiKeyDto();
-                dto.setDescription(institution.getDescription());
-                dto.setTaxCode(institution.getTaxCode());
-                dto.setEmail(!testEmail.isBlank() ? institutionId.concat(testEmail) : institution.getDigitalAddress());
-                apimClient.createInstitution(institutionId, dto);
-                apimClient.createInstitutionSubscription(institutionId, institution.getDescription(), scope, subscriptionId, subscriptionName);
-            }
+            String subscriptionId = subscriptionCode.getPrefixId() + institution.getTaxCode();
+            CreateInstitutionApiKeyDto dto = new CreateInstitutionApiKeyDto();
+            dto.setDescription(institution.getDescription());
+            dto.setTaxCode(institution.getTaxCode());
+            dto.setEmail(!testEmail.isBlank() ? institutionId.concat(testEmail) : institution.getDigitalAddress());
+            String subscriptionName = subscriptionCode.getDisplayName() + " " + institution.getDescription();
+            createUserIfNotExist(institutionId, dto);
+            apimClient.createInstitutionSubscription(institutionId, institution.getDescription(), scope, subscriptionId, subscriptionName);
         } else {
             throw new ResourceNotFoundException(String.format("The institution %s was not found", institutionId));
         }
         return apimClient.getApiSubscriptions(institutionId);
+    }
+
+    private void createUserIfNotExist(String institutionId, CreateInstitutionApiKeyDto dto) {
+        try {
+            apimClient.getInstitution(institutionId);
+        } catch (IllegalArgumentException e) {
+            // bad code but it's needed to handle the creation of a new User on APIM
+            apimClient.createInstitution(institutionId, dto);
+        }
     }
 
     public List<InstitutionApiKeys> createInstitutionKeys(String institutionId) {
