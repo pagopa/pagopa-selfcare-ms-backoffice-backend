@@ -550,13 +550,6 @@ public class ChannelMapper {
         wrapperChannel.setEnabled(model.getEnabled());
         wrapperChannel.setBrokerDescription(model.getBrokerDescription());
 
-        //default per gli ogetti di apiconfig poiche non hanno questi campi
-        wrapperChannel.setWrapperStatus(WrapperStatus.APPROVED);
-        LocalDate dateTime = LocalDate.of(2000, 1, 1);
-        Instant instant = dateTime.atStartOfDay(ZoneOffset.UTC).toInstant();
-        wrapperChannel.setCreatedAt(instant);
-        wrapperChannel.setModifiedAt(instant);
-
         return wrapperChannel;
     }
 
