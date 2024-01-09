@@ -4,7 +4,7 @@
     "description": "@project.description@",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "@project.name@",
-    "version": "1.4.1-1-PASELC-660-canali-psp-correggere-date"
+    "version": "1.4.2"
   },
   "servers": [
     {

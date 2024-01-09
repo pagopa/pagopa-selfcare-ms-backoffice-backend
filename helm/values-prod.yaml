@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "1.4.1-1-PASELC-660-canali-psp-correggere-date" #improve
+    tag: "1.4.2" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
