@@ -1,7 +1,7 @@
 # SelfCare BackOffice
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-selfcare-ms-backoffice-backend&metric=alert_status)](https://sonarcloud.io/dashboard?id=pagopa_pagopa-selfcare-ms-backoffice-backend)
-[![Integration Tests](https://github.com/pagopa/pagopa-selfcare-ms-backoffice-backend/actions/workflows/integration_test.yml/badge.svg?branch=main)](https://github.com/pagopa/pagopa-selfcare-ms-backoffice-backend/actions/workflows/integration_test.yml)
+[![Integration Tests](https://github.com/pagopa/pagopa-selfcare-frontend/actions/workflows/integration_test.yml/badge.svg?branch=main)](https://github.com/pagopa/pagopa-selfcare-frontend/actions/workflows/integration_test.yml)
 
 Microservice to manage PagoPA Backoffice
 
