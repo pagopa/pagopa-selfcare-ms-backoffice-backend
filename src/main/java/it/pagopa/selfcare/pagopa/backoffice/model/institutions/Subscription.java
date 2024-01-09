@@ -12,8 +12,8 @@ public enum Subscription {
     GPD_REP("/products/product-gpd-reporting", "GPD - Gestione flussi di rendicontazione", "gpdrep-"),
     GPD_PAY("/products/gpd-payments-rest-aks", "GPD - Recupero ricevute", "gpdpay-"),
     BIZ("/products/bizevents", "BIZ - Recupero ricevute Ente Creditore", "biz-"),
-    FDR_ORG("/products/fdr-org", "FdR - Flussi di Rendicontazione (ORG)", "fdrorg-"),
-    FDR_PSP("/products/fdr-psp", "FdR - Flussi di Rendicontazione (PSP)", "fdrpsp-");
+    FDR_ORG("/products/fdr-org", "FdR - Flussi di Rendicontazione", "fdrorg-"),
+    FDR_PSP("/products/fdr-psp", "FdR - Flussi di Rendicontazione", "fdrpsp-");
 
     private final String scope;
     private final String displayName;
