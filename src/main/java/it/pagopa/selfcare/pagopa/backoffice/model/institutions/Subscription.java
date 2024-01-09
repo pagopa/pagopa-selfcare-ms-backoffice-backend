@@ -8,12 +8,12 @@ import lombok.Getter;
 public enum Subscription {
 
     NODOAUTH("/products/nodo-auth", "Connessione con nodo", "nodauth-"),
-    BIZ("/products/bizevents", "Recupero Ricevuta", "biz-"),
-    GPD("/products/debt-positions", "Integrazione Asincrona - Posizioni Debitorie", "gdp-"),
-    GPD_REP("/products/product-gpd-reporting", "Integrazione Asincrona - Gestione flussi di rendicontazione", "gpdrep-"),
-    GPD_PAY("/products/gpd-payments-rest-aks", "Integrazione Asincrona - Ricevute", "gpdpay-"),
-    FDR_ORG("/products/fdr-org", "FdR - Flussi di rendicontazione ORG", "fdrorg-"),
-    FDR_PSP("/products/fdr-psp", "FdR - Flussi di rendicontazione PSP", "fdrpsp-");
+    GPD("/products/debt-positions", "GPD - Posizioni Debitorie", "gdp-"),
+    GPD_REP("/products/product-gpd-reporting", "GPD - Gestione flussi di rendicontazione", "gpdrep-"),
+    GPD_PAY("/products/gpd-payments-rest-aks", "GPD - Recupero ricevute", "gpdpay-"),
+    BIZ("/products/bizevents", "BIZ - Recupero ricevute Ente Creditore", "biz-"),
+    FDR_ORG("/products/fdr-org", "FdR - Flussi di Rendicontazione (ORG)", "fdrorg-"),
+    FDR_PSP("/products/fdr-psp", "FdR - Flussi di Rendicontazione (PSP)", "fdrpsp-");
 
     private final String scope;
     private final String displayName;
