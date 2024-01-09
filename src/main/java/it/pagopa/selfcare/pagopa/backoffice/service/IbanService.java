@@ -94,7 +94,7 @@ public class IbanService {
         List<DelegationExternal> delegations = externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
         List<String> taxCodes = delegations.stream()
                 .map(DelegationExternal::getTaxCode)
-                .limit(ibanExportCSVPreviewSize) // TODO this limit must be removed when preview of IBAN export is done
+                .limit(ibanExportCSVPreviewSize)
                 .collect(Collectors.toList());
 
         List<IbanCsv> ibans = retrieveIbans(taxCodes);
