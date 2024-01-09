@@ -549,6 +549,7 @@ public class ChannelMapper {
         wrapperChannel.setChannelCode(model.getChannelCode());
         wrapperChannel.setEnabled(model.getEnabled());
         wrapperChannel.setBrokerDescription(model.getBrokerDescription());
+        wrapperChannel.setWrapperStatus(WrapperStatus.APPROVED);
 
         return wrapperChannel;
     }
