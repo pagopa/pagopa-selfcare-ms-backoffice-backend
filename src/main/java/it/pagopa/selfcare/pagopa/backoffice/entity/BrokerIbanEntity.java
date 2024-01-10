@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 
 @Data
@@ -17,7 +18,7 @@ public class BrokerIbanEntity {
     private String ciFiscalCode;
     private String iban;
     private String status;
-    private OffsetDateTime validityDate;
+    private Instant validityDate;
     private String description;
     private String label;
 }
