@@ -50,6 +50,11 @@ public class CreditorInstitutionService {
     }
 
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(String ecCode, @NotNull CreditorInstitutionStationDto dto) {
+        try {
+            apiConfigClient.getCreditorInstitutionDetails(ecCode);
+        } catch (FeignException e) {
+            throw new AppException(AppError.CREDITOR_INSTITUTION_NOT_FOUND, ecCode);
+        }
         CreditorInstitutionStationEdit station = mapper.fromDto(dto);
         CreditorInstitutionStationEdit ecStation = apiConfigClient.createCreditorInstitutionStationRelationship(ecCode, station);
         return mapper.toResource(ecStation);
