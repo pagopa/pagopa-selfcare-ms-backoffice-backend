@@ -2,8 +2,13 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerAndEcDetailsResource;
@@ -57,6 +62,15 @@ public class CreditorInstitutionController {
     }
 
     @PostMapping(value = "/{ci-code}/station", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = CreditorInstitutionStationEditResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Forbidden", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Creates the relationship between the created station and the creditorInstitution", security = {@SecurityRequirement(name = "JWT")})
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(@Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
