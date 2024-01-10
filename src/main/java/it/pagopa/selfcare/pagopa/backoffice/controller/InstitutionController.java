@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.service.ApiManagementService;
+import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ public class InstitutionController {
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieves all the onboarded institutions related to the logged user", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public List<InstitutionDetail> getInstitutions() {
 
         return apiManagementService.getInstitutions();
@@ -37,6 +39,7 @@ public class InstitutionController {
     @GetMapping("/delegations")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve all active delegations for given institution broker and logged user", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public List<Delegation> getBrokerDelegation(@Parameter(description = "Institution's unique internal identifier") @RequestParam(required = false, value = "institution-id") String institutionId,
                                                 @Parameter(description = "Broker's unique id") @RequestParam(required = false, value = "brokerId") String brokerId) {
 
@@ -46,6 +49,7 @@ public class InstitutionController {
     @GetMapping("/{institution-id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieves the details of an institution", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public Institution getInstitution(@Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId) {
 
         return apiManagementService.getInstitution(institutionId);
@@ -54,6 +58,7 @@ public class InstitutionController {
     @GetMapping("/{institution-id}/products")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve all active products for given institution and logged user", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public List<Product> getInstitutionProducts(@Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId) {
 
         return apiManagementService.getInstitutionProducts(institutionId);
@@ -62,6 +67,7 @@ public class InstitutionController {
     @GetMapping("/{institution-id}/api-keys")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve an institution's key pair, including primary and secondary keys", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public List<InstitutionApiKeys> getInstitutionApiKeys(@Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId) {
 
         return apiManagementService.getInstitutionApiKeys(institutionId);
@@ -70,6 +76,7 @@ public class InstitutionController {
     @PostMapping("/{institution-id}/api-keys")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Creates a new subscription for a given Institution and returns its primary and secondary keys", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public List<InstitutionApiKeys> createInstitutionApiKeys(@Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId,
                                                              @Parameter(description = "Subscription's unique internal identifier") @RequestParam("subscription-code") Subscription subscriptionCode) {
 
@@ -79,6 +86,7 @@ public class InstitutionController {
     @PostMapping("/{subscription-id}/api-keys/primary/regenerate")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Regenerates the subscription's primary key", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public void regeneratePrimaryKey(@Parameter(description = "Institution's subscription id") @PathVariable("subscription-id") @NotBlank String subscriptionId) {
 
         apiManagementService.regeneratePrimaryKey(subscriptionId);
@@ -87,6 +95,7 @@ public class InstitutionController {
     @PostMapping("/{subscription-id}/api-keys/secondary/regenerate")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Regenerates the subscription's secondary key", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public void regenerateSecondaryKey(@Parameter(description = "Institution's subscription id") @PathVariable("subscription-id") String subscriptionId) {
 
         apiManagementService.regenerateSecondaryKey(subscriptionId);

@@ -10,6 +10,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 import it.pagopa.selfcare.pagopa.backoffice.service.StationService;
+import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,6 +30,7 @@ public class StationController {
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create new station", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public WrapperEntityOperations<StationDetails> createStation(@RequestBody @NotNull StationDetailsDto stationDetailsDto) {
         return stationService.createStation(stationDetailsDto);
     }
@@ -37,6 +39,7 @@ public class StationController {
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get paginated list of stations", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public StationsResource getStations(@Parameter(description = "") @RequestParam(required = false, defaultValue = "50") Integer limit,
                                         @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = true) Integer page,
                                         @Parameter(description = "Station's unique identifier") @RequestParam(required = false) String stationCode,
@@ -48,6 +51,7 @@ public class StationController {
     @GetMapping(value = "/{station-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get station's details", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public StationDetailResource getStation(@Parameter(description = "Station's unique identifier")
                                             @PathVariable("station-code") String stationCode) {
         return stationService.getStation(stationCode);
@@ -58,6 +62,7 @@ public class StationController {
     @GetMapping(value = "/{station-code}/creditor-institutions")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get Creditor Institutions By Station Code", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(@Parameter(description = "Station Code") @PathVariable("station-code") String stationCode,
                                                                              @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                                              @RequestParam Integer page,
@@ -68,6 +73,7 @@ public class StationController {
     @PutMapping(value = "/{station-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a station", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public StationDetailResource updateStation(@RequestBody @NotNull StationDetailsDto stationDetailsDto,
                                                @Parameter(description = "Station's unique identifier")
                                                @PathVariable("station-code") String stationCode) {
@@ -77,6 +83,7 @@ public class StationController {
     @GetMapping(value = "/wrapper/{station-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get wrapper station from mongo DB", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public WrapperEntities getWrapperEntitiesStation(@Parameter(description = "Channlecode or StationCode") @PathVariable("station-code") String code) {
         return stationService.getWrapperEntitiesStation(code);
     }
@@ -85,6 +92,7 @@ public class StationController {
     @GetMapping(value = "/merged", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get All Stations from cosmos db merged whit apiConfig", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public WrapperStationsResource getAllStationsMerged(@Parameter(description = "")
                                                         @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                         @Parameter(description = "Station's unique identifier")
@@ -102,6 +110,7 @@ public class StationController {
     @PostMapping(value = "/wrapper", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a WrapperChannel on Cosmodb", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public WrapperEntities<StationDetails> createWrapperStationDetails(@RequestBody
                                                                        @Valid
                                                                        WrapperStationDetailsDto wrapperStationDetailsDto) {
@@ -111,6 +120,7 @@ public class StationController {
     @GetMapping(value = "/merged/{station-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get station's details", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public StationDetailResource getStationDetail(@Parameter(description = "Station's unique identifier")
                                                   @PathVariable("station-code") String stationCode) {
         return stationService.getStationDetail(stationCode);
@@ -119,6 +129,7 @@ public class StationController {
     @GetMapping(value = "/station-code", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Generate a station code given the creditor institution's code", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public StationCodeResource getStationCode(@Parameter(description = "Creditor institution code")
                                               @RequestParam(value = "ec-code") String ecCode) {
         return stationService.getStationCode(ecCode, false);
@@ -127,6 +138,7 @@ public class StationController {
     @GetMapping(value = "/station-code/v2", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Generate a station code given the creditor institution's code", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public StationCodeResource getStationCodeV2(@Parameter(description = "Creditor institution code") @RequestParam(value = "ec-code") String ecCode) {
         return stationService.getStationCode(ecCode, true);
     }
@@ -134,6 +146,7 @@ public class StationController {
     @PutMapping(value = "/wrapper/{station-code}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update WrapperStationDetails", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public WrapperEntities updateWrapperStationDetails(@Parameter(description = "Station code") @PathVariable(value = "station-code") String stationCode,
                                                        @RequestBody @Valid StationDetailsDto stationDetailsDto) {
 
@@ -146,6 +159,7 @@ public class StationController {
     @PutMapping(value = "/wrapper/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a WrapperStation on Cosmodb", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public WrapperEntities updateWrapperStationDetailsByOpt(@RequestBody @Valid StationDetailsDto stationDetailsDto) {
         return stationService.updateWrapperStationDetailsByOpt(stationDetailsDto);
 
