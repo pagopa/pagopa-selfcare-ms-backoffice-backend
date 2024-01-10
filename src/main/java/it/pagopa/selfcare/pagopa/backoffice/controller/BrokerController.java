@@ -8,8 +8,10 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.BrokerEcDt
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 import it.pagopa.selfcare.pagopa.backoffice.service.BrokerService;
 import it.pagopa.selfcare.pagopa.backoffice.service.IbanService;
+import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -40,6 +42,7 @@ public class BrokerController {
     @PostMapping(value = "")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a Broker", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public BrokerResource createBroker(@RequestBody BrokerDto brokerDto) {
         return brokerService.createBroker(brokerDto);
     }
@@ -47,6 +50,7 @@ public class BrokerController {
     @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get paginated list of creditor brokers", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public BrokersResource getBrokersEC(@Parameter(description = "") @RequestParam(required = false, defaultValue = "50") Integer limit,
                                         @Parameter(description = "Page number. Page value starts from 0") @RequestParam Integer page,
                                         @RequestParam(required = false) String code,
@@ -60,6 +64,7 @@ public class BrokerController {
     @PutMapping(value = "/{broker-code}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update an existing EC broker", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public BrokerDetailsResource updateBroker(@RequestBody @Valid BrokerEcDto dto,
                                               @Parameter(description = "Broker code") @PathVariable("broker-code") String brokerCode) {
 
@@ -69,6 +74,7 @@ public class BrokerController {
     @GetMapping(value = "/{broker-code}/stations", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get paginated list of stations given a broker code", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public StationDetailsResourceList getStationsDetailsListByBroker(@PathVariable("broker-code") String brokerCode,
                                                                      @RequestParam(required = false) String stationId,
                                                                      @RequestParam(required = false, defaultValue = "10") Integer limit,
@@ -79,10 +85,9 @@ public class BrokerController {
     @GetMapping(value = "/{broker-id}/ibans/export", produces = "text/csv")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Export all IBANs of all creditor institutions handled by a broker EC to CSV", security = {@SecurityRequirement(name = "JWT")},
-            description = "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n" +
-                    "-|-|-|-|-|-|-|-|-|-\n" +
-                    "Y | N | Y | JWT | JWT | 1 min | Y | Y | Read | Y\n" +
-                    "The CSV file contains the following columns: `denominazioneEnte, codiceFiscale, iban, stato, dataAttivazioneIban, descrizione, etichetta`")
+            description = "The CSV file contains the following columns: `denominazioneEnte, codiceFiscale, iban, stato, dataAttivazioneIban, descrizione, etichetta`")
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
+    @Cacheable(value = "exportIbansToCsv")
     public ResponseEntity<Resource> exportIbansToCsv(@Parameter(description = "SelfCare Broker Id. it's an UUID") @PathVariable("broker-id") String brokerId) {
 
         byte[] file = ibanService.exportIbansToCsv(brokerId);

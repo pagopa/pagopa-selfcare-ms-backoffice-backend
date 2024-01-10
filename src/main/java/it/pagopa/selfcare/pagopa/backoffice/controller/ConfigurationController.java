@@ -11,6 +11,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatu
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.service.ConfigurationService;
 import it.pagopa.selfcare.pagopa.backoffice.service.WrapperService;
+import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,7 @@ public class ConfigurationController {
     @GetMapping(value = "/payment-types", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get list of payment type", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public PaymentTypes getPaymentTypes() {
 
         return configurationService.getPaymentTypes();
@@ -40,6 +42,7 @@ public class ConfigurationController {
     @GetMapping(value = "/wfesp-plugins", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a WrapperChannel on Cosmodb", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public WfespPluginConfs getWfespPlugins() {
 
         return configurationService.getWfespPlugins();
@@ -48,6 +51,7 @@ public class ConfigurationController {
     @GetMapping(value = "/wrapper/{wrapper-type}/status/{wrapper-status}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get Wrapper Channel Details from cosmos db", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
     public WrapperEntitiesList getWrapperByTypeAndStatus(@Parameter(description = "Type of Wrapper like CHANNEL or STATION") @PathVariable("wrapper-type") WrapperType wrapperType,
                                                          @Parameter(description = "Validation Status of a CHANNEL or STATION") @PathVariable(required = false, value = "wrapper-status") WrapperStatus wrapperStatus,
                                                          @Parameter(description = "Number of elements on one page. Default = 50") @RequestParam(required = false, defaultValue = "50") Integer limit,
