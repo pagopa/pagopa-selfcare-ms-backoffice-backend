@@ -1,14 +1,13 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
+import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
+import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerIbansRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -46,6 +45,9 @@ class IbanServiceTest {
     @MockBean
     private ApiConfigClient apiConfigClient;
 
+    @MockBean
+    private BrokerIbansRepository brokerIbansRepository;
+
     @Autowired
     @InjectMocks
     private IbanService ibanService;
@@ -56,19 +58,9 @@ class IbanServiceTest {
 
     @Test
     void exportIbansToCsv() throws IOException {
-        String delegations = TestUtil.readJsonFromFile("response/external/delegation.json");
-
-        List<DelegationExternal> delegationResponse = TestUtil.toObject(delegations, new TypeReference<>() {
-        });
-        when(externalApiClient.getBrokerDelegation(any(), eq("1111"), eq("prod-pagopa"), eq("FULL")))
-                .thenReturn(delegationResponse);
-
-        String ibans = TestUtil.readJsonFromFile("response/apiconfigintegration/ibans.json");
-
-        when(apiConfigSelfcareIntegrationClient.getIbans(1, 0, List.of("1234567890")))
-                .thenReturn(TestUtil.toObject(ibans, IbansList.class));
-        when(apiConfigSelfcareIntegrationClient.getIbans(100, 0, List.of("1234567890")))
-                .thenReturn(TestUtil.toObject(ibans, IbansList.class));
+        String ibans = TestUtil.readJsonFromFile("entity/broker_iban.json");
+        BrokerIbansEntity entity = TestUtil.toObject(ibans, BrokerIbansEntity.class);
+        when(brokerIbansRepository.findByBrokerCode(eq("1111"))).thenReturn(Optional.of(entity));
 
         byte[] result = ibanService.exportIbansToCsv("1111");
         assertNotNull(result);

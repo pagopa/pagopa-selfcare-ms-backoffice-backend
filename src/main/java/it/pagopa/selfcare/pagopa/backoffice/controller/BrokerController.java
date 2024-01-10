@@ -82,15 +82,15 @@ public class BrokerController {
         return brokerService.getStationsDetailsListByBroker(brokerCode, stationId, limit, page);
     }
 
-    @GetMapping(value = "/{broker-id}/ibans/export", produces = "text/csv")
+    @GetMapping(value = "/{broker-code}/ibans/export", produces = "text/csv")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Export all IBANs of all creditor institutions handled by a broker EC to CSV", security = {@SecurityRequirement(name = "JWT")},
             description = "The CSV file contains the following columns: `denominazioneEnte, codiceFiscale, iban, stato, dataAttivazioneIban, descrizione, etichetta`")
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
     @Cacheable(value = "exportIbansToCsv")
-    public ResponseEntity<Resource> exportIbansToCsv(@Parameter(description = "SelfCare Broker Id. it's an UUID") @PathVariable("broker-id") String brokerId) {
+    public ResponseEntity<Resource> exportIbansToCsv(@Parameter(description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode) {
 
-        byte[] file = ibanService.exportIbansToCsv(brokerId);
+        byte[] file = ibanService.exportIbansToCsv(brokerCode);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=iban-export.csv")
