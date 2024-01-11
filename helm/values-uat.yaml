@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "1.4.7" #improve
+    tag: "1.4.7-1-PASELC-685-be-export-iban-cron-job" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -95,6 +95,8 @@ microservice-chart:
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     IBANS_EXPORT_CVS_PREVIEW_SIZE: '1000'
+    CRONJOB_SCHEDULE_ENABLED: 'false'
+    CRONJOB_SCHEDULE_IBANEXPORT: "0 0 3 * * *"
   envSecret:
     AWS_ACCESS_KEY_ID: pagopa-u-aws-access-key-id
     AWS_SECRET_ACCESS_KEY: pagopa-u-aws-secret-access-key

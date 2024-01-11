@@ -9,6 +9,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
+import it.pagopa.selfcare.pagopa.backoffice.repository.TransactionalBulkDAO;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.GetResultList;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.MapInRequiredClass;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.NumberOfTotalPagesSearch;
