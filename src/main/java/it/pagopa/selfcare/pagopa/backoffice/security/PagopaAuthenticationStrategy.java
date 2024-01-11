@@ -7,7 +7,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.SelfCareUser;
 import it.pagopa.selfcare.pagopa.backoffice.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
-import org.springframework.security.core.AuthenticationException;
 
 import java.util.Optional;
 
@@ -27,7 +26,7 @@ public class PagopaAuthenticationStrategy {
         this.jwtUtil = jwtUtil;
     }
 
-    public JwtAuthenticationToken authenticate(JwtAuthenticationToken authentication) throws AuthenticationException {
+    public JwtAuthenticationToken authenticate(JwtAuthenticationToken authentication) {
         SelfCareUser user;
         try {
             Claims claims = jwtUtil.getClaims(authentication);

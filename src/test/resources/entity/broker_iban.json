@@ -1,0 +1,15 @@
+{
+  "brokerCode": "1111",
+  "createdAt": 1704895507028,
+  "ibans": [
+    {
+      "ciName": "Comune di Roma",
+      "ciFiscalCode": "123456",
+      "iban": "ITABC",
+      "status": "ATTIVO",
+      "validityDate": 1704895507032,
+      "description": "iban per il Canone Unico",
+      "label": "CUP"
+    }
+  ]
+}
