@@ -82,5 +82,9 @@ public class Utility {
         return csv.toString().getBytes();
     }
 
+    public static long getTimelapse(long startTime) {
+        return Calendar.getInstance().getTimeInMillis() - startTime;
+    }
+
 
 }
