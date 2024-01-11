@@ -58,9 +58,6 @@ public class SecurityConfig {
         http.authorizeRequests()
                 .anyRequest().fullyAuthenticated()
                 .and()
-                .exceptionHandling((configurer) -> {
-                    throw new AppException(AppError.UNAUTHORIZED);
-                })
                 .exceptionHandling()
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     throw new AppException(AppError.FORBIDDEN, accessDeniedException);
