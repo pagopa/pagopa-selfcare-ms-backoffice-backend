@@ -13,6 +13,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInst
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -213,4 +214,14 @@ public interface ApiConfigClient {
     BrokerPspDetails updateBrokerPSP(@PathVariable("brokerpspcode") String brokerpspcode,
                                      @RequestBody BrokerPspDetails brokerPspDetails);
 
+    @GetMapping(value = "/creditorinstitutions/view", produces = MediaType.APPLICATION_JSON_VALUE)
+    CreditorInstitutionsView getCreditorInstitutionsAssociatedToBrokerStations(@RequestParam(required = false, defaultValue = "50") Integer limit,
+                                                                               @RequestParam Integer page,
+                                                                               @RequestParam(required = false, name = "creditorInstitutionCode") String creditorInstitutionCode,
+                                                                               @RequestParam(required = false, name = "paBrokerCode") String paBrokerCode,
+                                                                               @RequestParam(required = false, name = "stationCode") String stationCode,
+                                                                               @RequestParam(required = false, name = "auxDigit") Long auxDigit,
+                                                                               @RequestParam(required = false, name = "applicationCode") Long applicationCode,
+                                                                               @RequestParam(required = false, name = "segregationCode") Long segregationCode,
+                                                                               @RequestParam(required = false, name = "mod4") Boolean mod4);
 }
