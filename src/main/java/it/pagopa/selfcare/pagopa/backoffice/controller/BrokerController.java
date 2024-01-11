@@ -82,7 +82,7 @@ public class BrokerController {
         return brokerService.getStationsDetailsListByBroker(brokerCode, stationId, limit, page);
     }
 
-    @GetMapping(value = "/{broker-code}/ibans/export", produces = "text/csv")
+    @GetMapping(value = "/{broker-code}/ibans/export")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Export all IBANs of all creditor institutions handled by a broker EC to CSV", security = {@SecurityRequirement(name = "JWT")},
             description = "The CSV file contains the following columns: `denominazioneEnte, codiceFiscale, iban, stato, dataAttivazioneIban, descrizione, etichetta`")
