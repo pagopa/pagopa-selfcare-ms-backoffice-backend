@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.BsonDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
@@ -20,7 +19,6 @@ import java.util.List;
 
 @Slf4j
 @Component
-@ConditionalOnExpression("'${info.properties.environment}'!='test'")
 public class TransactionalBulkDAO {
 
     @Autowired

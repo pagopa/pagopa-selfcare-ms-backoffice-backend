@@ -5,7 +5,6 @@ import com.mongodb.MongoClientSettings;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -16,7 +15,6 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 @Configuration
 @EnableMongoAuditing(modifyOnCreate = false)
-@ConditionalOnExpression("'${info.properties.environment}'=='test'")
 class DaoConfig {
 
     @Bean

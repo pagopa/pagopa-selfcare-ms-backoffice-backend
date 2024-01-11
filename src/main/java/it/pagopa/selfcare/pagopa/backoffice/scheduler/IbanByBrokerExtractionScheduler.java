@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -34,7 +33,6 @@ import java.util.stream.IntStream;
 
 @Slf4j
 @Component
-@ConditionalOnExpression("'${info.properties.environment}'!='test'")
 public class IbanByBrokerExtractionScheduler {
 
     @Autowired
