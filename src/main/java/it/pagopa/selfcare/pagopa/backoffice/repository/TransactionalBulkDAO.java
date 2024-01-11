@@ -1,4 +1,4 @@
-package it.pagopa.selfcare.pagopa.backoffice.scheduler;
+package it.pagopa.selfcare.pagopa.backoffice.repository;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoException;
