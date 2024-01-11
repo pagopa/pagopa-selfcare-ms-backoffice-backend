@@ -58,6 +58,8 @@ public class TransactionalBulkDAO {
                 log.info(String.format("[Export IBANs] - Complete persistence of broker's IBANs extractions (delete and persist) ended in [%d] ms!", Utility.getTimelapse(startTime)));
                 session.close();
             }
+        } catch (Exception e) {
+            log.error("[Export IBANs] - An error occurred while persisting new extractions!", e);
         }
     }
 

@@ -2,6 +2,9 @@ package it.pagopa.selfcare.pagopa.backoffice.config;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
+import com.mongodb.client.MongoClient;
+import net.javacrumbs.shedlock.core.LockProvider;
+import net.javacrumbs.shedlock.provider.mongo.MongoLockProvider;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +19,9 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 @Configuration
 @EnableMongoAuditing(modifyOnCreate = false)
 class DaoConfig {
+
+    @Value("${spring.data.mongodb.database}")
+    private String dbName;
 
     @Bean
     public AuditorAware<String> myAuditorProvider() {
@@ -32,4 +38,8 @@ class DaoConfig {
                 .build();
     }
 
+    @Bean
+    public LockProvider lockProvider(MongoClient mongo) {
+        return new MongoLockProvider(mongo.getDatabase(dbName));
+    }
 }

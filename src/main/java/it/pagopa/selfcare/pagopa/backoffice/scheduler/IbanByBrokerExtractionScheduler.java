@@ -23,6 +23,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -83,6 +85,7 @@ public class IbanByBrokerExtractionScheduler {
                 .build();
 
     @Scheduled(cron = "${cron.job.schedule.expression.iban-export}")
+    @SchedulerLock(name = "brokerIbansExport", lockAtMostFor = "30m", lockAtLeastFor = "1m")
     @Async
     public void extract() {
         log.info("[Export IBANs] - Starting IBAN extraction process...");
