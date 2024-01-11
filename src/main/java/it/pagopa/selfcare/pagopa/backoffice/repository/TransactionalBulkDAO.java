@@ -11,6 +11,8 @@ import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.BsonDocument;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
@@ -18,16 +20,20 @@ import java.util.List;
 
 @Slf4j
 @Component
+@ConditionalOnExpression("'${info.properties.environment}'!='test'")
 public class TransactionalBulkDAO {
 
     @Autowired
     private MongoClientSettings mongoClientSettings;
 
+    @Value("${spring.data.mongodb.database}")
+    private String dbName;
+
     public void saveAll(List<BrokerIbansEntity> entities) {
         log.debug(String.format("[Export IBANs] - Persisting a set of [%d] extractions. A delete and re-persist will be executed...", entities.size()));
         long startTime = Calendar.getInstance().getTimeInMillis();
         try (MongoClient client = MongoClients.create(mongoClientSettings)) {
-            MongoDatabase db = client.getDatabase("pagopaBackoffice");
+            MongoDatabase db = client.getDatabase(dbName);
             MongoCollection<BrokerIbansEntity> collection = db.getCollection("brokerIbans", BrokerIbansEntity.class);
             ClientSession session = client.startSession();
             try {
