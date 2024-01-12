@@ -105,7 +105,11 @@ public class IbanByBrokerExtractionScheduler {
         long startTime = Calendar.getInstance().getTimeInMillis();
         Instant now = Instant.now();
         List<BrokerIbansEntity> entities = new LinkedList<>();
-        for (String brokerCode : getAllBrokers()) {
+        Set<String> allBrokers = getAllBrokers();
+        int brokerIndex = 0;
+        int numberOfRetrievedBrokers = allBrokers.size();
+        for (String brokerCode : allBrokers) {
+            log.info(String.format("[Export IBANs] - [%d/%d] Analyzing broker with code [%s]...", ++brokerIndex, numberOfRetrievedBrokers, brokerCode));
             Optional<BrokerIbansEntity> brokerIbansEntity = getIbanForCIsDelegatedByBroker(brokerCode, now);
             brokerIbansEntity.ifPresent(entities::add);
         }
