@@ -75,7 +75,7 @@ public class IbanByBrokerExtractionScheduler {
     };
 
     private final NumberOfTotalPagesSearch getNumberOfIbansByBrokerPagesCallback = (int limit, int page, String code) -> {
-        List<String> codes = List.of(code);
+        List<String> codes = List.of(code.split(","));
         IbansList response = apiConfigSCIntClient.getIbans(limit, page, codes);
         return (int) Math.floor((double) response.getPageInfo().getTotalItems() / limit);
     };
@@ -105,8 +105,7 @@ public class IbanByBrokerExtractionScheduler {
         log.info("[Export IBANs] - Starting IBAN extraction process...");
         long startTime = Calendar.getInstance().getTimeInMillis();
         Instant now = Instant.now();
-        MDC.put(METHOD, "brokerIbansExport");
-        MDC.put(START_TIME, String.valueOf(startTime));
+        updateMDCForStartExecution(startTime);
         List<BrokerIbansEntity> entities = new LinkedList<>();
         Set<String> allBrokers = getAllBrokers();
         int brokerIndex = 0;
@@ -118,14 +117,9 @@ public class IbanByBrokerExtractionScheduler {
         }
         dao.saveAll(entities);
         long timelapse = Utility.getTimelapse(startTime);
-        MDC.put(STATUS, "OK");
-        MDC.put(CODE, "201");
-        MDC.put(RESPONSE_TIME, String.valueOf(timelapse));
+        updateMDCForEndExecution(timelapse);
         log.info(String.format("[Export IBANs] - IBAN extraction completed successfully in [%d] ms!.", timelapse));
-        MDC.remove(STATUS);
-        MDC.remove(CODE);
-        MDC.remove(RESPONSE_TIME);
-        MDC.remove(START_TIME);
+        cleanMDC();
     }
 
     private Set<String> getAllBrokers() {
@@ -243,5 +237,25 @@ public class IbanByBrokerExtractionScheduler {
                         .flatMap(Collection::stream)
                         .collect(Collectors.toSet()))
                 .join();
+    }
+
+    private void updateMDCForStartExecution(long startTime) {
+        MDC.put(METHOD, "brokerIbansExport");
+        MDC.put(START_TIME, String.valueOf(startTime));
+        MDC.put(REQUEST_ID, UUID.randomUUID().toString());
+    }
+
+    private void updateMDCForEndExecution(long timelapse) {
+        MDC.put(STATUS, "OK");
+        MDC.put(CODE, "201");
+        MDC.put(RESPONSE_TIME, String.valueOf(timelapse));
+    }
+
+    private void cleanMDC() {
+        MDC.remove(STATUS);
+        MDC.remove(CODE);
+        MDC.remove(RESPONSE_TIME);
+        MDC.remove(START_TIME);
+        MDC.remove(REQUEST_ID);
     }
 }
