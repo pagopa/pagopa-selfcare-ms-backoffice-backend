@@ -24,6 +24,8 @@ public class LoggingAspect {
     public static final String STATUS = "status";
     public static final String CODE = "httpCode";
     public static final String RESPONSE_TIME = "responseTime";
+    public static final String REQUEST_ID = "requestId";
+
     @Autowired
     HttpServletRequest httRequest;
     @Autowired
