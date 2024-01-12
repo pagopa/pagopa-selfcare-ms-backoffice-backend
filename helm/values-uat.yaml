@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "1.4.7-15-PASELC-685-be-export-iban-cron-job" #improve
+    tag: "1.4.7-16-PASELC-685-be-export-iban-cron-job" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
