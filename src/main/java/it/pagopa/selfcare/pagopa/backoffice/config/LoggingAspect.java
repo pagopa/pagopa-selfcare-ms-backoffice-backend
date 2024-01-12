@@ -89,7 +89,7 @@ public class LoggingAspect {
         return result;
     }
 
-    @AfterReturning(value = "execution(* *..web.handler..*(..))", returning = "result")
+    @AfterReturning(value = "execution(* *..exception.ErrorHandler.*(..))", returning = "result")
     public void trowingApiInvocation(JoinPoint joinPoint, ResponseEntity<?> result) {
         MDC.put(STATUS, "KO");
         MDC.put(CODE, String.valueOf(result.getStatusCodeValue()));

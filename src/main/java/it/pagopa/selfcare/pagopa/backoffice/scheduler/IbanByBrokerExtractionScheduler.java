@@ -18,6 +18,7 @@ import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.NumberOfTotalPage
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.PaginatedSearch;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,14 +26,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static it.pagopa.selfcare.pagopa.backoffice.config.LoggingAspect.*;
 
 
 @Slf4j
@@ -85,17 +86,17 @@ public class IbanByBrokerExtractionScheduler {
     };
 
     private final MapInRequiredClass<IbanDetails, BrokerIbanEntity> convertIbanDetailsToBrokerIbanEntity = (IbanDetails elem) ->
-        BrokerIbanEntity.builder()
-                .ciName(elem.getCiName())
-                .ciFiscalCode(elem.getCiFiscalCode())
-                .iban(elem.getIban())
-                .status(OffsetDateTime.now().isBefore(elem.getDueDate()) ? "ATTIVO" : "DISATTIVO")
-                .validityDate(elem.getValidityDate().toInstant())
-                .description(elem.getDescription())
-                .label(elem.getLabels().stream()
-                        .map(IbanLabel::getName)
-                        .collect(Collectors.joining(" - ")))
-                .build();
+            BrokerIbanEntity.builder()
+                    .ciName(elem.getCiName())
+                    .ciFiscalCode(elem.getCiFiscalCode())
+                    .iban(elem.getIban())
+                    .status(OffsetDateTime.now().isBefore(elem.getDueDate()) ? "ATTIVO" : "DISATTIVO")
+                    .validityDate(elem.getValidityDate().toInstant())
+                    .description(elem.getDescription())
+                    .label(elem.getLabels().stream()
+                            .map(IbanLabel::getName)
+                            .collect(Collectors.joining(" - ")))
+                    .build();
 
     @Scheduled(cron = "${cron.job.schedule.expression.iban-export}")
     @SchedulerLock(name = "brokerIbansExport", lockAtMostFor = "180m", lockAtLeastFor = "15m")
@@ -104,6 +105,8 @@ public class IbanByBrokerExtractionScheduler {
         log.info("[Export IBANs] - Starting IBAN extraction process...");
         long startTime = Calendar.getInstance().getTimeInMillis();
         Instant now = Instant.now();
+        MDC.put(METHOD, "brokerIbansExport");
+        MDC.put(START_TIME, String.valueOf(startTime));
         List<BrokerIbansEntity> entities = new LinkedList<>();
         Set<String> allBrokers = getAllBrokers();
         int brokerIndex = 0;
@@ -114,7 +117,15 @@ public class IbanByBrokerExtractionScheduler {
             brokerIbansEntity.ifPresent(entities::add);
         }
         dao.saveAll(entities);
-        log.info(String.format("[Export IBANs] - IBAN extraction completed successfully in [%d] ms!.", Utility.getTimelapse(startTime)));
+        long timelapse = Utility.getTimelapse(startTime);
+        MDC.put(STATUS, "OK");
+        MDC.put(CODE, "201");
+        MDC.put(RESPONSE_TIME, String.valueOf(timelapse));
+        log.info(String.format("[Export IBANs] - IBAN extraction completed successfully in [%d] ms!.", timelapse));
+        MDC.remove(STATUS);
+        MDC.remove(CODE);
+        MDC.remove(RESPONSE_TIME);
+        MDC.remove(START_TIME);
     }
 
     private Set<String> getAllBrokers() {
@@ -132,8 +143,13 @@ public class IbanByBrokerExtractionScheduler {
     private Optional<BrokerIbansEntity> getIbanForCIsDelegatedByBroker(String brokerCode, Instant createdAt) {
         Optional<BrokerIbansEntity> brokerIbansEntity;
         try {
+            // it gets all delegated CI
             Set<String> delegatedCITaxCodes = getDelegatedCreditorInstitutions(brokerCode);
+
+            // for each CI it gets all ibans
             Set<BrokerIbanEntity> ibans = getIbans(delegatedCITaxCodes, brokerCode);
+
+            //mapping into entity
             brokerIbansEntity = Optional.of(BrokerIbansEntity.builder()
                     .brokerCode(brokerCode)
                     .createdAt(createdAt)
@@ -160,7 +176,7 @@ public class IbanByBrokerExtractionScheduler {
 
     private Set<BrokerIbanEntity> getIbans(Set<String> ciCodes, String brokerCode) {
         Set<BrokerIbanEntity> brokerIbanEntities = new HashSet<>();
-        if (!ciCodes.isEmpty()) {
+        if(!ciCodes.isEmpty()) {
             log.debug(String.format("[Export IBANs] - Retrieving the list of all IBANs for [%d] creditor institutions related to broker [%s]...", ciCodes.size(), brokerCode));
             long startTime = Calendar.getInstance().getTimeInMillis();
 
@@ -192,21 +208,23 @@ public class IbanByBrokerExtractionScheduler {
      * @param mapInRequiredClass
      * @param limit
      * @param filterCode
+     * @param <M>                the main type retrieved from main search, i.e. the type that contains the list of results and the PageInfo detail
+     * @param <N>                the type of the nested object retreived from main search, i.e. the type related to the list of results
+     * @param <R>                the type of the final result list generated by the 'mapInRequiredClass' callback
      * @return the set of object in type 'R', mapped by <code>mapInRequiredClass</code> callback.
-     * @param <M> the main type retrieved from main search, i.e. the type that contains the list of results and the PageInfo detail
-     * @param <N> the type of the nested object retreived from main search, i.e. the type related to the list of results
-     * @param <R> the type of the final result list generated by the 'mapInRequiredClass' callback
      */
     private <M, N, R> Set<R> executeParallelClientCalls(PaginatedSearch<M> paginatedSearch, NumberOfTotalPagesSearch pageNumberSearch,
-                                                         GetResultList<M, N> getResultList, MapInRequiredClass<N, R> mapInRequiredClass,
-                                                         int limit, String filterCode) {
+                                                        GetResultList<M, N> getResultList, MapInRequiredClass<N, R> mapInRequiredClass,
+                                                        int limit, String filterCode) {
 
         Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
         int numberOfPages = pageNumberSearch.search(1, 0, filterCode);
 
         List<CompletableFuture<Set<R>>> futures = new LinkedList<>();
+
+        // create parallel calls
         CompletableFuture<Set<R>> future = CompletableFuture.supplyAsync(() -> {
-            if (mdcContextMap != null) {
+            if(mdcContextMap != null) {
                 MDC.setContextMap(mdcContextMap);
             }
             return IntStream.rangeClosed(0, numberOfPages)
@@ -218,6 +236,7 @@ public class IbanByBrokerExtractionScheduler {
         });
         futures.add(future);
 
+        // join parallel calls
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
                 .thenApply(e -> futures.stream()
                         .map(CompletableFuture::join)
