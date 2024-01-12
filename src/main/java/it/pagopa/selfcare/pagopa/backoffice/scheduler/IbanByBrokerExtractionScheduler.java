@@ -27,6 +27,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -60,6 +61,9 @@ public class IbanByBrokerExtractionScheduler {
 
     @Value("${extraction.ibans.getCIByBroker.pageLimit}")
     private Integer getCIByBrokerPageLimit;
+
+    @Value("${extraction.ibans.clean.olderThanDays}")
+    private Integer olderThanDays;
 
     private final PaginatedSearch<Brokers> getBrokerECCallback = (int limit, int page, String code) ->
             apiConfigClient.getBrokersEC(limit, page, code, null, null, null);
@@ -104,22 +108,29 @@ public class IbanByBrokerExtractionScheduler {
     @Scheduled(cron = "${cron.job.schedule.expression.iban-export}")
     @SchedulerLock(name = "brokerIbansExport", lockAtMostFor = "180m", lockAtLeastFor = "15m")
     @Async
-    public void extract() {
+    public void extract() throws IOException {
         log.info("[Export IBANs] - Starting IBAN extraction process...");
+        // log process start
+        this.dao.init();
         long startTime = Calendar.getInstance().getTimeInMillis();
-        Instant now = Instant.now();
         updateMDCForStartExecution(startTime);
-        List<BrokerIbansEntity> entities = new LinkedList<>();
+        // get all brokers registered in pagoPA platform
         Set<String> allBrokers = getAllBrokers();
-        int brokerIndex = 0;
         int numberOfRetrievedBrokers = allBrokers.size();
+        int brokerIndex = 0;
+        // retrieve and save all IBANs for all CIs delegated by retrieved brokers
+        Instant now = Instant.now();
         for (String brokerCode : allBrokers) {
             log.info(String.format("[Export IBANs] - [%d/%d] Analyzing broker with code [%s]...", ++brokerIndex, numberOfRetrievedBrokers, brokerCode));
             Optional<BrokerIbansEntity> brokerIbansEntity = getIbanForCIsDelegatedByBroker(brokerCode, now);
-            brokerIbansEntity.ifPresent(entities::add);
+            brokerIbansEntity.ifPresent(this.dao::save);
         }
-        brokerIbansRepository.deleteAll();
-        dao.saveAll(entities);
+        // clean files older than N days
+        Calendar olderThan = Calendar.getInstance();
+        olderThan.add(Calendar.DAY_OF_MONTH, olderThanDays * (-1));
+        this.dao.clean(olderThan.getTime());
+        this.dao.close();
+        // log process end
         long timelapse = Utility.getTimelapse(startTime);
         updateMDCForEndExecution(timelapse);
         log.info(String.format("[Export IBANs] - IBAN extraction completed successfully in [%d] ms!.", timelapse));
@@ -141,13 +152,11 @@ public class IbanByBrokerExtractionScheduler {
     private Optional<BrokerIbansEntity> getIbanForCIsDelegatedByBroker(String brokerCode, Instant createdAt) {
         Optional<BrokerIbansEntity> brokerIbansEntity;
         try {
-            // it gets all delegated CI
+            // gets all CIs delegated by broker
             Set<String> delegatedCITaxCodes = getDelegatedCreditorInstitutions(brokerCode);
-
-            // for each CI it gets all ibans
+            // gets all IBANs related to the CIs
             Set<BrokerIbanEntity> ibans = getIbans(delegatedCITaxCodes, brokerCode);
-
-            //mapping into entity
+            // map retrieved data into new entity
             brokerIbansEntity = Optional.of(BrokerIbansEntity.builder()
                     .brokerCode(brokerCode)
                     .createdAt(createdAt)
