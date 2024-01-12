@@ -11,6 +11,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
+import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerIbansRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.TransactionalBulkDAO;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.GetResultList;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.MapInRequiredClass;
@@ -39,6 +40,8 @@ import static it.pagopa.selfcare.pagopa.backoffice.config.LoggingAspect.*;
 @Slf4j
 @Component
 public class IbanByBrokerExtractionScheduler {
+    @Autowired
+    private BrokerIbansRepository brokerIbansRepository;
 
     @Autowired
     private ApiConfigClient apiConfigClient;
@@ -115,6 +118,7 @@ public class IbanByBrokerExtractionScheduler {
             Optional<BrokerIbansEntity> brokerIbansEntity = getIbanForCIsDelegatedByBroker(brokerCode, now);
             brokerIbansEntity.ifPresent(entities::add);
         }
+        brokerIbansRepository.deleteAll();
         dao.saveAll(entities);
         long timelapse = Utility.getTimelapse(startTime);
         updateMDCForEndExecution(timelapse);
