@@ -98,7 +98,7 @@ microservice-chart:
     OTEL_TRACES_SAMPLER: "always_on"
     IBANS_EXPORT_CVS_PREVIEW_SIZE: '1000'
     CRONJOB_SCHEDULE_ENABLED: 'true'
-    CRONJOB_SCHEDULE_IBANEXPORT: "0 0 3 * * *"
+    CRONJOB_SCHEDULE_IBANEXPORT: "0 0 2 * * *"
   envSecret:
     AWS_ACCESS_KEY_ID: pagopa-p-aws-access-key-id
     AWS_SECRET_ACCESS_KEY: pagopa-p-aws-secret-access-key
