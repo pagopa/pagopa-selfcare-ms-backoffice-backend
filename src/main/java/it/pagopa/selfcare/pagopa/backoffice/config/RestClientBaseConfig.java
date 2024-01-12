@@ -46,9 +46,4 @@ public class RestClientBaseConfig {
         return new SpringEncoder(objectFactory);
     }
 
-    @Bean
-    public Retryer retryer() {
-        return new Retryer.Default(100, 2000, 3);
-    }
-
 }

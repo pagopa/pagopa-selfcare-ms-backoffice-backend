@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.client;
 
+import feign.FeignException;
 import feign.RequestLine;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.ApiConfigFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.configuration.PaymentTypes;
@@ -19,6 +20,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
@@ -199,6 +202,10 @@ public interface ApiConfigClient {
 
     @GetMapping(value = "/brokers", produces = MediaType.APPLICATION_JSON_VALUE)
     @RequestLine("getBrokersEC")
+    @Retryable(
+            exclude = FeignException.FeignClientException.class,
+            maxAttemptsExpression = "${retry.utils.maxAttempts:3}",
+            backoff = @Backoff(delayExpression = "${retry.utils.maxDelay:2000}"))
     Brokers getBrokersEC(@RequestParam(required = false, defaultValue = "50") Integer limit,
                          @RequestParam Integer page,
                          @RequestParam(required = false) String code,
@@ -215,6 +222,10 @@ public interface ApiConfigClient {
                                      @RequestBody BrokerPspDetails brokerPspDetails);
 
     @GetMapping(value = "/creditorinstitutions/view", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Retryable(
+            exclude = FeignException.FeignClientException.class,
+            maxAttemptsExpression = "${retry.utils.maxAttempts:3}",
+            backoff = @Backoff(delayExpression = "${retry.utils.maxDelay:2000}"))
     CreditorInstitutionsView getCreditorInstitutionsAssociatedToBrokerStations(@RequestParam(required = false, defaultValue = "50") Integer limit,
                                                                                @RequestParam Integer page,
                                                                                @RequestParam(required = false, name = "creditorInstitutionCode") String creditorInstitutionCode,
