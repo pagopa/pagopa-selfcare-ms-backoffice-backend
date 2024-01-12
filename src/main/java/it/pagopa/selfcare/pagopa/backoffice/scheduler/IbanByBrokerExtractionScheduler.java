@@ -106,14 +106,8 @@ public class IbanByBrokerExtractionScheduler {
         Instant now = Instant.now();
         List<BrokerIbansEntity> entities = new LinkedList<>();
         for (String brokerCode : getAllBrokers()) {
-            BrokerIbansEntity brokerIbansEntity = BrokerIbansEntity.builder()
-                    .brokerCode(brokerCode)
-                    .createdAt(now)
-                    .ibans(new LinkedList<>())
-                    .build();
-            Set<String> delegatedCITaxCodes = getDelegatedCreditorInstitutions(brokerCode);
-            brokerIbansEntity.getIbans().addAll(getIbans(delegatedCITaxCodes, brokerCode));
-            entities.add(brokerIbansEntity);
+            Optional<BrokerIbansEntity> brokerIbansEntity = getIbanForCIsDelegatedByBroker(brokerCode, now);
+            brokerIbansEntity.ifPresent(entities::add);
         }
         dao.saveAll(entities);
         log.info(String.format("[Export IBANs] - IBAN extraction completed successfully in [%d] ms!.", Utility.getTimelapse(startTime)));
@@ -131,6 +125,23 @@ public class IbanByBrokerExtractionScheduler {
         return brokerCodes;
     }
 
+    private Optional<BrokerIbansEntity> getIbanForCIsDelegatedByBroker(String brokerCode, Instant createdAt) {
+        Optional<BrokerIbansEntity> brokerIbansEntity;
+        try {
+            Set<String> delegatedCITaxCodes = getDelegatedCreditorInstitutions(brokerCode);
+            Set<BrokerIbanEntity> ibans = getIbans(delegatedCITaxCodes, brokerCode);
+            brokerIbansEntity = Optional.of(BrokerIbansEntity.builder()
+                    .brokerCode(brokerCode)
+                    .createdAt(createdAt)
+                    .ibans(new ArrayList<>(ibans))
+                    .build());
+        } catch (Exception e) {
+            log.warn(String.format("[Export IBANs] - An error occurred while retrieving IBANs for CI associated to broker [%s]: the extraction will not be updated for this broker! Exception:", brokerCode), e);
+            brokerIbansEntity = Optional.empty();
+        }
+        return brokerIbansEntity;
+    }
+
     private Set<String> getDelegatedCreditorInstitutions(String brokerCode) {
         log.debug(String.format("[Export IBANs] - Retrieving the list of all creditor institutions associated to broker [%s]...", brokerCode));
         long startTime = Calendar.getInstance().getTimeInMillis();
@@ -144,23 +155,27 @@ public class IbanByBrokerExtractionScheduler {
     }
 
     private Set<BrokerIbanEntity> getIbans(Set<String> ciCodes, String brokerCode) {
-        log.debug(String.format("[Export IBANs] - Retrieving the list of all IBANs for [%d] creditor institutions related to broker [%s]...", ciCodes.size(), brokerCode));
-        long startTime = Calendar.getInstance().getTimeInMillis();
-
         Set<BrokerIbanEntity> brokerIbanEntities = new HashSet<>();
-        int limit = 100;
-        int totalSize = ciCodes.size();
-        List<String> ciCodesAsList = new ArrayList<>(ciCodes);
-        for (int i = 0; i < totalSize; i += limit) {
-            List<String> partition = ciCodesAsList.subList(i, Math.min(i + limit, totalSize));
-            String stringifiedCiCodesPartition = String.join(",", partition);
-            Set<BrokerIbanEntity> partitionedBrokerIbanEntities = executeParallelClientCalls(getIbansByBrokerCallback, getNumberOfIbansByBrokerPagesCallback,
-                    IbansList::getIbans, convertIbanDetailsToBrokerIbanEntity,
-                    getIbansPageLimit, stringifiedCiCodesPartition);
-            brokerIbanEntities.addAll(partitionedBrokerIbanEntities);
-        }
+        if (!ciCodes.isEmpty()) {
+            log.debug(String.format("[Export IBANs] - Retrieving the list of all IBANs for [%d] creditor institutions related to broker [%s]...", ciCodes.size(), brokerCode));
+            long startTime = Calendar.getInstance().getTimeInMillis();
 
-        log.info(String.format("[Export IBANs] - Retrieve of IBANs completed successfully! Extracted [%d] IBANs in [%d] ms.", brokerIbanEntities.size(), Utility.getTimelapse(startTime)));
+            int limit = 100;
+            int totalSize = ciCodes.size();
+            List<String> ciCodesAsList = new ArrayList<>(ciCodes);
+            for (int i = 0; i < totalSize; i += limit) {
+                List<String> partition = ciCodesAsList.subList(i, Math.min(i + limit, totalSize));
+                String stringifiedCiCodesPartition = String.join(",", partition);
+                Set<BrokerIbanEntity> partitionedBrokerIbanEntities = executeParallelClientCalls(getIbansByBrokerCallback, getNumberOfIbansByBrokerPagesCallback,
+                        IbansList::getIbans, convertIbanDetailsToBrokerIbanEntity,
+                        getIbansPageLimit, stringifiedCiCodesPartition);
+                brokerIbanEntities.addAll(partitionedBrokerIbanEntities);
+            }
+
+            log.info(String.format("[Export IBANs] - Retrieve of IBANs completed successfully! Extracted [%d] IBANs in [%d] ms.", brokerIbanEntities.size(), Utility.getTimelapse(startTime)));
+        } else {
+            log.info(String.format("[Export IBANs] - No creditor institution related to broker [%s] was found. Skipping it!", brokerCode));
+        }
         return brokerIbanEntities;
     }
 

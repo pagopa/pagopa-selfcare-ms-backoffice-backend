@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.RequestInterceptor;
+import feign.Retryer;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import it.pagopa.selfcare.pagopa.backoffice.interceptor.QueryParamsPlusEncoderInterceptor;
@@ -43,6 +44,11 @@ public class RestClientBaseConfig {
         ObjectFactory<HttpMessageConverters> objectFactory = () -> new HttpMessageConverters(jacksonConverter);
 
         return new SpringEncoder(objectFactory);
+    }
+
+    @Bean
+    public Retryer retryer() {
+        return new Retryer.Default(100, 2000, 3);
     }
 
 }

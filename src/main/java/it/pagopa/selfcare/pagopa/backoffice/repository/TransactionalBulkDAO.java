@@ -5,17 +5,22 @@ import com.mongodb.MongoException;
 import com.mongodb.TransactionOptions;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.*;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.InsertManyOptions;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.BsonDocument;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -39,9 +44,10 @@ public class TransactionalBulkDAO {
                 session.startTransaction(TransactionOptions.builder().writeConcern(WriteConcern.MAJORITY).build());
                 // deleting all old documents
                 long deletionStartTime = Calendar.getInstance().getTimeInMillis();
-                log.debug("[Export IBANs] - Deleting all previous extractions...");
-                collection.deleteMany(new BsonDocument());
-                log.info(String.format("[Export IBANs] - Deletion of all previous extractions completed successfully in [%d] ms!", Utility.getTimelapse(deletionStartTime)));
+                log.debug("[Export IBANs] - Deleting previous extractions that must be inserted again...");
+                Bson filter = Filters.in("brokerCode", entities.stream().map(BrokerIbansEntity::getBrokerCode).collect(Collectors.toSet()));
+                collection.deleteMany(filter.toBsonDocument());
+                log.info(String.format("[Export IBANs] - Deletion of previous extractions completed successfully in [%d] ms!", Utility.getTimelapse(deletionStartTime)));
                 // persisting all new documents
                 InsertManyOptions insertOptions = new InsertManyOptions();
                 insertOptions.ordered(true);
