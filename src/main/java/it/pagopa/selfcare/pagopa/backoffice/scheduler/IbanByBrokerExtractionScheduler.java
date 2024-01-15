@@ -143,7 +143,7 @@ public class IbanByBrokerExtractionScheduler {
         long timelapse = Utility.getTimelapse(startTime);
         updateMDCForEndExecution(timelapse);
         log.info(String.format("[Export IBANs] - IBAN extraction completed successfully in [%d] ms!.", timelapse));
-        cleanMDC();
+        MDC.clear();
     }
 
     private Set<String> getAllBrokers() {
@@ -159,7 +159,7 @@ public class IbanByBrokerExtractionScheduler {
         Calendar olderThan = Calendar.getInstance();
         olderThan.add(Calendar.HOUR, exportAgainAfterHours * (-1));
         Set<String> brokerCodeToBeExcluded = dao.getAllBrokerCodeGreaterThan(olderThan.getTime());
-        if (avoidExportPagoPABroker) {
+        if(avoidExportPagoPABroker) {
             brokerCodeToBeExcluded.add(Constants.PAGOPA_BROKER_CODE);
         }
         brokerCodes.removeAll(brokerCodeToBeExcluded);
@@ -284,11 +284,4 @@ public class IbanByBrokerExtractionScheduler {
         MDC.put(RESPONSE_TIME, String.valueOf(timelapse));
     }
 
-    private void cleanMDC() {
-        MDC.remove(STATUS);
-        MDC.remove(CODE);
-        MDC.remove(RESPONSE_TIME);
-        MDC.remove(START_TIME);
-        MDC.remove(REQUEST_ID);
-    }
 }
