@@ -3,7 +3,9 @@ package it.pagopa.selfcare.pagopa.backoffice.repository;
 import com.mongodb.*;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.model.WriteModel;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbanEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
 import it.pagopa.selfcare.pagopa.backoffice.util.Constants;
@@ -78,7 +80,7 @@ public class TransactionalBulkDAO implements Closeable {
             if (totalSize <= ibansBatchSize) {
                 collection.insertOne(entity);                
             } else {
-                log.debug("[Export IBANs] - The number of IBANs is greater than [%d] elements. Persisting it in partition mode.");
+                log.debug(String.format("[Export IBANs] - The number of IBANs is greater than [%d] elements. Persisting it in partition mode.", ibansBatchSize));
                 bulkInsert(entity);
             }
             // closing and committing transaction
@@ -102,10 +104,15 @@ public class TransactionalBulkDAO implements Closeable {
         collection.insertOne(partialEntity);
         // updating new entity, partitioning the persistence of the list of ibans in fixed block size (avoiding error 413 RequestEntityTooLarge)
         int totalSize = entity.getIbans().size();
+        List<WriteModel<BrokerIbansEntity>> writeOperations = new ArrayList<>();
         for (int i = 0; i < totalSize; i += ibansBatchSize) {
             List<BrokerIbanEntity> partition = entity.getIbans().subList(i, Math.min(i + ibansBatchSize, totalSize));
-            collection.updateOne(new Document(Constants.BROKER_CODE_DB_FIELD, entity.getBrokerCode()), Updates.addEachToSet("ibans", partition));
+            writeOperations.add(new UpdateOneModel<>(
+                    new Document(Constants.BROKER_CODE_DB_FIELD, entity.getBrokerCode()),
+                    Updates.addEachToSet("ibans", partition))
+            );
         }
+        collection.bulkWrite(writeOperations);
     }
 
     public void clean(Date olderThan) {
