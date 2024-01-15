@@ -86,18 +86,18 @@ public class IbanByBrokerExtractionScheduler {
 
     private final NumberOfTotalPagesSearch getNumberOfBrokerECPagesCallback = (int limit, int page, String code) -> {
         Brokers response = apiConfigClient.getBrokersEC(limit, page, null, null, null, null);
-        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / limit);
+        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getBrokersPageLimit);
     };
 
     private final NumberOfTotalPagesSearch getNumberOfIbansByBrokerPagesCallback = (int limit, int page, String code) -> {
         List<String> codes = List.of(code.split(","));
         IbansList response = apiConfigSCIntClient.getIbans(limit, page, codes);
-        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / limit);
+        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getIbansPageLimit);
     };
 
     private final NumberOfTotalPagesSearch getNumberOfCIsByBrokerCallback = (int limit, int page, String code) -> {
         CreditorInstitutionsView response = apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, null, null, null, null);
-        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / limit);
+        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getCIByBrokerPageLimit);
     };
 
     private final MapInRequiredClass<IbanDetails, BrokerIbanEntity> convertIbanDetailsToBrokerIbanEntity = (IbanDetails elem) ->
