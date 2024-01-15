@@ -5,7 +5,6 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -38,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             jwtAuthenticationToken.setDetails(authRequest.getDetails());
             SecurityContextHolder.getContext().setAuthentication(jwtAuthenticationToken);
             filterChain.doFilter(request, response);
-        } catch (AuthenticationException e) {
+        } catch (AppException e) {
             log.warn("Cannot set user authentication", e);
             filterChain.doFilter(request, response);
         } catch (final Exception e) {

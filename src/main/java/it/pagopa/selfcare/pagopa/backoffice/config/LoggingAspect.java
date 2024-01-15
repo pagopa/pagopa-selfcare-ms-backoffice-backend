@@ -24,6 +24,8 @@ public class LoggingAspect {
     public static final String STATUS = "status";
     public static final String CODE = "httpCode";
     public static final String RESPONSE_TIME = "responseTime";
+    public static final String REQUEST_ID = "requestId";
+
     @Autowired
     HttpServletRequest httRequest;
     @Autowired
@@ -89,7 +91,7 @@ public class LoggingAspect {
         return result;
     }
 
-    @AfterReturning(value = "execution(* *..web.handler..*(..))", returning = "result")
+    @AfterReturning(value = "execution(* *..exception.ErrorHandler.*(..))", returning = "result")
     public void trowingApiInvocation(JoinPoint joinPoint, ResponseEntity<?> result) {
         MDC.put(STATUS, "KO");
         MDC.put(CODE, String.valueOf(result.getStatusCodeValue()));
