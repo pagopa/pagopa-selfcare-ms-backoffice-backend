@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "1.4.7-19-iban-export-fix" #improve
+    tag: "1.4.7-20-iban-export-fix" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
