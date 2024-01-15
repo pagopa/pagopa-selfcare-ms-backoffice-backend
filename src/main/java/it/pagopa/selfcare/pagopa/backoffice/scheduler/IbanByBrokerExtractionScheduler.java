@@ -127,11 +127,10 @@ public class IbanByBrokerExtractionScheduler {
         int numberOfRetrievedBrokers = allBrokers.size();
         int brokerIndex = 0;
         // retrieve and save all IBANs for all CIs delegated by retrieved brokers
-        Instant now = Instant.now();
         for (String brokerCode : allBrokers) {
             long brokerExportStartTime = Calendar.getInstance().getTimeInMillis();
             log.info(String.format("[Export IBANs] - [%d/%d] Analyzing broker with code [%s]...", ++brokerIndex, numberOfRetrievedBrokers, brokerCode));
-            Optional<BrokerIbansEntity> brokerIbansEntity = getIbanForCIsDelegatedByBroker(brokerCode, now);
+            Optional<BrokerIbansEntity> brokerIbansEntity = getIbanForCIsDelegatedByBroker(brokerCode);
             brokerIbansEntity.ifPresent(this.dao::save);
             log.info(String.format("[Export IBANs] - Analysis of broker with code [%s] completed in [%d] ms!.", brokerCode, Utility.getTimelapse(brokerExportStartTime)));
         }
@@ -170,7 +169,7 @@ public class IbanByBrokerExtractionScheduler {
         return brokerCodes;
     }
 
-    private Optional<BrokerIbansEntity> getIbanForCIsDelegatedByBroker(String brokerCode, Instant createdAt) {
+    private Optional<BrokerIbansEntity> getIbanForCIsDelegatedByBroker(String brokerCode) {
         Optional<BrokerIbansEntity> brokerIbansEntity;
         try {
             // gets all CIs delegated by broker
@@ -180,7 +179,7 @@ public class IbanByBrokerExtractionScheduler {
             // map retrieved data into new entity
             brokerIbansEntity = Optional.of(BrokerIbansEntity.builder()
                     .brokerCode(brokerCode)
-                    .createdAt(createdAt)
+                    .createdAt(Instant.now())
                     .ibans(new ArrayList<>(ibans))
                     .build());
         } catch (Exception e) {

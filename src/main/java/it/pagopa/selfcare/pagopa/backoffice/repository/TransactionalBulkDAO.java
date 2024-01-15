@@ -2,10 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.repository;
 
 import com.mongodb.*;
 import com.mongodb.client.*;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.UpdateOneModel;
-import com.mongodb.client.model.Updates;
-import com.mongodb.client.model.WriteModel;
+import com.mongodb.client.model.*;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbanEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
 import it.pagopa.selfcare.pagopa.backoffice.util.Constants;
@@ -104,15 +101,10 @@ public class TransactionalBulkDAO implements Closeable {
         collection.insertOne(partialEntity);
         // updating new entity, partitioning the persistence of the list of ibans in fixed block size (avoiding error 413 RequestEntityTooLarge)
         int totalSize = entity.getIbans().size();
-        List<WriteModel<BrokerIbansEntity>> writeOperations = new ArrayList<>();
         for (int i = 0; i < totalSize; i += ibansBatchSize) {
             List<BrokerIbanEntity> partition = entity.getIbans().subList(i, Math.min(i + ibansBatchSize, totalSize));
-            writeOperations.add(new UpdateOneModel<>(
-                    new Document(Constants.BROKER_CODE_DB_FIELD, entity.getBrokerCode()),
-                    Updates.addEachToSet("ibans", partition))
-            );
+            collection.updateOne(new Document(Constants.BROKER_CODE_DB_FIELD, entity.getBrokerCode()), Updates.pushEach("ibans", partition));
         }
-        collection.bulkWrite(writeOperations);
     }
 
     public void clean(Date olderThan) {
