@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.RequestInterceptor;
+import feign.Retryer;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import it.pagopa.selfcare.pagopa.backoffice.interceptor.QueryParamsPlusEncoderInterceptor;
