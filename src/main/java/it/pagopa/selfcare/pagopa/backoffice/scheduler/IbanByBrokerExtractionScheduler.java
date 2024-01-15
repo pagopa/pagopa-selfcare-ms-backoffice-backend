@@ -17,6 +17,7 @@ import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.GetResultList;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.MapInRequiredClass;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.NumberOfTotalPagesSearch;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.PaginatedSearch;
+import it.pagopa.selfcare.pagopa.backoffice.util.Constants;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -56,7 +57,7 @@ public class IbanByBrokerExtractionScheduler {
     @Value("${extraction.ibans.getBrokers.pageLimit}")
     private Integer getBrokersPageLimit;
 
-    @Value("${extraction.ibans.getBrokers.pageLimit}")
+    @Value("${extraction.ibans.getIbans.pageLimit}")
     private Integer getIbansPageLimit;
 
     @Value("${extraction.ibans.getCIByBroker.pageLimit}")
@@ -64,6 +65,13 @@ public class IbanByBrokerExtractionScheduler {
 
     @Value("${extraction.ibans.clean.olderThanDays}")
     private Integer olderThanDays;
+
+    @Value("${extraction.ibans.exportAgainAfterHours}")
+    private Integer exportAgainAfterHours;
+
+    @Value("${extraction.ibans.avoidExportPagoPABroker}")
+    private boolean avoidExportPagoPABroker;
+
 
     private final PaginatedSearch<Brokers> getBrokerECCallback = (int limit, int page, String code) ->
             apiConfigClient.getBrokersEC(limit, page, code, null, null, null);
@@ -121,9 +129,11 @@ public class IbanByBrokerExtractionScheduler {
         // retrieve and save all IBANs for all CIs delegated by retrieved brokers
         Instant now = Instant.now();
         for (String brokerCode : allBrokers) {
+            long brokerExportStartTime = Calendar.getInstance().getTimeInMillis();
             log.info(String.format("[Export IBANs] - [%d/%d] Analyzing broker with code [%s]...", ++brokerIndex, numberOfRetrievedBrokers, brokerCode));
             Optional<BrokerIbansEntity> brokerIbansEntity = getIbanForCIsDelegatedByBroker(brokerCode, now);
             brokerIbansEntity.ifPresent(this.dao::save);
+            log.info(String.format("[Export IBANs] - Analysis of broker with code [%s] completed in [%d] ms!.", brokerCode, Utility.getTimelapse(brokerExportStartTime)));
         }
         // clean files older than N days
         Calendar olderThan = Calendar.getInstance();
@@ -141,9 +151,20 @@ public class IbanByBrokerExtractionScheduler {
         log.debug("[Export IBANs] - Retrieving the list of all brokers...");
         long startTime = Calendar.getInstance().getTimeInMillis();
 
+        // retrieved the list of all brokers in pagoPA platform
         Set<String> brokerCodes = executeParallelClientCalls(getBrokerECCallback, getNumberOfBrokerECPagesCallback,
                 Brokers::getBrokerList, Broker::getBrokerCode,
                 getBrokersPageLimit, null);
+        int totalRetrievedBrokerCodes = brokerCodes.size();
+        // exclude all brokers which export was executed not too much time ago
+        Calendar olderThan = Calendar.getInstance();
+        olderThan.add(Calendar.HOUR, exportAgainAfterHours * (-1));
+        Set<String> brokerCodeToBeExcluded = dao.getAllBrokerCodeGreaterThan(olderThan.getTime());
+        if (avoidExportPagoPABroker) {
+            brokerCodeToBeExcluded.add(Constants.PAGOPA_BROKER_CODE);
+        }
+        brokerCodes.removeAll(brokerCodeToBeExcluded);
+        log.debug(String.format("[Export IBANs] - Excluded [%d] of [%d] brokers because they were recently exported or are excluded a priori.", brokerCodeToBeExcluded.size(), totalRetrievedBrokerCodes));
 
         log.info(String.format("[Export IBANs] - Retrieve of brokers completed successfully! Extracted [%d] broker codes in [%d] ms.", brokerCodes.size(), Utility.getTimelapse(startTime)));
         return brokerCodes;

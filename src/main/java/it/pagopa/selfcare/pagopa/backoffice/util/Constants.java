@@ -20,5 +20,9 @@ public class Constants {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd";
 
+    public static final String BROKER_CODE_DB_FIELD = "brokerCode";
+
+    public static final String PAGOPA_BROKER_CODE = "15376371009";
+
 
 }

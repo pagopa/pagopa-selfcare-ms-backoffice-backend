@@ -1,9 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.repository;
 
-import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoException;
-import com.mongodb.TransactionOptions;
-import com.mongodb.WriteConcern;
+import com.mongodb.*;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
@@ -21,6 +18,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.fields;
 
 @Slf4j
 @Component
@@ -48,6 +47,22 @@ public class TransactionalBulkDAO implements Closeable {
         }
     }
 
+    public Set<String> getAllBrokerCodeGreaterThan(Date fromDate) {
+        Set<String> results = new HashSet<>();
+        BasicDBObject query = new BasicDBObject();
+        query.put("createdAt", new BasicDBObject("$gte", fromDate));
+
+        BasicDBObject fields = new BasicDBObject();
+        fields.put(Constants.BROKER_CODE_DB_FIELD, 1);
+        fields.put("_id", 0);
+
+        FindIterable<BrokerIbansEntity> entities = collection.find(query).projection(fields);
+        for (BrokerIbansEntity entity : entities) {
+            results.add(entity.getBrokerCode());
+        }
+        return results;
+    }
+
     public void save(BrokerIbansEntity entity) {
         String brokerCode = entity.getBrokerCode();
         log.debug(String.format("[Export IBANs] - Persisting the IBANs extraction for broker [%s]. A delete and re-persist will be executed...", brokerCode));
@@ -57,7 +72,7 @@ public class TransactionalBulkDAO implements Closeable {
             // starting transaction
             session.startTransaction(TransactionOptions.builder().writeConcern(WriteConcern.MAJORITY).build());
             // deleting old document
-            collection.deleteOne(Filters.eq("brokerCode", brokerCode).toBsonDocument());
+            collection.deleteOne(Filters.eq(Constants.BROKER_CODE_DB_FIELD, brokerCode).toBsonDocument());
             // persisting new entity, not including the iban list
             int totalSize = entity.getIbans().size();
             if (totalSize <= ibansBatchSize) {
@@ -89,7 +104,7 @@ public class TransactionalBulkDAO implements Closeable {
         int totalSize = entity.getIbans().size();
         for (int i = 0; i < totalSize; i += ibansBatchSize) {
             List<BrokerIbanEntity> partition = entity.getIbans().subList(i, Math.min(i + ibansBatchSize, totalSize));
-            collection.updateOne(new Document("brokerCode", entity.getBrokerCode()), Updates.addEachToSet("ibans", partition));
+            collection.updateOne(new Document(Constants.BROKER_CODE_DB_FIELD, entity.getBrokerCode()), Updates.addEachToSet("ibans", partition));
         }
     }
 
