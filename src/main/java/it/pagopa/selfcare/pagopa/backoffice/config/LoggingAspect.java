@@ -1,9 +1,14 @@
 package it.pagopa.selfcare.pagopa.backoffice.config;
 
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +18,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.UUID;
 
 @Aspect
 @Component
@@ -24,7 +30,10 @@ public class LoggingAspect {
     public static final String STATUS = "status";
     public static final String CODE = "httpCode";
     public static final String RESPONSE_TIME = "responseTime";
+    public static final String FAULT_CODE = "faultCode";
+    public static final String FAULT_DETAIL = "faultDetail";
     public static final String REQUEST_ID = "requestId";
+    public static final String OPERATION_ID = "operationId";
 
     @Autowired
     HttpServletRequest httRequest;
@@ -37,7 +46,7 @@ public class LoggingAspect {
     @Value("${info.properties.environment}")
     private String environment;
 
-    private static String getExecutionTime() {
+    public static String getExecutionTime() {
         long endTime = System.currentTimeMillis();
         long startTime = Long.parseLong(deNull(MDC.get(START_TIME)));
         long executionTime = endTime - startTime;
@@ -75,7 +84,11 @@ public class LoggingAspect {
     public Object logApiInvocation(ProceedingJoinPoint joinPoint) throws Throwable {
         MDC.put(METHOD, joinPoint.getSignature().getName());
         MDC.put(START_TIME, String.valueOf(System.currentTimeMillis()));
-        log.info("{} {}", httRequest.getMethod(), httRequest.getRequestURI());
+        MDC.put(OPERATION_ID, UUID.randomUUID().toString());
+        if(MDC.get(REQUEST_ID) == null) {
+            var requestId = UUID.randomUUID().toString();
+            MDC.put(REQUEST_ID, requestId);
+        }
         log.info("Invoking API operation {} - args: {}", joinPoint.getSignature().getName(), joinPoint.getArgs());
 
         Object result = joinPoint.proceed();
@@ -92,30 +105,26 @@ public class LoggingAspect {
     }
 
     @AfterReturning(value = "execution(* *..exception.ErrorHandler.*(..))", returning = "result")
-    public void trowingApiInvocation(JoinPoint joinPoint, ResponseEntity<?> result) {
+    public void trowingApiInvocation(JoinPoint joinPoint, ResponseEntity<ProblemJson> result) {
         MDC.put(STATUS, "KO");
         MDC.put(CODE, String.valueOf(result.getStatusCodeValue()));
         MDC.put(RESPONSE_TIME, getExecutionTime());
+        MDC.put(FAULT_CODE, getTitle(result));
+        MDC.put(FAULT_DETAIL, getDetail(result));
         log.info("Failed API operation {} - error: {}", MDC.get(METHOD), result);
-        MDC.remove(STATUS);
-        MDC.remove(CODE);
-        MDC.remove(RESPONSE_TIME);
-        MDC.remove(START_TIME);
+        MDC.clear();
     }
 
-    @AfterThrowing(pointcut = "execution(* *..web.security..*(..))", throwing = "error")
-    public void afterThrowingAdvice(JoinPoint jp, Exception error) {
-        MDC.put(STATUS, "KO");
-        MDC.put(CODE, "401");
-        MDC.put(RESPONSE_TIME, getExecutionTime());
-        String method = httRequest.getMethod() + httRequest.getRequestURI();
-        MDC.put(METHOD, method);
-        log.info("{} {}", httRequest.getMethod(), httRequest.getRequestURI());
-        log.info("Failed API operation {} - error: {}", method, error.getMessage());
-        MDC.remove(STATUS);
-        MDC.remove(CODE);
-        MDC.remove(RESPONSE_TIME);
-        MDC.remove(START_TIME);
+    private static String getDetail(ResponseEntity<ProblemJson> result) {
+        if(result != null && result.getBody() != null && result.getBody().getDetail() != null) {
+            return result.getBody().getDetail();
+        } else return AppError.UNKNOWN.getDetails();
+    }
+
+    private static String getTitle(ResponseEntity<ProblemJson> result) {
+        if(result != null && result.getBody() != null && result.getBody().getTitle() != null) {
+            return result.getBody().getTitle();
+        } else return AppError.UNKNOWN.getTitle();
     }
 
     @Around(value = "repository() || service()")

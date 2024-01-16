@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.security.JwtAuthenticationFilter;
 import it.pagopa.selfcare.pagopa.backoffice.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
+
+import static it.pagopa.selfcare.pagopa.backoffice.config.LoggingAspect.*;
 
 @Slf4j
 @Configuration
@@ -66,19 +69,23 @@ public class SecurityConfig {
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    log.warn("{} to resource {}", accessDeniedException.getMessage(), request.getRequestURI());
                     response.setStatus(HttpStatus.FORBIDDEN.value());
                     response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
                     ProblemJson problem = new ProblemJson(AppError.FORBIDDEN.getTitle(), HttpStatus.FORBIDDEN.value(), AppError.FORBIDDEN.getDetails());
+                    setMDC(problem);
+                    log.info("{} to resource {}", accessDeniedException.getMessage(), request.getRequestURI());
                     response.getOutputStream().print(objectMapper.writeValueAsString(problem));
+                    MDC.clear();
                 })
                 .authenticationEntryPoint((request, response, authException) -> {
-                    log.warn("{} {}", authException.getMessage(), request.getRequestURI());
                     response.addHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer realm=\"selfcare\"");
                     response.setStatus(HttpStatus.UNAUTHORIZED.value());
                     response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
                     ProblemJson problem = new ProblemJson(AppError.UNAUTHORIZED.getDetails(), HttpStatus.UNAUTHORIZED.value(), AppError.UNAUTHORIZED.getDetails());
+                    setMDC(problem);
+                    log.info("{} {}", authException.getMessage(), request.getRequestURI());
                     response.getOutputStream().print(objectMapper.writeValueAsString(problem));
+                    MDC.clear();
                 })
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
@@ -99,6 +106,15 @@ public class SecurityConfig {
                 .x509().disable()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    private void setMDC(ProblemJson problem) {
+        MDC.put(STATUS, "KO");
+        MDC.put(CODE, String.valueOf(problem.getStatus()));
+        MDC.put(RESPONSE_TIME, getExecutionTime());
+        MDC.put(METHOD, "filterChain");
+        MDC.put(FAULT_CODE, problem.getTitle());
+        MDC.put(FAULT_DETAIL, problem.getDetail());
     }
 
 
