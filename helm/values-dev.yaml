@@ -155,7 +155,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 1.4.9-1-java-17
+        tag: 1.4.9-2-java-17
         pullPolicy: Always
       envConfig: {}
       envSecret: {}
