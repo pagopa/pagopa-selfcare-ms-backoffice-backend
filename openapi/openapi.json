@@ -1,10 +1,10 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "description" : "@project.description@",
+    "description" : "Microservice to manage PagoPA Backoffice",
     "termsOfService" : "https://www.pagopa.gov.it/",
-    "title" : "@project.name@",
-    "version" : "1.4.7-20-iban-export-fix"
+    "title" : "SelfCare Backoffice",
+    "version" : "1.4.9"
   },
   "servers" : [ {
     "url" : "http://localhost:8080"
