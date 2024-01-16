@@ -86,18 +86,18 @@ public class IbanByBrokerExtractionScheduler {
 
     private final NumberOfTotalPagesSearch getNumberOfBrokerECPagesCallback = (int limit, int page, String code) -> {
         Brokers response = apiConfigClient.getBrokersEC(limit, page, null, null, null, null);
-        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / limit);
+        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getBrokersPageLimit);
     };
 
     private final NumberOfTotalPagesSearch getNumberOfIbansByBrokerPagesCallback = (int limit, int page, String code) -> {
         List<String> codes = List.of(code.split(","));
         IbansList response = apiConfigSCIntClient.getIbans(limit, page, codes);
-        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / limit);
+        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getIbansPageLimit);
     };
 
     private final NumberOfTotalPagesSearch getNumberOfCIsByBrokerCallback = (int limit, int page, String code) -> {
         CreditorInstitutionsView response = apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, null, null, null, null);
-        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / limit);
+        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getCIByBrokerPageLimit);
     };
 
     private final MapInRequiredClass<IbanDetails, BrokerIbanEntity> convertIbanDetailsToBrokerIbanEntity = (IbanDetails elem) ->
@@ -127,11 +127,10 @@ public class IbanByBrokerExtractionScheduler {
         int numberOfRetrievedBrokers = allBrokers.size();
         int brokerIndex = 0;
         // retrieve and save all IBANs for all CIs delegated by retrieved brokers
-        Instant now = Instant.now();
         for (String brokerCode : allBrokers) {
             long brokerExportStartTime = Calendar.getInstance().getTimeInMillis();
             log.info(String.format("[Export IBANs] - [%d/%d] Analyzing broker with code [%s]...", ++brokerIndex, numberOfRetrievedBrokers, brokerCode));
-            Optional<BrokerIbansEntity> brokerIbansEntity = getIbanForCIsDelegatedByBroker(brokerCode, now);
+            Optional<BrokerIbansEntity> brokerIbansEntity = getIbanForCIsDelegatedByBroker(brokerCode);
             brokerIbansEntity.ifPresent(this.dao::save);
             log.info(String.format("[Export IBANs] - Analysis of broker with code [%s] completed in [%d] ms!.", brokerCode, Utility.getTimelapse(brokerExportStartTime)));
         }
@@ -144,7 +143,7 @@ public class IbanByBrokerExtractionScheduler {
         long timelapse = Utility.getTimelapse(startTime);
         updateMDCForEndExecution(timelapse);
         log.info(String.format("[Export IBANs] - IBAN extraction completed successfully in [%d] ms!.", timelapse));
-        cleanMDC();
+        MDC.clear();
     }
 
     private Set<String> getAllBrokers() {
@@ -160,7 +159,7 @@ public class IbanByBrokerExtractionScheduler {
         Calendar olderThan = Calendar.getInstance();
         olderThan.add(Calendar.HOUR, exportAgainAfterHours * (-1));
         Set<String> brokerCodeToBeExcluded = dao.getAllBrokerCodeGreaterThan(olderThan.getTime());
-        if (avoidExportPagoPABroker) {
+        if(avoidExportPagoPABroker) {
             brokerCodeToBeExcluded.add(Constants.PAGOPA_BROKER_CODE);
         }
         brokerCodes.removeAll(brokerCodeToBeExcluded);
@@ -170,7 +169,7 @@ public class IbanByBrokerExtractionScheduler {
         return brokerCodes;
     }
 
-    private Optional<BrokerIbansEntity> getIbanForCIsDelegatedByBroker(String brokerCode, Instant createdAt) {
+    private Optional<BrokerIbansEntity> getIbanForCIsDelegatedByBroker(String brokerCode) {
         Optional<BrokerIbansEntity> brokerIbansEntity;
         try {
             // gets all CIs delegated by broker
@@ -180,7 +179,7 @@ public class IbanByBrokerExtractionScheduler {
             // map retrieved data into new entity
             brokerIbansEntity = Optional.of(BrokerIbansEntity.builder()
                     .brokerCode(brokerCode)
-                    .createdAt(createdAt)
+                    .createdAt(Instant.now())
                     .ibans(new ArrayList<>(ibans))
                     .build());
         } catch (Exception e) {
@@ -285,11 +284,4 @@ public class IbanByBrokerExtractionScheduler {
         MDC.put(RESPONSE_TIME, String.valueOf(timelapse));
     }
 
-    private void cleanMDC() {
-        MDC.remove(STATUS);
-        MDC.remove(CODE);
-        MDC.remove(RESPONSE_TIME);
-        MDC.remove(START_TIME);
-        MDC.remove(REQUEST_ID);
-    }
 }
