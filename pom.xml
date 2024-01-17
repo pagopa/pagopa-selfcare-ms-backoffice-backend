@@ -10,14 +10,17 @@
         <version>2.5.14</version>
     </parent>
     <artifactId>pagopa-selfcare-ms-backoffice</artifactId>
-    <version>1.4.9</version>
+    <version>1.4.9-2-java-17</version>
     <name>SelfCare Backoffice</name>
     <description>Microservice to manage PagoPA Backoffice</description>
 
     <properties>
         <aws-sdk.version>2.17.24</aws-sdk.version>
         <bom_version_to_target>1.2.4</bom_version_to_target>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
         <ecs-logback.version>1.5.0</ecs-logback.version>
         <jjwt.version>0.9.1</jjwt.version>
         <logback-json.version>0.1.5</logback-json.version>
