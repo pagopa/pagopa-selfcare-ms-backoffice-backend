@@ -18,8 +18,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.fields;
-
 @Slf4j
 @Component
 public class TransactionalBulkDAO implements Closeable {
