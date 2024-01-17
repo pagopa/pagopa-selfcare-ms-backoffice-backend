@@ -42,8 +42,6 @@ import static it.pagopa.selfcare.pagopa.backoffice.config.LoggingAspect.*;
 @Slf4j
 @Component
 public class IbanByBrokerExtractionScheduler {
-    @Autowired
-    private BrokerIbansRepository brokerIbansRepository;
 
     @Autowired
     private ApiConfigClient apiConfigClient;
