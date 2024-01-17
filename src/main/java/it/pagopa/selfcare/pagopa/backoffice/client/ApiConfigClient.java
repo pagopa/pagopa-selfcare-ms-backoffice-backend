@@ -231,6 +231,7 @@ public interface ApiConfigClient {
                                                                                @RequestParam(required = false, name = "creditorInstitutionCode") String creditorInstitutionCode,
                                                                                @RequestParam(required = false, name = "paBrokerCode") String paBrokerCode,
                                                                                @RequestParam(required = false, name = "stationCode") String stationCode,
+                                                                               @RequestParam(required = false, name = "enabled") Boolean enabled,
                                                                                @RequestParam(required = false, name = "auxDigit") Long auxDigit,
                                                                                @RequestParam(required = false, name = "applicationCode") Long applicationCode,
                                                                                @RequestParam(required = false, name = "segregationCode") Long segregationCode,

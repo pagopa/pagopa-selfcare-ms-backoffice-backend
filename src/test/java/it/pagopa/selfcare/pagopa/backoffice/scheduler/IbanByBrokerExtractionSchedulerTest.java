@@ -48,7 +48,6 @@ class IbanByBrokerExtractionSchedulerTest {
     private IbanByBrokerExtractionScheduler scheduler;
 
 
-
     @ParameterizedTest
     @CsvSource({
             "7,8,6,true",
@@ -78,7 +77,7 @@ class IbanByBrokerExtractionSchedulerTest {
         Set<String> brokerECMockMerged = mockGetBrokersEC(totalBrokers);
         Set<String> brokerAnalyzed = new HashSet<>(Set.copyOf(brokerECMockMerged));
         brokerAnalyzed.removeAll(brokerCodesToBeExcluded);
-        if (excludePagoPABroker) {
+        if(excludePagoPABroker) {
             brokerAnalyzed.remove(Constants.PAGOPA_BROKER_CODE);
         }
         mockGetIbans(totalCIsPerBroker, totalIbansPerCI, brokerECMockMerged, false);
@@ -124,7 +123,7 @@ class IbanByBrokerExtractionSchedulerTest {
         int pages = (int) Math.floor((double) totalBrokers / IbanByBrokerExtractionSchedulerTest.PAGE_LIMIT) + 1;
         List<Broker> brokerECMockMergedPages = new ArrayList<>();
         when(apiConfigClient.getBrokersEC(1, 0, null, null, null, null)).thenReturn(getBrokerECPageMock(totalBrokers));
-        for (int page = 0; page < pages; page ++) {
+        for (int page = 0; page < pages; page++) {
             Brokers brokerECMockPage = getBrokerECMock(0, totalBrokers);
             when(apiConfigClient.getBrokersEC(IbanByBrokerExtractionSchedulerTest.PAGE_LIMIT, page, null, null, null, null)).thenReturn(brokerECMockPage);
             brokerECMockMergedPages.addAll(brokerECMockPage.getBrokerList());
@@ -137,9 +136,9 @@ class IbanByBrokerExtractionSchedulerTest {
             CreditorInstitutionsView getCIsByBrokerMockPage0 = getCIsByBrokerMock(0, IbanByBrokerExtractionSchedulerTest.PAGE_LIMIT, totalCIsPerBroker, brokerECIdMock);
             CreditorInstitutionsView getCIsByBrokerMockPage1 = getCIsByBrokerMock(1, IbanByBrokerExtractionSchedulerTest.PAGE_LIMIT, totalCIsPerBroker, brokerECIdMock);
 
-            when(apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(1, 0, null, brokerECIdMock, null, null, null, null, null)).thenReturn(getCIsByBrokerPageMock(totalCIsPerBroker));
-            when(apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(5, 0, null, brokerECIdMock, null, null, null, null, null)).thenReturn(getCIsByBrokerMockPage0);
-            when(apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(5, 1, null, brokerECIdMock, null, null, null, null, null)).thenReturn(getCIsByBrokerMockPage1);
+            when(apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(1, 0, null, brokerECIdMock, null, true, null, null, null, null)).thenReturn(getCIsByBrokerPageMock(totalCIsPerBroker));
+            when(apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(5, 0, null, brokerECIdMock, null, true, null, null, null, null)).thenReturn(getCIsByBrokerMockPage0);
+            when(apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(5, 1, null, brokerECIdMock, null, true, null, null, null, null)).thenReturn(getCIsByBrokerMockPage1);
 
             List<CreditorInstitutionView> cisByBrokerMockMergedPages = new ArrayList<>();
             cisByBrokerMockMergedPages.addAll(getCIsByBrokerMockPage0.getCreditorInstitutionList());
@@ -147,9 +146,9 @@ class IbanByBrokerExtractionSchedulerTest {
             Set<String> partition = cisByBrokerMockMergedPages.stream().map(CreditorInstitutionView::getIdDominio).collect(Collectors.toSet());
             List<String> partitionAsList = new ArrayList<>(partition);
 
-            if (throwInError) {
+            if(throwInError) {
                 when(apiConfigSCIntClient.getIbans(1, 0, partitionAsList)).thenReturn(null);
-            } else if (totalCIsPerBroker > 0) {
+            } else if(totalCIsPerBroker > 0) {
                 IbansList ibanListMockPage0 = getIbansMock(0, IbanByBrokerExtractionSchedulerTest.PAGE_LIMIT, totalIbansPerCI, partitionAsList);
                 IbansList ibanListMockPage1 = getIbansMock(1, IbanByBrokerExtractionSchedulerTest.PAGE_LIMIT, totalIbansPerCI, partitionAsList);
                 when(apiConfigSCIntClient.getIbans(1, 0, partitionAsList)).thenReturn(getIbansPageMock(totalIbansPerCI));
@@ -202,11 +201,11 @@ class IbanByBrokerExtractionSchedulerTest {
         Brokers result = Brokers.builder()
                 .brokerList(IntStream.rangeClosed(lowerLimit, upperLimit)
                         .mapToObj(id -> Broker.builder()
-                                    .brokerCode(id == 1 ? Constants.PAGOPA_BROKER_CODE : "BRO" + id)
-                                    .enabled(true)
-                                    .description("Mock broker with id " + id)
-                                    .brokerDetails("Some detail")
-                                    .build())
+                                .brokerCode(id == 1 ? Constants.PAGOPA_BROKER_CODE : "BRO" + id)
+                                .enabled(true)
+                                .description("Mock broker with id " + id)
+                                .brokerDetails("Some detail")
+                                .build())
                         .collect(Collectors.toList()))
                 .pageInfo(PageInfo.builder()
                         .page(page)
