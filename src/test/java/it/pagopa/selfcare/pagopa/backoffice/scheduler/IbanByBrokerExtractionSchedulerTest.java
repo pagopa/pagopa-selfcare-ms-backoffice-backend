@@ -107,7 +107,7 @@ class IbanByBrokerExtractionSchedulerTest {
 
         // mocking DAO methods
         doNothing().when(dao).init();
-        when(dao.getAllBrokerCodeGreaterThan(any(Date.class))).thenReturn(Set.of());
+        when(dao.getAllBrokerCodeGreaterThan(any(Date.class))).thenReturn(new HashSet<>());
 
         // mocking API client responses
         Set<String> brokerECMockMerged = mockGetBrokersEC(totalBrokers);
