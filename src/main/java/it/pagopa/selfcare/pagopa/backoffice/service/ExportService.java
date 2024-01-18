@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +63,10 @@ public class ExportService {
         return Utility.createCsv(headers, mapInstitutionToCsv(ibans.getInstitutions()));
     }
 
-    public BrokerECExportStatus getBrokerExportStatus(String brokerCode) {
+    public BrokerECExportStatus getBrokerExportStatus(@NotNull String brokerCode) {
+        if (brokerCode == null) {
+            throw new AppException(AppError.BAD_REQUEST, "No valid broker code is passed.");
+        }
         Optional<ProjectCreatedAt> brokerIbansCreatedAt = Optional.empty();
         Optional<ProjectCreatedAt> brokerInstitutionsCreatedAt = Optional.empty();
         try {
