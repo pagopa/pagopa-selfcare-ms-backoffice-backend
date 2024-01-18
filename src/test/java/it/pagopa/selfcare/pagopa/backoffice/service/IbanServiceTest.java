@@ -47,12 +47,6 @@ class IbanServiceTest {
     @MockBean
     private ApiConfigClient apiConfigClient;
 
-    @MockBean
-    private BrokerIbansRepository brokerIbansRepository;
-
-    @MockBean
-    private BrokerInstitutionsRepository brokerInstitutionsRepository;
-
     @Autowired
     @InjectMocks
     private IbanService ibanService;
@@ -60,34 +54,6 @@ class IbanServiceTest {
     @Autowired
     private MockMvc mvc;
 
-
-    @Test
-    void exportIbansToCsv() throws IOException {
-        String ibans = TestUtil.readJsonFromFile("entity/broker_iban.json");
-        BrokerIbansEntity entity = TestUtil.toObject(ibans, BrokerIbansEntity.class);
-        when(brokerIbansRepository.findByBrokerCode(eq("1111"))).thenReturn(Optional.of(entity));
-
-        byte[] result = ibanService.exportIbansToCsv("1111");
-        assertNotNull(result);
-    }
-
-    @Test
-    void exportCreditorInstitutionToCsv() throws IOException {
-        String institutions = TestUtil.readJsonFromFile("entity/broker_institution.json");
-        BrokerInstitutionsEntity entity = TestUtil.toObject(institutions, BrokerInstitutionsEntity.class);
-        when(brokerInstitutionsRepository.findByBrokerCode(eq("02438750586"))).thenReturn(Optional.of(entity));
-
-        byte[] result = ibanService.exportCreditorInstitutionToCsv("02438750586");
-        assertNotNull(result);
-    }
-
-    @Test
-    void exportCreditorInstitutionToCsv_ko() throws IOException {
-        String brokerCode = "02438750586";
-        when(brokerIbansRepository.findByBrokerCode(eq(brokerCode))).thenReturn(Optional.empty());
-
-        assertThrows(AppException.class, () -> ibanService.exportCreditorInstitutionToCsv(brokerCode));
-    }
 
     @Test
     void getIban() throws IOException {
