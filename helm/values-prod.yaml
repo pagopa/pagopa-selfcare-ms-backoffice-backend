@@ -96,7 +96,6 @@ microservice-chart:
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
-    IBANS_EXPORT_CVS_PREVIEW_SIZE: '1000'
     CRONJOB_SCHEDULE_ENABLED: 'true'
     CRONJOB_SCHEDULE_IBANEXPORT: "0 0 2 * * *"
     EXTRACTION_IBANS_GETBROKERS_LIMIT: '200'
