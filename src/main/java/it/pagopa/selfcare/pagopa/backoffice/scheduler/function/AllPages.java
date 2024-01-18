@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.scheduler.function;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
+import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionEntity;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Broker;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.BrokerCreditorInstitutionDetails;
@@ -10,6 +11,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,9 +29,11 @@ public class AllPages {
     @Autowired
     private ApiConfigClient apiConfigClient;
 
-
     @Autowired
     private ApiConfigSelfcareIntegrationClient apiConfigSCIntClient;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
 
     @Value("${extraction.ibans.getBrokers.pageLimit}")
@@ -88,7 +92,6 @@ public class AllPages {
                 .join();
     }
 
-
     /**
      * @return the set of all brokers in pagoPA platform
      */
@@ -98,10 +101,10 @@ public class AllPages {
                 getBrokersPageLimit, null);
     }
 
-    public Set<BrokerCreditorInstitutionDetails> getCreditorInstitutionsAssociatedToBroker() {
-        return executeParallelClientCalls(getCreditorInstitutionsAssociatedToBroker, getCreditorInstitutionsAssociatedToBroker,
-                BrokerCreditorInstitutionDetails::getCreditorInstitutions, CreditorInstitutionDetail::getBrokerCode,
-                100, null);
+    public Set<BrokerInstitutionEntity> getCreditorInstitutionsAssociatedToBroker(String brokerCode) {
+        return executeParallelClientCalls(getCreditorInstitutionsAssociatedToBroker, getCreditorInstitutionsAssociatedToBrokerPages,
+                BrokerCreditorInstitutionDetails::getCreditorInstitutions, convertCreditorInstitutionDetailToBrokerInstitutionEntity,
+                getBrokersPageLimit, brokerCode);
     }
 
 
@@ -110,6 +113,11 @@ public class AllPages {
 
     private final PaginatedSearch<BrokerCreditorInstitutionDetails> getCreditorInstitutionsAssociatedToBroker = (int limit, int page, String code) ->
             apiConfigSCIntClient.getCreditorInstitutionsAssociatedToBroker(limit, page, true, code);
+
+    private final NumberOfTotalPagesSearch getCreditorInstitutionsAssociatedToBrokerPages = (int limit, int page, String code) -> {
+        var response = apiConfigSCIntClient.getCreditorInstitutionsAssociatedToBroker(limit, page, true, code);
+        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getBrokersPageLimit);
+    };
 
 
     private final PaginatedSearch<IbansList> getIbansByBrokerCallback = (int limit, int page, String code) -> {
@@ -136,4 +144,7 @@ public class AllPages {
         return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getCIByBrokerPageLimit);
     };
 
+
+    private final MapInRequiredClass<CreditorInstitutionDetail, BrokerInstitutionEntity> convertCreditorInstitutionDetailToBrokerInstitutionEntity = (CreditorInstitutionDetail elem) ->
+            modelMapper.map(elem, BrokerInstitutionEntity.class);
 }
