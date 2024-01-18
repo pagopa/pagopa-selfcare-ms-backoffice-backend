@@ -21,6 +21,8 @@ public enum AppError {
 
     STATION_CONFLICT(HttpStatus.CONFLICT, "Station Conflict", "There is a Station not completed."),
 
+    RESPONSE_NOT_READABLE(HttpStatus.BAD_GATEWAY, "Response Not Readable", "The response body is not readable"),
+
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Unauthorized", "Error during authentication"),
     FORBIDDEN(HttpStatus.FORBIDDEN, "Forbidden", "This method is forbidden"),
     UNKNOWN(null, null, null);
