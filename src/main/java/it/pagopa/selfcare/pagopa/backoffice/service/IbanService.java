@@ -5,10 +5,13 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationC
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbanEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
+import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionEntity;
+import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionsEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.*;
 import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerIbansRepository;
+import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerInstitutionsRepository;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -41,6 +44,9 @@ public class IbanService {
 
     @Autowired
     private BrokerIbansRepository brokerIbansRepository;
+
+    @Autowired
+    private BrokerInstitutionsRepository brokerInstitutionsRepository;
 
     @Autowired
     public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, ExternalApiClient externalApiClient, ModelMapper modelMapper) {
@@ -99,8 +105,28 @@ public class IbanService {
                 .orElseThrow(() -> new AppException(AppError.BROKER_NOT_FOUND, brokerCode));
 
         List<String> headers = Arrays.asList("denominazioneEnte", "codiceFiscale", "iban", "stato", "dataAttivazioneIban", "descrizione", "etichetta");
-        return Utility.createCsv(headers, mapToCsv(ibans.getIbans()));
+        return Utility.createCsv(headers, mapIbanToCsv(ibans.getIbans()));
     }
+
+
+    /**
+     * This method is used for exporting a set of IBANs to a CSV format.
+     * First, the system gets all the delegations for the input brokerCode.
+     * IBAN details are formatted into a CSV row structure.
+     *
+     * @param brokerCode The broker code used to retrieve delegations and hence the IBANs.
+     * @return The byte array representation of the generated CSV file.
+     */
+    public byte[] exportCreditorInstitutionToCsv(String brokerCode) {
+        BrokerInstitutionsEntity ibans = brokerInstitutionsRepository.findByBrokerCode(brokerCode)
+                .orElseThrow(() -> new AppException(AppError.BROKER_NOT_FOUND, brokerCode));
+
+        List<String> headers = Arrays.asList("companyName", "administrativeCode", "taxCode", "intermediated", "brokerCompanyName",
+                "brokerTaxCode", "model", "auxDigit", "segregationCode", "applicationCode", "cbillCode", "stationId", "stationState",
+                "activationDate", "version", "broadcast");
+        return Utility.createCsv(headers, mapInstitutionToCsv(ibans.getInstitutions()));
+    }
+
 
 
     /**
@@ -109,7 +135,7 @@ public class IbanService {
      * @param ibans The list of IbanCsv objects to be processed.
      * @return The list of lists after mapping and ensuring no null values.
      */
-    private List<List<String>> mapToCsv(List<BrokerIbanEntity> ibans) {
+    private List<List<String>> mapIbanToCsv(List<BrokerIbanEntity> ibans) {
         return ibans.stream()
                 .map(elem -> Arrays.asList(deNull(elem.getCiName()),
                         deNull(elem.getCiFiscalCode()),
@@ -119,6 +145,35 @@ public class IbanService {
                         deNull(elem.getDescription()),
                         deNull(elem.getLabel())
                 ))
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    /**
+     * This method processes a list of InstitutionCsv objects, mapping them to a List of lists of String type.
+     *
+     * @param institutions The list of InstitutionCsv objects to be processed.
+     * @return The list of lists after mapping and ensuring no null values.
+     */
+    private List<List<String>> mapInstitutionToCsv(List<BrokerInstitutionEntity> institutions) {
+        return institutions.stream()
+                .map(elem -> Arrays.asList(
+                        deNull(elem.getCompanyName()),
+                        deNull(elem.getAdministrativeCode()),
+                        deNull(elem.getTaxCode()),
+                        Boolean.TRUE.equals(deNull(elem.getIntermediated())) ? "YES" : "NO",
+                        deNull(elem.getBrokerCompanyName()),
+                        deNull(elem.getBrokerTaxCode()),
+                        deNull(elem.getModel()),
+                        deNull(elem.getAuxDigit()),
+                        deNull(elem.getSegregationCode()),
+                        deNull(elem.getApplicationCode()),
+                        deNull(elem.getCbillCode()),
+                        deNull(elem.getStationId()),
+                        deNull(elem.getStationState()),
+                        deNull(elem.getActivationDate()),
+                        deNull(elem.getVersion()),
+                        Boolean.TRUE.equals(deNull(elem.getBroadcast())) ? "ACTIVE" : "INACTIVE"
+                ))
+                .toList();
     }
 }
