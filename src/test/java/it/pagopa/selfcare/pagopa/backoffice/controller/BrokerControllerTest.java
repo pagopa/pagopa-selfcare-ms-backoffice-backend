@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
+import it.pagopa.selfcare.pagopa.backoffice.service.ExportService;
 import it.pagopa.selfcare.pagopa.backoffice.service.IbanService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,11 +29,14 @@ class BrokerControllerTest {
     @MockBean
     private IbanService ibanService;
 
+    @MockBean
+    private ExportService exportService;
+
     @BeforeEach
     void setUp() {
-        when(ibanService.exportIbansToCsv(anyString()))
+        when(exportService.exportIbansToCsv(anyString()))
                 .thenReturn(new byte[0]);
-        when(ibanService.exportCreditorInstitutionToCsv(anyString()))
+        when(exportService.exportCreditorInstitutionToCsv(anyString()))
                 .thenReturn(new byte[0]);
 
     }
