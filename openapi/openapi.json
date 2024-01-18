@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "1.4.11-1-PASELC-694-be-export-ec-download"
+    "version": "1.4.12"
   },
   "servers": [
     {
