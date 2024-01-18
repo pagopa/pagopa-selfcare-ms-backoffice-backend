@@ -28,6 +28,7 @@ public class CiBrokerExtractionScheduler {
         updateMDCForStartExecution();
         Set<String> allBrokers = allPages.getAllBrokers();
         for (String brokerCode : allBrokers) {
+            var entities = allPages.getCreditorInstitutionsAssociatedToBroker(brokerCode);
 
         }
 
