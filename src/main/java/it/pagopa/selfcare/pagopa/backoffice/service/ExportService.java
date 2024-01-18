@@ -22,11 +22,15 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.deNull;
 @Service
 public class ExportService {
 
-    @Autowired
-    private BrokerIbansRepository brokerIbansRepository;
+    private final BrokerIbansRepository brokerIbansRepository;
+
+    private final BrokerInstitutionsRepository brokerInstitutionsRepository;
 
     @Autowired
-    private BrokerInstitutionsRepository brokerInstitutionsRepository;
+    public ExportService(BrokerIbansRepository brokerIbansRepository, BrokerInstitutionsRepository brokerInstitutionsRepository) {
+        this.brokerIbansRepository = brokerIbansRepository;
+        this.brokerInstitutionsRepository = brokerInstitutionsRepository;
+    }
 
     /**
      * This method is used for exporting a set of IBANs to a CSV format.

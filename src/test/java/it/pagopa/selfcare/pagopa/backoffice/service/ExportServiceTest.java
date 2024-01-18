@@ -48,7 +48,7 @@ class ExportServiceTest {
     void exportIbansToCsv() throws IOException {
         String ibans = TestUtil.readJsonFromFile("entity/broker_iban.json");
         BrokerIbansEntity entity = TestUtil.toObject(ibans, BrokerIbansEntity.class);
-        when(brokerIbansRepository.findByBrokerCode(eq("1111"))).thenReturn(Optional.of(entity));
+        when(brokerIbansRepository.findByBrokerCode("1111")).thenReturn(Optional.of(entity));
 
         byte[] result = exportService.exportIbansToCsv("1111");
         assertNotNull(result);
@@ -57,7 +57,7 @@ class ExportServiceTest {
     @Test
     void exportIbansToCsv_ko() throws IOException {
         String brokerCode = "1111";
-        when(brokerIbansRepository.findByBrokerCode(eq(brokerCode))).thenReturn(Optional.empty());
+        when(brokerIbansRepository.findByBrokerCode(brokerCode)).thenReturn(Optional.empty());
 
         assertThrows(AppException.class, () -> exportService.exportIbansToCsv(brokerCode));
     }
@@ -66,7 +66,7 @@ class ExportServiceTest {
     void exportCreditorInstitutionToCsv() throws IOException {
         String institutions = TestUtil.readJsonFromFile("entity/broker_institution.json");
         BrokerInstitutionsEntity entity = TestUtil.toObject(institutions, BrokerInstitutionsEntity.class);
-        when(brokerInstitutionsRepository.findByBrokerCode(eq("02438750586"))).thenReturn(Optional.of(entity));
+        when(brokerInstitutionsRepository.findByBrokerCode("02438750586")).thenReturn(Optional.of(entity));
 
         byte[] result = exportService.exportCreditorInstitutionToCsv("02438750586");
         assertNotNull(result);
@@ -75,7 +75,7 @@ class ExportServiceTest {
     @Test
     void exportCreditorInstitutionToCsv_ko() throws IOException {
         String brokerCode = "02438750586";
-        when(brokerIbansRepository.findByBrokerCode(eq(brokerCode))).thenReturn(Optional.empty());
+        when(brokerIbansRepository.findByBrokerCode(brokerCode)).thenReturn(Optional.empty());
 
         assertThrows(AppException.class, () -> exportService.exportCreditorInstitutionToCsv(brokerCode));
     }
