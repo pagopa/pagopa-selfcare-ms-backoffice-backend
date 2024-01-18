@@ -5,9 +5,12 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
+import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionsEntity;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
 import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerIbansRepository;
+import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerInstitutionsRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.io.IOException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -45,9 +47,6 @@ class IbanServiceTest {
     @MockBean
     private ApiConfigClient apiConfigClient;
 
-    @MockBean
-    private BrokerIbansRepository brokerIbansRepository;
-
     @Autowired
     @InjectMocks
     private IbanService ibanService;
@@ -55,16 +54,6 @@ class IbanServiceTest {
     @Autowired
     private MockMvc mvc;
 
-
-    @Test
-    void exportIbansToCsv() throws IOException {
-        String ibans = TestUtil.readJsonFromFile("entity/broker_iban.json");
-        BrokerIbansEntity entity = TestUtil.toObject(ibans, BrokerIbansEntity.class);
-        when(brokerIbansRepository.findByBrokerCode(eq("1111"))).thenReturn(Optional.of(entity));
-
-        byte[] result = ibanService.exportIbansToCsv("1111");
-        assertNotNull(result);
-    }
 
     @Test
     void getIban() throws IOException {

@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "1.4.9-2-java-17"
+    "version": "1.4.12"
   },
   "servers": [
     {
@@ -238,6 +238,125 @@
           "Creditor institution's Brokers"
         ]
       }
+    },
+    "/brokers/{broker-code}/creditor-institutions/export": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | Y\nThe CSV file contains the following columns: `companyName, amministrativeCode, taxCode, intermediated, brokerCompanyName, brokerTaxCode, model, auxDigit, segregationCode, applicationCode, cbillCode, stationId, stationState, activationDate, version, broadcast`",
+        "operationId": "exportCreditorInstitutionToCsv",
+        "parameters": [
+          {
+            "description": "SelfCare Broker Code. it's a tax code",
+            "in": "path",
+            "name": "broker-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Export all creditor institutions handled by a broker EC to CSV",
+        "tags": [
+          "Creditor institution's Brokers"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/brokers/{broker-code}/export-status": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
+        "operationId": "getBrokerExportStatus",
+        "parameters": [
+          {
+            "description": "SelfCare Broker Code. it's a tax code",
+            "in": "path",
+            "name": "broker-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrokerECExportStatus"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Get all info about data exports for the broker EC",
+        "tags": [
+          "Creditor institution's Brokers"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
     },
     "/brokers/{broker-code}/ibans/export": {
       "get": {
@@ -5284,6 +5403,19 @@
           },
           "description": {
             "type": "string"
+          }
+        }
+      },
+      "BrokerECExportStatus": {
+        "type": "object",
+        "properties": {
+          "broker_ibans_last_update": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "broker_institutions_last_update": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
