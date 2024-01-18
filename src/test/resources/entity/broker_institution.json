@@ -1,0 +1,23 @@
+{
+  "brokerCode": "02438750586",
+  "createdAt": 1704895507028,
+  "institutions": [
+    {
+      "companyName": "Comune di Roma",
+      "administrativeCode": "---",
+      "taxCode": "02438750586",
+      "intermediated": "false",
+      "brokerCompanyName": "Regione Lazio",
+      "brokerTaxCode": "80143490581",
+      "model": 3,
+      "auxDigit": 3,
+      "segregationCode": "01",
+      "cbillCode": "APNEY",
+      "stationId": "80143490581_o1",
+      "stationState": "ACTIVE",
+      "activationDate": 1704895507028,
+      "version": "2",
+      "broadcast": false
+    }
+  ]
+}

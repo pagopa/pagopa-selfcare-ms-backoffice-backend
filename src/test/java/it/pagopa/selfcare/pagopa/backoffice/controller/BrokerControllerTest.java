@@ -32,12 +32,22 @@ class BrokerControllerTest {
     void setUp() {
         when(ibanService.exportIbansToCsv(anyString()))
                 .thenReturn(new byte[0]);
+        when(ibanService.exportCreditorInstitutionToCsv(anyString()))
+                .thenReturn(new byte[0]);
 
     }
 
     @Test
     void getBrokers() throws Exception {
         String url = "/brokers/1111/ibans/export";
+        mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/csv"));
+    }
+
+    @Test
+    void exportCreditorInstitutionToCsv() throws Exception {
+        String url = "/brokers/1111/creditor-institutions/export";
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("text/csv"));
