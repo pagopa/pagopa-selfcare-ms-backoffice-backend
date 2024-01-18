@@ -63,9 +63,14 @@ public class ExportService {
     }
 
     public BrokerECExportStatus getBrokerExportStatus(String brokerCode) {
-        Optional<ProjectCreatedAt> brokerIbansCreatedAt = brokerIbansRepository.findProjectedByBrokerCode(brokerCode);
-        Optional<ProjectCreatedAt> brokerInstitutionsCreatedAt = brokerInstitutionsRepository.findProjectedByBrokerCode(brokerCode);
-
+        Optional<ProjectCreatedAt> brokerIbansCreatedAt = Optional.empty();
+        Optional<ProjectCreatedAt> brokerInstitutionsCreatedAt = Optional.empty();
+        try {
+            brokerIbansCreatedAt = brokerIbansRepository.findProjectedByBrokerCode(brokerCode);
+            brokerInstitutionsCreatedAt = brokerInstitutionsRepository.findProjectedByBrokerCode(brokerCode);
+        } catch (Exception e) {
+            log.error(String.format("Error while retrieving export status for broker [%s]", brokerCode), e);
+        }
         return BrokerECExportStatus.builder()
                 .brokerIbansLastUpdate(brokerIbansCreatedAt.map(ProjectCreatedAt::getCreatedAt).orElse(null))
                 .brokerInstitutionsLastUpdate(brokerInstitutionsCreatedAt.map(ProjectCreatedAt::getCreatedAt).orElse(null))
