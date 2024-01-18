@@ -32,14 +32,11 @@ public class BrokerController {
 
     private final BrokerService brokerService;
 
-    private final IbanService ibanService;
-
     private final ExportService exportService;
 
     @Autowired
-    public BrokerController(BrokerService brokerService, IbanService ibanService, ExportService exportService) {
+    public BrokerController(BrokerService brokerService, ExportService exportService) {
         this.brokerService = brokerService;
-        this.ibanService = ibanService;
         this.exportService = exportService;
     }
 
