@@ -80,7 +80,7 @@ public class IbanByBrokerExtractionScheduler {
     };
 
     private final PaginatedSearch<CreditorInstitutionsView> getCIsByBrokerCallback = (int limit, int page, String code) ->
-            apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, null, null, null, null);
+            apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, true, null, null, null, null);
 
     private final NumberOfTotalPagesSearch getNumberOfBrokerECPagesCallback = (int limit, int page, String code) -> {
         Brokers response = apiConfigClient.getBrokersEC(limit, page, null, null, null, null);
@@ -94,7 +94,7 @@ public class IbanByBrokerExtractionScheduler {
     };
 
     private final NumberOfTotalPagesSearch getNumberOfCIsByBrokerCallback = (int limit, int page, String code) -> {
-        CreditorInstitutionsView response = apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, null, null, null, null);
+        CreditorInstitutionsView response = apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, true, null, null, null, null);
         return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getCIByBrokerPageLimit);
     };
 
