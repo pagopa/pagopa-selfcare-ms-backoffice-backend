@@ -122,7 +122,7 @@ public class BrokerController {
     @GetMapping(value = "/{broker-code}/export-status", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all info about data exports for the broker EC", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public BrokerECExportStatus getBrokerExportStatus(@Parameter(description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode) {
 
         return exportService.getBrokerExportStatus(brokerCode);
