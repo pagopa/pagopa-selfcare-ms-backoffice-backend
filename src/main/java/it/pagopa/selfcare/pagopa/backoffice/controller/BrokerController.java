@@ -97,4 +97,20 @@ public class BrokerController {
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(new ByteArrayResource(file));
     }
+
+    @GetMapping(value = "/{broker-code}/creditor-institutions/export", produces = {"text/csv", MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Export all creditor institutions handled by a broker EC to CSV", security = {@SecurityRequirement(name = "JWT")},
+            description = "The CSV file contains the following columns: `companyName, amministrativeCode, taxCode, intermediated, brokerCompanyName, brokerTaxCode, model, auxDigit, segregationCode, applicationCode, cbillCode, stationId, stationState, activationDate, version, broadcast`")
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
+    @Cacheable(value = "exportIbansToCsv")
+    public ResponseEntity<Resource> exportCreditorInstitutionToCsv(@Parameter(description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode) {
+
+        byte[] file = ibanService.exportCreditorInstitutionToCsv(brokerCode);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ci-export.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(new ByteArrayResource(file));
+    }
 }
