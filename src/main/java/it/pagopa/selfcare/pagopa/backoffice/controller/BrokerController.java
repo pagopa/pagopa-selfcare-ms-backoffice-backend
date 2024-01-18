@@ -5,8 +5,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.BrokerEcDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.export.BrokerECExportStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 import it.pagopa.selfcare.pagopa.backoffice.service.BrokerService;
+import it.pagopa.selfcare.pagopa.backoffice.service.ExportService;
 import it.pagopa.selfcare.pagopa.backoffice.service.IbanService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -30,12 +32,12 @@ public class BrokerController {
 
     private final BrokerService brokerService;
 
-    private final IbanService ibanService;
+    private final ExportService exportService;
 
     @Autowired
-    public BrokerController(BrokerService brokerService, IbanService ibanService) {
+    public BrokerController(BrokerService brokerService, ExportService exportService) {
         this.brokerService = brokerService;
-        this.ibanService = ibanService;
+        this.exportService = exportService;
     }
 
 
@@ -90,11 +92,36 @@ public class BrokerController {
     @Cacheable(value = "exportIbansToCsv")
     public ResponseEntity<Resource> exportIbansToCsv(@Parameter(description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode) {
 
-        byte[] file = ibanService.exportIbansToCsv(brokerCode);
+        byte[] file = exportService.exportIbansToCsv(brokerCode);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=iban-export.csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(new ByteArrayResource(file));
+    }
+
+    @GetMapping(value = "/{broker-code}/creditor-institutions/export", produces = {"text/csv", MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Export all creditor institutions handled by a broker EC to CSV", security = {@SecurityRequirement(name = "JWT")},
+            description = "The CSV file contains the following columns: `companyName, amministrativeCode, taxCode, intermediated, brokerCompanyName, brokerTaxCode, model, auxDigit, segregationCode, applicationCode, cbillCode, stationId, stationState, activationDate, version, broadcast`")
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
+    @Cacheable(value = "exportCreditorInstitutionToCsv")
+    public ResponseEntity<Resource> exportCreditorInstitutionToCsv(@Parameter(description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode) {
+
+        byte[] file = exportService.exportCreditorInstitutionToCsv(brokerCode);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ci-export.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(new ByteArrayResource(file));
+    }
+
+    @GetMapping(value = "/{broker-code}/export-status", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get all info about data exports for the broker EC", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    public BrokerECExportStatus getBrokerExportStatus(@Parameter(description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode) {
+
+        return exportService.getBrokerExportStatus(brokerCode);
     }
 }
