@@ -1,10 +1,12 @@
 package it.pagopa.selfcare.pagopa.backoffice.scheduler;
 
-import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
+import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.AllPages;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -13,23 +15,23 @@ import java.util.UUID;
 
 import static it.pagopa.selfcare.pagopa.backoffice.config.LoggingAspect.*;
 
+@Component
 public class CiBrokerExtractionScheduler {
 
-    @Scheduled(cron = "${cron.job.schedule.expression.iban-export}")
+    @Autowired
+    private AllPages allPages;
+
+    @Scheduled(cron = "${cron.job.schedule.expression.ci-export}")
     @SchedulerLock(name = "brokerCiExport", lockAtMostFor = "180m", lockAtLeastFor = "15m")
     @Async
     public void extract() throws IOException {
         updateMDCForStartExecution();
-        Set<String> allBrokers = getAllBrokers();
+        Set<String> allBrokers = allPages.getAllBrokers();
         for (String brokerCode : allBrokers) {
 
         }
-        Calendar olderThan = Calendar.getInstance();
-        olderThan.add(Calendar.DAY_OF_MONTH, olderThanDays * (-1));
-        this.dao.clean(olderThan.getTime());
-        this.dao.close();
-        long timelapse = Utility.getTimelapse(startTime);
-        updateMDCForEndExecution(timelapse);
+
+        updateMDCForEndExecution();
         MDC.clear();
     }
 
@@ -40,9 +42,11 @@ public class CiBrokerExtractionScheduler {
     }
 
 
-    private void updateMDCForEndExecution(long timelapse) {
+    private void updateMDCForEndExecution() {
         MDC.put(STATUS, "OK");
         MDC.put(CODE, "201");
-        MDC.put(RESPONSE_TIME, String.valueOf(timelapse));
+        MDC.put(RESPONSE_TIME, getExecutionTime());
     }
+
+
 }

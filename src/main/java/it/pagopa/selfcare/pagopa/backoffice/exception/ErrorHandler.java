@@ -1,5 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.exception;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
@@ -16,6 +19,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -144,7 +148,30 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
                         .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+    
+    @ExceptionHandler({FeignException.class})
+    public ResponseEntity<ProblemJson> handleFeignException(final FeignException ex, final WebRequest request) {
+        log.warn("App Exception raised: {}", ex.getMessage());
+        log.debug("Trace error: ", ex);
 
+        ProblemJson problem;
+        if(ex.responseBody().isPresent()) {
+            var body = new String(ex.responseBody().get().array(), StandardCharsets.UTF_8);
+            try {
+                problem = new ObjectMapper().readValue(body, ProblemJson.class);
+            } catch (JsonProcessingException e) {
+                throw new AppException(AppError.RESPONSE_NOT_READABLE, e);
+            }
+        } else {
+            problem = ProblemJson.builder()
+                    .status(HttpStatus.BAD_GATEWAY.value())
+                    .title("No Response Body")
+                    .detail("Error with external dependency")
+                    .build();
+        }
+
+        return new ResponseEntity<>(problem, HttpStatus.valueOf(problem.getStatus()));
+    }
 
     /**
      * Handle if a {@link AppException} is raised
@@ -154,8 +181,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
      * @return a {@link ProblemJson} as response with the cause and with an appropriated HTTP status
      */
     @ExceptionHandler({AppException.class})
-    public ResponseEntity<ProblemJson> handleAppException(
-            final AppException ex, final WebRequest request) {
+    public ResponseEntity<ProblemJson> handleAppException(final AppException ex, final WebRequest request) {
         if(ex.getCause() != null) {
             log.warn("App Exception raised: " + ex.getMessage() + "\nCause of the App Exception: ", ex.getCause());
         } else {
@@ -178,14 +204,13 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
      * @return a {@link ProblemJson} as response with the cause and with 500 as HTTP status
      */
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<ProblemJson> handleGenericException(
-            final Exception ex, final WebRequest request) {
+    public ResponseEntity<ProblemJson> handleGenericException(final Exception ex, final WebRequest request) {
         log.error("Generic Exception raised:", ex);
         var errorResponse =
                 ProblemJson.builder()
                         .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                         .title(AppError.INTERNAL_SERVER_ERROR.getTitle())
-                        .detail(AppError.INTERNAL_SERVER_ERROR.getDetails())
+                        .detail(ex.getMessage())
                         .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
