@@ -1,5 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
+import it.pagopa.selfcare.pagopa.backoffice.model.export.BrokerECExportStatus;
+import it.pagopa.selfcare.pagopa.backoffice.service.ExportService;
 import it.pagopa.selfcare.pagopa.backoffice.service.IbanService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Calendar;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -28,10 +32,20 @@ class BrokerControllerTest {
     @MockBean
     private IbanService ibanService;
 
+    @MockBean
+    private ExportService exportService;
+
     @BeforeEach
     void setUp() {
-        when(ibanService.exportIbansToCsv(anyString()))
+        when(exportService.exportIbansToCsv(anyString()))
                 .thenReturn(new byte[0]);
+        when(exportService.exportCreditorInstitutionToCsv(anyString()))
+                .thenReturn(new byte[0]);
+        when(exportService.getBrokerExportStatus(anyString()))
+                .thenReturn(BrokerECExportStatus.builder()
+                        .brokerIbansLastUpdate(Calendar.getInstance().toInstant())
+                        .brokerInstitutionsLastUpdate(Calendar.getInstance().toInstant())
+                        .build());
 
     }
 
@@ -41,6 +55,22 @@ class BrokerControllerTest {
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("text/csv"));
+    }
+
+    @Test
+    void exportCreditorInstitutionToCsv() throws Exception {
+        String url = "/brokers/1111/creditor-institutions/export";
+        mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/csv"));
+    }
+
+    @Test
+    void getBrokerExportStatus() throws Exception {
+        String url = "/brokers/1111/export-status";
+        mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"));
     }
 
 }
