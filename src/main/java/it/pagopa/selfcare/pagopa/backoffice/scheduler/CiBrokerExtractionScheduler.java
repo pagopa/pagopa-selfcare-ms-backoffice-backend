@@ -38,7 +38,8 @@ public class CiBrokerExtractionScheduler {
     @SchedulerLock(name = "brokerCiExport", lockAtMostFor = "180m", lockAtLeastFor = "15m")
     @Async
     @Transactional
-    public void extract() {
+    public void extractCi() {
+        // just a start print
         updateMDCForStartExecution();
         log.info("[Export-CI] export starting...");
 
@@ -47,7 +48,10 @@ public class CiBrokerExtractionScheduler {
             upsertBrokerInstitution(brokerCode);
         }
 
+        // delete the old entities
         brokerInstitutionsRepository.deleteAllByCreatedAtBefore(Instant.now().minus(Duration.ofDays(olderThanDays)));
+
+        // just a success print
         updateMDCForEndExecution();
         log.info("[Export-CI] export complete!");
         MDC.clear();
@@ -55,15 +59,17 @@ public class CiBrokerExtractionScheduler {
 
     @Transactional
     public void upsertBrokerInstitution(String brokerCode) {
+        // delete old entity if it exists
         brokerInstitutionsRepository.findByBrokerCode(brokerCode)
                 .ifPresent(brokerInstitutionsRepository::delete);
-        var institutions = allPages.getCreditorInstitutionsAssociatedToBroker(brokerCode)
-                .stream()
-                .toList();
+        // retrieve new data
+        var institutions = allPages.getCreditorInstitutionsAssociatedToBroker(brokerCode).stream().toList();
+        // build new entity
         var entity = BrokerInstitutionsEntity.builder()
                 .brokerCode(brokerCode)
                 .institutions(institutions)
                 .build();
+        // save new entity
         brokerInstitutionsRepository.save(entity);
     }
 
