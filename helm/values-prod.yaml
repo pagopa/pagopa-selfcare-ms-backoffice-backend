@@ -45,9 +45,9 @@ microservice-chart:
       nginx.ingress.kubernetes.io/cors-allow-origin: "https://api.platform.pagopa.it"
   serviceAccount:
     create: false
-    annotations: {}
+    annotations: { }
     name: ""
-  podAnnotations: {}
+  podAnnotations: { }
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -98,7 +98,6 @@ microservice-chart:
     OTEL_TRACES_SAMPLER: "always_on"
     CRONJOB_SCHEDULE_ENABLED: 'true'
     CRONJOB_SCHEDULE_IBANEXPORT: "0 0 2 * * *"
-    CRONJOB_SCHEDULE_CIEXPORT: "0 0 2 * * *"
     EXTRACTION_IBANS_GETBROKERS_LIMIT: '200'
     EXTRACTION_IBANS_GETIBANS_LIMIT: '1000'
     EXTRACTION_IBANS_GETCIBYBROKER_LIMIT: '1000'
@@ -130,8 +129,8 @@ microservice-chart:
   keyvault:
     name: "pagopa-p-selfcare-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: {}
-  tolerations: []
+  nodeSelector: { }
+  tolerations: [ ]
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -158,5 +157,7 @@ microservice-chart:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
         tag: 1.4.12-2-PASELC-655-be-export-ec-cron-job
         pullPolicy: Always
-      envConfig: {}
-      envSecret: {}
+      envConfig: {
+        CRONJOB_SCHEDULE_CIEXPORT: "* * * * * *"
+      }
+      envSecret: { }
