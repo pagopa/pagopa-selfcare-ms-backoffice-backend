@@ -155,7 +155,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 1.4.12-1-PASELC-655-be-export-ec-cron-job
+        tag: 1.4.12-2-PASELC-655-be-export-ec-cron-job
         pullPolicy: Always
       envConfig: {}
       envSecret: {}
