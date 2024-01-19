@@ -55,7 +55,8 @@ public class CiBrokerExtractionScheduler {
 
     @Transactional
     public void upsertBrokerInstitution(String brokerCode) {
-        brokerInstitutionsRepository.deleteByBrokerCode(brokerCode);
+        brokerInstitutionsRepository.findByBrokerCode(brokerCode)
+                .ifPresent(brokerInstitutionsRepository::delete);
         var institutions = allPages.getCreditorInstitutionsAssociatedToBroker(brokerCode)
                 .stream()
                 .toList();
