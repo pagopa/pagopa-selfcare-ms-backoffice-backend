@@ -45,9 +45,9 @@ microservice-chart:
       nginx.ingress.kubernetes.io/cors-allow-origin: "https://api.platform.pagopa.it"
   serviceAccount:
     create: false
-    annotations: { }
+    annotations: {}
     name: ""
-  podAnnotations: { }
+  podAnnotations: {}
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -129,8 +129,8 @@ microservice-chart:
   keyvault:
     name: "pagopa-p-selfcare-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: { }
-  tolerations: [ ]
+  nodeSelector: {}
+  tolerations: []
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -155,9 +155,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 1.4.12-2-PASELC-655-be-export-ec-cron-job
+        tag: 1.5.0-1-PASELC-655-be-export-ec-cron-job
         pullPolicy: Always
-      envConfig: {
-        CRONJOB_SCHEDULE_CIEXPORT: "* * * * * *"
-      }
-      envSecret: { }
+      envConfig: {CRONJOB_SCHEDULE_CIEXPORT: "* * * * * *"}
+      envSecret: {}
