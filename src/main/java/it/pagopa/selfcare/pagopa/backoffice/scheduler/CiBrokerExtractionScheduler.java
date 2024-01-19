@@ -42,27 +42,37 @@ public class CiBrokerExtractionScheduler {
         // just a start print
         updateMDCForStartExecution();
         log.info("[Export-CI] export starting...");
+        try {
+            Set<String> allBrokers = allPages.getAllBrokers();
+            int index = 0;
+            for (String brokerCode : allBrokers) {
+                log.debug("start broker " + brokerCode + " " + index++ + " / " + allBrokers.size());
+                upsertBrokerInstitution(brokerCode);
+            }
 
-        Set<String> allBrokers = allPages.getAllBrokers();
-        for (String brokerCode : allBrokers) {
-            upsertBrokerInstitution(brokerCode);
+            // delete the old entities
+            brokerInstitutionsRepository.deleteAllByCreatedAtBefore(Instant.now().minus(Duration.ofDays(olderThanDays)));
+            // just a success print
+            updateMDCForEndExecution();
+            log.info("[Export-CI] export complete!");
+        } catch (Exception e) {
+            updateMDCError(e);
+            log.error("[Export-CI] an error occurred during the export creation", e);
+            throw e;
+        } finally {
+            MDC.clear();
         }
 
-        // delete the old entities
-        brokerInstitutionsRepository.deleteAllByCreatedAtBefore(Instant.now().minus(Duration.ofDays(olderThanDays)));
-
-        // just a success print
-        updateMDCForEndExecution();
-        log.info("[Export-CI] export complete!");
-        MDC.clear();
     }
 
     @Transactional
     public void upsertBrokerInstitution(String brokerCode) {
         // delete old entity if it exists
+        log.debug("delete old table");
         brokerInstitutionsRepository.findByBrokerCode(brokerCode)
                 .ifPresent(brokerInstitutionsRepository::delete);
         // retrieve new data
+        log.debug("retrieve new data for broker " + brokerCode);
         var institutions = allPages.getCreditorInstitutionsAssociatedToBroker(brokerCode).stream().toList();
         // build new entity
         var entity = BrokerInstitutionsEntity.builder()
@@ -70,6 +80,7 @@ public class CiBrokerExtractionScheduler {
                 .institutions(institutions)
                 .build();
         // save new entity
+        log.debug("save " + institutions.size() + " items for broker " + brokerCode);
         brokerInstitutionsRepository.save(entity);
     }
 
@@ -77,6 +88,7 @@ public class CiBrokerExtractionScheduler {
         MDC.put(METHOD, "brokerCiExport");
         MDC.put(START_TIME, String.valueOf(Calendar.getInstance().getTimeInMillis()));
         MDC.put(REQUEST_ID, UUID.randomUUID().toString());
+        MDC.put(OPERATION_ID, UUID.randomUUID().toString());
     }
 
 
@@ -84,6 +96,14 @@ public class CiBrokerExtractionScheduler {
         MDC.put(STATUS, "OK");
         MDC.put(CODE, "201");
         MDC.put(RESPONSE_TIME, getExecutionTime());
+    }
+
+    private void updateMDCError(Exception e) {
+        MDC.put(STATUS, "KO");
+        MDC.put(CODE, "500");
+        MDC.put(RESPONSE_TIME, getExecutionTime());
+        MDC.put(FAULT_CODE, "Export CI Broker");
+        MDC.put(FAULT_DETAIL, e.getMessage());
     }
 
 
