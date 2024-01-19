@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface WrapperRepository extends MongoRepository<WrapperEntities, String> {
 
@@ -16,7 +17,7 @@ public interface WrapperRepository extends MongoRepository<WrapperEntities, Stri
 
     List<WrapperEntities<?>> findByStatus(WrapperStatus status);
 
-    Page<WrapperEntities<?>> findByIdAndType(String id, WrapperType wrapperType, Pageable pageable);
+    Optional<WrapperEntities<?>> findByIdAndType(String id, WrapperType wrapperType);
 
     Page<WrapperEntities<?>> findByIdLikeAndType(String idLike, WrapperType wrapperType, Pageable pageable);
 

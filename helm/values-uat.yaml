@@ -43,9 +43,9 @@ microservice-chart:
     servicePort: 8080
   serviceAccount:
     create: false
-    annotations: {}
+    annotations: { }
     name: ""
-  podAnnotations: {}
+  podAnnotations: { }
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -96,6 +96,7 @@ microservice-chart:
     OTEL_TRACES_SAMPLER: "always_on"
     CRONJOB_SCHEDULE_ENABLED: 'true'
     CRONJOB_SCHEDULE_IBANEXPORT: "0 0 2 * * *"
+    CRONJOB_SCHEDULE_CIEXPORT: "0 0 2 * * *"
     EXTRACTION_IBANS_GETBROKERS_LIMIT: '200'
     EXTRACTION_IBANS_GETIBANS_LIMIT: '500'
     EXTRACTION_IBANS_GETCIBYBROKER_LIMIT: '1000'
@@ -129,8 +130,8 @@ microservice-chart:
   keyvault:
     name: "pagopa-u-selfcare-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: {}
-  tolerations: []
+  nodeSelector: { }
+  tolerations: [ ]
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -157,5 +158,5 @@ microservice-chart:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
         tag: 1.4.9-2-java-17
         pullPolicy: Always
-      envConfig: {}
-      envSecret: {}
+      envConfig: { }
+      envSecret: { }
