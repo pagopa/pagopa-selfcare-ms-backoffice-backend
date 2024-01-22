@@ -131,12 +131,11 @@ public class AllPages {
     private final MapInRequiredClass<CreditorInstitutionDetail, BrokerInstitutionEntity> convertCreditorInstitutionDetailToBrokerInstitutionEntity = (CreditorInstitutionDetail ci) -> {
         Instant activationDate = null;
         var wrapper = wrapperRepository.findByIdAndType("", WrapperType.STATION);
-        if(wrapper.isPresent()) {
-            if(wrapper.get().getEntities() != null && wrapper.get().getEntities().get(0) != null) {
-                StationDetails station = ((WrapperEntityOperations<StationDetails>) wrapper.get().getEntities().get(0)).getEntity();
-                activationDate = station.getActivationDate();
-            }
+        if(wrapper.isPresent() && wrapper.get().getEntities() != null && wrapper.get().getEntities().get(0) != null) {
+            StationDetails station = ((WrapperEntityOperations<StationDetails>) wrapper.get().getEntities().get(0)).getEntity();
+            activationDate = station.getActivationDate();
         }
+
         boolean intermediated = getAllBrokers().stream()
                 .toList().contains(ci.getBrokerCode());
 

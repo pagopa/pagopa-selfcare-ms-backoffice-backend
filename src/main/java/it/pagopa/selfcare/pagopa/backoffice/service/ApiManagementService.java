@@ -11,38 +11,32 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutio
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class ApiManagementService {
 
-    protected static final String AN_INSTITUTION_ID_IS_REQUIRED = "An institutionId is required";
+    private final AzureApiManagerClient apimClient;
 
-    private static final String SUBSCRIPTION_APIS_ID = "apis-";
+    private final ExternalApiClient externalApiClient;
 
-    private static final String SUBSCRIPTION_APIS_DISPLAY = "Apis";
-
-    @Autowired
-    private AzureApiManagerClient apimClient;
-
-    @Autowired
-    private ExternalApiClient externalApiClient;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Value("${institution.subscription.test-email}")
     private String testEmail;
+
+    public ApiManagementService(AzureApiManagerClient apimClient, ExternalApiClient externalApiClient, ModelMapper modelMapper) {
+        this.apimClient = apimClient;
+        this.externalApiClient = externalApiClient;
+        this.modelMapper = modelMapper;
+    }
 
     public List<InstitutionDetail> getInstitutions() {
 
@@ -50,7 +44,7 @@ public class ApiManagementService {
         Collection<InstitutionInfo> institutions = externalApiClient.getInstitutions(Utility.extractUserIdFromAuth(authentication));
         return institutions.stream()
                 .map(institution -> modelMapper.map(institution, InstitutionDetail.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Institution getInstitution(String institutionId) {
@@ -66,7 +60,7 @@ public class ApiManagementService {
         var response = externalApiClient.getBrokerDelegation(institutionId, brokerId, "prod-pagopa", "FULL");
         return response.stream()
                 .map(elem -> modelMapper.map(elem, Delegation.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<InstitutionApiKeys> getInstitutionApiKeys(String institutionId) {
@@ -95,31 +89,9 @@ public class ApiManagementService {
         try {
             apimClient.getInstitution(institutionId);
         } catch (IllegalArgumentException e) {
-            // bad code but it's needed to handle the creation of a new User on APIM
+            // bad code, but it's needed to handle the creation of a new User on APIM
             apimClient.createInstitution(institutionId, dto);
         }
-    }
-
-    public List<InstitutionApiKeys> createInstitutionKeys(String institutionId) {
-        Assert.hasText(institutionId, AN_INSTITUTION_ID_IS_REQUIRED);
-
-        InstitutionResponse institution = externalApiClient.getInstitution(institutionId);
-        if(institution != null) {
-
-            try {
-                apimClient.createInstitutionSubscription(institutionId, institution.getDescription(), "/apis", SUBSCRIPTION_APIS_ID.concat(institutionId), SUBSCRIPTION_APIS_DISPLAY);
-            } catch (RuntimeException e) {
-                CreateInstitutionApiKeyDto dto = new CreateInstitutionApiKeyDto();
-                dto.setDescription(institution.getDescription());
-                dto.setTaxCode(institution.getTaxCode());
-                dto.setEmail(!testEmail.isBlank() ? institutionId.concat(testEmail) : institution.getDigitalAddress());
-                apimClient.createInstitution(institutionId, dto);
-                apimClient.createInstitutionSubscription(institutionId, institution.getDescription(), "/apis", SUBSCRIPTION_APIS_ID.concat(institutionId), SUBSCRIPTION_APIS_DISPLAY);
-            }
-        } else {
-            throw new AppException(AppError.APIM_USER_NOT_FOUND, institutionId);
-        }
-        return apimClient.getApiSubscriptions(institutionId);
     }
 
     public void regeneratePrimaryKey(String subscriptionId) {
