@@ -1,0 +1,25 @@
+{
+  "creditor_institutions": [
+    {
+      "business_name": "business_name_1957cfd20a7c",
+      "creditor_institution_code": "creditor_institution_code_25b9bada28ed",
+      "cbill_code": "cbill_code_263f98b65775",
+      "broker_business_name": "broker_business_name_efbedbbc3e7d",
+      "broker_code": "broker_code_aad191da644f",
+      "station_code": "station_code_ff0ff3cc14c1",
+      "station_enabled": false,
+      "station_version": 0,
+      "aux_digit": 0,
+      "segregation_code": "segregation_code_4a239edcf3b9",
+      "application_code": "application_code_6e4766611c40",
+      "broadcast": false
+    }
+  ],
+  "page_info": {
+    "page": 0,
+    "limit": 1,
+    "items_found": 1,
+    "total_pages": 1,
+    "total_items": 1
+  }
+}
