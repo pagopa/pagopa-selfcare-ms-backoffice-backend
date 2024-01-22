@@ -23,34 +23,34 @@ import javax.validation.constraints.Size;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreditorInstitutionView {
 
-  @JsonProperty("creditor_institution_code")
-  @Schema(example = "1234567890100", required = true)
-  @NotBlank
-  @Size(max = 35)
-  private String idDominio;
+    @JsonProperty("creditor_institution_code")
+    @Schema(example = "1234567890100", required = true)
+    @NotBlank
+    @Size(max = 35)
+    private String idDominio;
 
-  @JsonProperty("broker_code")
-  @Schema(example = "223344556677889900", required = true)
-  @NotBlank
-  @Size(max = 35)
-  private String idIntermediarioPa;
+    @JsonProperty("broker_code")
+    @Schema(example = "223344556677889900", required = true)
+    @NotBlank
+    @Size(max = 35)
+    private String idIntermediarioPa;
 
-  @JsonProperty("station_code")
-  @Schema(example = "1234567890100", required = true)
-  @NotBlank
-  @Size(max = 35)
-  private String idStazione;
+    @JsonProperty("station_code")
+    @Schema(example = "1234567890100", required = true)
+    @NotBlank
+    @Size(max = 35)
+    private String idStazione;
 
-  @JsonProperty("aux_digit")
-  private Long auxDigit;
+    @JsonProperty("aux_digit")
+    private Long auxDigit;
 
-  @Min(0)
-  @JsonProperty("application_code")
-  private Long progressivo;
+    @Min(0)
+    @JsonProperty("application_code")
+    private Long progressivo;
 
-  @JsonProperty("segregation_code")
-  private Long segregazione;
+    @JsonProperty("segregation_code")
+    private Long segregazione;
 
-  @JsonProperty("mod4")
-  private Boolean quartoModello;
+    @JsonProperty("mod4")
+    private Boolean quartoModello;
 }

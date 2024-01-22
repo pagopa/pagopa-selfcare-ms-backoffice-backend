@@ -11,4 +11,5 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAsync
 @EnableSchedulerLock(defaultLockAtMostFor = "10m")
 @ConditionalOnProperty(name = "cron.job.schedule.enabled", matchIfMissing = true)
-public class SchedulerConfig {}
+public class SchedulerConfig {
+}

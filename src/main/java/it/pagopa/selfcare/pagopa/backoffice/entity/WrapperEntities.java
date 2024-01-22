@@ -58,13 +58,13 @@ public class WrapperEntities<T> implements Persistable<String> {
         this();
         this.createdAt = Instant.now();
         Object obj = wrapperEntity.getEntity();
-        if(obj instanceof ChannelDetails) {
+        if(obj instanceof ChannelDetails cd) {
 
-            this.id = ((ChannelDetails) obj).getChannelCode();
+            this.id = cd.getChannelCode();
             this.type = WrapperType.CHANNEL;
             this.brokerCode = ((ChannelDetails) obj).getBrokerPspCode();
-        } else if(obj instanceof StationDetails) {
-            this.id = ((StationDetails) obj).getStationCode();
+        } else if(obj instanceof StationDetails sd) {
+            this.id = sd.getStationCode();
             this.type = WrapperType.STATION;
             this.brokerCode = ((StationDetails) obj).getBrokerCode();
         }

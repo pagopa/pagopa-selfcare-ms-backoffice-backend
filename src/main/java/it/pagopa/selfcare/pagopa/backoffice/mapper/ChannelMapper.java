@@ -7,9 +7,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChann
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
