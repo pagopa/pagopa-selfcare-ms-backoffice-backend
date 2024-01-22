@@ -1,11 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.util;
 
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 public class StringUtils {
@@ -35,7 +32,7 @@ public class StringUtils {
         List<String> validCodes = new LinkedList<>();
         IntStream.range(1, 100).forEach(i -> {
             String newCode = entityCode.concat("_").concat(i <= 9 ? "0" + i : "" + i);
-            if (!codes.contains(newCode)) {
+            if(!codes.contains(newCode)) {
                 validCodes.add(newCode);
             }
         });

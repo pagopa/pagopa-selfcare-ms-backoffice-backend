@@ -148,7 +148,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
                         .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
-    
+
     @ExceptionHandler({FeignException.class})
     public ResponseEntity<ProblemJson> handleFeignException(final FeignException ex, final WebRequest request) {
         log.warn("App Exception raised: {}", ex.getMessage());

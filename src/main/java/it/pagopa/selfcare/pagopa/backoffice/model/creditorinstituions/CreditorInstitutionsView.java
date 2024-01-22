@@ -11,7 +11,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-/** CreditorInstitutions */
+/**
+ * CreditorInstitutions
+ */
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -21,15 +23,15 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreditorInstitutionsView {
 
-  @JsonProperty("creditor_institutions")
-  @Schema(required = true)
-  @NotNull
-  @Valid
-  private List<CreditorInstitutionView> creditorInstitutionList;
+    @JsonProperty("creditor_institutions")
+    @Schema(required = true)
+    @NotNull
+    @Valid
+    private List<CreditorInstitutionView> creditorInstitutionList;
 
-  @JsonProperty("page_info")
-  @Schema(required = true)
-  @NotNull
-  @Valid
-  private PageInfo pageInfo;
+    @JsonProperty("page_info")
+    @Schema(required = true)
+    @NotNull
+    @Valid
+    private PageInfo pageInfo;
 }

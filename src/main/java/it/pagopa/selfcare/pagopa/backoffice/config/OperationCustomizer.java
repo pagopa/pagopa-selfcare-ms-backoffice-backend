@@ -10,15 +10,14 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.deNull;
 @Component
 public class OperationCustomizer implements org.springdoc.core.customizers.OperationCustomizer {
 
-    String TABLE_TEMPLATE =
-            "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n" +
-                    "-|-|-|-|-|-|-|-|-|-\n";
-
     @Override
     public Operation customize(Operation operation, HandlerMethod handlerMethod) {
         OpenApiTableMetadata annotation = handlerMethod.getMethodAnnotation(OpenApiTableMetadata.class);
         if(annotation != null) {
-            operation.description(TABLE_TEMPLATE + buildData(annotation) + "\n" + deNull(operation.getDescription()));
+            String tableTemplate = """
+                    Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable
+                    -|-|-|-|-|-|-|-|-|-""";
+            operation.description(tableTemplate + buildData(annotation) + "\n" + deNull(operation.getDescription()));
         }
         return operation;
     }

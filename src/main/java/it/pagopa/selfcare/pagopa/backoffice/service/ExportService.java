@@ -68,7 +68,7 @@ public class ExportService {
     }
 
     public BrokerECExportStatus getBrokerExportStatus(@NotNull String brokerCode) {
-        if (brokerCode == null) {
+        if(brokerCode == null) {
             throw new AppException(AppError.BAD_REQUEST, "No valid broker code is passed.");
         }
         Optional<ProjectCreatedAt> brokerIbansCreatedAt = Optional.empty();
