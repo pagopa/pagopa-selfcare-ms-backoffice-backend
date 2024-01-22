@@ -1,5 +1,9 @@
 package it.pagopa.selfcare.pagopa.backoffice.exception;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
@@ -16,8 +20,11 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * All Exceptions are handled by this class
@@ -25,7 +32,6 @@ import java.util.List;
 @ControllerAdvice
 @Slf4j
 public class ErrorHandler extends ResponseEntityExceptionHandler {
-
 
     /**
      * Handle if the input request is not a valid JSON
@@ -143,6 +149,42 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
                         .detail(ex.getMessage())
                         .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+
+    /**
+     * Handle if a {@link FeignException} is raised
+     *
+     * @param ex      {@link FeignException} exception raised
+     * @param request from frontend
+     * @return a {@link ProblemJson} as response with the cause and with an appropriated HTTP status
+     */
+    @ExceptionHandler({FeignException.class})
+    public ResponseEntity<ProblemJson> handleFeignException(
+            final FeignException ex, final WebRequest request) {
+        if(ex.getCause() != null) {
+            log.warn("FeignException raised: " + ex.getMessage() + "\nCause of the client exception: ", ex.getCause());
+        } else {
+            log.warn("FeignException raised: {}", ex.getMessage());
+            log.debug("Trace error: ", ex);
+        }
+
+        ProblemJson errorResponse;
+        if(ex.responseBody().isPresent()) {
+            try {
+                String body = new String(ex.responseBody().get().array(), StandardCharsets.UTF_8);
+                errorResponse = new ObjectMapper().readValue(body, ProblemJson.class);
+            } catch (JsonProcessingException e) {
+                throw new AppException(AppError.RESPONSE_NOT_READABLE, e);
+            }
+        } else {
+            errorResponse = ProblemJson.builder()
+                    .status(HttpStatus.BAD_GATEWAY.value())
+                    .title("Error during communication")
+                    .detail("Error during communication with other services")
+                    .build();
+        }
+        return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(ex.status()));
     }
 
 
