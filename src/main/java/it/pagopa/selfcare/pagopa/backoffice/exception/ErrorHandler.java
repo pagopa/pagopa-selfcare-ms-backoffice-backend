@@ -2,7 +2,6 @@ package it.pagopa.selfcare.pagopa.backoffice.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +22,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * All Exceptions are handled by this class
@@ -160,14 +157,8 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
      * @return a {@link ProblemJson} as response with the cause and with an appropriated HTTP status
      */
     @ExceptionHandler({FeignException.class})
-    public ResponseEntity<ProblemJson> handleFeignException(
-            final FeignException ex, final WebRequest request) {
-        if(ex.getCause() != null) {
-            log.warn("FeignException raised: " + ex.getMessage() + "\nCause of the client exception: ", ex.getCause());
-        } else {
-            log.warn("FeignException raised: {}", ex.getMessage());
-            log.debug("Trace error: ", ex);
-        }
+    public ResponseEntity<ProblemJson> handleFeignException(final FeignException ex, final WebRequest request) {
+        log.warn("FeignException raised: ", ex);
 
         ProblemJson errorResponse;
         if(ex.responseBody().isPresent()) {
@@ -175,7 +166,11 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
                 String body = new String(ex.responseBody().get().array(), StandardCharsets.UTF_8);
                 errorResponse = new ObjectMapper().readValue(body, ProblemJson.class);
             } catch (JsonProcessingException e) {
-                throw new AppException(AppError.RESPONSE_NOT_READABLE, e);
+                errorResponse = ProblemJson.builder()
+                        .status(HttpStatus.BAD_GATEWAY.value())
+                        .title(AppError.RESPONSE_NOT_READABLE.getTitle())
+                        .detail(AppError.RESPONSE_NOT_READABLE.getDetails())
+                        .build();
             }
         } else {
             errorResponse = ProblemJson.builder()
@@ -201,8 +196,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
         if(ex.getCause() != null) {
             log.warn("App Exception raised: " + ex.getMessage() + "\nCause of the App Exception: ", ex.getCause());
         } else {
-            log.warn("App Exception raised: {}", ex.getMessage());
-            log.debug("Trace error: ", ex);
+            log.warn("App Exception raised: ", ex);
         }
         var errorResponse = ProblemJson.builder()
                 .status(ex.getHttpStatus().value())
