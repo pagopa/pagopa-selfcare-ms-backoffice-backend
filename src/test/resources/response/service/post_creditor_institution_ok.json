@@ -1,0 +1,16 @@
+{
+  "creditorInstitutionCode": "12345678900",
+  "enabled": true,
+  "businessName": "Comune XYZ",
+  "cbillCode": "COXYZ",
+  "address": {
+    "location": "via Roma 1",
+    "city": "XYZ",
+    "zipCode": "00000",
+    "countryCode": "IT",
+    "taxDomicile": "via Roma 1"
+  },
+  "pspPayment": true,
+  "reportingFtp": false,
+  "reportingZip": false
+}
