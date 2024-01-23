@@ -30,7 +30,6 @@ public class CreditorInstitutionDto {
     private String businessName;
 
     @ApiModelProperty(value = "Creditor Institution's CBill interbank code")
-    @JsonProperty("cbill_code")
     @Schema(example = "ABCDE")
     private String cbillCode;
 
