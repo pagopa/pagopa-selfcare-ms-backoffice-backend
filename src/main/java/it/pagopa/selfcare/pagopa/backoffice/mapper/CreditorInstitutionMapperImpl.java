@@ -68,6 +68,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         creditorInstitutionDetails.setCreditorInstitutionCode(dto.getCreditorInstitutionCode());
         creditorInstitutionDetails.setEnabled(dto.getEnabled());
         creditorInstitutionDetails.setBusinessName(StringUtils.truncateString(dto.getBusinessName(), 70));
+        creditorInstitutionDetails.setCbillCode(dto.getCbillCode());
         creditorInstitutionDetails.setAddress(fromDto(dto.getAddress()));
         creditorInstitutionDetails.setPspPayment(dto.getPspPayment());
         creditorInstitutionDetails.setReportingFtp(dto.getReportingFtp());
@@ -101,6 +102,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         creditorInstitutionDetailsResource.setCreditorInstitutionCode(model.getCreditorInstitutionCode());
         creditorInstitutionDetailsResource.setEnabled(model.getEnabled());
         creditorInstitutionDetailsResource.setBusinessName(model.getBusinessName());
+        creditorInstitutionDetailsResource.setCbillCode(model.getCbillCode());
         creditorInstitutionDetailsResource.setAddress(toResource(model.getAddress()));
         creditorInstitutionDetailsResource.setPspPayment(model.getPspPayment());
         creditorInstitutionDetailsResource.setReportingFtp(model.getReportingFtp());
@@ -170,6 +172,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
         creditorInstitutionResource.setBusinessName(model.getBusinessName());
         creditorInstitutionResource.setCreditorInstitutionCode(model.getCreditorInstitutionCode());
+        creditorInstitutionResource.setCbillCode(model.getCbillCode());
         creditorInstitutionResource.setEnabled(model.getEnabled());
         creditorInstitutionResource.setBroadcast(model.getBroadcast());
         creditorInstitutionResource.setMod4(model.getMod4());
