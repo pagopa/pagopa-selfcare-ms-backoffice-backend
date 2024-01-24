@@ -1,0 +1,8 @@
+{
+  "stationCode": "00000000000_01",
+  "auxDigit": "03",
+  "applicationCode": null,
+  "segregationCode": "02",
+  "mod4": "true",
+  "broadcast": false
+}

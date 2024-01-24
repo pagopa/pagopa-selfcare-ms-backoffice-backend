@@ -1,0 +1,33 @@
+{
+  "creditor_institutions": [
+    {
+      "creditorInstitutionCode": "12345678900",
+      "enabled": true,
+      "businessName": "Comune XYZ",
+      "cbillCode": "COXYZ",
+      "applicationCode": "01",
+      "auxDigit": "03",
+      "segregationCode": "02",
+      "mod4": "x",
+      "broadcast": false
+    },
+    {
+      "creditorInstitutionCode": "12345678901",
+      "enabled": true,
+      "businessName": "Comune ABC",
+      "cbillCode": "COABC",
+      "applicationCode": "02",
+      "auxDigit": "03",
+      "segregationCode": "01",
+      "mod4": "x",
+      "broadcast": false
+    }
+  ],
+  "page_info": {
+    "page": 0,
+    "limit": 0,
+    "items_found": 2,
+    "total_pages": 1,
+    "total_items": 2
+  }
+}

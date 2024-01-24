@@ -30,7 +30,6 @@ import java.util.List;
 @Slf4j
 public class ErrorHandler extends ResponseEntityExceptionHandler {
 
-
     /**
      * Handle if the input request is not a valid JSON
      *
@@ -174,6 +173,40 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Handle if a {@link FeignException} is raised
+     *
+     * @param ex      {@link FeignException} exception raised
+     * @param request from frontend
+     * @return a {@link ProblemJson} as response with the cause and with an appropriated HTTP status
+     */
+    @ExceptionHandler({FeignException.class})
+    public ResponseEntity<ProblemJson> handleFeignException(final FeignException ex, final WebRequest request) {
+        log.warn("FeignException raised: ", ex);
+
+        ProblemJson errorResponse;
+        if(ex.responseBody().isPresent()) {
+            try {
+                String body = new String(ex.responseBody().get().array(), StandardCharsets.UTF_8);
+                errorResponse = new ObjectMapper().readValue(body, ProblemJson.class);
+            } catch (JsonProcessingException e) {
+                errorResponse = ProblemJson.builder()
+                        .status(HttpStatus.BAD_GATEWAY.value())
+                        .title(AppError.RESPONSE_NOT_READABLE.getTitle())
+                        .detail(AppError.RESPONSE_NOT_READABLE.getDetails())
+                        .build();
+            }
+        } else {
+            errorResponse = ProblemJson.builder()
+                    .status(HttpStatus.BAD_GATEWAY.value())
+                    .title("Error during communication")
+                    .detail("Error during communication with other services")
+                    .build();
+        }
+        return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(ex.status()));
+    }
+
+
+    /**
      * Handle if a {@link AppException} is raised
      *
      * @param ex      {@link AppException} exception raised
@@ -185,8 +218,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
         if(ex.getCause() != null) {
             log.warn("App Exception raised: " + ex.getMessage() + "\nCause of the App Exception: ", ex.getCause());
         } else {
-            log.warn("App Exception raised: {}", ex.getMessage());
-            log.debug("Trace error: ", ex);
+            log.warn("App Exception raised: ", ex);
         }
         var errorResponse = ProblemJson.builder()
                 .status(ex.getHttpStatus().value())

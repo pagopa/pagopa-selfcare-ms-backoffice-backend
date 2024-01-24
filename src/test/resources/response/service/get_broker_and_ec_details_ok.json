@@ -1,0 +1,20 @@
+{
+  "brokerDetailsResource": {
+    "broker_code": "00000000000",
+    "description": "broker 0",
+    "enabled": true,
+    "extended_fault_bean": true
+  },
+  "creditorInstitutionDetailsResource": {
+    "address": {
+      "location": "via Roma 1",
+      "city": "XYZ",
+      "zipCode": "00000",
+      "countryCode": "IT",
+      "taxDomicile": "via Roma 1"
+    },
+    "pspPayment": true,
+    "reportingFtp": false,
+    "reportingZip": false
+  }
+}

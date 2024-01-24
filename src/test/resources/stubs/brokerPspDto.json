@@ -1,6 +1,0 @@
-{
-  "broker_psp_code": "test",
-  "description": "intermediario test",
-  "enabled": true,
-  "extended_fault_bean": true
-}
