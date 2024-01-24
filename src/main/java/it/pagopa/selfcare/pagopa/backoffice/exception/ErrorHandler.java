@@ -148,29 +148,6 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({FeignException.class})
-    public ResponseEntity<ProblemJson> handleFeignException(final FeignException ex, final WebRequest request) {
-        log.warn("App Exception raised: {}", ex.getMessage());
-        log.debug("Trace error: ", ex);
-
-        ProblemJson problem;
-        if(ex.responseBody().isPresent()) {
-            var body = new String(ex.responseBody().get().array(), StandardCharsets.UTF_8);
-            try {
-                problem = new ObjectMapper().readValue(body, ProblemJson.class);
-            } catch (JsonProcessingException e) {
-                throw new AppException(AppError.RESPONSE_NOT_READABLE, e);
-            }
-        } else {
-            problem = ProblemJson.builder()
-                    .status(HttpStatus.BAD_GATEWAY.value())
-                    .title("No Response Body")
-                    .detail("Error with external dependency")
-                    .build();
-        }
-
-        return new ResponseEntity<>(problem, HttpStatus.valueOf(problem.getStatus()));
-    }
 
     /**
      * Handle if a {@link FeignException} is raised
@@ -183,28 +160,28 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ProblemJson> handleFeignException(final FeignException ex, final WebRequest request) {
         log.warn("FeignException raised: ", ex);
 
-        ProblemJson errorResponse;
+        ProblemJson problem;
         if(ex.responseBody().isPresent()) {
+            var body = new String(ex.responseBody().get().array(), StandardCharsets.UTF_8);
             try {
-                String body = new String(ex.responseBody().get().array(), StandardCharsets.UTF_8);
-                errorResponse = new ObjectMapper().readValue(body, ProblemJson.class);
+                problem = new ObjectMapper().readValue(body, ProblemJson.class);
             } catch (JsonProcessingException e) {
-                errorResponse = ProblemJson.builder()
+                problem = ProblemJson.builder()
                         .status(HttpStatus.BAD_GATEWAY.value())
                         .title(AppError.RESPONSE_NOT_READABLE.getTitle())
                         .detail(AppError.RESPONSE_NOT_READABLE.getDetails())
                         .build();
             }
         } else {
-            errorResponse = ProblemJson.builder()
+            problem = ProblemJson.builder()
                     .status(HttpStatus.BAD_GATEWAY.value())
-                    .title("Error during communication")
-                    .detail("Error during communication with other services")
+                    .title("No Response Body")
+                    .detail("Error with external dependency")
                     .build();
         }
-        return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(ex.status()));
-    }
 
+        return new ResponseEntity<>(problem, HttpStatus.valueOf(problem.getStatus()));
+    }
 
     /**
      * Handle if a {@link AppException} is raised
