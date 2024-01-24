@@ -46,7 +46,7 @@ public class CiBrokerExtractionScheduler {
             Set<String> allBrokers = allPages.getAllBrokers();
             int index = 0;
             for (String brokerCode : allBrokers) {
-                log.debug("start broker " + brokerCode + " " + index++ + " / " + allBrokers.size());
+                log.debug("[Export-CI] analyzing broker " + brokerCode + " (" + index++ + "/" + allBrokers.size() + ")");
                 upsertBrokerInstitution(brokerCode);
             }
 
@@ -62,17 +62,15 @@ public class CiBrokerExtractionScheduler {
         } finally {
             MDC.clear();
         }
-
     }
 
-    @Transactional
     public void upsertBrokerInstitution(String brokerCode) {
         // delete old entity if it exists
-        log.debug("delete old table");
+        log.debug("[Export-CI] delete old table");
         brokerInstitutionsRepository.findByBrokerCode(brokerCode)
                 .ifPresent(brokerInstitutionsRepository::delete);
         // retrieve new data
-        log.debug("retrieve new data for broker " + brokerCode);
+        log.debug("[Export-CI] retrieve new data for the broker " + brokerCode);
         var institutions = allPages.getCreditorInstitutionsAssociatedToBroker(brokerCode).stream().toList();
         // build new entity
         var entity = BrokerInstitutionsEntity.builder()
@@ -80,7 +78,7 @@ public class CiBrokerExtractionScheduler {
                 .institutions(institutions)
                 .build();
         // save new entity
-        log.debug("save " + institutions.size() + " items for broker " + brokerCode);
+        log.debug("[Export-CI] save " + institutions.size() + " items for the broker " + brokerCode);
         brokerInstitutionsRepository.save(entity);
     }
 
