@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "1.5.1-1-PASELC-713-gestione-cbill" #improve
+    tag: "1.5.2" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
