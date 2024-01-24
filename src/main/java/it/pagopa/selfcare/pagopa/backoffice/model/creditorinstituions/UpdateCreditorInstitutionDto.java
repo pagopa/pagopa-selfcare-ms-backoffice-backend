@@ -26,6 +26,10 @@ public class UpdateCreditorInstitutionDto {
     @JsonProperty(required = true)
     @NotBlank
     private String businessName;
+
+    @ApiModelProperty(value = "Creditor Institution's interbank code")
+    private String cbillCode;
+
     @ApiModelProperty(value = "Creditor Institution's address object", required = true)
     @NotNull
     @JsonProperty(required = true)

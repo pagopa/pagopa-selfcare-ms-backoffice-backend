@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "1.5.1"
+    "version": "1.5.1-1-PASELC-713-gestione-cbill"
   },
   "servers": [
     {
@@ -7047,6 +7047,9 @@
           "businessName": {
             "type": "string"
           },
+          "cbillCode": {
+            "type": "string"
+          },
           "creditorInstitutionCode": {
             "maxLength": 30,
             "minLength": 0,
@@ -7090,6 +7093,10 @@
           "businessName": {
             "type": "string"
           },
+          "cbill_code": {
+            "type": "string",
+            "example": "ABCDE"
+          },
           "creditorInstitutionCode": {
             "maxLength": 30,
             "minLength": 0,
@@ -7127,6 +7134,9 @@
             "type": "boolean"
           },
           "businessName": {
+            "type": "string"
+          },
+          "cbillCode": {
             "type": "string"
           },
           "creditorInstitutionCode": {
