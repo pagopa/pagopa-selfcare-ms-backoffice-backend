@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "1.5.2" #improve
+    tag: "1.5.2-1-PASELC-655-be-export-ec-cron-job" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -141,7 +141,7 @@ microservice-chart:
                 values:
                   - user
   canaryDelivery:
-    create: true
+    create: false
     ingress:
       create: true
       canary:
