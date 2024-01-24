@@ -22,6 +22,9 @@ public class CreditorInstitutionResource {
     @NotBlank
     private String businessName;
 
+    @ApiModelProperty(value = "Creditor Institution's CBill interbank code")
+    private String cbillCode;
+
     @ApiModelProperty(value = "ApplicationCode")
     private String applicationCode;
 

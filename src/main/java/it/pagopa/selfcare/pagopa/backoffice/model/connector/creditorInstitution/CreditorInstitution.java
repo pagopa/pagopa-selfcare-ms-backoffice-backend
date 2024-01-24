@@ -1,6 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
@@ -13,6 +15,9 @@ public class CreditorInstitution {
 
     @JsonProperty("business_name")
     private String businessName;
+
+    @JsonProperty("cbill_code")
+    private String cbillCode;
 
     @JsonProperty("application_code")
     private String applicationCode;
