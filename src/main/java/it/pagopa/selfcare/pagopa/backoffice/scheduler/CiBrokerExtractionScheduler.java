@@ -87,6 +87,7 @@ public class CiBrokerExtractionScheduler {
         MDC.put(START_TIME, String.valueOf(Calendar.getInstance().getTimeInMillis()));
         MDC.put(REQUEST_ID, UUID.randomUUID().toString());
         MDC.put(OPERATION_ID, UUID.randomUUID().toString());
+        MDC.put(ARGS, "");
     }
 
 

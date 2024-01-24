@@ -39,21 +39,26 @@ public class LoggingAspect {
     public static final String FAULT_DETAIL = "faultDetail";
     public static final String REQUEST_ID = "requestId";
     public static final String OPERATION_ID = "operationId";
+    public static final String ARGS = "args";
 
     @Autowired
     HttpServletRequest httRequest;
+
     @Autowired
     HttpServletResponse httpResponse;
+
     @Value("${info.application.name}")
     private String name;
+
     @Value("${info.application.version}")
     private String version;
+
     @Value("${info.properties.environment}")
     private String environment;
 
     public static String getExecutionTime() {
         long endTime = System.currentTimeMillis();
-        long startTime = Long.parseLong(MDC.get(START_TIME) == null ? String.valueOf(System.currentTimeMillis()) : MDC.get(START_TIME));
+        long startTime = Long.parseLong(getStartTime());
         long executionTime = endTime - startTime;
         return String.valueOf(executionTime);
     }
@@ -91,6 +96,8 @@ public class LoggingAspect {
             MDC.put(REQUEST_ID, requestId);
         }
         Map<String, String> params = getParams(joinPoint);
+        MDC.put(ARGS, params.toString());
+
         log.info("Invoking API operation {} - args: {}", joinPoint.getSignature().getName(), params);
 
         Object result = joinPoint.proceed();
@@ -117,6 +124,15 @@ public class LoggingAspect {
         MDC.clear();
     }
 
+    @Around(value = "repository() || service()")
+    public Object logTrace(ProceedingJoinPoint joinPoint) throws Throwable {
+        Map<String, String> params = getParams(joinPoint);
+        log.debug("Call method {} - args: {}", joinPoint.getSignature().toShortString(), params);
+        Object result = joinPoint.proceed();
+        log.debug("Return method {} - result: {}", joinPoint.getSignature().toShortString(), result);
+        return result;
+    }
+
     private static String getDetail(ResponseEntity<ProblemJson> result) {
         if(result != null && result.getBody() != null && result.getBody().getDetail() != null) {
             return result.getBody().getDetail();
@@ -129,13 +145,8 @@ public class LoggingAspect {
         } else return AppError.UNKNOWN.getTitle();
     }
 
-    @Around(value = "repository() || service()")
-    public Object logTrace(ProceedingJoinPoint joinPoint) throws Throwable {
-        Map<String, String> params = getParams(joinPoint);
-        log.debug("Call method {} - args: {}", joinPoint.getSignature().toShortString(), params);
-        Object result = joinPoint.proceed();
-        log.debug("Return method {} - result: {}", joinPoint.getSignature().toShortString(), result);
-        return result;
+    private static String getStartTime() {
+        return MDC.get(START_TIME) == null ? String.valueOf(System.currentTimeMillis()) : MDC.get(START_TIME);
     }
 
     private static Map<String, String> getParams(ProceedingJoinPoint joinPoint) {
