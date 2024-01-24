@@ -1,0 +1,21 @@
+{
+  "creditor_institution_code": "12345678900",
+  "enabled": true,
+  "business_name": "Comune XYZ",
+  "cbill_code": "COXYZ",
+  "application_code": "01",
+  "aux_digit": "03",
+  "segregation_code": "02",
+  "mod4": "x",
+  "broadcast": false,
+  "address": {
+    "location": "via Roma 1",
+    "city": "XYZ",
+    "zip_code": "00000",
+    "country_code": "IT",
+    "tax_domicile": "via Roma 1"
+  },
+  "psp_payment": true,
+  "reporting_ftp": false,
+  "reporting_zip": false
+}
