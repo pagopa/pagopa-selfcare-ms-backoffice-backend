@@ -56,12 +56,6 @@ public class LoggingAspect {
     @Value("${info.properties.environment}")
     private String environment;
 
-    public static String getExecutionTime() {
-        long endTime = System.currentTimeMillis();
-        long startTime = Long.parseLong(getStartTime());
-        long executionTime = endTime - startTime;
-        return String.valueOf(executionTime);
-    }
 
     @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
     public void restController() {
@@ -145,8 +139,14 @@ public class LoggingAspect {
         } else return AppError.UNKNOWN.getTitle();
     }
 
-    private static String getStartTime() {
-        return MDC.get(START_TIME) == null ? String.valueOf(System.currentTimeMillis()) : MDC.get(START_TIME);
+    public static String getExecutionTime() {
+        String startTime = MDC.get(START_TIME);
+        if(startTime != null) {
+            long endTime = System.currentTimeMillis();
+            long executionTime = endTime - Long.parseLong(startTime);
+            return String.valueOf(executionTime);
+        }
+        return "-";
     }
 
     private static Map<String, String> getParams(ProceedingJoinPoint joinPoint) {

@@ -58,10 +58,33 @@ public class AllPages {
     }
 
     @Cacheable(value = "getCreditorInstitutionsAssociatedToBroker")
-    public Set<BrokerInstitutionEntity> getCreditorInstitutionsAssociatedToBroker(String brokerCode) {
-        return executeParallelClientCalls(getCreditorInstitutionsAssociatedToBroker, getCreditorInstitutionsAssociatedToBrokerPages,
-                BrokerCreditorInstitutionDetails::getCreditorInstitutions, convertCreditorInstitutionDetailToBrokerInstitutionEntity,
-                getCIByBrokerPageLimit, brokerCode);
+    public Set<BrokerInstitutionEntity> getCreditorInstitutionsAssociatedToBroker(String brokerCode, boolean intermediated) {
+        Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
+        int numberOfPages = getCreditorInstitutionsAssociatedToBrokerPages.search(1, 0, brokerCode);
+
+        List<CompletableFuture<Set<BrokerInstitutionEntity>>> futures = new LinkedList<>();
+
+        // create parallel calls
+        CompletableFuture<Set<BrokerInstitutionEntity>> future = CompletableFuture.supplyAsync(() -> {
+            if(mdcContextMap != null) {
+                MDC.setContextMap(mdcContextMap);
+            }
+            return IntStream.rangeClosed(0, numberOfPages)
+                    .parallel()
+                    .mapToObj(page -> getCreditorInstitutionsAssociatedToBroker.search(getCIByBrokerPageLimit, page, brokerCode))
+                    .flatMap(response -> response.getCreditorInstitutions().stream())
+                    .map(elem -> convertCreditorInstitutionDetailToBrokerInstitutionEntity(elem, intermediated))
+                    .collect(Collectors.toSet());
+        });
+        futures.add(future);
+
+        // join parallel calls
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(e -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toSet()))
+                .join();
     }
 
 
@@ -128,16 +151,13 @@ public class AllPages {
         return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getBrokersPageLimit);
     };
 
-    private final MapInRequiredClass<CreditorInstitutionDetail, BrokerInstitutionEntity> convertCreditorInstitutionDetailToBrokerInstitutionEntity = (CreditorInstitutionDetail ci) -> {
+    private BrokerInstitutionEntity convertCreditorInstitutionDetailToBrokerInstitutionEntity(CreditorInstitutionDetail ci, Boolean intermediated) {
         Instant activationDate = null;
-        var wrapper = wrapperRepository.findByIdAndType("", WrapperType.STATION);
+        var wrapper = wrapperRepository.findByIdAndType(ci.getStationCode(), WrapperType.STATION);
         if(wrapper.isPresent() && wrapper.get().getEntities() != null && wrapper.get().getEntities().get(0) != null) {
             StationDetails station = ((WrapperEntityOperations<StationDetails>) wrapper.get().getEntities().get(0)).getEntity();
             activationDate = station.getActivationDate();
         }
-
-        boolean intermediated = getAllBrokers().stream()
-                .toList().contains(ci.getBrokerCode());
 
         return BrokerInstitutionEntity.builder()
                 .applicationCode(ci.getApplicationCode())
@@ -160,7 +180,7 @@ public class AllPages {
                 .version(String.valueOf(ci.getStationVersion()))
                 .broadcast(ci.getBroadcast())
                 .build();
-    };
+    }
 
     private static int toInt(CreditorInstitutionDetail ci) {
         return ci.getAuxDigit() != null ? Math.toIntExact(ci.getAuxDigit()) : 0;
