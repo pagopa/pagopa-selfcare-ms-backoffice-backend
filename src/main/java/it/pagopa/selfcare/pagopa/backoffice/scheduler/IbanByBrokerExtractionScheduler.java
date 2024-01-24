@@ -230,6 +230,7 @@ public class IbanByBrokerExtractionScheduler {
         MDC.put(START_TIME, String.valueOf(startTime));
         MDC.put(REQUEST_ID, UUID.randomUUID().toString());
         MDC.put(OPERATION_ID, UUID.randomUUID().toString());
+        MDC.put(ARGS, "");
     }
 
     private void updateMDCForEndExecution(long timelapse) {
