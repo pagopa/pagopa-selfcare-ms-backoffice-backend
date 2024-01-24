@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.CodeSignature;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +19,11 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+
+import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.deNull;
 
 @Aspect
 @Component
@@ -48,13 +53,9 @@ public class LoggingAspect {
 
     public static String getExecutionTime() {
         long endTime = System.currentTimeMillis();
-        long startTime = Long.parseLong(deNull(MDC.get(START_TIME)));
+        long startTime = Long.parseLong(MDC.get(START_TIME) == null ? String.valueOf(System.currentTimeMillis()) : MDC.get(START_TIME));
         long executionTime = endTime - startTime;
         return String.valueOf(executionTime);
-    }
-
-    private static String deNull(String s) {
-        return s == null ? String.valueOf(System.currentTimeMillis()) : s;
     }
 
     @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
@@ -89,7 +90,8 @@ public class LoggingAspect {
             var requestId = UUID.randomUUID().toString();
             MDC.put(REQUEST_ID, requestId);
         }
-        log.info("Invoking API operation {} - args: {}", joinPoint.getSignature().getName(), joinPoint.getArgs());
+        Map<String, String> params = getParams(joinPoint);
+        log.info("Invoking API operation {} - args: {}", joinPoint.getSignature().getName(), params);
 
         Object result = joinPoint.proceed();
 
@@ -129,9 +131,20 @@ public class LoggingAspect {
 
     @Around(value = "repository() || service()")
     public Object logTrace(ProceedingJoinPoint joinPoint) throws Throwable {
-        log.debug("Call method {} - args: {}", joinPoint.getSignature().toShortString(), joinPoint.getArgs());
+        Map<String, String> params = getParams(joinPoint);
+        log.debug("Call method {} - args: {}", joinPoint.getSignature().toShortString(), params);
         Object result = joinPoint.proceed();
         log.debug("Return method {} - result: {}", joinPoint.getSignature().toShortString(), result);
         return result;
+    }
+
+    private static Map<String, String> getParams(ProceedingJoinPoint joinPoint) {
+        CodeSignature codeSignature = (CodeSignature) joinPoint.getSignature();
+        Map<String, String> params = new HashMap<>();
+        int i = 0;
+        for (var paramName : codeSignature.getParameterNames()) {
+            params.put(paramName, deNull(joinPoint.getArgs()[i++]));
+        }
+        return params;
     }
 }
