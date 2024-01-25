@@ -57,7 +57,7 @@ class CiBrokerExtractionSchedulerTest {
                 .build()));
         doNothing().when(brokerInstitutionsRepository).delete(any());
         when(allPages.getAllBrokers()).thenReturn(Set.of(BROKER_CODE));
-        when(allPages.getCreditorInstitutionsAssociatedToBroker(eq(BROKER_CODE), anyBoolean())).thenReturn(Set.of(BrokerInstitutionEntity.builder()
+        when(allPages.getCreditorInstitutionsAssociatedToBroker(eq(BROKER_CODE))).thenReturn(Set.of(BrokerInstitutionEntity.builder()
                 .taxCode("99999")
                 .stationId("9999_01")
                 .version("2")
