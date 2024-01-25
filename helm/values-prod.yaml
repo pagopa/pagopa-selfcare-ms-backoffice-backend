@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "1.5.2-1-PASELC-655-be-export-ec-cron-job" #improve
+    tag: "1.5.2-3-PASELC-655-be-export-ec-cron-job" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -45,9 +45,9 @@ microservice-chart:
       nginx.ingress.kubernetes.io/cors-allow-origin: "https://api.platform.pagopa.it"
   serviceAccount:
     create: false
-    annotations: { }
+    annotations: {}
     name: ""
-  podAnnotations: { }
+  podAnnotations: {}
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -130,8 +130,8 @@ microservice-chart:
   keyvault:
     name: "pagopa-p-selfcare-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: { }
-  tolerations: [ ]
+  nodeSelector: {}
+  tolerations: []
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -142,7 +142,7 @@ microservice-chart:
                 values:
                   - user
   canaryDelivery:
-    create: true
+    create: false
     ingress:
       create: true
       canary:
@@ -158,5 +158,5 @@ microservice-chart:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
         tag: 1.5.2-2-PASELC-655-be-export-ec-cron-job
         pullPolicy: Always
-      envConfig: { }
-      envSecret: { }
+      envConfig: {}
+      envSecret: {}
