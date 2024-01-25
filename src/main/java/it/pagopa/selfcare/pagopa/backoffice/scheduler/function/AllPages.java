@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.scheduler.function;
 
 
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionEntity;
@@ -58,7 +59,7 @@ public class AllPages {
     }
 
     @Cacheable(value = "getCreditorInstitutionsAssociatedToBroker")
-    public Set<BrokerInstitutionEntity> getCreditorInstitutionsAssociatedToBroker(String brokerCode, boolean intermediated) {
+    public Set<BrokerInstitutionEntity> getCreditorInstitutionsAssociatedToBroker(String brokerCode) {
         Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
         int numberOfPages = getCreditorInstitutionsAssociatedToBrokerPages.search(1, 0, brokerCode);
 
@@ -73,7 +74,7 @@ public class AllPages {
                     .parallel()
                     .mapToObj(page -> getCreditorInstitutionsAssociatedToBroker.search(getCIByBrokerPageLimit, page, brokerCode))
                     .flatMap(response -> response.getCreditorInstitutions().stream())
-                    .map(elem -> convertCreditorInstitutionDetailToBrokerInstitutionEntity(elem, intermediated))
+                    .map(elem -> convertCreditorInstitutionDetailToBrokerInstitutionEntity(elem))
                     .collect(Collectors.toSet());
         });
         futures.add(future);
@@ -151,7 +152,7 @@ public class AllPages {
         return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getBrokersPageLimit);
     };
 
-    private BrokerInstitutionEntity convertCreditorInstitutionDetailToBrokerInstitutionEntity(CreditorInstitutionDetail ci, Boolean intermediated) {
+    private BrokerInstitutionEntity convertCreditorInstitutionDetailToBrokerInstitutionEntity(CreditorInstitutionDetail ci) {
         Instant activationDate = null;
         var wrapper = wrapperRepository.findByIdAndType(ci.getStationCode(), WrapperType.STATION);
         if(wrapper.isPresent() && wrapper.get().getEntities() != null && wrapper.get().getEntities().get(0) != null) {
@@ -166,7 +167,7 @@ public class AllPages {
                 .companyName(ci.getBusinessName())
                 .administrativeCode(null)
                 .taxCode(ci.getCreditorInstitutionCode())
-                .intermediated(intermediated) // TODO always true
+                .intermediated(isIntermediated(ci))
                 .brokerCompanyName(ci.getBrokerBusinessName())
                 .brokerTaxCode(ci.getBrokerCode())
                 .model(3)
@@ -181,6 +182,17 @@ public class AllPages {
                 .broadcast(ci.getBroadcast())
                 .pspPayment(ci.getPspPayment())
                 .build();
+    }
+
+    private boolean isIntermediated(CreditorInstitutionDetail ci) {
+        boolean intermediated;
+        try {
+            apiConfigClient.getBroker(ci.getStationCode());
+            intermediated = true;
+        } catch (FeignException.NotFound e) {
+            intermediated = true;
+        }
+        return intermediated;
     }
 
     private static int toInt(CreditorInstitutionDetail ci) {

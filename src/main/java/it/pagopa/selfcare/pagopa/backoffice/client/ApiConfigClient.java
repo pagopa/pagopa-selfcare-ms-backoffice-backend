@@ -17,6 +17,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -159,6 +160,10 @@ public interface ApiConfigClient {
     @PutMapping(value = "/creditorinstitutions/{creditorinstitutioncode}", produces = MediaType.APPLICATION_JSON_VALUE)
     CreditorInstitutionDetails updateCreditorInstitutionDetails(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
                                                                 @RequestBody CreditorInstitutionDetails request);
+
+    @GetMapping(value = "/brokers/{brokercode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Cacheable(value = "getBroker")
+    BrokerDetails getBroker(@RequestParam(required = false, name = "brokercode") String brokerCode);
 
     @PostMapping(value = "/brokers", produces = MediaType.APPLICATION_JSON_VALUE)
     BrokerDetails createBroker(@RequestBody BrokerDetails request);
