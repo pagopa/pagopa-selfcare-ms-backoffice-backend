@@ -166,7 +166,7 @@ public class AllPages {
                 .companyName(ci.getBusinessName())
                 .administrativeCode(null)
                 .taxCode(ci.getCreditorInstitutionCode())
-                .intermediated(intermediated)
+                .intermediated(intermediated) // TODO always true
                 .brokerCompanyName(ci.getBrokerBusinessName())
                 .brokerTaxCode(ci.getBrokerCode())
                 .model(3)
@@ -179,6 +179,7 @@ public class AllPages {
                 .activationDate(activationDate)
                 .version(String.valueOf(ci.getStationVersion()))
                 .broadcast(ci.getBroadcast())
+                .pspPayment(ci.getPspPayment())
                 .build();
     }
 

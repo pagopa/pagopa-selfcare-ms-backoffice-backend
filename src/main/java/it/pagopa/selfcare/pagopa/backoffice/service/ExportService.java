@@ -116,7 +116,7 @@ public class ExportService {
                         deNull(elem.getCompanyName()),
                         deNull(elem.getAdministrativeCode()),
                         deNull(elem.getTaxCode()),
-                        Boolean.TRUE.equals(deNull(elem.getIntermediated())) ? "YES" : "NO",
+                        Boolean.TRUE.equals(deNull(elem.getIntermediated())) ? "true" : "false",
                         deNull(elem.getBrokerCompanyName()),
                         deNull(elem.getBrokerTaxCode()),
                         deNull(elem.getModel()),
@@ -128,7 +128,7 @@ public class ExportService {
                         deNull(elem.getStationState()),
                         deNull(elem.getActivationDate()),
                         deNull(elem.getVersion()),
-                        Boolean.TRUE.equals(deNull(elem.getBroadcast())) ? "ACTIVE" : "INACTIVE"
+                        Boolean.TRUE.equals(deNull(elem.getBroadcast())) ? "true" : "false"
                 ))
                 .toList();
     }
