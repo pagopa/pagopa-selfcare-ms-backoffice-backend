@@ -46,10 +46,8 @@ public class CiBrokerExtractionScheduler {
             Set<String> allBrokers = allPages.getAllBrokers();
             int index = 0;
             for (String brokerCode : allBrokers) {
-                boolean intermediated = allBrokers.stream()
-                        .toList().contains(brokerCode);
                 log.debug("[Export-CI] analyzing broker " + brokerCode + " (" + index++ + "/" + allBrokers.size() + ")");
-                upsertBrokerInstitution(brokerCode, intermediated);
+                upsertBrokerInstitution(brokerCode);
             }
 
             // delete the old entities
@@ -66,14 +64,14 @@ public class CiBrokerExtractionScheduler {
         }
     }
 
-    public void upsertBrokerInstitution(String brokerCode, boolean intermediated) {
+    public void upsertBrokerInstitution(String brokerCode) {
         // delete old entity if it exists
         log.debug("[Export-CI] delete old table");
         brokerInstitutionsRepository.findByBrokerCode(brokerCode)
                 .ifPresent(brokerInstitutionsRepository::delete);
         // retrieve new data
         log.debug("[Export-CI] retrieve new data for the broker " + brokerCode);
-        var institutions = allPages.getCreditorInstitutionsAssociatedToBroker(brokerCode, intermediated).stream().toList();
+        var institutions = allPages.getCreditorInstitutionsAssociatedToBroker(brokerCode).stream().toList();
         // build new entity
         var entity = BrokerInstitutionsEntity.builder()
                 .brokerCode(brokerCode)
