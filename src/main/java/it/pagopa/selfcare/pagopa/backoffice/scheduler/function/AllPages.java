@@ -74,7 +74,7 @@ public class AllPages {
                     .parallel()
                     .mapToObj(page -> getCreditorInstitutionsAssociatedToBroker.search(getCIByBrokerPageLimit, page, brokerCode))
                     .flatMap(response -> response.getCreditorInstitutions().stream())
-                    .map(elem -> convertCreditorInstitutionDetailToBrokerInstitutionEntity(elem))
+                    .map(this::convertCreditorInstitutionDetailToBrokerInstitutionEntity)
                     .collect(Collectors.toSet());
         });
         futures.add(future);
