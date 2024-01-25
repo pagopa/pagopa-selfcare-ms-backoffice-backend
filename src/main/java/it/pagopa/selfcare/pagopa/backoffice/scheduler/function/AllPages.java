@@ -1,7 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.scheduler.function;
 
 
-import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionEntity;
@@ -167,7 +166,7 @@ public class AllPages {
                 .companyName(ci.getBusinessName())
                 .administrativeCode(null)
                 .taxCode(ci.getCreditorInstitutionCode())
-                .intermediated(isIntermediated(ci))
+                .intermediated(!ci.getBrokerCode().equals(ci.getCreditorInstitutionCode()))
                 .brokerCompanyName(ci.getBrokerBusinessName())
                 .brokerTaxCode(ci.getBrokerCode())
                 .model(3)
@@ -182,17 +181,6 @@ public class AllPages {
                 .broadcast(ci.getBroadcast())
                 .pspPayment(ci.getPspPayment())
                 .build();
-    }
-
-    private boolean isIntermediated(CreditorInstitutionDetail ci) {
-        boolean intermediated;
-        try {
-            apiConfigClient.getBroker(ci.getStationCode());
-            intermediated = true;
-        } catch (FeignException.NotFound e) {
-            intermediated = true;
-        }
-        return intermediated;
     }
 
     private static int toInt(CreditorInstitutionDetail ci) {
