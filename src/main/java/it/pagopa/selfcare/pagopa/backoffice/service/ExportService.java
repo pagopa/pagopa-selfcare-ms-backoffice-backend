@@ -63,7 +63,7 @@ public class ExportService {
 
         List<String> headers = Arrays.asList("companyName", "administrativeCode", "taxCode", "intermediated", "brokerCompanyName",
                 "brokerTaxCode", "model", "auxDigit", "segregationCode", "applicationCode", "cbillCode", "stationId", "stationState",
-                "activationDate", "version", "broadcast");
+                "activationDate", "version", "broadcast", "pagamentoPSP");
         return Utility.createCsv(headers, mapInstitutionToCsv(ibans.getInstitutions()));
     }
 
@@ -128,7 +128,8 @@ public class ExportService {
                         deNull(elem.getStationState()),
                         deNull(elem.getActivationDate()),
                         deNull(elem.getVersion()),
-                        Boolean.TRUE.equals(deNull(elem.getBroadcast())) ? "true" : "false"
+                        Boolean.TRUE.equals(deNull(elem.getBroadcast())) ? "true" : "false",
+                        Boolean.TRUE.equals(deNull(elem.getPspPayment())) ? "true" : "false"
                 ))
                 .toList();
     }
