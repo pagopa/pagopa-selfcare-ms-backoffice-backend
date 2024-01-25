@@ -75,4 +75,9 @@ public class CreditorInstitutionDetail {
     @JsonProperty("broadcast")
     @Schema(description = "The flag that define if the station is made for broadcast operations", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Boolean broadcast;
+
+
+    @JsonProperty("psp_payment")
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, defaultValue = "true")
+    private Boolean pspPayment;
 }
