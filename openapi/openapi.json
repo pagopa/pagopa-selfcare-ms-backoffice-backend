@@ -23,7 +23,7 @@
   "paths" : {
     "/brokers" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId" : "getBrokersEC",
         "parameters" : [ {
           "in" : "query",
@@ -110,7 +110,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
         "operationId" : "createBroker_1",
         "requestBody" : {
           "content" : {
@@ -159,7 +159,7 @@
         }
       } ],
       "put" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
         "operationId" : "updateBroker",
         "parameters" : [ {
           "description" : "Broker code",
@@ -209,7 +209,7 @@
     },
     "/brokers/{broker-code}/creditor-institutions/export" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | Y\nThe CSV file contains the following columns: `companyName, amministrativeCode, taxCode, intermediated, brokerCompanyName, brokerTaxCode, model, auxDigit, segregationCode, applicationCode, cbillCode, stationId, stationState, activationDate, version, broadcast`",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | Y\nThe CSV file contains the following columns: `companyName, amministrativeCode, taxCode, intermediated, brokerCompanyName, brokerTaxCode, model, auxDigit, segregationCode, applicationCode, cbillCode, stationId, stationState, activationDate, version, broadcast`",
         "operationId" : "exportCreditorInstitutionToCsv",
         "parameters" : [ {
           "description" : "SelfCare Broker Code. it's a tax code",
@@ -264,7 +264,7 @@
     },
     "/brokers/{broker-code}/export-status" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId" : "getBrokerExportStatus",
         "parameters" : [ {
           "description" : "SelfCare Broker Code. it's a tax code",
@@ -312,7 +312,7 @@
     },
     "/brokers/{broker-code}/ibans/export" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | Y\nThe CSV file contains the following columns: `denominazioneEnte, codiceFiscale, iban, stato, dataAttivazioneIban, descrizione, etichetta`",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | Y\nThe CSV file contains the following columns: `denominazioneEnte, codiceFiscale, iban, stato, dataAttivazioneIban, descrizione, etichetta`",
         "operationId" : "exportIbansToCsv",
         "parameters" : [ {
           "description" : "SelfCare Broker Code. it's a tax code",
@@ -367,7 +367,7 @@
     },
     "/brokers/{broker-code}/stations" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId" : "getStationsDetailsListByBroker",
         "parameters" : [ {
           "in" : "path",
@@ -439,7 +439,7 @@
     },
     "/bundles/payment-service-providers/{psp-code}" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getBundlesByPSP",
         "parameters" : [ {
           "description" : "Number of elements on one page. Default = 50",
@@ -525,7 +525,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "createBundle",
         "parameters" : [ {
           "description" : "Fiscal code of the payment service provider",
@@ -575,7 +575,7 @@
     },
     "/bundles/payment-types" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getBundlesPaymentTypes",
         "parameters" : [ {
           "description" : "Number of elements on one page. Default = 50",
@@ -635,7 +635,7 @@
     },
     "/bundles/touchpoints" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getTouchpoints",
         "parameters" : [ {
           "description" : "Number of elements on one page. Default = 10",
@@ -695,7 +695,7 @@
     },
     "/channels" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId" : "getChannels",
         "parameters" : [ {
           "description" : "Number of elements on one page. Default = 50",
@@ -769,7 +769,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
         "operationId" : "createChannel",
         "requestBody" : {
           "content" : {
@@ -810,7 +810,7 @@
     },
     "/channels/csv" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId" : "getChannelsCSV",
         "responses" : {
           "200" : {
@@ -856,7 +856,7 @@
     },
     "/channels/merged" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getAllChannelsMerged",
         "parameters" : [ {
           "in" : "query",
@@ -938,7 +938,7 @@
     },
     "/channels/merged/{channel-code}" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getChannelDetail",
         "parameters" : [ {
           "description" : "Code of the payment channel",
@@ -994,7 +994,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "createWrapperChannelDetails",
         "requestBody" : {
           "content" : {
@@ -1033,7 +1033,7 @@
         "tags" : [ "Channels" ]
       },
       "put" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "updateWrapperChannelDetails",
         "requestBody" : {
           "content" : {
@@ -1082,7 +1082,7 @@
         }
       } ],
       "put" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "updateWrapperChannelDetailsByOpt",
         "requestBody" : {
           "content" : {
@@ -1123,7 +1123,7 @@
     },
     "/channels/wrapper/{channel-code}" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getGenericWrapperEntities",
         "parameters" : [ {
           "description" : "Channel code",
@@ -1171,7 +1171,7 @@
     },
     "/channels/{channel-code}" : {
       "delete" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "deleteChannel",
         "parameters" : [ {
           "description" : "Code of the payment channel",
@@ -1202,7 +1202,7 @@
         "tags" : [ "Channels" ]
       },
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId" : "getChannelDetails",
         "parameters" : [ {
           "description" : "Code of the payment channel",
@@ -1248,7 +1248,7 @@
         }
       } ],
       "put" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
         "operationId" : "updateChannel",
         "parameters" : [ {
           "description" : "Channel's unique identifier",
@@ -1298,7 +1298,7 @@
     },
     "/channels/{channel-code}/payment-service-providers" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId" : "getChannelPaymentServiceProviders",
         "parameters" : [ {
           "description" : "Code of the payment channel",
@@ -1372,7 +1372,7 @@
     },
     "/channels/{channel-code}/payment-types" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getChannelPaymentTypes",
         "parameters" : [ {
           "description" : "Channel's unique identifier",
@@ -1418,7 +1418,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "createChannelPaymentType",
         "parameters" : [ {
           "description" : "Channel's unique identifier",
@@ -1468,7 +1468,7 @@
     },
     "/channels/{channel-code}/payment-types/{payment-type-code}" : {
       "delete" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "deleteChannelPaymentType",
         "parameters" : [ {
           "description" : "Channel's unique identifier",
@@ -1517,7 +1517,7 @@
     },
     "/configurations/payment-types" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getPaymentTypes",
         "responses" : {
           "200" : {
@@ -1556,7 +1556,7 @@
     },
     "/configurations/wfesp-plugins" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getWfespPlugins",
         "responses" : {
           "200" : {
@@ -1595,7 +1595,7 @@
     },
     "/configurations/wrapper/{wrapper-type}/status/{wrapper-status}" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getWrapperByTypeAndStatus",
         "parameters" : [ {
           "description" : "Type of Wrapper like CHANNEL or STATION",
@@ -1696,7 +1696,7 @@
     },
     "/creditor-institutions" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getCreditorInstitutions",
         "parameters" : [ {
           "description" : "Number of elements on one page. Default = 50",
@@ -1846,7 +1846,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "createCreditorInstitution",
         "requestBody" : {
           "content" : {
@@ -1967,7 +1967,7 @@
     },
     "/creditor-institutions/{ci-code}" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getCreditorInstitutionDetails",
         "parameters" : [ {
           "description" : "Creditor institution code",
@@ -2100,7 +2100,7 @@
         }
       } ],
       "put" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "updateCreditorInstitutionDetails",
         "parameters" : [ {
           "description" : "Creditor institution code",
@@ -2237,7 +2237,7 @@
     },
     "/creditor-institutions/{ci-code}/full" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getBrokerAndEcDetails",
         "parameters" : [ {
           "description" : "Broker code of an EC",
@@ -2370,7 +2370,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "createCreditorInstitutionAndBroker",
         "parameters" : [ {
           "description" : "Creditor institution code",
@@ -2500,7 +2500,7 @@
     },
     "/creditor-institutions/{ci-code}/ibans" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getCreditorInstitutionIbans",
         "parameters" : [ {
           "description" : "Creditor institution code",
@@ -2554,7 +2554,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "createCreditorInstitutionIbans",
         "parameters" : [ {
           "description" : "Creditor institution code",
@@ -2604,7 +2604,7 @@
     },
     "/creditor-institutions/{ci-code}/ibans/{iban-value}" : {
       "delete" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "deleteCreditorInstitutionIbans",
         "parameters" : [ {
           "description" : "Creditor institution code",
@@ -2651,7 +2651,7 @@
         }
       } ],
       "put" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "updateCreditorInstitutionIbans",
         "parameters" : [ {
           "description" : "Creditor institution code",
@@ -2709,7 +2709,7 @@
     },
     "/creditor-institutions/{ci-code}/segregation-codes" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getCreditorInstitutionSegregationcodes",
         "parameters" : [ {
           "description" : "Creditor institution code",
@@ -2852,7 +2852,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "associateStationToCreditorInstitution",
         "parameters" : [ {
           "description" : "Creditor institution code",
@@ -3007,7 +3007,7 @@
     },
     "/creditor-institutions/{ci-code}/station/{station-code}" : {
       "delete" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "deleteCreditorInstitutionStationRelationship",
         "parameters" : [ {
           "description" : "Creditor institution code",
@@ -3199,7 +3199,7 @@
     },
     "/institutions" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getInstitutions",
         "responses" : {
           "200" : {
@@ -3241,7 +3241,7 @@
     },
     "/institutions/delegations" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getBrokerDelegation",
         "parameters" : [ {
           "description" : "Institution's unique internal identifier",
@@ -3300,7 +3300,7 @@
     },
     "/institutions/{institution-id}" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getInstitution",
         "parameters" : [ {
           "description" : "Institution's unique internal identifier",
@@ -3348,7 +3348,7 @@
     },
     "/institutions/{institution-id}/api-keys" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getInstitutionApiKeys",
         "parameters" : [ {
           "description" : "Institution's unique internal identifier",
@@ -3397,7 +3397,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "createInstitutionApiKeys",
         "parameters" : [ {
           "description" : "Institution's unique internal identifier",
@@ -3449,7 +3449,7 @@
     },
     "/institutions/{institution-id}/products" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getInstitutionProducts",
         "parameters" : [ {
           "description" : "Institution's unique internal identifier",
@@ -3508,7 +3508,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "regeneratePrimaryKey",
         "parameters" : [ {
           "description" : "Institution's subscription id",
@@ -3549,7 +3549,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "regenerateSecondaryKey",
         "parameters" : [ {
           "description" : "Institution's subscription id",
@@ -3582,7 +3582,7 @@
     },
     "/operative-tables" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getOperativeTables",
         "responses" : {
           "200" : {
@@ -3619,7 +3619,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "insertOperativeTable",
         "requestBody" : {
           "content" : {
@@ -3660,7 +3660,7 @@
     },
     "/operative-tables/{ci-code}" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getOperativeTable",
         "parameters" : [ {
           "description" : "Creditor Institution code",
@@ -3706,7 +3706,7 @@
         }
       } ],
       "put" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "updateOperativeTable",
         "parameters" : [ {
           "in" : "path",
@@ -3755,7 +3755,7 @@
     },
     "/payment-service-providers" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getPaymentServiceProviders",
         "parameters" : [ {
           "description" : "Number of elements on one page. Default = 50",
@@ -3836,7 +3836,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "createPSP",
         "parameters" : [ {
           "description" : "If true the PSP will also be signed up as a broker",
@@ -3887,7 +3887,7 @@
     },
     "/payment-service-providers/{psp-code}" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getBrokerAndPspDetails",
         "parameters" : [ {
           "description" : "PSP code",
@@ -3933,7 +3933,7 @@
         }
       } ],
       "put" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "updatePSP",
         "parameters" : [ {
           "description" : "code of the Payment Service Provider",
@@ -3983,7 +3983,7 @@
     },
     "/payment-service-providers/{psp-code}/channels" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getPspChannels",
         "parameters" : [ {
           "description" : "Code of the payment service provider",
@@ -4031,7 +4031,7 @@
     },
     "/payment-service-providers/{psp-code}/channels/available-code" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getFirstValidChannelCode",
         "parameters" : [ {
           "description" : "Code of the payment service provider",
@@ -4088,7 +4088,7 @@
     },
     "/payment-service-providers/{psp-code}/channels/{channel-code}" : {
       "delete" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "deletePSPChannels",
         "parameters" : [ {
           "description" : "Code of the payment service provider",
@@ -4135,7 +4135,7 @@
         }
       } ],
       "put" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "updatePaymentServiceProvidersChannels",
         "parameters" : [ {
           "description" : "Code of the payment service provider",
@@ -4193,7 +4193,7 @@
     },
     "/psp-brokers" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getBrokersPsp",
         "parameters" : [ {
           "in" : "query",
@@ -4283,7 +4283,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "createBroker",
         "requestBody" : {
           "content" : {
@@ -4324,7 +4324,7 @@
     },
     "/psp-brokers/{broker-code}" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getBrokerPsp",
         "parameters" : [ {
           "description" : "Broker's code",
@@ -4370,7 +4370,7 @@
         }
       } ],
       "put" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "updateBrokerPSP",
         "parameters" : [ {
           "description" : "Broker code",
@@ -4420,7 +4420,7 @@
     },
     "/psp-brokers/{broker-code}/channels" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getChannelListByBroker",
         "parameters" : [ {
           "in" : "path",
@@ -4492,7 +4492,7 @@
     },
     "/psp-brokers/{broker-code}/payment-service-providers" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getPspBrokerPsp",
         "parameters" : [ {
           "in" : "query",
@@ -4558,7 +4558,7 @@
     },
     "/stations" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getStations",
         "parameters" : [ {
           "in" : "query",
@@ -4639,7 +4639,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "createStation",
         "requestBody" : {
           "content" : {
@@ -4680,7 +4680,7 @@
     },
     "/stations/merged" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getAllStationsMerged",
         "parameters" : [ {
           "in" : "query",
@@ -4762,7 +4762,7 @@
     },
     "/stations/merged/{station-code}" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getStationDetail",
         "parameters" : [ {
           "description" : "Station's unique identifier",
@@ -4810,7 +4810,7 @@
     },
     "/stations/station-code" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getStationCode",
         "parameters" : [ {
           "description" : "Creditor institution code",
@@ -4858,7 +4858,7 @@
     },
     "/stations/station-code/v2" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getStationCodeV2",
         "parameters" : [ {
           "description" : "Creditor institution code",
@@ -4914,7 +4914,7 @@
         }
       } ],
       "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "createWrapperStationDetails",
         "requestBody" : {
           "content" : {
@@ -4963,7 +4963,7 @@
         }
       } ],
       "put" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "updateWrapperStationDetailsByOpt",
         "requestBody" : {
           "content" : {
@@ -5004,7 +5004,7 @@
     },
     "/stations/wrapper/{station-code}" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getWrapperEntitiesStation",
         "parameters" : [ {
           "description" : "Channlecode or StationCode",
@@ -5050,7 +5050,7 @@
         }
       } ],
       "put" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "updateWrapperStationDetails",
         "parameters" : [ {
           "description" : "Station code",
@@ -5100,7 +5100,7 @@
     },
     "/stations/{station-code}" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getStation",
         "parameters" : [ {
           "description" : "Station's unique identifier",
@@ -5146,7 +5146,7 @@
         }
       } ],
       "put" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "updateStation",
         "parameters" : [ {
           "description" : "Station's unique identifier",
@@ -5196,7 +5196,7 @@
     },
     "/stations/{station-code}/creditor-institutions" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId" : "getCreditorInstitutionsByStationCode",
         "parameters" : [ {
           "description" : "Station Code",
@@ -5269,7 +5269,7 @@
     },
     "/taxonomies" : {
       "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-Y | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | Y\n",
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | Y\n",
         "operationId" : "getTaxonomies",
         "responses" : {
           "200" : {
