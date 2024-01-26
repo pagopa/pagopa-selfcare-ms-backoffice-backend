@@ -3,8 +3,8 @@
   "info": {
     "description": "@project.description@",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "title": "@project.name@",
-    "version": "1.5.2-4-PASELC-655-be-export-ec-cron-job"
+    "title": "SelfCare Backoffice",
+    "version": "1.5.3"
   },
   "servers": [
     {
