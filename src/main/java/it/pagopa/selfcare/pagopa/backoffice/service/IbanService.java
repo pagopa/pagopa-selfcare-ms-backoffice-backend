@@ -48,9 +48,9 @@ public class IbanService {
 
     public Iban updateIban(String ciCode, String ibanValue, IbanCreate dto) {
         // updating labels, owned by other CI, related to the passed IBAN
-        if (!isEmpty(dto.getLabels())) {
+        if(!isEmpty(dto.getLabels())) {
             Ibans ibansEnhanced = apiConfigClient.getCreditorInstitutionIbans(ciCode, dto.getLabels().get(0).getName());
-            if (ibansEnhanced != null && !ObjectUtils.isEmpty(ibansEnhanced.getIbanList())) {
+            if(ibansEnhanced != null && !ObjectUtils.isEmpty(ibansEnhanced.getIbanList())) {
                 ibansEnhanced.getIbanList().forEach(iban -> {
                     IbanCreateApiconfig ibanCreate = modelMapper.map(iban, IbanCreateApiconfig.class);
                     List<IbanLabel> ibanLabelList = ibanCreate.getLabels()

@@ -98,6 +98,7 @@ microservice-chart:
     OTEL_TRACES_SAMPLER: "always_on"
     CRONJOB_SCHEDULE_ENABLED: 'true'
     CRONJOB_SCHEDULE_IBANEXPORT: "0 0 2 * * *"
+    CRONJOB_SCHEDULE_CIEXPORT: "0 0 2 * * *"
     EXTRACTION_IBANS_GETBROKERS_LIMIT: '200'
     EXTRACTION_IBANS_GETIBANS_LIMIT: '1000'
     EXTRACTION_IBANS_GETCIBYBROKER_LIMIT: '1000'
@@ -155,7 +156,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 1.4.9-2-java-17
+        tag: 1.5.2-2-PASELC-655-be-export-ec-cron-job
         pullPolicy: Always
       envConfig: {}
       envSecret: {}

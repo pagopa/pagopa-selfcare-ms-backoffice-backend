@@ -19,9 +19,11 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * All Exceptions are handled by this class
@@ -160,28 +162,38 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ProblemJson> handleFeignException(final FeignException ex, final WebRequest request) {
         log.warn("FeignException raised: ", ex);
 
-        ProblemJson errorResponse;
+        ProblemJson problem;
         if(ex.responseBody().isPresent()) {
+            var body = new String(ex.responseBody().get().array(), StandardCharsets.UTF_8);
             try {
-                String body = new String(ex.responseBody().get().array(), StandardCharsets.UTF_8);
-                errorResponse = new ObjectMapper().readValue(body, ProblemJson.class);
-            } catch (JsonProcessingException e) {
-                errorResponse = ProblemJson.builder()
+                problem = new ObjectMapper().readValue(body, ProblemJson.class);
+                validateProblemBody(problem);
+            } catch (JsonProcessingException | ValidationException e) {
+                problem = ProblemJson.builder()
                         .status(HttpStatus.BAD_GATEWAY.value())
                         .title(AppError.RESPONSE_NOT_READABLE.getTitle())
                         .detail(AppError.RESPONSE_NOT_READABLE.getDetails())
                         .build();
             }
         } else {
-            errorResponse = ProblemJson.builder()
+            problem = ProblemJson.builder()
                     .status(HttpStatus.BAD_GATEWAY.value())
-                    .title("Error during communication")
-                    .detail("Error during communication with other services")
+                    .title("No Response Body")
+                    .detail("Error with external dependency")
                     .build();
         }
-        return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(ex.status()));
+        return new ResponseEntity<>(problem, HttpStatus.valueOf(problem.getStatus()));
     }
 
+    private static void validateProblemBody(ProblemJson problem) {
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            Set<ConstraintViolation<ProblemJson>> violations = validator.validate(problem);
+            if(!violations.isEmpty()) {
+                throw new ValidationException("the response is not a problemJson");
+            }
+        }
+    }
 
     /**
      * Handle if a {@link AppException} is raised
@@ -191,8 +203,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
      * @return a {@link ProblemJson} as response with the cause and with an appropriated HTTP status
      */
     @ExceptionHandler({AppException.class})
-    public ResponseEntity<ProblemJson> handleAppException(
-            final AppException ex, final WebRequest request) {
+    public ResponseEntity<ProblemJson> handleAppException(final AppException ex, final WebRequest request) {
         if(ex.getCause() != null) {
             log.warn("App Exception raised: " + ex.getMessage() + "\nCause of the App Exception: ", ex.getCause());
         } else {
@@ -214,14 +225,13 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
      * @return a {@link ProblemJson} as response with the cause and with 500 as HTTP status
      */
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<ProblemJson> handleGenericException(
-            final Exception ex, final WebRequest request) {
+    public ResponseEntity<ProblemJson> handleGenericException(final Exception ex, final WebRequest request) {
         log.error("Generic Exception raised:", ex);
         var errorResponse =
                 ProblemJson.builder()
                         .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                         .title(AppError.INTERNAL_SERVER_ERROR.getTitle())
-                        .detail(AppError.INTERNAL_SERVER_ERROR.getDetails())
+                        .detail(ex.getMessage())
                         .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }

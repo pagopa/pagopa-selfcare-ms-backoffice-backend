@@ -2,7 +2,8 @@ package it.pagopa.selfcare.pagopa.backoffice.repository;
 
 import com.mongodb.*;
 import com.mongodb.client.*;
-import com.mongodb.client.model.*;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbanEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
 import it.pagopa.selfcare.pagopa.backoffice.util.Constants;
@@ -72,8 +73,8 @@ public class TransactionalBulkDAO implements Closeable {
             collection.deleteOne(Filters.eq(Constants.BROKER_CODE_DB_FIELD, brokerCode).toBsonDocument());
             // persisting new entity, not including the iban list
             int totalSize = entity.getIbans().size();
-            if (totalSize <= ibansBatchSize) {
-                collection.insertOne(entity);                
+            if(totalSize <= ibansBatchSize) {
+                collection.insertOne(entity);
             } else {
                 log.debug(String.format("[Export IBANs] - The number of IBANs is greater than [%d] elements. Persisting it in partition mode.", ibansBatchSize));
                 bulkInsert(entity);
@@ -88,7 +89,7 @@ public class TransactionalBulkDAO implements Closeable {
             session.close();
         }
     }
-    
+
     private void bulkInsert(BrokerIbansEntity entity) {
         BrokerIbansEntity partialEntity = BrokerIbansEntity.builder()
                 .id(entity.getId())

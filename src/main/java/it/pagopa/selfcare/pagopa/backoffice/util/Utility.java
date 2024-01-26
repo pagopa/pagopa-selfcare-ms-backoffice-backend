@@ -7,7 +7,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChann
 import org.springframework.security.core.Authentication;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Utility {
 
@@ -17,8 +16,7 @@ public class Utility {
 
     public static String extractUserIdFromAuth(Authentication authentication) {
         String userIdForAuth = "";
-        if(authentication != null && authentication.getPrincipal() instanceof SelfCareUser) {
-            var user = (SelfCareUser) authentication.getPrincipal();
+        if(authentication != null && authentication.getPrincipal() instanceof SelfCareUser user) {
             userIdForAuth = user.getId();
         }
         return userIdForAuth;
@@ -27,7 +25,7 @@ public class Utility {
     public static WrapperChannels mergeAndSortWrapperChannels(WrapperChannels channelFromApiConfig, WrapperChannels channelFromLocal, String sorting) {
         List<WrapperChannel> mergedList = new ArrayList<>();
         mergedList.addAll(channelFromLocal.getChannelList());
-        mergedList.addAll(channelFromApiConfig.getChannelList().stream().filter(obj2 -> channelFromLocal.getChannelList().stream().noneMatch(obj1 -> Objects.equals(obj1.getChannelCode(), obj2.getChannelCode()))).collect(Collectors.toList()));
+        mergedList.addAll(channelFromApiConfig.getChannelList().stream().filter(obj2 -> channelFromLocal.getChannelList().stream().noneMatch(obj1 -> Objects.equals(obj1.getChannelCode(), obj2.getChannelCode()))).toList());
 
         if("asc".equalsIgnoreCase(sorting)) {
             mergedList.sort(Comparator.comparing(WrapperChannel::getChannelCode));

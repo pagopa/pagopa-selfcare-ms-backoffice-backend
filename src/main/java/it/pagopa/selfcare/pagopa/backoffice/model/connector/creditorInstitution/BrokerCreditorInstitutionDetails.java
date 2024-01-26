@@ -1,4 +1,4 @@
-package it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions;
+package it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
- * CreditorInstitutions
+ * Creditor Institutions
  */
 @Data
 @Builder(toBuilder = true)
@@ -21,16 +21,15 @@ import java.util.List;
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreditorInstitutionsView {
+public class BrokerCreditorInstitutionDetails {
 
     @JsonProperty("creditor_institutions")
-    @Schema(required = true)
     @NotNull
-    @Valid
-    private List<CreditorInstitutionView> creditorInstitutionList;
+    @Schema(description = "List of creditor institutions associated to the same broker by different stations")
+    private List<CreditorInstitutionDetail> creditorInstitutions;
 
     @JsonProperty("page_info")
-    @Schema(required = true)
+    @Schema()
     @NotNull
     @Valid
     private PageInfo pageInfo;
