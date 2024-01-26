@@ -19,9 +19,11 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * All Exceptions are handled by this class
@@ -165,7 +167,8 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
             var body = new String(ex.responseBody().get().array(), StandardCharsets.UTF_8);
             try {
                 problem = new ObjectMapper().readValue(body, ProblemJson.class);
-            } catch (JsonProcessingException e) {
+                validateProblemBody(problem);
+            } catch (JsonProcessingException | ValidationException e) {
                 problem = ProblemJson.builder()
                         .status(HttpStatus.BAD_GATEWAY.value())
                         .title(AppError.RESPONSE_NOT_READABLE.getTitle())
@@ -179,8 +182,17 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
                     .detail("Error with external dependency")
                     .build();
         }
-
         return new ResponseEntity<>(problem, HttpStatus.valueOf(problem.getStatus()));
+    }
+
+    private static void validateProblemBody(ProblemJson problem) {
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            Set<ConstraintViolation<ProblemJson>> violations = validator.validate(problem);
+            if(!violations.isEmpty()) {
+                throw new ValidationException("the response is not a problemJson");
+            }
+        }
     }
 
     /**
