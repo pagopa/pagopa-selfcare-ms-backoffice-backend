@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "description": "Microservice to manage PagoPA Backoffice",
+    "description": "@project.description@",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
     "version": "1.5.3"
@@ -17,12 +17,12 @@
           "default": "/backoffice/v1"
         },
         "host": {
-          "default": "api.dev.platform.pagopa.it",
           "enum": [
             "api.dev.platform.pagopa.it",
             "api.uat.platform.pagopa.it",
             "api.platform.pagopa.it"
-          ]
+          ],
+          "default": "api.dev.platform.pagopa.it"
         }
       }
     }
@@ -7093,7 +7093,7 @@
           "businessName": {
             "type": "string"
           },
-          "cbill_code": {
+          "cbillCode": {
             "type": "string",
             "example": "ABCDE"
           },
@@ -8706,6 +8706,9 @@
             "$ref": "#/components/schemas/CreditorInstitutionAddressDto"
           },
           "businessName": {
+            "type": "string"
+          },
+          "cbillCode": {
             "type": "string"
           },
           "creditorInstitutionCode": {

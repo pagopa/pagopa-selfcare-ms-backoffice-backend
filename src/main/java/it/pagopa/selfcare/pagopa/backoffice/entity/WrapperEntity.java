@@ -33,11 +33,11 @@ public class WrapperEntity<T> implements WrapperEntityOperations<T> {
 
     public WrapperEntity(T entity) {
         this.createdAt = Instant.now();
-        if(entity instanceof ChannelDetails) {
-            this.id = ((ChannelDetails) entity).getChannelCode();
+        if(entity instanceof ChannelDetails cd) {
+            this.id = cd.getChannelCode();
             this.type = WrapperType.CHANNEL;
-        } else if(entity instanceof StationDetails) {
-            this.id = ((StationDetails) entity).getStationCode();
+        } else if(entity instanceof StationDetails sd) {
+            this.id = sd.getStationCode();
             this.type = WrapperType.STATION;
         }
 

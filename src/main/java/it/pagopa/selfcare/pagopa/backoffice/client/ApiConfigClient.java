@@ -160,6 +160,9 @@ public interface ApiConfigClient {
     CreditorInstitutionDetails updateCreditorInstitutionDetails(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
                                                                 @RequestBody CreditorInstitutionDetails request);
 
+    @GetMapping(value = "/brokers/{brokercode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    BrokerDetails getBroker(@RequestParam(required = false, name = "brokercode") String brokerCode);
+
     @PostMapping(value = "/brokers", produces = MediaType.APPLICATION_JSON_VALUE)
     BrokerDetails createBroker(@RequestBody BrokerDetails request);
 

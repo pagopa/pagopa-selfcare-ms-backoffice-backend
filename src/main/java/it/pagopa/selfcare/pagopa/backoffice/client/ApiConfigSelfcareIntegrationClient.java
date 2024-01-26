@@ -1,8 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.client;
 
-import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.ApiConfigSelfcareIntFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetailsList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.BrokerCreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
@@ -43,11 +43,20 @@ public interface ApiConfigSelfcareIntegrationClient {
     @PostMapping(value = "/ibans", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Retryable(
-            exclude = FeignException.FeignClientException.class,
             maxAttemptsExpression = "${retry.utils.maxAttempts:3}",
             backoff = @Backoff(delayExpression = "${retry.utils.maxDelay:2000}"))
     IbansList getIbans(
             @RequestParam(defaultValue = "10") Integer limit,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestBody List<String> ecList);
+
+    @GetMapping(value = "/brokers/{brokerId}/creditor-institutions", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    @Retryable(maxAttemptsExpression = "${retry.utils.maxAttempts:3}",
+            backoff = @Backoff(delayExpression = "${retry.utils.maxDelay:2000}"))
+    BrokerCreditorInstitutionDetails getCreditorInstitutionsAssociatedToBroker(
+            @RequestParam(defaultValue = "10") Integer limit,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "true") Boolean enabled,
+            @PathVariable("brokerId") String brokerId);
 }

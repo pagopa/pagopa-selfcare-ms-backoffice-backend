@@ -29,4 +29,5 @@ public class BrokerInstitutionEntity {
     private Instant activationDate;
     private String version;
     private Boolean broadcast;
+    private Boolean pspPayment;
 }

@@ -63,12 +63,12 @@ public class ExportService {
 
         List<String> headers = Arrays.asList("companyName", "administrativeCode", "taxCode", "intermediated", "brokerCompanyName",
                 "brokerTaxCode", "model", "auxDigit", "segregationCode", "applicationCode", "cbillCode", "stationId", "stationState",
-                "activationDate", "version", "broadcast");
+                "activationDate", "version", "broadcast", "PSPpayment");
         return Utility.createCsv(headers, mapInstitutionToCsv(ibans.getInstitutions()));
     }
 
     public BrokerECExportStatus getBrokerExportStatus(@NotNull String brokerCode) {
-        if (brokerCode == null) {
+        if(brokerCode == null) {
             throw new AppException(AppError.BAD_REQUEST, "No valid broker code is passed.");
         }
         Optional<ProjectCreatedAt> brokerIbansCreatedAt = Optional.empty();
@@ -116,7 +116,7 @@ public class ExportService {
                         deNull(elem.getCompanyName()),
                         deNull(elem.getAdministrativeCode()),
                         deNull(elem.getTaxCode()),
-                        Boolean.TRUE.equals(deNull(elem.getIntermediated())) ? "YES" : "NO",
+                        Boolean.TRUE.equals(deNull(elem.getIntermediated())) ? "true" : "false",
                         deNull(elem.getBrokerCompanyName()),
                         deNull(elem.getBrokerTaxCode()),
                         deNull(elem.getModel()),
@@ -128,7 +128,8 @@ public class ExportService {
                         deNull(elem.getStationState()),
                         deNull(elem.getActivationDate()),
                         deNull(elem.getVersion()),
-                        Boolean.TRUE.equals(deNull(elem.getBroadcast())) ? "ACTIVE" : "INACTIVE"
+                        Boolean.TRUE.equals(deNull(elem.getBroadcast())) ? "true" : "false",
+                        Boolean.TRUE.equals(deNull(elem.getPspPayment())) ? "true" : "false"
                 ))
                 .toList();
     }
