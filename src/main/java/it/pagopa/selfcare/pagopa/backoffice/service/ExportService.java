@@ -63,7 +63,7 @@ public class ExportService {
 
         List<String> headers = Arrays.asList("companyName", "administrativeCode", "taxCode", "intermediated", "brokerCompanyName",
                 "brokerTaxCode", "model", "auxDigit", "segregationCode", "applicationCode", "cbillCode", "stationId", "stationState",
-                "activationDate", "version", "broadcast", "pagamentoPSP");
+                "activationDate", "version", "broadcast", "PSPpayment");
         return Utility.createCsv(headers, mapInstitutionToCsv(ibans.getInstitutions()));
     }
 
