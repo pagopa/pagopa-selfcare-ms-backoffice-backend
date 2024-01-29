@@ -66,8 +66,8 @@ public class StationController {
     public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(@Parameter(description = "Station Code") @PathVariable("station-code") String stationCode,
                                                                              @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                                              @RequestParam Integer page,
-                                                                             @Parameter(description = "Filter by creditor institution name") @RequestParam(required = false, name = "ci-name") String ciName) {
-        return stationService.getCreditorInstitutionsByStationCode(stationCode, limit, page, ciName);
+                                                                             @Parameter(description = "Filter by creditor institution name or creditor instiitution fiscal code") @RequestParam(required = false, name = "ci-name-or-fiscalcode") String ciNameOrFiscalCode) {
+        return stationService.getCreditorInstitutionsByStationCode(stationCode, limit, page, ciNameOrFiscalCode);
     }
 
     @PutMapping(value = "/{station-code}", produces = {MediaType.APPLICATION_JSON_VALUE})

@@ -178,7 +178,7 @@ public interface ApiConfigClient {
     CreditorInstitutions getCreditorInstitutionsByStation(@PathVariable(required = false, name = "stationcode") String stationcode,
                                                           @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                           @RequestParam Integer page,
-                                                          @RequestParam String ciName);
+                                                          @RequestParam String ciNameOrCF);
 
     @DeleteMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/stations/{stationcode}", produces = MediaType.APPLICATION_JSON_VALUE)
     void deleteCreditorInstitutionStationRelationship(@PathVariable("creditorinstitutioncode") String ecCode,
