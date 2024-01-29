@@ -164,7 +164,6 @@ public class AllPages {
                 .broadcast(ci.getBroadcast())
                 .cbillCode(ci.getCbillCode())
                 .companyName(ci.getBusinessName())
-                .administrativeCode(null)
                 .taxCode(ci.getCreditorInstitutionCode())
                 .intermediated(!ci.getBrokerCode().equals(ci.getCreditorInstitutionCode()))
                 .brokerCompanyName(ci.getBrokerBusinessName())
