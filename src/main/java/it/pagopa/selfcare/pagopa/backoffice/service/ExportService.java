@@ -61,7 +61,7 @@ public class ExportService {
         BrokerInstitutionsEntity ibans = brokerInstitutionsRepository.findByBrokerCode(brokerCode)
                 .orElseThrow(() -> new AppException(AppError.BROKER_NOT_FOUND, brokerCode));
 
-        List<String> headers = Arrays.asList("companyName", "administrativeCode", "taxCode", "intermediated", "brokerCompanyName",
+        List<String> headers = Arrays.asList("companyName", "taxCode", "intermediated", "brokerCompanyName",
                 "brokerTaxCode", "model", "auxDigit", "segregationCode", "applicationCode", "cbillCode", "stationId", "stationState",
                 "activationDate", "version", "broadcast", "PSPpayment");
         return Utility.createCsv(headers, mapInstitutionToCsv(ibans.getInstitutions()));
@@ -114,7 +114,6 @@ public class ExportService {
         return institutions.stream()
                 .map(elem -> Arrays.asList(
                         deNull(elem.getCompanyName()),
-                        deNull(elem.getAdministrativeCode()),
                         deNull(elem.getTaxCode()),
                         Boolean.TRUE.equals(deNull(elem.getIntermediated())) ? "true" : "false",
                         deNull(elem.getBrokerCompanyName()),

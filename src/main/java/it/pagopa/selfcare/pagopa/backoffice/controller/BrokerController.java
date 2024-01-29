@@ -102,7 +102,7 @@ public class BrokerController {
     @GetMapping(value = "/{broker-code}/creditor-institutions/export", produces = {"text/csv", MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Export all creditor institutions handled by a broker EC to CSV", security = {@SecurityRequirement(name = "JWT")},
-            description = "The CSV file contains the following columns: `companyName, amministrativeCode, taxCode, intermediated, brokerCompanyName, brokerTaxCode, model, auxDigit, segregationCode, applicationCode, cbillCode, stationId, stationState, activationDate, version, broadcast`")
+            description = "The CSV file contains the following columns: `companyName, taxCode, intermediated, brokerCompanyName, brokerTaxCode, model, auxDigit, segregationCode, applicationCode, cbillCode, stationId, stationState, activationDate, version, broadcast`")
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
     @Cacheable(value = "exportCreditorInstitutionToCsv")
     public ResponseEntity<Resource> exportCreditorInstitutionToCsv(@Parameter(description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode) {
