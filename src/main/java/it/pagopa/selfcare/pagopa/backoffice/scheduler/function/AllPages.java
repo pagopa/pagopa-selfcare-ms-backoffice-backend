@@ -160,16 +160,13 @@ public class AllPages {
         }
 
         return BrokerInstitutionEntity.builder()
-                .applicationCode(ci.getApplicationCode())
-                .broadcast(ci.getBroadcast())
-                .cbillCode(ci.getCbillCode())
                 .companyName(ci.getBusinessName())
                 .taxCode(ci.getCreditorInstitutionCode())
                 .intermediated(!ci.getBrokerCode().equals(ci.getCreditorInstitutionCode()))
                 .brokerCompanyName(ci.getBrokerBusinessName())
                 .brokerTaxCode(ci.getBrokerCode())
                 .model(3)
-                .auxDigit(toInt(ci))
+                .auxDigit(getAuxDigit(ci))
                 .segregationCode(ci.getSegregationCode())
                 .applicationCode(ci.getApplicationCode())
                 .cbillCode(ci.getCbillCode())
@@ -182,7 +179,29 @@ public class AllPages {
                 .build();
     }
 
-    private static int toInt(CreditorInstitutionDetail ci) {
-        return ci.getAuxDigit() != null ? Math.toIntExact(ci.getAuxDigit()) : 0;
+    private static String getAuxDigit(CreditorInstitutionDetail ci) {
+        /* if aux digit is null we use this table to calculate it.
+
+          aux | segregation | application
+          0   |     null    |   value
+          3   |    value    |    null
+          0/3 |    value    |   value
+
+        */
+        if(ci.getAuxDigit() == null) {
+            if(ci.getSegregationCode() == null && ci.getApplicationCode() != null) {
+                return "0";
+            }
+            if(ci.getSegregationCode() != null && ci.getApplicationCode() == null) {
+                return "3";
+            }
+            if(ci.getSegregationCode() != null && ci.getApplicationCode() != null) {
+                return "0/3";
+            }
+            return "";
+
+        } else {
+            return String.valueOf(Math.toIntExact(ci.getAuxDigit()));
+        }
     }
 }
