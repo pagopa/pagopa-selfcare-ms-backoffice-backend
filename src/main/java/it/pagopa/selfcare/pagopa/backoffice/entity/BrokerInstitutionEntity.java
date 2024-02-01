@@ -20,7 +20,7 @@ public class BrokerInstitutionEntity {
     private String brokerCompanyName;
     private String brokerTaxCode;
     private Integer model;
-    private Integer auxDigit;
+    private String auxDigit;
     private String segregationCode;
     private String applicationCode;
     private String cbillCode;

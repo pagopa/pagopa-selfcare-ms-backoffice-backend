@@ -103,7 +103,7 @@ public class IbanByBrokerExtractionScheduler {
                     .ciName(elem.getCiName())
                     .ciFiscalCode(elem.getCiFiscalCode())
                     .iban(elem.getIban())
-                    .status(OffsetDateTime.now().isBefore(elem.getDueDate()) ? "ATTIVO" : "DISATTIVO")
+                    .status(OffsetDateTime.now().isAfter(elem.getValidityDate()) ? "ATTIVO" : "DISATTIVO")
                     .validityDate(elem.getValidityDate().toInstant())
                     .description(elem.getDescription())
                     .label(elem.getLabels().stream()
