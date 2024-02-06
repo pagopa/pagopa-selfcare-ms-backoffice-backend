@@ -10,8 +10,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.util.StringUtils;
 
-import java.util.stream.Collectors;
-
 public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper {
 
     @Override
@@ -193,7 +191,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
         creditorInstitutionsResource.setCreditorInstitutionList(model.getCreditorInstitutionList().stream()
                 .map(this::toResorce)
-                .collect(Collectors.toList()));
+                .toList());
         creditorInstitutionsResource.setPageInfo(model.getPageInfo());
 
         return creditorInstitutionsResource;

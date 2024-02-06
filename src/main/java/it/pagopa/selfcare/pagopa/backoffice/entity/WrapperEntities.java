@@ -81,8 +81,8 @@ public class WrapperEntities<T> implements Persistable<String> {
     }
 
 
-    public void sortEntitesByCreatedAt() {
-        this.entities.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
+    public void sortEntitiesById() {
+        this.entities.sort(Comparator.comparing(WrapperEntityOperations::getId, Comparator.naturalOrder()));
     }
 
 

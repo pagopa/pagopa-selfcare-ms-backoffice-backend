@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
 
@@ -56,7 +55,7 @@ public class IbanService {
                     List<IbanLabel> ibanLabelList = ibanCreate.getLabels()
                             .stream()
                             .filter(f -> !(f.getName().equals(dto.getLabels().get(0).getName())))
-                            .collect(Collectors.toList());
+                            .toList();
                     ibanCreate.setLabels(ibanLabelList);
                     apiConfigClient.updateCreditorInstitutionIbans(ciCode, iban.getIban(), ibanCreate);
                 });

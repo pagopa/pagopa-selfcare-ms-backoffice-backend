@@ -84,7 +84,7 @@ public class StationController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get wrapper station from mongo DB", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public WrapperEntities getWrapperEntitiesStation(@Parameter(description = "Channlecode or StationCode") @PathVariable("station-code") String code) {
+    public WrapperEntities getWrapperEntitiesStation(@Parameter(description = "ChannelCode or StationCode") @PathVariable("station-code") String code) {
         return stationService.getWrapperEntitiesStation(code);
     }
 

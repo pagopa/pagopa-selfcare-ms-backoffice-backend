@@ -7,8 +7,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResourceList;
 
-import java.util.stream.Collectors;
-
 public class TavoloOpMapper {
 
     private TavoloOpMapper() {
@@ -41,7 +39,7 @@ public class TavoloOpMapper {
 
         response.setTavoloOpResourceList(tavoloOpOperations.getTavoloOpOperationsList().stream()
                 .map(TavoloOpMapper::toResource)
-                .collect(Collectors.toList()));
+                .toList());
 
         return response;
     }

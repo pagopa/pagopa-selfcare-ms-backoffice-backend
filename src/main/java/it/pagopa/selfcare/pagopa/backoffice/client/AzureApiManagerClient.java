@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -66,7 +65,7 @@ public class AzureApiManagerClient {
     public List<InstitutionApiKeys> createInstitutionSubscription(String institutionId, String institutionName) {
         log.trace("createInstitutionSubscription start");
         log.debug("createInstitutionSubscription institutionId = {}, institutionName = {}", institutionId, institutionName);
-        SubscriptionContract contract = manager.subscriptions().createOrUpdate(resourceGroupName,
+        manager.subscriptions().createOrUpdate(resourceGroupName,
                 serviceName,
                 institutionId,
                 new SubscriptionCreateParameters()
@@ -139,7 +138,7 @@ public class AzureApiManagerClient {
                             apiKeys.setId(contract.name());
                         }
                         return apiKeys;
-                    }).collect(Collectors.toList());
+                    }).toList();
         } catch (ManagementException e) {
             institutionApiKeysList = new ArrayList<>();
         }
