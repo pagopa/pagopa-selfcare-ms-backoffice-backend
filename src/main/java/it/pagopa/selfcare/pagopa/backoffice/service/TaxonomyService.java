@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TaxonomyService {
@@ -22,7 +21,7 @@ public class TaxonomyService {
     public Taxonomies getTaxonomies() {
         List<Taxonomy> taxonomies = taxonomyClient.getTaxonomies().stream()
                 .map(elem -> modelMapper.map(elem, Taxonomy.class))
-                .collect(Collectors.toList());
+                .toList();
         return Taxonomies.builder()
                 .taxonomies(taxonomies)
                 .build();

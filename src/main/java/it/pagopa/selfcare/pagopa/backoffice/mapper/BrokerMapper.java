@@ -6,9 +6,10 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokersResource;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import java.util.stream.Collectors;
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BrokerMapper {
 
     public static BrokerDetails fromDto(BrokerDto brokerDto) {
@@ -61,7 +62,7 @@ public class BrokerMapper {
 
         brokersResource.setBrokerList(brokers.getBrokerList().stream()
                 .map(BrokerMapper::toResource)
-                .collect(Collectors.toList()));
+                .toList());
 
 
         return brokersResource;

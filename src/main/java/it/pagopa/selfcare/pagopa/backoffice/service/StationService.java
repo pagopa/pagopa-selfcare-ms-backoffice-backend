@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -108,10 +109,12 @@ public class StationService {
         StationDetails stationDetails;
         WrapperStatus status;
         String createdBy = "";
+        Instant createdAt = null;
         String modifiedBy = "";
         try {
             WrapperEntities<StationDetails> result = wrapperService.findById(stationCode);
             createdBy = result.getCreatedBy();
+            createdAt = result.getCreatedAt();
             modifiedBy = result.getModifiedBy();
             stationDetails = (StationDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
             status = result.getStatus();
@@ -121,7 +124,7 @@ public class StationService {
             status = WrapperStatus.APPROVED;
         }
 
-        return stationMapper.toResource(stationDetails, status, createdBy, modifiedBy);
+        return stationMapper.toResource(stationDetails, status, createdBy, modifiedBy, createdAt);
     }
 
     public StationCodeResource getStationCode(String ecCode, Boolean v2) {
@@ -141,16 +144,14 @@ public class StationService {
     }
 
 
-    public WrapperEntities updateWrapperStationDetails(
-            @Valid
-            StationDetailsDto stationDetailsDto) {
-
+    public WrapperEntities updateWrapperStationDetails(@Valid StationDetailsDto stationDetailsDto) {
         final String UPDATE_STATION_SUMMARY = "Station creation validation: %s";
         final String UPDATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validated: %s";
 
-        WrapperEntities createdWrapperEntities = wrapperService.
-                update(stationMapper.fromDto
-                        (stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
+
+        apiConfigClient.getStation(stationDetailsDto.getStationCode());
+
+        WrapperEntities createdWrapperEntities = wrapperService.upsert(stationMapper.fromDto(stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
 
         jiraServiceManagerClient.createTicket(String.format(UPDATE_STATION_SUMMARY, stationDetailsDto.getStationCode()),
                 String.format(UPDATE_STATION_DESCRIPTION, stationDetailsDto.getStationCode(), stationDetailsDto.getBrokerCode(), stationDetailsDto.getValidationUrl()));
@@ -189,7 +190,6 @@ public class StationService {
     }
 
     public WrapperEntities getWrapperEntitiesStation(String code) {
-
         return wrapperService.findById(code);
     }
 
@@ -198,10 +198,12 @@ public class StationService {
 
         Stations stations = getStations(limit, page, sorting, brokerCode, null, stationCode);
         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
-        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, brokerCode, page, limit);
-        WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
-        WrapperStations stationsMergedAndSorted = mergeAndSortWrapperStations(responseApiConfig, responseMongo, sorting);
 
+        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, brokerCode, page, limit);
+
+        WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
+
+        WrapperStations stationsMergedAndSorted = mergeAndSortWrapperStations(responseApiConfig, responseMongo, sorting);
         return stationMapper.toWrapperStationsResource(stationsMergedAndSorted);
     }
 
@@ -245,7 +247,7 @@ public class StationService {
         mergedList.addAll(
                 wrapperStationsApiConfig.getStationsList().stream()
                         .filter(obj2 -> wrapperStationsMongo.getStationsList().stream().noneMatch(obj1 -> Objects.equals(obj1.getStationCode(), obj2.getStationCode())))
-                        .collect(Collectors.toList())
+                        .toList()
         );
 
         if("asc".equalsIgnoreCase(sorting)) {

@@ -4,7 +4,9 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import com.mongodb.*;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoException;
+import com.mongodb.TransactionOptions;
 import com.mongodb.client.*;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbanEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
@@ -14,13 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
-
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,8 +25,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -108,13 +107,13 @@ class TransactionalBulkDAOTest {
             verify(client, times(1)).close();
             verify(collection, times(1)).deleteOne(any(Bson.class));
             verify(collection, times(1)).insertOne(any(BrokerIbansEntity.class));
-            if (numberOfIbans > ibansBatchSize) {
+            if(numberOfIbans > ibansBatchSize) {
                 verify(collection, times(numberOfIbans / ibansBatchSize)).updateOne(any(Bson.class), any(Bson.class));
             }
             ILoggingEvent logLine1 = getLog();
             assertTrue("The log message does not contains the required string", logLine1.getMessage().contains("[Export IBANs] - Persisting"));
             assertEquals("The log message does not contains the required error level string", Level.DEBUG, logLine1.getLevel());
-            if (numberOfIbans > ibansBatchSize) {
+            if(numberOfIbans > ibansBatchSize) {
                 ILoggingEvent logLine2 = getLog();
                 assertTrue("The log message does not contains the required string", logLine2.getMessage().contains("[Export IBANs] - The number of IBANs is greater than"));
                 assertEquals("The log message does not contains the required error level string", Level.DEBUG, logLine2.getLevel());
@@ -136,7 +135,9 @@ class TransactionalBulkDAOTest {
 
             // mocking components
             MongoClient client = mockMongoClientInit(mockStatic);
-            when(collection.deleteOne(any(Bson.class))).thenAnswer(invocation -> { throw new MongoException("Mocked error!");});
+            when(collection.deleteOne(any(Bson.class))).thenAnswer(invocation -> {
+                throw new MongoException("Mocked error!");
+            });
 
             // executing logic to be checked
             dao.init();
@@ -164,7 +165,7 @@ class TransactionalBulkDAOTest {
     }
 
     @SneakyThrows
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @ParameterizedTest
     @CsvSource({
             "false",
@@ -179,7 +180,7 @@ class TransactionalBulkDAOTest {
             // mocking components
             MongoClient client = mockMongoClientInit(mockStatic);
             MongoCursor cursor = mock(MongoCursor.class);
-            if (hasEntities) {
+            if(hasEntities) {
                 when(cursor.hasNext()).thenReturn(true, true, true, false);
                 when(cursor.next()).thenReturn(BrokerIbansEntity.builder()
                                 .brokerCode("0000000001")
@@ -205,7 +206,7 @@ class TransactionalBulkDAOTest {
 
             // check assertions
             verify(client, times(1)).close();
-            if (hasEntities) {
+            if(hasEntities) {
                 assertEquals("The result size is different from 3 elements", 3, result.size());
                 assertTrue("The result set does not contains code", result.contains("0000000001"));
             } else {
@@ -255,7 +256,9 @@ class TransactionalBulkDAOTest {
 
             // mocking components
             MongoClient client = mockMongoClientInit(mockStatic);
-            when(collection.deleteMany(any(Bson.class))).thenAnswer(invocation -> { throw new MongoException("Mocked error!");});
+            when(collection.deleteMany(any(Bson.class))).thenAnswer(invocation -> {
+                throw new MongoException("Mocked error!");
+            });
 
             // executing logic to be checked
             dao.init();
@@ -311,7 +314,7 @@ class TransactionalBulkDAOTest {
     private BrokerIbansEntity getBrokerIbansEntity(int numberOfIbans) {
         String creditorInstitution = "00000000000";
         List<BrokerIbanEntity> brokerIbanEntities = List.of();
-        if (numberOfIbans > 0) {
+        if(numberOfIbans > 0) {
             brokerIbanEntities = IntStream.rangeClosed(1, numberOfIbans)
                     .mapToObj(id -> BrokerIbanEntity.builder()
                             .ciName(creditorInstitution + " PA")
@@ -322,7 +325,7 @@ class TransactionalBulkDAOTest {
                             .description("description")
                             .label("label1")
                             .build())
-                    .collect(Collectors.toList());
+                    .toList();
         }
         return BrokerIbansEntity.builder()
                 .id(UUID.randomUUID().toString())

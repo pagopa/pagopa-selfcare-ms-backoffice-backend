@@ -9,7 +9,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatu
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 
@@ -422,12 +421,9 @@ public class ChannelMapper {
 
     public static ChannelPspResource toResource(ChannelPsp model) {
         ChannelPspResource resource = null;
-        List<String> list = new ArrayList<>();
         if(model != null) {
             resource = new ChannelPspResource();
-            if(model.getPaymentTypeList() != null) {
-                model.getPaymentTypeList().forEach(i -> list.add(i));
-            }
+            List<String> list = new ArrayList<>(model.getPaymentTypeList());
             resource.setEnabled(model.getEnabled());
             resource.setBusinessName(model.getBusinessName());
             resource.setPspCode(model.getPspCode());
@@ -560,7 +556,7 @@ public class ChannelMapper {
 
         wrapperChannels.setChannelList(model.getChannelList().stream()
                 .map(ChannelMapper::toWrapperChannel)
-                .collect(Collectors.toList()));
+                .toList());
         wrapperChannels.setPageInfo(model.getPageInfo());
 
         return wrapperChannels;
@@ -613,7 +609,7 @@ public class ChannelMapper {
 
         wrapperChannelsResource.setChannelList(wrapperChannels.getChannelList().stream()
                 .map(station -> toWrapperChannelResource(station))
-                .collect(Collectors.toList()));
+                .toList());
         wrapperChannelsResource.setPageInfo(wrapperChannels.getPageInfo());
 
         return wrapperChannelsResource;
@@ -643,7 +639,7 @@ public class ChannelMapper {
             return null;
         }
         ChannelDetailsResourceList resource = new ChannelDetailsResourceList();
-        resource.setChannelDetailsResources(model.getChannelDetailsList().stream().map(ChannelMapper::toResource).collect(Collectors.toList()));
+        resource.setChannelDetailsResources(model.getChannelDetailsList().stream().map(ChannelMapper::toResource).toList());
 
         resource.setPageInfo(model.getPageInfo());
         return resource;

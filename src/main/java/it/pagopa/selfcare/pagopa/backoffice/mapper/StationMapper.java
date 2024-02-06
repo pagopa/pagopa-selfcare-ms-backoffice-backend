@@ -11,6 +11,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStati
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 
+import java.time.Instant;
 import java.util.List;
 
 //@Mapper
@@ -18,7 +19,7 @@ public interface StationMapper {
 
     StationDetailResource toResource(StationDetails model);
 
-    StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy);
+    StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy, Instant createdAt);
 
     StationsResource toResource(Stations model);
 

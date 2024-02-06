@@ -226,7 +226,7 @@ public class WrapperService {
     public <T> WrapperEntities<T> findById(String id) {
         var response = repository.findById(id)
                 .orElseThrow(() -> new AppException(AppError.WRAPPER_NOT_FOUND, id));
-        response.sortEntitesByCreatedAt();
+        response.sortEntitiesById();
         return response;
     }
 
@@ -263,14 +263,47 @@ public class WrapperService {
         WrapperEntitiesList stationMongoList = findByIdLikeOrTypeOrBrokerCode(entityCode, WrapperType.STATION, null, 0, 100);
 
         List<String> channelAndStationCodes = new LinkedList<>();
-        channelAndStationCodes.addAll(channelMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).collect(Collectors.toList()));
-        channelAndStationCodes.addAll(stationMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).collect(Collectors.toList()));
-        channelAndStationCodes.addAll(channels.getChannelList().stream().map(Channel::getChannelCode).collect(Collectors.toList()));
-        channelAndStationCodes.addAll(stations.getStationsList().stream().map(Station::getStationCode).collect(Collectors.toList()));
+        channelAndStationCodes.addAll(channelMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).toList());
+        channelAndStationCodes.addAll(stationMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).toList());
+        channelAndStationCodes.addAll(channels.getChannelList().stream().map(Channel::getChannelCode).toList());
+        channelAndStationCodes.addAll(stations.getStationsList().stream().map(Station::getStationCode).toList());
 
         Set<String> validCodes = channelAndStationCodes.stream()
                 .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toSet());
         return generator(validCodes, entityCode);
     }
+
+    /**
+     * @param details  station details
+     * @param note     not used now
+     * @param status   @link{WrapperStatus}
+     * @param createBy creator
+     * @return it inserts the station if it doesn't exist or updates it
+     */
+    public WrapperEntities<StationDetails> upsert(StationDetails details, String note, String status, String createBy) {
+        var entity = repository.findById(details.getStationCode());
+        if(entity.isPresent()) {
+            return update(details, note, status, createBy);
+        } else {
+            details.setActivationDate(null);
+
+            WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(details);
+            wrapperEntity.setNote(note);
+            wrapperEntity.setStatus(WrapperStatus.TO_CHECK_UPDATE);
+            wrapperEntity.setCreatedAt(Instant.now());
+            wrapperEntity.setModifiedAt(Instant.now());
+            wrapperEntity.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
+
+            WrapperEntities<StationDetails> wrapperEntities = new WrapperEntities<>(wrapperEntity);
+            wrapperEntities.setCreatedAt(null);
+            wrapperEntities.setCreatedBy(null);
+            wrapperEntities.setModifiedAt(Instant.now());
+            wrapperEntities.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
+
+            return repository.insert(wrapperEntities);
+        }
+    }
+
+
 }

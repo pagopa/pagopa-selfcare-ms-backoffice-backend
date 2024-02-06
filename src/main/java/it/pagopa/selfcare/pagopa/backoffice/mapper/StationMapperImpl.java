@@ -12,9 +12,9 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStati
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 
@@ -88,7 +88,7 @@ public class StationMapperImpl implements StationMapper {
     }
 
     @Override
-    public StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy) {
+    public StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy, Instant createdAt) {
         if(model == null) {
             return null;
         }
@@ -142,6 +142,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setWrapperStatus(status);
         stationDetailResource.setCreatedBy(createdBy);
         stationDetailResource.setModifiedBy(modifiedBy);
+        stationDetailResource.setCreatedAt(createdAt);
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
         BrokerDetails brokerDetails = model.getIntermediarioPa();
@@ -165,8 +166,8 @@ public class StationMapperImpl implements StationMapper {
         StationsResource stationsResource = new StationsResource();
 
         stationsResource.setStationsList(model.getStationsList().stream()
-                .map(station -> toResource(station))
-                .collect(Collectors.toList()));
+                .map(this::toResource)
+                .toList());
         stationsResource.setPageInfo(model.getPageInfo());
 
         return stationsResource;
@@ -235,7 +236,7 @@ public class StationMapperImpl implements StationMapper {
         }
         StationDetailsResourceList resource = new StationDetailsResourceList();
         resource.setStationsDetailsList(model.getStationsDetailsList().stream().map(i ->
-                toResource(i)).collect(Collectors.toList()));
+                toResource(i)).toList());
 
         resource.setPageInfo(model.getPageInfo());
         return resource;
@@ -270,7 +271,7 @@ public class StationMapperImpl implements StationMapper {
 
         wrapperStations.setStationsList(model.getStationsList().stream()
                 .map(station -> toWrapperStation(station))
-                .collect(Collectors.toList()));
+                .toList());
         wrapperStations.setPageInfo(model.getPageInfo());
 
         return wrapperStations;
@@ -286,8 +287,11 @@ public class StationMapperImpl implements StationMapper {
         List<WrapperStation> stationList = new ArrayList<>();
 
         wrapperEntitiesList.getWrapperEntities().forEach(
-                ent -> stationList.add(toWrapperStation(
-                        (WrapperEntityOperations<StationDetails>) getWrapperEntityOperationsSortedList(ent).get(0))));
+                ent -> {
+                    WrapperStation wrapperStation = toWrapperStation((WrapperEntityOperations<StationDetails>) getWrapperEntityOperationsSortedList(ent).get(0));
+                    wrapperStation.setCreatedAt(ent.getCreatedAt());
+                    stationList.add(wrapperStation);
+                });
 
         wrapperStations.setStationsList(stationList);
         wrapperStations.setPageInfo(wrapperEntitiesList.getPageInfo());
@@ -328,7 +332,7 @@ public class StationMapperImpl implements StationMapper {
 
         wrapperStationsResource.setStationsList(wrapperStations.getStationsList().stream()
                 .map(station -> toWrapperStationResource(station))
-                .collect(Collectors.toList()));
+                .toList());
         wrapperStationsResource.setPageInfo(wrapperStations.getPageInfo());
 
         return wrapperStationsResource;
