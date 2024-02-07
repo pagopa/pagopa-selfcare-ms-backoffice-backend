@@ -6,8 +6,19 @@ import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelPspList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
@@ -27,17 +38,21 @@ import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWra
 @Service
 public class ChannelService {
 
-    @Autowired
-    private ApiConfigClient apiConfigClient;
+    private final ApiConfigClient apiConfigClient;
+
+    private final WrapperService wrapperService;
+
+    private final JiraServiceManagerClient jsmClient;
+
+    private final AwsSesClient awsSesClient;
 
     @Autowired
-    private WrapperService wrapperService;
-
-    @Autowired
-    private JiraServiceManagerClient jsmClient;
-
-    @Autowired
-    private AwsSesClient awsSesClient;
+    public ChannelService(ApiConfigClient apiConfigClient, WrapperService wrapperService, JiraServiceManagerClient jsmClient, AwsSesClient awsSesClient) {
+        this.apiConfigClient = apiConfigClient;
+        this.wrapperService = wrapperService;
+        this.jsmClient = jsmClient;
+        this.awsSesClient = awsSesClient;
+    }
 
     public WrapperChannelsResource getAllMergedChannel(Integer limit, String channelcode, String brokerCode, Integer page, String sorting) {
         Channels channels = apiConfigClient.getChannels(limit, page, channelcode, brokerCode, sorting);
@@ -175,4 +190,8 @@ public class ChannelService {
         return ChannelMapper.toResource(dto);
     }
 
+    public ChannelsResource getPspChannels(Integer limit, Integer page, String pspTaxCode, String sort) {
+        Channels dto = apiConfigClient.getPspChannelsByTaxCode(limit, page, pspTaxCode, sort);
+        return ChannelMapper.toResource(dto);
+    }
 }
