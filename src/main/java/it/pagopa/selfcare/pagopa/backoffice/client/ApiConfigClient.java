@@ -15,7 +15,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviderDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviders;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
@@ -72,13 +71,6 @@ public interface ApiConfigClient {
     @PutMapping(value = "/channels/{channelcode}", produces = MediaType.APPLICATION_JSON_VALUE)
     ChannelDetails updateChannel(@RequestBody ChannelDetails channelDetails,
                                  @PathVariable("channelcode") String channelCode);
-
-    /**
-     * @deprecated (since v1.7.0, new API added in ApiConfig Selfcare Integration Client that replace this one)
-     */
-    @Deprecated(since="1.7.0", forRemoval=true)
-    @GetMapping(value = "/paymentserviceproviders/{pspcode}/channels", produces = MediaType.APPLICATION_JSON_VALUE)
-    PspChannels getPspChannels(@PathVariable("pspcode") String pspCode);
 
     @GetMapping(value = "/channels/{channelcode}", produces = MediaType.APPLICATION_JSON_VALUE)
     ChannelDetails getChannelDetails(@PathVariable("channelcode") String channelcode);
