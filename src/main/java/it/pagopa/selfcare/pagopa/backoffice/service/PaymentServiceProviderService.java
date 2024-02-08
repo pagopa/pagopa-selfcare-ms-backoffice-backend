@@ -2,11 +2,25 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.BrokerOrPspDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.BrokerPspDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelCodeResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProviderDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProviderDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProvidersResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.BrokerPspDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channel;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviderDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviders;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +38,25 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
 @Slf4j
 public class PaymentServiceProviderService {
 
-    @Autowired
-    private ApiConfigClient apiConfigClient;
+    private final ApiConfigClient apiConfigClient;
+
+    private final ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
+
+    private final WrapperService wrapperService;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private WrapperService wrapperService;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    public PaymentServiceProviderService(
+            ApiConfigClient apiConfigClient,
+            ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
+            WrapperService wrapperService,
+            ModelMapper modelMapper) {
+        this.apiConfigClient = apiConfigClient;
+        this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
+        this.wrapperService = wrapperService;
+        this.modelMapper = modelMapper;
+    }
 
     public PaymentServiceProviderDetailsResource createPSP(PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto, Boolean direct) {
         var dtoAsMap = ChannelMapper.fromPaymentServiceProviderDetailsDtoToMap(paymentServiceProviderDetailsDto);
@@ -86,8 +111,8 @@ public class PaymentServiceProviderService {
     }
 
 
-    public PspChannelsResource getPSPChannels(String pspCode) {
-        PspChannels dto = apiConfigClient.getPspChannels(pspCode);
+    public PspChannelsResource getPSPChannels(String pspTaxCode) {
+        PspChannels dto = apiConfigSelfcareIntegrationClient.getPspChannels(pspTaxCode);
         return ChannelMapper.toResource(dto);
     }
 
