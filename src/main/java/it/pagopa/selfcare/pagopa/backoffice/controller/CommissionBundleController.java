@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.service.CommissionBundleService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
@@ -64,9 +65,9 @@ public class CommissionBundleController {
     @Operation(summary = "Create a commissional bundle related to PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public String createBundle(@Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
-                               @Parameter(description = "Commissional bundle related to PSP to be created") @RequestBody @NotNull Bundle bundleDto) {
+                               @Parameter(description = "Commissional bundle related to PSP to be created") @RequestBody @NotNull BundleRequest bundleRequest) {
 
-        return commissionBundleService.createPSPBundle(pspCode, bundleDto);
+        return commissionBundleService.createPSPBundle(pspCode, bundleRequest);
     }
 
 }
