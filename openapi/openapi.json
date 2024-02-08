@@ -625,7 +625,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Bundle"
+                "$ref": "#/components/schemas/BundleRequest"
               }
             }
           },
@@ -6330,8 +6330,7 @@
             "type": "string",
             "format": "date"
           }
-        },
-        "description": "Commissional bundle related to PSP to be created"
+        }
       },
       "BundlePaymentType": {
         "type": "object",
@@ -6368,6 +6367,79 @@
             }
           }
         }
+      },
+      "BundleRequest": {
+        "type": "object",
+        "properties": {
+          "abi": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "digitalStamp": {
+            "type": "boolean"
+          },
+          "digitalStampRestriction": {
+            "type": "boolean"
+          },
+          "idBrokerPsp": {
+            "type": "string"
+          },
+          "idCdi": {
+            "type": "string"
+          },
+          "idChannel": {
+            "type": "string"
+          },
+          "maxPaymentAmount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "minPaymentAmount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "paymentAmount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "paymentType": {
+            "type": "string"
+          },
+          "pspBusinessName": {
+            "type": "string"
+          },
+          "touchpoint": {
+            "type": "string"
+          },
+          "transferCategoryList": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "GLOBAL",
+              "PUBLIC",
+              "PRIVATE"
+            ]
+          },
+          "validityDateFrom": {
+            "type": "string",
+            "format": "date"
+          },
+          "validityDateTo": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "description": "Commissional bundle related to PSP to be created"
       },
       "Bundles": {
         "type": "object",
