@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
