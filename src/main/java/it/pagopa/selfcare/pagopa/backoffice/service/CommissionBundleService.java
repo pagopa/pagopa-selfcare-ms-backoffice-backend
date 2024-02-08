@@ -34,8 +34,7 @@ public class CommissionBundleService {
     }
 
     public Bundles getBundlesByPSP(String pspCode, List<BundleType> bundleType, String name, Integer limit, Integer page) {
-        BundlesDTO dto = gecClient.getBundlesByPSP(pspCode, bundleType, name, limit, page);
-        return modelMapper.map(dto, Bundles.class);
+        return gecClient.getBundlesByPSP(pspCode, bundleType, name, limit, page);
     }
 
     public String createPSPBundle(String pspCode, BundleCreate dto) {

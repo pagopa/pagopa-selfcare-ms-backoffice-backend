@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.GecFeignConfig;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -14,7 +15,7 @@ public interface GecClient {
 
     @GetMapping(value = "/cis/{cifiscalcode}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    BundlesDTO getBundlesByCI(@PathVariable(required = true) String cifiscalcode,
+    Bundles getBundlesByCI(@PathVariable(required = true) String cifiscalcode,
                               @RequestParam(required = false) Integer limit,
                               @RequestParam(required = false) Integer page);
 
@@ -25,11 +26,11 @@ public interface GecClient {
 
     @GetMapping(value = "/psps/{idpsp}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    BundlesDTO getBundlesByPSP(@PathVariable(required = true) String idpsp,
-                               @RequestParam(required = false) List<BundleType> bundleType,
-                               @RequestParam(required = false) String name,
-                               @RequestParam(required = false) Integer limit,
-                               @RequestParam(required = false) Integer page);
+    Bundles getBundlesByPSP(@PathVariable(required = true) String idpsp,
+                            @RequestParam(required = false) List<BundleType> bundleType,
+                            @RequestParam(required = false) String name,
+                            @RequestParam(required = false) Integer limit,
+                            @RequestParam(required = false) Integer page);
 
     @PostMapping(value = "/psps/{idpsp}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody

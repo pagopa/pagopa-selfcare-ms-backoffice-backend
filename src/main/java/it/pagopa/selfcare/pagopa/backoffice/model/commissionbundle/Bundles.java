@@ -15,9 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 public class Bundles {
 
-    @JsonProperty("bundles")
     private List<Bundle> bundles;
-
-    @JsonProperty("page_info")
     private PageInfo pageInfo;
 }
