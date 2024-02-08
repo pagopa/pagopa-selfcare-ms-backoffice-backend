@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.GecFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -35,7 +36,7 @@ public interface GecClient {
     @PostMapping(value = "/psps/{idpsp}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     String createPSPBundle(@PathVariable(required = true) String idpsp,
-                           @RequestBody @NotNull BundleCreateDTO bundle);
+                           @RequestBody @NotNull Bundle bundle);
 
     @GetMapping(value = "/paymenttypes", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
