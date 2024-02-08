@@ -66,18 +66,6 @@ public class ChannelController {
         return channelService.getChannels(limit, page, code, sort);
     }
 
-    @GetMapping("/psps/{psp-tax-code}")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get paginated list of channels by PSP tax code", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public ChannelsResource getPspChannels(@Parameter(description = "Number of elements on one page. Default = 50") @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                           @Parameter(description = "Page number. Page value starts from 0") @RequestParam Integer page,
-                                           @Parameter(description = "Filter channel by PSP tax code") @PathVariable(value = "psp-tax-code") String pspTaxCode,
-                                           @Parameter(description = "Sort Direction ordering") @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort) {
-
-        return channelService.getPspChannels(limit, page, pspTaxCode, sort);
-    }
-
     @GetMapping(value = "/{channel-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get channel's details", security = {@SecurityRequirement(name = "JWT")})

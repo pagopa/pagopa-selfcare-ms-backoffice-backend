@@ -73,6 +73,10 @@ public interface ApiConfigClient {
     ChannelDetails updateChannel(@RequestBody ChannelDetails channelDetails,
                                  @PathVariable("channelcode") String channelCode);
 
+    /**
+     * @deprecated (since v1.7.0, new API added in ApiConfig Selfcare Integration Client that replace this one)
+     */
+    @Deprecated(since="1.7.0", forRemoval=true)
     @GetMapping(value = "/paymentserviceproviders/{pspcode}/channels", produces = MediaType.APPLICATION_JSON_VALUE)
     PspChannels getPspChannels(@PathVariable("pspcode") String pspCode);
 
@@ -253,7 +257,4 @@ public interface ApiConfigClient {
                                                                                @RequestParam(required = false, name = "applicationCode") Long applicationCode,
                                                                                @RequestParam(required = false, name = "segregationCode") Long segregationCode,
                                                                                @RequestParam(required = false, name = "mod4") Boolean mod4);
-
-    @GetMapping(value = "/paymentserviceproviders/{psp-tax-code}/channels", produces = MediaType.APPLICATION_JSON_VALUE)
-    Channels getPspChannelsByTaxCode(Integer limit, Integer page, @PathVariable(value = "psp-tax-code") String pspTaxCode, String sort);
 }
