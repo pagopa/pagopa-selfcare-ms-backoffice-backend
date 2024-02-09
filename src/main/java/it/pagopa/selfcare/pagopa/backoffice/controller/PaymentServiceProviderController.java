@@ -52,7 +52,7 @@ public class PaymentServiceProviderController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get the channels of the PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public PspChannelsResource getPspChannels(@Parameter(description = "Code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode) {
+    public PspChannelsResource getPspChannels(@Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode) {
 
         return paymentServiceProviderService.getPSPChannels(pspTaxCode);
     }
