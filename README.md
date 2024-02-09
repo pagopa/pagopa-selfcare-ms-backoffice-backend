@@ -30,7 +30,7 @@ the [OpenApi 3 here.](https://editor.swagger.io/?url=https://raw.githubuserconte
 
 ## Technology Stack
 
-- Java 11
+- Java 17
 - Spring Boot
 - Spring Web
 - Hibernate
@@ -45,13 +45,13 @@ the [OpenApi 3 here.](https://editor.swagger.io/?url=https://raw.githubuserconte
 
 - git
 - maven
-- jdk-11
+- jdk-17
 
 ### Run the project
 
 Start the springboot application with this command:
 
-`mvn spring-boot:run -Dspring-boot.run.profiles=local`
+`mvn spring-boot:run -Dspring.profiles.active=local`
 
 👀 You need to put in your local environment some variables
 
