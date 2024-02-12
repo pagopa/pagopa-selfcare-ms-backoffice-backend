@@ -20,9 +20,12 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "Payment Service Providers")
 public class PaymentServiceProviderController {
 
-    @Autowired
-    private PaymentServiceProviderService paymentServiceProviderService;
+    private final PaymentServiceProviderService paymentServiceProviderService;
 
+    @Autowired
+    public PaymentServiceProviderController(PaymentServiceProviderService paymentServiceProviderService) {
+        this.paymentServiceProviderService = paymentServiceProviderService;
+    }
 
     @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
@@ -45,13 +48,13 @@ public class PaymentServiceProviderController {
         return paymentServiceProviderService.getBrokerAndPspDetails(brokerPspCode);
     }
 
-    @GetMapping(value = "/{psp-code}/channels", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{psp-tax-code}/channels", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get the channels of the PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public PspChannelsResource getPspChannels(@Parameter(description = "Code of the payment service provider") @PathVariable("psp-code") String pspCode) {
+    public PspChannelsResource getPspChannels(@Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode) {
 
-        return paymentServiceProviderService.getPSPChannels(pspCode);
+        return paymentServiceProviderService.getPSPChannels(pspTaxCode);
     }
 
     @GetMapping(value = "/{psp-code}/channels/available-code", produces = {MediaType.APPLICATION_JSON_VALUE})
