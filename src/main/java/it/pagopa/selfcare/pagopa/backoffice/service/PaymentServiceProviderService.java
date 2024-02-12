@@ -58,12 +58,14 @@ public class PaymentServiceProviderService {
         this.modelMapper = modelMapper;
     }
 
-    public PaymentServiceProviderDetailsResource createPSP(PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto, Boolean direct) {
-        var dtoAsMap = ChannelMapper.fromPaymentServiceProviderDetailsDtoToMap(paymentServiceProviderDetailsDto);
-        if(Boolean.TRUE.equals(direct)) {
-            apiConfigClient.createBrokerPsp(dtoAsMap);
+    public PaymentServiceProviderDetailsResource createPSP(PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto, Boolean isDirect) {
+        BrokerPspDetails brokerPspDetails = ChannelMapper.fromPaymentServiceProviderDetailsDtoToMap(paymentServiceProviderDetailsDto);
+        if (Boolean.TRUE.equals(isDirect)) {
+            apiConfigClient.createBrokerPsp(brokerPspDetails);
         }
-        PaymentServiceProviderDetails responsePSP = apiConfigClient.createPaymentServiceProvider(modelMapper.map(paymentServiceProviderDetailsDto, PaymentServiceProviderDetails.class));
+        paymentServiceProviderDetailsDto.setPspCode("PSP".concat(paymentServiceProviderDetailsDto.getTaxCode()));
+        PaymentServiceProviderDetails pspDetails = modelMapper.map(paymentServiceProviderDetailsDto, PaymentServiceProviderDetails.class);
+        PaymentServiceProviderDetails responsePSP = apiConfigClient.createPaymentServiceProvider(pspDetails);
         return ChannelMapper.toResource(responsePSP);
     }
 
