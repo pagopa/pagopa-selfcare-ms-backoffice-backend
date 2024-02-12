@@ -6,7 +6,14 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.service.ChannelService;
 import it.pagopa.selfcare.pagopa.backoffice.service.WrapperService;
@@ -16,7 +23,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -28,11 +44,15 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "Channels")
 public class ChannelController {
 
-    @Autowired
-    private ChannelService channelService;
+    private final ChannelService channelService;
+
+    private final WrapperService wrapperService;
 
     @Autowired
-    private WrapperService wrapperService;
+    public ChannelController(ChannelService channelService, WrapperService wrapperService) {
+        this.channelService = channelService;
+        this.wrapperService = wrapperService;
+    }
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
