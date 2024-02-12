@@ -20,7 +20,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServi
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -64,29 +63,32 @@ class PaymentServiceProviderServiceTest {
     @InjectMocks
     private PaymentServiceProviderService sut;
 
-    @BeforeEach
-    void setUp() {
-    }
-
     @Test
-    void createPSPWithNullPaymentServiceProviderDetailsDtoAndDirectTrue() {
+    void createPSPDirectTrue() {
         when(apiConfigClientMock.createPaymentServiceProvider(any()))
                 .thenReturn(getPaymentServiceProviderDetails());
+
+        PaymentServiceProviderDetailsDto pspDetailsDto = new PaymentServiceProviderDetailsDto();
+        pspDetailsDto.setTaxCode("tax-code");
         PaymentServiceProviderDetailsResource result =
-                assertDoesNotThrow(() -> sut.createPSP(null, true));
+                assertDoesNotThrow(() -> sut.createPSP(pspDetailsDto, true));
 
         assertNotNull(result);
+        verify(apiConfigClientMock).createBrokerPsp(any());
     }
 
     @Test
     void createPSPWithDirectFalse() {
         when(apiConfigClientMock.createPaymentServiceProvider(any()))
                 .thenReturn(getPaymentServiceProviderDetails());
+
+        PaymentServiceProviderDetailsDto pspDetailsDto = new PaymentServiceProviderDetailsDto();
+        pspDetailsDto.setTaxCode("tax-code");
         PaymentServiceProviderDetailsResource result =
-                assertDoesNotThrow(() -> sut.createPSP(new PaymentServiceProviderDetailsDto(), false));
+                assertDoesNotThrow(() -> sut.createPSP(pspDetailsDto, false));
 
         assertNotNull(result);
-        verify(apiConfigClientMock, never()).createBroker(any());
+        verify(apiConfigClientMock, never()).createBrokerPsp(any());
     }
 
     @Test

@@ -36,6 +36,7 @@ public class PaymentServiceProviderController {
                                                                       @Parameter(description = "Payment service provider code") @RequestParam(name = "psp-code", required = false) String pspCode,
                                                                       @Parameter(description = "Tax Code of the payment service provider") @RequestParam(name = "tax-code", required = false) String taxCode,
                                                                       @Parameter(description = "Payment service provider name") @RequestParam(required = false) String name) {
+
         return paymentServiceProviderService.getPaymentServiceProviders(limit, page, pspCode, taxCode, name);
     }
 
@@ -84,6 +85,7 @@ public class PaymentServiceProviderController {
     public PaymentServiceProviderDetailsResource updatePSP(@Parameter(description = "code of the Payment Service Provider")
                                                            @PathVariable("psp-code") String pspCode,
                                                            @RequestBody @NotNull PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto) {
+
         return paymentServiceProviderService.updatePSP(pspCode, paymentServiceProviderDetailsDto);
     }
 
