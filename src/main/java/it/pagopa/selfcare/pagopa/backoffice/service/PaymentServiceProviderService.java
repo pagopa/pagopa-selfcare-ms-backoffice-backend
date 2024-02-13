@@ -21,6 +21,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServi
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviders;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
+import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,16 +47,21 @@ public class PaymentServiceProviderService {
 
     private final ModelMapper modelMapper;
 
+    private final LegacyPspCodeUtil legacyPspCodeUtil;
+
+
     @Autowired
     public PaymentServiceProviderService(
             ApiConfigClient apiConfigClient,
             ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
             WrapperService wrapperService,
-            ModelMapper modelMapper) {
+            ModelMapper modelMapper,
+            LegacyPspCodeUtil legacyPspCodeUtil) {
         this.apiConfigClient = apiConfigClient;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
         this.wrapperService = wrapperService;
         this.modelMapper = modelMapper;
+        this.legacyPspCodeUtil = legacyPspCodeUtil;
     }
 
     public PaymentServiceProviderDetailsResource createPSP(PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto, Boolean isDirect) {
@@ -118,7 +124,8 @@ public class PaymentServiceProviderService {
         return ChannelMapper.toResource(dto);
     }
 
-    public PspChannelPaymentTypesResource updatePSPChannel(String pspCode, String channelCode, PspChannelPaymentTypes pspChannelPaymentTypes) {
+    public PspChannelPaymentTypesResource updatePSPChannel(String taxCode, String channelCode, PspChannelPaymentTypes pspChannelPaymentTypes) {
+        String pspCode = legacyPspCodeUtil.retrievePspCode(taxCode, false);
         PspChannelPaymentTypes dto = apiConfigClient.updatePaymentServiceProvidersChannels(pspCode, channelCode, pspChannelPaymentTypes);
         return ChannelMapper.toResource(dto);
     }
