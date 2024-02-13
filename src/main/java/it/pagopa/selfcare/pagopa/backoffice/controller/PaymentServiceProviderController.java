@@ -89,15 +89,15 @@ public class PaymentServiceProviderController {
         return paymentServiceProviderService.updatePSP(pspCode, paymentServiceProviderDetailsDto);
     }
 
-    @PutMapping(value = "/{psp-code}/channels/{channel-code}")
+    @PutMapping(value = "/{tax-code}/channels/{channel-code}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Update a relation between a PSP and a channel", security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Update a relation between a PSP and a channel, using the tax code to find related PSP Code", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public PspChannelPaymentTypesResource updatePaymentServiceProvidersChannels(@Parameter(description = "Code of the payment service provider") @PathVariable("psp-code") String pspCode,
+    public PspChannelPaymentTypesResource updatePaymentServiceProvidersChannels(@Parameter(description = "Tax Code to use for retrieval of the related Code of the payment service provider") @PathVariable("tax-code") String taxCode,
                                                                                 @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
                                                                                 @Parameter(description = " List of payment types") @RequestBody PspChannelPaymentTypes pspChannelPaymentTypes) {
 
-        return paymentServiceProviderService.updatePSPChannel(pspCode, channelCode, pspChannelPaymentTypes);
+        return paymentServiceProviderService.updatePSPChannel(taxCode, channelCode, pspChannelPaymentTypes);
     }
 
     @DeleteMapping(value = "/{psp-code}/channels/{channel-code}")

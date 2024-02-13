@@ -19,6 +19,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServi
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviders;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
+import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,6 +57,9 @@ class PaymentServiceProviderServiceTest {
 
     @Mock
     private WrapperService wrapperServiceMock;
+
+    @Mock
+    private LegacyPspCodeUtil legacyPspCodeUtil;
 
     @Mock
     private ModelMapper modelMapperMock;
@@ -197,8 +201,9 @@ class PaymentServiceProviderServiceTest {
     void updatePSPChannel() {
         when(apiConfigClientMock.updatePaymentServiceProvidersChannels(anyString(), anyString(), any()))
                 .thenReturn(new PspChannelPaymentTypes(new ArrayList<>()));
+        when(legacyPspCodeUtil.retrievePspCode(any(),eq(false))).thenReturn("psp-code");
         PspChannelPaymentTypesResource result =
-                assertDoesNotThrow(() -> sut.updatePSPChannel("psp-code", "channel-code", new PspChannelPaymentTypes()));
+                assertDoesNotThrow(() -> sut.updatePSPChannel("tax-code", "channel-code", new PspChannelPaymentTypes()));
 
         assertNotNull(result);
     }

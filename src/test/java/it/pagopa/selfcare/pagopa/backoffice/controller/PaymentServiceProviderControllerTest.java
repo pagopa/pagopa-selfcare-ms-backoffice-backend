@@ -75,7 +75,7 @@ class PaymentServiceProviderControllerTest {
 
     @Test
     void getBrokerAndPspDetailsTest() throws Exception {
-        mvc.perform(get("/payment-service-providers/{psp-code}", PSP_CODE)
+        mvc.perform(get("/payment-service-providers/{rax-code}", PSP_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -112,7 +112,7 @@ class PaymentServiceProviderControllerTest {
 
     @Test
     void updatePaymentServiceProvidersChannelsTest() throws Exception {
-        mvc.perform(put("/payment-service-providers//{psp-code}/channels/{channel-code}", PSP_CODE, CHANNEL_CODE)
+        mvc.perform(put("/payment-service-providers/{tax-code}/channels/{channel-code}", PSP_TAX_CODE, CHANNEL_CODE)
                         .content(objectMapper.writeValueAsBytes(new PspChannelPaymentTypes()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -120,7 +120,7 @@ class PaymentServiceProviderControllerTest {
 
     @Test
     void deletePSPChannelsTest() throws Exception {
-        mvc.perform(delete("/payment-service-providers//{psp-code}/channels/{channel-code", PSP_CODE, CHANNEL_CODE)
+        mvc.perform(delete("/payment-service-providers/{psp-code}/channels/{channel-code", PSP_CODE, CHANNEL_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
