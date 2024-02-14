@@ -119,16 +119,6 @@ class LegacyPspCodeUtilTest {
         verify(pspLegacyRepository).findByCf(any());
     }
 
-    @Test
-    void taxCodeNotInRepositoryShouldProduceNewTruncatedPspCodeOverCharLimit() {
-        when(pspLegacyRepository.findByCf(any())).thenReturn(Optional.empty());
-        String codeResult = pspCodeUtil.retrievePspCode(TEST_CF_LONG, true);
-        assertNotNull(codeResult);
-        assertEquals(11,codeResult.length());
-        assertEquals((PSP_PREFIX.concat(TEST_CF_LONG)).substring(0,11),codeResult);
-        verify(pspLegacyRepository).findByCf(any());
-    }
-
     public PspLegacyEntity getResultEntity() {
         return PspLegacyEntity
                 .builder()

@@ -16,8 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -32,6 +31,15 @@ public class ApiManagementService {
     @Value("${institution.subscription.test-email}")
     private String testEmail;
 
+    private static final Map<RoleType,List<String>> INSTITUTIONS_ROLE_ALLOWED_TYPES;
+    static {
+        INSTITUTIONS_ROLE_ALLOWED_TYPES = Map.of(
+                RoleType.PSP, List.of("PG", "PSP"),
+                RoleType.EC, List.of("PA", "GSP", "SCP"),
+                RoleType.PT, List.of("PT")
+        );
+    }
+
     public ApiManagementService(AzureApiManagerClient apimClient, ExternalApiClient externalApiClient, ModelMapper modelMapper) {
         this.apimClient = apimClient;
         this.externalApiClient = externalApiClient;
@@ -39,7 +47,6 @@ public class ApiManagementService {
     }
 
     public List<InstitutionDetail> getInstitutions() {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Collection<InstitutionInfo> institutions = externalApiClient.getInstitutions(Utility.extractUserIdFromAuth(authentication));
         return institutions.stream()
@@ -56,10 +63,14 @@ public class ApiManagementService {
         return externalApiClient.getInstitutionUserProducts(institutionId, Utility.extractUserIdFromAuth(authentication));
     }
 
-    public List<Delegation> getBrokerDelegation(String institutionId, String brokerId) {
-        var response = externalApiClient.getBrokerDelegation(institutionId, brokerId, "prod-pagopa", "FULL");
+    public List<Delegation> getBrokerDelegation(String institutionId, String brokerId, List<RoleType> roles) {
+        var response = externalApiClient.getBrokerDelegation(
+                institutionId, brokerId, "prod-pagopa", "FULL");
         return response.stream()
                 .map(elem -> modelMapper.map(elem, Delegation.class))
+                .filter(delegation -> (roles == null || roles.isEmpty()) || (roles.stream().anyMatch(
+                        role ->INSTITUTIONS_ROLE_ALLOWED_TYPES.containsKey(role) &&
+                        INSTITUTIONS_ROLE_ALLOWED_TYPES.get(role).contains(delegation.getInstitutionType()))))
                 .toList();
     }
 
