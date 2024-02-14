@@ -42,3 +42,4 @@ build/
 **/**/.java-version
 infra/.terraform/
 **/secrets
+/decrypted_env
