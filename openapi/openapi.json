@@ -3262,7 +3262,7 @@
         }, {
           "description" : "Broker's role to consider when filtering institution types (PSP,EC,PT_EC,PT_PSP,PT_ALL)",
           "in" : "query",
-          "name" : "role",
+          "name" : "roles",
           "required" : false,
           "schema" : {
             "type" : "array",
