@@ -34,7 +34,7 @@ public interface GecClient {
 
     @PostMapping(value = "/psps/{idpsp}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    String createPSPBundle(@PathVariable(required = true) String idpsp,
+    BundleCreateResponse createPSPBundle(@PathVariable(required = true) String idpsp,
                            @RequestBody @NotNull BundleRequest bundle);
 
     @GetMapping(value = "/paymenttypes", produces = MediaType.APPLICATION_JSON_VALUE)
