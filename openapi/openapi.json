@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.0.1"
+    "version": "2.0.2"
   },
   "servers": [
     {
@@ -17,12 +17,12 @@
           "default": "/backoffice/v1"
         },
         "host": {
+          "default": "api.dev.platform.pagopa.it",
           "enum": [
             "api.dev.platform.pagopa.it",
             "api.uat.platform.pagopa.it",
             "api.platform.pagopa.it"
-          ],
-          "default": "api.dev.platform.pagopa.it"
+          ]
         }
       }
     }
@@ -3633,6 +3633,23 @@
             "required": false,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "description": "Broker's role to consider when filtering institution types (PSP,EC,PT_EC,PT_PSP,PT_ALL)",
+            "in": "query",
+            "name": "roles",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "EC",
+                  "PSP",
+                  "PT"
+                ]
+              }
             }
           }
         ],

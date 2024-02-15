@@ -1,0 +1,13 @@
+{
+ "id": "000000",
+  "externalId": "000001",
+  "originId": "123",
+  "description": "aDescription",
+  "digitalAddress": "aDigitalAddress",
+  "address": "aAddress",
+  "zipCode": "aZipCode",
+  "taxCode": "aTaxCode",
+  "origin": "anOrigin",
+  "institutionType": "PA",
+  "attributes": []
+}
