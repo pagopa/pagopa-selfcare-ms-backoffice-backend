@@ -41,9 +41,10 @@ public class InstitutionController {
     @Operation(summary = "Retrieve all active delegations for given institution broker and logged user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public List<Delegation> getBrokerDelegation(@Parameter(description = "Institution's unique internal identifier") @RequestParam(required = false, value = "institution-id") String institutionId,
-                                                @Parameter(description = "Broker's unique id") @RequestParam(required = false, value = "brokerId") String brokerId) {
-
-        return apiManagementService.getBrokerDelegation(institutionId, brokerId);
+                                                @Parameter(description = "Broker's unique id") @RequestParam(required = false, value = "brokerId") String brokerId,
+                                                @Parameter(description = "Broker's role to consider when filtering institution types (PSP,EC,PT_EC,PT_PSP,PT_ALL)") @RequestParam(required = false, value = "roles") List<RoleType> roles
+    ) {
+        return apiManagementService.getBrokerDelegation(institutionId, brokerId, roles);
     }
 
     @GetMapping("/{institution-id}")

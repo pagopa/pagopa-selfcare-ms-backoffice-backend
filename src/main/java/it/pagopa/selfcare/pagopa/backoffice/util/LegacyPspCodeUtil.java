@@ -38,7 +38,7 @@ public class LegacyPspCodeUtil {
                 pspCode = pspLegacyEntity.getBic().get(0);
             }
         }
-        return pspCode.length() > 11 ? pspCode.substring(0,11) : pspCode;
+        return pspCode;
     }
 
     private static boolean abiIsPresent(PspLegacyEntity pspLegacyEntity) {
