@@ -58,6 +58,7 @@ Start the springboot application with this command:
 👀 You need to put in your local environment some variables
 
 If you have access to azure dev, you can use `sops.sh` script to decrypt `./encrypted_env` to create a valid env file.
+_You need to have sops installed._
 
 _An example:_
 
