@@ -80,7 +80,7 @@ microservice-chart:
     PAGOPA_APIM_SERVICE_URL: https://api.uat.platform.pagopa.it
     PAGOPA_SELFCARE_INTEGRATION_APIM_SERVICE_URL: https://api.uat.platform.pagopa.it
     GEC_SERVICE_URL: https://api.uat.platform.pagopa.it
-    TAXONOMY_SERVICE_URL: https://api.uat.platform.pagopa.it
+    TAXONOMY_SERVICE_URL: https://api.platform.pagopa.it
     AZURE_RESOURCE_GROUP: pagopa-u-api-rg
     AZURE_SERVICE_NAME: pagopa-u-apim
     ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
