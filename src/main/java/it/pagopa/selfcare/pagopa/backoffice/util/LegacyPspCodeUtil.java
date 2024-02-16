@@ -30,12 +30,20 @@ public class LegacyPspCodeUtil {
         PspLegacyEntity pspLegacyEntity = pspLegacyRepository.findByCf(taxCode).orElse(null);
 
         if(pspLegacyEntity != null) {
-            if(abiIsPresent(pspLegacyEntity)) {
-                pspCode = pspLegacyEntity.getAbi().get(0);
-            }
-            // if direct we search for a BIC psp, but if it doesn't exist we can use the ABI psp
-            if(asBroker && bicIsPresent(pspLegacyEntity)) {
-                pspCode = pspLegacyEntity.getBic().get(0);
+            if(asBroker) {
+                // if psp acts as a broker we search first in the BIC list and then in the ABI list
+                if(bicIsPresent(pspLegacyEntity)) {
+                    pspCode = pspLegacyEntity.getBic().get(0);
+                } else if(abiIsPresent(pspLegacyEntity)) {
+                    pspCode = pspLegacyEntity.getAbi().get(0);
+                }
+            } else {
+                // if psp doesn't act as a broker we search first in the ABI list and then in the BIC list
+                if(abiIsPresent(pspLegacyEntity)) {
+                    pspCode = pspLegacyEntity.getAbi().get(0);
+                } else if(bicIsPresent(pspLegacyEntity)) {
+                    pspCode = pspLegacyEntity.getBic().get(0);
+                }
             }
         }
         return pspCode;
