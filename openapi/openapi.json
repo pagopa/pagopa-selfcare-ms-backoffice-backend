@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.0.2"
+    "version": "2.0.4"
   },
   "servers": [
     {
@@ -636,7 +636,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/BundleCreateResponse"
                 }
               }
             },
@@ -6360,6 +6360,9 @@
             "format": "date"
           }
         }
+      },
+      "BundleCreateResponse": {
+        "type": "object"
       },
       "BundlePaymentType": {
         "type": "object",

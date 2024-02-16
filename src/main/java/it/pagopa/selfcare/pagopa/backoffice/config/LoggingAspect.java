@@ -1,5 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.config;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.deNull;
-
 @Aspect
 @Component
 @Slf4j
@@ -35,6 +36,7 @@ public class LoggingAspect {
     public static final String STATUS = "status";
     public static final String CODE = "httpCode";
     public static final String RESPONSE_TIME = "responseTime";
+    public static final String RESPONSE = "response";
     public static final String FAULT_CODE = "faultCode";
     public static final String FAULT_DETAIL = "faultDetail";
     public static final String REQUEST_ID = "requestId";
@@ -89,8 +91,8 @@ public class LoggingAspect {
             var requestId = UUID.randomUUID().toString();
             MDC.put(REQUEST_ID, requestId);
         }
-        Map<String, String> params = getParams(joinPoint);
-        MDC.put(ARGS, params.toString());
+        String params = getParams(joinPoint);
+        MDC.put(ARGS, getParams(joinPoint));
 
         log.info("Invoking API operation {} - args: {}", joinPoint.getSignature().getName(), params);
 
@@ -99,7 +101,9 @@ public class LoggingAspect {
         MDC.put(STATUS, "OK");
         MDC.put(CODE, String.valueOf(httpResponse.getStatus()));
         MDC.put(RESPONSE_TIME, getExecutionTime());
+        MDC.put(RESPONSE, toJsonString(result));
         log.info("Successful API operation {} - result: {}", joinPoint.getSignature().getName(), result);
+        MDC.remove(RESPONSE);
         MDC.remove(STATUS);
         MDC.remove(CODE);
         MDC.remove(RESPONSE_TIME);
@@ -112,6 +116,7 @@ public class LoggingAspect {
         MDC.put(STATUS, "KO");
         MDC.put(CODE, String.valueOf(result.getStatusCodeValue()));
         MDC.put(RESPONSE_TIME, getExecutionTime());
+        MDC.put(RESPONSE, toJsonString(result));
         MDC.put(FAULT_CODE, getTitle(result));
         MDC.put(FAULT_DETAIL, getDetail(result));
         log.info("Failed API operation {} - error: {}", MDC.get(METHOD), result);
@@ -120,7 +125,7 @@ public class LoggingAspect {
 
     @Around(value = "repository() || service()")
     public Object logTrace(ProceedingJoinPoint joinPoint) throws Throwable {
-        Map<String, String> params = getParams(joinPoint);
+        String params = getParams(joinPoint);
         log.debug("Call method {} - args: {}", joinPoint.getSignature().toShortString(), params);
         Object result = joinPoint.proceed();
         log.debug("Return method {} - result: {}", joinPoint.getSignature().toShortString(), result);
@@ -149,13 +154,26 @@ public class LoggingAspect {
         return "-";
     }
 
-    private static Map<String, String> getParams(ProceedingJoinPoint joinPoint) {
+    private static String getParams(ProceedingJoinPoint joinPoint) {
         CodeSignature codeSignature = (CodeSignature) joinPoint.getSignature();
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         int i = 0;
         for (var paramName : codeSignature.getParameterNames()) {
-            params.put(paramName, deNull(joinPoint.getArgs()[i++]));
+            Object param = joinPoint.getArgs()[i++];
+            params.put(paramName, param);
         }
-        return params;
+        return toJsonString(params);
+
+    }
+
+    private static String toJsonString(Object param) {
+        try {
+            return new ObjectMapper()
+                    .registerModule(new JavaTimeModule())
+                    .writeValueAsString(param);
+        } catch (JsonProcessingException e) {
+            log.warn("An error occurred when trying to parse a parameter", e);
+            return "parsing error";
+        }
     }
 }

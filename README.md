@@ -53,7 +53,13 @@ Start the springboot application with this command:
 
 `mvn spring-boot:run -Dspring.profiles.active=local`
 
+#### Local Environment
+
 👀 You need to put in your local environment some variables
+
+If you have access to azure dev, you can use `./infra/sops.sh` script to decrypt `./infra/env/dev/encrypted_env` to
+create a valid env file.
+_You need to have sops installed._
 
 _An example:_
 
