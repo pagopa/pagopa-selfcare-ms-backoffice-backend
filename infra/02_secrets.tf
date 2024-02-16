@@ -5,6 +5,7 @@ data "azurerm_key_vault" "kv" {
 
 
 resource "azurerm_key_vault_key" "sops_key" {
+  count        = var.env_short == "d" ? 1 : 0
   name         = "${local.service}-sops-key"
   key_vault_id = data.azurerm_key_vault.kv.id
   key_type     = "RSA"
