@@ -48,23 +48,23 @@ jobs:
         with:
           persist-credentials: false
 
-#      - name: Read create dashboard parameters
-#        id: read_parameters
-#        uses: actions/github-script@v6.3.3
-#        env:
-#          API_NAME: ${{ github.event.client_payload.api-name || inputs.api-name }}
-#          ENVIRONMENT: ${{ github.event.client_payload.environment || inputs.environment }}
-#        with:
-#          script: |
-#             const { API_NAME, ENVIRONMENT } = process.env
-#              var apiName = API_NAME.trim();
-#              var environment = ENVIRONMENT.trim();
-#              core.info(`Api name ${apiName}, environment: ${environment}`);
-#                if (!apiName || !environment) {
-#                throw `Could not create dashboard, cannot find parameters for api name and environment...`;
-#              }
-#              core.setOutput("apiName", apiName);
-#              core.setOutput("environment", environment);
+      - name: Read create dashboard parameters
+        id: read_parameters
+        uses: actions/github-script@v6.3.3
+        env:
+          API_NAME: ${{ github.event.client_payload.api-name || inputs.api-name }}
+          ENVIRONMENT: ${{ github.event.client_payload.environment || inputs.environment }}
+        with:
+          script: |
+             const { API_NAME, ENVIRONMENT } = process.env
+              var apiName = API_NAME.trim();
+              var environment = ENVIRONMENT.trim();
+              core.info(`Api name ${apiName}, environment: ${environment}`);
+                if (!apiName || !environment) {
+                throw `Could not create dashboard, cannot find parameters for api name and environment...`;
+              }
+              core.setOutput("apiName", apiName);
+              core.setOutput("environment", environment);
 #
 #      - name: Replace opex config file parameters
 #        id: replace_opex_file_parameters
