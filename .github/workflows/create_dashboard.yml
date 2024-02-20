@@ -1,0 +1,98 @@
+
+name: Create Dashboard
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+    inputs:
+      api-name:
+        description: 'Api name for which create dashboards and alerts'
+        required: true
+        type: choice
+        options:
+          - backoffice
+      environment:
+        description: 'Environment for which create dashboards and alerts'
+        required: true
+        type: choice
+        options:
+          - uat
+          - prod
+      config-options:
+        description: 'JSON string containing env properties that will be replaced into opex config.yaml file before dashboard generation'
+        type: string
+        required: false
+
+  repository_dispatch:
+    types:
+      - create-dashboard
+
+permissions:
+  id-token: write
+  contents: read
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  dashboard:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-22.04
+
+    environment:
+      name: ${{ inputs.environment }}
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Checkout
+        id: checkout
+        # from https://github.com/actions/checkout/commits/main
+        uses: actions/checkout@1f9a0c22da41e6ebfa534300ef656657ea2c6707
+        with:
+          persist-credentials: false
+
+      - name: Read create dashboard parameters
+        id: read_parameters
+        uses: actions/github-script@v6.3.3
+        env:
+          API_NAME: ${{ github.event.client_payload.api-name || inputs.api-name }}
+          ENVIRONMENT: ${{ github.event.client_payload.environment || inputs.environment }}
+        with:
+          script: |
+             const { API_NAME, ENVIRONMENT } = process.env
+              var apiName = API_NAME.trim();
+              var environment = ENVIRONMENT.trim();
+              core.info(`Api name ${apiName}, environment: ${environment}`);
+                if (!apiName || !environment) {
+                throw `Could not create dashboard, cannot find parameters for api name and environment...`;
+              }
+              core.setOutput("apiName", apiName);
+              core.setOutput("environment", environment);
+
+      - name: Replace opex config file parameters
+        id: replace_opex_file_parameters
+        env:
+          CONFIG_FILE: .opex/${{ steps.read_parameters.outputs.apiName }}/env/${{ steps.read_parameters.outputs.environment }}/config.yaml
+          CONFIG_OPTIONS: ${{ github.event.client_payload.config-options || inputs.config-options }}
+        run: |
+          echo "📝 Replacing config yaml placeholders"
+          echo "Properties to be set: $CONFIG_OPTIONS into file $CONFIG_FILE"
+          for property in $(echo $CONFIG_OPTIONS | yq -o shell); do
+            IFS='=' read -r -a split <<< "$property"
+            key=${split[0]}
+            value=$(echo ${split[1]}|sed "s/'//g")
+            echo "Replacing key: [$key] with value: [$value]"
+            sed -i "s/\${$key}/$value/" $CONFIG_FILE
+          done
+          echo "Modified config file"
+          cat $CONFIG_FILE
+
+      # this action create a folder named /azure-dashboard
+      # from https://github.com/pagopa/opex-dashboard-azure-action/commits/main
+      - uses: pagopa/opex-dashboard-azure-action@3ad80a5e4a2d5a8f342615637072f21b687320ce
+        with:
+          environment: ${{ steps.read_parameters.outputs.environment }}
+          api-name: ${{ steps.read_parameters.outputs.apiName }}
+          config: .opex/${{ steps.read_parameters.outputs.apiName }}/env/${{ steps.read_parameters.outputs.environment }}/config.yaml
+          client-id: ${{ secrets.CLIENT_ID }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
+          # from https://github.com/pagopa/opex-dashboard-azure-action/pkgs/container/opex-dashboard-azure-action
+          docker-version: sha256:04d8ead53c772d23b094c2a395292dc159e6f2905e1b13b5f828f31eac6eb27f
