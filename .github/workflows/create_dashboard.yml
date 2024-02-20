@@ -86,7 +86,7 @@ jobs:
 
       # this action create a folder named /azure-dashboard
       # from https://github.com/pagopa/opex-dashboard-azure-action/commits/main
-      - uses: pagopa/opex-dashboard-azure-action@3ad80a5e4a2d5a8f342615637072f21b687320ce
+      - uses: pagopa/opex-dashboard-azure-action@1.2.1
         with:
           environment: ${{ steps.read_parameters.outputs.environment }}
           api-name: ${{ steps.read_parameters.outputs.apiName }}
