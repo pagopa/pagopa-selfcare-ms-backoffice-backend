@@ -16,7 +16,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -30,15 +32,6 @@ public class ApiManagementService {
 
     @Value("${institution.subscription.test-email}")
     private String testEmail;
-
-    private static final Map<RoleType,List<String>> INSTITUTIONS_ROLE_ALLOWED_TYPES;
-    static {
-        INSTITUTIONS_ROLE_ALLOWED_TYPES = Map.of(
-                RoleType.PSP, List.of("PG", "PSP"),
-                RoleType.EC, List.of("PA", "GSP", "SCP"),
-                RoleType.PT, List.of("PT")
-        );
-    }
 
     public ApiManagementService(AzureApiManagerClient apimClient, ExternalApiClient externalApiClient, ModelMapper modelMapper) {
         this.apimClient = apimClient;
@@ -64,14 +57,23 @@ public class ApiManagementService {
     }
 
     public List<Delegation> getBrokerDelegation(String institutionId, String brokerId, List<RoleType> roles) {
-        var response = externalApiClient.getBrokerDelegation(
-                institutionId, brokerId, "prod-pagopa", "FULL");
-        return response.stream()
+        var response = externalApiClient.getBrokerDelegation(institutionId, brokerId, "prod-pagopa", "FULL");
+
+        var result = response.stream()
                 .map(elem -> modelMapper.map(elem, Delegation.class))
-                .filter(delegation -> (roles == null || roles.isEmpty()) || (roles.stream().anyMatch(
-                        role ->INSTITUTIONS_ROLE_ALLOWED_TYPES.containsKey(role) &&
-                        INSTITUTIONS_ROLE_ALLOWED_TYPES.get(role).contains(delegation.getInstitutionType()))))
                 .toList();
+
+        // filter by roles
+        if(roles != null && !roles.isEmpty()) {
+            result = result.parallelStream()
+                    .filter(Objects::nonNull)
+                    .filter(delegation -> {
+                        RoleType roleType = RoleType.fromSelfcareRole(delegation.getInstitutionType());
+                        return roles.contains(roleType);
+                    })
+                    .toList();
+        }
+        return result;
     }
 
     public List<InstitutionApiKeys> getInstitutionApiKeys(String institutionId) {

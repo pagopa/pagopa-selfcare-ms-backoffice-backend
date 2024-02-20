@@ -74,6 +74,11 @@ public class LoggingAspect {
         // all service methods
     }
 
+    @Pointcut("execution(* *..client.*(..))")
+    public void client() {
+        // all service methods
+    }
+
     /**
      * Log essential info of application during the startup.
      */
@@ -123,7 +128,7 @@ public class LoggingAspect {
         MDC.clear();
     }
 
-    @Around(value = "repository() || service()")
+    @Around(value = "repository() || service() || client()")
     public Object logTrace(ProceedingJoinPoint joinPoint) throws Throwable {
         String params = getParams(joinPoint);
         log.debug("Call method {} - args: {}", joinPoint.getSignature().toShortString(), params);
