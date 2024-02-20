@@ -48,41 +48,41 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Read create dashboard parameters
-        id: read_parameters
-        uses: actions/github-script@v6.3.3
-        env:
-          API_NAME: ${{ github.event.client_payload.api-name || inputs.api-name }}
-          ENVIRONMENT: ${{ github.event.client_payload.environment || inputs.environment }}
-        with:
-          script: |
-             const { API_NAME, ENVIRONMENT } = process.env
-              var apiName = API_NAME.trim();
-              var environment = ENVIRONMENT.trim();
-              core.info(`Api name ${apiName}, environment: ${environment}`);
-                if (!apiName || !environment) {
-                throw `Could not create dashboard, cannot find parameters for api name and environment...`;
-              }
-              core.setOutput("apiName", apiName);
-              core.setOutput("environment", environment);
-
-      - name: Replace opex config file parameters
-        id: replace_opex_file_parameters
-        env:
-          CONFIG_FILE: .opex/${{ steps.read_parameters.outputs.apiName }}/env/${{ steps.read_parameters.outputs.environment }}/config.yaml
-          CONFIG_OPTIONS: ${{ github.event.client_payload.config-options || inputs.config-options }}
-        run: |
-          echo "📝 Replacing config yaml placeholders"
-          echo "Properties to be set: $CONFIG_OPTIONS into file $CONFIG_FILE"
-          for property in $(echo $CONFIG_OPTIONS | yq -o shell); do
-            IFS='=' read -r -a split <<< "$property"
-            key=${split[0]}
-            value=$(echo ${split[1]}|sed "s/'//g")
-            echo "Replacing key: [$key] with value: [$value]"
-            sed -i "s/\${$key}/$value/" $CONFIG_FILE
-          done
-          echo "Modified config file"
-          cat $CONFIG_FILE
+#      - name: Read create dashboard parameters
+#        id: read_parameters
+#        uses: actions/github-script@v6.3.3
+#        env:
+#          API_NAME: ${{ github.event.client_payload.api-name || inputs.api-name }}
+#          ENVIRONMENT: ${{ github.event.client_payload.environment || inputs.environment }}
+#        with:
+#          script: |
+#             const { API_NAME, ENVIRONMENT } = process.env
+#              var apiName = API_NAME.trim();
+#              var environment = ENVIRONMENT.trim();
+#              core.info(`Api name ${apiName}, environment: ${environment}`);
+#                if (!apiName || !environment) {
+#                throw `Could not create dashboard, cannot find parameters for api name and environment...`;
+#              }
+#              core.setOutput("apiName", apiName);
+#              core.setOutput("environment", environment);
+#
+#      - name: Replace opex config file parameters
+#        id: replace_opex_file_parameters
+#        env:
+#          CONFIG_FILE: .opex/${{ steps.read_parameters.outputs.apiName }}/env/${{ steps.read_parameters.outputs.environment }}/config.yaml
+#          CONFIG_OPTIONS: ${{ github.event.client_payload.config-options || inputs.config-options }}
+#        run: |
+#          echo "📝 Replacing config yaml placeholders"
+#          echo "Properties to be set: $CONFIG_OPTIONS into file $CONFIG_FILE"
+#          for property in $(echo $CONFIG_OPTIONS | yq -o shell); do
+#            IFS='=' read -r -a split <<< "$property"
+#            key=${split[0]}
+#            value=$(echo ${split[1]}|sed "s/'//g")
+#            echo "Replacing key: [$key] with value: [$value]"
+#            sed -i "s/\${$key}/$value/" $CONFIG_FILE
+#          done
+#          echo "Modified config file"
+#          cat $CONFIG_FILE
 
       # this action create a folder named /azure-dashboard
       # from https://github.com/pagopa/opex-dashboard-azure-action/commits/main
