@@ -490,7 +490,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetails.setBrokerDescription(model.getBrokerDescription());
 
         //default
-        stationDetails.setTimeoutA(15L);
+        stationDetails.setTimeoutA(7L);
         stationDetails.setTimeoutB(30L);
         stationDetails.setTimeoutC(120L);
         stationDetails.setThreadNumber(1L);
