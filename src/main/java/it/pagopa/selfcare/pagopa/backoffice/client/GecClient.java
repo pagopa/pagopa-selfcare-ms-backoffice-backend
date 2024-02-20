@@ -16,8 +16,8 @@ public interface GecClient {
     @GetMapping(value = "/cis/{cifiscalcode}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     Bundles getBundlesByCI(@PathVariable(required = true) String cifiscalcode,
-                              @RequestParam(required = false) Integer limit,
-                              @RequestParam(required = false) Integer page);
+                           @RequestParam(required = false) Integer limit,
+                           @RequestParam(required = false) Integer page);
 
     @GetMapping(value = "/touchpoints", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -27,7 +27,7 @@ public interface GecClient {
     @GetMapping(value = "/psps/{idpsp}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     Bundles getBundlesByPSP(@PathVariable(required = true) String idpsp,
-                            @RequestParam(required = false) List<BundleType> bundleType,
+                            @RequestParam(required = false) List<BundleType> types,
                             @RequestParam(required = false) String name,
                             @RequestParam(required = false) Integer limit,
                             @RequestParam(required = false) Integer page);
@@ -35,7 +35,7 @@ public interface GecClient {
     @PostMapping(value = "/psps/{idpsp}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     BundleCreateResponse createPSPBundle(@PathVariable(required = true) String idpsp,
-                           @RequestBody @NotNull BundleRequest bundle);
+                                         @RequestBody @NotNull BundleRequest bundle);
 
     @GetMapping(value = "/paymenttypes", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
