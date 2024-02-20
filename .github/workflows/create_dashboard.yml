@@ -36,7 +36,7 @@ jobs:
       # from https://github.com/pagopa/opex-dashboard-azure-action/
       - uses: pagopa/opex-dashboard-azure-action@v1.2.1
         with:
-          environment: ${{ matrix.environment }}
+          environment: ${{ inputs.environment }}
           api-name: backoffice
           config: .opex/backoffice/env/${{ inputs.environment }}/config.yaml
           client-id: ${{ secrets.CLIENT_ID }}
