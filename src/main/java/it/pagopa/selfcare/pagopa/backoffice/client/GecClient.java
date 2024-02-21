@@ -47,4 +47,10 @@ public interface GecClient {
     @ResponseBody
     Bundle getBundleDetailByPSP(@PathVariable() String idpsp,
                                 @PathVariable() String idbundle);
+
+    @PutMapping(value = "/psps/{idpsp}/bundles/{idbundle}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    void updatePSPBundle(@PathVariable() String idpsp,
+                         @PathVariable() String idbundle,
+                         @RequestBody @NotNull BundleRequest bundle);
 }

@@ -41,4 +41,8 @@ public class CommissionBundleService {
     public Bundle getBundleDetailByPSP(String pspCode, String idBundle){
         return gecClient.getBundleDetailByPSP(pspCode, idBundle);
     }
+
+    public void updateBundleByPSP(String pspCode, String idBundle, BundleRequest bundle){
+        gecClient.updatePSPBundle(pspCode, idBundle, bundle);
+    }
 }

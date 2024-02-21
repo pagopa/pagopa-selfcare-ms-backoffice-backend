@@ -80,4 +80,15 @@ public class CommissionBundleController {
         return commissionBundleService.getBundleDetailByPSP(pspCode, idBundle);
     }
 
+    @PutMapping(value = "/payment-service-providers/{psp-code}/bundle/{id-bundle}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Update a bundle by psp code and bundle id", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public void updateBundleByPSP(
+            @Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
+            @Parameter(description = "Commissional bundle's id") @PathVariable("id-bundle") String idBundle,
+            @Parameter(description = "Commissional bundle related to PSP to be updated") @RequestBody @NotNull BundleRequest bundle){
+        commissionBundleService.updateBundleByPSP(pspCode, idBundle, bundle);
+    }
+
 }
