@@ -37,4 +37,8 @@ public class CommissionBundleService {
     public BundleCreateResponse createPSPBundle(String pspCode, BundleRequest bundle) {
         return gecClient.createPSPBundle(pspCode, bundle);
     }
+
+    public Bundle getBundleDetailByPSP(String pspCode, String idBundle){
+        return gecClient.getBundleDetailByPSP(pspCode, idBundle);
+    }
 }
