@@ -71,7 +71,7 @@ public class CommissionBundleController {
         return commissionBundleService.createPSPBundle(pspCode, bundleRequest);
     }
 
-    @GetMapping(value = "/payment-service-providers/{psp-code}/bundle/{id-bundle}")
+    @GetMapping(value = "/{id-bundle}/payment-service-providers/{psp-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a bundle by psp code and bundle id", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
@@ -80,7 +80,7 @@ public class CommissionBundleController {
         return commissionBundleService.getBundleDetailByPSP(pspCode, idBundle);
     }
 
-    @PutMapping(value = "/payment-service-providers/{psp-code}/bundle/{id-bundle}")
+    @PutMapping(value = "/{id-bundle}/payment-service-providers/{psp-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a bundle by psp code and bundle id", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
@@ -91,7 +91,7 @@ public class CommissionBundleController {
         commissionBundleService.updatePSPBundle(pspCode, idBundle, bundle);
     }
 
-    @DeleteMapping(value = "/payment-service-providers/{psp-code}/bundle/{id-bundle}")
+    @DeleteMapping(value = "/{id-bundle}/payment-service-providers/{psp-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Delete a bundle by psp code and bundle id", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata

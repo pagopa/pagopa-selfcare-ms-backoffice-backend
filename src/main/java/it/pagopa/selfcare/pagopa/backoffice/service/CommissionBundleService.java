@@ -14,11 +14,15 @@ import java.util.List;
 @Service
 public class CommissionBundleService {
 
-    @Autowired
-    private GecClient gecClient;
+    private final GecClient gecClient;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public CommissionBundleService(GecClient gecClient, ModelMapper modelMapper) {
+        this.gecClient = gecClient;
+        this.modelMapper = modelMapper;
+    }
 
     public BundlePaymentTypes getBundlesPaymentTypes(Integer limit, Integer page) {
         BundlePaymentTypesDTO dto = gecClient.getPaymenttypes(limit, page);
