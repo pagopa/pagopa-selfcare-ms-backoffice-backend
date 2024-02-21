@@ -4,7 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
@@ -31,7 +33,7 @@ public class CommissionBundleController {
     @GetMapping("/payment-types")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a paginated list of payment types", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public BundlePaymentTypes getBundlesPaymentTypes(@Parameter(description = "Number of elements on one page. Default = 50") @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                      @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = false, defaultValue = "0") Integer page) {
 

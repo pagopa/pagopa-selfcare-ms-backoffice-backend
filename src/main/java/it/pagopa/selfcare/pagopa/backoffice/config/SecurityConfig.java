@@ -44,8 +44,8 @@ public class SecurityConfig {
     @Value("${info.properties.environment}")
     private String env;
 
-    @Value("${jwt.enabled}")
-    private Boolean jwtEnabled;
+    @Value("${jwt.ignore}")
+    private Boolean jwtIgnore;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -57,7 +57,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         // skip jwt-check during junit test
         // the user in the security context is mocked
-        if("test".equals(env) || Boolean.TRUE.equals(jwtEnabled)) {
+        if("test".equals(env) || Boolean.TRUE.equals(jwtIgnore)) {
             return web -> web.ignoring().antMatchers("/**");
         } else {
             return web -> web.ignoring().antMatchers(AUTH_WHITELIST);
