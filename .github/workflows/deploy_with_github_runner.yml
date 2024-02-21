@@ -30,7 +30,7 @@ jobs:
         # from https://github.com/pagopa/eng-github-actions-iac-template/tree/main/azure/github-self-hosted-runner-azure-create-action
         uses: pagopa/eng-github-actions-iac-template/azure/github-self-hosted-runner-azure-create-action@main
         with:
-          client_id: ${{ secrets.CD_CLIENT_ID }}
+          client_id: ${{ secrets.CLIENT_ID }}
           tenant_id: ${{ secrets.TENANT_ID }}
           subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
           container_app_environment_name: ${{ vars.CONTAINER_APP_ENVIRONMENT_NAME }}
@@ -47,7 +47,7 @@ jobs:
         uses: pagopa/github-actions-template/aks-deploy@main
         with:
           branch: ${{ github.ref_name }}
-          client_id: ${{ secrets.CD_CLIENT_ID }}
+          client_id: ${{ secrets.CLIENT_ID }}
           subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
           tenant_id: ${{ secrets.TENANT_ID }}
           env: ${{ inputs.environment }}
@@ -70,7 +70,7 @@ jobs:
         # from https://github.com/pagopa/eng-github-actions-iac-template/tree/main/azure/github-self-hosted-runner-azure-cleanup-action
         uses: pagopa/eng-github-actions-iac-template/azure/github-self-hosted-runner-azure-cleanup-action@0ee2f58fd46d10ac7f00bce4304b98db3dbdbe9a
         with:
-          client_id: ${{ secrets.CD_CLIENT_ID }}
+          client_id: ${{ secrets.CLIENT_ID }}
           tenant_id: ${{ secrets.TENANT_ID }}
           subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
           resource_group_name: ${{ vars.CONTAINER_APP_ENVIRONMENT_RESOURCE_GROUP_NAME }}
@@ -101,7 +101,7 @@ jobs:
         # from https://github.com/Azure/login/commits/master
         uses: azure/login@92a5484dfaf04ca78a94597f4f19fea633851fa2
         with:
-          client-id: ${{ secrets.CD_CLIENT_ID }}
+          client-id: ${{ secrets.CLIENT_ID }}
           tenant-id: ${{ secrets.TENANT_ID }}
           subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
 
@@ -110,7 +110,7 @@ jobs:
         shell: bash
         run: |
           cd ./infra
-          export ARM_CLIENT_ID="${{ secrets.CD_CLIENT_ID }}"
+          export ARM_CLIENT_ID="${{ secrets.CLIENT_ID }}"
           export ARM_SUBSCRIPTION_ID=$(az account show --query id --output tsv)
           export ARM_TENANT_ID=$(az account show --query tenantId --output tsv)
           export ARM_USE_OIDC=true
