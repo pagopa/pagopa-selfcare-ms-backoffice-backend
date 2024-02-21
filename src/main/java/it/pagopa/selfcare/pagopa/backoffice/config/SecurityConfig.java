@@ -54,7 +54,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         // skip jwt-check during junit test
         // the user in the security context is mocked
-        if("test".equals(env)) {
+        if("test".equals(env) || "local".equals(env)) {
             return (web) -> web.ignoring().antMatchers("/**");
         } else {
             return (web) -> web.ignoring().antMatchers(AUTH_WHITELIST);
