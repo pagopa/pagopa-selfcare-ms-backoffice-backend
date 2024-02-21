@@ -43,3 +43,4 @@ build/
 **/.terraform/
 **/secrets
 **/decrypted_env
+**/.DS_Store
