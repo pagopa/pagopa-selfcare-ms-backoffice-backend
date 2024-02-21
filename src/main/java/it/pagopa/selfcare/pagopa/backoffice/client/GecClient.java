@@ -49,8 +49,11 @@ public interface GecClient {
                                 @PathVariable() String idbundle);
 
     @PutMapping(value = "/psps/{idpsp}/bundles/{idbundle}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
     void updatePSPBundle(@PathVariable() String idpsp,
                          @PathVariable() String idbundle,
                          @RequestBody @NotNull BundleRequest bundle);
+
+    @DeleteMapping(value = "/psps/{idpsp}/bundles/{idbundle}", produces = MediaType.APPLICATION_JSON_VALUE)
+    void deletePSPBundle(@PathVariable() String idpsp,
+                         @PathVariable() String idbundle);
 }

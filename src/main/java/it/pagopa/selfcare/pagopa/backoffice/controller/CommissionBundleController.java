@@ -84,11 +84,22 @@ public class CommissionBundleController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a bundle by psp code and bundle id", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public void updateBundleByPSP(
+    public void updatePSPBundle(
             @Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
             @Parameter(description = "Commissional bundle's id") @PathVariable("id-bundle") String idBundle,
             @Parameter(description = "Commissional bundle related to PSP to be updated") @RequestBody @NotNull BundleRequest bundle){
-        commissionBundleService.updateBundleByPSP(pspCode, idBundle, bundle);
+        commissionBundleService.updatePSPBundle(pspCode, idBundle, bundle);
+    }
+
+    @DeleteMapping(value = "/payment-service-providers/{psp-code}/bundle/{id-bundle}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Delete a bundle by psp code and bundle id", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public void deletePSPBundle(
+            @Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
+            @Parameter(description = "Commissional bundle's id") @PathVariable("id-bundle") String idBundle
+    ){
+        commissionBundleService.deletePSPBundle(pspCode, idBundle);
     }
 
 }

@@ -42,7 +42,11 @@ public class CommissionBundleService {
         return gecClient.getBundleDetailByPSP(pspCode, idBundle);
     }
 
-    public void updateBundleByPSP(String pspCode, String idBundle, BundleRequest bundle){
+    public void updatePSPBundle(String pspCode, String idBundle, BundleRequest bundle){
         gecClient.updatePSPBundle(pspCode, idBundle, bundle);
+    }
+
+    public void deletePSPBundle(String pspCode, String idBundle){
+        gecClient.deletePSPBundle(pspCode, idBundle);
     }
 }
