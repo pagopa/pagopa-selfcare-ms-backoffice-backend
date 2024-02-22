@@ -1,16 +1,17 @@
 package it.pagopa.selfcare.pagopa.backoffice.util;
 
 import it.pagopa.selfcare.pagopa.backoffice.entity.PspLegacyEntity;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.repository.PspLegacyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import static it.pagopa.selfcare.pagopa.backoffice.exception.AppError.PSP_CODE_NOT_FOUND;
 
 @Component
 public class LegacyPspCodeUtil {
 
     private final PspLegacyRepository pspLegacyRepository;
-
-    private final static String PSP_PREFIX = "PSP";
 
     @Autowired
     public LegacyPspCodeUtil(PspLegacyRepository pspLegacyRepository) {
@@ -26,7 +27,7 @@ public class LegacyPspCodeUtil {
      * @return the PSP code
      */
     public String retrievePspCode(String taxCode, boolean asBroker) {
-        String pspCode = PSP_PREFIX.concat(taxCode);
+        String pspCode = null;
         PspLegacyEntity pspLegacyEntity = pspLegacyRepository.findByCf(taxCode).orElse(null);
 
         if(pspLegacyEntity != null) {
@@ -46,6 +47,11 @@ public class LegacyPspCodeUtil {
                 }
             }
         }
+
+        if (pspCode == null) {
+            throw new AppException(PSP_CODE_NOT_FOUND, taxCode);
+        }
+
         return pspCode;
     }
 

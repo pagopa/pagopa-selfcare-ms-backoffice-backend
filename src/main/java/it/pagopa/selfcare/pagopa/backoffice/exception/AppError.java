@@ -23,6 +23,8 @@ public enum AppError {
     CREDITOR_INSTITUTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Creditor institution Not Found", "No creditor institution found with code %s"),
     OPERATIVE_TABLE_NOT_FOUND(HttpStatus.NOT_FOUND, "Operative Table Not Found", "No operative table found with code %s"),
 
+    PSP_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "Psp Code Not Found", "No psp code found for taxCode %s"),
+
     STATION_CONFLICT(HttpStatus.CONFLICT, "Station Conflict", "There is a Station not completed."),
 
     UNKNOWN(null, null, null);
