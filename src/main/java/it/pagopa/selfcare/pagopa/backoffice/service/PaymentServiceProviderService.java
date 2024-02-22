@@ -23,6 +23,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPa
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,13 +66,25 @@ public class PaymentServiceProviderService {
         this.legacyPspCodeUtil = legacyPspCodeUtil;
     }
 
-    public PaymentServiceProviderDetailsResource createPSP(PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto, Boolean isDirect) {
-        BrokerPspDetails brokerPspDetails = ChannelMapper.fromPaymentServiceProviderDetailsDtoToMap(paymentServiceProviderDetailsDto);
+    public PaymentServiceProviderDetailsResource createPSP(
+            PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto, Boolean isDirect) {
+        BrokerPspDetails brokerPspDetails = ChannelMapper.fromPaymentServiceProviderDetailsDtoToMap(
+                paymentServiceProviderDetailsDto);
         if (Boolean.TRUE.equals(isDirect)) {
             apiConfigClient.createBrokerPsp(brokerPspDetails);
         }
-        paymentServiceProviderDetailsDto.setPspCode("PSP".concat(paymentServiceProviderDetailsDto.getTaxCode()));
-        PaymentServiceProviderDetails pspDetails = modelMapper.map(paymentServiceProviderDetailsDto, PaymentServiceProviderDetails.class);
+
+        if (StringUtils.isNotEmpty(paymentServiceProviderDetailsDto.getAbi())) {
+            paymentServiceProviderDetailsDto.setPspCode("ABI".concat(paymentServiceProviderDetailsDto.getAbi()));
+        } else if (StringUtils.isNotEmpty(paymentServiceProviderDetailsDto.getBic())) {
+            paymentServiceProviderDetailsDto.setPspCode(paymentServiceProviderDetailsDto.getBic());
+        } else {
+            throw new AppException(AppError.BAD_REQUEST, "Missing ABI/BIC while creating new psp for %s",
+                    paymentServiceProviderDetailsDto.getTaxCode());
+        }
+
+        PaymentServiceProviderDetails pspDetails = modelMapper.map(
+                paymentServiceProviderDetailsDto, PaymentServiceProviderDetails.class);
         PaymentServiceProviderDetails responsePSP = apiConfigClient.createPaymentServiceProvider(pspDetails);
         return ChannelMapper.toResource(responsePSP);
     }
