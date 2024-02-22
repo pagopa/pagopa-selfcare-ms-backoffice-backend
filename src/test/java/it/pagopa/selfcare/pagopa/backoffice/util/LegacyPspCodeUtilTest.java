@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.util;
 
 import it.pagopa.selfcare.pagopa.backoffice.entity.PspLegacyEntity;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.repository.PspLegacyRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,8 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,20 +39,16 @@ class LegacyPspCodeUtilTest {
     }
 
     @Test
-    void taxCodeNotInRepositoryShouldProduceNewPspCodeWhenMappingDirect() {
+    void taxCodeNotInRepositoryShouldThrowExceptionWhenMissingMappingDirect() {
         when(pspLegacyRepository.findByCf(any())).thenReturn(Optional.empty());
-        String codeResult = pspCodeUtil.retrievePspCode(TEST_CF, true);
-        assertNotNull(codeResult);
-        assertEquals(PSP_PREFIX.concat(TEST_CF), codeResult);
+        assertThrows(AppException.class, () -> pspCodeUtil.retrievePspCode(TEST_CF, false));
         verify(pspLegacyRepository).findByCf(any());
     }
 
     @Test
-    void taxCodeNotInRepositoryShouldProduceNewPspCodeWhenMappingNotDirect() {
+    void taxCodeNotInRepositoryShouldThrowExceptionWhenMissingMappingNotDirect() {
         when(pspLegacyRepository.findByCf(any())).thenReturn(Optional.empty());
-        String codeResult = pspCodeUtil.retrievePspCode(TEST_CF, false);
-        assertNotNull(codeResult);
-        assertEquals(PSP_PREFIX.concat(TEST_CF), codeResult);
+        assertThrows(AppException.class, () -> pspCodeUtil.retrievePspCode(TEST_CF, false));
         verify(pspLegacyRepository).findByCf(any());
     }
 
@@ -80,7 +76,7 @@ class LegacyPspCodeUtilTest {
         PspLegacyEntity pspLegacyEntityWithoutBic = getResultEntity();
         pspLegacyEntityWithoutBic.setBic(null);
         when(pspLegacyRepository.findByCf(any())).thenReturn(Optional.of(pspLegacyEntityWithoutBic));
-        String codeResult = pspCodeUtil.retrievePspCode(TEST_CF, true);
+        String codeResult = pspCodeUtil.retrievePspCode(TEST_CF, false);
         assertNotNull(codeResult);
         assertEquals("ABI1", codeResult);
         verify(pspLegacyRepository).findByCf(any());
@@ -91,7 +87,7 @@ class LegacyPspCodeUtilTest {
         PspLegacyEntity pspLegacyEntityWithoutBic = getResultEntity();
         pspLegacyEntityWithoutBic.setBic(Collections.emptyList());
         when(pspLegacyRepository.findByCf(any())).thenReturn(Optional.of(pspLegacyEntityWithoutBic));
-        String codeResult = pspCodeUtil.retrievePspCode(TEST_CF, true);
+        String codeResult = pspCodeUtil.retrievePspCode(TEST_CF, false);
         assertNotNull(codeResult);
         assertEquals("ABI1", codeResult);
         verify(pspLegacyRepository).findByCf(any());

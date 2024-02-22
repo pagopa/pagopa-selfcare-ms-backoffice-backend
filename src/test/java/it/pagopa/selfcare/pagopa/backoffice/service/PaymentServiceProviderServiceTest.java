@@ -74,6 +74,7 @@ class PaymentServiceProviderServiceTest {
 
         PaymentServiceProviderDetailsDto pspDetailsDto = new PaymentServiceProviderDetailsDto();
         pspDetailsDto.setTaxCode("tax-code");
+        pspDetailsDto.setAbi("TESTABI");
         PaymentServiceProviderDetailsResource result =
                 assertDoesNotThrow(() -> sut.createPSP(pspDetailsDto, true));
 
@@ -88,6 +89,7 @@ class PaymentServiceProviderServiceTest {
 
         PaymentServiceProviderDetailsDto pspDetailsDto = new PaymentServiceProviderDetailsDto();
         pspDetailsDto.setTaxCode("tax-code");
+        pspDetailsDto.setBic("TESTBIC");
         PaymentServiceProviderDetailsResource result =
                 assertDoesNotThrow(() -> sut.createPSP(pspDetailsDto, false));
 
