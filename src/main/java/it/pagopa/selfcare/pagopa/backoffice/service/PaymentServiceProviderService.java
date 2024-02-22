@@ -76,8 +76,11 @@ public class PaymentServiceProviderService {
 
         if (StringUtils.isNotEmpty(paymentServiceProviderDetailsDto.getAbi())) {
             paymentServiceProviderDetailsDto.setPspCode("ABI".concat(paymentServiceProviderDetailsDto.getAbi()));
-        } else {
+        } else if (StringUtils.isNotEmpty(paymentServiceProviderDetailsDto.getBic())) {
             paymentServiceProviderDetailsDto.setPspCode(paymentServiceProviderDetailsDto.getBic());
+        } else {
+            throw new AppException(AppError.BAD_REQUEST, "Missing ABI/BIC while creating new psp for %s",
+                    paymentServiceProviderDetailsDto.getTaxCode());
         }
 
         PaymentServiceProviderDetails pspDetails = modelMapper.map(

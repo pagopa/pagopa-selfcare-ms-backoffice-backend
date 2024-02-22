@@ -98,6 +98,14 @@ class PaymentServiceProviderServiceTest {
     }
 
     @Test
+    void createPSPErrorOnMissingAbiOrBic() {
+        PaymentServiceProviderDetailsDto pspDetailsDto = new PaymentServiceProviderDetailsDto();
+        pspDetailsDto.setTaxCode("tax-code");
+        assertThrows(AppException.class, () -> sut.createPSP(pspDetailsDto, false));
+        verify(apiConfigClientMock, never()).createBrokerPsp(any());
+    }
+
+    @Test
     void updatePSP() {
         when(apiConfigClientMock.updatePSP(anyString(), any()))
                 .thenReturn(getPaymentServiceProviderDetails());
