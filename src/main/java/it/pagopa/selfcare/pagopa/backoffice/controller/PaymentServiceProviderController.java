@@ -30,7 +30,7 @@ public class PaymentServiceProviderController {
     @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get the list of payment service providers", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public PaymentServiceProvidersResource getPaymentServiceProviders(@Parameter(description = "Number of elements on one page. Default = 50") @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                                       @Parameter(description = "Page number. Page value starts from 0") @RequestParam Integer page,
                                                                       @Parameter(description = "Payment service provider code") @RequestParam(name = "psp-code", required = false) String pspCode,
@@ -40,19 +40,19 @@ public class PaymentServiceProviderController {
         return paymentServiceProviderService.getPaymentServiceProviders(limit, page, pspCode, taxCode, name);
     }
 
-    @GetMapping(value = "/{psp-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{tax-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get payment service provider's details", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
-    public BrokerOrPspDetailsResource getBrokerAndPspDetails(@Parameter(description = "PSP code") @PathVariable(required = true, name = "psp-code") String brokerPspCode) {
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    public BrokerOrPspDetailsResource getBrokerAndPspDetails(@Parameter(description = "Tax Code to use for retrieval of the related Code of the payment service provider") @PathVariable(required = true, name = "tax-code") String brokerTaxCode) {
 
-        return paymentServiceProviderService.getBrokerAndPspDetails(brokerPspCode);
+        return paymentServiceProviderService.getBrokerAndPspDetails(brokerTaxCode);
     }
 
     @GetMapping(value = "/{psp-tax-code}/channels", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get the channels of the PSP", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public PspChannelsResource getPspChannels(@Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode) {
 
         return paymentServiceProviderService.getPSPChannels(pspTaxCode);
@@ -61,7 +61,7 @@ public class PaymentServiceProviderController {
     @GetMapping(value = "/{psp-code}/channels/available-code", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a valid code for the passed PSP that is not used yet for existing channels", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public ChannelCodeResource getFirstValidChannelCode(@Parameter(description = "Code of the payment service provider") @PathVariable("psp-code") String pspCode,
                                                         @Parameter(description = "is true if the channel is V2") @RequestParam(required = false, defaultValue = "false") Boolean v2) {
 
@@ -71,7 +71,7 @@ public class PaymentServiceProviderController {
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a payment service provider", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public PaymentServiceProviderDetailsResource createPSP(@Parameter(description = "If true the PSP will also be signed up as a broker") @RequestParam(required = false, defaultValue = "false") Boolean direct,
                                                            @RequestBody @NotNull PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto) {
 
@@ -81,7 +81,7 @@ public class PaymentServiceProviderController {
     @PutMapping(value = "/{psp-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update payment service provider", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public PaymentServiceProviderDetailsResource updatePSP(@Parameter(description = "code of the Payment Service Provider")
                                                            @PathVariable("psp-code") String pspCode,
                                                            @RequestBody @NotNull PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto) {
@@ -92,7 +92,7 @@ public class PaymentServiceProviderController {
     @PutMapping(value = "/{tax-code}/channels/{channel-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a relation between a PSP and a channel, using the tax code to find related PSP Code", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public PspChannelPaymentTypesResource updatePaymentServiceProvidersChannels(@Parameter(description = "Tax Code to use for retrieval of the related Code of the payment service provider") @PathVariable("tax-code") String taxCode,
                                                                                 @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
                                                                                 @Parameter(description = " List of payment types") @RequestBody PspChannelPaymentTypes pspChannelPaymentTypes) {
@@ -103,7 +103,7 @@ public class PaymentServiceProviderController {
     @DeleteMapping(value = "/{psp-code}/channels/{channel-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Delete a relation between a PSP and a channel", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public void deletePSPChannels(@Parameter(description = "Code of the payment service provider") @PathVariable("psp-code") String pspCode,
                                   @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode) {
 

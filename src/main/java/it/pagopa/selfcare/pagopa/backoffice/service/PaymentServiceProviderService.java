@@ -102,7 +102,9 @@ public class PaymentServiceProviderService {
         return ChannelMapper.toResource(response);
     }
 
-    public BrokerOrPspDetailsResource getBrokerAndPspDetails(String brokerPspCode) {
+    public BrokerOrPspDetailsResource getBrokerAndPspDetails(String taxCode) {
+        String brokerPspCode = legacyPspCodeUtil.retrievePspCode(taxCode, false);
+
         BrokerPspDetailsResource brokerPspDetailsResource = null;
         PaymentServiceProviderDetailsResource paymentServiceProviderDetailsResource = null;
         BrokerPspDetails brokerPspDetails;
