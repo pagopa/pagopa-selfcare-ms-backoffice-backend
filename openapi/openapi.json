@@ -4549,72 +4549,6 @@
         ]
       }
     },
-    "/payment-service-providers/{psp-code}": {
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
-      "put": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
-        "operationId": "updatePSP",
-        "parameters": [
-          {
-            "description": "code of the Payment Service Provider",
-            "in": "path",
-            "name": "psp-code",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PaymentServiceProviderDetailsDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaymentServiceProviderDetailsResource"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Update payment service provider",
-        "tags": [
-          "Payment Service Providers"
-        ]
-      }
-    },
     "/payment-service-providers/{psp-code}/channels/available-code": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
@@ -4739,62 +4673,6 @@
         }
       ]
     },
-    "/payment-service-providers/{psp-tax-code}/channels": {
-      "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId": "getPspChannels",
-        "parameters": [
-          {
-            "description": "Tax code of the payment service provider",
-            "in": "path",
-            "name": "psp-tax-code",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PspChannelsResource"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Get the channels of the PSP",
-        "tags": [
-          "Payment Service Providers"
-        ]
-      },
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ]
-    },
     "/payment-service-providers/{tax-code}": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
@@ -4836,6 +4714,116 @@
           }
         ],
         "summary": "Get payment service provider's details",
+        "tags": [
+          "Payment Service Providers"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "put": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
+        "operationId": "updatePSP",
+        "parameters": [
+          {
+            "description": "Tax code of the Payment Service Provider",
+            "in": "path",
+            "name": "tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentServiceProviderDetailsDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentServiceProviderDetailsResource"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Update payment service provider",
+        "tags": [
+          "Payment Service Providers"
+        ]
+      }
+    },
+    "/payment-service-providers/{tax-code}/channels": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
+        "operationId": "getPspChannels",
+        "parameters": [
+          {
+            "description": "Tax code of the payment service provider",
+            "in": "path",
+            "name": "tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PspChannelsResource"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Get the channels of the PSP",
         "tags": [
           "Payment Service Providers"
         ]

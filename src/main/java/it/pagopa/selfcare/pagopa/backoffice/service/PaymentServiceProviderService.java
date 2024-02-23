@@ -37,6 +37,9 @@ import java.util.stream.Collectors;
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.REGEX_GENERATE;
 import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
 
+/**
+ * Service that manage Payment Service Providers
+ */
 @Service
 @Slf4j
 public class PaymentServiceProviderService {
@@ -89,10 +92,10 @@ public class PaymentServiceProviderService {
         return ChannelMapper.toResource(responsePSP);
     }
 
-    public PaymentServiceProviderDetailsResource updatePSP(String pspcode, @NotNull PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto) {
-
+    public PaymentServiceProviderDetailsResource updatePSP(String pspTaxCode, @NotNull PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto) {
         PaymentServiceProviderDetails paymentServiceProviderDetails = ChannelMapper.fromPaymentServiceProviderDetailsDto(paymentServiceProviderDetailsDto);
-        PaymentServiceProviderDetails response = apiConfigClient.updatePSP(pspcode, paymentServiceProviderDetails);
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
+        PaymentServiceProviderDetails response = this.apiConfigClient.updatePSP(pspCode, paymentServiceProviderDetails);
         return ChannelMapper.toResource(response);
     }
 
