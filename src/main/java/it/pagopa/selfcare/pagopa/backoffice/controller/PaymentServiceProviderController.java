@@ -40,13 +40,13 @@ public class PaymentServiceProviderController {
         return paymentServiceProviderService.getPaymentServiceProviders(limit, page, pspCode, taxCode, name);
     }
 
-    @GetMapping(value = "/{psp-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{tax-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get payment service provider's details", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public BrokerOrPspDetailsResource getBrokerAndPspDetails(@Parameter(description = "PSP code") @PathVariable(required = true, name = "psp-code") String brokerPspCode) {
+    public BrokerOrPspDetailsResource getBrokerAndPspDetails(@Parameter(description = "Tax Code to use for retrieval of the related Code of the payment service provider") @PathVariable(required = true, name = "tax-code") String brokerTaxCode) {
 
-        return paymentServiceProviderService.getBrokerAndPspDetails(brokerPspCode);
+        return paymentServiceProviderService.getBrokerAndPspDetails(brokerTaxCode);
     }
 
     @GetMapping(value = "/{psp-tax-code}/channels", produces = {MediaType.APPLICATION_JSON_VALUE})
