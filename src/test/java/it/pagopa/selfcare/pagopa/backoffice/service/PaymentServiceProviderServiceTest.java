@@ -140,7 +140,7 @@ class PaymentServiceProviderServiceTest {
         PaymentServiceProviderDetails paymentServiceProviderDetails = getPaymentServiceProviderDetails();
         when(apiConfigClientMock.getPSPDetails(anyString()))
                 .thenReturn(paymentServiceProviderDetails);
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,true)).thenReturn(BROKER_PSP_CODE);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,false)).thenReturn(BROKER_PSP_CODE);
 
         BrokerOrPspDetailsResource result =
                 assertDoesNotThrow(() -> sut.getBrokerAndPspDetails(TAX_CODE));
@@ -160,7 +160,7 @@ class PaymentServiceProviderServiceTest {
         PaymentServiceProviderDetails paymentServiceProviderDetails = getPaymentServiceProviderDetails();
         when(apiConfigClientMock.getPSPDetails(anyString()))
                 .thenReturn(paymentServiceProviderDetails);
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,true)).thenReturn(BROKER_PSP_CODE);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,false)).thenReturn(BROKER_PSP_CODE);
         BrokerOrPspDetailsResource result =
                 assertDoesNotThrow(() -> sut.getBrokerAndPspDetails(TAX_CODE));
 
@@ -178,7 +178,7 @@ class PaymentServiceProviderServiceTest {
                 .thenReturn(brokerPspDetails);
         when(apiConfigClientMock.getPSPDetails(anyString()))
                 .thenThrow(FeignException.NotFound.class);
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,true)).thenReturn(BROKER_PSP_CODE);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,false)).thenReturn(BROKER_PSP_CODE);
         BrokerOrPspDetailsResource result =
                 assertDoesNotThrow(() -> sut.getBrokerAndPspDetails(TAX_CODE));
 
@@ -194,7 +194,7 @@ class PaymentServiceProviderServiceTest {
                 .thenThrow(FeignException.NotFound.class);
         when(apiConfigClientMock.getPSPDetails(anyString()))
                 .thenThrow(FeignException.NotFound.class);
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,true)).thenReturn(BROKER_PSP_CODE);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,false)).thenReturn(BROKER_PSP_CODE);
         AppException e =
                 assertThrows(AppException.class, () -> sut.getBrokerAndPspDetails(TAX_CODE));
 
