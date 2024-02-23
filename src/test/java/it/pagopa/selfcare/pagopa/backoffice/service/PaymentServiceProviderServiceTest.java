@@ -49,6 +49,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PaymentServiceProviderServiceTest {
 
+    public static final String BROKER_PSP_CODE = "broker-psp-code";
+    public static final String TAX_CODE = "tax-code";
+    public static final String CHANNEL_CODE = "channel-code";
+    public static final String PSP_CODE = "psp-code";
     @Mock
     private ApiConfigClient apiConfigClientMock;
 
@@ -73,7 +77,7 @@ class PaymentServiceProviderServiceTest {
                 .thenReturn(getPaymentServiceProviderDetails());
 
         PaymentServiceProviderDetailsDto pspDetailsDto = new PaymentServiceProviderDetailsDto();
-        pspDetailsDto.setTaxCode("tax-code");
+        pspDetailsDto.setTaxCode(TAX_CODE);
         pspDetailsDto.setAbi("TESTABI");
         PaymentServiceProviderDetailsResource result =
                 assertDoesNotThrow(() -> sut.createPSP(pspDetailsDto, true));
@@ -88,7 +92,7 @@ class PaymentServiceProviderServiceTest {
                 .thenReturn(getPaymentServiceProviderDetails());
 
         PaymentServiceProviderDetailsDto pspDetailsDto = new PaymentServiceProviderDetailsDto();
-        pspDetailsDto.setTaxCode("tax-code");
+        pspDetailsDto.setTaxCode(TAX_CODE);
         pspDetailsDto.setBic("TESTBIC");
         PaymentServiceProviderDetailsResource result =
                 assertDoesNotThrow(() -> sut.createPSP(pspDetailsDto, false));
@@ -110,7 +114,7 @@ class PaymentServiceProviderServiceTest {
         when(apiConfigClientMock.updatePSP(anyString(), any()))
                 .thenReturn(getPaymentServiceProviderDetails());
         PaymentServiceProviderDetailsResource result =
-                assertDoesNotThrow(() -> sut.updatePSP("psp-code", new PaymentServiceProviderDetailsDto()));
+                assertDoesNotThrow(() -> sut.updatePSP(PSP_CODE, new PaymentServiceProviderDetailsDto()));
 
         assertNotNull(result);
     }
@@ -123,7 +127,7 @@ class PaymentServiceProviderServiceTest {
                         .paymentServiceProviderList(new ArrayList<>())
                         .build());
         PaymentServiceProvidersResource result =
-                assertDoesNotThrow(() -> sut.getPaymentServiceProviders(10, 0, "psp-code", "tax-code", "name"));
+                assertDoesNotThrow(() -> sut.getPaymentServiceProviders(10, 0, PSP_CODE, TAX_CODE, "name"));
 
         assertNotNull(result);
     }
@@ -136,9 +140,10 @@ class PaymentServiceProviderServiceTest {
         PaymentServiceProviderDetails paymentServiceProviderDetails = getPaymentServiceProviderDetails();
         when(apiConfigClientMock.getPSPDetails(anyString()))
                 .thenReturn(paymentServiceProviderDetails);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,true)).thenReturn(BROKER_PSP_CODE);
 
         BrokerOrPspDetailsResource result =
-                assertDoesNotThrow(() -> sut.getBrokerAndPspDetails("broker-psp-code"));
+                assertDoesNotThrow(() -> sut.getBrokerAndPspDetails(TAX_CODE));
 
         assertNotNull(result);
         assertNotNull(result.getBrokerPspDetailsResource());
@@ -155,9 +160,9 @@ class PaymentServiceProviderServiceTest {
         PaymentServiceProviderDetails paymentServiceProviderDetails = getPaymentServiceProviderDetails();
         when(apiConfigClientMock.getPSPDetails(anyString()))
                 .thenReturn(paymentServiceProviderDetails);
-
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,true)).thenReturn(BROKER_PSP_CODE);
         BrokerOrPspDetailsResource result =
-                assertDoesNotThrow(() -> sut.getBrokerAndPspDetails("broker-psp-code"));
+                assertDoesNotThrow(() -> sut.getBrokerAndPspDetails(TAX_CODE));
 
         assertNotNull(result);
         assertNull(result.getBrokerPspDetailsResource());
@@ -173,9 +178,9 @@ class PaymentServiceProviderServiceTest {
                 .thenReturn(brokerPspDetails);
         when(apiConfigClientMock.getPSPDetails(anyString()))
                 .thenThrow(FeignException.NotFound.class);
-
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,true)).thenReturn(BROKER_PSP_CODE);
         BrokerOrPspDetailsResource result =
-                assertDoesNotThrow(() -> sut.getBrokerAndPspDetails("broker-psp-code"));
+                assertDoesNotThrow(() -> sut.getBrokerAndPspDetails(TAX_CODE));
 
         assertNotNull(result);
         assertNotNull(result.getBrokerPspDetailsResource());
@@ -189,9 +194,9 @@ class PaymentServiceProviderServiceTest {
                 .thenThrow(FeignException.NotFound.class);
         when(apiConfigClientMock.getPSPDetails(anyString()))
                 .thenThrow(FeignException.NotFound.class);
-
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,true)).thenReturn(BROKER_PSP_CODE);
         AppException e =
-                assertThrows(AppException.class, () -> sut.getBrokerAndPspDetails("broker-psp-code"));
+                assertThrows(AppException.class, () -> sut.getBrokerAndPspDetails(TAX_CODE));
 
         assertNotNull(e);
         assertEquals(HttpStatus.SC_NOT_FOUND, e.getHttpStatus().value());
@@ -202,7 +207,7 @@ class PaymentServiceProviderServiceTest {
         when(apiConfigSelfcareIntegrationClientMock.getPspChannels(anyString()))
                 .thenReturn(new PspChannels(new ArrayList<>()));
         PspChannelsResource result =
-                assertDoesNotThrow(() -> sut.getPSPChannels("psp-code"));
+                assertDoesNotThrow(() -> sut.getPSPChannels(PSP_CODE));
 
         assertNotNull(result);
     }
@@ -211,16 +216,16 @@ class PaymentServiceProviderServiceTest {
     void updatePSPChannel() {
         when(apiConfigClientMock.updatePaymentServiceProvidersChannels(anyString(), anyString(), any()))
                 .thenReturn(new PspChannelPaymentTypes(new ArrayList<>()));
-        when(legacyPspCodeUtil.retrievePspCode(any(),eq(false))).thenReturn("psp-code");
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,false)).thenReturn(PSP_CODE);
         PspChannelPaymentTypesResource result =
-                assertDoesNotThrow(() -> sut.updatePSPChannel("tax-code", "channel-code", new PspChannelPaymentTypes()));
+                assertDoesNotThrow(() -> sut.updatePSPChannel(TAX_CODE, CHANNEL_CODE, new PspChannelPaymentTypes()));
 
         assertNotNull(result);
     }
 
     @Test
     void deletePSPChannel() {
-        assertDoesNotThrow(() -> sut.deletePSPChannel("psp-code", "channel-code"));
+        assertDoesNotThrow(() -> sut.deletePSPChannel(PSP_CODE, CHANNEL_CODE));
     }
 
     @Test
@@ -229,7 +234,7 @@ class PaymentServiceProviderServiceTest {
         when(wrapperServiceMock.getFirstValidCodeV2(anyString()))
                 .thenReturn(channelCodeV2);
         ChannelCodeResource result =
-                assertDoesNotThrow(() -> sut.getFirstValidChannelCode("psp-code", true));
+                assertDoesNotThrow(() -> sut.getFirstValidChannelCode(PSP_CODE, true));
 
         assertNotNull(result);
         assertEquals(channelCodeV2, result.getChannelCode());
@@ -249,7 +254,7 @@ class PaymentServiceProviderServiceTest {
         when(apiConfigClientMock.getChannels(anyInt(), anyInt(), anyString(), eq(null), anyString()))
                 .thenReturn(channels);
         ChannelCodeResource result =
-                assertDoesNotThrow(() -> sut.getFirstValidChannelCode("psp-code", false));
+                assertDoesNotThrow(() -> sut.getFirstValidChannelCode(PSP_CODE, false));
 
         assertNotNull(result);
         assertNotEquals(channelCode, result.getChannelCode());
