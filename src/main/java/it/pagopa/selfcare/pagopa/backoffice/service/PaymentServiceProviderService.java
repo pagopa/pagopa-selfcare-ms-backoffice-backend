@@ -103,7 +103,7 @@ public class PaymentServiceProviderService {
     }
 
     public BrokerOrPspDetailsResource getBrokerAndPspDetails(String taxCode) {
-        String brokerPspCode = legacyPspCodeUtil.retrievePspCode(taxCode, true);
+        String brokerPspCode = legacyPspCodeUtil.retrievePspCode(taxCode, false);
 
         BrokerPspDetailsResource brokerPspDetailsResource = null;
         PaymentServiceProviderDetailsResource paymentServiceProviderDetailsResource = null;
