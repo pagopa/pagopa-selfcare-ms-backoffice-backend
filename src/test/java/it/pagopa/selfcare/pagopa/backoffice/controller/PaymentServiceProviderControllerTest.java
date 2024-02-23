@@ -104,7 +104,7 @@ class PaymentServiceProviderControllerTest {
 
     @Test
     void updatePSPTest() throws Exception {
-        mvc.perform(put("/payment-service-providers/{psp-code}", PSP_CODE)
+        mvc.perform(put("/payment-service-providers/{psp-tax-code}", PSP_TAX_CODE)
                         .content(objectMapper.writeValueAsBytes(new PaymentServiceProviderDetailsDto()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

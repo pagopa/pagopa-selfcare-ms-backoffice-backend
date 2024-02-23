@@ -111,10 +111,11 @@ class PaymentServiceProviderServiceTest {
 
     @Test
     void updatePSP() {
-        when(apiConfigClientMock.updatePSP(anyString(), any()))
+        when(apiConfigClientMock.updatePSP(eq("psp-code"), any()))
                 .thenReturn(getPaymentServiceProviderDetails());
+        when(legacyPspCodeUtil.retrievePspCode("psp-tax-code",false)).thenReturn("psp-code");
         PaymentServiceProviderDetailsResource result =
-                assertDoesNotThrow(() -> sut.updatePSP(PSP_CODE, new PaymentServiceProviderDetailsDto()));
+                assertDoesNotThrow(() -> sut.updatePSP("psp-tax-code", new PaymentServiceProviderDetailsDto()));
 
         assertNotNull(result);
     }

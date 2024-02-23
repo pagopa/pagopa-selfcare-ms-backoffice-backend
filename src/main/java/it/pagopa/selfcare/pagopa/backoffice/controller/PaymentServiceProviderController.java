@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * Controller class that expose APIs to manage Payment Service Providers
+ */
 @RestController
 @RequestMapping(value = "/payment-service-providers")
 @Tag(name = "Payment Service Providers")
@@ -78,15 +81,15 @@ public class PaymentServiceProviderController {
         return paymentServiceProviderService.createPSP(paymentServiceProviderDetailsDto, direct);
     }
 
-    @PutMapping(value = "/{psp-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PutMapping(value = "/{psp-tax-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update payment service provider", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    public PaymentServiceProviderDetailsResource updatePSP(@Parameter(description = "code of the Payment Service Provider")
-                                                           @PathVariable("psp-code") String pspCode,
-                                                           @RequestBody @NotNull PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto) {
+    public PaymentServiceProviderDetailsResource updatePSP(
+            @Parameter(description = "tax code of the Payment Service Provider") @PathVariable("psp-tax-code") String pspTaxCode,
+            @RequestBody @NotNull PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto) {
 
-        return paymentServiceProviderService.updatePSP(pspCode, paymentServiceProviderDetailsDto);
+        return this.paymentServiceProviderService.updatePSP(pspTaxCode, paymentServiceProviderDetailsDto);
     }
 
     @PutMapping(value = "/{tax-code}/channels/{channel-code}")
