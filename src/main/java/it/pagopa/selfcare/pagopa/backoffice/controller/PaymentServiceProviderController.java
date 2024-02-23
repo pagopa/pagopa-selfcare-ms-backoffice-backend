@@ -52,11 +52,11 @@ public class PaymentServiceProviderController {
         return paymentServiceProviderService.getBrokerAndPspDetails(brokerTaxCode);
     }
 
-    @GetMapping(value = "/{psp-tax-code}/channels", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{tax-code}/channels", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get the channels of the PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public PspChannelsResource getPspChannels(@Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode) {
+    public PspChannelsResource getPspChannels(@Parameter(description = "Tax code of the payment service provider") @PathVariable("tax-code") String pspTaxCode) {
 
         return paymentServiceProviderService.getPSPChannels(pspTaxCode);
     }
@@ -81,12 +81,12 @@ public class PaymentServiceProviderController {
         return paymentServiceProviderService.createPSP(paymentServiceProviderDetailsDto, direct);
     }
 
-    @PutMapping(value = "/{psp-tax-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PutMapping(value = "/{tax-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update payment service provider", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public PaymentServiceProviderDetailsResource updatePSP(
-            @Parameter(description = "tax code of the Payment Service Provider") @PathVariable("psp-tax-code") String pspTaxCode,
+            @Parameter(description = "Tax code of the Payment Service Provider") @PathVariable("tax-code") String pspTaxCode,
             @RequestBody @NotNull PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto) {
 
         return this.paymentServiceProviderService.updatePSP(pspTaxCode, paymentServiceProviderDetailsDto);
