@@ -107,10 +107,10 @@ public class PaymentServiceProviderController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Delete a relation between a PSP and a channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    public void deletePSPChannels(@Parameter(description = "Tax code of the payment service provider") @PathVariable("tax-code") String pspTaxCode,
-                                  @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode) {
+    public void dissociatePSPFromChannel(@Parameter(description = "Tax code of the payment service provider") @PathVariable("tax-code") String pspTaxCode,
+                                         @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode) {
 
-        this.paymentServiceProviderService.deletePSPChannel(pspTaxCode, channelCode);
+        this.paymentServiceProviderService.dissociatePSPFromChannel(pspTaxCode, channelCode);
     }
 
 }

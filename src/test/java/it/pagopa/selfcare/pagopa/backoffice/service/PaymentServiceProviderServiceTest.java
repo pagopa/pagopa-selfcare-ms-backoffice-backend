@@ -226,7 +226,7 @@ class PaymentServiceProviderServiceTest {
 
     @Test
     void deletePSPChannel() {
-        assertDoesNotThrow(() -> sut.deletePSPChannel(TAX_CODE, CHANNEL_CODE));
+        assertDoesNotThrow(() -> sut.dissociatePSPFromChannel(TAX_CODE, CHANNEL_CODE));
     }
 
     @Test

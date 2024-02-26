@@ -148,7 +148,7 @@ public class PaymentServiceProviderService {
         return ChannelMapper.toResource(dto);
     }
 
-    public void deletePSPChannel(String pspTaxCode, String channelCode) {
+    public void dissociatePSPFromChannel(String pspTaxCode, String channelCode) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
         this.apiConfigClient.deletePaymentServiceProvidersChannels(pspCode, channelCode);
     }
