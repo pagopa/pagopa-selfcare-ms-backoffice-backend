@@ -103,14 +103,14 @@ public class PaymentServiceProviderController {
         return paymentServiceProviderService.updatePSPChannel(taxCode, channelCode, pspChannelPaymentTypes);
     }
 
-    @DeleteMapping(value = "/{psp-code}/channels/{channel-code}")
+    @DeleteMapping(value = "/{tax-code}/channels/{channel-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Delete a relation between a PSP and a channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    public void deletePSPChannels(@Parameter(description = "Code of the payment service provider") @PathVariable("psp-code") String pspCode,
+    public void deletePSPChannels(@Parameter(description = "Tax code of the payment service provider") @PathVariable("tax-code") String pspTaxCode,
                                   @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode) {
 
-        paymentServiceProviderService.deletePSPChannel(pspCode, channelCode);
+        this.paymentServiceProviderService.deletePSPChannel(pspTaxCode, channelCode);
     }
 
 }
