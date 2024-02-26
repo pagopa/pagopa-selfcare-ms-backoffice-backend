@@ -61,14 +61,14 @@ public class PaymentServiceProviderController {
         return paymentServiceProviderService.getPSPChannels(pspTaxCode);
     }
 
-    @GetMapping(value = "/{psp-code}/channels/available-code", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{tax-code}/channels/available-code", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a valid code for the passed PSP that is not used yet for existing channels", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public ChannelCodeResource getFirstValidChannelCode(@Parameter(description = "Code of the payment service provider") @PathVariable("psp-code") String pspCode,
+    public ChannelCodeResource getFirstValidChannelCode(@Parameter(description = "Tax Code of the payment service provider") @PathVariable("tax-code") String taxCode,
                                                         @Parameter(description = "is true if the channel is V2") @RequestParam(required = false, defaultValue = "false") Boolean v2) {
 
-        return paymentServiceProviderService.getFirstValidChannelCode(pspCode, v2);
+        return paymentServiceProviderService.getFirstValidChannelCode(taxCode, v2);
     }
 
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
