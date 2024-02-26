@@ -234,8 +234,9 @@ class PaymentServiceProviderServiceTest {
         String channelCodeV2 = "channel-code-v2";
         when(wrapperServiceMock.getFirstValidCodeV2(anyString()))
                 .thenReturn(channelCodeV2);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE, false)).thenReturn(PSP_CODE);
         ChannelCodeResource result =
-                assertDoesNotThrow(() -> sut.getFirstValidChannelCode(PSP_CODE, true));
+                assertDoesNotThrow(() -> sut.getFirstValidChannelCode(TAX_CODE, true));
 
         assertNotNull(result);
         assertEquals(channelCodeV2, result.getChannelCode());
@@ -254,8 +255,9 @@ class PaymentServiceProviderServiceTest {
                 , new PageInfo());
         when(apiConfigClientMock.getChannels(anyInt(), anyInt(), anyString(), eq(null), anyString()))
                 .thenReturn(channels);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE, false)).thenReturn(PSP_CODE);
         ChannelCodeResource result =
-                assertDoesNotThrow(() -> sut.getFirstValidChannelCode(PSP_CODE, false));
+                assertDoesNotThrow(() -> sut.getFirstValidChannelCode(TAX_CODE, false));
 
         assertNotNull(result);
         assertNotEquals(channelCode, result.getChannelCode());

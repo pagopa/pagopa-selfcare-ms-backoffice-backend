@@ -154,7 +154,8 @@ public class PaymentServiceProviderService {
     }
 
 
-    public ChannelCodeResource getFirstValidChannelCode(String pspCode, Boolean v2) {
+    public ChannelCodeResource getFirstValidChannelCode(String taxCode, Boolean v2) {
+        String pspCode = legacyPspCodeUtil.retrievePspCode(taxCode, false);
         if(Boolean.TRUE.equals(v2)) {
             return new ChannelCodeResource(wrapperService.getFirstValidCodeV2(pspCode));
         } else {
