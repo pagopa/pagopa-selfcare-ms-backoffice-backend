@@ -4549,64 +4549,6 @@
         ]
       }
     },
-    "/payment-service-providers/{psp-code}/channels/{channel-code}": {
-      "delete": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
-        "operationId": "deletePSPChannels",
-        "parameters": [
-          {
-            "description": "Code of the payment service provider",
-            "in": "path",
-            "name": "psp-code",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Channel's unique identifier",
-            "in": "path",
-            "name": "channel-code",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Delete a relation between a PSP and a channel",
-        "tags": [
-          "Payment Service Providers"
-        ]
-      },
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ]
-    },
     "/payment-service-providers/{tax-code}": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
@@ -4840,6 +4782,52 @@
       ]
     },
     "/payment-service-providers/{tax-code}/channels/{channel-code}": {
+      "delete": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
+        "operationId": "dissociatePSPFromChannel",
+        "parameters": [
+          {
+            "description": "Tax code of the payment service provider",
+            "in": "path",
+            "name": "tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Channel's unique identifier",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Delete a relation between a PSP and a channel",
+        "tags": [
+          "Payment Service Providers"
+        ]
+      },
       "parameters": [
         {
           "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
@@ -7106,7 +7094,8 @@
           "business_name",
           "enabled",
           "payment_types",
-          "psp_code"
+          "psp_code",
+          "tax_code"
         ],
         "type": "object",
         "properties": {
@@ -7123,6 +7112,9 @@
             }
           },
           "psp_code": {
+            "type": "string"
+          },
+          "tax_code": {
             "type": "string"
           }
         }
