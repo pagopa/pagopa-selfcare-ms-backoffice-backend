@@ -427,6 +427,7 @@ public class ChannelMapper {
             resource.setEnabled(model.getEnabled());
             resource.setBusinessName(model.getBusinessName());
             resource.setPspCode(model.getPspCode());
+            resource.setTaxCode(model.getTaxCode());
             resource.setPaymentTypeList(list);
         }
         return resource;

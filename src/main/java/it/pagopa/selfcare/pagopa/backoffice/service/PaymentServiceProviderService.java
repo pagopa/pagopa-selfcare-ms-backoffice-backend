@@ -24,7 +24,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -149,8 +148,9 @@ public class PaymentServiceProviderService {
         return ChannelMapper.toResource(dto);
     }
 
-    public void deletePSPChannel(String pspCode, String channelCode) {
-        apiConfigClient.deletePaymentServiceProvidersChannels(pspCode, channelCode);
+    public void dissociatePSPFromChannel(String pspTaxCode, String channelCode) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
+        this.apiConfigClient.deletePaymentServiceProvidersChannels(pspCode, channelCode);
     }
 
 
