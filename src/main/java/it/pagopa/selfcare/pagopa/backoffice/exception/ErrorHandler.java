@@ -168,6 +168,8 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
             try {
                 problem = new ObjectMapper().readValue(body, ProblemJson.class);
                 validateProblemBody(problem);
+                problem.setStatus(AppError.BAD_GATEWAY.getHttpStatus().value());
+                problem.setTitle(AppError.BAD_GATEWAY.getTitle());
             } catch (JsonProcessingException | ValidationException e) {
                 problem = ProblemJson.builder()
                         .status(HttpStatus.BAD_GATEWAY.value())
@@ -177,9 +179,9 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
             }
         } else {
             problem = ProblemJson.builder()
-                    .status(HttpStatus.BAD_GATEWAY.value())
-                    .title("No Response Body")
-                    .detail("Error with external dependency")
+                    .status(AppError.BAD_GATEWAY.getHttpStatus().value())
+                    .title(AppError.BAD_GATEWAY.getTitle())
+                    .detail("No Response Body")
                     .build();
         }
         return new ResponseEntity<>(problem, HttpStatus.valueOf(problem.getStatus()));
