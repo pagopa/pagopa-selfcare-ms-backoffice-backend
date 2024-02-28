@@ -89,7 +89,7 @@ class PaymentServiceProviderControllerTest {
 
     @Test
     void getFirstValidChannelCodeTest() throws Exception {
-        mvc.perform(get("/payment-service-providers/{psp-code}/channels/available-code", PSP_CODE)
+        mvc.perform(get("/payment-service-providers/{tax-code}/channels/available-code", PSP_TAX_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -120,7 +120,7 @@ class PaymentServiceProviderControllerTest {
 
     @Test
     void deletePSPChannelsTest() throws Exception {
-        mvc.perform(delete("/payment-service-providers/{psp-code}/channels/{channel-code", PSP_CODE, CHANNEL_CODE)
+        mvc.perform(delete("/payment-service-providers/{tax-code}/channels/{channel-code}", PSP_TAX_CODE, CHANNEL_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

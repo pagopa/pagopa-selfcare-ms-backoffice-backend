@@ -61,14 +61,14 @@ public class PaymentServiceProviderController {
         return paymentServiceProviderService.getPSPChannels(pspTaxCode);
     }
 
-    @GetMapping(value = "/{psp-code}/channels/available-code", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{tax-code}/channels/available-code", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a valid code for the passed PSP that is not used yet for existing channels", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public ChannelCodeResource getFirstValidChannelCode(@Parameter(description = "Code of the payment service provider") @PathVariable("psp-code") String pspCode,
+    public ChannelCodeResource getFirstValidChannelCode(@Parameter(description = "Tax Code of the payment service provider") @PathVariable("tax-code") String taxCode,
                                                         @Parameter(description = "is true if the channel is V2") @RequestParam(required = false, defaultValue = "false") Boolean v2) {
 
-        return paymentServiceProviderService.getFirstValidChannelCode(pspCode, v2);
+        return paymentServiceProviderService.getFirstValidChannelCode(taxCode, v2);
     }
 
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -103,14 +103,14 @@ public class PaymentServiceProviderController {
         return paymentServiceProviderService.updatePSPChannel(taxCode, channelCode, pspChannelPaymentTypes);
     }
 
-    @DeleteMapping(value = "/{psp-code}/channels/{channel-code}")
+    @DeleteMapping(value = "/{tax-code}/channels/{channel-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Delete a relation between a PSP and a channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    public void deletePSPChannels(@Parameter(description = "Code of the payment service provider") @PathVariable("psp-code") String pspCode,
-                                  @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode) {
+    public void dissociatePSPFromChannel(@Parameter(description = "Tax code of the payment service provider") @PathVariable("tax-code") String pspTaxCode,
+                                         @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode) {
 
-        paymentServiceProviderService.deletePSPChannel(pspCode, channelCode);
+        this.paymentServiceProviderService.dissociatePSPFromChannel(pspTaxCode, channelCode);
     }
 
 }
