@@ -24,7 +24,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +36,9 @@ import java.util.stream.Collectors;
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.REGEX_GENERATE;
 import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
 
+/**
+ * Service that manage Payment Service Providers
+ */
 @Service
 @Slf4j
 public class PaymentServiceProviderService {
@@ -89,10 +91,10 @@ public class PaymentServiceProviderService {
         return ChannelMapper.toResource(responsePSP);
     }
 
-    public PaymentServiceProviderDetailsResource updatePSP(String pspcode, @NotNull PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto) {
-
+    public PaymentServiceProviderDetailsResource updatePSP(String pspTaxCode, @NotNull PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto) {
         PaymentServiceProviderDetails paymentServiceProviderDetails = ChannelMapper.fromPaymentServiceProviderDetailsDto(paymentServiceProviderDetailsDto);
-        PaymentServiceProviderDetails response = apiConfigClient.updatePSP(pspcode, paymentServiceProviderDetails);
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
+        PaymentServiceProviderDetails response = this.apiConfigClient.updatePSP(pspCode, paymentServiceProviderDetails);
         return ChannelMapper.toResource(response);
     }
 
@@ -102,7 +104,9 @@ public class PaymentServiceProviderService {
         return ChannelMapper.toResource(response);
     }
 
-    public BrokerOrPspDetailsResource getBrokerAndPspDetails(String brokerPspCode) {
+    public BrokerOrPspDetailsResource getBrokerAndPspDetails(String taxCode) {
+        String brokerPspCode = legacyPspCodeUtil.retrievePspCode(taxCode, false);
+
         BrokerPspDetailsResource brokerPspDetailsResource = null;
         PaymentServiceProviderDetailsResource paymentServiceProviderDetailsResource = null;
         BrokerPspDetails brokerPspDetails;
@@ -144,12 +148,14 @@ public class PaymentServiceProviderService {
         return ChannelMapper.toResource(dto);
     }
 
-    public void deletePSPChannel(String pspCode, String channelCode) {
-        apiConfigClient.deletePaymentServiceProvidersChannels(pspCode, channelCode);
+    public void dissociatePSPFromChannel(String pspTaxCode, String channelCode) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
+        this.apiConfigClient.deletePaymentServiceProvidersChannels(pspCode, channelCode);
     }
 
 
-    public ChannelCodeResource getFirstValidChannelCode(String pspCode, Boolean v2) {
+    public ChannelCodeResource getFirstValidChannelCode(String taxCode, Boolean v2) {
+        String pspCode = legacyPspCodeUtil.retrievePspCode(taxCode, false);
         if(Boolean.TRUE.equals(v2)) {
             return new ChannelCodeResource(wrapperService.getFirstValidCodeV2(pspCode));
         } else {

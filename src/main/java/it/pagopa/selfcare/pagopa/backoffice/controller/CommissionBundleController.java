@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
@@ -27,13 +28,17 @@ import java.util.List;
 @Tag(name = "Commission bundles")
 public class CommissionBundleController {
 
+    private final CommissionBundleService commissionBundleService;
+
     @Autowired
-    private CommissionBundleService commissionBundleService;
+    public CommissionBundleController(CommissionBundleService commissionBundleService) {
+        this.commissionBundleService = commissionBundleService;
+    }
 
     @GetMapping("/payment-types")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a paginated list of payment types", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public BundlePaymentTypes getBundlesPaymentTypes(@Parameter(description = "Number of elements on one page. Default = 50") @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                      @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = false, defaultValue = "0") Integer page) {
 
@@ -43,7 +48,7 @@ public class CommissionBundleController {
     @GetMapping("/touchpoints")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a paginated list of touchpoints", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public Touchpoints getTouchpoints(@Parameter(description = "Number of elements on one page. Default = 10") @RequestParam(required = false, defaultValue = "10") Integer limit,
                                       @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = false, defaultValue = "0") Integer page) {
 
@@ -53,7 +58,7 @@ public class CommissionBundleController {
     @GetMapping("/payment-service-providers/{psp-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a paginated list of bundles related to PSP", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public Bundles getBundlesByPSP(@Parameter(description = "Number of elements on one page. Default = 50") @RequestParam(required = false, defaultValue = "50") Integer limit,
                                    @Parameter(description = "Commissional bundle's type") @RequestParam(name = "bundle-type", required = false) List<BundleType> bundleType,
                                    @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = false, defaultValue = "0") Integer page,
@@ -66,11 +71,42 @@ public class CommissionBundleController {
     @PostMapping(value = "/payment-service-providers/{psp-code}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a commissional bundle related to PSP", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public BundleCreateResponse createBundle(@Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
                                              @Parameter(description = "Commissional bundle related to PSP to be created") @RequestBody @NotNull BundleRequest bundleRequest) {
 
         return commissionBundleService.createPSPBundle(pspCode, bundleRequest);
+    }
+
+    @GetMapping(value = "/{id-bundle}/payment-service-providers/{psp-code}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get a bundle by psp code and bundle id", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    public Bundle getBundleDetailByPSP(@Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
+                                       @Parameter(description = "Commissional bundle's id") @PathVariable("id-bundle") String idBundle){
+        return commissionBundleService.getBundleDetailByPSP(pspCode, idBundle);
+    }
+
+    @PutMapping(value = "/{id-bundle}/payment-service-providers/{psp-code}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Update a bundle by psp code and bundle id", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
+    public void updatePSPBundle(
+            @Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
+            @Parameter(description = "Commissional bundle's id") @PathVariable("id-bundle") String idBundle,
+            @Parameter(description = "Commissional bundle related to PSP to be updated") @RequestBody @NotNull BundleRequest bundle){
+        commissionBundleService.updatePSPBundle(pspCode, idBundle, bundle);
+    }
+
+    @DeleteMapping(value = "/{id-bundle}/payment-service-providers/{psp-code}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Delete a bundle by psp code and bundle id", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
+    public void deletePSPBundle(
+            @Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
+            @Parameter(description = "Commissional bundle's id") @PathVariable("id-bundle") String idBundle
+    ){
+        commissionBundleService.deletePSPBundle(pspCode, idBundle);
     }
 
 }

@@ -12,6 +12,7 @@ public enum AppError {
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Unauthorized", "Error during authentication"),
     FORBIDDEN(HttpStatus.FORBIDDEN, "Forbidden", "This method is forbidden"),
     RESPONSE_NOT_READABLE(HttpStatus.BAD_GATEWAY, "Response Not Readable", "The response body is not readable"),
+    BAD_GATEWAY(HttpStatus.BAD_GATEWAY, "Error with external dependency", "%s"),
     SELFCARE_ROLE_NOT_FOUND(HttpStatus.BAD_GATEWAY, "SelfCare Role Not Found", "Unexpected role %s from Selfcare response"),
 
     ACTOR_NOT_FOUND(HttpStatus.NOT_FOUND, "Actor Not Found", "No Broker and No CreditorInstitution found with code %s"),

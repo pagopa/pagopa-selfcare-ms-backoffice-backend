@@ -20,9 +20,12 @@ public class ChannelPsp {
     private String businessName;
 
     @JsonProperty("enabled")
-
     @NotNull
     private Boolean enabled;
+
+    @JsonProperty("tax_code")
+    @NotNull
+    private String taxCode;
 
     @JsonProperty("payment_types")
     @NotNull

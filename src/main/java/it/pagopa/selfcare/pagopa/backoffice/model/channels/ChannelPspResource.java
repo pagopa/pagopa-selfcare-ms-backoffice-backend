@@ -26,6 +26,11 @@ public class ChannelPspResource {
     @NotNull
     private Boolean enabled;
 
+    @JsonProperty("tax_code")
+    @ApiModelProperty(value = "Payment Service Provider tax code")
+    @NotNull
+    private String taxCode;
+
     @JsonProperty("payment_types")
     @ApiModelProperty(value = "List of payment types")
     @NotNull

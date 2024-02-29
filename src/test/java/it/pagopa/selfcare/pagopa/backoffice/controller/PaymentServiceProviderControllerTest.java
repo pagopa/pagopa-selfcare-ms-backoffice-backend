@@ -75,21 +75,21 @@ class PaymentServiceProviderControllerTest {
 
     @Test
     void getBrokerAndPspDetailsTest() throws Exception {
-        mvc.perform(get("/payment-service-providers/{rax-code}", PSP_CODE)
+        mvc.perform(get("/payment-service-providers/{tax-code}", PSP_TAX_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     void getPspChannelsTest() throws Exception {
-        mvc.perform(get("/payment-service-providers/{psp-tax-code}/channels", PSP_TAX_CODE)
+        mvc.perform(get("/payment-service-providers/{tax-code}/channels", PSP_TAX_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     void getFirstValidChannelCodeTest() throws Exception {
-        mvc.perform(get("/payment-service-providers/{psp-code}/channels/available-code", PSP_CODE)
+        mvc.perform(get("/payment-service-providers/{tax-code}/channels/available-code", PSP_TAX_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -104,7 +104,7 @@ class PaymentServiceProviderControllerTest {
 
     @Test
     void updatePSPTest() throws Exception {
-        mvc.perform(put("/payment-service-providers/{psp-code}", PSP_CODE)
+        mvc.perform(put("/payment-service-providers/{tax-code}", PSP_TAX_CODE)
                         .content(objectMapper.writeValueAsBytes(new PaymentServiceProviderDetailsDto()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -120,7 +120,7 @@ class PaymentServiceProviderControllerTest {
 
     @Test
     void deletePSPChannelsTest() throws Exception {
-        mvc.perform(delete("/payment-service-providers/{psp-code}/channels/{channel-code", PSP_CODE, CHANNEL_CODE)
+        mvc.perform(delete("/payment-service-providers/{tax-code}/channels/{channel-code}", PSP_TAX_CODE, CHANNEL_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
