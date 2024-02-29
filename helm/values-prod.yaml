@@ -156,7 +156,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 2.2.4-1-opex-dashboard
+        tag: 2.2.4-2-opex-dashboard
         pullPolicy: Always
       envConfig: {}
       envSecret: {}
