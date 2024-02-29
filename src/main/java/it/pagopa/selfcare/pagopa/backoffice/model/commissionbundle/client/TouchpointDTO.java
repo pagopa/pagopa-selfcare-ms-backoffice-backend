@@ -2,7 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client;
 
 import lombok.Data;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 @Data
 public class TouchpointDTO {
@@ -11,5 +11,5 @@ public class TouchpointDTO {
 
     private String name;
 
-    private OffsetDateTime createdDate;
+    private LocalDateTime createdDate;
 }
