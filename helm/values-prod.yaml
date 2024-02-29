@@ -142,7 +142,7 @@ microservice-chart:
                 values:
                   - user
   canaryDelivery:
-    create: false
+    create: true
     ingress:
       create: true
       canary:
@@ -156,7 +156,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 1.5.2-2-PASELC-655-be-export-ec-cron-job
+        tag: 2.2.4-1-opex-dashboard
         pullPolicy: Always
       envConfig: {}
       envSecret: {}
