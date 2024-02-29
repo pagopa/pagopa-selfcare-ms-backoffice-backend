@@ -3,7 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 @Data
 public class Touchpoint {
@@ -15,5 +15,5 @@ public class Touchpoint {
     private String name;
 
     @JsonProperty("created_date")
-    private OffsetDateTime createdDate;
+    private LocalDateTime createdDate;
 }
