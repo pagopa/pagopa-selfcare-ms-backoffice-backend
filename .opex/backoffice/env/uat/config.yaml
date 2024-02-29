@@ -2,7 +2,7 @@ oa3_spec: ./openapi/openapi.json
 name: opex_pagopa-selfcare-ms-backoffice
 location: West Europe
 timespan: 5m
-data_source: /subscriptions/b9fc9419-6097-45fe-9f74-ba0641c91912/resourceGroups/pagopa-p-api-rg/providers/Microsoft.ApiManagement/service/pagopa-p-apim
+data_source: /subscriptions/26abc801-0d8f-4a6e-ac5f-8e81bcc09112/resourceGroups/pagopa-u-api-rg/providers/Microsoft.ApiManagement/service/pagopa-u-apim
 resource_type: api-management
 action_groups:
   - /subscriptions/26abc801-0d8f-4a6e-ac5f-8e81bcc09112/resourceGroups/pagopa-u-monitor-rg/providers/microsoft.insights/actionGroups/PagoPA
