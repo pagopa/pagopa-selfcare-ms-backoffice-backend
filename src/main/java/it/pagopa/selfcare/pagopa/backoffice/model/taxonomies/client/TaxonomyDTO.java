@@ -15,7 +15,7 @@ public class TaxonomyDTO {
     private String ecType;
 
 
-    @JsonProperty("Progressivo Macro Area per Ente Creditore")
+    @JsonProperty("PROGRESSIVO MACRO AREA PER ENTE CREDITORE")
     private String macroAreaEcProgressive;
 
 
@@ -33,12 +33,11 @@ public class TaxonomyDTO {
     @JsonProperty("TIPO SERVIZIO")
     private String serviceType;
 
-    @JsonProperty("Motivo Giuridico della riscossione")
+    @JsonProperty("MOTIVO GIURIDICO DELLA RISCOSSIONE")
     private String legalReasonCollection;
 
     @JsonProperty("DESCRIZIONE TIPO SERVIZIO")
     private String serviceTypeDescription;
-
 
     @JsonProperty("VERSIONE TASSONOMIA")
     private String taxonomyVersion;
