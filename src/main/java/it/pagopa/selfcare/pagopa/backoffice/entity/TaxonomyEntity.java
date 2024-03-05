@@ -49,9 +49,9 @@ public class TaxonomyEntity implements Persistable<String> {
     @Indexed(unique = true)
     private String specificBuiltInData;
 
-    private String startDate;
+    private Instant startDate;
 
-    private String endDate;
+    private Instant endDate;
 
     @LastModifiedDate
     @FieldNameConstants.Include

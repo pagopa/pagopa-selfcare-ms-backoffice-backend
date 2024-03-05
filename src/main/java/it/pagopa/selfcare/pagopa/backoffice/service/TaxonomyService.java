@@ -4,11 +4,13 @@ import it.pagopa.selfcare.pagopa.backoffice.client.TaxonomyClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.TaxonomyGroupEntity;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.*;
 import it.pagopa.selfcare.pagopa.backoffice.repository.TaxonomyGroupRepository;
+import it.pagopa.selfcare.pagopa.backoffice.repository.TaxonomyRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
 public class TaxonomyService {
 
     @Autowired
-    private TaxonomyClient taxonomyClient;
+    private TaxonomyRepository taxonomyRepository;
 
     @Autowired
     private TaxonomyGroupRepository taxonomyGroupRepository;
@@ -27,8 +29,10 @@ public class TaxonomyService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public Taxonomies getTaxonomies() {
-        List<Taxonomy> taxonomies = taxonomyClient.getTaxonomies().stream()
+    public Taxonomies getTaxonomies(String code, String ec, String macroArea, Boolean onlyValid) {
+        List<Taxonomy> taxonomies = taxonomyRepository.searchTaxonomies(
+                ec, macroArea, code != null ? ".*".concat(code).concat(".*") : null, onlyValid, Instant.now())
+                .stream()
                 .map(elem -> modelMapper.map(elem, Taxonomy.class))
                 .toList();
         return Taxonomies.builder()
