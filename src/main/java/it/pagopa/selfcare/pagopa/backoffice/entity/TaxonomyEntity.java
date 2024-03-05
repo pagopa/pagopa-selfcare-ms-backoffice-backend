@@ -3,10 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.annotation.*;
 import org.springframework.data.domain.Persistable;
@@ -17,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 import java.time.Instant;
 
 @Data
+@Builder
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Document("taxonomies")

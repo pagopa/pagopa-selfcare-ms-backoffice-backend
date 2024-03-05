@@ -73,10 +73,14 @@ public class TaxonomiesExtractionScheduler {
             taxonomyDTOList.forEach(taxonomyDTO -> {
                 TaxonomyEntity taxonomyEntity = new TaxonomyEntity();
                 BeanUtils.copyProperties(taxonomyDTO, taxonomyEntity);
-                taxonomyEntity.setStartDate(LocalDate.parse(taxonomyDTO.getStartDate(), dateTimeFormatter)
-                        .atStartOfDay().toInstant(ZoneOffset.UTC));
-                taxonomyEntity.setEndDate(LocalDate.parse(taxonomyDTO.getEndDate(), dateTimeFormatter)
-                        .atTime(23,59,59,999).toInstant(ZoneOffset.UTC));
+                if (taxonomyDTO.getStartDate() != null) {
+                    taxonomyEntity.setStartDate(LocalDate.parse(taxonomyDTO.getStartDate(), dateTimeFormatter)
+                            .atStartOfDay().toInstant(ZoneOffset.UTC));
+                }
+                if (taxonomyDTO.getEndDate() != null) {
+                    taxonomyEntity.setEndDate(LocalDate.parse(taxonomyDTO.getEndDate(), dateTimeFormatter)
+                            .atTime(23, 59, 59, 999).toInstant(ZoneOffset.UTC));
+                }
                 taxonomyEntities.add(taxonomyEntity);
 
                 if (!taxonomyGroupsMap.containsKey(taxonomyDTO.getEcType())) {

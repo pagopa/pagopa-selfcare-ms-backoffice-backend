@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
+import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomies;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.TaxonomyGroups;
 import it.pagopa.selfcare.pagopa.backoffice.service.TaxonomyService;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,6 +37,28 @@ class TaxonomyControllerTest {
     @BeforeEach
     void setUp() {
         Mockito.reset(taxonomyService);
+    }
+
+    @Test
+    void getTaxonomyShouldReturnOK() throws Exception {
+        when(taxonomyService.getTaxonomies(any(),any(),any(),any()))
+                .thenReturn(new Taxonomies());
+        mvc.perform(get("/taxonomies")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(taxonomyService).getTaxonomies(any(),any(),any(),any());
+    }
+
+    @Test
+    void getTaxonomyShouldReturnKO() throws Exception {
+        when(taxonomyService.getTaxonomies(any(),any(),any(),any()))
+                .then(invocationOnMock -> {
+                    throw new Exception();
+                });
+        mvc.perform(get("/taxonomies")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+        verify(taxonomyService).getTaxonomies(any(),any(),any(),any());
     }
 
     @Test
