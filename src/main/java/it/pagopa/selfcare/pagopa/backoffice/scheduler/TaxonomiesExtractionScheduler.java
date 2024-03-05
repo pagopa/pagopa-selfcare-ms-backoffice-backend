@@ -20,6 +20,10 @@ import java.util.*;
 
 import static it.pagopa.selfcare.pagopa.backoffice.config.LoggingAspect.*;
 
+/**
+ * Contains the scheduled function to be used for taxonomy extraction from the external source using the API Client,
+ * saving the result on the taxonomies and taxonomy-groups cosmos account
+ */
 @Component
 @Slf4j
 public class TaxonomiesExtractionScheduler {
@@ -39,6 +43,9 @@ public class TaxonomiesExtractionScheduler {
         this.taxonomyClient = taxonomyClient;
     }
 
+    /**
+     * Method containing the scheduled function
+     */
     @Scheduled(cron = "${cron.job.schedule.expression.taxonomies-extraction}")
     @SchedulerLock(name = "taxonomiesExtraction", lockAtMostFor = "180m", lockAtLeastFor = "15m")
     @Async
