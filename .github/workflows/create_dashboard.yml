@@ -39,7 +39,7 @@ jobs:
           environment: ${{ inputs.environment }}
           api-name: backoffice
           config: .opex/backoffice/env/${{ inputs.environment }}/config.yaml
-          client-id: ${{ secrets.CLIENT_ID }}
+          client-id: ${{ secrets.CD_CLIENT_ID }}
           tenant-id: ${{ secrets.TENANT_ID }}
           subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
           # from https://github.com/pagopa/opex-dashboard-azure-action/pkgs/container/opex-dashboard-azure-action

@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.3.0" #improve
+    tag: "2.3.1" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -97,7 +97,7 @@ microservice-chart:
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     CRONJOB_SCHEDULE_ENABLED: 'true'
-    CRONJOB_SCHEDULE_TAXONOMYEXPORT: "0 0 2 * * *"
+    CRONJOB_SCHEDULE_TAXONOMYEXPORT: "0 0 7 * * *"
     CRONJOB_SCHEDULE_IBANEXPORT: "0 0 2 * * *"
     CRONJOB_SCHEDULE_CIEXPORT: "0 0 2 * * *"
     EXTRACTION_IBANS_GETBROKERS_LIMIT: '200'
@@ -143,7 +143,7 @@ microservice-chart:
                 values:
                   - user
   canaryDelivery:
-    create: false
+    create: true
     ingress:
       create: true
       canary:
@@ -157,7 +157,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 1.5.2-2-PASELC-655-be-export-ec-cron-job
+        tag: 2.3.2
         pullPolicy: Always
       envConfig: {}
       envSecret: {}
