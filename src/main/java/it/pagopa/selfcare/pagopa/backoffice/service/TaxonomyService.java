@@ -40,6 +40,11 @@ public class TaxonomyService {
                 .build();
     }
 
+    public List<Taxonomy> getTaxonomiesByCodes(List<String> codes) {
+        return taxonomyRepository.findBySpecificBuiltInDataIn(codes).stream()
+                .map(elem -> modelMapper.map(elem, Taxonomy.class)).collect(Collectors.toList());
+    }
+
     /**
      * Method to return the list of available taxonomy groyp saved on cosmos
      * @return instance of TaxonomyGroups, containing the list of available taxonomy groups

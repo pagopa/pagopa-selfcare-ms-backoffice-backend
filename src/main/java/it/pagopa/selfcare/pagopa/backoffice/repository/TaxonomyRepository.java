@@ -17,4 +17,6 @@ public interface TaxonomyRepository extends MongoRepository<TaxonomyEntity, Stri
             " ]}")
     List<TaxonomyEntity> searchTaxonomies(String ec, String macroArea, String code, Boolean valid, Instant now);
 
+    List<TaxonomyEntity> findBySpecificBuiltInDataIn(List<String> codes);
+
 }
