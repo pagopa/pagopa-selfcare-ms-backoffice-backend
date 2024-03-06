@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static it.pagopa.selfcare.pagopa.backoffice.config.LoggingAspect.*;
+import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.*;
 
 @Component
 @Slf4j
@@ -40,7 +41,7 @@ public class CiBrokerExtractionScheduler {
     @Transactional
     public void extractCi() {
         // just a start print
-        updateMDCForStartExecution();
+        updateMDCForStartExecution("brokerCiExport", "");
         log.info("[Export-CI] export starting...");
         try {
             Set<String> allBrokers = allPages.getAllBrokers();
@@ -56,7 +57,7 @@ public class CiBrokerExtractionScheduler {
             updateMDCForEndExecution();
             log.info("[Export-CI] export complete!");
         } catch (Exception e) {
-            updateMDCError(e);
+            updateMDCError(e, "Export CI Broker");
             log.error("[Export-CI] an error occurred during the export creation", e);
             throw e;
         } finally {
@@ -80,29 +81,6 @@ public class CiBrokerExtractionScheduler {
         // save new entity
         log.debug("[Export-CI] save " + institutions.size() + " items for the broker " + brokerCode);
         brokerInstitutionsRepository.save(entity);
-    }
-
-    private void updateMDCForStartExecution() {
-        MDC.put(METHOD, "brokerCiExport");
-        MDC.put(START_TIME, String.valueOf(Calendar.getInstance().getTimeInMillis()));
-        MDC.put(REQUEST_ID, UUID.randomUUID().toString());
-        MDC.put(OPERATION_ID, UUID.randomUUID().toString());
-        MDC.put(ARGS, "");
-    }
-
-
-    private void updateMDCForEndExecution() {
-        MDC.put(STATUS, "OK");
-        MDC.put(CODE, "201");
-        MDC.put(RESPONSE_TIME, getExecutionTime());
-    }
-
-    private void updateMDCError(Exception e) {
-        MDC.put(STATUS, "KO");
-        MDC.put(CODE, "500");
-        MDC.put(RESPONSE_TIME, getExecutionTime());
-        MDC.put(FAULT_CODE, "Export CI Broker");
-        MDC.put(FAULT_DETAIL, e.getMessage());
     }
 
 
