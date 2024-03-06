@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomies;
+import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.TaxonomyGroups;
 import it.pagopa.selfcare.pagopa.backoffice.service.TaxonomyService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,15 @@ public class TaxonomyController {
     @Cacheable(value = "taxonomy")
     public Taxonomies getTaxonomies() {
         return taxonomyService.getTaxonomies();
+    }
+
+    @GetMapping("/groups")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get a list of taxonomies groups", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(cacheable = true)
+    @Cacheable(value = "taxonomyGroups")
+    public TaxonomyGroups getTaxonomyGroups() {
+        return taxonomyService.getTaxonomyGroups();
     }
 
 }
