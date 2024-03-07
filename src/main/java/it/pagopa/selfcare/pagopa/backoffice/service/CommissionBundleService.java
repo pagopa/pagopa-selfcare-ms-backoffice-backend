@@ -5,9 +5,11 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -18,10 +20,13 @@ public class CommissionBundleService {
 
     private final ModelMapper modelMapper;
 
+    private final TaxonomyService taxonomyService;
+
     @Autowired
-    public CommissionBundleService(GecClient gecClient, ModelMapper modelMapper) {
+    public CommissionBundleService(GecClient gecClient, ModelMapper modelMapper, TaxonomyService taxonomyService) {
         this.gecClient = gecClient;
         this.modelMapper = modelMapper;
+        this.taxonomyService = taxonomyService;
     }
 
     public BundlePaymentTypes getBundlesPaymentTypes(Integer limit, Integer page) {
@@ -34,16 +39,32 @@ public class CommissionBundleService {
         return modelMapper.map(dto, Touchpoints.class);
     }
 
-    public Bundles getBundlesByPSP(String pspCode, List<BundleType> bundleType, String name, Integer limit, Integer page) {
-        return gecClient.getBundlesByPSP(pspCode, bundleType, name, limit, page);
+    public BundlesResource getBundlesByPSP(
+            String pspCode, List<BundleType> bundleType, String name, Integer limit, Integer page) {
+        Bundles bundles = gecClient.getBundlesByPSP(pspCode, bundleType, name, limit, page);
+        List<BundleResource> bundleResources = bundles.getBundles() != null ?
+                bundles.getBundles().stream().map(bundle -> {
+                    BundleResource bundleResource = new BundleResource();
+                    BeanUtils.copyProperties(bundle, bundleResource);
+                    bundleResource.setTransferCategoryList(
+                            taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
+                    );
+                    return bundleResource;
+                }).toList() :
+                new ArrayList<>();
+        return BundlesResource.builder().bundles(bundleResources).pageInfo(bundles.getPageInfo()).build();
     }
 
     public BundleCreateResponse createPSPBundle(String pspCode, BundleRequest bundle) {
         return gecClient.createPSPBundle(pspCode, bundle);
     }
 
-    public Bundle getBundleDetailByPSP(String pspCode, String idBundle){
-        return gecClient.getBundleDetailByPSP(pspCode, idBundle);
+    public BundleResource getBundleDetailByPSP(String pspCode, String idBundle){
+        Bundle bundle = gecClient.getBundleDetailByPSP(pspCode, idBundle);
+        BundleResource bundleResource = new BundleResource();
+        BeanUtils.copyProperties(bundle, bundleResource);
+        bundleResource.setTransferCategoryList(taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList()));
+        return bundleResource;
     }
 
     public void updatePSPBundle(String pspCode, String idBundle, BundleRequest bundle){

@@ -1,10 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
@@ -96,7 +93,7 @@ class CommissionBundleControllerTest {
     void getBundleByPSPWithDefaultParamsOK() throws Exception {
         String url = "/bundles/payment-service-providers/{psp-code}";
         when(service.getBundlesByPSP(PSP_CODE, null, null, 50, 0)).thenReturn(
-                new Bundles()
+                new BundlesResource()
         );
         mvc.perform(get(url, PSP_CODE)
                 ).andExpect(status().isOk())
@@ -111,7 +108,7 @@ class CommissionBundleControllerTest {
         Integer page = 2;
         String name = "pspName";
         when(service.getBundlesByPSP(PSP_CODE, bundleTypeList, name, limit, page)).thenReturn(
-                new Bundles()
+                new BundlesResource()
         );
         mvc.perform(get(url, PSP_CODE)
                         .param("limit", String.valueOf(limit))
@@ -120,6 +117,7 @@ class CommissionBundleControllerTest {
                         .param("bundle-type", BundleType.PRIVATE.name())
                 ).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        verify(service).getBundlesByPSP(PSP_CODE, bundleTypeList, name, limit, page);
     }
 
     @Test
@@ -147,7 +145,7 @@ class CommissionBundleControllerTest {
     @Test
     void getBundleDetailByPSPOK() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-code}";
-        when(service.getBundleDetailByPSP(PSP_CODE, BUNDLE_ID)).thenReturn(new Bundle());
+        when(service.getBundleDetailByPSP(PSP_CODE, BUNDLE_ID)).thenReturn(new BundleResource());
 
         mvc.perform(get(url, BUNDLE_ID, PSP_CODE))
                 .andExpect(status().isOk())

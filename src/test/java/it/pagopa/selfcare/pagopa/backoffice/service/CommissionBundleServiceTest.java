@@ -1,12 +1,17 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
+import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,6 +19,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +37,9 @@ class CommissionBundleServiceTest {
     private GecClient client;
     @Autowired
     private CommissionBundleService service;
+
+    @MockBean
+    private  TaxonomyService taxonomyService;
 
     @Test
     void getBundlesPaymentTypes() {
@@ -52,6 +63,12 @@ class CommissionBundleServiceTest {
 
     @Test
     void getBundlesByPSP() {
+        when(client.getBundlesByPSP(any(), any(), any(), any(), any())).thenReturn(
+                Bundles.builder().bundles(Collections.singletonList(
+                        Bundle.builder().transferCategoryList(Collections.singletonList("test")).build())).build()
+        );
+        when(taxonomyService.getTaxonomiesByCodes(any())).thenReturn(
+                Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
         List<BundleType> bundleTypeList = Collections.singletonList(BundleType.GLOBAL);
         Assertions.assertDoesNotThrow(
                 () -> service.getBundlesByPSP(PSP_CODE, bundleTypeList, PSP_NAME, LIMIT, PAGE)
@@ -70,9 +87,16 @@ class CommissionBundleServiceTest {
 
     @Test
     void getBundleDetailByPSP() {
-        Assertions.assertDoesNotThrow(
+        when(client.getBundleDetailByPSP(any(), any())).thenReturn(
+                Bundle.builder().transferCategoryList(Collections.singletonList("test")).build());
+        when(taxonomyService.getTaxonomiesByCodes(any())).thenReturn(
+                Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
+        BundleResource bundleResource = Assertions.assertDoesNotThrow(
                 () -> service.getBundleDetailByPSP(PSP_CODE, ID_BUNDLE)
         );
+        assertNotNull(bundleResource);
+        assertNotNull(bundleResource.getTransferCategoryList());
+        assertEquals(1, bundleResource.getTransferCategoryList().size());
         verify(client).getBundleDetailByPSP(PSP_CODE, ID_BUNDLE);
     }
 
