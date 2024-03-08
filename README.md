@@ -1,23 +1,22 @@
 # SelfCare BackOffice
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-selfcare-ms-backoffice-backend&metric=alert_status)](https://sonarcloud.io/dashboard?id=pagopa_pagopa-selfcare-ms-backoffice-backend)
-[![Integration Tests](https://github.com/pagopa/pagopa-selfcare-frontend/actions/workflows/integration_test.yml/badge.svg?branch=main)](https://github.com/pagopa/pagopa-selfcare-frontend/actions/workflows/integration_test.yml)
+[![Integration Tests](https://github.com/pagopa/pagopa-selfcare-ms-backoffice-backend/actions/workflows/integration_test.yml/badge.svg?branch=main)](https://github.com/pagopa/pagopa-selfcare-ms-backoffice-backend/actions/workflows/integration_test.yml)
 
 Microservice to manage PagoPA Backoffice
 
 - [SelfCare BackOffice](#selfcare-backoffice)
-    * [Api Documentation 📖](#api-documentation---)
+    * [Api Documentation 📖](#api-documentation-)
     * [Technology Stack](#technology-stack)
-    * [Develop Locally 💻](#develop-locally---)
-        + [Prerequisites](#prerequisites-1)
+    * [Develop Locally 💻](#develop-locally-)
+        + [Prerequisites](#prerequisites)
         + [Run the project](#run-the-project)
         + [Spring Profiles](#spring-profiles)
-        + [Testing 🧪](#testing---)
+        + [Testing 🧪](#testing-)
             - [Unit testing](#unit-testing)
             - [Integration testing](#integration-testing)
-            - [Performance testing](#performance-testing)
-    * [Contributors 👥](#contributors---)
-        + [Mainteiners](#mainteiners)
+    * [Contributors 👥](#contributors-)
+        + [Maintainers](#maintainers)
 
 ---
 
@@ -117,6 +116,6 @@ From `./integration-test/src`
 
 Made with ❤️ by PagoPa S.p.A.
 
-### Mainteiners
+### Maintainers
 
 See `CODEOWNERS` file
