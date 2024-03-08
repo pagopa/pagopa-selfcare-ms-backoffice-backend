@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
+import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
@@ -11,7 +12,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Touchp
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@SpringBootTest(classes = {CommissionBundleService.class, MappingsConfiguration.class})
 class CommissionBundleServiceTest {
 
     public static final String PSP_CODE = "pspCode";
@@ -33,6 +33,9 @@ class CommissionBundleServiceTest {
     public static final int LIMIT = 50;
     public static final int PAGE = 0;
     public static final String ID_BUNDLE = "idBundle";
+    private static final String CI_CODE = "ciCode";
+    private static final String BUNDLE_OFFER_ID = "bundleOfferId";
+
     @MockBean
     private GecClient client;
     @Autowired
@@ -115,5 +118,21 @@ class CommissionBundleServiceTest {
                 () -> service.deletePSPBundle(PSP_CODE, ID_BUNDLE)
         );
         verify(client).deletePSPBundle(PSP_CODE, ID_BUNDLE);
+    }
+
+    @Test
+    void ciAcceptPrivateBundleOfferTest() {
+        Assertions.assertDoesNotThrow(
+                () -> service.ciAcceptPrivateBundleOffer(CI_CODE, BUNDLE_OFFER_ID)
+        );
+        verify(client).ciAcceptPrivateBundleOffer(CI_CODE, BUNDLE_OFFER_ID);
+    }
+
+    @Test
+    void removeCIBundleTest() {
+        Assertions.assertDoesNotThrow(
+                () -> service.removeCIBundle(CI_CODE, ID_BUNDLE)
+        );
+        verify(client).removeCIBundle(CI_CODE, ID_BUNDLE);
     }
 }
