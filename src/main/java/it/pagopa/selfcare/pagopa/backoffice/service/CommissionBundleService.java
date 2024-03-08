@@ -546,4 +546,26 @@ public class CommissionBundleService {
     private boolean isBundleRequested(PublicBundleRequests bundleRequests) {
         return bundleRequests != null && bundleRequests.getPageInfo().getTotalItems() != null && bundleRequests.getPageInfo().getTotalItems() > 0;
     }
+
+    /**
+     * Accept the private bundle offer with the provided id.
+     * The provided tax code identifies the creditor institution that accept the offer
+     *
+     * @param ciTaxCode the tax code of the creditor institution
+     * @param idBundleOffer th id of the bundle offer
+     * @return the id of the accepted private bundle
+     */
+    public CIBundleId ciAcceptPrivateBundleOffer(String ciTaxCode, String idBundleOffer) {
+        return gecClient.ciAcceptPrivateBundleOffer(ciTaxCode, idBundleOffer);
+    }
+
+    /**
+     * Remove the subscription of a creditor institution to a bundle
+     *
+     * @param ciTaxCode the creditor institution tax code
+     * @param idBundle the bundle id
+     */
+    public void removeCIBundle(String ciTaxCode, String idBundle){
+        gecClient.removeCIBundle(ciTaxCode, idBundle);
+    }
 }

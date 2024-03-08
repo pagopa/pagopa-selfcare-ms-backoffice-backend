@@ -17,10 +17,15 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleC
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
 import it.pagopa.selfcare.pagopa.backoffice.service.CommissionBundleService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -317,5 +322,24 @@ public class CommissionBundleController {
             @RequestBody @NotNull PublicBundleRequest publicBundleRequest
     ){
         commissionBundleService.createCIBundleRequest(ciTaxCode, publicBundleRequest, bundleName);
+    }
+    @PostMapping(value = "offers/{id-bundle-offer}/creditor-institutions/{ci-code}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Accept a private bundle offer by bundle offer id and ci tax code", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public CIBundleId acceptPrivateBundleOffer(
+            @Parameter(description = "Commission bundle offer's id") @PathVariable("id-bundle-offer") String idBundleOffer,
+            @Parameter(description = "Tax code of the creditor institution") @PathVariable("ci-code") String ciTaxCode) {
+        return commissionBundleService.ciAcceptPrivateBundleOffer(ciTaxCode, idBundleOffer);
+    }
+
+    @DeleteMapping(value = "/{id-bundle}/creditor-institutions/{ci-code}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Remove bundle by ci tax code and bundle id", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public void removeCIBundle(
+            @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
+            @Parameter(description = "Tax code of the creditor institution") @PathVariable("ci-code") String ciTaxCode) {
+        commissionBundleService.removeCIBundle(ciTaxCode, idBundle);
     }
 }
