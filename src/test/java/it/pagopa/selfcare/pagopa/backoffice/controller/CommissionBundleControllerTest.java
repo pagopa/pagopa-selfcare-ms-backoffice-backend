@@ -29,8 +29,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(username = "user1", password = "pwd", roles = "USER")
 class CommissionBundleControllerTest {
     private static final String PSP_CODE = "pspCode";
+    private static final String CI_CODE = "ciCode";
     public static final String BUNDLE_ID = "bundleId";
+    private static final String BUNDLE_OFFER_ID = "bundleOfferId";
+
     private final ObjectMapper mapper = new ObjectMapper();
+
     @Autowired
     private MockMvc mvc;
 
@@ -172,5 +176,23 @@ class CommissionBundleControllerTest {
         mvc.perform(delete(url, BUNDLE_ID, PSP_CODE))
                 .andExpect(status().isOk());
         verify(service).deletePSPBundle(PSP_CODE, BUNDLE_ID);
+    }
+
+    @Test
+    void acceptPrivateBundleOfferTest() throws Exception {
+        String url = "/bundles/offers/{id-bundle-offer}/creditor-institutions/{ci-code}";
+
+        mvc.perform(post(url, BUNDLE_OFFER_ID, CI_CODE))
+                .andExpect(status().isOk());
+        verify(service).ciAcceptPrivateBundleOffer(CI_CODE, BUNDLE_OFFER_ID);
+    }
+
+    @Test
+    void removeCIBundleTest() throws Exception {
+        String url = "/bundles/{id-bundle}/creditor-institutions/{ci-code}";
+
+        mvc.perform(delete(url, BUNDLE_ID, CI_CODE))
+                .andExpect(status().isOk());
+        verify(service).removeCIBundle(CI_CODE, BUNDLE_ID);
     }
 }

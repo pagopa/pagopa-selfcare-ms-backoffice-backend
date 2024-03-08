@@ -4,17 +4,30 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
 import it.pagopa.selfcare.pagopa.backoffice.service.CommissionBundleService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -80,7 +93,7 @@ public class CommissionBundleController {
     @Operation(summary = "Get a bundle by psp code and bundle id", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public BundleResource getBundleDetailByPSP(@Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
-                                       @Parameter(description = "Commissional bundle's id") @PathVariable("id-bundle") String idBundle){
+                                               @Parameter(description = "Commissional bundle's id") @PathVariable("id-bundle") String idBundle) {
         return commissionBundleService.getBundleDetailByPSP(pspCode, idBundle);
     }
 
@@ -91,7 +104,7 @@ public class CommissionBundleController {
     public void updatePSPBundle(
             @Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
             @Parameter(description = "Commissional bundle's id") @PathVariable("id-bundle") String idBundle,
-            @Parameter(description = "Commissional bundle related to PSP to be updated") @RequestBody @NotNull BundleRequest bundle){
+            @Parameter(description = "Commissional bundle related to PSP to be updated") @RequestBody @NotNull BundleRequest bundle) {
         commissionBundleService.updatePSPBundle(pspCode, idBundle, bundle);
     }
 
@@ -102,8 +115,27 @@ public class CommissionBundleController {
     public void deletePSPBundle(
             @Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
             @Parameter(description = "Commissional bundle's id") @PathVariable("id-bundle") String idBundle
-    ){
+    ) {
         commissionBundleService.deletePSPBundle(pspCode, idBundle);
     }
 
+    @PostMapping(value = "/offers/{id-bundle-offer}/creditor-institutions/{ci-code}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Accept a private bundle offer by bundle offer id and ci tax code", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public CIBundleId acceptPrivateBundleOffer(
+            @Parameter(description = "Commission bundle offer's id") @PathVariable("id-bundle-offer") String idBundleOffer,
+            @Parameter(description = "Tax code of the creditor institution") @PathVariable("ci-code") String ciTaxCode) {
+        return commissionBundleService.ciAcceptPrivateBundleOffer(ciTaxCode, idBundleOffer);
+    }
+
+    @DeleteMapping(value = "/{id-bundle}/creditor-institutions/{ci-code}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Remove bundle by ci tax code and bundle id", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public void removeCIBundle(
+            @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
+            @Parameter(description = "Tax code of the creditor institution") @PathVariable("ci-code") String ciTaxCode) {
+        commissionBundleService.removeCIBundle(ciTaxCode, idBundle);
+    }
 }
