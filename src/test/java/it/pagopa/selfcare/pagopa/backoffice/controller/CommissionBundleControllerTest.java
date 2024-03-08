@@ -47,6 +47,7 @@ class CommissionBundleControllerTest {
     private static final String CI_BUNDLE_ID = "ciBundleId";
     public static final String ID_BUNDLE_REQUEST = "idBundleRequest";
     public static final String BUNDLE_NAME = "bundleName";
+    private static final String BUNDLE_OFFER_ID = "bundleOfferId";
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -310,5 +311,23 @@ class CommissionBundleControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
         verify(service).createCIBundleRequest(CI_TAX_CODE, bundleRequest, BUNDLE_NAME);
+    }
+
+    @Test
+    void acceptPrivateBundleOfferTest() throws Exception {
+        String url = "/bundles/offers/{id-bundle-offer}/creditor-institutions/{ci-code}";
+
+        mvc.perform(post(url, BUNDLE_OFFER_ID, CI_TAX_CODE))
+                .andExpect(status().isOk());
+        verify(service).ciAcceptPrivateBundleOffer(CI_CODE, BUNDLE_OFFER_ID);
+    }
+
+    @Test
+    void removeCIBundleTest() throws Exception {
+        String url = "/bundles/{id-bundle}/creditor-institutions/{ci-code}";
+
+        mvc.perform(delete(url, BUNDLE_ID, CI_TAX_CODE))
+                .andExpect(status().isOk());
+        verify(service).removeCIBundle(CI_CODE, BUNDLE_ID);
     }
 }

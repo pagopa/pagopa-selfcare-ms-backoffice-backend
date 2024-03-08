@@ -17,6 +17,14 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleS
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreditorInstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import org.junit.jupiter.api.Test;
@@ -46,7 +54,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {MappingsConfiguration.class, CommissionBundleService.class})
+@SpringBootTest(classes = {CommissionBundleService.class, MappingsConfiguration.class})
 class CommissionBundleServiceTest {
 
     private static final String PSP_CODE = "pspCode";
@@ -61,6 +69,7 @@ class CommissionBundleServiceTest {
     private static final String TRANSFER_CATEGORY = "9/0105107TS/";
     private static final String SERVICE_TYPE = "Diritti Pratiche SUAP e SUE";
     public static final String BUNDLE_NAME = "bundleName";
+    private static final String BUNDLE_OFFER_ID = "bundleOfferId";
 
     @MockBean
     private GecClient gecClient;
@@ -697,5 +706,21 @@ class CommissionBundleServiceTest {
                 .maxPaymentAmount(100L)
                 .transferCategory(TRANSFER_CATEGORY)
                 .build();
+    }
+
+    @Test
+    void ciAcceptPrivateBundleOfferTest() {
+        Assertions.assertDoesNotThrow(
+                () -> service.ciAcceptPrivateBundleOffer(CI_CODE, BUNDLE_OFFER_ID)
+        );
+        verify(client).ciAcceptPrivateBundleOffer(CI_CODE, BUNDLE_OFFER_ID);
+    }
+
+    @Test
+    void removeCIBundleTest() {
+        Assertions.assertDoesNotThrow(
+                () -> service.removeCIBundle(CI_CODE, ID_BUNDLE)
+        );
+        verify(client).removeCIBundle(CI_CODE, ID_BUNDLE);
     }
 }

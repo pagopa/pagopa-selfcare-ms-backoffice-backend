@@ -323,7 +323,7 @@ public class CommissionBundleController {
     ){
         commissionBundleService.createCIBundleRequest(ciTaxCode, publicBundleRequest, bundleName);
     }
-    @PostMapping(value = "offers/{id-bundle-offer}/creditor-institutions/{ci-code}")
+    @PostMapping(value = "/offers/{id-bundle-offer}/creditor-institutions/{ci-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Accept a private bundle offer by bundle offer id and ci tax code", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
