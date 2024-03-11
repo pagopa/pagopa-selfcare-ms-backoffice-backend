@@ -38,7 +38,7 @@ public class SecurityConfig {
             "/favicon.ico",
             "/error",
             "/actuator/**",
-            "/info"
+//            "/info"
     };
 
     @Value("${info.properties.environment}")

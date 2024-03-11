@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,11 +38,16 @@ public class BaseController  {
     @GetMapping(value = "/info")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<AppInfo> healthCheck() {
-        log.info(featureManager.getAllFeatureNames().toString());
-        log.info(featureManager.isEnabledAsync("Beta").block().toString());
-        log.info(featureManager.isEnabledAsync("test").block().toString());
         // Used just for health checking
         AppInfo info = AppInfo.builder().name(name).version(version).environment(environment).build();
         return ResponseEntity.status(HttpStatus.OK).body(info);
+    }
+
+    @Operation(summary = "Return Azure Feature Flags", description = "Return the value of the flag given the name", security = {@SecurityRequirement(name = "JWT")}, tags = {"Home"})
+    @GetMapping(value = "/flags/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Boolean> healthCheck(@PathVariable("name") String name) {
+        boolean flag = featureManager.isEnabled(name);
+        return ResponseEntity.status(HttpStatus.OK).body(flag);
     }
 }

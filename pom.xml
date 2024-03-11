@@ -265,10 +265,7 @@
             <groupId>com.azure.spring</groupId>
             <artifactId>spring-cloud-azure-feature-management-web</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.microsoft.azure</groupId>
-            <artifactId>spring-cloud-azure-feature-management</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
