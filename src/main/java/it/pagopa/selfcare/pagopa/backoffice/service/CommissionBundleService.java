@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
+import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -22,11 +23,18 @@ public class CommissionBundleService {
 
     private final TaxonomyService taxonomyService;
 
+    private final LegacyPspCodeUtil legacyPspCodeUtil;
+
     @Autowired
-    public CommissionBundleService(GecClient gecClient, ModelMapper modelMapper, TaxonomyService taxonomyService) {
+    public CommissionBundleService(
+            GecClient gecClient,
+            ModelMapper modelMapper,
+            TaxonomyService taxonomyService,
+            LegacyPspCodeUtil legacyPspCodeUtil) {
         this.gecClient = gecClient;
         this.modelMapper = modelMapper;
         this.taxonomyService = taxonomyService;
+        this.legacyPspCodeUtil = legacyPspCodeUtil;
     }
 
     public BundlePaymentTypes getBundlesPaymentTypes(Integer limit, Integer page) {
@@ -40,14 +48,19 @@ public class CommissionBundleService {
     }
 
     public BundlesResource getBundlesByPSP(
-            String pspCode, List<BundleType> bundleType, String name, Integer limit, Integer page) {
-        Bundles bundles = gecClient.getBundlesByPSP(pspCode, bundleType, name, limit, page);
+            String pspTaxCode,
+            List<BundleType> bundleType,
+            String name, Integer limit,
+            Integer page
+    ) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
+        Bundles bundles = this.gecClient.getBundlesByPSP(pspCode, bundleType, name, limit, page);
         List<BundleResource> bundleResources = bundles.getBundles() != null ?
                 bundles.getBundles().stream().map(bundle -> {
                     BundleResource bundleResource = new BundleResource();
                     BeanUtils.copyProperties(bundle, bundleResource);
                     bundleResource.setTransferCategoryList(
-                            taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
+                            this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
                     );
                     return bundleResource;
                 }).toList() :
@@ -55,23 +68,27 @@ public class CommissionBundleService {
         return BundlesResource.builder().bundles(bundleResources).pageInfo(bundles.getPageInfo()).build();
     }
 
-    public BundleCreateResponse createPSPBundle(String pspCode, BundleRequest bundle) {
-        return gecClient.createPSPBundle(pspCode, bundle);
+    public BundleCreateResponse createPSPBundle(String pspTaxCode, BundleRequest bundle) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
+        return this.gecClient.createPSPBundle(pspCode, bundle);
     }
 
-    public BundleResource getBundleDetailByPSP(String pspCode, String idBundle){
-        Bundle bundle = gecClient.getBundleDetailByPSP(pspCode, idBundle);
+    public BundleResource getBundleDetailByPSP(String pspTaxCode, String idBundle) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
+        Bundle bundle = this.gecClient.getBundleDetailByPSP(pspCode, idBundle);
         BundleResource bundleResource = new BundleResource();
         BeanUtils.copyProperties(bundle, bundleResource);
-        bundleResource.setTransferCategoryList(taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList()));
+        bundleResource.setTransferCategoryList(this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList()));
         return bundleResource;
     }
 
-    public void updatePSPBundle(String pspCode, String idBundle, BundleRequest bundle){
-        gecClient.updatePSPBundle(pspCode, idBundle, bundle);
+    public void updatePSPBundle(String pspTaxCode, String idBundle, BundleRequest bundle) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
+        this.gecClient.updatePSPBundle(pspCode, idBundle, bundle);
     }
 
-    public void deletePSPBundle(String pspCode, String idBundle){
-        gecClient.deletePSPBundle(pspCode, idBundle);
+    public void deletePSPBundle(String pspTaxCode, String idBundle) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
+        this.gecClient.deletePSPBundle(pspCode, idBundle);
     }
 }

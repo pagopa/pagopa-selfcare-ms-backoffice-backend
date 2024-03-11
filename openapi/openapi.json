@@ -504,7 +504,7 @@
         }
       ]
     },
-    "/bundles/payment-service-providers/{psp-code}": {
+    "/bundles/payment-service-providers/{psp-tax-code}": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId": "getBundlesByPSP",
@@ -521,7 +521,7 @@
             }
           },
           {
-            "description": "Commissional bundle's type",
+            "description": "Commission bundle's type",
             "in": "query",
             "name": "bundle-type",
             "required": false,
@@ -549,16 +549,16 @@
             }
           },
           {
-            "description": "Fiscal code of the payment service provider",
+            "description": "Tax code of the payment service provider",
             "in": "path",
-            "name": "psp-code",
+            "name": "psp-tax-code",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
-            "description": "Commissional bundle's name",
+            "description": "Commission bundle's name",
             "in": "query",
             "name": "name",
             "required": false,
@@ -572,7 +572,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bundles"
+                  "$ref": "#/components/schemas/BundlesResource"
                 }
               }
             },
@@ -612,9 +612,9 @@
         "operationId": "createBundle",
         "parameters": [
           {
-            "description": "Fiscal code of the payment service provider",
+            "description": "Tax code of the payment service provider",
             "in": "path",
-            "name": "psp-code",
+            "name": "psp-tax-code",
             "required": true,
             "schema": {
               "type": "string"
@@ -656,7 +656,7 @@
             "JWT": []
           }
         ],
-        "summary": "Create a commissional bundle related to PSP",
+        "summary": "Create a commission bundle related to PSP",
         "tags": [
           "Commission bundles"
         ]
@@ -800,22 +800,22 @@
         }
       ]
     },
-    "/bundles/{id-bundle}/payment-service-providers/{psp-code}": {
+    "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}": {
       "delete": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
         "operationId": "deletePSPBundle",
         "parameters": [
           {
-            "description": "Fiscal code of the payment service provider",
+            "description": "Tax code of the payment service provider",
             "in": "path",
-            "name": "psp-code",
+            "name": "psp-tax-code",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
-            "description": "Commissional bundle's id",
+            "description": "Commission bundle's id",
             "in": "path",
             "name": "id-bundle",
             "required": true,
@@ -852,16 +852,16 @@
         "operationId": "getBundleDetailByPSP",
         "parameters": [
           {
-            "description": "Fiscal code of the payment service provider",
+            "description": "Tax code of the payment service provider",
             "in": "path",
-            "name": "psp-code",
+            "name": "psp-tax-code",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
-            "description": "Commissional bundle's id",
+            "description": "Commission bundle's id",
             "in": "path",
             "name": "id-bundle",
             "required": true,
@@ -875,7 +875,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bundle"
+                  "$ref": "#/components/schemas/BundleResource"
                 }
               }
             },
@@ -915,16 +915,16 @@
         "operationId": "updatePSPBundle",
         "parameters": [
           {
-            "description": "Fiscal code of the payment service provider",
+            "description": "Tax code of the payment service provider",
             "in": "path",
-            "name": "psp-code",
+            "name": "psp-tax-code",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
-            "description": "Commissional bundle's id",
+            "description": "Commission bundle's id",
             "in": "path",
             "name": "id-bundle",
             "required": true,
@@ -6529,97 +6529,6 @@
           }
         }
       },
-      "Bundle": {
-        "type": "object",
-        "properties": {
-          "description": {
-            "type": "string"
-          },
-          "digitalStamp": {
-            "type": "boolean",
-            "description": "If the payment needs a tax stamp, mutually exclusive with digitalStampRestriction"
-          },
-          "digitalStampRestriction": {
-            "type": "boolean",
-            "description": "If the payment can be payed only with a tax stamp, mutually exclusive with digitalStamp"
-          },
-          "idBrokerPsp": {
-            "type": "string",
-            "description": "TaxCode of the linked broker PSP"
-          },
-          "idBundle": {
-            "type": "string",
-            "description": "Document ID"
-          },
-          "idChannel": {
-            "type": "string",
-            "description": "ID of the linked channel"
-          },
-          "insertedDate": {
-            "type": "string",
-            "description": "Date of creation",
-            "format": "date-time"
-          },
-          "lastUpdatedDate": {
-            "type": "string",
-            "description": "Date of the last change",
-            "format": "date-time"
-          },
-          "maxPaymentAmount": {
-            "type": "integer",
-            "description": "Maximum commission fee that can bee applied",
-            "format": "int64"
-          },
-          "minPaymentAmount": {
-            "type": "integer",
-            "description": "Minimum commission fee that can be applied",
-            "format": "int64"
-          },
-          "name": {
-            "type": "string"
-          },
-          "paymentAmount": {
-            "type": "integer",
-            "description": "Applied commission fee",
-            "format": "int64"
-          },
-          "paymentType": {
-            "type": "string",
-            "description": "Payment type for which the bundle can be applied"
-          },
-          "touchpoint": {
-            "type": "string",
-            "description": "Touch-point where the bundle can be applied"
-          },
-          "transferCategoryList": {
-            "type": "array",
-            "description": "List of taxonomies that relates to the bundle",
-            "items": {
-              "type": "string",
-              "description": "List of taxonomies that relates to the bundle"
-            }
-          },
-          "type": {
-            "type": "string",
-            "description": "Bundle enum type",
-            "enum": [
-              "GLOBAL",
-              "PUBLIC",
-              "PRIVATE"
-            ]
-          },
-          "validityDateFrom": {
-            "type": "string",
-            "description": "Date from which the bundle is valid",
-            "format": "date"
-          },
-          "validityDateTo": {
-            "type": "string",
-            "description": "Date after which the bundle is expired",
-            "format": "date"
-          }
-        }
-      },
       "BundleCreateResponse": {
         "type": "object",
         "properties": {
@@ -6752,15 +6661,105 @@
             "format": "date"
           }
         },
-        "description": "Commissional bundle related to PSP to be created"
+        "description": "Commission bundle related to PSP to be created"
       },
-      "Bundles": {
+      "BundleResource": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "digitalStamp": {
+            "type": "boolean",
+            "description": "If the payment needs a tax stamp, mutually exclusive with digitalStampRestriction"
+          },
+          "digitalStampRestriction": {
+            "type": "boolean",
+            "description": "If the payment can be payed only with a tax stamp, mutually exclusive with digitalStamp"
+          },
+          "idBrokerPsp": {
+            "type": "string",
+            "description": "TaxCode of the linked broker PSP"
+          },
+          "idBundle": {
+            "type": "string",
+            "description": "Document ID"
+          },
+          "idChannel": {
+            "type": "string",
+            "description": "ID of the linked channel"
+          },
+          "insertedDate": {
+            "type": "string",
+            "description": "Date of creation",
+            "format": "date-time"
+          },
+          "lastUpdatedDate": {
+            "type": "string",
+            "description": "Date of the last change",
+            "format": "date-time"
+          },
+          "maxPaymentAmount": {
+            "type": "integer",
+            "description": "Maximum commission fee that can bee applied",
+            "format": "int64"
+          },
+          "minPaymentAmount": {
+            "type": "integer",
+            "description": "Minimum commission fee that can be applied",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "paymentAmount": {
+            "type": "integer",
+            "description": "Applied commission fee",
+            "format": "int64"
+          },
+          "paymentType": {
+            "type": "string",
+            "description": "Payment type for which the bundle can be applied"
+          },
+          "touchpoint": {
+            "type": "string",
+            "description": "Touch-point where the bundle can be applied"
+          },
+          "transferCategoryList": {
+            "type": "array",
+            "description": "List of taxonomies that relates to the bundle",
+            "items": {
+              "$ref": "#/components/schemas/Taxonomy"
+            }
+          },
+          "type": {
+            "type": "string",
+            "description": "Bundle enum type",
+            "enum": [
+              "GLOBAL",
+              "PUBLIC",
+              "PRIVATE"
+            ]
+          },
+          "validityDateFrom": {
+            "type": "string",
+            "description": "Date from which the bundle is valid",
+            "format": "date"
+          },
+          "validityDateTo": {
+            "type": "string",
+            "description": "Date after which the bundle is expired",
+            "format": "date"
+          }
+        }
+      },
+      "BundlesResource": {
         "type": "object",
         "properties": {
           "bundles": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Bundle"
+              "$ref": "#/components/schemas/BundleResource"
             }
           },
           "pageInfo": {

@@ -28,7 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @WithMockUser(username = "user1", password = "pwd", roles = "USER")
 class CommissionBundleControllerTest {
-    private static final String PSP_CODE = "pspCode";
+
+    private static final String PSP_TAX_CODE = "pspTaxCode";
     public static final String BUNDLE_ID = "bundleId";
     private final ObjectMapper mapper = new ObjectMapper();
     @Autowired
@@ -92,10 +93,10 @@ class CommissionBundleControllerTest {
     @Test
     void getBundleByPSPWithDefaultParamsOK() throws Exception {
         String url = "/bundles/payment-service-providers/{psp-code}";
-        when(service.getBundlesByPSP(PSP_CODE, null, null, 50, 0)).thenReturn(
+        when(service.getBundlesByPSP(PSP_TAX_CODE, null, null, 50, 0)).thenReturn(
                 new BundlesResource()
         );
-        mvc.perform(get(url, PSP_CODE)
+        mvc.perform(get(url, PSP_TAX_CODE)
                 ).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
@@ -107,26 +108,26 @@ class CommissionBundleControllerTest {
         List<BundleType> bundleTypeList = Collections.singletonList(BundleType.PRIVATE);
         Integer page = 2;
         String name = "pspName";
-        when(service.getBundlesByPSP(PSP_CODE, bundleTypeList, name, limit, page)).thenReturn(
+        when(service.getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, name, limit, page)).thenReturn(
                 new BundlesResource()
         );
-        mvc.perform(get(url, PSP_CODE)
+        mvc.perform(get(url, PSP_TAX_CODE)
                         .param("limit", String.valueOf(limit))
                         .param("page", String.valueOf(page))
                         .param("name", name)
                         .param("bundle-type", BundleType.PRIVATE.name())
                 ).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
-        verify(service).getBundlesByPSP(PSP_CODE, bundleTypeList, name, limit, page);
+        verify(service).getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, name, limit, page);
     }
 
     @Test
     void createPSPBundleOK() throws Exception {
         String url = "/bundles/payment-service-providers/{psp-code}";
         BundleRequest bundleRequest = new BundleRequest();
-        when(service.createPSPBundle(PSP_CODE, bundleRequest)).thenReturn(new BundleCreateResponse());
+        when(service.createPSPBundle(PSP_TAX_CODE, bundleRequest)).thenReturn(new BundleCreateResponse());
 
-        mvc.perform(post(url, PSP_CODE)
+        mvc.perform(post(url, PSP_TAX_CODE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(mapper.writeValueAsString(bundleRequest))
                 ).andExpect(status().isCreated())
@@ -137,7 +138,7 @@ class CommissionBundleControllerTest {
     void createPSPBundleNoBundleKO() throws Exception {
         String url = "/bundles/payment-service-providers/{psp-code}";
 
-        mvc.perform(post(url, PSP_CODE)
+        mvc.perform(post(url, PSP_TAX_CODE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is4xxClientError());
     }
@@ -145,32 +146,32 @@ class CommissionBundleControllerTest {
     @Test
     void getBundleDetailByPSPOK() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-code}";
-        when(service.getBundleDetailByPSP(PSP_CODE, BUNDLE_ID)).thenReturn(new BundleResource());
+        when(service.getBundleDetailByPSP(PSP_TAX_CODE, BUNDLE_ID)).thenReturn(new BundleResource());
 
-        mvc.perform(get(url, BUNDLE_ID, PSP_CODE))
+        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
-        verify(service).getBundleDetailByPSP(PSP_CODE, BUNDLE_ID);
+        verify(service).getBundleDetailByPSP(PSP_TAX_CODE, BUNDLE_ID);
     }
 
     @Test
     void updatePSPBundleOK() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-code}";
         BundleRequest bundleRequest = new BundleRequest();
-        mvc.perform(put(url, BUNDLE_ID, PSP_CODE)
+        mvc.perform(put(url, BUNDLE_ID, PSP_TAX_CODE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(bundleRequest))
                 )
                 .andExpect(status().isOk());
-        verify(service).updatePSPBundle(PSP_CODE, BUNDLE_ID, bundleRequest);
+        verify(service).updatePSPBundle(PSP_TAX_CODE, BUNDLE_ID, bundleRequest);
     }
 
     @Test
     void deletePSPBundleOK() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-code}";
 
-        mvc.perform(delete(url, BUNDLE_ID, PSP_CODE))
+        mvc.perform(delete(url, BUNDLE_ID, PSP_TAX_CODE))
                 .andExpect(status().isOk());
-        verify(service).deletePSPBundle(PSP_CODE, BUNDLE_ID);
+        verify(service).deletePSPBundle(PSP_TAX_CODE, BUNDLE_ID);
     }
 }
