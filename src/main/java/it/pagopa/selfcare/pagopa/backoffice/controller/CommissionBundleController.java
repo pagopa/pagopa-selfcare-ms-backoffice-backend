@@ -113,19 +113,18 @@ public class CommissionBundleController {
         commissionBundleService.deletePSPBundle(pspTaxCode, idBundle);
     }
 
-
     /**
      * Accept a list of EC subscription requests to a public bundle
      *
-     * @param pspTaxCode the tax code of the PSP that owns the public bundle
+     * @param pspTaxCode          the tax code of the PSP that owns the public bundle
      * @param bundleRequestIdList the list of bundle request id to be accepted
      */
-    @PostMapping(value = "/requests/payment-service-providers/{tax-code}/accept", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/requests/payment-service-providers/{psp-tax-code}/accept", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Accept a list of subscription to a public bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public void acceptPublicBundleSubscriptions(
-            @Parameter(description = "Tax code of the payment service provider") @PathVariable("tax-code") String pspTaxCode,
+            @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
             @RequestBody @NotNull List<String> bundleRequestIdList
     ) {
         commissionBundleService.acceptPublicBundleSubscriptionsByPSP(pspTaxCode, bundleRequestIdList);
