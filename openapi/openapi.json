@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.3.1"
+    "version": "2.3.6"
   },
   "servers": [
     {
@@ -6137,6 +6137,42 @@
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | Y\n",
         "operationId": "getTaxonomies",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "code",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "in": "query",
+            "name": "ec",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "macro_area",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "only_valid",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6163,6 +6199,51 @@
           }
         ],
         "summary": "Get a list of taxonomies",
+        "tags": [
+          "Taxonomy"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/taxonomies/groups": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | Y\n",
+        "operationId": "getTaxonomyGroups",
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaxonomyGroups"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Get a list of taxonomies groups",
         "tags": [
           "Taxonomy"
         ]
@@ -8893,6 +8974,52 @@
           },
           "taxonomy_version": {
             "type": "string"
+          }
+        }
+      },
+      "TaxonomyGroup": {
+        "type": "object",
+        "properties": {
+          "areas": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaxonomyGroupArea"
+            }
+          },
+          "ecType": {
+            "type": "string"
+          },
+          "ecTypeCode": {
+            "type": "string"
+          }
+        }
+      },
+      "TaxonomyGroupArea": {
+        "type": "object",
+        "properties": {
+          "macroAreaDescription": {
+            "type": "string"
+          },
+          "macroAreaEcProgressive": {
+            "type": "string"
+          },
+          "macroAreaName": {
+            "type": "string"
+          }
+        }
+      },
+      "TaxonomyGroups": {
+        "required": [
+          "taxonomyGroups"
+        ],
+        "type": "object",
+        "properties": {
+          "taxonomyGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaxonomyGroup"
+            }
           }
         }
       },

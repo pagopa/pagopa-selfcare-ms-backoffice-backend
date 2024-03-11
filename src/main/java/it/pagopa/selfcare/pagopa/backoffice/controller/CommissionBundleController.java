@@ -4,10 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
@@ -59,11 +56,11 @@ public class CommissionBundleController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a paginated list of bundles related to PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public Bundles getBundlesByPSP(@Parameter(description = "Number of elements on one page. Default = 50") @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                   @Parameter(description = "Commissional bundle's type") @RequestParam(name = "bundle-type", required = false) List<BundleType> bundleType,
-                                   @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = false, defaultValue = "0") Integer page,
-                                   @Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
-                                   @Parameter(description = "Commissional bundle's name") @RequestParam(required = false) String name) {
+    public BundlesResource getBundlesByPSP(@Parameter(description = "Number of elements on one page. Default = 50") @RequestParam(required = false, defaultValue = "50") Integer limit,
+                                           @Parameter(description = "Commissional bundle's type") @RequestParam(name = "bundle-type", required = false) List<BundleType> bundleType,
+                                           @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = false, defaultValue = "0") Integer page,
+                                           @Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
+                                           @Parameter(description = "Commissional bundle's name") @RequestParam(required = false) String name) {
 
         return commissionBundleService.getBundlesByPSP(pspCode, bundleType, name, limit, page);
     }
@@ -82,7 +79,7 @@ public class CommissionBundleController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a bundle by psp code and bundle id", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public Bundle getBundleDetailByPSP(@Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
+    public BundleResource getBundleDetailByPSP(@Parameter(description = "Fiscal code of the payment service provider") @PathVariable("psp-code") String pspCode,
                                        @Parameter(description = "Commissional bundle's id") @PathVariable("id-bundle") String idBundle){
         return commissionBundleService.getBundleDetailByPSP(pspCode, idBundle);
     }
