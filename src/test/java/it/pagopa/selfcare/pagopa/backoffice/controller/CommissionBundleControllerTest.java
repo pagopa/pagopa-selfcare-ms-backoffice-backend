@@ -31,7 +31,9 @@ class CommissionBundleControllerTest {
 
     private static final String PSP_TAX_CODE = "pspTaxCode";
     public static final String BUNDLE_ID = "bundleId";
+
     private final ObjectMapper mapper = new ObjectMapper();
+
     @Autowired
     private MockMvc mvc;
 
@@ -173,5 +175,17 @@ class CommissionBundleControllerTest {
         mvc.perform(delete(url, BUNDLE_ID, PSP_TAX_CODE))
                 .andExpect(status().isOk());
         verify(service).deletePSPBundle(PSP_TAX_CODE, BUNDLE_ID);
+    }
+
+    @Test
+    void acceptPublicBundleSubscriptionsOK() throws Exception {
+        String url = "/bundles/requests/payment-service-providers/{tax-code}/accept";
+        List<String> idBundleRequest = Collections.singletonList("idBundleRequest");
+
+        mvc.perform(post(url, PSP_TAX_CODE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapper.writeValueAsString(idBundleRequest)))
+                .andExpect(status().isOk());
+        verify(service).acceptPublicBundleSubscriptionsByPSP(PSP_TAX_CODE, idBundleRequest);
     }
 }
