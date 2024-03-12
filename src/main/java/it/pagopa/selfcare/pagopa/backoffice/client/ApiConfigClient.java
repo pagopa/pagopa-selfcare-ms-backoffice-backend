@@ -217,8 +217,8 @@ public interface ApiConfigClient {
     @RequestLine("getBrokersEC")
     @Retryable(
             exclude = FeignException.FeignClientException.class,
-            maxAttemptsExpression = "${retry.utils.maxAttempts:3}",
-            backoff = @Backoff(delayExpression = "${retry.utils.maxDelay:2000}"))
+            maxAttemptsExpression = "${retry.utils.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.utils.maxDelay}"))
     Brokers getBrokersEC(@RequestParam(required = false, defaultValue = "50") Integer limit,
                          @RequestParam Integer page,
                          @RequestParam(required = false) String code,
@@ -237,8 +237,8 @@ public interface ApiConfigClient {
     @GetMapping(value = "/creditorinstitutions/view", produces = MediaType.APPLICATION_JSON_VALUE)
     @Retryable(
             exclude = FeignException.FeignClientException.class,
-            maxAttemptsExpression = "${retry.utils.maxAttempts:3}",
-            backoff = @Backoff(delayExpression = "${retry.utils.maxDelay:2000}"))
+            maxAttemptsExpression = "${retry.utils.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.utils.maxDelay}"))
     CreditorInstitutionsView getCreditorInstitutionsAssociatedToBrokerStations(@RequestParam(required = false, defaultValue = "50") Integer limit,
                                                                                @RequestParam Integer page,
                                                                                @RequestParam(required = false, name = "creditorInstitutionCode") String creditorInstitutionCode,

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,12 +30,14 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = {MappingsConfiguration.class, CommissionBundleService.class})
 class CommissionBundleServiceTest {
 
-    public static final String PSP_CODE = "pspCode";
+    private static final String PSP_CODE = "pspCode";
     private static final String PSP_TAX_CODE = "pspTaxCode";
-    public static final String PSP_NAME = "pspName";
-    public static final int LIMIT = 50;
-    public static final int PAGE = 0;
-    public static final String ID_BUNDLE = "idBundle";
+    private static final String PSP_NAME = "pspName";
+    private static final int LIMIT = 50;
+    private static final int PAGE = 0;
+    private static final String ID_BUNDLE = "idBundle";
+    private static final String ID_BUNDLE_REQUEST = "idBundleRequest";
+    private static final String ID_BUNDLE_REQUEST_2 = "idBundleRequest2";
 
     @MockBean
     private GecClient client;
@@ -43,7 +46,7 @@ class CommissionBundleServiceTest {
     private CommissionBundleService service;
 
     @MockBean
-    private  TaxonomyService taxonomyService;
+    private TaxonomyService taxonomyService;
 
     @MockBean
     private LegacyPspCodeUtil legacyPspCodeUtilMock;
@@ -130,5 +133,19 @@ class CommissionBundleServiceTest {
                 () -> service.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE)
         );
         verify(client).deletePSPBundle(PSP_CODE, ID_BUNDLE);
+    }
+
+    @Test
+    void acceptPublicBundleSubscriptionsByPSPSuccess() {
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
+        List<String> bundleRequestIdList = new ArrayList<>();
+        bundleRequestIdList.add(ID_BUNDLE_REQUEST);
+        bundleRequestIdList.add(ID_BUNDLE_REQUEST_2);
+
+        assertDoesNotThrow(() ->
+                service.acceptPublicBundleSubscriptionsByPSP(PSP_TAX_CODE, bundleRequestIdList));
+
+        verify(client).acceptPublicBundleSubscriptionsByPSP(PSP_CODE, ID_BUNDLE_REQUEST);
+        verify(client).acceptPublicBundleSubscriptionsByPSP(PSP_CODE, ID_BUNDLE_REQUEST_2);
     }
 }

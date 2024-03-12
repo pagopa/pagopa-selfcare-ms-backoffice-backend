@@ -1,8 +1,17 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -90,5 +99,19 @@ public class CommissionBundleService {
     public void deletePSPBundle(String pspTaxCode, String idBundle) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
         this.gecClient.deletePSPBundle(pspCode, idBundle);
+    }
+
+    /**
+     * Retrieve the PSP code with the psp tax code and accept the list of EC subscription requests to a public bundle
+     * by invoking the {@link GecClient}
+     *
+     * @param pspTaxCode the tax code of the PSP that owns the public bundle
+     * @param bundleRequestIdList the list of bundle request id to be accepted
+     */
+    public void acceptPublicBundleSubscriptionsByPSP(String pspTaxCode, List<String> bundleRequestIdList) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
+        for (String requestId : bundleRequestIdList) {
+            this.gecClient.acceptPublicBundleSubscriptionsByPSP(pspCode, requestId);
+        }
     }
 }
