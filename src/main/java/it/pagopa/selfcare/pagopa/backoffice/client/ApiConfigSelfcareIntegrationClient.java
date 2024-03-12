@@ -49,8 +49,8 @@ public interface ApiConfigSelfcareIntegrationClient {
     @PostMapping(value = "/ibans", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Retryable(
-            maxAttemptsExpression = "${retry.utils.maxAttempts:3}",
-            backoff = @Backoff(delayExpression = "${retry.utils.maxDelay:2000}"))
+            maxAttemptsExpression = "${retry.utils.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.utils.maxDelay}"))
     IbansList getIbans(
             @RequestParam(defaultValue = "10") Integer limit,
             @RequestParam(defaultValue = "0") Integer page,
@@ -58,8 +58,8 @@ public interface ApiConfigSelfcareIntegrationClient {
 
     @GetMapping(value = "/brokers/{brokerId}/creditor-institutions", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    @Retryable(maxAttemptsExpression = "${retry.utils.maxAttempts:3}",
-            backoff = @Backoff(delayExpression = "${retry.utils.maxDelay:2000}"))
+    @Retryable(maxAttemptsExpression = "${retry.utils.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.utils.maxDelay}"))
     BrokerCreditorInstitutionDetails getCreditorInstitutionsAssociatedToBroker(
             @RequestParam(defaultValue = "10") Integer limit,
             @RequestParam(defaultValue = "0") Integer page,
