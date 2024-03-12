@@ -4,6 +4,7 @@ import com.azure.spring.cloud.feature.management.FeatureManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import it.pagopa.selfcare.pagopa.backoffice.model.AppInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.featureflags.FeatureFlags;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @RestController()
 @Configuration
@@ -43,11 +48,24 @@ public class BaseController  {
         return ResponseEntity.status(HttpStatus.OK).body(info);
     }
 
-    @Operation(summary = "Return Azure Feature Flags", description = "Return the value of the flag given the name", security = {@SecurityRequirement(name = "JWT")}, tags = {"Home"})
+    @Operation(summary = "Return an Azure Feature Flag", description = "Return the value of the flag given the name", security = {@SecurityRequirement(name = "JWT")}, tags = {"Home"})
     @GetMapping(value = "/flags/{name}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Boolean> healthCheck(@PathVariable("name") String name) {
+    public ResponseEntity<Boolean> getFeatureFlag(@PathVariable("name") String name) {
         boolean flag = featureManager.isEnabled(name);
         return ResponseEntity.status(HttpStatus.OK).body(flag);
+    }
+
+    @Operation(summary = "Return all Azure Feature Flags", description = "Return a map with all feature flags", security = {@SecurityRequirement(name = "JWT")}, tags = {"Home"})
+    @GetMapping(value = "/flags")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<FeatureFlags> getFeatureFlags() {
+        Set<String> featureFlagNames = featureManager.getAllFeatureNames();
+        Map<String, Boolean> map = new HashMap<>();
+        for (var name : featureFlagNames) {
+            boolean value = featureManager.isEnabled(name);
+            map.put(name, value);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(FeatureFlags.builder().flags(map).build());
     }
 }

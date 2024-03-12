@@ -1,9 +1,9 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "description" : "Microservice to manage PagoPA Backoffice",
+    "description" : "@project.description@",
     "termsOfService" : "https://www.pagopa.gov.it/",
-    "title" : "SelfCare Backoffice",
+    "title" : "@project.name@",
     "version" : "2.3.1"
   },
   "servers" : [ {
@@ -3302,10 +3302,49 @@
         }
       } ]
     },
+    "/flags" : {
+      "get" : {
+        "description" : "Return a map with all feature flags",
+        "operationId" : "getFeatureFlags",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/FeatureFlags"
+                }
+              }
+            },
+            "description" : "OK",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "JWT" : [ ]
+        } ],
+        "summary" : "Return all Azure Feature Flags",
+        "tags" : [ "Home" ]
+      },
+      "parameters" : [ {
+        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+        "in" : "header",
+        "name" : "X-Request-Id",
+        "schema" : {
+          "type" : "string"
+        }
+      } ]
+    },
     "/flags/{name}" : {
       "get" : {
         "description" : "Return the value of the flag given the name",
-        "operationId" : "healthCheck_1",
+        "operationId" : "getFeatureFlag",
         "parameters" : [ {
           "in" : "path",
           "name" : "name",
@@ -3337,7 +3376,7 @@
         "security" : [ {
           "JWT" : [ ]
         } ],
-        "summary" : "Return Azure Feature Flags",
+        "summary" : "Return an Azure Feature Flag",
         "tags" : [ "Home" ]
       },
       "parameters" : [ {
@@ -6731,6 +6770,17 @@
           },
           "pec" : {
             "type" : "string"
+          }
+        }
+      },
+      "FeatureFlags" : {
+        "type" : "object",
+        "properties" : {
+          "flags" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "boolean"
+            }
           }
         }
       },
