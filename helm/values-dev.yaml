@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.3.1"
+    tag: "2.3.8"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -95,6 +95,7 @@ microservice-chart:
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     CRONJOB_SCHEDULE_ENABLED: 'true'
+    CRONJOB_SCHEDULE_TAXONOMYEXPORT: "0 0 7 * * *"
     CRONJOB_SCHEDULE_IBANEXPORT: "0 0 2 * * *"
     CRONJOB_SCHEDULE_CIEXPORT: "0 0 2 * * *"
     EXTRACTION_IBANS_GETBROKERS_LIMIT: '200'
@@ -103,6 +104,8 @@ microservice-chart:
     EXTRACTION_IBANS_CLEAN_OLDERTHANDAYS: '7'
     EXTRACTION_IBANS_PERSISTIBANBATCHSIZE: '8000'
     EXTRACTION_IBANS_EXPORTAGAINAFTERHOURS: '0'
+    CLIENT_RETRY_MAX_ATTEMPTS: '3'
+    CLIENT_RETRY_MAX_DELAY: '2000'
   envSecret:
     AWS_ACCESS_KEY_ID: pagopa-d-aws-access-key-id
     AWS_SECRET_ACCESS_KEY: pagopa-d-aws-secret-access-key
@@ -156,7 +159,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 2.2.4-2-opex-dashboard
+        tag: 2.3.2
         pullPolicy: Always
       envConfig: {}
       envSecret: {}
