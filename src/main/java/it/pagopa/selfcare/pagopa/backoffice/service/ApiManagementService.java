@@ -153,7 +153,7 @@ public class ApiManagementService {
      * @param subscriptionId the id of the subscription
      */
     public void regeneratePrimaryKey(String institutionId, String subscriptionId) {
-        apimClient.regeneratePrimaryKey(subscriptionId);
+        this.apimClient.regeneratePrimaryKey(subscriptionId);
 
         if (subscriptionId.startsWith(Subscription.BO_EXT.getPrefixId())) {
             updateAuthorization(institutionId, subscriptionId, true);
@@ -170,7 +170,7 @@ public class ApiManagementService {
      * @param subscriptionId the id of the subscription
      */
     public void regenerateSecondaryKey(String institutionId, String subscriptionId) {
-        apimClient.regenerateSecondaryKey(subscriptionId);
+        this.apimClient.regenerateSecondaryKey(subscriptionId);
 
         if (subscriptionId.startsWith(Subscription.BO_EXT.getPrefixId())) {
             updateAuthorization(institutionId, subscriptionId, false);
@@ -228,14 +228,14 @@ public class ApiManagementService {
 
     private void createUserIfNotExist(String institutionId, InstitutionResponse institution) {
         try {
-            apimClient.getInstitution(institutionId);
+            this.apimClient.getInstitution(institutionId);
         } catch (IllegalArgumentException e) {
             // bad code, but it's needed to handle the creation of a new User on APIM
             CreateInstitutionApiKeyDto dto = new CreateInstitutionApiKeyDto();
             dto.setDescription(institution.getDescription());
             dto.setTaxCode(institution.getTaxCode());
             dto.setEmail(!this.testEmail.isBlank() ? institutionId.concat(this.testEmail) : institution.getDigitalAddress());
-            apimClient.createInstitution(institutionId, dto);
+            this.apimClient.createInstitution(institutionId, dto);
         }
     }
 }
