@@ -62,9 +62,9 @@ public class BaseController  {
     public ResponseEntity<FeatureFlags> getFeatureFlags() {
         Set<String> featureFlagNames = featureManager.getAllFeatureNames();
         Map<String, Boolean> map = new HashMap<>();
-        for (var name : featureFlagNames) {
-            boolean value = featureManager.isEnabled(name);
-            map.put(name, value);
+        for (var flagName : featureFlagNames) {
+            boolean value = featureManager.isEnabled(flagName);
+            map.put(flagName, value);
         }
         return ResponseEntity.status(HttpStatus.OK).body(FeatureFlags.builder().flags(map).build());
     }
