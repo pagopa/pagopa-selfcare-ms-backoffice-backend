@@ -232,7 +232,7 @@ class PaymentServiceProviderServiceTest {
     @Test
     void getFirstValidChannelCodeWithV2True() {
         String channelCodeV2 = "channel-code-v2";
-        when(wrapperServiceMock.getFirstValidCodeV2(anyString()))
+        when(wrapperServiceMock.getFirstValidCodeV2(anyString(),anyString()))
                 .thenReturn(channelCodeV2);
         when(legacyPspCodeUtil.retrievePspCode(TAX_CODE, false)).thenReturn(PSP_CODE);
         ChannelCodeResource result =
@@ -240,7 +240,7 @@ class PaymentServiceProviderServiceTest {
 
         assertNotNull(result);
         assertEquals(channelCodeV2, result.getChannelCode());
-        verify(wrapperServiceMock).getFirstValidCodeV2(anyString());
+        verify(wrapperServiceMock).getFirstValidCodeV2(anyString(),anyString());
         verify(apiConfigClientMock, never()).getChannels(anyInt(), anyInt(), anyString(), eq(null), anyString());
     }
 
@@ -261,7 +261,7 @@ class PaymentServiceProviderServiceTest {
 
         assertNotNull(result);
         assertNotEquals(channelCode, result.getChannelCode());
-        verify(wrapperServiceMock, never()).getFirstValidCodeV2(anyString());
+        verify(wrapperServiceMock, never()).getFirstValidCodeV2(anyString(),anyString());
         verify(apiConfigClientMock).getChannels(anyInt(), anyInt(), anyString(), eq(null), anyString());
     }
 

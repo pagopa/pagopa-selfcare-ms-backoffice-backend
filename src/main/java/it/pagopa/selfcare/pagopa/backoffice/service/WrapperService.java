@@ -256,11 +256,11 @@ public class WrapperService {
         return wrapperEntitiesList;
     }
 
-    public String getFirstValidCodeV2(String entityCode) {
-        Channels channels = apiConfigClient.getChannels(100, 0, entityCode, null, "DESC");
-        Stations stations = apiConfigClient.getStations(100, 0, "DESC", null, null, entityCode);
-        WrapperEntitiesList channelMongoList = findByIdLikeOrTypeOrBrokerCode(entityCode, WrapperType.CHANNEL, null, 0, 100);
-        WrapperEntitiesList stationMongoList = findByIdLikeOrTypeOrBrokerCode(entityCode, WrapperType.STATION, null, 0, 100);
+    public String getFirstValidCodeV2(String getChannelCode, String channelCreationCode) {
+        Channels channels = apiConfigClient.getChannels(100, 0, getChannelCode, null, "DESC");
+        Stations stations = apiConfigClient.getStations(100, 0, "DESC", null, null, getChannelCode);
+        WrapperEntitiesList channelMongoList = findByIdLikeOrTypeOrBrokerCode(getChannelCode, WrapperType.CHANNEL, null, 0, 100);
+        WrapperEntitiesList stationMongoList = findByIdLikeOrTypeOrBrokerCode(getChannelCode, WrapperType.STATION, null, 0, 100);
 
         List<String> channelAndStationCodes = new LinkedList<>();
         channelAndStationCodes.addAll(channelMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).toList());
@@ -271,7 +271,7 @@ public class WrapperService {
         Set<String> validCodes = channelAndStationCodes.stream()
                 .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toSet());
-        return generator(validCodes, entityCode);
+        return generator(validCodes, channelCreationCode);
     }
 
     /**
