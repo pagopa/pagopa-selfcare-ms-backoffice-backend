@@ -256,22 +256,31 @@ public class WrapperService {
         return wrapperEntitiesList;
     }
 
-    public String getFirstValidCodeV2(String lastCode, String taxCode) {
-        Channels channels = apiConfigClient.getChannels(100, 0, getChannelCode, null, "DESC");
-        Stations stations = apiConfigClient.getStations(100, 0, "DESC", null, null, getChannelCode);
-        WrapperEntitiesList channelMongoList = findByIdLikeOrTypeOrBrokerCode(getChannelCode, WrapperType.CHANNEL, null, 0, 100);
-        WrapperEntitiesList stationMongoList = findByIdLikeOrTypeOrBrokerCode(getChannelCode, WrapperType.STATION, null, 0, 100);
+    public String getFirstValidStationCodeV2(String taxCode) {
+        Stations stations = apiConfigClient.getStations(100, 0, "DESC", null, null, taxCode);
+        WrapperEntitiesList stationMongoList = findByIdLikeOrTypeOrBrokerCode(taxCode, WrapperType.STATION, null, 0, 100);
 
-        List<String> channelAndStationCodes = new LinkedList<>();
-        channelAndStationCodes.addAll(channelMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).toList());
-        channelAndStationCodes.addAll(stationMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).toList());
-        channelAndStationCodes.addAll(channels.getChannelList().stream().map(Channel::getChannelCode).toList());
-        channelAndStationCodes.addAll(stations.getStationsList().stream().map(Station::getStationCode).toList());
+        List<String> stationCodes = new LinkedList<>();
+        stationCodes.addAll(stationMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).toList());
+        stationCodes.addAll(stations.getStationsList().stream().map(Station::getStationCode).toList());
 
-        Set<String> validCodes = channelAndStationCodes.stream()
+        Set<String> validCodes = stationCodes.stream()
                 .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toSet());
-        return generator(validCodes, channelCreationCode);
+        return generator(validCodes, taxCode);
+    }
+    public String getFirstValidChannelCodeV2(String pspCode, String taxCode) {
+        Channels channels = apiConfigClient.getChannels(100, 0, pspCode, null, "DESC");
+        WrapperEntitiesList channelMongoList = findByIdLikeOrTypeOrBrokerCode(pspCode, WrapperType.CHANNEL, null, 0, 100);
+
+        List<String> channelCodes = new LinkedList<>();
+        channelCodes.addAll(channelMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).toList());
+        channelCodes.addAll(channels.getChannelList().stream().map(Channel::getChannelCode).toList());
+
+        Set<String> validCodes = channelCodes.stream()
+                .filter(s -> s.matches(REGEX_GENERATE))
+                .collect(Collectors.toSet());
+        return generator(validCodes, taxCode);
     }
 
     /**
