@@ -6,21 +6,8 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationC
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.BrokerOrPspDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.BrokerPspDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelCodeResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProviderDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProviderDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProvidersResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.BrokerPspDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channel;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviderDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviders;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -157,18 +144,18 @@ public class PaymentServiceProviderService {
     public ChannelCodeResource getFirstValidChannelCode(String taxCode, Boolean v2) {
         String pspCode = legacyPspCodeUtil.retrievePspCode(taxCode, false);
         if(Boolean.TRUE.equals(v2)) {
-            return new ChannelCodeResource(wrapperService.getFirstValidCodeV2(pspCode));
+            return new ChannelCodeResource(wrapperService.getFirstValidChannelCodeV2(pspCode, taxCode));
         } else {
-            return new ChannelCodeResource(getFirstValidChannelCodeAux(pspCode));
+            return new ChannelCodeResource(getFirstValidChannelCodeAux(pspCode, taxCode));
         }
     }
 
-    private String getFirstValidChannelCodeAux(String pspCode) {
+    private String getFirstValidChannelCodeAux(String pspCode, String taxCode) {
         Channels response = apiConfigClient.getChannels(1, 0, pspCode, null, "DESC");
         List<Channel> codeList = response.getChannelList();
         Set<String> codes = codeList.stream().map(Channel::getChannelCode)
                 .filter(s -> s.matches(REGEX_GENERATE)) // String_nn
                 .collect(Collectors.toSet());
-        return generator(codes, pspCode);
+        return generator(codes, taxCode);
     }
 }
