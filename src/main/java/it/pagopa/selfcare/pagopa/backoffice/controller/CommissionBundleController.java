@@ -139,7 +139,7 @@ public class CommissionBundleController {
      */
     @PostMapping(value = "/requests/payment-service-providers/{psp-tax-code}/request/{bundle-request-id}/reject", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Accept a list of subscription to a public bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "reject of subscription to a public bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public void rejectPublicBundleSubscription(
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,

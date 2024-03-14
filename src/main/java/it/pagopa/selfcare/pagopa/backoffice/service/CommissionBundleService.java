@@ -115,8 +115,15 @@ public class CommissionBundleService {
         }
     }
 
+    /**
+     * Reject a subscription requests to a public bundle
+     *
+     * @param pspTaxCode          the tax code of the PSP that owns the public bundle
+     * @param bundleRequestId the request id to be rejected
+     */
     public void rejectPublicBundleSubscriptionByPSP(String pspTaxCode, String bundleRequestId) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
         this.gecClient.rejectPublicBundleSubscriptionByPSP(pspCode, bundleRequestId);
     }
+
 }
