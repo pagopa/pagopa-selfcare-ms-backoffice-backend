@@ -17,7 +17,7 @@ public enum Subscription {
     BIZ("/products/bizevents", "BIZ - Recupero ricevute Ente Creditore", "biz-"),
     FDR_ORG("/products/fdr-org", "FdR - Flussi di Rendicontazione (EC)", "fdrorg-"),
     FDR_PSP("/products/fdr-psp", "FdR - Flussi di Rendicontazione (PSP)", "fdrpsp-"),
-    BO_EXT("/products/selfcare-bo-external", "Backoffice External", "selfcareboexternal-");
+    BO_EXT("/apis/%s-backoffice-external-api-v1", "Backoffice External", "selfcareboexternal-");
 
     private final String scope;
     private final String displayName;

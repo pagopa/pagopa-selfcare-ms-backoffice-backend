@@ -48,20 +48,24 @@ public class ApiManagementService {
 
     private final String testEmail;
 
+    private final String environment;
+
     private final AuthorizerConfigClient authorizerConfigClient;
 
     @Autowired
-    public ApiManagementService(
-            AzureApiManagerClient apimClient,
-            ExternalApiClient externalApiClient,
-            ModelMapper modelMapper,
-            @Value("${institution.subscription.test-email}") String testEmail,
-            AuthorizerConfigClient authorizerConfigClient) {
+    public ApiManagementService(AzureApiManagerClient apimClient,
+                                ExternalApiClient externalApiClient,
+                                ModelMapper modelMapper,
+                                @Value("${institution.subscription.test-email}") String testEmail,
+                                @Value("${info.properties.environment}") String environment,
+                                AuthorizerConfigClient authorizerConfigClient
+    ) {
         this.apimClient = apimClient;
         this.externalApiClient = externalApiClient;
         this.modelMapper = modelMapper;
         this.testEmail = testEmail;
         this.authorizerConfigClient = authorizerConfigClient;
+        this.environment = environment;
     }
 
     public List<InstitutionDetail> getInstitutions() {
@@ -124,7 +128,7 @@ public class ApiManagementService {
         this.apimClient.createInstitutionSubscription(
                 institutionId,
                 institution.getDescription(),
-                subscriptionCode.getScope(),
+                String.format(subscriptionCode.getScope(), getEnvironment()),
                 subscriptionId,
                 subscriptionName);
 
@@ -237,6 +241,10 @@ public class ApiManagementService {
             dto.setEmail(!this.testEmail.isBlank() ? institutionId.concat(this.testEmail) : institution.getDigitalAddress());
             this.apimClient.createInstitution(institutionId, dto);
         }
+    }
+
+    private char getEnvironment() {
+        return environment.toLowerCase().charAt(0);
     }
 }
 
