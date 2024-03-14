@@ -6,7 +6,6 @@ import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
-import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
@@ -190,17 +189,15 @@ class ApiManagementServiceTest {
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
-        when(authorizerConfigClient.getAuthorization(anyString()))
-                .thenReturn(AuthorizationList.builder()
-                        .authorizations(Collections.singletonList(Authorization.builder().id("auth-id").build()))
-                        .build());
+        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder().id("auth-id").build());
 
         service.regeneratePrimaryKey(INSTITUTION_ID, subscriptionId);
 
         verify(apimClient).regeneratePrimaryKey(subscriptionId);
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(externalApiClient).getInstitution(INSTITUTION_ID);
-        verify(authorizerConfigClient).updateAuthorization(anyString(), any());
+        verify(authorizerConfigClient).deleteAuthorization(anyString());
+        verify(authorizerConfigClient).createAuthorization(any());
     }
 
     @Test
@@ -218,17 +215,15 @@ class ApiManagementServiceTest {
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
-        when(authorizerConfigClient.getAuthorization(anyString()))
-                .thenReturn(AuthorizationList.builder()
-                        .authorizations(Collections.singletonList(Authorization.builder().id("auth-id").build()))
-                        .build());
+        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder().id("auth-id").build());
 
         service.regenerateSecondaryKey(INSTITUTION_ID, subscriptionId);
 
         verify(apimClient).regenerateSecondaryKey(subscriptionId);
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(externalApiClient).getInstitution(INSTITUTION_ID);
-        verify(authorizerConfigClient).updateAuthorization(anyString(), any());
+        verify(authorizerConfigClient).deleteAuthorization(anyString());
+        verify(authorizerConfigClient).createAuthorization(any());
     }
 
     private InstitutionApiKeys buildInstitutionApiKeys(String subscriptionId) {

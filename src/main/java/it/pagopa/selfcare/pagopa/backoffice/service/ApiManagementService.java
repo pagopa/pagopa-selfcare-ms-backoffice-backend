@@ -7,7 +7,6 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationEntity;
-import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationOwner;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationOwnerType;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
@@ -190,13 +189,14 @@ public class ApiManagementService {
                 .findFirst()
                 .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
 
-        AuthorizationList authorizationList = this.authorizerConfigClient.getAuthorization(createAuthorizationBOId(institution, isPrimaryKey));
-        if (authorizationList.getAuthorizations().size() != 1) {
+        Authorization authorization = this.authorizerConfigClient.getAuthorization(createAuthorizationBOId(institution, isPrimaryKey));
+        if (authorization == null) {
             throw new AppException(AppError.AUTHORIZATION_NOT_FOUND, institutionId);
         }
-        Authorization authorization = authorizationList.getAuthorizations().get(0);
+
+        this.authorizerConfigClient.deleteAuthorization(authorization.getId());
         authorization.setSubscriptionKey(isPrimaryKey ? apiKeys.getPrimaryKey() : apiKeys.getSecondaryKey());
-        this.authorizerConfigClient.updateAuthorization(authorization.getId(), authorization);
+        this.authorizerConfigClient.createAuthorization(authorization);
     }
 
     private InstitutionResponse getInstitutionResponse(String institutionId) {
