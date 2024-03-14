@@ -124,11 +124,12 @@ public class ApiManagementService {
 
         String subscriptionId = String.format("%s%s", subscriptionCode.getPrefixId(), institution.getTaxCode());
         String subscriptionName = String.format("%s %s", subscriptionCode.getDisplayName(), institution.getDescription());
+        String subscriptionScope = String.format(subscriptionCode.getScope(), getEnvironment());
         createUserIfNotExist(institutionId, institution);
         this.apimClient.createInstitutionSubscription(
                 institutionId,
                 institution.getDescription(),
-                String.format(subscriptionCode.getScope(), getEnvironment()),
+                subscriptionScope,
                 subscriptionId,
                 subscriptionName);
 
