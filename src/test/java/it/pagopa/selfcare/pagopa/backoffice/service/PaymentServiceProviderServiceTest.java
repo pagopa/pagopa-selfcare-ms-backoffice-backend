@@ -4,21 +4,9 @@ import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.BrokerOrPspDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelCodeResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProviderDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProviderDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProvidersResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.BrokerPspDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channel;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviderDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviders;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
@@ -31,20 +19,9 @@ import org.modelmapper.ModelMapper;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentServiceProviderServiceTest {
@@ -232,7 +209,7 @@ class PaymentServiceProviderServiceTest {
     @Test
     void getFirstValidChannelCodeWithV2True() {
         String channelCodeV2 = "channel-code-v2";
-        when(wrapperServiceMock.getFirstValidCodeV2(anyString()))
+        when(wrapperServiceMock.getFirstValidChannelCodeV2(anyString(),anyString()))
                 .thenReturn(channelCodeV2);
         when(legacyPspCodeUtil.retrievePspCode(TAX_CODE, false)).thenReturn(PSP_CODE);
         ChannelCodeResource result =
@@ -240,7 +217,7 @@ class PaymentServiceProviderServiceTest {
 
         assertNotNull(result);
         assertEquals(channelCodeV2, result.getChannelCode());
-        verify(wrapperServiceMock).getFirstValidCodeV2(anyString());
+        verify(wrapperServiceMock).getFirstValidChannelCodeV2(anyString(),anyString());
         verify(apiConfigClientMock, never()).getChannels(anyInt(), anyInt(), anyString(), eq(null), anyString());
     }
 
@@ -261,7 +238,7 @@ class PaymentServiceProviderServiceTest {
 
         assertNotNull(result);
         assertNotEquals(channelCode, result.getChannelCode());
-        verify(wrapperServiceMock, never()).getFirstValidCodeV2(anyString());
+        verify(wrapperServiceMock, never()).getFirstValidChannelCodeV2(anyString(),anyString());
         verify(apiConfigClientMock).getChannels(anyInt(), anyInt(), anyString(), eq(null), anyString());
     }
 
