@@ -256,7 +256,7 @@ public class WrapperService {
         return wrapperEntitiesList;
     }
 
-    public String getFirstValidCodeV2(String getChannelCode, String channelCreationCode) {
+    public String getFirstValidCodeV2(String lastCode, String taxCode) {
         Channels channels = apiConfigClient.getChannels(100, 0, getChannelCode, null, "DESC");
         Stations stations = apiConfigClient.getStations(100, 0, "DESC", null, null, getChannelCode);
         WrapperEntitiesList channelMongoList = findByIdLikeOrTypeOrBrokerCode(getChannelCode, WrapperType.CHANNEL, null, 0, 100);
