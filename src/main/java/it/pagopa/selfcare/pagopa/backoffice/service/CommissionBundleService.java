@@ -114,4 +114,9 @@ public class CommissionBundleService {
             this.gecClient.acceptPublicBundleSubscriptionsByPSP(pspCode, requestId);
         }
     }
+
+    public void rejectPublicBundleSubscriptionByPSP(String pspTaxCode, String bundleRequestId) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
+        this.gecClient.rejectPublicBundleSubscriptionByPSP(pspCode, bundleRequestId);
+    }
 }

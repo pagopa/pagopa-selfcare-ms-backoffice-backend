@@ -78,4 +78,14 @@ public interface GecClient {
             backoff = @Backoff(delayExpression = "${retry.utils.maxDelay}"))
     void acceptPublicBundleSubscriptionsByPSP(@PathVariable("psp-code") String pspCode,
                                               @PathVariable("id-bundle-request") String idBundleRequest);
+
+    @PostMapping(value = "/psps/{psp-code}/requests/{id-bundle-request}/reject")
+    @Retryable(
+            exclude = FeignException.FeignClientException.class,
+            maxAttemptsExpression = "${retry.utils.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.utils.maxDelay}"))
+    void rejectPublicBundleSubscriptionByPSP(@PathVariable("psp-code") String pspCode,
+                                              @PathVariable("id-bundle-request") String idBundleRequest);
+
+
 }

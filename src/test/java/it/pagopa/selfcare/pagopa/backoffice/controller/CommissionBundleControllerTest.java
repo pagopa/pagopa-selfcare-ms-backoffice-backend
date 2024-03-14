@@ -188,4 +188,14 @@ class CommissionBundleControllerTest {
                 .andExpect(status().isOk());
         verify(service).acceptPublicBundleSubscriptionsByPSP(PSP_TAX_CODE, idBundleRequest);
     }
+
+    @Test
+    void rejectPublicBundleSubscriptionsOK() throws Exception {
+        String url = "/bundles/requests/payment-service-providers/{psp-tax-code}/request/{bundle-request-id}/reject";
+        mvc.perform(post(url, PSP_TAX_CODE, "idBundleRequest")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        verify(service).rejectPublicBundleSubscriptionByPSP(PSP_TAX_CODE, "idBundleRequest");
+    }
+
 }
