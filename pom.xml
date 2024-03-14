@@ -10,7 +10,7 @@
         <version>2.5.14</version>
     </parent>
     <artifactId>pagopa-selfcare-ms-backoffice</artifactId>
-    <version>2.3.8</version>
+    <version>2.3.9</version>
     <name>SelfCare Backoffice</name>
     <description>Microservice to manage PagoPA Backoffice</description>
 
@@ -50,6 +50,13 @@
     </repositories>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.azure.spring</groupId>
+                <artifactId>spring-cloud-azure-dependencies</artifactId>
+                <version>4.14.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -228,15 +235,6 @@
             <artifactId>azure-resourcemanager-apimanagement</artifactId>
             <version>1.0.0-beta.3</version>
         </dependency>
-        <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-core-http-netty</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-identity</artifactId>
-            <version>1.5.5</version>
-        </dependency>
 
         <!-- AWS SDK -->
         <dependency>
@@ -248,6 +246,20 @@
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>ses</artifactId>
             <version>${aws-sdk.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-appconfiguration-config-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-feature-management-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
         <!-- Jira -->
