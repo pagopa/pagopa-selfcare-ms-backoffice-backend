@@ -78,4 +78,9 @@ public interface GecClient {
             backoff = @Backoff(delayExpression = "${retry.utils.maxDelay}"))
     void acceptPublicBundleSubscriptionsByPSP(@PathVariable("psp-code") String pspCode,
                                               @PathVariable("id-bundle-request") String idBundleRequest);
+
+    @GetMapping(value = "/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    Bundles getBundles(@RequestParam(required = false) Integer limit,
+                       @RequestParam(required = false) Integer page);
 }

@@ -1,12 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
@@ -64,6 +59,10 @@ public class CommissionBundleService {
     ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
         Bundles bundles = this.gecClient.getBundlesByPSP(pspCode, bundleType, name, limit, page);
+        return getBundlesResource(bundles);
+    }
+
+    private BundlesResource getBundlesResource(Bundles bundles) {
         List<BundleResource> bundleResources = bundles.getBundles() != null ?
                 bundles.getBundles().stream().map(bundle -> {
                     BundleResource bundleResource = new BundleResource();
@@ -114,4 +113,20 @@ public class CommissionBundleService {
             this.gecClient.acceptPublicBundleSubscriptionsByPSP(pspCode, requestId);
         }
     }
+
+    /**
+     * Retrieve creditor institution paged bundle list, using optionally a filter by creditor institution tax code,
+     * using a dedicate API. the result contains an expanded version of the bundle, using the taxonomy detail extracted
+     * from the repository instance
+     * @param cisTaxCode optional parameter used for filter by creditor institution tax code
+     * @param limit page limit parameter
+     * @param page page number parameter
+     * @return paged list of bundle resources, expanded with taxonomy data
+     */
+    public BundlesResource getCisBundles(String cisTaxCode, Integer limit, Integer page) {
+        Bundles bundles = cisTaxCode != null ?
+                gecClient.getBundlesByCI(cisTaxCode,limit,page) : gecClient.getBundles(limit, page);
+        return getBundlesResource(bundles);
+    }
+
 }

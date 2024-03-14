@@ -30,6 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CommissionBundleControllerTest {
 
     private static final String PSP_TAX_CODE = "pspTaxCode";
+
+    private static final String EC_TAX_CODE = "ecTaxCode";
+
     public static final String BUNDLE_ID = "bundleId";
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -188,4 +191,36 @@ class CommissionBundleControllerTest {
                 .andExpect(status().isOk());
         verify(service).acceptPublicBundleSubscriptionsByPSP(PSP_TAX_CODE, idBundleRequest);
     }
+
+    @Test
+    void getCiBundlesWithTaxCodeOK() throws Exception {
+        String url = "/bundles/cis";
+        int limit = 25;
+        int page = 2;
+        when(service.getCisBundles(EC_TAX_CODE, limit, page)).thenReturn(
+                new BundlesResource()
+        );
+        mvc.perform(get(url)
+                        .param("cisTaxCode",EC_TAX_CODE)
+                        .param("limit", String.valueOf(limit))
+                        .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    void getCiBundlesWithoutTaxCodeOK() throws Exception {
+        String url = "/bundles/cis";
+        int limit = 25;
+        int page = 2;
+        when(service.getCisBundles(null, limit, page)).thenReturn(
+                new BundlesResource()
+        );
+        mvc.perform(get(url)
+                        .param("limit", String.valueOf(limit))
+                        .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
 }
