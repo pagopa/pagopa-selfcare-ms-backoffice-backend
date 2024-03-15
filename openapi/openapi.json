@@ -1,10 +1,10 @@
 {
-  "openapi": "3.0.1",
-  "info": {
-    "description": "Microservice to manage PagoPA Backoffice",
-    "termsOfService": "https://www.pagopa.gov.it/",
-    "title": "SelfCare Backoffice",
-    "version": "2.3.16"
+  "openapi" : "3.0.1",
+  "info" : {
+    "description" : "Microservice to manage PagoPA Backoffice",
+    "termsOfService" : "https://www.pagopa.gov.it/",
+    "title" : "SelfCare Backoffice",
+    "version" : "2.3.16"
   },
   "servers" : [ {
     "url" : "http://localhost:8080"
@@ -445,24 +445,6 @@
           "description" : "Commission bundle's type",
           "in" : "query",
           "name" : "types",
-    "/bundles/payment-service-providers/{psp-tax-code}" : {
-      "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId" : "getBundlesByPSP",
-        "parameters" : [ {
-          "description" : "Number of elements on one page. Default = 50",
-          "in" : "query",
-          "name" : "limit",
-          "required" : false,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32",
-            "default" : 50
-          }
-        }, {
-          "description" : "Commission bundle's type",
-          "in" : "query",
-          "name" : "bundle-type",
           "required" : false,
           "schema" : {
             "type" : "array",
@@ -500,14 +482,6 @@
             "default" : 0
           }
         }, {
-          "description" : "Tax code of the payment service provider",
-          "in" : "path",
-          "name" : "psp-tax-code",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
           "description" : "Commission bundle's name",
           "in" : "query",
           "name" : "name",
@@ -539,6 +513,7 @@
         "security" : [ {
           "JWT" : [ ]
         } ],
+        "summary" : "Get a paginated list of bundles to be used by creditor institutions",
         "tags" : [ "Commission bundles" ]
       },
       "parameters" : [ {
@@ -587,11 +562,6 @@
             "default" : 0
           }
         }, {
-      } ],
-      "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
-        "operationId" : "createBundle",
-        "parameters" : [ {
           "description" : "Tax code of the payment service provider",
           "in" : "path",
           "name" : "psp-tax-code",
@@ -618,27 +588,6 @@
               }
             },
             "description" : "OK",
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/BundleRequest"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/BundleCreateResponse"
-                }
-              }
-            },
-            "description" : "Created",
             "headers" : {
               "X-Request-Id" : {
                 "description" : "This header identifies the call",
@@ -822,19 +771,6 @@
         "security" : [ {
           "JWT" : [ ]
         } ],
-        "summary" : "Get a paginated list of payment types",
-        "tags" : [ "Commission bundles" ]
-      },
-      "parameters" : [ {
-        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-        "in" : "header",
-        "name" : "X-Request-Id",
-        "schema" : {
-          "type" : "string"
-        }
-      } ]
-    },
-    "/bundles/requests/payment-service-providers/{psp-tax-code}/accept" : {
         "summary" : "Accept a list of subscription to a public bundle of a PSP",
         "tags" : [ "Commission bundles" ]
       }
@@ -850,7 +786,7 @@
       } ],
       "post" : {
         "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId" : "acceptPublicBundleSubscriptions",
+        "operationId" : "rejectPublicBundleSubscription",
         "parameters" : [ {
           "description" : "Tax code of the payment service provider",
           "in" : "path",
@@ -859,20 +795,6 @@
           "schema" : {
             "type" : "string"
           }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "type" : "array",
-                "items" : {
-                  "type" : "string"
-                }
-              }
-            }
-          },
-          "required" : true
-        },
         }, {
           "description" : "Bundle request id",
           "in" : "path",
@@ -898,7 +820,7 @@
         "security" : [ {
           "JWT" : [ ]
         } ],
-        "summary" : "Accept a list of subscription to a public bundle of a PSP",
+        "summary" : "reject of subscription to a public bundle of a PSP",
         "tags" : [ "Commission bundles" ]
       }
     },
@@ -1570,16 +1492,6 @@
         "security" : [ {
           "JWT" : [ ]
         } ],
-        "summary" : "Execute the update as operator in the channel request that must be validated",
-        "tags" : [ "Channels" ]
-      }
-    },
-    "/channels/wrapper/{channel-code}" : {
-      "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId" : "getGenericWrapperEntities",
-        "parameters" : [ {
-          "description" : "Channel code",
         "summary" : "Get a channel that is currently in hold for operator validation",
         "tags" : [ "Channels" ]
       },
@@ -1702,584 +1614,6 @@
               }
             },
             "description" : "OK",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "JWT" : [ ]
-        } ],
-        "summary" : "Update a channel, validating the update request previously inserted by user",
-        "tags" : [ "Channels" ]
-      }
-    },
-    "/channels/{channel-code}/payment-service-providers" : {
-      "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId" : "getChannelPaymentServiceProviders",
-        "parameters" : [ {
-          "description" : "Code of the payment channel",
-          "in" : "path",
-          "name" : "channel-code",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "in" : "query",
-          "name" : "limit",
-          "required" : false,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32",
-            "default" : 50
-          }
-        }, {
-          "description" : "Page number. Page value starts from 0",
-          "in" : "query",
-          "name" : "page",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32"
-          }
-        }, {
-          "description" : "Filter by PSP name",
-          "in" : "query",
-          "name" : "psp-name",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ChannelPspListResource"
-                }
-              }
-            },
-            "description" : "OK",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "JWT" : [ ]
-        } ],
-        "summary" : "Get paginated list of PSPs associated with the channel",
-        "tags" : [ "Channels" ]
-      },
-      "parameters" : [ {
-        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-        "in" : "header",
-        "name" : "X-Request-Id",
-        "schema" : {
-          "type" : "string"
-        }
-      } ]
-    },
-    "/channels/{channel-code}/payment-types" : {
-      "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId" : "getChannelPaymentTypes",
-        "parameters" : [ {
-          "description" : "Channel's unique identifier",
-          "in" : "path",
-          "name" : "channel-code",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                }
-              }
-            },
-            "description" : "OK",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "JWT" : [ ]
-        } ],
-        "tags" : [ "Channels" ]
-      },
-      "parameters" : [ {
-        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-        "in" : "header",
-        "name" : "X-Request-Id",
-        "schema" : {
-          "type" : "string"
-        }
-      } ]
-    },
-    "/channels/{channel-code}" : {
-      "delete" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId" : "deleteChannel",
-        "parameters" : [ {
-          "description" : "Code of the payment channel",
-      } ],
-      "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId" : "createChannelPaymentType",
-        "parameters" : [ {
-          "description" : "Channel's unique identifier",
-          "in" : "path",
-          "name" : "channel-code",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/PspChannelPaymentTypes"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/PspChannelPaymentTypesResource"
-                }
-              }
-            },
-            "description" : "Created",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "JWT" : [ ]
-        } ],
-        "summary" : "Create a payment types of a channel",
-        "tags" : [ "Channels" ]
-      }
-    },
-    "/channels/{channel-code}/payment-types/{payment-type-code}" : {
-      "delete" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId" : "deleteChannelPaymentType",
-        "parameters" : [ {
-          "description" : "Channel's unique identifier",
-          "in" : "path",
-          "name" : "channel-code",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "Code of the payment type",
-          "in" : "path",
-          "name" : "payment-type-code",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "JWT" : [ ]
-        } ],
-        "summary" : "delete payment type of a channel",
-        "tags" : [ "Channels" ]
-      },
-      "parameters" : [ {
-        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-        "in" : "header",
-        "name" : "X-Request-Id",
-        "schema" : {
-          "type" : "string"
-        }
-      } ]
-    },
-    "/configurations/payment-types" : {
-      "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId" : "getPaymentTypes",
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/PaymentTypes"
-                }
-              }
-            },
-            "description" : "OK",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "JWT" : [ ]
-        } ],
-        "summary" : "delete channel",
-        "tags" : [ "Channels" ]
-      },
-      "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId" : "getChannelDetails",
-        "parameters" : [ {
-          "description" : "Code of the payment channel",
-          "in" : "path",
-          "name" : "channel-code",
-          "required" : true,
-          "schema" : {
-        "summary" : "Get list of payment type",
-        "tags" : [ "Configuration" ]
-      },
-      "parameters" : [ {
-        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-        "in" : "header",
-        "name" : "X-Request-Id",
-        "schema" : {
-          "type" : "string"
-        }
-      } ]
-    },
-    "/configurations/wfesp-plugins" : {
-      "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId" : "getWfespPlugins",
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WfespPluginConfs"
-                }
-              }
-            },
-            "description" : "OK",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "JWT" : [ ]
-        } ],
-        "summary" : "Update a WrapperChannel on Cosmodb",
-        "tags" : [ "Configuration" ]
-      },
-      "parameters" : [ {
-        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-        "in" : "header",
-        "name" : "X-Request-Id",
-        "schema" : {
-          "type" : "string"
-        }
-      } ]
-    },
-    "/configurations/wrapper/{wrapper-type}/status/{wrapper-status}" : {
-      "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId" : "getWrapperByTypeAndStatus",
-        "parameters" : [ {
-          "description" : "Type of Wrapper like CHANNEL or STATION",
-          "in" : "path",
-          "name" : "wrapper-type",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "enum" : [ "CHANNEL", "STATION" ]
-          }
-        }, {
-          "description" : "Validation Status of a CHANNEL or STATION",
-          "in" : "path",
-          "name" : "wrapper-status",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "enum" : [ "APPROVED", "TO_CHECK", "TO_FIX", "TO_CHECK_UPDATE", "TO_FIX_UPDATE" ]
-          }
-        }, {
-          "description" : "Number of elements on one page. Default = 50",
-          "in" : "query",
-          "name" : "limit",
-          "required" : false,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32",
-            "default" : 50
-          }
-        }, {
-          "description" : "Page number. Page value starts from 0",
-          "in" : "query",
-          "name" : "page",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32"
-          }
-        }, {
-          "description" : "Broker code filter for search",
-          "in" : "query",
-          "name" : "broker-code",
-          "required" : false,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "Query with sql like parameter for field id search",
-          "in" : "query",
-          "name" : "id-like",
-          "required" : false,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "Method of sorting",
-          "in" : "query",
-          "name" : "sorting",
-          "required" : false,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                }
-              }
-            },
-            "description" : "OK",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "JWT" : [ ]
-        } ],
-        "summary" : "Get channel's details",
-      },
-      "parameters" : [ {
-        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-        "in" : "header",
-        "name" : "X-Request-Id",
-        "schema" : {
-          "type" : "string"
-        }
-      } ],
-      "put" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
-        "operationId" : "updateChannel",
-        "parameters" : [ {
-          "description" : "Channel's unique identifier",
-          "in" : "path",
-          "name" : "channel-code",
-      } ]
-    },
-    "/creditor-institutions" : {
-      "get" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId" : "getCreditorInstitutions",
-        "parameters" : [ {
-          "description" : "Number of elements on one page. Default = 50",
-          "in" : "query",
-          "name" : "limit",
-          "required" : false,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32",
-            "default" : 50
-          }
-        }, {
-          "description" : "Page number. Page value starts from 0",
-          "in" : "query",
-          "name" : "page",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32"
-          }
-        }, {
-          "description" : "Creditor institution code",
-          "in" : "query",
-          "name" : "ci-code",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/ChannelDetailsDto"
-              }
-            }
-          },
-          "required" : true
-        },
-        }, {
-          "description" : "Creditor institution name",
-          "in" : "query",
-          "name" : "name",
-          "required" : false,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "Sorting method for paginated result",
-          "in" : "query",
-          "name" : "sorting",
-          "required" : false,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-
-                }
-              }
-            },
-            "description" : "OK",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-
-                }
-              }
-            }
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description" : "Bad Request",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          },
-          "403" : {
-            "description" : "Forbidden",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description" : "Service unavailable",
             "headers" : {
               "X-Request-Id" : {
                 "description" : "This header identifies the call",
@@ -4481,67 +3815,49 @@
             }
           }
         },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Retrieve an institution's key pair, including primary and secondary keys",
-        "tags": [
-          "Institutions"
-        ]
+        "security" : [ {
+          "JWT" : [ ]
+        } ],
+        "summary" : "Retrieve an institution's key pair, including primary and secondary keys",
+        "tags" : [ "Institutions" ]
       },
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
+      "parameters" : [ {
+        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+        "in" : "header",
+        "name" : "X-Request-Id",
+        "schema" : {
+          "type" : "string"
         }
-      ],
-      "post": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "createInstitutionApiKeys",
-        "parameters": [
-          {
-            "description": "Institution's unique internal identifier",
-            "in": "path",
-            "name": "institution-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Subscription's unique internal identifier",
-            "in": "query",
-            "name": "subscription-code",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "NODOAUTH",
-                "GPD",
-                "GPD_REP",
-                "GPD_PAY",
-                "BIZ",
-                "FDR_ORG",
-                "FDR_PSP",
-                "BO_EXT"
-              ]
-            }
+      } ],
+      "post" : {
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId" : "createInstitutionApiKeys",
+        "parameters" : [ {
+          "description" : "Institution's unique internal identifier",
+          "in" : "path",
+          "name" : "institution-id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/InstitutionApiKeys"
+        }, {
+          "description" : "Subscription's unique internal identifier",
+          "in" : "query",
+          "name" : "subscription-code",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "NODOAUTH", "GPD", "GPD_REP", "GPD_PAY", "BIZ", "FDR_ORG", "FDR_PSP", "BO_EXT_EC", "BO_EXT_PSP" ]
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/InstitutionApiKeys"
                   }
                 }
               }
@@ -4561,6 +3877,104 @@
           "JWT" : [ ]
         } ],
         "summary" : "Creates a new subscription for a given Institution and returns its primary and secondary keys",
+        "tags" : [ "Institutions" ]
+      }
+    },
+    "/institutions/{institution-id}/api-keys/{subscription-id}/primary/regenerate" : {
+      "parameters" : [ {
+        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+        "in" : "header",
+        "name" : "X-Request-Id",
+        "schema" : {
+          "type" : "string"
+        }
+      } ],
+      "post" : {
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId" : "regeneratePrimaryKey",
+        "parameters" : [ {
+          "description" : "Institution's unique internal identifier",
+          "in" : "path",
+          "name" : "institution-id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Institution's subscription id",
+          "in" : "path",
+          "name" : "subscription-id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "JWT" : [ ]
+        } ],
+        "summary" : "Regenerates the subscription's primary key",
+        "tags" : [ "Institutions" ]
+      }
+    },
+    "/institutions/{institution-id}/api-keys/{subscription-id}/secondary/regenerate" : {
+      "parameters" : [ {
+        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+        "in" : "header",
+        "name" : "X-Request-Id",
+        "schema" : {
+          "type" : "string"
+        }
+      } ],
+      "post" : {
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId" : "regenerateSecondaryKey",
+        "parameters" : [ {
+          "description" : "Institution's unique internal identifier",
+          "in" : "path",
+          "name" : "institution-id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Institution's subscription id",
+          "in" : "path",
+          "name" : "subscription-id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "JWT" : [ ]
+        } ],
+        "summary" : "Regenerates the subscription's secondary key",
         "tags" : [ "Institutions" ]
       }
     },
@@ -4614,262 +4028,6 @@
           "type" : "string"
         }
       } ]
-    },
-    "/institutions/{subscription-id}/api-keys/primary/regenerate" : {
-      "parameters" : [ {
-        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-        "in" : "header",
-        "name" : "X-Request-Id",
-        "schema" : {
-          "type" : "string"
-        }
-      } ],
-      "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId" : "regeneratePrimaryKey",
-        "parameters" : [ {
-          "description" : "Institution's subscription id",
-          "in" : "path",
-          "name" : "subscription-id",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "No Content",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "JWT" : [ ]
-        } ],
-        "summary" : "Regenerates the subscription's primary key",
-        "tags" : [ "Institutions" ]
-      }
-    },
-    "/institutions/{subscription-id}/api-keys/secondary/regenerate" : {
-      "parameters" : [ {
-        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-        "in" : "header",
-        "name" : "X-Request-Id",
-        "schema" : {
-          "type" : "string"
-        }
-      } ],
-      "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId" : "regenerateSecondaryKey",
-        "parameters" : [ {
-          "description" : "Institution's subscription id",
-          "in" : "path",
-          "name" : "subscription-id",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "No Content",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "JWT" : [ ]
-        } ],
-        "summary" : "Regenerates the subscription's secondary key",
-        "tags" : [ "Institutions" ]
-      }
-    "/institutions/{institution-id}/api-keys/{subscription-id}/primary/regenerate": {
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
-      "post": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "regeneratePrimaryKey",
-        "parameters": [
-          {
-            "description": "Institution's unique internal identifier",
-            "in": "path",
-            "name": "institution-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Institution's subscription id",
-            "in": "path",
-            "name": "subscription-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Regenerates the subscription's primary key",
-        "tags": [
-          "Institutions"
-        ]
-      }
-    },
-    "/institutions/{institution-id}/api-keys/{subscription-id}/secondary/regenerate": {
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
-      "post": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "regenerateSecondaryKey",
-        "parameters": [
-          {
-            "description": "Institution's unique internal identifier",
-            "in": "path",
-            "name": "institution-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Institution's subscription id",
-            "in": "path",
-            "name": "subscription-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Regenerates the subscription's secondary key",
-        "tags": [
-          "Institutions"
-        ]
-      }
-    },
-    "/institutions/{institution-id}/products": {
-      "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "getInstitutionProducts",
-        "parameters": [
-          {
-            "description": "Institution's unique internal identifier",
-            "in": "path",
-            "name": "institution-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Product"
-                  }
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Retrieve all active products for given institution and logged user",
-        "tags": [
-          "Institutions"
-        ]
-      },
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ]
     },
     "/operative-tables" : {
       "get" : {

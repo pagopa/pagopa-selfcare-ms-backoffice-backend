@@ -224,6 +224,8 @@ class CommissionBundleControllerTest {
                         .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
     void rejectPublicBundleSubscriptionsOK() throws Exception {
         String url = "/bundles/requests/payment-service-providers/{psp-tax-code}/request/{bundle-request-id}/reject";
         mvc.perform(post(url, PSP_TAX_CODE, "idBundleRequest")

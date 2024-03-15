@@ -126,14 +126,15 @@ public class CommissionBundleService {
      */
     public BundlesResource getCisBundles(List<BundleType> bundleType, String cisTaxCode, String name, Integer limit, Integer page) {
         Bundles bundles = cisTaxCode != null ?
-                gecClient.getBundlesByCI(cisTaxCode,limit,page) : gecClient.getBundles(limit, page);
+                gecClient.getBundlesByCI(cisTaxCode, limit, page) : gecClient.getBundles(limit, page);
         if (cisTaxCode != null && (bundleType != null || name != null)) {
             bundles.setBundles(bundles.getBundles().stream().filter(
-                    item -> (bundleType == null || bundleType.contains(item.getType())) &&
-                            (name == null || item.getName().toLowerCase().contains(name.toLowerCase())))
+                            item -> (bundleType == null || bundleType.contains(item.getType())) &&
+                                    (name == null || item.getName().toLowerCase().contains(name.toLowerCase())))
                     .collect(Collectors.toList()));
         }
         return getBundlesResource(bundles);
+    }
 
     /**
      * Reject a subscription requests to a public bundle
