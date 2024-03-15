@@ -111,8 +111,8 @@ public class ApiManagementService {
     /**
      * Create the subscription's api keys to the specified subscription for the specified institution.
      * <p>
-     * If the subscription is for {@link Subscription#BO_EXT} then it configure the Authorizer config service in order to enable
-     * the authorization process.
+     * If the subscription is for {@link Subscription#BO_EXT_EC} or {@link Subscription#BO_EXT_PSP} then it configure
+     * the Authorizer config service in order to enable the authorization process.
      *
      * @param institutionId the id of the institution
      * @param subscriptionCode the code of the requested subscription
@@ -133,7 +133,7 @@ public class ApiManagementService {
                 subscriptionName);
 
         List<InstitutionApiKeys> apiSubscriptions = this.apimClient.getApiSubscriptions(institutionId);
-        if (!subscriptionCode.equals(Subscription.BO_EXT)) {
+        if (!subscriptionCode.equals(Subscription.BO_EXT_EC) && !subscriptionCode.equals(Subscription.BO_EXT_PSP)) {
             return apiSubscriptions;
         }
 
@@ -142,16 +142,20 @@ public class ApiManagementService {
                 .findFirst()
                 .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
 
-        this.authorizerConfigClient.createAuthorization(buildAuthorization(apiKeys.getPrimaryKey(), institution, true));
-        this.authorizerConfigClient.createAuthorization(buildAuthorization(apiKeys.getSecondaryKey(), institution, false));
+        Authorization authorizationPrimaryKey =
+                buildAuthorization(subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, true);
+        this.authorizerConfigClient.createAuthorization(authorizationPrimaryKey);
+        Authorization authorizationSecondaryKey =
+                buildAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, false);
+        this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
         return apiSubscriptions;
     }
 
     /**
      * Regenerate the primary subscription key to the specified subscription for the given institution.
      * <p>
-     * If the subscription is for {@link Subscription#BO_EXT} then it update the Authorizer config service
-     * with the new api key.
+     * If the subscription is for {@link Subscription#BO_EXT_EC} or {@link Subscription#BO_EXT_PSP} then it update
+     * the Authorizer config service with the new api key.
      *
      * @param institutionId the id of the institution
      * @param subscriptionId the id of the subscription
@@ -159,16 +163,19 @@ public class ApiManagementService {
     public void regeneratePrimaryKey(String institutionId, String subscriptionId) {
         this.apimClient.regeneratePrimaryKey(subscriptionId);
 
-        if (subscriptionId.startsWith(Subscription.BO_EXT.getPrefixId())) {
-            updateAuthorization(institutionId, subscriptionId, true);
+        if (subscriptionId.startsWith(Subscription.BO_EXT_EC.getPrefixId())) {
+            updateAuthorization(institutionId, subscriptionId, Subscription.BO_EXT_EC.getPrefixId(), true);
+        }
+        if (subscriptionId.startsWith(Subscription.BO_EXT_PSP.getPrefixId())) {
+            updateAuthorization(institutionId, subscriptionId, Subscription.BO_EXT_PSP.getPrefixId(), true);
         }
     }
 
     /**
      * Regenerate the secondary subscription key to the specified subscription for the given institution.
      * <p>
-     * If the subscription is for {@link Subscription#BO_EXT} then it update the Authorizer config service
-     * with the new api key.
+     * If the subscription is for {@link Subscription#BO_EXT_EC} or {@link Subscription#BO_EXT_PSP} then it update
+     * the Authorizer config service with the new api key.
      *
      * @param institutionId the id of the institution
      * @param subscriptionId the id of the subscription
@@ -176,20 +183,22 @@ public class ApiManagementService {
     public void regenerateSecondaryKey(String institutionId, String subscriptionId) {
         this.apimClient.regenerateSecondaryKey(subscriptionId);
 
-        if (subscriptionId.startsWith(Subscription.BO_EXT.getPrefixId())) {
-            updateAuthorization(institutionId, subscriptionId, false);
+        if (subscriptionId.startsWith(Subscription.BO_EXT_EC.getPrefixId())) {
+            updateAuthorization(institutionId, subscriptionId, Subscription.BO_EXT_EC.getPrefixId(), false);
+        }
+        if (subscriptionId.startsWith(Subscription.BO_EXT_PSP.getPrefixId())) {
+            updateAuthorization(institutionId, subscriptionId, Subscription.BO_EXT_PSP.getPrefixId(), false);
         }
     }
 
-    private void updateAuthorization(String institutionId, String subscriptionId, boolean isPrimaryKey) {
-        InstitutionResponse institution = getInstitutionResponse(institutionId);
-
+    private void updateAuthorization(String institutionId, String subscriptionId, String subscriptionPrefixId, boolean isPrimaryKey) {
         InstitutionApiKeys apiKeys = this.apimClient.getApiSubscriptions(institutionId).stream()
                 .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
                 .findFirst()
                 .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
 
-        Authorization authorization = this.authorizerConfigClient.getAuthorization(createAuthorizationBOId(institution, isPrimaryKey));
+        String authorizationId = createAuthorizationBOId(subscriptionPrefixId, institutionId, isPrimaryKey);
+        Authorization authorization = this.authorizerConfigClient.getAuthorization(authorizationId);
         if (authorization == null) {
             throw new AppException(AppError.AUTHORIZATION_NOT_FOUND, institutionId);
         }
@@ -207,9 +216,14 @@ public class ApiManagementService {
         return institution;
     }
 
-    private Authorization buildAuthorization(String subscriptionKey, InstitutionResponse institution, boolean isPrimaryKey) {
+    private Authorization buildAuthorization(
+            String subscriptionPrefixId,
+            String subscriptionKey,
+            InstitutionResponse institution,
+            boolean isPrimaryKey
+    ) {
         return Authorization.builder()
-                .id(createAuthorizationBOId(institution, isPrimaryKey))
+                .id(createAuthorizationBOId(subscriptionPrefixId, institution.getId(), isPrimaryKey))
                 .domain("backoffice_external")
                 .subscriptionKey(subscriptionKey)
                 .description(String.format("%s key configuration for backoffice external", isPrimaryKey ? PRIMARY : SECONDARY))
@@ -227,8 +241,8 @@ public class ApiManagementService {
                 .build();
     }
 
-    private String createAuthorizationBOId(InstitutionResponse institution, boolean isPrimaryKey) {
-        return String.format("%s%s_%s", Subscription.BO_EXT.getPrefixId(), institution.getId(), isPrimaryKey ? PRIMARY : SECONDARY);
+    private String createAuthorizationBOId(String subscriptionPrefixId, String institutionId, boolean isPrimaryKey) {
+        return String.format("%s%s_%s", subscriptionPrefixId, institutionId, isPrimaryKey ? PRIMARY : SECONDARY);
     }
 
     private void createUserIfNotExist(String institutionId, InstitutionResponse institution) {
