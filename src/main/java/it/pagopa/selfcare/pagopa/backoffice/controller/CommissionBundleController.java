@@ -39,7 +39,7 @@ public class CommissionBundleController {
      * @param page page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
-    @GetMapping("/cis")
+    @GetMapping("/creditor_institutions")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a paginated list of bundles to be used by creditor institutions", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
