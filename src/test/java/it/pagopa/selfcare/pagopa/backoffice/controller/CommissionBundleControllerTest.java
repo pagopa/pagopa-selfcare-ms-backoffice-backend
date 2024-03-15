@@ -202,6 +202,7 @@ class CommissionBundleControllerTest {
                 new BundlesResource()
         );
         mvc.perform(get(url)
+                        .param("types", BundleType.PRIVATE.name())
                         .param("cisTaxCode",EC_TAX_CODE)
                         .param("limit", String.valueOf(limit))
                         .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))

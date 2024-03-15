@@ -157,8 +157,11 @@ class CommissionBundleServiceTest {
     void getCIBundlesShouldReturnExpandedResultFromFilteredAPI() {
         when(client.getBundlesByCI(any(),any(), any())).thenReturn(Bundles.builder()
                 .bundles(
-                    Collections.singletonList(Bundle.builder()
-                            .transferCategoryList(Collections.singletonList("test")).build())
+                    Collections.singletonList(
+                            Bundle.builder()
+                                .type(BundleType.PRIVATE)
+                                .transferCategoryList(Collections.singletonList("test"))
+                            .build())
                 )
                 .pageInfo(PageInfo.builder().build()
         ).build());
