@@ -110,8 +110,8 @@ microservice-chart:
     AWS_ACCESS_KEY_ID: pagopa-u-aws-access-key-id
     AWS_SECRET_ACCESS_KEY: pagopa-u-aws-secret-access-key
     AWS_SES_USER: pagopa-u-aws-ses-user
-    CLIENT_SECRET: pagopa-u-selfcare-client-secret
-    CLIENT_ID: pagopa-u-selfcare-client-id
+    AZURE_CLIENT_SECRET: pagopa-u-selfcare-client-secret
+    AZURE_CLIENT_ID: pagopa-u-selfcare-client-id
     SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selfcare-u-apim-external-api-key-env-prod
     PAPGOPA_APIM_GEC_API_KEY_PAGOPA: pagopa-u-apim-gec-key
     PAPGOPA_APIM_TAXONOMY_API_KEY_PAGOPA: pagopa-u-apim-taxonomy-key
@@ -120,7 +120,6 @@ microservice-chart:
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-u-connection-string'
     TENANT_ID: pagopa-selfcare-uat-tenant-id
     SUBSCRIPTION_ID: pagopa-selfcare-u-subscription-id
-    APP_CONFIGURATION_CONNECTION_STRING: appconfiguration-conn-string
     JWT_TOKEN_PUBLIC_KEY: pagopa-u-weu-selfcare-jwt-pub-key
     JWT_TOKEN_PUBLIC_KEY_PROD: pagopa-u-weu-selfcare-jwt-pub-key-env-prod
     TEST_EMAIL: pagopa-u-env-test-email
