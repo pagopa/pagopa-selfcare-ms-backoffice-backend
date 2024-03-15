@@ -1,10 +1,10 @@
 {
-  "openapi" : "3.0.1",
-  "info" : {
-    "description" : "Microservice to manage PagoPA Backoffice",
-    "termsOfService" : "https://www.pagopa.gov.it/",
-    "title" : "SelfCare Backoffice",
-    "version" : "2.3.13"
+  "openapi": "3.0.1",
+  "info": {
+    "description": "Microservice to manage PagoPA Backoffice",
+    "termsOfService": "https://www.pagopa.gov.it/",
+    "title": "SelfCare Backoffice",
+    "version": "2.3.16"
   },
   "servers" : [ {
     "url" : "http://localhost:8080"
@@ -3727,49 +3727,67 @@
             }
           }
         },
-        "security" : [ {
-          "JWT" : [ ]
-        } ],
-        "summary" : "Retrieve an institution's key pair, including primary and secondary keys",
-        "tags" : [ "Institutions" ]
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Retrieve an institution's key pair, including primary and secondary keys",
+        "tags": [
+          "Institutions"
+        ]
       },
-      "parameters" : [ {
-        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-        "in" : "header",
-        "name" : "X-Request-Id",
-        "schema" : {
-          "type" : "string"
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
         }
-      } ],
-      "post" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId" : "createInstitutionApiKeys",
-        "parameters" : [ {
-          "description" : "Institution's unique internal identifier",
-          "in" : "path",
-          "name" : "institution-id",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
+      ],
+      "post": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "createInstitutionApiKeys",
+        "parameters": [
+          {
+            "description": "Institution's unique internal identifier",
+            "in": "path",
+            "name": "institution-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Subscription's unique internal identifier",
+            "in": "query",
+            "name": "subscription-code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "NODOAUTH",
+                "GPD",
+                "GPD_REP",
+                "GPD_PAY",
+                "BIZ",
+                "FDR_ORG",
+                "FDR_PSP",
+                "BO_EXT"
+              ]
+            }
           }
-        }, {
-          "description" : "Subscription's unique internal identifier",
-          "in" : "query",
-          "name" : "subscription-code",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "enum" : [ "NODOAUTH", "GPD", "GPD_REP", "GPD_PAY", "BIZ", "FDR_ORG", "FDR_PSP" ]
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/InstitutionApiKeys"
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InstitutionApiKeys"
                   }
                 }
               }
@@ -3924,6 +3942,180 @@
         "summary" : "Regenerates the subscription's secondary key",
         "tags" : [ "Institutions" ]
       }
+    "/institutions/{institution-id}/api-keys/{subscription-id}/primary/regenerate": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "regeneratePrimaryKey",
+        "parameters": [
+          {
+            "description": "Institution's unique internal identifier",
+            "in": "path",
+            "name": "institution-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Institution's subscription id",
+            "in": "path",
+            "name": "subscription-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Regenerates the subscription's primary key",
+        "tags": [
+          "Institutions"
+        ]
+      }
+    },
+    "/institutions/{institution-id}/api-keys/{subscription-id}/secondary/regenerate": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "regenerateSecondaryKey",
+        "parameters": [
+          {
+            "description": "Institution's unique internal identifier",
+            "in": "path",
+            "name": "institution-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Institution's subscription id",
+            "in": "path",
+            "name": "subscription-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Regenerates the subscription's secondary key",
+        "tags": [
+          "Institutions"
+        ]
+      }
+    },
+    "/institutions/{institution-id}/products": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "getInstitutionProducts",
+        "parameters": [
+          {
+            "description": "Institution's unique internal identifier",
+            "in": "path",
+            "name": "institution-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Retrieve all active products for given institution and logged user",
+        "tags": [
+          "Institutions"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
     },
     "/operative-tables" : {
       "get" : {
