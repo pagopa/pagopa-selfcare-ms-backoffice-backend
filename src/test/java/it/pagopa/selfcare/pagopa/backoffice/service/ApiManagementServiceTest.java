@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -41,7 +42,6 @@ class ApiManagementServiceTest {
 
     private final String INSTITUTION_ID = "INSTITUTION_ID";
     private final String SUBSCRIPTION_ID = "SUBSCRIPTION_ID";
-    private final String SUBSCRIPTION_ID_BO_EXT = Subscription.BO_EXT.getPrefixId() + "SUBSCRIPTION_ID";
     private final String BROKER_ID = "BROKER_ID";
 
     @MockBean
@@ -154,16 +154,16 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void createSubscriptionKeysForBOExt() throws IOException {
+    void createSubscriptionKeysForBOExtEC() throws IOException {
         InstitutionResponse institutionResponse = TestUtil.fileToObject(
                 "response/externalapi/institution_response.json", InstitutionResponse.class);
         InstitutionApiKeys institutionApiKeys =
-                buildInstitutionApiKeys(String.format("%s%s", Subscription.BO_EXT.getPrefixId(), institutionResponse.getTaxCode()));
+                buildInstitutionApiKeys(String.format("%s%s", Subscription.BO_EXT_EC.getPrefixId(), institutionResponse.getTaxCode()));
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
 
-        List<InstitutionApiKeys> result = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.BO_EXT);
+        List<InstitutionApiKeys> result = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.BO_EXT_EC);
 
         assertNotNull(result);
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
@@ -176,52 +176,96 @@ class ApiManagementServiceTest {
 
     @Test
     void regeneratePrimaryKey() {
-        service.regeneratePrimaryKey(INSTITUTION_ID, SUBSCRIPTION_ID);
+        assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, SUBSCRIPTION_ID));
+
         verify(apimClient).regeneratePrimaryKey(SUBSCRIPTION_ID);
+        verify(apimClient, never()).getApiSubscriptions(INSTITUTION_ID);
+        verify(authorizerConfigClient, never()).deleteAuthorization(anyString());
+        verify(authorizerConfigClient, never()).createAuthorization(any());
     }
 
     @Test
-    void regeneratePrimaryKeyForBOExt() throws IOException {
+    void regeneratePrimaryKeyForBOExtEC() throws IOException {
         InstitutionResponse institutionResponse = TestUtil.fileToObject(
                 "response/externalapi/institution_response.json", InstitutionResponse.class);
-        String subscriptionId = String.format("%s%s", Subscription.BO_EXT.getPrefixId(), institutionResponse.getTaxCode());
+        String subscriptionId = String.format("%s%s", Subscription.BO_EXT_EC.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
         when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder().id("auth-id").build());
 
-        service.regeneratePrimaryKey(INSTITUTION_ID, subscriptionId);
+        assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, subscriptionId));
 
         verify(apimClient).regeneratePrimaryKey(subscriptionId);
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
-        verify(externalApiClient).getInstitution(INSTITUTION_ID);
+        verify(authorizerConfigClient).deleteAuthorization(anyString());
+        verify(authorizerConfigClient).createAuthorization(any());
+    }
+
+    @Test
+    void regeneratePrimaryKeyForBOExtPSP() throws IOException {
+        InstitutionResponse institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        String subscriptionId = String.format("%s%s", Subscription.BO_EXT_PSP.getPrefixId(), institutionResponse.getTaxCode());
+        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
+
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
+        when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
+        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder().id("auth-id").build());
+
+        assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, subscriptionId));
+
+        verify(apimClient).regeneratePrimaryKey(subscriptionId);
+        verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient).deleteAuthorization(anyString());
         verify(authorizerConfigClient).createAuthorization(any());
     }
 
     @Test
     void regenerateSecondaryKey() {
-        service.regenerateSecondaryKey(INSTITUTION_ID, SUBSCRIPTION_ID);
+        assertDoesNotThrow(() -> service.regenerateSecondaryKey(INSTITUTION_ID, SUBSCRIPTION_ID));
+
         verify(apimClient).regenerateSecondaryKey(SUBSCRIPTION_ID);
+        verify(apimClient, never()).getApiSubscriptions(INSTITUTION_ID);
+        verify(authorizerConfigClient, never()).deleteAuthorization(anyString());
+        verify(authorizerConfigClient, never()).createAuthorization(any());
     }
 
     @Test
-    void regenerateSecondaryKeyForBOExt() throws IOException {
+    void regenerateSecondaryKeyForBOExtEC() throws IOException {
         InstitutionResponse institutionResponse = TestUtil.fileToObject(
                 "response/externalapi/institution_response.json", InstitutionResponse.class);
-        String subscriptionId = String.format("%s%s", Subscription.BO_EXT.getPrefixId(), institutionResponse.getTaxCode());
+        String subscriptionId = String.format("%s%s", Subscription.BO_EXT_EC.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
         when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder().id("auth-id").build());
 
-        service.regenerateSecondaryKey(INSTITUTION_ID, subscriptionId);
+        assertDoesNotThrow(() -> service.regenerateSecondaryKey(INSTITUTION_ID, subscriptionId));
 
         verify(apimClient).regenerateSecondaryKey(subscriptionId);
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
-        verify(externalApiClient).getInstitution(INSTITUTION_ID);
+        verify(authorizerConfigClient).deleteAuthorization(anyString());
+        verify(authorizerConfigClient).createAuthorization(any());
+    }
+
+    @Test
+    void regenerateSecondaryKeyForBOExtPSP() throws IOException {
+        InstitutionResponse institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        String subscriptionId = String.format("%s%s", Subscription.BO_EXT_PSP.getPrefixId(), institutionResponse.getTaxCode());
+        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
+
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
+        when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
+        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder().id("auth-id").build());
+
+        assertDoesNotThrow(() -> service.regenerateSecondaryKey(INSTITUTION_ID, subscriptionId));
+
+        verify(apimClient).regenerateSecondaryKey(subscriptionId);
+        verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient).deleteAuthorization(anyString());
         verify(authorizerConfigClient).createAuthorization(any());
     }
