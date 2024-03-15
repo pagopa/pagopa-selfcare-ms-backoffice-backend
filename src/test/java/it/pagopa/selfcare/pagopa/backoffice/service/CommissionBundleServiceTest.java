@@ -182,6 +182,34 @@ class CommissionBundleServiceTest {
     }
 
     @Test
+    void getCIBundlesShouldReturnExpandedResultFromFilteredAPIWithoutType() {
+        when(client.getBundlesByCI(any(),any(), any())).thenReturn(Bundles.builder()
+                .bundles(
+                        Collections.singletonList(
+                                Bundle.builder()
+                                        .name("ecName")
+                                        .type(BundleType.PRIVATE)
+                                        .transferCategoryList(Collections.singletonList("test"))
+                                        .build())
+                )
+                .pageInfo(PageInfo.builder().build()
+                ).build());
+        when(taxonomyService.getTaxonomiesByCodes(any())).thenReturn(
+                Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
+
+        BundlesResource bundlesResource = assertDoesNotThrow(
+                () -> service.getCisBundles(
+                        null, EC_TAX_CODE, "name", 10, 0));
+        assertNotNull(bundlesResource);
+        assertNotNull(bundlesResource.getPageInfo());
+        assertNotNull(bundlesResource.getBundles());
+        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+        verify(client).getBundlesByCI(EC_TAX_CODE, 10, 0);
+        verifyNoMoreInteractions(client);
+        verify(taxonomyService).getTaxonomiesByCodes(any());
+    }
+
+    @Test
     void getCIBundlesShouldReturnExpandedResultFromGlobalAPI() {
         when(client.getBundles(any(), any())).thenReturn(Bundles.builder()
                 .bundles(
