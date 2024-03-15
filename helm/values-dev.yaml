@@ -117,6 +117,7 @@ microservice-chart:
     PAPGOPA_APIM_TAXONOMY_API_KEY_PAGOPA: pagopa-d-apim-taxonomy-key
     PAGOPA_APIM_API_CONFIG_API_KEY_PAGOPA: pagopa-d-apim-api-config-key
     PAGOPA_APIM_API_CONFIG_SELFCARE_INTEGRATION_API_KEY_PAGOPA: pagopa-d-apim-api-config-selfcare-integration-key
+    PAPGOPA_APIM_AUTHORIZER_CONFIG_API_KEY_PAGOPA: pagopa-d-apim-authorizer-config-key
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-d-connection-string'
     TENANT_ID: pagopa-selfcare-dev-tenant-id
     SUBSCRIPTION_ID: pagopa-selfcare-d-subscription-id

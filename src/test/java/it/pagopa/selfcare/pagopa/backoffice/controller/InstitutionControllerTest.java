@@ -1,15 +1,13 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.service.ApiManagementService;
-import it.pagopa.selfcare.pagopa.backoffice.service.ExportService;
-import it.pagopa.selfcare.pagopa.backoffice.service.IbanService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -34,6 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(username = "user1", password = "pwd", roles = "USER")
 class InstitutionControllerTest {
 
+    private final String INSTITUTION_ID = "INSTITUTION_ID";
+    private final String SUBSCRIPTION_ID = "SUBSCRIPTION_ID";
+
     @Autowired
     private MockMvc mvc;
 
@@ -41,11 +42,6 @@ class InstitutionControllerTest {
     private ApiManagementService apiManagementService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    private final String INSTITUTION_ID = "INSTITUTION_ID";
-
-    private final String SUBSCRIPTION_ID = "SUBSCRIPTION_ID";
-
 
     @BeforeEach
     void setUp() {
@@ -100,16 +96,27 @@ class InstitutionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void createSubscriptionKeys() throws Exception {
+        mvc.perform(post("/institutions//{institution-id}/api-keys", INSTITUTION_ID)
+                        .param("subscription-code", Subscription.GPD.name())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
+    }
+
     @Test
     void regeneratePrimaryKey() throws Exception {
-        mvc.perform(post("/institutions/{subscription-id}/api-keys/primary/regenerate", SUBSCRIPTION_ID)
+        mvc.perform(post("/institutions/{institution-id}/api-keys/{subscription-id}/primary/regenerate",
+                        INSTITUTION_ID, SUBSCRIPTION_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
     }
 
     @Test
     void regenerateSecondaryKey() throws Exception {
-        mvc.perform(post("/institutions/{subscription-id}/api-keys/secondary/regenerate", SUBSCRIPTION_ID)
+        mvc.perform(post("/institutions/{institution-id}/api-keys/{subscription-id}/secondary/regenerate",
+                        INSTITUTION_ID, SUBSCRIPTION_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
     }
