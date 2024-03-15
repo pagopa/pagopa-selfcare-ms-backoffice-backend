@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -123,9 +124,13 @@ public class CommissionBundleService {
      * @param page page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
-    public BundlesResource getCisBundles(String cisTaxCode, Integer limit, Integer page) {
+    public BundlesResource getCisBundles(List<BundleType> bundleType, String cisTaxCode, Integer limit, Integer page) {
         Bundles bundles = cisTaxCode != null ?
                 gecClient.getBundlesByCI(cisTaxCode,limit,page) : gecClient.getBundles(limit, page);
+        if (bundleType != null) {
+            bundles.setBundles(bundles.getBundles().stream().filter(item ->
+                    bundleType.contains(item.getType())).collect(Collectors.toList()));
+        }
         return getBundlesResource(bundles);
     }
 

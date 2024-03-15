@@ -44,11 +44,12 @@ public class CommissionBundleController {
     @Operation(summary = "Get a paginated list of bundles to be used by creditor institutions", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public BundlesResource getCisBundles(
+            @Parameter(description = "Commission bundle's type") @RequestParam(required = false) List<BundleType> types,
             @Parameter(description = "Creditor Institution Tax Code") @RequestParam(required = false) String cisTaxCode,
             @Parameter(description = "Number of elements on one page. Default = 50") @RequestParam(required = false, defaultValue = "50") Integer limit,
             @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = false, defaultValue = "0") Integer page
     ) {
-        return commissionBundleService.getCisBundles(cisTaxCode, limit, page);
+        return commissionBundleService.getCisBundles(types, cisTaxCode, limit, page);
     }
 
     @GetMapping("/payment-types")

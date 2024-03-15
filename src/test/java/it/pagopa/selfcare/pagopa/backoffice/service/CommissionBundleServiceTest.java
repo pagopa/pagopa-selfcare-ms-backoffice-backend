@@ -166,7 +166,8 @@ class CommissionBundleServiceTest {
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
 
         BundlesResource bundlesResource = assertDoesNotThrow(
-                () -> service.getCisBundles(EC_TAX_CODE, 10, 0));
+                () -> service.getCisBundles(
+                        Collections.singletonList(BundleType.PRIVATE), EC_TAX_CODE, 10, 0));
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
@@ -189,7 +190,7 @@ class CommissionBundleServiceTest {
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
 
         BundlesResource bundlesResource = assertDoesNotThrow(
-                () -> service.getCisBundles(null,10, 0));
+                () -> service.getCisBundles(null,null,10, 0));
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
