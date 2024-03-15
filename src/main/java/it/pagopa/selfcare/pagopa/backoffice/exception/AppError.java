@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+/**
+ * Enum that define the application error codes
+ */
 @Getter
 @AllArgsConstructor
 public enum AppError {
@@ -17,6 +20,8 @@ public enum AppError {
 
     ACTOR_NOT_FOUND(HttpStatus.NOT_FOUND, "Actor Not Found", "No Broker and No CreditorInstitution found with code %s"),
     APIM_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "APIM User Not Found", "No User found with code %s"),
+    APIM_KEY_NOT_FOUND(HttpStatus.NOT_FOUND, "APIM keys Not Found", "No API keys found with code %s"),
+    AUTHORIZATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Authorization Not Found", "No Authorization found with code %s"),
     BROKER_NOT_FOUND(HttpStatus.NOT_FOUND, "Broker Not Found", "No broker found with code %s"),
     WRAPPER_NOT_FOUND(HttpStatus.NOT_FOUND, "Wrapper Entity not Found", "No wrapper entity found with code %s"),
     WRAPPER_STATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Wrapper Station not Found", "No wrapper station found with code %s"),
