@@ -198,7 +198,7 @@ class CommissionBundleControllerTest {
         int limit = 25;
         int page = 2;
         when(service.getCisBundles(Collections.singletonList(BundleType.PRIVATE),
-                    EC_TAX_CODE, limit, page)).thenReturn(
+                    EC_TAX_CODE, "name", limit, page)).thenReturn(
                 new BundlesResource()
         );
         mvc.perform(get(url)
@@ -215,7 +215,7 @@ class CommissionBundleControllerTest {
         String url = "/bundles/cis";
         int limit = 25;
         int page = 2;
-        when(service.getCisBundles(null, null, limit, page)).thenReturn(
+        when(service.getCisBundles(null, null, null, limit, page)).thenReturn(
                 new BundlesResource()
         );
         mvc.perform(get(url)

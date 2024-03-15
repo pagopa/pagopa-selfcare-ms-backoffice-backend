@@ -159,6 +159,7 @@ class CommissionBundleServiceTest {
                 .bundles(
                     Collections.singletonList(
                             Bundle.builder()
+                                .name("ecName")
                                 .type(BundleType.PRIVATE)
                                 .transferCategoryList(Collections.singletonList("test"))
                             .build())
@@ -170,7 +171,7 @@ class CommissionBundleServiceTest {
 
         BundlesResource bundlesResource = assertDoesNotThrow(
                 () -> service.getCisBundles(
-                        Collections.singletonList(BundleType.PRIVATE), EC_TAX_CODE, 10, 0));
+                        Collections.singletonList(BundleType.PRIVATE), EC_TAX_CODE, "name", 10, 0));
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
@@ -193,7 +194,7 @@ class CommissionBundleServiceTest {
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
 
         BundlesResource bundlesResource = assertDoesNotThrow(
-                () -> service.getCisBundles(null,null,10, 0));
+                () -> service.getCisBundles(null,null,null, 10, 0));
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());

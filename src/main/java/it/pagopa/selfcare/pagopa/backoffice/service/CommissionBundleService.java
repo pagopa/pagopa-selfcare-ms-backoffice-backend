@@ -124,12 +124,14 @@ public class CommissionBundleService {
      * @param page page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
-    public BundlesResource getCisBundles(List<BundleType> bundleType, String cisTaxCode, Integer limit, Integer page) {
+    public BundlesResource getCisBundles(List<BundleType> bundleType, String cisTaxCode, String name, Integer limit, Integer page) {
         Bundles bundles = cisTaxCode != null ?
                 gecClient.getBundlesByCI(cisTaxCode,limit,page) : gecClient.getBundles(limit, page);
-        if (bundleType != null) {
-            bundles.setBundles(bundles.getBundles().stream().filter(item ->
-                    bundleType.contains(item.getType())).collect(Collectors.toList()));
+        if (cisTaxCode != null && (bundleType != null || name != null)) {
+            bundles.setBundles(bundles.getBundles().stream().filter(
+                    item -> (bundleType == null || bundleType.contains(item.getType())) &&
+                            (name == null || item.getName().toLowerCase().contains(name.toLowerCase())))
+                    .collect(Collectors.toList()));
         }
         return getBundlesResource(bundles);
     }
