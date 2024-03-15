@@ -90,6 +90,7 @@ public class AzureApiManagerClient {
                         .withOwnerId(String.format("/users/%s", institutionId))
                         .withDisplayName(subscriptionName)
                         .withScope(scope)
+                        .withState(SubscriptionState.ACTIVE)
         );
         log.trace("createInstitutionSubscription end");
     }
