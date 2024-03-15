@@ -5,10 +5,12 @@ import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import org.junit.jupiter.api.Test;
@@ -24,14 +26,16 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = {MappingsConfiguration.class, CommissionBundleService.class})
 class CommissionBundleServiceTest {
 
     private static final String PSP_CODE = "pspCode";
     private static final String PSP_TAX_CODE = "pspTaxCode";
+
+    private static final String EC_TAX_CODE = "ecTaxCode";
+
     private static final String PSP_NAME = "pspName";
     private static final int LIMIT = 50;
     private static final int PAGE = 0;
@@ -150,6 +154,84 @@ class CommissionBundleServiceTest {
     }
 
     @Test
+    void getCIBundlesShouldReturnExpandedResultFromFilteredAPI() {
+        when(client.getBundlesByCI(any(),any(), any())).thenReturn(Bundles.builder()
+                .bundles(
+                    Collections.singletonList(
+                            Bundle.builder()
+                                .name("ecName")
+                                .type(BundleType.PRIVATE)
+                                .transferCategoryList(Collections.singletonList("test"))
+                            .build())
+                )
+                .pageInfo(PageInfo.builder().build()
+        ).build());
+        when(taxonomyService.getTaxonomiesByCodes(any())).thenReturn(
+                Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
+
+        BundlesResource bundlesResource = assertDoesNotThrow(
+                () -> service.getCisBundles(
+                        Collections.singletonList(BundleType.PRIVATE), EC_TAX_CODE, "name", 10, 0));
+        assertNotNull(bundlesResource);
+        assertNotNull(bundlesResource.getPageInfo());
+        assertNotNull(bundlesResource.getBundles());
+        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+        verify(client).getBundlesByCI(EC_TAX_CODE, 10, 0);
+        verifyNoMoreInteractions(client);
+        verify(taxonomyService).getTaxonomiesByCodes(any());
+    }
+
+    @Test
+    void getCIBundlesShouldReturnExpandedResultFromFilteredAPIWithoutType() {
+        when(client.getBundlesByCI(any(),any(), any())).thenReturn(Bundles.builder()
+                .bundles(
+                        Collections.singletonList(
+                                Bundle.builder()
+                                        .name("ecName")
+                                        .type(BundleType.PRIVATE)
+                                        .transferCategoryList(Collections.singletonList("test"))
+                                        .build())
+                )
+                .pageInfo(PageInfo.builder().build()
+                ).build());
+        when(taxonomyService.getTaxonomiesByCodes(any())).thenReturn(
+                Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
+
+        BundlesResource bundlesResource = assertDoesNotThrow(
+                () -> service.getCisBundles(
+                        null, EC_TAX_CODE, "name", 10, 0));
+        assertNotNull(bundlesResource);
+        assertNotNull(bundlesResource.getPageInfo());
+        assertNotNull(bundlesResource.getBundles());
+        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+        verify(client).getBundlesByCI(EC_TAX_CODE, 10, 0);
+        verifyNoMoreInteractions(client);
+        verify(taxonomyService).getTaxonomiesByCodes(any());
+    }
+
+    @Test
+    void getCIBundlesShouldReturnExpandedResultFromGlobalAPI() {
+        when(client.getBundles(any(), any())).thenReturn(Bundles.builder()
+                .bundles(
+                        Collections.singletonList(Bundle.builder()
+                                .transferCategoryList(Collections.singletonList("test")).build())
+                )
+                .pageInfo(PageInfo.builder().build()
+                ).build());
+        when(taxonomyService.getTaxonomiesByCodes(any())).thenReturn(
+                Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
+
+        BundlesResource bundlesResource = assertDoesNotThrow(
+                () -> service.getCisBundles(null,null,null, 10, 0));
+        assertNotNull(bundlesResource);
+        assertNotNull(bundlesResource.getPageInfo());
+        assertNotNull(bundlesResource.getBundles());
+        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+        verify(client).getBundles(10, 0);
+        verifyNoMoreInteractions(client);
+        verify(taxonomyService).getTaxonomiesByCodes(any());
+    }  
+      
     void rejectPublicBundleSubscriptionByPSPSuccess() {
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
         assertDoesNotThrow(() ->
