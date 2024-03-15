@@ -129,4 +129,22 @@ public class CommissionBundleController {
     ) {
         commissionBundleService.acceptPublicBundleSubscriptionsByPSP(pspTaxCode, bundleRequestIdList);
     }
+
+
+    /**
+     * Reject a subscription requests to a public bundle
+     *
+     * @param pspTaxCode          the tax code of the PSP that owns the public bundle
+     * @param bundleRequestId the request id to be rejected
+     */
+    @PostMapping(value = "/requests/payment-service-providers/{psp-tax-code}/request/{bundle-request-id}/reject", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "reject of subscription to a public bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public void rejectPublicBundleSubscription(
+            @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
+            @Parameter(description = "Bundle request id") @PathVariable("bundle-request-id") String bundleRequestId) {
+        commissionBundleService.rejectPublicBundleSubscriptionByPSP(pspTaxCode, bundleRequestId);
+    }
+
 }

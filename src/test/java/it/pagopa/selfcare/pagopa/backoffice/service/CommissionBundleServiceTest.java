@@ -148,4 +148,13 @@ class CommissionBundleServiceTest {
         verify(client).acceptPublicBundleSubscriptionsByPSP(PSP_CODE, ID_BUNDLE_REQUEST);
         verify(client).acceptPublicBundleSubscriptionsByPSP(PSP_CODE, ID_BUNDLE_REQUEST_2);
     }
+
+    @Test
+    void rejectPublicBundleSubscriptionByPSPSuccess() {
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
+        assertDoesNotThrow(() ->
+                service.rejectPublicBundleSubscriptionByPSP(PSP_TAX_CODE, ID_BUNDLE_REQUEST));
+        verify(client).rejectPublicBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE_REQUEST);
+    }
+
 }
