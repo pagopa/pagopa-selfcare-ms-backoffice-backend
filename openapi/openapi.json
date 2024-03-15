@@ -437,7 +437,7 @@
         }
       } ]
     },
-    "/bundles/cis" : {
+    "/bundles/creditor_institutions" : {
       "get" : {
         "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId" : "getCisBundles",
@@ -480,6 +480,14 @@
             "type" : "integer",
             "format" : "int32",
             "default" : 0
+          }
+        }, {
+          "description" : "Commission bundle's name",
+          "in" : "query",
+          "name" : "name",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
           }
         } ],
         "responses" : {

@@ -194,7 +194,7 @@ class CommissionBundleControllerTest {
 
     @Test
     void getCiBundlesWithTaxCodeOK() throws Exception {
-        String url = "/bundles/cis";
+        String url = "/bundles/creditor_institutions";
         int limit = 25;
         int page = 2;
         when(service.getCisBundles(Collections.singletonList(BundleType.PRIVATE),
@@ -202,6 +202,7 @@ class CommissionBundleControllerTest {
                 new BundlesResource()
         );
         mvc.perform(get(url)
+                        .param("name", "name")
                         .param("types", BundleType.PRIVATE.name())
                         .param("cisTaxCode",EC_TAX_CODE)
                         .param("limit", String.valueOf(limit))
@@ -212,7 +213,7 @@ class CommissionBundleControllerTest {
 
     @Test
     void getCiBundlesWithoutTaxCodeOK() throws Exception {
-        String url = "/bundles/cis";
+        String url = "/bundles/creditor_institutions";
         int limit = 25;
         int page = 2;
         when(service.getCisBundles(null, null, null, limit, page)).thenReturn(
