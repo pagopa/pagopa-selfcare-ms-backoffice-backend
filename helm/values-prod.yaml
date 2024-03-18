@@ -83,8 +83,9 @@ microservice-chart:
     PAGOPA_SELFCARE_INTEGRATION_APIM_SERVICE_URL: https://api.platform.pagopa.it
     GEC_SERVICE_URL: https://api.platform.pagopa.it
     TAXONOMY_SERVICE_URL: https://api.platform.pagopa.it
-    RESOURCE_GROUP: pagopa-p-api-rg
-    SERVICE_NAME: pagopa-p-apim
+    AZURE_RESOURCE_GROUP: pagopa-p-api-rg
+    AZURE_SERVICE_NAME: pagopa-p-apim
+    APPCONFIGURATION_ENDPOINT: 'https://pagopa-p-selfcare-appconfiguration.azconfig.io'
     ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
     MONGODB_NAME: pagopaBackoffice
     AUTHORIZATION_FLAG: 'false'
@@ -120,8 +121,8 @@ microservice-chart:
     PAGOPA_APIM_API_CONFIG_SELFCARE_INTEGRATION_API_KEY_PAGOPA: pagopa-p-apim-api-config-selfcare-integration-key
     PAPGOPA_APIM_AUTHORIZER_CONFIG_API_KEY_PAGOPA: pagopa-p-apim-authorizer-config-key
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-p-connection-string'
-    TENANT_ID: pagopa-selfcare-prod-tenant-id
-    SUBSCRIPTION_ID: pagopa-selfcare-p-subscription-id
+    AZURE_TENANT_ID: pagopa-selfcare-prod-tenant-id
+    AZURE_SUBSCRIPTION_ID: pagopa-selfcare-p-subscription-id
     JWT_TOKEN_PUBLIC_KEY_PROD: pagopa-p-weu-selfcare-jwt-pub-key
     TEST_EMAIL: pagopa-p-env-test-email
     MONGODB_CONNECTION_URI: cosmodbmongo-p-bopagopa-connection-string

@@ -83,6 +83,7 @@ microservice-chart:
     TAXONOMY_SERVICE_URL: https://api.platform.pagopa.it
     RESOURCE_GROUP: pagopa-d-api-rg
     SERVICE_NAME: pagopa-d-apim
+    APPCONFIGURATION_ENDPOINT: 'https://pagopa-d-selfcare-appconfiguration.azconfig.io'
     ENABLE_CONFIDENTIAL_FILTER: 'FALSE'
     MONGODB_NAME: pagopaBackoffice
     AUTHORIZATION_FLAG: 'false'
