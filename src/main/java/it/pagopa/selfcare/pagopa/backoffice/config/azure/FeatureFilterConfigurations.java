@@ -1,15 +1,27 @@
 package it.pagopa.selfcare.pagopa.backoffice.config.azure;
 
+import com.azure.identity.ClientSecretCredential;
+import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.spring.cloud.feature.management.filters.PercentageFilter;
 import com.azure.spring.cloud.feature.management.filters.TargetingFilter;
 import com.azure.spring.cloud.feature.management.filters.TimeWindowFilter;
 import com.azure.spring.cloud.feature.management.targeting.TargetingContextAccessor;
 import com.azure.spring.cloud.feature.management.targeting.TargetingEvaluationOptions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class FeatureFilterConfigurations {
+
+    @Value("${azure.resource-manager.api-manager.client-id}")
+    private String clientId;
+
+    @Value("${azure.resource-manager.api-manager.client-secret}")
+    private String clientSecret;
+
+    @Value("${azure.resource-manager.api-manager.tenant-id}")
+    private String tenantId;
 
     private final OperationFeatureFilter operationFeatureFilter;
 
@@ -40,6 +52,15 @@ public class FeatureFilterConfigurations {
     @Bean
     public TargetingContextAccessor targetingContextAccessor() {
         return new TargetingContextAccessorImpl();
+    }
+
+    @Bean
+    public ClientSecretCredential createChainedCredential() {
+        return new ClientSecretCredentialBuilder()
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .tenantId(tenantId)
+                .build();
     }
 
 }

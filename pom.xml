@@ -256,6 +256,14 @@
             <groupId>com.azure.spring</groupId>
             <artifactId>spring-cloud-azure-feature-management-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+        </dependency>
+       <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity-broker</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
