@@ -1,7 +1,5 @@
 package it.pagopa.selfcare.pagopa.backoffice.config.azure;
 
-import com.azure.identity.ClientSecretCredential;
-import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.spring.cloud.feature.management.filters.PercentageFilter;
 import com.azure.spring.cloud.feature.management.filters.TargetingFilter;
 import com.azure.spring.cloud.feature.management.filters.TimeWindowFilter;
@@ -54,13 +52,5 @@ public class FeatureFilterConfigurations {
         return new TargetingContextAccessorImpl();
     }
 
-    @Bean
-    public ClientSecretCredential createChainedCredential() {
-        return new ClientSecretCredentialBuilder()
-                .clientId(clientId)
-                .clientSecret(clientSecret)
-                .tenantId(tenantId)
-                .build();
-    }
 
 }

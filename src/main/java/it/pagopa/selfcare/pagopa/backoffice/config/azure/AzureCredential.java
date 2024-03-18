@@ -19,7 +19,7 @@ public class AzureCredential {
     private String tenantId;
 
     @Bean
-    public ClientSecretCredential createChainedCredential() {
+    public ClientSecretCredential createCredential() {
         return new ClientSecretCredentialBuilder()
                 .clientId(clientId)
                 .clientSecret(clientSecret)
