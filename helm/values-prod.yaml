@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.3.22" #improve
+    tag: "2.3.22-1-fix-azure-client-id" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -114,15 +114,15 @@ microservice-chart:
     AWS_SES_USER: pagopa-p-aws-ses-user
     AZURE_CLIENT_SECRET: pagopa-p-selfcare-client-secret
     AZURE_CLIENT_ID: pagopa-p-selfcare-client-id
+    AZURE_TENANT_ID: pagopa-selfcare-prod-tenant-id
+    AZURE_SUBSCRIPTION_ID: pagopa-selfcare-p-subscription-id
     SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selfcare-p-apim-external-api-key
-    PAPGOPA_APIM_TAXONOMY_API_KEY_PAGOPA: pagopa-p-apim-taxonomy-key
     PAPGOPA_APIM_GEC_API_KEY_PAGOPA: pagopa-p-apim-gec-key
+    PAPGOPA_APIM_TAXONOMY_API_KEY_PAGOPA: pagopa-p-apim-taxonomy-key
     PAGOPA_APIM_API_CONFIG_API_KEY_PAGOPA: pagopa-p-apim-api-config-key
     PAGOPA_APIM_API_CONFIG_SELFCARE_INTEGRATION_API_KEY_PAGOPA: pagopa-p-apim-api-config-selfcare-integration-key
     PAPGOPA_APIM_AUTHORIZER_CONFIG_API_KEY_PAGOPA: pagopa-p-apim-authorizer-config-key
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-p-connection-string'
-    AZURE_TENANT_ID: pagopa-selfcare-prod-tenant-id
-    AZURE_SUBSCRIPTION_ID: pagopa-selfcare-p-subscription-id
     JWT_TOKEN_PUBLIC_KEY_PROD: pagopa-p-weu-selfcare-jwt-pub-key
     TEST_EMAIL: pagopa-p-env-test-email
     MONGODB_CONNECTION_URI: cosmodbmongo-p-bopagopa-connection-string
@@ -147,7 +147,7 @@ microservice-chart:
                 values:
                   - user
   canaryDelivery:
-    create: false
+    create: true
     ingress:
       create: true
       canary:
@@ -161,7 +161,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 2.3.2
+        tag: 2.3.22-2-fix-azure-client-id
         pullPolicy: Always
       envConfig: {}
       envSecret: {}

@@ -18,7 +18,7 @@ public enum Subscription {
     FDR_ORG("/products/fdr-org", "FdR - Flussi di Rendicontazione (EC)", "fdrorg-"),
     FDR_PSP("/products/fdr-psp", "FdR - Flussi di Rendicontazione (PSP)", "fdrpsp-"),
     BO_EXT_EC("/apis/%s-backoffice-external-ec-api-v1", "Backoffice External (EC)", "selfcareboexternalec-"),
-    BO_EXT_PSP("/apis/%s-backoffice-external-psp -api-v1", "Backoffice External (PSP)", "selfcareboexternalpsp-");
+    BO_EXT_PSP("/apis/%s-backoffice-external-psp-api-v1", "Backoffice External (PSP)", "selfcareboexternalpsp-");
 
     private final String scope;
     private final String displayName;
