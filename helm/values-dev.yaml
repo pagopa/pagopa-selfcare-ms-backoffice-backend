@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.3.22"
+    tag: "2.3.22-1-fix-azure-client-id"
     pullPolicy: Always
   livenessProbe:
     httpGet:
