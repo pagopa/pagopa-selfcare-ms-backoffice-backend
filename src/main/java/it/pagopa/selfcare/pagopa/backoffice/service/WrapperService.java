@@ -269,9 +269,9 @@ public class WrapperService {
                 .collect(Collectors.toSet());
         return generator(validCodes, taxCode);
     }
-    public String getFirstValidChannelCodeV2(String pspCode, String taxCode) {
-        Channels channels = apiConfigClient.getChannels(100, 0, pspCode, null, "DESC");
-        WrapperEntitiesList channelMongoList = findByIdLikeOrTypeOrBrokerCode(pspCode, WrapperType.CHANNEL, null, 0, 100);
+    public String getFirstValidChannelCodeV2(String taxCode) {
+        Channels channels = apiConfigClient.getChannels(100, 0, null, taxCode, "DESC");
+        WrapperEntitiesList channelMongoList = findByIdLikeOrTypeOrBrokerCode(null, WrapperType.CHANNEL, taxCode, 0, 100);
 
         List<String> channelCodes = new LinkedList<>();
         channelCodes.addAll(channelMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).toList());
