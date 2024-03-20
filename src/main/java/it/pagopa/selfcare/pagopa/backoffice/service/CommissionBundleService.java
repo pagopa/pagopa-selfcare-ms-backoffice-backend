@@ -126,7 +126,7 @@ public class CommissionBundleService {
      */
     public BundlesResource getCisBundles(List<BundleType> bundleType, String cisTaxCode, String name, Integer limit, Integer page) {
         Bundles bundles = cisTaxCode != null ?
-                gecClient.getBundlesByCI(cisTaxCode, limit, page) : gecClient.getBundles(limit, page);
+                gecClient.getBundlesByCI(cisTaxCode, limit, page) : gecClient.getBundles(bundleType, name, limit, page);
         if (cisTaxCode != null && (bundleType != null || name != null)) {
             bundles.setBundles(bundles.getBundles().stream().filter(
                             item -> (bundleType == null || bundleType.contains(item.getType())) &&
