@@ -163,11 +163,13 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
         log.warn("FeignException raised: ", ex);
 
         ProblemJson problem;
+        int statusCode = AppError.BAD_GATEWAY.getHttpStatus().value();
         if(ex.responseBody().isPresent()) {
             var body = new String(ex.responseBody().get().array(), StandardCharsets.UTF_8);
             try {
                 problem = new ObjectMapper().readValue(body, ProblemJson.class);
                 validateProblemBody(problem);
+                statusCode = problem.getStatus();
                 problem.setStatus(AppError.BAD_GATEWAY.getHttpStatus().value());
                 problem.setTitle(AppError.BAD_GATEWAY.getTitle());
             } catch (JsonProcessingException | ValidationException e) {
@@ -184,7 +186,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
                     .detail("No Response Body")
                     .build();
         }
-        return new ResponseEntity<>(problem, HttpStatus.valueOf(problem.getStatus()));
+        return new ResponseEntity<>(problem, HttpStatus.valueOf(statusCode));
     }
 
     private static void validateProblemBody(ProblemJson problem) {
