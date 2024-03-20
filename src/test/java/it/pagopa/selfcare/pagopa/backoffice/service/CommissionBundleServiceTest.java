@@ -211,7 +211,7 @@ class CommissionBundleServiceTest {
 
     @Test
     void getCIBundlesShouldReturnExpandedResultFromGlobalAPI() {
-        when(client.getBundles(any(), any())).thenReturn(Bundles.builder()
+        when(client.getBundles(any(), anyString(), anyInt(), anyInt())).thenReturn(Bundles.builder()
                 .bundles(
                         Collections.singletonList(Bundle.builder()
                                 .transferCategoryList(Collections.singletonList("test")).build())
@@ -222,12 +222,12 @@ class CommissionBundleServiceTest {
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
 
         BundlesResource bundlesResource = assertDoesNotThrow(
-                () -> service.getCisBundles(null,null,null, 10, 0));
+                () -> service.getCisBundles(Collections.singletonList(BundleType.GLOBAL),null,"bundleName", 10, 0));
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
         assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
-        verify(client).getBundles(10, 0);
+        verify(client).getBundles(Collections.singletonList(BundleType.GLOBAL), "bundleName",10, 0);
         verifyNoMoreInteractions(client);
         verify(taxonomyService).getTaxonomiesByCodes(any());
     }  
