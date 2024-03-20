@@ -59,21 +59,22 @@ public class PaymentServiceProviderService {
             PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto, Boolean isDirect) {
         BrokerPspDetails brokerPspDetails = ChannelMapper.fromPaymentServiceProviderDetailsDtoToMap(
                 paymentServiceProviderDetailsDto);
-        if (Boolean.TRUE.equals(isDirect)) {
+        if(Boolean.TRUE.equals(isDirect)) {
             apiConfigClient.createBrokerPsp(brokerPspDetails);
         }
 
-        if (StringUtils.isNotEmpty(paymentServiceProviderDetailsDto.getAbi())) {
+        if(StringUtils.isNotEmpty(paymentServiceProviderDetailsDto.getAbi())) {
             paymentServiceProviderDetailsDto.setPspCode("ABI".concat(paymentServiceProviderDetailsDto.getAbi()));
-        } else if (StringUtils.isNotEmpty(paymentServiceProviderDetailsDto.getBic())) {
+        } else if(StringUtils.isNotEmpty(paymentServiceProviderDetailsDto.getBic())) {
             paymentServiceProviderDetailsDto.setPspCode(paymentServiceProviderDetailsDto.getBic());
         } else {
             throw new AppException(AppError.BAD_REQUEST, "Missing ABI/BIC while creating new psp for %s",
                     paymentServiceProviderDetailsDto.getTaxCode());
         }
+        PaymentServiceProviderDetails pspDetails = modelMapper.map(paymentServiceProviderDetailsDto, PaymentServiceProviderDetails.class);
 
-        PaymentServiceProviderDetails pspDetails = modelMapper.map(
-                paymentServiceProviderDetailsDto, PaymentServiceProviderDetails.class);
+        legacyPspCodeUtil.upsertPspLegacy(pspDetails);
+
         PaymentServiceProviderDetails responsePSP = apiConfigClient.createPaymentServiceProvider(pspDetails);
         return ChannelMapper.toResource(responsePSP);
     }
@@ -81,6 +82,9 @@ public class PaymentServiceProviderService {
     public PaymentServiceProviderDetailsResource updatePSP(String pspTaxCode, @NotNull PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto) {
         PaymentServiceProviderDetails paymentServiceProviderDetails = ChannelMapper.fromPaymentServiceProviderDetailsDto(paymentServiceProviderDetailsDto);
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
+
+        legacyPspCodeUtil.upsertPspLegacy(paymentServiceProviderDetails);
+
         PaymentServiceProviderDetails response = this.apiConfigClient.updatePSP(pspCode, paymentServiceProviderDetails);
         return ChannelMapper.toResource(response);
     }
@@ -157,4 +161,6 @@ public class PaymentServiceProviderService {
                 .collect(Collectors.toSet());
         return generator(codes, taxCode);
     }
+
+
 }

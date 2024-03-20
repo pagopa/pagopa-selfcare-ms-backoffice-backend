@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.util;
 
 import it.pagopa.selfcare.pagopa.backoffice.entity.PspLegacyEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviderDetails;
 import it.pagopa.selfcare.pagopa.backoffice.repository.PspLegacyRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,11 +23,8 @@ class LegacyPspCodeUtilTest {
 
     private final PspLegacyRepository pspLegacyRepository;
 
-    private final String PSP_PREFIX = "PSP";
-
     private final String TEST_CF = "TESTCF";
 
-    private final String TEST_CF_LONG = "TESTCF00000001";
 
     public LegacyPspCodeUtilTest() {
         pspLegacyRepository = Mockito.mock(PspLegacyRepository.class);
@@ -113,6 +111,46 @@ class LegacyPspCodeUtilTest {
         assertNotNull(codeResult);
         assertEquals("BIC1", codeResult);
         verify(pspLegacyRepository).findByCf(any());
+    }
+    @Test
+    void upsertUpdate() {
+        PspLegacyEntity pspLegacyEntityWithoutAbi = getResultEntity();
+        pspLegacyEntityWithoutAbi.setAbi(Collections.emptyList());
+        when(pspLegacyRepository.findByCf(any())).thenReturn(Optional.of(pspLegacyEntityWithoutAbi));
+
+        PaymentServiceProviderDetails pspDetails = PaymentServiceProviderDetails.builder()
+                .taxCode(TEST_CF)
+                .abi("1234")
+                .bic("98R")
+                .pspCode("ABI1234")
+                .build();
+        pspCodeUtil.upsertPspLegacy(pspDetails);
+        verify(pspLegacyRepository).findByCf(any());
+        verify(pspLegacyRepository).save(any());
+    }
+
+    @Test
+    void upsertSave() {
+        PaymentServiceProviderDetails pspDetails = PaymentServiceProviderDetails.builder()
+                .taxCode(TEST_CF)
+                .abi("1234")
+                .bic("98R")
+                .pspCode("ABI1234")
+                .build();
+        pspCodeUtil.upsertPspLegacy(pspDetails);
+        verify(pspLegacyRepository).findByCf(any());
+        verify(pspLegacyRepository).save(any());
+    }
+    @Test
+    void upsertSaveBic() {
+        PaymentServiceProviderDetails pspDetails = PaymentServiceProviderDetails.builder()
+                .taxCode(TEST_CF)
+                .bic("98R")
+                .pspCode("ABI1234")
+                .build();
+        pspCodeUtil.upsertPspLegacy(pspDetails);
+        verify(pspLegacyRepository).findByCf(any());
+        verify(pspLegacyRepository).save(any());
     }
 
     public PspLegacyEntity getResultEntity() {
