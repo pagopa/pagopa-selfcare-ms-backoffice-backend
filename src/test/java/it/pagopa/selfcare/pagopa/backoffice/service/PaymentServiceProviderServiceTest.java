@@ -209,15 +209,14 @@ class PaymentServiceProviderServiceTest {
     @Test
     void getFirstValidChannelCodeWithV2True() {
         String channelCodeV2 = "channel-code-v2";
-        when(wrapperServiceMock.getFirstValidChannelCodeV2(anyString(),anyString()))
+        when(wrapperServiceMock.getFirstValidChannelCodeV2(anyString()))
                 .thenReturn(channelCodeV2);
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE, false)).thenReturn(PSP_CODE);
         ChannelCodeResource result =
                 assertDoesNotThrow(() -> sut.getFirstValidChannelCode(TAX_CODE, true));
 
         assertNotNull(result);
         assertEquals(channelCodeV2, result.getChannelCode());
-        verify(wrapperServiceMock).getFirstValidChannelCodeV2(anyString(),anyString());
+        verify(wrapperServiceMock).getFirstValidChannelCodeV2(anyString());
         verify(apiConfigClientMock, never()).getChannels(anyInt(), anyInt(), anyString(), eq(null), anyString());
     }
 
@@ -230,16 +229,15 @@ class PaymentServiceProviderServiceTest {
                                 .channelCode("channel_23")
                                 .build())
                 , new PageInfo());
-        when(apiConfigClientMock.getChannels(anyInt(), anyInt(), anyString(), eq(null), anyString()))
+        when(apiConfigClientMock.getChannels(anyInt(), anyInt(), eq(null), anyString(), anyString()))
                 .thenReturn(channels);
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE, false)).thenReturn(PSP_CODE);
         ChannelCodeResource result =
                 assertDoesNotThrow(() -> sut.getFirstValidChannelCode(TAX_CODE, false));
 
         assertNotNull(result);
         assertNotEquals(channelCode, result.getChannelCode());
-        verify(wrapperServiceMock, never()).getFirstValidChannelCodeV2(anyString(),anyString());
-        verify(apiConfigClientMock).getChannels(anyInt(), anyInt(), anyString(), eq(null), anyString());
+        verify(wrapperServiceMock, never()).getFirstValidChannelCodeV2(anyString());
+        verify(apiConfigClientMock).getChannels(anyInt(), anyInt(), eq(null), anyString(), anyString());
     }
 
     private PaymentServiceProviderDetails getPaymentServiceProviderDetails() {
