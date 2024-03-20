@@ -142,16 +142,15 @@ public class PaymentServiceProviderService {
 
 
     public ChannelCodeResource getFirstValidChannelCode(String taxCode, Boolean v2) {
-        String pspCode = legacyPspCodeUtil.retrievePspCode(taxCode, false);
         if(Boolean.TRUE.equals(v2)) {
-            return new ChannelCodeResource(wrapperService.getFirstValidChannelCodeV2(pspCode, taxCode));
+            return new ChannelCodeResource(wrapperService.getFirstValidChannelCodeV2(taxCode));
         } else {
-            return new ChannelCodeResource(getFirstValidChannelCodeAux(pspCode, taxCode));
+            return new ChannelCodeResource(getFirstValidChannelCodeAux(taxCode));
         }
     }
 
-    private String getFirstValidChannelCodeAux(String pspCode, String taxCode) {
-        Channels response = apiConfigClient.getChannels(1, 0, pspCode, null, "DESC");
+    private String getFirstValidChannelCodeAux(String taxCode) {
+        Channels response = apiConfigClient.getChannels(1, 0, null, taxCode, "DESC");
         List<Channel> codeList = response.getChannelList();
         Set<String> codes = codeList.stream().map(Channel::getChannelCode)
                 .filter(s -> s.matches(REGEX_GENERATE)) // String_nn
