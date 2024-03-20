@@ -2,9 +2,12 @@ package it.pagopa.selfcare.pagopa.backoffice.util;
 
 import it.pagopa.selfcare.pagopa.backoffice.entity.PspLegacyEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviderDetails;
 import it.pagopa.selfcare.pagopa.backoffice.repository.PspLegacyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 import static it.pagopa.selfcare.pagopa.backoffice.exception.AppError.PSP_CODE_NOT_FOUND;
 
@@ -61,6 +64,31 @@ public class LegacyPspCodeUtil {
 
     private static boolean bicIsPresent(PspLegacyEntity pspLegacyEntity) {
         return pspLegacyEntity.getBic() != null && !pspLegacyEntity.getBic().isEmpty();
+    }
+
+    public void upsertPspLegacy(PaymentServiceProviderDetails pspDetails) {
+        PspLegacyEntity entity;
+        var optional = pspLegacyRepository.findByCf(pspDetails.getTaxCode());
+        if(optional.isPresent()) {
+            // check if the entity already exists
+            entity = optional.get();
+        } else {
+            // build the new entity to save
+            var builder = PspLegacyEntity.builder()
+                    .cf(pspDetails.getTaxCode());
+
+            // if the abi is present we need to add it into the list
+            if(pspDetails.getAbi() != null && !pspDetails.getAbi().isEmpty()) {
+                builder.abi(List.of(pspDetails.getPspCode()));
+            }
+            // if the bic is present we need to add it into the list
+            else if(pspDetails.getBic() != null && !pspDetails.getBic().isEmpty()) {
+                builder.bic(List.of(pspDetails.getPspCode()));
+            }
+            entity = builder.build();
+        }
+
+        pspLegacyRepository.save(entity);
     }
 
 }
