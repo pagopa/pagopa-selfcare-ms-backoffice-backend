@@ -82,7 +82,9 @@ public interface GecClient {
 
     @GetMapping(value = "/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    Bundles getBundles(@RequestParam(required = false) Integer limit,
+    Bundles getBundles(@RequestParam(required = false) List<BundleType> types,
+                       @RequestParam(required = false) String name,
+                       @RequestParam(required = false) Integer limit,
                        @RequestParam(required = false) Integer page);
 
     @PostMapping(value = "/psps/{psp-code}/requests/{id-bundle-request}/reject")
