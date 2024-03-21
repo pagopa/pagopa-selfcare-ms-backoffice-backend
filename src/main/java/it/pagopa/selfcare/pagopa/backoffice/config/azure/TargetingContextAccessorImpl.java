@@ -14,7 +14,15 @@ public class TargetingContextAccessorImpl implements TargetingContextAccessor {
         var selfcareUser = ((SelfCareUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         context.setUserId(selfcareUser.getEmail());
         ArrayList<String> groups = new ArrayList<>();
-        groups.add(selfcareUser.getEmail());
+        groups.add(getGroup(selfcareUser));
         context.setGroups(groups);
+    }
+
+    private static String getGroup(SelfCareUser selfcareUser) {
+        try {
+            return "@" + selfcareUser.getEmail().split("@")[1];
+        }catch (Exception e){
+            return "";
+        }
     }
 }
