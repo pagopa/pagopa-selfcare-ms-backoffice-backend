@@ -3287,11 +3287,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Iban"
+                  "$ref": "#/components/schemas/CreditorInstitutionDetailsResource"
                 }
               }
             },
             "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Conflict",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
