@@ -78,12 +78,13 @@ public class BrokerService {
      * Retrieves the list of broker's creditor institution delegation for the specified broker enriched with:
      * <ul>
      * <li>the institution's station count
-     * <li>the institution's cbill code
+     * <li>the institution's CBILL code
      * 
      * @param brokerId the broker identifier
+     * @param brokerCode the broker tax code
      * @return the enriched list of broker's delegations
      */
-    public List<MyCIResource> getBrokerDelegation(String brokerId) {
+    public List<MyCIResource> getBrokerDelegation(String brokerCode, String brokerId) {
         List<DelegationExternal> delegationResponse =
                 this.externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
 
@@ -98,8 +99,8 @@ public class BrokerService {
 
         delegationList.forEach(delegation -> {
             delegation.setInstitutionStationCount(
-                    getInstitutionsStationCount(delegation.getBrokerId()));
-            delegation.setCbillCode(getInstitutionCbillCode(delegation.getInstitutionTaxCode()));
+                    getInstitutionsStationCount(brokerCode));
+            delegation.setCbillCode(getInstitutionCBILLCode(delegation.getInstitutionTaxCode()));
         });
 
         return delegationList;
@@ -115,7 +116,7 @@ public class BrokerService {
         return 0L;
     }
 
-    private String getInstitutionCbillCode(String institutionTaxCode) {
+    private String getInstitutionCBILLCode(String institutionTaxCode) {
         CreditorInstitutionDetails dto =
                 this.apiConfigClient.getCreditorInstitutionDetails(institutionTaxCode);
         if (dto != null) {

@@ -36,9 +36,9 @@ public class MyCIResource {
     @JsonProperty(value = "broker_id")
     private String brokerId;
 
-    @ApiModelProperty(value = "Broker tax code")
-    @JsonProperty(value = "broker_tax_code")
-    private String brokerTaxCode;
+    @ApiModelProperty(value = "Broker's name")
+    @JsonProperty(value = "broker_name")
+    private String brokerName;
 
     @ApiModelProperty(value = "Institution type")
     @JsonProperty(value = "institution_type")

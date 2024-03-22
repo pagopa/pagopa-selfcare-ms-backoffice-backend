@@ -76,7 +76,8 @@ public class BrokerController {
             @RequestParam(required = false) String name,
             @Parameter(description = "order by name or code, default = CODE") @RequestParam(
                     required = false, defaultValue = "CODE") String orderby,
-            @Parameter() @RequestParam(required = false, defaultValue = "DESC") String ordering) {
+            @Parameter() @RequestParam(required = false, defaultValue = "DESC") String ordering
+    ) {
         return brokerService.getBrokersEC(limit, page, code, name, orderby, ordering);
     }
 
@@ -87,8 +88,8 @@ public class BrokerController {
             security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public BrokerDetailsResource updateBroker(@RequestBody @Valid BrokerEcDto dto, @Parameter(
-            description = "Broker code") @PathVariable("broker-code") String brokerCode) {
-
+            description = "Broker code") @PathVariable("broker-code") String brokerCode
+    ) {
         return brokerService.updateBrokerForCI(dto, brokerCode);
     }
 
@@ -101,7 +102,8 @@ public class BrokerController {
             @PathVariable("broker-code") String brokerCode,
             @RequestParam(required = false) String stationId,
             @RequestParam(required = false, defaultValue = "10") Integer limit,
-            @RequestParam(required = false, defaultValue = "0") Integer page) {
+            @RequestParam(required = false, defaultValue = "0") Integer page
+    ) {
         return brokerService.getStationsDetailsListByBroker(brokerCode, stationId, limit, page);
     }
 
@@ -114,9 +116,9 @@ public class BrokerController {
             description = "The CSV file contains the following columns: `denominazioneEnte, codiceFiscale, iban, stato, dataAttivazioneIban, descrizione, etichetta`")
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
     @Cacheable(value = "exportIbansToCsv")
-    public ResponseEntity<Resource> exportIbansToCsv(@Parameter(
-            description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode) {
-
+    public ResponseEntity<Resource> exportIbansToCsv(
+            @Parameter(description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode
+    ) {
         byte[] file = exportService.exportIbansToCsv(brokerCode);
 
         return ResponseEntity.ok()
@@ -133,9 +135,9 @@ public class BrokerController {
             description = "The CSV file contains the following columns: `companyName, taxCode, intermediated, brokerCompanyName, brokerTaxCode, model, auxDigit, segregationCode, applicationCode, cbillCode, stationId, stationState, activationDate, version, broadcast`")
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
     @Cacheable(value = "exportCreditorInstitutionToCsv")
-    public ResponseEntity<Resource> exportCreditorInstitutionToCsv(@Parameter(
-            description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode) {
-
+    public ResponseEntity<Resource> exportCreditorInstitutionToCsv(
+            @Parameter(description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode
+    ) {
         byte[] file = exportService.exportCreditorInstitutionToCsv(brokerCode);
 
         return ResponseEntity.ok()
@@ -150,9 +152,9 @@ public class BrokerController {
     @Operation(summary = "Get all info about data exports for the broker EC",
             security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public BrokerECExportStatus getBrokerExportStatus(@Parameter(
-            description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode) {
-
+    public BrokerECExportStatus getBrokerExportStatus(
+            @Parameter(description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode
+    ) {
         return exportService.getBrokerExportStatus(brokerCode);
     }
 
@@ -160,17 +162,20 @@ public class BrokerController {
      * Retrieves the list of creditor institution's delegation for the specified broker
      * 
      * @param brokerId the broker identifier
+     * @param brokerCode the broker tax code
      * @return the list of broker's delegations
      */
-    @GetMapping("/{broker-id}/delegations")
+    @GetMapping("/{broker-code}/delegations")
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Retrieve all delegations for given ci broker",
             security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
     @Cacheable(value = "getBrokerDelegation")
-    public List<MyCIResource> getBrokerDelegation(@Parameter(
-            description = "Broker's unique id") @PathVariable("broker-id") String brokerId) {
-        return this.brokerService.getBrokerDelegation(brokerId);
+    public List<MyCIResource> getBrokerDelegation(
+            @Parameter(description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode,
+            @Parameter(description = "Broker's unique id") @RequestParam String brokerId
+    ) {
+        return this.brokerService.getBrokerDelegation(brokerCode, brokerId);
     }
 }
