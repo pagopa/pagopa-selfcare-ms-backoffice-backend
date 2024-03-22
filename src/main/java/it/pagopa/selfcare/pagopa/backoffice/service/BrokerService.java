@@ -15,8 +15,10 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.MyCIResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
 import java.util.Objects;
+
 import org.mapstruct.factory.Mappers;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +41,8 @@ public class BrokerService {
 
     @Autowired
     public BrokerService(ApiConfigClient apiConfigClient,
-            ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
-            ModelMapper modelMapper, ExternalApiClient externalApiClient) {
+                         ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
+                         ModelMapper modelMapper, ExternalApiClient externalApiClient) {
         this.apiConfigClient = apiConfigClient;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
         this.modelMapper = modelMapper;
@@ -60,7 +62,7 @@ public class BrokerService {
     }
 
     public StationDetailsResourceList getStationsDetailsListByBroker(String brokerId,
-            String stationId, Integer limit, Integer page) {
+                                                                     String stationId, Integer limit, Integer page) {
         StationDetailsList response = apiConfigSelfcareIntegrationClient
                 .getStationsDetailsListByBroker(brokerId, stationId, limit, page);
         return modelMapper.map(response, StationDetailsResourceList.class);
@@ -68,7 +70,7 @@ public class BrokerService {
 
 
     public BrokersResource getBrokersEC(Integer limit, Integer page, String code, String name,
-            String orderby, String ordering) {
+                                        String orderby, String ordering) {
         Brokers response = apiConfigClient.getBrokersEC(limit, page, code, name, orderby, ordering);
         return modelMapper.map(response, BrokersResource.class);
     }
@@ -79,8 +81,8 @@ public class BrokerService {
      * <ul>
      * <li>the institution's station count
      * <li>the institution's CBILL code
-     * 
-     * @param brokerId the broker identifier
+     *
+     * @param brokerId   the broker identifier
      * @param brokerCode the broker tax code
      * @return the enriched list of broker's delegations
      */
@@ -98,18 +100,17 @@ public class BrokerService {
                 .toList();
 
         delegationList.forEach(delegation -> {
-            delegation.setInstitutionStationCount(
-                    getInstitutionsStationCount(brokerCode));
+            delegation.setInstitutionStationCount(getInstitutionsStationCount(brokerCode));
             delegation.setCbillCode(getInstitutionCBILLCode(delegation.getInstitutionTaxCode()));
         });
 
         return delegationList;
     }
 
-    private Long getInstitutionsStationCount(String brokerId) {
+    private Long getInstitutionsStationCount(String brokerCode) {
         // TODO filter stations by creditor institution tax code
         StationDetailsList response = this.apiConfigSelfcareIntegrationClient
-                .getStationsDetailsListByBroker(brokerId, null, 10, 0);
+                .getStationsDetailsListByBroker(brokerCode, null, 10, 0);
         if (response.getPageInfo() != null && response.getPageInfo().getTotalItems() != null) {
             return response.getPageInfo().getTotalItems();
         }
@@ -117,8 +118,7 @@ public class BrokerService {
     }
 
     private String getInstitutionCBILLCode(String institutionTaxCode) {
-        CreditorInstitutionDetails dto =
-                this.apiConfigClient.getCreditorInstitutionDetails(institutionTaxCode);
+        CreditorInstitutionDetails dto = this.apiConfigClient.getCreditorInstitutionDetails(institutionTaxCode);
         if (dto != null) {
             return dto.getCbillCode();
         }
