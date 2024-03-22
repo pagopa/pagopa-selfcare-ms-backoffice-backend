@@ -173,7 +173,7 @@ public class BrokerController {
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
     @Cacheable(value = "getBrokerDelegation")
     public List<MyCIResource> getBrokerDelegation(
-            @Parameter(description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode,
+            @Parameter(description = "Broker's tax code") @PathVariable("broker-code") String brokerCode,
             @Parameter(description = "Broker's unique id") @RequestParam String brokerId
     ) {
         return this.brokerService.getBrokerDelegation(brokerCode, brokerId);

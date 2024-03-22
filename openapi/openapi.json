@@ -302,6 +302,74 @@
         }
       ]
     },
+    "/brokers/{broker-code}/delegations": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | Y\n",
+        "operationId": "getBrokerDelegation_1",
+        "parameters": [
+          {
+            "description": "Broker's tax code",
+            "in": "path",
+            "name": "broker-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker's unique id",
+            "in": "query",
+            "name": "brokerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MyCIResource"
+                  }
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Retrieve all delegations for given ci broker",
+        "tags": [
+          "Creditor institution's Brokers"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
     "/brokers/{broker-code}/export-status": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
@@ -8199,6 +8267,39 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "MyCIResource": {
+        "type": "object",
+        "properties": {
+          "broker_id": {
+            "type": "string"
+          },
+          "broker_name": {
+            "type": "string"
+          },
+          "cbill_code": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "institution_id": {
+            "type": "string"
+          },
+          "institution_name": {
+            "type": "string"
+          },
+          "institution_station_count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "institution_tax_code": {
+            "type": "string"
+          },
+          "institution_type": {
+            "type": "string"
           }
         }
       },
