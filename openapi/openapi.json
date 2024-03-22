@@ -3287,7 +3287,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CreditorInstitutionDetailsResource"
+                  "$ref": "#/components/schemas/Iban"
                 }
               }
             },
