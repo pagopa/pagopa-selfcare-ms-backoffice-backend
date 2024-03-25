@@ -23,11 +23,12 @@ import java.util.List;
 @FeignClient(name = "api-config-selfcare-integration", url = "${rest-client.api-config-selfcare-integration.base-url}", configuration = ApiConfigSelfcareIntFeignConfig.class)
 public interface ApiConfigSelfcareIntegrationClient {
 
-    @GetMapping(value = "/brokers/{brokerId}/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/brokers/{broker-code}/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     StationDetailsList getStationsDetailsListByBroker(
-            @PathVariable("brokerId") String brokerId,
+            @PathVariable("broker-code") String brokerCode,
             @RequestParam(required = false) String stationId,
+            @RequestParam(required = false) String institutionTaxCode,
             @RequestParam(required = false, defaultValue = "10") Integer limit,
             @RequestParam(required = false, defaultValue = "0") Integer page);
 
@@ -56,7 +57,7 @@ public interface ApiConfigSelfcareIntegrationClient {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestBody List<String> ecList);
 
-    @GetMapping(value = "/brokers/{brokerId}/creditor-institutions", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/brokers/{broker-code}/creditor-institutions", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Retryable(maxAttemptsExpression = "${retry.utils.maxAttempts}",
             backoff = @Backoff(delayExpression = "${retry.utils.maxDelay}"))
@@ -64,7 +65,7 @@ public interface ApiConfigSelfcareIntegrationClient {
             @RequestParam(defaultValue = "10") Integer limit,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "true") Boolean enabled,
-            @PathVariable("brokerId") String brokerId);
+            @PathVariable("broker-code") String brokerCode);
 
     @GetMapping(value = "/payment-service-providers/{psp-tax-code}/channels", produces = MediaType.APPLICATION_JSON_VALUE)
     PspChannels getPspChannels(@PathVariable(value = "psp-tax-code") String pspTaxCode);

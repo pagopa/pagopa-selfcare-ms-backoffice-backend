@@ -41,8 +41,8 @@ public class BrokerService {
 
     @Autowired
     public BrokerService(ApiConfigClient apiConfigClient,
-                         ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
-                         ModelMapper modelMapper, ExternalApiClient externalApiClient) {
+            ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
+            ModelMapper modelMapper, ExternalApiClient externalApiClient) {
         this.apiConfigClient = apiConfigClient;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
         this.modelMapper = modelMapper;
@@ -61,32 +61,39 @@ public class BrokerService {
         return mapper.toResource(dto);
     }
 
-    public StationDetailsResourceList getStationsDetailsListByBroker(String brokerId,
-                                                                     String stationId, Integer limit, Integer page) {
+    public StationDetailsResourceList getStationsDetailsListByBroker(String brokerCode,
+            String stationId, Integer limit, Integer page) {
         StationDetailsList response = apiConfigSelfcareIntegrationClient
-                .getStationsDetailsListByBroker(brokerId, stationId, limit, page);
+                .getStationsDetailsListByBroker(brokerCode, stationId, null, limit, page);
         return modelMapper.map(response, StationDetailsResourceList.class);
     }
 
 
     public BrokersResource getBrokersEC(Integer limit, Integer page, String code, String name,
-                                        String orderby, String ordering) {
+            String orderby, String ordering) {
         Brokers response = apiConfigClient.getBrokersEC(limit, page, code, name, orderby, ordering);
         return modelMapper.map(response, BrokersResource.class);
     }
 
 
     /**
-     * Retrieves the list of broker's creditor institution delegation for the specified broker enriched with:
+     * Retrieves the list of broker's creditor institution delegation for the specified broker
+     * enriched with:
      * <ul>
      * <li>the institution's station count
      * <li>the institution's CBILL code
      *
-     * @param brokerId   the broker identifier
+     * @param brokerId the broker identifier
      * @param brokerCode the broker tax code
      * @return the enriched list of broker's delegations
      */
-    public List<MyCIResource> getBrokerDelegation(String brokerCode, String brokerId) {
+    public List<MyCIResource> getCIBrokerDelegation(
+            String brokerCode,
+            String brokerId,
+            String ciName,
+            Integer page,
+            Integer limit
+    ) {
         List<DelegationExternal> delegationResponse =
                 this.externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
 
@@ -94,23 +101,44 @@ public class BrokerService {
                 .map(elem -> modelMapper.map(elem, MyCIResource.class)).toList();
 
         // filter by roles
-        delegationList = delegationList.parallelStream().filter(Objects::nonNull)
+        delegationList = delegationList.parallelStream()
+                .filter(Objects::nonNull)
                 .filter(delegation -> RoleType.EC
                         .equals(RoleType.fromSelfcareRole(delegation.getInstitutionType())))
+                .filter(delegation -> institutionNameMatchFilter(ciName, delegation))
+                .skip(page != 0 ? (long) page * limit : 0)
+                .limit(limit)
                 .toList();
 
-        delegationList.forEach(delegation -> {
-            delegation.setInstitutionStationCount(getInstitutionsStationCount(brokerCode));
-            delegation.setCbillCode(getInstitutionCBILLCode(delegation.getInstitutionTaxCode()));
+        /*
+        filtro nome ente
+        paginazione
+        parallel stream
+        repo stazioni con extend per query con join pa stazioni pa join pa == id dominio
+         */
+
+        delegationList.parallelStream().forEach(delegation -> {
+            String institutionTaxCode = delegation.getInstitutionTaxCode();
+            delegation.setInstitutionStationCount(getInstitutionsStationCount(brokerCode, institutionTaxCode));
+            delegation.setCbillCode(getInstitutionCBILLCode(institutionTaxCode));
         });
 
         return delegationList;
     }
 
-    private Long getInstitutionsStationCount(String brokerCode) {
-        // TODO filter stations by creditor institution tax code
+    private boolean institutionNameMatchFilter(String ciName, MyCIResource delegation) {
+        if (ciName == null || ciName.trim().isEmpty()) {
+            return true;
+        }
+        if (delegation.getInstitutionName() == null) {
+            return false;
+        }
+        return delegation.getInstitutionName().toLowerCase().contains(ciName.toLowerCase());
+    }
+
+    private Long getInstitutionsStationCount(String brokerCode, String institutionTaxCode) {
         StationDetailsList response = this.apiConfigSelfcareIntegrationClient
-                .getStationsDetailsListByBroker(brokerCode, null, 10, 0);
+                .getStationsDetailsListByBroker(brokerCode, null, institutionTaxCode, 1, 0);
         if (response.getPageInfo() != null && response.getPageInfo().getTotalItems() != null) {
             return response.getPageInfo().getTotalItems();
         }
@@ -118,7 +146,8 @@ public class BrokerService {
     }
 
     private String getInstitutionCBILLCode(String institutionTaxCode) {
-        CreditorInstitutionDetails dto = this.apiConfigClient.getCreditorInstitutionDetails(institutionTaxCode);
+        CreditorInstitutionDetails dto =
+                this.apiConfigClient.getCreditorInstitutionDetails(institutionTaxCode);
         if (dto != null) {
             return dto.getCbillCode();
         }
