@@ -40,9 +40,12 @@ public class BrokerService {
     private final ExternalApiClient externalApiClient;
 
     @Autowired
-    public BrokerService(ApiConfigClient apiConfigClient,
+    public BrokerService(
+            ApiConfigClient apiConfigClient,
             ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
-            ModelMapper modelMapper, ExternalApiClient externalApiClient) {
+            ModelMapper modelMapper,
+            ExternalApiClient externalApiClient
+    ) {
         this.apiConfigClient = apiConfigClient;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
         this.modelMapper = modelMapper;
@@ -62,7 +65,7 @@ public class BrokerService {
     }
 
     public StationDetailsResourceList getStationsDetailsListByBroker(String brokerCode,
-            String stationId, Integer limit, Integer page) {
+                                                                     String stationId, Integer limit, Integer page) {
         StationDetailsList response = apiConfigSelfcareIntegrationClient
                 .getStationsDetailsListByBroker(brokerCode, stationId, null, limit, page);
         return modelMapper.map(response, StationDetailsResourceList.class);
@@ -70,21 +73,24 @@ public class BrokerService {
 
 
     public BrokersResource getBrokersEC(Integer limit, Integer page, String code, String name,
-            String orderby, String ordering) {
+                                        String orderby, String ordering) {
         Brokers response = apiConfigClient.getBrokersEC(limit, page, code, name, orderby, ordering);
         return modelMapper.map(response, BrokersResource.class);
     }
 
 
     /**
-     * Retrieves the list of broker's creditor institution delegation for the specified broker
+     * Retrieves the paginated list of broker's creditor institution delegation for the specified broker
      * enriched with:
      * <ul>
      * <li>the institution's station count
      * <li>the institution's CBILL code
      *
-     * @param brokerId the broker identifier
      * @param brokerCode the broker tax code
+     * @param brokerId   the broker identifier
+     * @param ciName     creditor institution's name, used for filtering result
+     * @param page       page number
+     * @param limit      number of element in the page
      * @return the enriched list of broker's delegations
      */
     public List<MyCIResource> getCIBrokerDelegation(
@@ -109,13 +115,6 @@ public class BrokerService {
                 .skip(page != 0 ? (long) page * limit : 0)
                 .limit(limit)
                 .toList();
-
-        /*
-        filtro nome ente
-        paginazione
-        parallel stream
-        repo stazioni con extend per query con join pa stazioni pa join pa == id dominio
-         */
 
         delegationList.parallelStream().forEach(delegation -> {
             String institutionTaxCode = delegation.getInstitutionTaxCode();
