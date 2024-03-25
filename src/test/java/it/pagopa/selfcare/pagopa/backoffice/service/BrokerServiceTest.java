@@ -84,11 +84,11 @@ class BrokerServiceTest {
     @Test
     void getStationsDetailsListByBrokerTest() {
         when(apiConfigSelfcareIntegrationClient
-                .getStationsDetailsListByBroker(anyString(), anyString(), anyString(), anyInt(), anyInt()))
+                .getStationsDetailsListByBroker(anyString(), anyString(), eq(null), anyInt(), anyInt()))
                 .thenReturn(new StationDetailsList());
 
         StationDetailsResourceList result = assertDoesNotThrow(() ->
-                sut.getStationsDetailsListByBroker(anyString(), anyString(), anyInt(), anyInt()));
+                sut.getStationsDetailsListByBroker("brokercode", "stationId", 1, 0));
 
         assertNotNull(result);
     }

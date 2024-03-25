@@ -64,8 +64,12 @@ public class BrokerService {
         return mapper.toResource(dto);
     }
 
-    public StationDetailsResourceList getStationsDetailsListByBroker(String brokerCode,
-                                                                     String stationId, Integer limit, Integer page) {
+    public StationDetailsResourceList getStationsDetailsListByBroker(
+            String brokerCode,
+            String stationId,
+            Integer limit,
+            Integer page
+    ) {
         StationDetailsList response = apiConfigSelfcareIntegrationClient
                 .getStationsDetailsListByBroker(brokerCode, stationId, null, limit, page);
         return modelMapper.map(response, StationDetailsResourceList.class);
