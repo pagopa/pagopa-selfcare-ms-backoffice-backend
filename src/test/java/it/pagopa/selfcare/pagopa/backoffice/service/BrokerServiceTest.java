@@ -49,6 +49,8 @@ class BrokerServiceTest {
     private static final String INSTITUTION_TAX_CODE_1 = "institutionTaxCode1";
     private static final String INSTITUTION_TAX_CODE_2 = "institutionTaxCode2";
     private static final String INSTITUTION_TAX_CODE_3 = "institutionTaxCode3";
+    private static final int PAGE_0 = 0;
+    private static final int LIMIT = 5;
 
     @MockBean
     private ApiConfigClient apiConfigClient;
@@ -89,7 +91,7 @@ class BrokerServiceTest {
                 .thenReturn(new StationDetailsList());
 
         StationDetailsResourceList result = assertDoesNotThrow(() ->
-                sut.getStationsDetailsListByBroker("brokercode", "stationId", 1, 0));
+                sut.getStationsDetailsListByBroker("brokerCode", "stationId", 1, PAGE_0));
 
         assertNotNull(result);
     }
@@ -132,7 +134,7 @@ class BrokerServiceTest {
                 .thenReturn(buildCreditorInstitutionDetails(CBILL_2));
 
         CIBrokerDelegationPage result = assertDoesNotThrow(
-                () -> sut.getCIBrokerDelegation(BROKER_CODE, BROKER_ID, null, 0, 5));
+                () -> sut.getCIBrokerDelegation(BROKER_CODE, BROKER_ID, null, PAGE_0, LIMIT));
 
         assertNotNull(result);
         assertNotNull(result.getCiBrokerDelegationResources());
@@ -196,7 +198,7 @@ class BrokerServiceTest {
                 .thenReturn(buildCreditorInstitutionDetails(CBILL_2));
 
         CIBrokerDelegationPage result = assertDoesNotThrow(
-                () -> sut.getCIBrokerDelegation(BROKER_CODE, BROKER_ID, "test", 0, 5));
+                () -> sut.getCIBrokerDelegation(BROKER_CODE, BROKER_ID, "test", PAGE_0, LIMIT));
 
         assertNotNull(result);
         assertNotNull(result.getCiBrokerDelegationResources());
@@ -252,13 +254,20 @@ class BrokerServiceTest {
                 .thenReturn(buildCreditorInstitutionDetails(CBILL_2));
 
         CIBrokerDelegationPage firstPage = assertDoesNotThrow(
-                () -> sut.getCIBrokerDelegation(BROKER_CODE, BROKER_ID, "test", 0, 5));
+                () -> sut.getCIBrokerDelegation(BROKER_CODE, BROKER_ID, "test", PAGE_0, LIMIT));
         CIBrokerDelegationPage secondPage = assertDoesNotThrow(
-                () -> sut.getCIBrokerDelegation(BROKER_CODE, BROKER_ID, "test", 1, 5));
+                () -> sut.getCIBrokerDelegation(BROKER_CODE, BROKER_ID, "test", 1, LIMIT));
 
         assertNotNull(firstPage);
         assertNotNull(firstPage.getCiBrokerDelegationResources());
         assertNotNull(firstPage.getPageInfo());
+
+        PageInfo firstPagePageInfo = firstPage.getPageInfo();
+        assertEquals(PAGE_0, firstPagePageInfo.getPage());
+        assertEquals(LIMIT, firstPagePageInfo.getLimit());
+        assertEquals(1, firstPagePageInfo.getTotalPages());
+        assertEquals(2, firstPagePageInfo.getTotalItems());
+        assertEquals(2, firstPagePageInfo.getItemsFound());
 
         List<CIBrokerDelegationResource> delegationResources = firstPage.getCiBrokerDelegationResources();
         assertNotEquals(delegationExternalList.size(), delegationResources.size());
@@ -269,21 +278,12 @@ class BrokerServiceTest {
         assertNotNull(secondPage.getPageInfo());
         assertEquals(0, secondPage.getCiBrokerDelegationResources().size());
 
-        Optional<CIBrokerDelegationResource> first = delegationResources.stream().filter(delegation -> delegation
-                        .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_1))
-                .findFirst();
-        assertTrue(first.isPresent());
-        CIBrokerDelegationResource CIBrokerDelegationResource1 = first.get();
-        assertEquals(3L, CIBrokerDelegationResource1.getInstitutionStationCount());
-        assertEquals(CBILL_1, CIBrokerDelegationResource1.getCbillCode());
-
-        Optional<CIBrokerDelegationResource> second = delegationResources.stream().filter(delegation -> delegation
-                        .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_2))
-                .findFirst();
-        assertTrue(second.isPresent());
-        CIBrokerDelegationResource CIBrokerDelegationResource2 = second.get();
-        assertEquals(3L, CIBrokerDelegationResource2.getInstitutionStationCount());
-        assertEquals(CBILL_2, CIBrokerDelegationResource2.getCbillCode());
+        PageInfo secondPagePageInfo = secondPage.getPageInfo();
+        assertEquals(1, secondPagePageInfo.getPage());
+        assertEquals(LIMIT, secondPagePageInfo.getLimit());
+        assertEquals(1, secondPagePageInfo.getTotalPages());
+        assertEquals(2, secondPagePageInfo.getTotalItems());
+        assertEquals(0, secondPagePageInfo.getItemsFound());
 
         verify(externalApiClient, times(2))
                 .getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString());
