@@ -174,7 +174,7 @@
         ]
       }
     },
-    "/brokers/{broker-code}": {
+    "/brokers/{broker-tax-code}": {
       "parameters": [
         {
           "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
@@ -190,9 +190,9 @@
         "operationId": "updateBroker",
         "parameters": [
           {
-            "description": "Broker code",
+            "description": "Broker's tax code",
             "in": "path",
-            "name": "broker-code",
+            "name": "broker-tax-code",
             "required": true,
             "schema": {
               "type": "string"
@@ -240,7 +240,7 @@
         ]
       }
     },
-    "/brokers/{broker-code}/creditor-institutions/export": {
+    "/brokers/{broker-tax-code}/creditor-institutions/export": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | Y\nThe CSV file contains the following columns: `companyName, taxCode, intermediated, brokerCompanyName, brokerTaxCode, model, auxDigit, segregationCode, applicationCode, cbillCode, stationId, stationState, activationDate, version, broadcast`",
         "operationId": "exportCreditorInstitutionToCsv",
@@ -248,7 +248,7 @@
           {
             "description": "SelfCare Broker Code. it's a tax code",
             "in": "path",
-            "name": "broker-code",
+            "name": "broker-tax-code",
             "required": true,
             "schema": {
               "type": "string"
@@ -303,7 +303,7 @@
         }
       ]
     },
-    "/brokers/{broker-code}/delegations": {
+    "/brokers/{broker-tax-code}/delegations": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | Y\n",
         "operationId": "getCIBrokerDelegation",
@@ -311,7 +311,7 @@
           {
             "description": "Broker's tax code",
             "in": "path",
-            "name": "broker-code",
+            "name": "broker-tax-code",
             "required": true,
             "schema": {
               "type": "string"
@@ -397,7 +397,7 @@
         }
       ]
     },
-    "/brokers/{broker-code}/export-status": {
+    "/brokers/{broker-tax-code}/export-status": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId": "getBrokerExportStatus",
@@ -405,7 +405,7 @@
           {
             "description": "SelfCare Broker Code. it's a tax code",
             "in": "path",
-            "name": "broker-code",
+            "name": "broker-tax-code",
             "required": true,
             "schema": {
               "type": "string"
@@ -453,7 +453,7 @@
         }
       ]
     },
-    "/brokers/{broker-code}/ibans/export": {
+    "/brokers/{broker-tax-code}/ibans/export": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | Y\nThe CSV file contains the following columns: `denominazioneEnte, codiceFiscale, iban, stato, dataAttivazioneIban, descrizione, etichetta`",
         "operationId": "exportIbansToCsv",
@@ -461,7 +461,7 @@
           {
             "description": "SelfCare Broker Code. it's a tax code",
             "in": "path",
-            "name": "broker-code",
+            "name": "broker-tax-code",
             "required": true,
             "schema": {
               "type": "string"
@@ -516,14 +516,14 @@
         }
       ]
     },
-    "/brokers/{broker-code}/stations": {
+    "/brokers/{broker-tax-code}/stations": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId": "getStationsDetailsListByBroker",
         "parameters": [
           {
             "in": "path",
-            "name": "broker-code",
+            "name": "broker-tax-code",
             "required": true,
             "schema": {
               "type": "string"

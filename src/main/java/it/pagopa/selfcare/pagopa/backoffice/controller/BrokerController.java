@@ -63,8 +63,7 @@ public class BrokerController {
 
     @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get paginated list of creditor brokers",
-            security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Get paginated list of creditor brokers", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public BrokersResource getBrokersEC(
             @Parameter(description = "Number of elements on one page") @RequestParam(required = false,
@@ -80,24 +79,24 @@ public class BrokerController {
     }
 
 
-    @PutMapping(value = "/{broker-code}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{broker-tax-code}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Update an existing EC broker",
-            security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Update an existing EC broker", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    public BrokerDetailsResource updateBroker(@RequestBody @Valid BrokerEcDto dto, @Parameter(
-            description = "Broker code") @PathVariable("broker-code") String brokerCode) {
+    public BrokerDetailsResource updateBroker(
+            @RequestBody @Valid BrokerEcDto dto,
+            @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode
+    ) {
         return brokerService.updateBrokerForCI(dto, brokerCode);
     }
 
-    @GetMapping(value = "/{broker-code}/stations",
-            produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{broker-tax-code}/stations", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get paginated list of stations given a broker code",
             security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public StationDetailsResourceList getStationsDetailsListByBroker(
-            @PathVariable("broker-code") String brokerCode,
+            @PathVariable("broker-tax-code") String brokerCode,
             @RequestParam(required = false) String stationId,
             @RequestParam(required = false, defaultValue = "10") Integer limit,
             @RequestParam(required = false, defaultValue = "0") Integer page) {
@@ -105,17 +104,19 @@ public class BrokerController {
                 page);
     }
 
-    @GetMapping(value = "/{broker-code}/ibans/export",
+    @GetMapping(value = "/{broker-tax-code}/ibans/export",
             produces = {"text/csv", MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Export all IBANs of all creditor institutions handled by a broker EC to CSV",
             security = {@SecurityRequirement(name = "JWT")},
-            description = "The CSV file contains the following columns: `denominazioneEnte, codiceFiscale, iban, stato, dataAttivazioneIban, descrizione, etichetta`")
-    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ,
-            cacheable = true)
+            description = "The CSV file contains the following columns: `denominazioneEnte, codiceFiscale, iban, " +
+                    "stato, dataAttivazioneIban, descrizione, etichetta`")
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
     @Cacheable(value = "exportIbansToCsv")
-    public ResponseEntity<Resource> exportIbansToCsv(@Parameter(
-            description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode) {
+    public ResponseEntity<Resource> exportIbansToCsv(
+            @Parameter(description = "SelfCare Broker Code. it's a tax code")
+            @PathVariable("broker-tax-code") String brokerCode
+    ) {
         byte[] file = exportService.exportIbansToCsv(brokerCode);
 
         return ResponseEntity.ok()
@@ -125,17 +126,20 @@ public class BrokerController {
                 .body(new ByteArrayResource(file));
     }
 
-    @GetMapping(value = "/{broker-code}/creditor-institutions/export",
+    @GetMapping(value = "/{broker-tax-code}/creditor-institutions/export",
             produces = {"text/csv", MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Export all creditor institutions handled by a broker EC to CSV",
             security = {@SecurityRequirement(name = "JWT")},
-            description = "The CSV file contains the following columns: `companyName, taxCode, intermediated, brokerCompanyName, brokerTaxCode, model, auxDigit, segregationCode, applicationCode, cbillCode, stationId, stationState, activationDate, version, broadcast`")
-    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ,
-            cacheable = true)
+            description = "The CSV file contains the following columns: `companyName, taxCode, intermediated, brokerCompanyName," +
+                    " brokerTaxCode, model, auxDigit, segregationCode, applicationCode, cbillCode, stationId, stationState, " +
+                    "activationDate, version, broadcast`")
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
     @Cacheable(value = "exportCreditorInstitutionToCsv")
-    public ResponseEntity<Resource> exportCreditorInstitutionToCsv(@Parameter(
-            description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode) {
+    public ResponseEntity<Resource> exportCreditorInstitutionToCsv(
+            @Parameter(description = "SelfCare Broker Code. it's a tax code")
+            @PathVariable("broker-tax-code") String brokerCode
+    ) {
         byte[] file = exportService.exportCreditorInstitutionToCsv(brokerCode);
 
         return ResponseEntity.ok()
@@ -145,14 +149,15 @@ public class BrokerController {
                 .body(new ByteArrayResource(file));
     }
 
-    @GetMapping(value = "/{broker-code}/export-status",
-            produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{broker-tax-code}/export-status", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all info about data exports for the broker EC",
             security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public BrokerECExportStatus getBrokerExportStatus(@Parameter(
-            description = "SelfCare Broker Code. it's a tax code") @PathVariable("broker-code") String brokerCode) {
+    public BrokerECExportStatus getBrokerExportStatus(
+            @Parameter(description = "SelfCare Broker Code. it's a tax code")
+            @PathVariable("broker-tax-code") String brokerCode
+    ) {
         return exportService.getBrokerExportStatus(brokerCode);
     }
 
@@ -166,15 +171,14 @@ public class BrokerController {
      * @param limit      number of element in the page
      * @return the requested page of broker's delegations
      */
-    @GetMapping("/{broker-code}/delegations")
+    @GetMapping("/{broker-tax-code}/delegations")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve all delegations for given ci broker",
             security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ,
-            cacheable = true)
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
     @Cacheable(value = "getBrokerDelegation")
     public CIBrokerDelegationPage getCIBrokerDelegation(
-            @Parameter(description = "Broker's tax code") @PathVariable("broker-code") String brokerCode,
+            @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
             @Parameter(description = "Broker's unique id") @RequestParam String brokerId,
             @Parameter(description = "Creditor institution's name, used for filtering results")
             @RequestParam(required = false) String ciName,
