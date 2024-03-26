@@ -34,6 +34,7 @@
         "operationId": "getBrokersEC",
         "parameters": [
           {
+            "description": "Number of elements on one page",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -360,10 +361,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MyCIResource"
-                  }
+                  "$ref": "#/components/schemas/CIBrokerDelegationPage"
                 }
               }
             },
@@ -7208,6 +7206,53 @@
           }
         }
       },
+      "CIBrokerDelegationPage": {
+        "type": "object",
+        "properties": {
+          "ci_broker_delegations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CIBrokerDelegationResource"
+            }
+          },
+          "page_info": {
+            "$ref": "#/components/schemas/PageInfo"
+          }
+        }
+      },
+      "CIBrokerDelegationResource": {
+        "type": "object",
+        "properties": {
+          "broker_id": {
+            "type": "string"
+          },
+          "broker_name": {
+            "type": "string"
+          },
+          "cbill_code": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "institution_id": {
+            "type": "string"
+          },
+          "institution_name": {
+            "type": "string"
+          },
+          "institution_station_count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "institution_tax_code": {
+            "type": "string"
+          },
+          "institution_type": {
+            "type": "string"
+          }
+        }
+      },
       "ChannelCodeResource": {
         "type": "object",
         "properties": {
@@ -8296,39 +8341,6 @@
             "items": {
               "type": "string"
             }
-          }
-        }
-      },
-      "MyCIResource": {
-        "type": "object",
-        "properties": {
-          "broker_id": {
-            "type": "string"
-          },
-          "broker_name": {
-            "type": "string"
-          },
-          "cbill_code": {
-            "type": "string"
-          },
-          "id": {
-            "type": "string"
-          },
-          "institution_id": {
-            "type": "string"
-          },
-          "institution_name": {
-            "type": "string"
-          },
-          "institution_station_count": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "institution_tax_code": {
-            "type": "string"
-          },
-          "institution_type": {
-            "type": "string"
           }
         }
       },
