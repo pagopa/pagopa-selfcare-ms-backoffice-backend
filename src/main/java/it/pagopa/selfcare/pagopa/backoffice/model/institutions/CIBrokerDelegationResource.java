@@ -8,13 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Model that holds the information for My creditor institutions page.
+ * Model that holds the information for a creditor institution's broker's delegations.
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MyCIResource {
+public class CIBrokerDelegationResource {
 
     @ApiModelProperty(value = "Delegation Id")
     @JsonProperty(value = "id")

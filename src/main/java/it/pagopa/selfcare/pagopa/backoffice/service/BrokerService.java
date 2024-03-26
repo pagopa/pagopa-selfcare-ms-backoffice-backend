@@ -5,17 +5,20 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationC
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.BrokerEcDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationPage;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.MyCIResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -95,9 +98,9 @@ public class BrokerService {
      * @param ciName     creditor institution's name, used for filtering result
      * @param page       page number
      * @param limit      number of element in the page
-     * @return the enriched list of broker's delegations
+     * @return the enriched page of broker's delegations
      */
-    public List<MyCIResource> getCIBrokerDelegation(
+    public CIBrokerDelegationPage getCIBrokerDelegation(
             String brokerCode,
             String brokerId,
             String ciName,
@@ -107,8 +110,8 @@ public class BrokerService {
         List<DelegationExternal> delegationResponse =
                 this.externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
 
-        List<MyCIResource> delegationList = delegationResponse.stream()
-                .map(elem -> modelMapper.map(elem, MyCIResource.class)).toList();
+        List<CIBrokerDelegationResource> delegationList = delegationResponse.stream()
+                .map(elem -> modelMapper.map(elem, CIBrokerDelegationResource.class)).toList();
 
         // filter by roles
         delegationList = delegationList.parallelStream()
@@ -116,20 +119,43 @@ public class BrokerService {
                 .filter(delegation -> RoleType.EC
                         .equals(RoleType.fromSelfcareRole(delegation.getInstitutionType())))
                 .filter(delegation -> institutionNameMatchFilter(ciName, delegation))
-                .skip(page != 0 ? (long) page * limit : 0)
-                .limit(limit)
                 .toList();
 
-        delegationList.parallelStream().forEach(delegation -> {
+        int fromIndex = page * limit;
+        if (delegationList.size() < fromIndex) {
+            return buildDelegationPageResponse(Collections.emptyList(), limit, page, delegationList);
+        }
+        List<CIBrokerDelegationResource> selectedDelegationPage =
+                delegationList.subList(fromIndex, Math.min(fromIndex + limit, delegationList.size()));
+
+        selectedDelegationPage.parallelStream().forEach(delegation -> {
             String institutionTaxCode = delegation.getInstitutionTaxCode();
             delegation.setInstitutionStationCount(getInstitutionsStationCount(brokerCode, institutionTaxCode));
             delegation.setCbillCode(getInstitutionCBILLCode(institutionTaxCode));
         });
 
-        return delegationList;
+        return buildDelegationPageResponse(selectedDelegationPage, limit, page, delegationList);
     }
 
-    private boolean institutionNameMatchFilter(String ciName, MyCIResource delegation) {
+    private CIBrokerDelegationPage buildDelegationPageResponse(
+            List<CIBrokerDelegationResource> delegationPage,
+            Integer limit,
+            Integer page,
+            List<CIBrokerDelegationResource> delegationList
+    ) {
+        return CIBrokerDelegationPage.builder()
+                .ciBrokerDelegationResources(delegationPage)
+                .pageInfo(PageInfo.builder()
+                        .itemsFound(delegationPage.size())
+                        .limit(limit)
+                        .page(page)
+                        .totalPages((int) Math.ceil(delegationList.size() * 1.0 / limit))
+                        .totalItems((long) delegationList.size())
+                        .build())
+                .build();
+    }
+
+    private boolean institutionNameMatchFilter(String ciName, CIBrokerDelegationResource delegation) {
         if (ciName == null || ciName.trim().isEmpty()) {
             return true;
         }

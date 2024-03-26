@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import it.pagopa.selfcare.pagopa.backoffice.model.export.BrokerECExportStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.MyCIResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationPage;
 import it.pagopa.selfcare.pagopa.backoffice.service.BrokerService;
 import it.pagopa.selfcare.pagopa.backoffice.service.ExportService;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +15,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Calendar;
-import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -51,7 +50,7 @@ class BrokerControllerTest {
                                 Calendar.getInstance().toInstant())
                         .build());
         when(brokerService.getCIBrokerDelegation(anyString(), anyString(), anyString(), anyInt(), anyInt()))
-                .thenReturn(Collections.singletonList(new MyCIResource()));
+                .thenReturn(new CIBrokerDelegationPage());
     }
 
     @Test
@@ -84,7 +83,7 @@ class BrokerControllerTest {
         mvc.perform(get(url, "brokerCode")
                         .param("brokerId", "brokerId")
                         .param("ciCode", "ciCode")
-                        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"));
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 }

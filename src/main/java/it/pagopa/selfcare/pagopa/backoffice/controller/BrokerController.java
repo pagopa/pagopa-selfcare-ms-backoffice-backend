@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.BrokerEcDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.export.BrokerECExportStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.MyCIResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationPage;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerResource;
@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -68,7 +67,7 @@ public class BrokerController {
             security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public BrokersResource getBrokersEC(
-            @Parameter(description = "") @RequestParam(required = false,
+            @Parameter(description = "Number of elements on one page") @RequestParam(required = false,
                     defaultValue = "50") Integer limit,
             @Parameter(description = "Page number. Page value starts from 0") @RequestParam Integer page,
             @RequestParam(required = false) String code,
@@ -165,7 +164,7 @@ public class BrokerController {
      * @param ciName     creditor institution's name, used for filtering result
      * @param page       page number
      * @param limit      number of element in the page
-     * @return the list of broker's delegations
+     * @return the requested page of broker's delegations
      */
     @GetMapping("/{broker-code}/delegations")
     @ResponseStatus(HttpStatus.OK)
@@ -174,7 +173,7 @@ public class BrokerController {
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ,
             cacheable = true)
     @Cacheable(value = "getBrokerDelegation")
-    public List<MyCIResource> getCIBrokerDelegation(
+    public CIBrokerDelegationPage getCIBrokerDelegation(
             @Parameter(description = "Broker's tax code") @PathVariable("broker-code") String brokerCode,
             @Parameter(description = "Broker's unique id") @RequestParam String brokerId,
             @Parameter(description = "Creditor institution's name, used for filtering results")

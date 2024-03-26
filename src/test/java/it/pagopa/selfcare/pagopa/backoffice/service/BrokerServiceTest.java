@@ -9,8 +9,9 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationPage;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.MyCIResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokersResource;
@@ -130,36 +131,40 @@ class BrokerServiceTest {
         when(apiConfigClient.getCreditorInstitutionDetails(INSTITUTION_TAX_CODE_2))
                 .thenReturn(buildCreditorInstitutionDetails(CBILL_2));
 
-        List<MyCIResource> result = assertDoesNotThrow(
+        CIBrokerDelegationPage result = assertDoesNotThrow(
                 () -> sut.getCIBrokerDelegation(BROKER_CODE, BROKER_ID, null, 0, 5));
 
         assertNotNull(result);
-        assertNotEquals(delegationExternalList.size(), result.size());
-        assertEquals(3, result.size());
+        assertNotNull(result.getCiBrokerDelegationResources());
+        assertNotNull(result.getPageInfo());
 
-        Optional<MyCIResource> first = result.stream().filter(delegation -> delegation
+        List<CIBrokerDelegationResource> delegationResources = result.getCiBrokerDelegationResources();
+        assertNotEquals(delegationExternalList.size(), delegationResources.size());
+        assertEquals(3, delegationResources.size());
+
+        Optional<CIBrokerDelegationResource> first = delegationResources.stream().filter(delegation -> delegation
                         .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_1))
                 .findFirst();
         assertTrue(first.isPresent());
-        MyCIResource myCIResource1 = first.get();
-        assertEquals(3L, myCIResource1.getInstitutionStationCount());
-        assertEquals(CBILL_1, myCIResource1.getCbillCode());
+        CIBrokerDelegationResource CIBrokerDelegationResource1 = first.get();
+        assertEquals(3L, CIBrokerDelegationResource1.getInstitutionStationCount());
+        assertEquals(CBILL_1, CIBrokerDelegationResource1.getCbillCode());
 
-        Optional<MyCIResource> second = result.stream().filter(delegation -> delegation
+        Optional<CIBrokerDelegationResource> second = delegationResources.stream().filter(delegation -> delegation
                         .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_2))
                 .findFirst();
         assertTrue(second.isPresent());
-        MyCIResource myCIResource2 = second.get();
-        assertEquals(3L, myCIResource2.getInstitutionStationCount());
-        assertEquals(CBILL_2, myCIResource2.getCbillCode());
+        CIBrokerDelegationResource CIBrokerDelegationResource2 = second.get();
+        assertEquals(3L, CIBrokerDelegationResource2.getInstitutionStationCount());
+        assertEquals(CBILL_2, CIBrokerDelegationResource2.getCbillCode());
 
-        Optional<MyCIResource> third = result.stream().filter(delegation -> delegation
+        Optional<CIBrokerDelegationResource> third = delegationResources.stream().filter(delegation -> delegation
                         .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_3))
                 .findFirst();
         assertTrue(third.isPresent());
-        MyCIResource myCIResource3 = third.get();
-        assertEquals(0L, myCIResource3.getInstitutionStationCount());
-        assertNull(myCIResource3.getCbillCode());
+        CIBrokerDelegationResource CIBrokerDelegationResource3 = third.get();
+        assertEquals(0L, CIBrokerDelegationResource3.getInstitutionStationCount());
+        assertNull(CIBrokerDelegationResource3.getCbillCode());
 
         verify(externalApiClient).getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString());
         verify(apiConfigSelfcareIntegrationClient, times(3))
@@ -190,28 +195,32 @@ class BrokerServiceTest {
         when(apiConfigClient.getCreditorInstitutionDetails(INSTITUTION_TAX_CODE_2))
                 .thenReturn(buildCreditorInstitutionDetails(CBILL_2));
 
-        List<MyCIResource> result = assertDoesNotThrow(
+        CIBrokerDelegationPage result = assertDoesNotThrow(
                 () -> sut.getCIBrokerDelegation(BROKER_CODE, BROKER_ID, "test", 0, 5));
 
         assertNotNull(result);
-        assertNotEquals(delegationExternalList.size(), result.size());
-        assertEquals(2, result.size());
+        assertNotNull(result.getCiBrokerDelegationResources());
+        assertNotNull(result.getPageInfo());
 
-        Optional<MyCIResource> first = result.stream().filter(delegation -> delegation
+        List<CIBrokerDelegationResource> delegationResources = result.getCiBrokerDelegationResources();
+        assertNotEquals(delegationExternalList.size(), delegationResources.size());
+        assertEquals(2, delegationResources.size());
+
+        Optional<CIBrokerDelegationResource> first = delegationResources.stream().filter(delegation -> delegation
                         .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_1))
                 .findFirst();
         assertTrue(first.isPresent());
-        MyCIResource myCIResource1 = first.get();
-        assertEquals(3L, myCIResource1.getInstitutionStationCount());
-        assertEquals(CBILL_1, myCIResource1.getCbillCode());
+        CIBrokerDelegationResource CIBrokerDelegationResource1 = first.get();
+        assertEquals(3L, CIBrokerDelegationResource1.getInstitutionStationCount());
+        assertEquals(CBILL_1, CIBrokerDelegationResource1.getCbillCode());
 
-        Optional<MyCIResource> second = result.stream().filter(delegation -> delegation
+        Optional<CIBrokerDelegationResource> second = delegationResources.stream().filter(delegation -> delegation
                         .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_2))
                 .findFirst();
         assertTrue(second.isPresent());
-        MyCIResource myCIResource2 = second.get();
-        assertEquals(3L, myCIResource2.getInstitutionStationCount());
-        assertEquals(CBILL_2, myCIResource2.getCbillCode());
+        CIBrokerDelegationResource CIBrokerDelegationResource2 = second.get();
+        assertEquals(3L, CIBrokerDelegationResource2.getInstitutionStationCount());
+        assertEquals(CBILL_2, CIBrokerDelegationResource2.getCbillCode());
 
         verify(externalApiClient).getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString());
         verify(apiConfigSelfcareIntegrationClient, times(2))
@@ -242,33 +251,39 @@ class BrokerServiceTest {
         when(apiConfigClient.getCreditorInstitutionDetails(INSTITUTION_TAX_CODE_2))
                 .thenReturn(buildCreditorInstitutionDetails(CBILL_2));
 
-        List<MyCIResource> firstPage = assertDoesNotThrow(
+        CIBrokerDelegationPage firstPage = assertDoesNotThrow(
                 () -> sut.getCIBrokerDelegation(BROKER_CODE, BROKER_ID, "test", 0, 5));
-        List<MyCIResource> secondPage = assertDoesNotThrow(
+        CIBrokerDelegationPage secondPage = assertDoesNotThrow(
                 () -> sut.getCIBrokerDelegation(BROKER_CODE, BROKER_ID, "test", 1, 5));
 
         assertNotNull(firstPage);
-        assertNotEquals(delegationExternalList.size(), firstPage.size());
-        assertEquals(2, firstPage.size());
+        assertNotNull(firstPage.getCiBrokerDelegationResources());
+        assertNotNull(firstPage.getPageInfo());
+
+        List<CIBrokerDelegationResource> delegationResources = firstPage.getCiBrokerDelegationResources();
+        assertNotEquals(delegationExternalList.size(), delegationResources.size());
+        assertEquals(2, delegationResources.size());
 
         assertNotNull(secondPage);
-        assertEquals(0, secondPage.size());
+        assertNotNull(secondPage.getCiBrokerDelegationResources());
+        assertNotNull(secondPage.getPageInfo());
+        assertEquals(0, secondPage.getCiBrokerDelegationResources().size());
 
-        Optional<MyCIResource> first = firstPage.stream().filter(delegation -> delegation
+        Optional<CIBrokerDelegationResource> first = delegationResources.stream().filter(delegation -> delegation
                         .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_1))
                 .findFirst();
         assertTrue(first.isPresent());
-        MyCIResource myCIResource1 = first.get();
-        assertEquals(3L, myCIResource1.getInstitutionStationCount());
-        assertEquals(CBILL_1, myCIResource1.getCbillCode());
+        CIBrokerDelegationResource CIBrokerDelegationResource1 = first.get();
+        assertEquals(3L, CIBrokerDelegationResource1.getInstitutionStationCount());
+        assertEquals(CBILL_1, CIBrokerDelegationResource1.getCbillCode());
 
-        Optional<MyCIResource> second = firstPage.stream().filter(delegation -> delegation
+        Optional<CIBrokerDelegationResource> second = delegationResources.stream().filter(delegation -> delegation
                         .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_2))
                 .findFirst();
         assertTrue(second.isPresent());
-        MyCIResource myCIResource2 = second.get();
-        assertEquals(3L, myCIResource2.getInstitutionStationCount());
-        assertEquals(CBILL_2, myCIResource2.getCbillCode());
+        CIBrokerDelegationResource CIBrokerDelegationResource2 = second.get();
+        assertEquals(3L, CIBrokerDelegationResource2.getInstitutionStationCount());
+        assertEquals(CBILL_2, CIBrokerDelegationResource2.getCbillCode());
 
         verify(externalApiClient, times(2))
                 .getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString());
