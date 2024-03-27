@@ -175,8 +175,7 @@ public class BrokerController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve all delegations for given ci broker",
             security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
-    @Cacheable(value = "getBrokerDelegation")
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = false)
     public CIBrokerDelegationPage getCIBrokerDelegation(
             @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
             @Parameter(description = "Broker's unique id") @RequestParam String brokerId,
