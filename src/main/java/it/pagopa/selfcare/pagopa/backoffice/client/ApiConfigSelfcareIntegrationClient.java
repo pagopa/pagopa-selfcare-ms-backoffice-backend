@@ -28,7 +28,7 @@ public interface ApiConfigSelfcareIntegrationClient {
     StationDetailsList getStationsDetailsListByBroker(
             @PathVariable("broker-tax-code") String brokerCode,
             @RequestParam(required = false) String stationId,
-            @RequestParam(required = false) String institutionTaxCode,
+            @RequestParam(required = false) String ciTaxCode,
             @RequestParam(required = false, defaultValue = "10") Integer limit,
             @RequestParam(required = false, defaultValue = "0") Integer page);
 
