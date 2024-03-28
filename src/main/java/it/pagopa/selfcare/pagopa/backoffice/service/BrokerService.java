@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
@@ -175,11 +176,15 @@ public class BrokerService {
     }
 
     private String getInstitutionCBILLCode(String institutionTaxCode) {
-        CreditorInstitutionDetails dto =
-                this.apiConfigClient.getCreditorInstitutionDetails(institutionTaxCode);
-        if (dto != null) {
-            return dto.getCbillCode();
+        try {
+            CreditorInstitutionDetails dto =
+                    this.apiConfigClient.getCreditorInstitutionDetails(institutionTaxCode);
+            if (dto != null) {
+                return dto.getCbillCode();
+            }
+            return null;
+        } catch (FeignException.NotFound e) {
+            return null;
         }
-        return null;
     }
 }
