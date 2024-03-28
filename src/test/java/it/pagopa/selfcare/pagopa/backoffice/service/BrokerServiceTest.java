@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
@@ -120,10 +121,10 @@ class BrokerServiceTest {
 
         when(apiConfigSelfcareIntegrationClient.getStationsDetailsListByBroker(
                 eq(BROKER_CODE), eq(null), eq(INSTITUTION_TAX_CODE_1), anyInt(), anyInt()))
-                .thenReturn(buildStationDetailsList());
+                .thenReturn(buildStationDetailsList(3L));
         when(apiConfigSelfcareIntegrationClient.getStationsDetailsListByBroker(
                 eq(BROKER_CODE), eq(null), eq(INSTITUTION_TAX_CODE_2), anyInt(), anyInt()))
-                .thenReturn(buildStationDetailsList());
+                .thenReturn(buildStationDetailsList(3L));
         when(apiConfigSelfcareIntegrationClient.getStationsDetailsListByBroker(
                 eq(BROKER_CODE), eq(null), eq(INSTITUTION_TAX_CODE_3), anyInt(), anyInt()))
                 .thenReturn(new StationDetailsList());
@@ -187,10 +188,10 @@ class BrokerServiceTest {
 
         when(apiConfigSelfcareIntegrationClient.getStationsDetailsListByBroker(
                 eq(BROKER_CODE), eq(null), eq(INSTITUTION_TAX_CODE_1), anyInt(), anyInt()))
-                .thenReturn(buildStationDetailsList());
+                .thenReturn(buildStationDetailsList(3L));
         when(apiConfigSelfcareIntegrationClient.getStationsDetailsListByBroker(
                 eq(BROKER_CODE), eq(null), eq(INSTITUTION_TAX_CODE_2), anyInt(), anyInt()))
-                .thenReturn(buildStationDetailsList());
+                .thenReturn(buildStationDetailsList(3L));
 
         when(apiConfigClient.getCreditorInstitutionDetails(INSTITUTION_TAX_CODE_1))
                 .thenReturn(buildCreditorInstitutionDetails(CBILL_1));
@@ -243,10 +244,10 @@ class BrokerServiceTest {
 
         when(apiConfigSelfcareIntegrationClient.getStationsDetailsListByBroker(
                 eq(BROKER_CODE), eq(null), eq(INSTITUTION_TAX_CODE_1), anyInt(), anyInt()))
-                .thenReturn(buildStationDetailsList());
+                .thenReturn(buildStationDetailsList(3L));
         when(apiConfigSelfcareIntegrationClient.getStationsDetailsListByBroker(
                 eq(BROKER_CODE), eq(null), eq(INSTITUTION_TAX_CODE_2), anyInt(), anyInt()))
-                .thenReturn(buildStationDetailsList());
+                .thenReturn(buildStationDetailsList(3L));
 
         when(apiConfigClient.getCreditorInstitutionDetails(INSTITUTION_TAX_CODE_1))
                 .thenReturn(buildCreditorInstitutionDetails(CBILL_1));
@@ -292,9 +293,50 @@ class BrokerServiceTest {
         verify(apiConfigClient, times(2)).getCreditorInstitutionDetails(anyString());
     }
 
-    private static StationDetailsList buildStationDetailsList() {
+    @Test
+    void getBrokerDelegationTestWithCBILCodeNotFount() {
+        List<DelegationExternal> delegationExternalList = new ArrayList<>();
+        delegationExternalList.add(buildDelegationExternal("PA", INSTITUTION_TAX_CODE_1));
+
+        when(externalApiClient.getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString()))
+                .thenReturn(delegationExternalList);
+
+        long stationCount = 0L;
+        when(apiConfigSelfcareIntegrationClient.getStationsDetailsListByBroker(
+                eq(BROKER_CODE), eq(null), eq(INSTITUTION_TAX_CODE_1), anyInt(), anyInt()))
+                .thenReturn(buildStationDetailsList(stationCount));
+
+        when(apiConfigClient.getCreditorInstitutionDetails(INSTITUTION_TAX_CODE_1))
+                .thenThrow(FeignException.NotFound.class);
+
+        CIBrokerDelegationPage result = assertDoesNotThrow(
+                () -> sut.getCIBrokerDelegation(BROKER_CODE, BROKER_ID, null, PAGE_0, LIMIT));
+
+        assertNotNull(result);
+        assertNotNull(result.getCiBrokerDelegationResources());
+        assertNotNull(result.getPageInfo());
+
+        List<CIBrokerDelegationResource> delegationResources = result.getCiBrokerDelegationResources();
+        assertEquals(delegationExternalList.size(), delegationResources.size());
+        assertEquals(1, delegationResources.size());
+
+        Optional<CIBrokerDelegationResource> first = delegationResources.stream().filter(delegation -> delegation
+                        .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_1))
+                .findFirst();
+        assertTrue(first.isPresent());
+        CIBrokerDelegationResource CIBrokerDelegationResource1 = first.get();
+        assertEquals(stationCount, CIBrokerDelegationResource1.getInstitutionStationCount());
+        assertNull(CIBrokerDelegationResource1.getCbillCode());
+
+        verify(externalApiClient).getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString());
+        verify(apiConfigSelfcareIntegrationClient, times(1))
+                .getStationsDetailsListByBroker(anyString(), eq(null), anyString(), anyInt(), anyInt());
+        verify(apiConfigClient, times(1)).getCreditorInstitutionDetails(anyString());
+    }
+
+    private static StationDetailsList buildStationDetailsList(long totalItems) {
         PageInfo pageInfo = new PageInfo();
-        pageInfo.setTotalItems(3L);
+        pageInfo.setTotalItems(totalItems);
         StationDetailsList stationDetailsList = new StationDetailsList();
         stationDetailsList.setPageInfo(pageInfo);
         return stationDetailsList;
