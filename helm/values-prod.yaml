@@ -118,6 +118,7 @@ microservice-chart:
     AZURE_SUBSCRIPTION_ID: pagopa-selfcare-p-subscription-id
     SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selfcare-p-apim-external-api-key
     PAPGOPA_APIM_GEC_API_KEY_PAGOPA: pagopa-p-apim-gec-key
+    PAPGOPA_APIM_GPD_API_KEY_PAGOPA: pagopa-p-apim-gpd-key
     PAPGOPA_APIM_TAXONOMY_API_KEY_PAGOPA: pagopa-p-apim-taxonomy-key
     PAGOPA_APIM_API_CONFIG_API_KEY_PAGOPA: pagopa-p-apim-api-config-key
     PAGOPA_APIM_API_CONFIG_SELFCARE_INTEGRATION_API_KEY_PAGOPA: pagopa-p-apim-api-config-selfcare-integration-key
