@@ -4,15 +4,21 @@ import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.BrokerEcDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationPage;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerStationPage;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerStationResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
@@ -27,6 +33,8 @@ import org.mapstruct.factory.Mappers;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 
 @Slf4j
 @Service
@@ -43,17 +51,19 @@ public class BrokerService {
 
     private final ExternalApiClient externalApiClient;
 
+    private final WrapperService wrapperService;
+
     @Autowired
     public BrokerService(
             ApiConfigClient apiConfigClient,
             ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
             ModelMapper modelMapper,
-            ExternalApiClient externalApiClient
-    ) {
+            ExternalApiClient externalApiClient, WrapperService wrapperService) {
         this.apiConfigClient = apiConfigClient;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
         this.modelMapper = modelMapper;
         this.externalApiClient = externalApiClient;
+        this.wrapperService = wrapperService;
     }
 
     public BrokerResource createBroker(BrokerDto brokerDto) {
@@ -138,6 +148,55 @@ public class BrokerService {
         return buildDelegationPageResponse(selectedDelegationPage, limit, page, delegationList);
     }
 
+    /**
+     * Retrieve the paginated association info between broker's stations and creditor institutions for
+     * the specified broker's tax code and creditor institution's tax code.
+     *
+     * @param brokerTaxCode broker's tax code
+     * @param ciTaxCode creditor institution's tax code
+     * @param stationCode station identifier
+     * @param page page number
+     * @param limit page size
+     * @return the association info
+     */
+    public CIBrokerStationPage getCIBrokerStations(
+            String brokerTaxCode,
+            String ciTaxCode,
+            String stationCode,
+            Integer page,
+            Integer limit
+    ) {
+        CreditorInstitutionsView creditorInstitutionsView = this.apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(
+                limit,
+                page,
+                ciTaxCode,
+                brokerTaxCode,
+                stationCode,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if (creditorInstitutionsView.getCreditorInstitutionList().isEmpty()) {
+            return CIBrokerStationPage.builder()
+                    .ciBrokerStations(Collections.emptyList())
+                    .pageInfo(creditorInstitutionsView.getPageInfo())
+                    .build();
+        }
+
+        List<CIBrokerStationResource> ciBrokerStations = creditorInstitutionsView.getCreditorInstitutionList().stream()
+                .map(ciView -> this.modelMapper.map(ciView, CIBrokerStationResource.class))
+                .map(ciBrokerStation -> enrichBrokerStation(stationCode, ciBrokerStation))
+                .toList();
+
+        return CIBrokerStationPage.builder()
+                .ciBrokerStations(ciBrokerStations)
+                .pageInfo(creditorInstitutionsView.getPageInfo())
+                .build();
+    }
+
     private CIBrokerDelegationPage buildDelegationPageResponse(
             List<CIBrokerDelegationResource> delegationPage,
             Integer limit,
@@ -186,5 +245,18 @@ public class BrokerService {
         } catch (FeignException.NotFound e) {
             return null;
         }
+    }
+
+    private CIBrokerStationResource enrichBrokerStation(String stationCode, CIBrokerStationResource ciBrokerStation) {
+        try {
+            WrapperEntities<StationDetails> result = this.wrapperService.findById(ciBrokerStation.getStationCode());
+            StationDetails details = (StationDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
+
+            ciBrokerStation.setActivationDate(details.getActivationDate());
+            ciBrokerStation.setModifiedAt(details.getModifiedAt());
+        } catch (AppException e) {
+            log.warn("Station with id {} not found in wrapper store", stationCode, e);
+        }
+        return ciBrokerStation;
     }
 }

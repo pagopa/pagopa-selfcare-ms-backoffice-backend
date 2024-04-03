@@ -239,14 +239,16 @@ public interface ApiConfigClient {
             exclude = FeignException.FeignClientException.class,
             maxAttemptsExpression = "${retry.utils.maxAttempts}",
             backoff = @Backoff(delayExpression = "${retry.utils.maxDelay}"))
-    CreditorInstitutionsView getCreditorInstitutionsAssociatedToBrokerStations(@RequestParam(required = false, defaultValue = "50") Integer limit,
-                                                                               @RequestParam Integer page,
-                                                                               @RequestParam(required = false, name = "creditorInstitutionCode") String creditorInstitutionCode,
-                                                                               @RequestParam(required = false, name = "paBrokerCode") String paBrokerCode,
-                                                                               @RequestParam(required = false, name = "stationCode") String stationCode,
-                                                                               @RequestParam(required = false, name = "enabled") Boolean enabled,
-                                                                               @RequestParam(required = false, name = "auxDigit") Long auxDigit,
-                                                                               @RequestParam(required = false, name = "applicationCode") Long applicationCode,
-                                                                               @RequestParam(required = false, name = "segregationCode") Long segregationCode,
-                                                                               @RequestParam(required = false, name = "mod4") Boolean mod4);
+    CreditorInstitutionsView getCreditorInstitutionsAssociatedToBrokerStations(
+            @RequestParam(required = false, defaultValue = "50") Integer limit,
+            @RequestParam Integer page,
+            @RequestParam(required = false, name = "creditorInstitutionCode") String creditorInstitutionCode,
+            @RequestParam(required = false, name = "paBrokerCode") String paBrokerCode,
+            @RequestParam(required = false, name = "stationCode") String stationCode,
+            @RequestParam(required = false, name = "enabled") Boolean enabled,
+            @RequestParam(required = false, name = "auxDigit") Long auxDigit,
+            @RequestParam(required = false, name = "applicationCode") Long applicationCode,
+            @RequestParam(required = false, name = "segregationCode") Long segregationCode,
+            @RequestParam(required = false, name = "mod4") Boolean mod4
+    );
 }

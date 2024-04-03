@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.BrokerEcDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.export.BrokerECExportStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationPage;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerStationPage;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerResource;
@@ -185,5 +186,31 @@ public class BrokerController {
             @RequestParam(required = false, defaultValue = "0") Integer page
     ) {
         return this.brokerService.getCIBrokerDelegation(brokerCode, brokerId, ciName, page, limit);
+    }
+
+    /**
+     * Retrieve the paginated association info between broker's stations and creditor institutions for
+     * the specified broker's tax code and creditor institution's tax code.
+     *
+     * @param brokerTaxCode broker's tax code
+     * @param ciTaxCode creditor institution's tax code
+     * @param stationCode station identifier
+     * @param page page number
+     * @param limit page size
+     * @return the association info
+     */
+    @GetMapping("/{broker-tax-code}/delegations/creditor-institutions/{ci-tax-code}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Retrieve all broker's station associated with the given creditor institution",
+            security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = false)
+    public CIBrokerStationPage getCIBrokerStations(
+            @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerTaxCode,
+            @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
+            @Parameter(description = "Station identifier, used for filtering results") @RequestParam(required = false) String stationCode,
+            @RequestParam(required = false, defaultValue = "10") Integer limit,
+            @RequestParam(required = false, defaultValue = "0") Integer page
+    ) {
+        return this.brokerService.getCIBrokerStations(brokerTaxCode, ciTaxCode, stationCode, page, limit);
     }
 }
