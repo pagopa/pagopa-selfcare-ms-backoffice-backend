@@ -30,9 +30,12 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "Creditor institutions")
 public class CreditorInstitutionController {
 
-    @Autowired
-    private CreditorInstitutionService ciService;
+    private final CreditorInstitutionService ciService;
 
+    @Autowired
+    public CreditorInstitutionController(CreditorInstitutionService ciService) {
+        this.ciService = ciService;
+    }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {
@@ -207,4 +210,31 @@ public class CreditorInstitutionController {
 
     }
 
+    /**
+     * Retrieve the operative table and the payment contacts list of the creditor institution with the provided
+     * tax code and institution's id
+     *
+     * @param ciTaxCode creditor institution's tax code
+     * @param institutionId creditor institution's identifier
+     * @return the creditor institution's contacts
+     */
+    @GetMapping(value = "/{ci-tax-code}/contacts", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = CreditorInstitutionDetailsResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get creditor institution's payment contacts and operative table", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public CreditorInstitutionContactsResource getCreditorInstitutionContacts(
+            @Parameter(description = "Creditor institution code") @PathVariable("ci-tax-code") @NotBlank String ciTaxCode,
+            @Parameter(description = "Institution's identifier") @RequestParam String institutionId
+    ) {
+        return ciService.getCreditorInstitutionContacts(ciTaxCode, institutionId);
+    }
 }
