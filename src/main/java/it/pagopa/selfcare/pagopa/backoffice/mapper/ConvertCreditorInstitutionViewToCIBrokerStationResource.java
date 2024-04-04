@@ -21,7 +21,7 @@ public class ConvertCreditorInstitutionViewToCIBrokerStationResource implements 
                 .auxDigit(model.getAuxDigit())
                 .segregationCode(model.getSegregazione())
                 .applicationCode(model.getProgressivo())
-                // todo add enabled .enabled(model)
+                .stationEnabled(model.getStationEnabled())
                 .build();
     }
 }

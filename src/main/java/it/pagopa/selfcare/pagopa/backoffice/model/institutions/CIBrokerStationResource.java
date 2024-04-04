@@ -43,8 +43,8 @@ public class CIBrokerStationResource {
     private Long segregationCode;
 
     @ApiModelProperty(value = "Station's activation state")
-    @JsonProperty("enabled")
-    private Boolean enabled;
+    @JsonProperty("station_enabled")
+    private Boolean stationEnabled;
 
     @ApiModelProperty("Station's activation date")
     @JsonProperty("activation_date")

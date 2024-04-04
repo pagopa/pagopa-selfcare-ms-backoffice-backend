@@ -253,7 +253,7 @@ public class BrokerService {
             StationDetails details = (StationDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
 
             ciBrokerStation.setActivationDate(details.getActivationDate());
-            ciBrokerStation.setModifiedAt(details.getModifiedAt());
+            ciBrokerStation.setModifiedAt(result.getModifiedAt());
         } catch (AppException e) {
             log.warn("Station with id {} not found in wrapper store", stationCode, e);
         }

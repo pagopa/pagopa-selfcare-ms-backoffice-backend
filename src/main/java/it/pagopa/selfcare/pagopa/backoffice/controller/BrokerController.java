@@ -199,7 +199,7 @@ public class BrokerController {
      * @param limit page size
      * @return the association info
      */
-    @GetMapping("/{broker-tax-code}/delegations/creditor-institutions/{ci-tax-code}")
+    @GetMapping("/{broker-tax-code}/creditor-institutions/{ci-tax-code}/stations")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve all broker's station associated with the given creditor institution",
             security = {@SecurityRequirement(name = "JWT")})
