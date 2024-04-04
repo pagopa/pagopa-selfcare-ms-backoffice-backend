@@ -39,4 +39,18 @@ public class PaymentsReceiptsService {
     ) {
         return this.gpdClient.getPaymentsReceipts(organizationTaxCode, page, limit, debtorTaxCode, PAGOPA_SERVICE_CODE, fromDate, toDate);
     }
+
+    /**
+     * Retrieve payment receipt detail
+     *
+     * @param organizationTaxCode Organization tax code
+     * @param iuv Receipt's iuv
+     * @return receipts detail as XML
+     */
+    public String getPaymentReceiptDetail(
+            String organizationTaxCode,
+            String iuv
+    ){
+        return this.gpdClient.getPaymentReceiptDetail(organizationTaxCode, iuv);
+    }
 }
