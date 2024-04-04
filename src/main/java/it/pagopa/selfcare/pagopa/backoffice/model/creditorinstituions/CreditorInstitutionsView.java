@@ -24,13 +24,13 @@ import java.util.List;
 public class CreditorInstitutionsView {
 
     @JsonProperty("creditor_institutions")
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     @Valid
     private List<CreditorInstitutionView> creditorInstitutionList;
 
     @JsonProperty("page_info")
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     @Valid
     private PageInfo pageInfo;
