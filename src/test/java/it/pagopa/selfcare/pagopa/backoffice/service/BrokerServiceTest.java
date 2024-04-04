@@ -5,14 +5,22 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionView;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationPage;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerStationPage;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerStationResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokersResource;
@@ -22,12 +30,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -36,6 +47,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -61,6 +73,9 @@ class BrokerServiceTest {
 
     @MockBean
     private ExternalApiClient externalApiClient;
+
+    @MockBean
+    private WrapperService wrapperService;
 
     @Autowired
     private BrokerService sut;
@@ -334,7 +349,143 @@ class BrokerServiceTest {
         verify(apiConfigClient, times(1)).getCreditorInstitutionDetails(anyString());
     }
 
-    private static StationDetailsList buildStationDetailsList(long totalItems) {
+    @Test
+    void getCIBrokerStationsSuccess() {
+        CreditorInstitutionsView institutionsView = buildInstitutionsView();
+        Instant modifiedAt = Instant.now();
+        Instant activationDate = Instant.now();
+        when(apiConfigClient
+                .getCreditorInstitutionsAssociatedToBrokerStations(
+                        anyInt(),
+                        anyInt(),
+                        anyString(),
+                        anyString(),
+                        anyString(),
+                        eq(null),
+                        eq(null),
+                        eq(null),
+                        eq(null),
+                        eq(null))
+        ).thenReturn(institutionsView);
+        when(wrapperService.findById(anyString())).thenReturn(buildWrapper(modifiedAt, activationDate));
+
+        CIBrokerStationPage result = assertDoesNotThrow(() ->
+                sut.getCIBrokerStations("brokerTaxCode", "ciTaxCode", "stationCode", 0, 5));
+
+        assertNotNull(result);
+        List<CIBrokerStationResource> ciBrokerStations = result.getCiBrokerStations();
+        assertFalse(ciBrokerStations.isEmpty());
+        assertEquals(1, ciBrokerStations.size());
+        CIBrokerStationResource stationResource = ciBrokerStations.get(0);
+
+        CreditorInstitutionView view = institutionsView.getCreditorInstitutionList().get(0);
+        assertEquals(view.getIdDominio(), stationResource.getCiTaxCode());
+        assertEquals(view.getIdIntermediarioPa(), stationResource.getBrokerTaxCode());
+        assertEquals(view.getIdStazione(), stationResource.getStationCode());
+        assertEquals(view.getProgressivo(), stationResource.getApplicationCode());
+        assertEquals(view.getSegregazione(), stationResource.getSegregationCode());
+        assertEquals(view.getAuxDigit(), stationResource.getAuxDigit());
+        assertEquals(view.getStationEnabled(), stationResource.getStationEnabled());
+        assertEquals(modifiedAt, stationResource.getModifiedAt());
+        assertEquals(activationDate, stationResource.getActivationDate());
+    }
+
+    @Test
+    void getCIBrokerStationsWithViewNoResult() {
+        when(apiConfigClient
+                .getCreditorInstitutionsAssociatedToBrokerStations(
+                        anyInt(),
+                        anyInt(),
+                        anyString(),
+                        anyString(),
+                        anyString(),
+                        eq(null),
+                        eq(null),
+                        eq(null),
+                        eq(null),
+                        eq(null))
+        ).thenReturn(CreditorInstitutionsView.builder().creditorInstitutionList(Collections.emptyList()).build());
+
+        CIBrokerStationPage result = assertDoesNotThrow(() ->
+                sut.getCIBrokerStations("brokerTaxCode", "ciTaxCode", "stationCode", 0, 5));
+
+        assertNotNull(result);
+        assertTrue(result.getCiBrokerStations().isEmpty());
+
+        verify(wrapperService, never()).findById(anyString());
+    }
+
+    @Test
+    void getCIBrokerStationsWithWrapperNotFound() {
+        CreditorInstitutionsView institutionsView = buildInstitutionsView();
+        when(apiConfigClient
+                .getCreditorInstitutionsAssociatedToBrokerStations(
+                        anyInt(),
+                        anyInt(),
+                        anyString(),
+                        anyString(),
+                        anyString(),
+                        eq(null),
+                        eq(null),
+                        eq(null),
+                        eq(null),
+                        eq(null))
+        ).thenReturn(institutionsView);
+        when(wrapperService.findById(anyString())).thenThrow(AppException.class);
+
+        CIBrokerStationPage result = assertDoesNotThrow(() ->
+                sut.getCIBrokerStations("brokerTaxCode", "ciTaxCode", "stationCode", 0, 5));
+
+        assertNotNull(result);
+        List<CIBrokerStationResource> ciBrokerStations = result.getCiBrokerStations();
+        assertFalse(ciBrokerStations.isEmpty());
+        assertEquals(1, ciBrokerStations.size());
+        CIBrokerStationResource stationResource = ciBrokerStations.get(0);
+
+        CreditorInstitutionView view = institutionsView.getCreditorInstitutionList().get(0);
+        assertEquals(view.getIdDominio(), stationResource.getCiTaxCode());
+        assertEquals(view.getIdIntermediarioPa(), stationResource.getBrokerTaxCode());
+        assertEquals(view.getIdStazione(), stationResource.getStationCode());
+        assertEquals(view.getProgressivo(), stationResource.getApplicationCode());
+        assertEquals(view.getSegregazione(), stationResource.getSegregationCode());
+        assertEquals(view.getAuxDigit(), stationResource.getAuxDigit());
+        assertEquals(view.getStationEnabled(), stationResource.getStationEnabled());
+        assertNull(stationResource.getModifiedAt());
+        assertNull(stationResource.getActivationDate());
+    }
+
+    private WrapperEntities<Object> buildWrapper(Instant modifiedAt, Instant activationDate) {
+        WrapperEntities<Object> entities = new WrapperEntities<>();
+
+        entities.setModifiedAt(modifiedAt);
+
+        StationDetails station = new StationDetails();
+        station.setActivationDate(activationDate);
+
+        WrapperEntity<Object> entity = new WrapperEntity<>();
+        entity.setEntity(station);
+
+        entities.setEntities(Collections.singletonList(entity));
+        return entities;
+    }
+
+    private CreditorInstitutionsView buildInstitutionsView() {
+        return CreditorInstitutionsView.builder()
+                .creditorInstitutionList(Collections.singletonList(
+                        CreditorInstitutionView.builder()
+                                .idDominio("ciTaxCode")
+                                .idIntermediarioPa("brokerTaxCode")
+                                .idStazione("stationCode")
+                                .auxDigit(3L)
+                                .segregazione(40L)
+                                .stationEnabled(true)
+                                .build()
+                ))
+                .pageInfo(PageInfo.builder().build())
+                .build();
+    }
+
+    private StationDetailsList buildStationDetailsList(long totalItems) {
         PageInfo pageInfo = new PageInfo();
         pageInfo.setTotalItems(totalItems);
         StationDetailsList stationDetailsList = new StationDetailsList();
@@ -342,7 +493,7 @@ class BrokerServiceTest {
         return stationDetailsList;
     }
 
-    private static CreditorInstitutionDetails buildCreditorInstitutionDetails(String cbill) {
+    private CreditorInstitutionDetails buildCreditorInstitutionDetails(String cbill) {
         CreditorInstitutionDetails creditorInstitutionDetails =
                 new CreditorInstitutionDetails();
         creditorInstitutionDetails.setCbillCode(cbill);

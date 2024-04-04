@@ -131,4 +131,17 @@ class CreditorInstitutionControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
 
     }
+
+    @Test
+    void getCreditorInstitutionContacts() throws Exception {
+        String url = "/creditor-institutions/{ci-tax-code}/contacts";
+        when(ciService.getCreditorInstitutionContacts(anyString(), anyString()))
+                .thenReturn(new CreditorInstitutionContactsResource());
+
+        mvc.perform(get(url, "ciTaxCode")
+                        .param("institutionId", "instiutionId")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
 }

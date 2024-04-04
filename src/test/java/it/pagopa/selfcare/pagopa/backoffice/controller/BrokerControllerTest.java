@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import it.pagopa.selfcare.pagopa.backoffice.model.export.BrokerECExportStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationPage;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerStationPage;
 import it.pagopa.selfcare.pagopa.backoffice.service.BrokerService;
 import it.pagopa.selfcare.pagopa.backoffice.service.ExportService;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +52,8 @@ class BrokerControllerTest {
                         .build());
         when(brokerService.getCIBrokerDelegation(anyString(), anyString(), anyString(), anyInt(), anyInt()))
                 .thenReturn(new CIBrokerDelegationPage());
+        when(brokerService.getCIBrokerStations(anyString(), anyString(), anyString(), anyInt(), anyInt()))
+                .thenReturn(new CIBrokerStationPage());
     }
 
     @Test
@@ -83,6 +86,15 @@ class BrokerControllerTest {
         mvc.perform(get(url, "brokerCode")
                         .param("brokerId", "brokerId")
                         .param("ciCode", "ciCode")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getCIBrokerStations() throws Exception {
+        String url = "/brokers/{broker-tax-code}/creditor-institutions/{ci-tax-code}/stations";
+        mvc.perform(get(url, "brokerCode", "ciTaxCode")
+                        .param("stationCode", "stationCode")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
