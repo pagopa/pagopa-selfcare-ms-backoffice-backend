@@ -280,12 +280,12 @@ class CreditorInstitutionServiceTest {
         TavoloOpResource operativeTable = buildTavoloOpResource();
         InstitutionProductUsers users = buildInstitutionProductUsers();
         when(operativeTableService.getOperativeTable("ciTaxCode")).thenReturn(operativeTable);
-        when(externalApiClient.getInstitutionProductUsers(
+        /*when(externalApiClient.getInstitutionProductUsers(
                 "institutionId",
                 null,
                 null,
                 Collections.singletonList("admin"))
-        ).thenReturn(Collections.singletonList(users));
+        ).thenReturn(Collections.singletonList(users));*/
 
         CreditorInstitutionContactsResource result = assertDoesNotThrow(() ->
                 service.getCreditorInstitutionContacts("ciTaxCode", "institutionId"));
@@ -293,40 +293,42 @@ class CreditorInstitutionServiceTest {
         assertNotNull(result);
         assertNotNull(result.getOperativeTable());
         assertEquals(operativeTable, result.getOperativeTable());
-        assertNotNull(result.getCiPaymentContacts());
+        assertNull(result.getCiPaymentContacts());
+        /*assertNotNull(result.getCiPaymentContacts());
         assertEquals(1, result.getCiPaymentContacts().size());
 
         CIPaymentContact actualPaymentContact = result.getCiPaymentContacts().get(0);
         assertEquals(users.getEmail(), actualPaymentContact.getEmail());
         assertEquals(users.getName(), actualPaymentContact.getName());
         assertEquals(users.getSurname(), actualPaymentContact.getSurname());
-        assertEquals(users.getFiscalCode(), actualPaymentContact.getFiscalCode());
+        assertEquals(users.getFiscalCode(), actualPaymentContact.getFiscalCode());*/
     }
 
     @Test
     void getCreditorInstitutionContactsWithOperativeTableNotFound() {
         InstitutionProductUsers users = buildInstitutionProductUsers();
         when(operativeTableService.getOperativeTable("ciTaxCode")).thenThrow(AppException.class);
-        when(externalApiClient.getInstitutionProductUsers(
+        /*when(externalApiClient.getInstitutionProductUsers(
                 "institutionId",
                 null,
                 null,
                 Collections.singletonList("admin"))
-        ).thenReturn(Collections.singletonList(users));
+        ).thenReturn(Collections.singletonList(users));*/
 
         CreditorInstitutionContactsResource result = assertDoesNotThrow(() ->
                 service.getCreditorInstitutionContacts("ciTaxCode", "institutionId"));
 
         assertNotNull(result);
         assertNull(result.getOperativeTable());
-        assertNotNull(result.getCiPaymentContacts());
+        assertNull(result.getCiPaymentContacts());
+        /*assertNotNull(result.getCiPaymentContacts());
         assertEquals(1, result.getCiPaymentContacts().size());
 
         CIPaymentContact actualPaymentContact = result.getCiPaymentContacts().get(0);
         assertEquals(users.getEmail(), actualPaymentContact.getEmail());
         assertEquals(users.getName(), actualPaymentContact.getName());
         assertEquals(users.getSurname(), actualPaymentContact.getSurname());
-        assertEquals(users.getFiscalCode(), actualPaymentContact.getFiscalCode());
+        assertEquals(users.getFiscalCode(), actualPaymentContact.getFiscalCode());*/
     }
 
     private TavoloOpResource buildTavoloOpResource() {

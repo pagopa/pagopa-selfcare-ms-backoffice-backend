@@ -157,21 +157,22 @@ public class CreditorInstitutionService {
             log.warn("Operative table for creditor institution with tax code {} not found", ciTaxCode, e);
         }
 
-        List<InstitutionProductUsers> institutionUserList =
+        // TODO: check if can be enabled or must be deleted
+        /*List<InstitutionProductUsers> institutionUserList =
                 this.externalApiClient.getInstitutionProductUsers(
                         institutionId,
                         null,
                         null,
                         Collections.singletonList("admin")
-                );
+                );*/
 
         return CreditorInstitutionContactsResource.builder()
                 .operativeTable(operativeTable)
-                .ciPaymentContacts(
+                /*.ciPaymentContacts(
                         institutionUserList.stream()
                                 .map(user -> modelMapper.map(user, CIPaymentContact.class))
                                 .toList()
-                )
+                )*/
                 .build();
     }
 }
