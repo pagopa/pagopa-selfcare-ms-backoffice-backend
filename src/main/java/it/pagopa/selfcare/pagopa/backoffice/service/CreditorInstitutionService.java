@@ -4,6 +4,7 @@ import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
+import it.pagopa.selfcare.pagopa.backoffice.entity.TavoloOpEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.BrokerMapper;
@@ -13,11 +14,18 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
-import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.*;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionAndBrokerDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionContactsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationEditResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.UpdateCreditorInstitutionDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerAndEcDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResource;
+import it.pagopa.selfcare.pagopa.backoffice.repository.TavoloOpRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.modelmapper.ModelMapper;
@@ -26,8 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.NotNull;
-import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -39,7 +46,7 @@ public class CreditorInstitutionService {
 
     private final ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
-    private final OperativeTableService operativeTableService;
+    private final TavoloOpRepository operativeTableRepository;
 
     private final ExternalApiClient externalApiClient;
 
@@ -49,11 +56,11 @@ public class CreditorInstitutionService {
     public CreditorInstitutionService(
             ApiConfigClient apiConfigClient,
             ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
-            OperativeTableService operativeTableService,
+            TavoloOpRepository operativeTableRepository,
             ExternalApiClient externalApiClient, ModelMapper modelMapper) {
         this.apiConfigClient = apiConfigClient;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
-        this.operativeTableService = operativeTableService;
+        this.operativeTableRepository = operativeTableRepository;
         this.externalApiClient = externalApiClient;
         this.modelMapper = modelMapper;
     }
@@ -117,7 +124,7 @@ public class CreditorInstitutionService {
 
         try {
             brokers = apiConfigClient.getBrokersEC(1, 0, brokerEcCode, null, null, "ASC");
-            if(brokers != null && !ObjectUtils.isEmpty(brokers.getBrokerList())) {
+            if (brokers != null && !ObjectUtils.isEmpty(brokers.getBrokerList())) {
                 brokerResource = BrokerMapper.toResource(brokers.getBrokerList().get(0));
             }
         } catch (FeignException.NotFound e) {
@@ -131,7 +138,7 @@ public class CreditorInstitutionService {
             log.trace("getBrokerOrEcDetails - Not CreditorInstitution found");
         }
 
-        if(brokerResource == null && creditorInstitutionDetailsResource == null) {
+        if (brokerResource == null && creditorInstitutionDetailsResource == null) {
             throw new AppException(AppError.ACTOR_NOT_FOUND, brokerEcCode);
         }
         BrokerAndEcDetailsResource resource = new BrokerAndEcDetailsResource();
@@ -145,16 +152,16 @@ public class CreditorInstitutionService {
      * Retrieve the operative table and the payment contacts list of the creditor institution with the provided
      * tax code and institution's id
      *
-     * @param ciTaxCode creditor institution's tax code
+     * @param ciTaxCode     creditor institution's tax code
      * @param institutionId creditor institution's identifier
      * @return the creditor institution's contacts
      */
     public CreditorInstitutionContactsResource getCreditorInstitutionContacts(String ciTaxCode, String institutionId) {
+        Optional<TavoloOpEntity> optionalOperativeTable = this.operativeTableRepository.findByTaxCode(ciTaxCode);
+
         TavoloOpResource operativeTable = null;
-        try {
-            operativeTable = this.operativeTableService.getOperativeTable(ciTaxCode);
-        } catch (AppException e) {
-            log.warn("Operative table for creditor institution with the provided tax code not found", e);
+        if (optionalOperativeTable.isPresent()) {
+            operativeTable = this.modelMapper.map(optionalOperativeTable.get(), TavoloOpResource.class);
         }
 
         // TODO: check if can be enabled or must be deleted
