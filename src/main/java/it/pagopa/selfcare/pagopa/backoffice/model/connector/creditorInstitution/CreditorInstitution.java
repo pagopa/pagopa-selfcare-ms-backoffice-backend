@@ -1,8 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
