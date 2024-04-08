@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
-import it.pagopa.selfcare.pagopa.backoffice.client.TaxonomyClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.TaxonomyGroupEntity;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.*;
 import it.pagopa.selfcare.pagopa.backoffice.repository.TaxonomyGroupRepository;
