@@ -179,16 +179,9 @@ public class BrokerService {
                 null
         );
 
-        if (creditorInstitutionsView.getCreditorInstitutionList().isEmpty()) {
-            return CIBrokerStationPage.builder()
-                    .ciBrokerStations(Collections.emptyList())
-                    .pageInfo(creditorInstitutionsView.getPageInfo())
-                    .build();
-        }
-
         List<CIBrokerStationResource> ciBrokerStations = creditorInstitutionsView.getCreditorInstitutionList().stream()
                 .map(ciView -> this.modelMapper.map(ciView, CIBrokerStationResource.class))
-                .map(ciBrokerStation -> enrichBrokerStation(stationCode, ciBrokerStation))
+                .map(this::enrichBrokerStation)
                 .toList();
 
         return CIBrokerStationPage.builder()
@@ -247,7 +240,7 @@ public class BrokerService {
         }
     }
 
-    private CIBrokerStationResource enrichBrokerStation(String stationCode, CIBrokerStationResource ciBrokerStation) {
+    private CIBrokerStationResource enrichBrokerStation(CIBrokerStationResource ciBrokerStation) {
         try {
             WrapperEntities<StationDetails> result = this.wrapperService.findById(ciBrokerStation.getStationCode());
             StationDetails details = (StationDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
@@ -255,7 +248,7 @@ public class BrokerService {
             ciBrokerStation.setActivationDate(details.getActivationDate());
             ciBrokerStation.setModifiedAt(result.getModifiedAt());
         } catch (AppException e) {
-            log.warn("Station with id {} not found in wrapper store", stationCode, e);
+            log.warn("Station with id {} not found in wrapper store", ciBrokerStation.getStationCode(), e);
         }
         return ciBrokerStation;
     }

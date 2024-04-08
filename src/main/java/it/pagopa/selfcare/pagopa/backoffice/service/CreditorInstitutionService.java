@@ -154,7 +154,7 @@ public class CreditorInstitutionService {
         try {
             operativeTable = this.operativeTableService.getOperativeTable(ciTaxCode);
         } catch (AppException e) {
-            log.warn("Operative table for creditor institution with tax code {} not found", ciTaxCode, e);
+            log.warn("Operative table for creditor institution with the provided tax code not found", e);
         }
 
         // TODO: check if can be enabled or must be deleted
