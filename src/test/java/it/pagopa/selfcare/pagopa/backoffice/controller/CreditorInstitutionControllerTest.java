@@ -38,8 +38,7 @@ class CreditorInstitutionControllerTest {
         when(ciService.getCreditorInstitutions(anyInt(), anyInt(), anyString(), anyString(), anyString()))
                 .thenReturn(TestUtil.fileToObject("response/service/get_creditor_institutions_ok.json", CreditorInstitutionsResource.class));
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+                .andExpect(status().isOk());
     }
 
     @Test

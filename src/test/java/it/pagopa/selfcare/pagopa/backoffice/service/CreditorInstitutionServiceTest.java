@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
+import it.pagopa.selfcare.pagopa.backoffice.entity.TavoloOpEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
@@ -13,7 +14,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
-import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CIPaymentContact;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionAndBrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionContactsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDetailsResource;
@@ -25,6 +25,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.UpdateCred
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerAndEcDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResource;
+import it.pagopa.selfcare.pagopa.backoffice.repository.TavoloOpRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -33,7 +34,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.time.Instant;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,7 +63,7 @@ class CreditorInstitutionServiceTest {
     private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
     @MockBean
-    private OperativeTableService operativeTableService;
+    private TavoloOpRepository operativeTableRepository;
 
     @MockBean
     private ExternalApiClient externalApiClient;
@@ -277,9 +279,9 @@ class CreditorInstitutionServiceTest {
 
     @Test
     void getCreditorInstitutionContactsSuccess() {
-        TavoloOpResource operativeTable = buildTavoloOpResource();
+        TavoloOpEntity entity = buildTavoloOpEntity();
         InstitutionProductUsers users = buildInstitutionProductUsers();
-        when(operativeTableService.getOperativeTable("ciTaxCode")).thenReturn(operativeTable);
+        when(operativeTableRepository.findByTaxCode("ciTaxCode")).thenReturn(Optional.of(entity));
         /*when(externalApiClient.getInstitutionProductUsers(
                 "institutionId",
                 null,
@@ -292,7 +294,9 @@ class CreditorInstitutionServiceTest {
 
         assertNotNull(result);
         assertNotNull(result.getOperativeTable());
-        assertEquals(operativeTable, result.getOperativeTable());
+        assertEquals(entity.getName(), result.getOperativeTable().getName());
+        assertEquals(entity.getEmail(), result.getOperativeTable().getEmail());
+        assertEquals(entity.getTelephone(), result.getOperativeTable().getTelephone());
         assertNull(result.getCiPaymentContacts());
         /*assertNotNull(result.getCiPaymentContacts());
         assertEquals(1, result.getCiPaymentContacts().size());
@@ -307,7 +311,7 @@ class CreditorInstitutionServiceTest {
     @Test
     void getCreditorInstitutionContactsWithOperativeTableNotFound() {
         InstitutionProductUsers users = buildInstitutionProductUsers();
-        when(operativeTableService.getOperativeTable("ciTaxCode")).thenThrow(AppException.class);
+        when(operativeTableRepository.findByTaxCode("ciTaxCode")).thenReturn(Optional.empty());
         /*when(externalApiClient.getInstitutionProductUsers(
                 "institutionId",
                 null,
@@ -331,12 +335,12 @@ class CreditorInstitutionServiceTest {
         assertEquals(users.getFiscalCode(), actualPaymentContact.getFiscalCode());*/
     }
 
-    private TavoloOpResource buildTavoloOpResource() {
-        return TavoloOpResource.builder()
-                .name("table")
-                .email("email")
-                .telephone("123345656")
-                .build();
+    private TavoloOpEntity buildTavoloOpEntity() {
+        TavoloOpEntity entity = new TavoloOpEntity();
+        entity.setName("Name");
+        entity.setEmail("email");
+        entity.setTelephone("12234545");
+        return entity;
     }
 
     private InstitutionProductUsers buildInstitutionProductUsers() {

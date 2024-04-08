@@ -367,7 +367,7 @@ class BrokerServiceTest {
                         eq(null),
                         eq(null))
         ).thenReturn(institutionsView);
-        when(wrapperService.findById(anyString())).thenReturn(buildWrapper(modifiedAt, activationDate));
+        when(wrapperService.findByIdOptional(anyString())).thenReturn(Optional.of(buildWrapper(modifiedAt, activationDate)));
 
         CIBrokerStationPage result = assertDoesNotThrow(() ->
                 sut.getCIBrokerStations("brokerTaxCode", "ciTaxCode", "stationCode", 0, 5));
@@ -431,7 +431,7 @@ class BrokerServiceTest {
                         eq(null),
                         eq(null))
         ).thenReturn(institutionsView);
-        when(wrapperService.findById(anyString())).thenThrow(AppException.class);
+        when(wrapperService.findByIdOptional(anyString())).thenReturn(Optional.empty());
 
         CIBrokerStationPage result = assertDoesNotThrow(() ->
                 sut.getCIBrokerStations("brokerTaxCode", "ciTaxCode", "stationCode", 0, 5));

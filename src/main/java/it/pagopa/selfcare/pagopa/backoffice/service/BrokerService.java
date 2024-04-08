@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.mapstruct.factory.Mappers;
 import org.modelmapper.ModelMapper;
@@ -241,15 +242,16 @@ public class BrokerService {
     }
 
     private CIBrokerStationResource enrichBrokerStation(CIBrokerStationResource ciBrokerStation) {
-        try {
-            WrapperEntities<StationDetails> result = this.wrapperService.findById(ciBrokerStation.getStationCode());
-            StationDetails details = (StationDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
-
-            ciBrokerStation.setActivationDate(details.getActivationDate());
-            ciBrokerStation.setModifiedAt(result.getModifiedAt());
-        } catch (AppException e) {
-            log.warn("Station with id {} not found in wrapper store", ciBrokerStation.getStationCode(), e);
+        Optional<WrapperEntities> optionalResult = this.wrapperService.findByIdOptional(ciBrokerStation.getStationCode());
+        if (optionalResult.isEmpty()) {
+            log.warn("Station with id {} not found in wrapper store", ciBrokerStation.getStationCode());
+            return ciBrokerStation;
         }
+        WrapperEntities result = optionalResult.get();
+        StationDetails details = (StationDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
+
+        ciBrokerStation.setActivationDate(details.getActivationDate());
+        ciBrokerStation.setModifiedAt(result.getModifiedAt());
         return ciBrokerStation;
     }
 }
