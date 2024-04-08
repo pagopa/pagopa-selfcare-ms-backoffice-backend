@@ -25,6 +25,7 @@ class PaymentsReceiptsControllerTest {
     public static final String DEBTOR_TAX_CODE = "debtor tax code";
     public static final String FROM_DATE = "01/01/2020";
     public static final String TO_DATE = "05/05/2025";
+    public static final String IUV = "IUV";
     @Autowired
     private MockMvc mvc;
 
@@ -56,5 +57,16 @@ class PaymentsReceiptsControllerTest {
                         .param("toDate", TO_DATE)
                 ).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    void getPaymentsReceiptsOK() throws Exception {
+        String url = "/payments-receipts/{organization-tax-code}/detail/{iuv}";
+        when(service.getPaymentReceiptDetail(ORGANIZATION_TAX_CODE, IUV)).thenReturn(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+        );
+        mvc.perform(get(url, ORGANIZATION_TAX_CODE, IUV)
+                ).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_XML_VALUE+";charset=UTF-8"));
     }
 }

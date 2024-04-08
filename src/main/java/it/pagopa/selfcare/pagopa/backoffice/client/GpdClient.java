@@ -12,13 +12,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @FeignClient(name = "gpd", url = "${rest-client.gpd.base-url}", configuration = GpdFeignConfig.class)
 public interface GpdClient {
 
-    @GetMapping(value = "/payments/{organizationFiscalCode}/receipts", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/payments/{organizationTaxCode}/receipts", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    ReceiptsInfo getPaymentsReceipts(@PathVariable String organizationFiscalCode,
+    ReceiptsInfo getPaymentsReceipts(@PathVariable String organizationTaxCode,
                                      @RequestParam Integer pageNum,
                                      @RequestParam(required = false) Integer pageSize,
                                      @RequestParam(required = false) String debtor,
                                      @RequestParam(required = false) String service,
                                      @RequestParam(required = false) String from,
                                      @RequestParam(required = false) String to);
+
+    @GetMapping(value = "/payments/{organizationTaxCode}/receipts/{iuv}", produces = MediaType.APPLICATION_XML_VALUE)
+    @ResponseBody
+    String getPaymentReceiptDetail(@PathVariable String organizationTaxCode,
+                                   @PathVariable String iuv);
 }

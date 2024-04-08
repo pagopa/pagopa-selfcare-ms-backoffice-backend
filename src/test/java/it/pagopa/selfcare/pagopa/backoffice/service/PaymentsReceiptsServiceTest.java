@@ -16,7 +16,8 @@ class PaymentsReceiptsServiceTest {
     public static final String DEBTOR_TAX_CODE = "debtor tax code";
     public static final String FROM_DATE = "01/01/2020";
     public static final String TO_DATE = "05/05/2025";
-    public static final String SERVICE_CODE = "serviceCode";
+    public static final String SERVICE_CODE = "47";
+    public static final String IUV = "IUV";
 
     @MockBean
     private GpdClient client;
@@ -24,9 +25,16 @@ class PaymentsReceiptsServiceTest {
     private PaymentsReceiptsService service;
     @Test
     void getPaymentsReceipts() {
-        when(client.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, DEBTOR_TAX_CODE, "47", FROM_DATE, TO_DATE)).thenReturn(
+        when(client.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, DEBTOR_TAX_CODE, SERVICE_CODE, FROM_DATE, TO_DATE)).thenReturn(
                 new ReceiptsInfo());
         assertDoesNotThrow(
                 () -> service.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, DEBTOR_TAX_CODE, FROM_DATE, TO_DATE));
+    }
+    @Test
+    void getPaymentReceiptDetail() {
+        when(client.getPaymentReceiptDetail(ORGANIZATION_TAX_CODE, IUV)).thenReturn(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        assertDoesNotThrow(
+                () -> service.getPaymentReceiptDetail(ORGANIZATION_TAX_CODE, IUV));
     }
 }

@@ -35,11 +35,11 @@ public class PaymentsReceiptsController {
      * Return the organization's receipts list
      *
      * @param organizationTaxCode Organization tax code
-     * @param page Page number
-     * @param limit Maximum elements for page
-     * @param debtorTaxCode Debtor tax code
-     * @param fromDate Filter date (after this date)
-     * @param toDate Filter date (before this date)
+     * @param page                Page number
+     * @param limit               Maximum elements for page
+     * @param debtorTaxCode       Debtor tax code
+     * @param fromDate            Filter date (after this date)
+     * @param toDate              Filter date (before this date)
      * @return paged list of the organization's receipts
      */
     @GetMapping(value = "/{organization-tax-code}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -61,5 +61,29 @@ public class PaymentsReceiptsController {
             @Parameter(description = "Filter by date, before this date") @RequestParam(required = false) String toDate
     ) {
         return paymentsReceiptsService.getPaymentsReceipts(organizationTaxCode, page, limit, debtorTaxCode, fromDate, toDate);
+    }
+
+    /**
+     * Return receipt's details
+     *
+     * @param organizationTaxCode Organization tax code
+     * @param iuv                 Receipt's IUV
+     * @return receipt's details as XML
+     */
+    @GetMapping(value = "/{organization-tax-code}/detail/{iuv}", produces = MediaType.APPLICATION_XML_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get the payment receipt's details", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    public String getPaymentReceiptDetail(
+            @Parameter(description = "Tax code of the organization") @PathVariable("organization-tax-code") String organizationTaxCode,
+            @Parameter(description = "Receipt's IUV") @PathVariable("iuv") String iuv
+    ) {
+        return paymentsReceiptsService.getPaymentReceiptDetail(organizationTaxCode, iuv);
     }
 }
