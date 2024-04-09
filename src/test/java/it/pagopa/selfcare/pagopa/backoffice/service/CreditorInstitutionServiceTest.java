@@ -4,6 +4,9 @@ import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
+import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
+import it.pagopa.selfcare.pagopa.backoffice.entity.TavoloOpEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
@@ -11,27 +14,46 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
-import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionAndBrokerDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionContactsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationEditResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.UpdateCreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerAndEcDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResource;
+import it.pagopa.selfcare.pagopa.backoffice.repository.TavoloOpRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@WithMockUser(username = "user1", password = "pwd", roles = "USER")
+@SpringBootTest(classes = {CreditorInstitutionService.class, MappingsConfiguration.class})
 class CreditorInstitutionServiceTest {
 
     @MockBean
@@ -40,10 +62,14 @@ class CreditorInstitutionServiceTest {
     @MockBean
     private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
-    @Autowired
-    @InjectMocks
-    private CreditorInstitutionService service;
+    @MockBean
+    private TavoloOpRepository operativeTableRepository;
 
+    @MockBean
+    private ExternalApiClient externalApiClient;
+
+    @Autowired
+    private CreditorInstitutionService service;
 
     @Test
     void getCreditorInstitutions_ok() throws IOException {
@@ -249,5 +275,80 @@ class CreditorInstitutionServiceTest {
         when(apiConfigClient.getCreditorInstitutionDetails(anyString())).thenThrow(feignException);
 
         assertThrows(AppException.class, () -> service.getBrokerAndEcDetails("12345678900"));
+    }
+
+    @Test
+    void getCreditorInstitutionContactsSuccess() {
+        TavoloOpEntity entity = buildTavoloOpEntity();
+        InstitutionProductUsers users = buildInstitutionProductUsers();
+        when(operativeTableRepository.findByTaxCode("ciTaxCode")).thenReturn(Optional.of(entity));
+        /*when(externalApiClient.getInstitutionProductUsers(
+                "institutionId",
+                null,
+                null,
+                Collections.singletonList("admin"))
+        ).thenReturn(Collections.singletonList(users));*/
+
+        CreditorInstitutionContactsResource result = assertDoesNotThrow(() ->
+                service.getCreditorInstitutionContacts("ciTaxCode", "institutionId"));
+
+        assertNotNull(result);
+        assertNotNull(result.getOperativeTable());
+        assertEquals(entity.getName(), result.getOperativeTable().getName());
+        assertEquals(entity.getEmail(), result.getOperativeTable().getEmail());
+        assertEquals(entity.getTelephone(), result.getOperativeTable().getTelephone());
+        assertNull(result.getCiPaymentContacts());
+        /*assertNotNull(result.getCiPaymentContacts());
+        assertEquals(1, result.getCiPaymentContacts().size());
+
+        CIPaymentContact actualPaymentContact = result.getCiPaymentContacts().get(0);
+        assertEquals(users.getEmail(), actualPaymentContact.getEmail());
+        assertEquals(users.getName(), actualPaymentContact.getName());
+        assertEquals(users.getSurname(), actualPaymentContact.getSurname());
+        assertEquals(users.getFiscalCode(), actualPaymentContact.getFiscalCode());*/
+    }
+
+    @Test
+    void getCreditorInstitutionContactsWithOperativeTableNotFound() {
+        InstitutionProductUsers users = buildInstitutionProductUsers();
+        when(operativeTableRepository.findByTaxCode("ciTaxCode")).thenReturn(Optional.empty());
+        /*when(externalApiClient.getInstitutionProductUsers(
+                "institutionId",
+                null,
+                null,
+                Collections.singletonList("admin"))
+        ).thenReturn(Collections.singletonList(users));*/
+
+        CreditorInstitutionContactsResource result = assertDoesNotThrow(() ->
+                service.getCreditorInstitutionContacts("ciTaxCode", "institutionId"));
+
+        assertNotNull(result);
+        assertNull(result.getOperativeTable());
+        assertNull(result.getCiPaymentContacts());
+        /*assertNotNull(result.getCiPaymentContacts());
+        assertEquals(1, result.getCiPaymentContacts().size());
+
+        CIPaymentContact actualPaymentContact = result.getCiPaymentContacts().get(0);
+        assertEquals(users.getEmail(), actualPaymentContact.getEmail());
+        assertEquals(users.getName(), actualPaymentContact.getName());
+        assertEquals(users.getSurname(), actualPaymentContact.getSurname());
+        assertEquals(users.getFiscalCode(), actualPaymentContact.getFiscalCode());*/
+    }
+
+    private TavoloOpEntity buildTavoloOpEntity() {
+        TavoloOpEntity entity = new TavoloOpEntity();
+        entity.setName("Name");
+        entity.setEmail("email");
+        entity.setTelephone("12234545");
+        return entity;
+    }
+
+    private InstitutionProductUsers buildInstitutionProductUsers() {
+        return InstitutionProductUsers.builder()
+                .fiscalCode("taxCode")
+                .email("emailUser")
+                .name("name")
+                .surname("surname")
+                .build();
     }
 }

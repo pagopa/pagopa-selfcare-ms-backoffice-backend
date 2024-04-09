@@ -230,6 +230,10 @@ public class WrapperService {
         return response;
     }
 
+    public Optional<WrapperEntities> findByIdOptional(String id) {
+        return repository.findById(id);
+    }
+
     public WrapperEntitiesList findByIdLikeOrTypeOrBrokerCode(String idLike, WrapperType wrapperType, String brokerCode, Integer page, Integer size) {
 
         Pageable paging = PageRequest.of(page, size);

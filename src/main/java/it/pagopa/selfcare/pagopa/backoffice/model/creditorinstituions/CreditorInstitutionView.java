@@ -24,19 +24,19 @@ import javax.validation.constraints.Size;
 public class CreditorInstitutionView {
 
     @JsonProperty("creditor_institution_code")
-    @Schema(example = "1234567890100", required = true)
+    @Schema(example = "1234567890100", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank
     @Size(max = 35)
     private String idDominio;
 
     @JsonProperty("broker_code")
-    @Schema(example = "223344556677889900", required = true)
+    @Schema(example = "223344556677889900", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank
     @Size(max = 35)
     private String idIntermediarioPa;
 
     @JsonProperty("station_code")
-    @Schema(example = "1234567890100", required = true)
+    @Schema(example = "1234567890100", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank
     @Size(max = 35)
     private String idStazione;
@@ -53,4 +53,7 @@ public class CreditorInstitutionView {
 
     @JsonProperty("mod4")
     private Boolean quartoModello;
+
+    @JsonProperty("station_enabled")
+    private Boolean stationEnabled;
 }

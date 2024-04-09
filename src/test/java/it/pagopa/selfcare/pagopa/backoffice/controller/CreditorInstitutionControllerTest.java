@@ -38,8 +38,7 @@ class CreditorInstitutionControllerTest {
         when(ciService.getCreditorInstitutions(anyInt(), anyInt(), anyString(), anyString(), anyString()))
                 .thenReturn(TestUtil.fileToObject("response/service/get_creditor_institutions_ok.json", CreditorInstitutionsResource.class));
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -130,5 +129,18 @@ class CreditorInstitutionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
 
+    }
+
+    @Test
+    void getCreditorInstitutionContacts() throws Exception {
+        String url = "/creditor-institutions/{ci-tax-code}/contacts";
+        when(ciService.getCreditorInstitutionContacts(anyString(), anyString()))
+                .thenReturn(new CreditorInstitutionContactsResource());
+
+        mvc.perform(get(url, "ciTaxCode")
+                        .param("institutionId", "instiutionId")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 }

@@ -2,11 +2,17 @@ package it.pagopa.selfcare.pagopa.backoffice.model.tavoloop;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TavoloOpResource {
 
 
@@ -22,11 +28,11 @@ public class TavoloOpResource {
     @JsonProperty(required = true)
     private String referent;
 
-    @ApiModelProperty(value = " contact person's email address", required = true)
+    @ApiModelProperty(value = "contact person's email address", required = true)
     @JsonProperty(required = true)
     private String email;
 
-    @ApiModelProperty(value = "", required = true)
+    @ApiModelProperty(required = true)
     @JsonProperty(required = true)
     private String telephone;
 

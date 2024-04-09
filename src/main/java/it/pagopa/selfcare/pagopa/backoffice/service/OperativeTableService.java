@@ -10,36 +10,55 @@ import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResourceList;
 import it.pagopa.selfcare.pagopa.backoffice.repository.TavoloOpRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OperativeTableService {
 
-    @Autowired
-    private AuditorAware<String> auditorAware;
+    private final AuditorAware<String> auditorAware;
+
+    private final TavoloOpRepository tavoloOpRepository;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private TavoloOpRepository tavoloOpRepository;
+    public OperativeTableService(AuditorAware<String> auditorAware, TavoloOpRepository tavoloOpRepository, ModelMapper modelMapper) {
+        this.auditorAware = auditorAware;
+        this.tavoloOpRepository = tavoloOpRepository;
+        this.modelMapper = modelMapper;
+    }
 
+    /**
+     * Retrieve the list of operative table
+     *
+     * @return the operative table's list
+     */
     public TavoloOpResourceList getOperativeTables() {
         TavoloOpEntitiesList tavoloOpResourceList = findAll();
         return TavoloOpMapper.toResource(tavoloOpResourceList);
     }
 
-    public TavoloOpResource getOperativeTable(String ecCode) {
-        TavoloOpOperations tavoloOpOperations = tavoloOpRepository.findByTaxCode(ecCode);
-        TavoloOpResource response = TavoloOpMapper.toResource(tavoloOpOperations);
-        if(response == null) {
-            throw new AppException(AppError.OPERATIVE_TABLE_NOT_FOUND, ecCode);
-        }
-        return response;
-    }
+    /**
+     * Retrieve the operative table given the creditor institution's tax code
+     *
+     * @param ciTaxCode creditor institution's tax code
+     * @return the operative table
+     */
+    public TavoloOpResource getOperativeTable(String ciTaxCode) {
+        Optional<TavoloOpEntity> optionalOperativeTable = this.tavoloOpRepository.findByTaxCode(ciTaxCode);
 
+        if (optionalOperativeTable.isEmpty()) {
+            throw new AppException(AppError.OPERATIVE_TABLE_NOT_FOUND, ciTaxCode);
+        }
+        return this.modelMapper.map(optionalOperativeTable.get(), TavoloOpResource.class);
+    }
 
     /**
      * map the request as an entity and save a new tavoloOp on DB
@@ -57,10 +76,6 @@ public class OperativeTableService {
         TavoloOpEntity tavoloOpEntity = mapTavoloOpEntity(tavoloOp);
         return tavoloOpRepository.save(tavoloOpEntity);
     }
-
-
-    // Private Methods
-
 
     /**
      * map a class in another
