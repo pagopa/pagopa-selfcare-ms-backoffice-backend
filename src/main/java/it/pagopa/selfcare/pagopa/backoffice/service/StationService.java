@@ -275,9 +275,11 @@ public class StationService {
     public TestStationResource testStation(StationTestDto stationTestDto) {
         try {
             forwarderTestClient.testForwardConnection(
+                    "",
                     stationTestDto.getHostUrl(),
                     stationTestDto.getHostPort(),
-                    stationTestDto.getHostPath());
+                    stationTestDto.getHostPath()
+            );
             return TestStationResource.builder().testResult(TestResultEnum.SUCCESS).message("OK").build();
         } catch (FeignException feignException) {
             if (feignException.status() == 400) {

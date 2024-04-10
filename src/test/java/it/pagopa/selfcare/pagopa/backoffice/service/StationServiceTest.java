@@ -50,7 +50,7 @@ class StationServiceTest {
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
         assertEquals(TestResultEnum.SUCCESS, testStationResource.getTestResult());
-        verify(forwarderTestClient).testForwardConnection(any(),any(),any());
+        verify(forwarderTestClient).testForwardConnection(any(),any(),any(),any());
     }
 
     @Test
@@ -58,12 +58,12 @@ class StationServiceTest {
         Response response = Response.builder().status(400).request(
                 Request.create(Request.HttpMethod.POST, "test", new HashMap<>(), "".getBytes(), null)).build();
         FeignException feignException = FeignException.errorStatus("test", response);
-        when(forwarderTestClient.testForwardConnection(any(),any(),any())).thenThrow(feignException);
+        when(forwarderTestClient.testForwardConnection(any(),any(),any(),any())).thenThrow(feignException);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
         assertEquals(TestResultEnum.SUCCESS, testStationResource.getTestResult());
-        verify(forwarderTestClient).testForwardConnection(any(),any(),any());
+        verify(forwarderTestClient).testForwardConnection(any(),any(),any(),any());
     }
 
     @Test
@@ -71,12 +71,12 @@ class StationServiceTest {
         Response response = Response.builder().status(500).request(
                 Request.create(Request.HttpMethod.POST, "test", new HashMap<>(), "".getBytes(), null)).build();
         FeignException feignException = FeignException.errorStatus("test", response);
-        when(forwarderTestClient.testForwardConnection(any(),any(),any())).thenThrow(feignException);
+        when(forwarderTestClient.testForwardConnection(any(),any(),any(),any())).thenThrow(feignException);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
         assertEquals(TestResultEnum.ERROR, testStationResource.getTestResult());
-        verify(forwarderTestClient).testForwardConnection(any(),any(),any());
+        verify(forwarderTestClient).testForwardConnection(any(),any(),any(),any());
     }
 
 }
