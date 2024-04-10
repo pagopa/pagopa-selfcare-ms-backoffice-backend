@@ -168,13 +168,10 @@ public class StationController {
 
     @PostMapping(value = "/forward/test", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get station's details", security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Test station connectivity", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public TestStationResource testStation(@Parameter(description = "Station's unique identifier")
-                                           StationTestDto stationTestDto) {
+    public TestStationResource testStation(@RequestBody @Valid @NotNull StationTestDto stationTestDto) {
         return stationService.testStation(stationTestDto);
-
     }
-
 
 }

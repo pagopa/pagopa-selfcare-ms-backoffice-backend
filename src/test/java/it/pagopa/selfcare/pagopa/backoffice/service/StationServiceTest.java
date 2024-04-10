@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import feign.FeignException;
+import feign.Request;
 import feign.Response;
 import it.pagopa.selfcare.pagopa.backoffice.client.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
@@ -12,13 +13,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@SpringBootTest(classes = {StationService.class})
 class StationServiceTest {
 
     @Autowired
@@ -26,6 +31,9 @@ class StationServiceTest {
 
     @MockBean
     private WrapperService wrapperService;
+
+    @MockBean
+    private ApiConfigClient apiConfigClient;
 
     @MockBean
     private AwsSesClient awsSesClient;
@@ -47,10 +55,10 @@ class StationServiceTest {
 
     @Test
     void testStationShouldSuccessOnBadRequestForwardCall() {
-        when(forwarderTestClient.testForwardConnection(any(),any(),any())).thenAnswer(item -> {
-           Response response = Response.builder().status(400).build();
-           throw FeignException.errorStatus("test", response);
-        });
+        Response response = Response.builder().status(400).request(
+                Request.create(Request.HttpMethod.POST, "test", new HashMap<>(), "".getBytes(), null)).build();
+        FeignException feignException = FeignException.errorStatus("test", response);
+        when(forwarderTestClient.testForwardConnection(any(),any(),any())).thenThrow(feignException);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
@@ -60,10 +68,10 @@ class StationServiceTest {
 
     @Test
     void testStationShouldReturnKOOnErrorForwardCall() {
-        when(forwarderTestClient.testForwardConnection(any(),any(),any())).thenAnswer(item -> {
-            Response response = Response.builder().status(500).build();
-            throw FeignException.errorStatus("test", response);
-        });
+        Response response = Response.builder().status(500).request(
+                Request.create(Request.HttpMethod.POST, "test", new HashMap<>(), "".getBytes(), null)).build();
+        FeignException feignException = FeignException.errorStatus("test", response);
+        when(forwarderTestClient.testForwardConnection(any(),any(),any())).thenThrow(feignException);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);

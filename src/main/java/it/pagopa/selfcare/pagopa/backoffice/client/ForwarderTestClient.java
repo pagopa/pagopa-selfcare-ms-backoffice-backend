@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.ws.rs.HeaderParam;
 
 @Headers({"X-Host-Url: {host}", "X-Host-Port: {port}", "X-Host-Path: {path}"})
-@FeignClient(name = "gpd", url = "${rest-client.forwarder.base-url}", configuration = ForwarderFeignConfig.class)
+@FeignClient(name = "forwarder-test", url = "${rest-client.forwarder.base-url}", configuration = ForwarderFeignConfig.class)
 public interface ForwarderTestClient {
 
     @GetMapping(value = "/forward", produces = MediaType.APPLICATION_XML_VALUE)
