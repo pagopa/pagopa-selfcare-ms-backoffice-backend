@@ -197,7 +197,7 @@ public class BrokerService {
      * @param brokerTaxCode Tax code of the broker to delete
      */
     public void deleteCIBroker(String brokerTaxCode) {
-        apiConfigClient.deleteCIBroker(brokerTaxCode);
+        this.apiConfigClient.deleteCIBroker(brokerTaxCode);
     }
 
     private CIBrokerDelegationPage buildDelegationPageResponse(

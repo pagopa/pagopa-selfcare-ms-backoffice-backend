@@ -24,8 +24,12 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "Payment Service Provider's Brokers")
 public class PspBrokerController {
 
+    private final PspBrokerService pspBrokerService;
+
     @Autowired
-    private PspBrokerService pspBrokerService;
+    public PspBrokerController(PspBrokerService pspBrokerService) {
+        this.pspBrokerService = pspBrokerService;
+    }
 
     @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
@@ -114,6 +118,6 @@ public class PspBrokerController {
     public void deletePspBroker(
             @Parameter(description = "Broker tax code") @PathVariable("broker-tax-code") String brokerTaxCode
     ){
-        pspBrokerService.deletePspBroker(brokerTaxCode);
+        this.pspBrokerService.deletePspBroker(brokerTaxCode);
     }
 }

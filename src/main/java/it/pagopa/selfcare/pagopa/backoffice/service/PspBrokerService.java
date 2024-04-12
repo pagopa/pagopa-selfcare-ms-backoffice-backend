@@ -16,12 +16,15 @@ import javax.validation.constraints.NotNull;
 @Service
 public class PspBrokerService {
 
+    private final ApiConfigClient apiConfigClient;
+
+    private final ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
     @Autowired
-    private ApiConfigClient apiConfigClient;
-
-    @Autowired
-    private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
+    public PspBrokerService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient) {
+        this.apiConfigClient = apiConfigClient;
+        this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
+    }
 
 
     public BrokersPspResource getBrokersForPSP(Integer limit, Integer page, String filterByCode, String filterByName, String orderBy, String sorting) {
@@ -65,6 +68,6 @@ public class PspBrokerService {
      * @param brokerTaxCode Tax code of the broker to delete
      */
     public void deletePspBroker(String brokerTaxCode) {
-        apiConfigClient.deleteBrokerPsp(brokerTaxCode);
+        this.apiConfigClient.deleteBrokerPsp(brokerTaxCode);
     }
 }
