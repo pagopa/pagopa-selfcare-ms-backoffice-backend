@@ -175,6 +175,43 @@
       }
     },
     "/brokers/{broker-tax-code}": {
+      "delete": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "deleteCIBroker",
+        "parameters": [
+          {
+            "description": "Broker tax code",
+            "in": "path",
+            "name": "broker-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Deletes the Creditor Institution's broker",
+        "tags": [
+          "Creditor institution's Brokers"
+        ]
+      },
       "parameters": [
         {
           "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
@@ -6412,6 +6449,55 @@
           }
         ],
         "summary": "Get the list of payment service providers related to a broker",
+        "tags": [
+          "Payment Service Provider's Brokers"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/psp-brokers/{broker-tax-code}": {
+      "delete": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "deletePspBroker",
+        "parameters": [
+          {
+            "description": "Broker tax code",
+            "in": "path",
+            "name": "broker-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Deletes the Payment Service Provider's broker",
         "tags": [
           "Payment Service Provider's Brokers"
         ]
