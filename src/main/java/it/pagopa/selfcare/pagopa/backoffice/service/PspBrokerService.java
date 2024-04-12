@@ -59,5 +59,12 @@ public class PspBrokerService {
         return ChannelMapper.toResource(dto);
     }
 
-
+    /**
+     * Deletes the Payment Service Provider's broker
+     *
+     * @param brokerTaxCode Tax code of the broker to delete
+     */
+    public void deletePspBroker(String brokerTaxCode) {
+        apiConfigClient.deleteBrokerPsp(brokerTaxCode);
+    }
 }

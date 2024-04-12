@@ -251,4 +251,10 @@ public interface ApiConfigClient {
             @RequestParam(required = false, name = "segregationCode") Long segregationCode,
             @RequestParam(required = false, name = "mod4") Boolean mod4
     );
+
+    @DeleteMapping(value = "/brokerspsp/{brokerTaxCode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    void deleteBrokerPsp(@PathVariable("brokerTaxCode") String brokerTaxCode);
+
+    @DeleteMapping(value = "/brokers/{brokerTaxCode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    void deleteCIBroker(@PathVariable("brokerTaxCode") String brokerTaxCode);
 }

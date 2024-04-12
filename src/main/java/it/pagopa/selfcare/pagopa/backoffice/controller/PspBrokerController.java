@@ -89,5 +89,18 @@ public class PspBrokerController {
         return pspBrokerService.getPSPAssociatedToBroker(brokerCode, limit, page);
     }
 
-
+    /**
+     * Deletes the Payment Service Provider's broker
+     *
+     * @param brokerTaxCode Tax code of the broker to delete
+     */
+    @DeleteMapping(value = "/{broker-tax-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Deletes the Payment Service Provider's broker", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public void deletePspBroker(
+            @Parameter(description = "Broker tax code") @PathVariable("broker-tax-code") String brokerTaxCode
+    ){
+        pspBrokerService.deletePspBroker(brokerTaxCode);
+    }
 }
