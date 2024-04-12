@@ -80,6 +80,7 @@ microservice-chart:
     PAGOPA_APIM_SERVICE_URL: https://api.dev.platform.pagopa.it
     PAGOPA_SELFCARE_INTEGRATION_APIM_SERVICE_URL: https://api.dev.platform.pagopa.it
     GEC_SERVICE_URL: https://api.dev.platform.pagopa.it
+    FORWARDER_SERVICE_URL: https://api.dev.platform.pagopa.it
     TAXONOMY_SERVICE_URL: https://api.platform.pagopa.it
     AZURE_RESOURCE_GROUP: pagopa-d-api-rg
     AZURE_SERVICE_NAME: pagopa-d-apim
@@ -119,6 +120,7 @@ microservice-chart:
     PAPGOPA_APIM_GEC_API_KEY_PAGOPA: pagopa-d-apim-gec-key
     PAPGOPA_APIM_GPD_API_KEY_PAGOPA: pagopa-d-apim-gpd-key
     PAPGOPA_APIM_TAXONOMY_API_KEY_PAGOPA: pagopa-d-apim-taxonomy-key
+    PAPGOPA_APIM_FORWARDER_API_KEY_PAGOPA: pagopa-d-apim-forwarder-key
     PAGOPA_APIM_API_CONFIG_API_KEY_PAGOPA: pagopa-d-apim-api-config-key
     PAGOPA_APIM_API_CONFIG_SELFCARE_INTEGRATION_API_KEY_PAGOPA: pagopa-d-apim-api-config-selfcare-integration-key
     PAPGOPA_APIM_AUTHORIZER_CONFIG_API_KEY_PAGOPA: pagopa-d-apim-authorizer-config-key

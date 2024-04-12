@@ -82,6 +82,7 @@ microservice-chart:
     PAGOPA_APIM_SERVICE_URL: https://api.platform.pagopa.it
     PAGOPA_SELFCARE_INTEGRATION_APIM_SERVICE_URL: https://api.platform.pagopa.it
     GEC_SERVICE_URL: https://api.platform.pagopa.it
+    FORWARDER_SERVICE_URL: https://api.platform.pagopa.it
     TAXONOMY_SERVICE_URL: https://api.platform.pagopa.it
     AZURE_RESOURCE_GROUP: pagopa-p-api-rg
     AZURE_SERVICE_NAME: pagopa-p-apim
@@ -119,6 +120,7 @@ microservice-chart:
     SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selfcare-p-apim-external-api-key
     PAPGOPA_APIM_GEC_API_KEY_PAGOPA: pagopa-p-apim-gec-key
     PAPGOPA_APIM_GPD_API_KEY_PAGOPA: pagopa-p-apim-gpd-key
+    PAPGOPA_APIM_FORWARDER_API_KEY_PAGOPA: pagopa-p-apim-forwarder-key
     PAPGOPA_APIM_TAXONOMY_API_KEY_PAGOPA: pagopa-p-apim-taxonomy-key
     PAGOPA_APIM_API_CONFIG_API_KEY_PAGOPA: pagopa-p-apim-api-config-key
     PAGOPA_APIM_API_CONFIG_SELFCARE_INTEGRATION_API_KEY_PAGOPA: pagopa-p-apim-api-config-selfcare-integration-key

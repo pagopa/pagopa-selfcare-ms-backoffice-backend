@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.POST;
 
 @RestController
 @RequestMapping(value = "/stations")
@@ -165,5 +166,12 @@ public class StationController {
 
     }
 
+    @PostMapping(value = "/forward/test", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Test station connectivity", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public TestStationResource testStation(@RequestBody @Valid @NotNull StationTestDto stationTestDto) {
+        return stationService.testStation(stationTestDto);
+    }
 
 }
