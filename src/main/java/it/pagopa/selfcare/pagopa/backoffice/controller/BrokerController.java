@@ -30,15 +30,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -233,5 +225,20 @@ public class BrokerController {
             @RequestParam(required = false, defaultValue = "0") Integer page
     ) {
         return this.brokerService.getCIBrokerStations(brokerTaxCode, ciTaxCode, stationCode, page, limit);
+    }
+
+    /**
+     * Deletes the Creditor Institution's broker
+     *
+     * @param brokerTaxCode Tax code of the broker to delete
+     */
+    @DeleteMapping(value = "/{broker-tax-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Deletes the Creditor Institution's broker", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public void deleteCIBroker(
+            @Parameter(description = "Broker tax code") @PathVariable("broker-tax-code") String brokerTaxCode
+    ){
+        this.brokerService.deleteCIBroker(brokerTaxCode);
     }
 }
