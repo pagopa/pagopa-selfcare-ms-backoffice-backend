@@ -8200,6 +8200,9 @@
           },
           "institution_type": {
             "type": "string"
+          },
+          "is_institution_signed_in": {
+            "type": "boolean"
           }
         }
       },
