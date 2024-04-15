@@ -27,7 +27,7 @@ public class ChannelMapper {
             model.getBrokerPspList().forEach(i -> {
                 list.add(toResource(i));
             });
-            resource.setBrokerPspResources(list);
+            resource.setBrokerPspList(list);
 
 
         }

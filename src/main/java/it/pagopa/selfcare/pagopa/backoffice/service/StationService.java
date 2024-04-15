@@ -1,7 +1,9 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.ForwarderTestClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
@@ -51,6 +53,9 @@ public class StationService {
 
     @Autowired
     private AwsSesClient awsSesClient;
+
+    @Autowired
+    private ForwarderTestClient forwarderTestClient;
 
     @Autowired
     private JiraServiceManagerClient jiraServiceManagerClient;
@@ -265,6 +270,25 @@ public class StationService {
         pageInfo.setTotalItems(wrapperStationsApiConfig.getPageInfo().getTotalItems());
         result.setPageInfo(pageInfo);
         return result;
+    }
+
+    public TestStationResource testStation(StationTestDto stationTestDto) {
+        try {
+            forwarderTestClient.testForwardConnection(
+                    "",
+                    stationTestDto.getHostUrl(),
+                    stationTestDto.getHostPort(),
+                    stationTestDto.getHostPath()
+            );
+            return TestStationResource.builder().testResult(TestResultEnum.SUCCESS).message("OK").build();
+        } catch (FeignException feignException) {
+            if (feignException.status() == 400) {
+                return TestStationResource.builder().testResult(TestResultEnum.SUCCESS)
+                        .message("Success connection with 400 status").build();
+            }
+            return TestStationResource.builder().testResult(TestResultEnum.ERROR)
+                    .message("Connection Error with status: " + feignException.status()).build();
+        }
     }
 
 }

@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.3.39" #improve
+    tag: "2.3.42" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -80,6 +80,7 @@ microservice-chart:
     PAGOPA_APIM_SERVICE_URL: https://api.uat.platform.pagopa.it
     PAGOPA_SELFCARE_INTEGRATION_APIM_SERVICE_URL: https://api.uat.platform.pagopa.it
     GEC_SERVICE_URL: https://api.uat.platform.pagopa.it
+    FORWARDER_SERVICE_URL: https://api.uat.platform.pagopa.it
     TAXONOMY_SERVICE_URL: https://api.platform.pagopa.it
     AZURE_RESOURCE_GROUP: pagopa-u-api-rg
     AZURE_SERVICE_NAME: pagopa-u-apim
@@ -118,6 +119,7 @@ microservice-chart:
     SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA: selfcare-u-apim-external-api-key-env-prod
     PAPGOPA_APIM_GEC_API_KEY_PAGOPA: pagopa-u-apim-gec-key
     PAPGOPA_APIM_GPD_API_KEY_PAGOPA: pagopa-u-apim-gpd-key
+    PAPGOPA_APIM_FORWARDER_API_KEY_PAGOPA: pagopa-u-apim-forwarder-key
     PAPGOPA_APIM_TAXONOMY_API_KEY_PAGOPA: pagopa-u-apim-taxonomy-key
     PAGOPA_APIM_API_CONFIG_API_KEY_PAGOPA: pagopa-u-apim-api-config-key
     PAGOPA_APIM_API_CONFIG_SELFCARE_INTEGRATION_API_KEY_PAGOPA: pagopa-u-apim-api-config-selfcare-integration-key
