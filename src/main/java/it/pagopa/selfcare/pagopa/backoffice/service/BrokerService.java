@@ -154,10 +154,10 @@ public class BrokerService {
      * the specified broker's tax code and creditor institution's tax code.
      *
      * @param brokerTaxCode broker's tax code
-     * @param ciTaxCode creditor institution's tax code
-     * @param stationCode station identifier
-     * @param page page number
-     * @param limit page size
+     * @param ciTaxCode     creditor institution's tax code
+     * @param stationCode   station identifier
+     * @param page          page number
+     * @param limit         page size
      * @return the association info
      */
     public CIBrokerStationPage getCIBrokerStations(
@@ -189,6 +189,15 @@ public class BrokerService {
                 .ciBrokerStations(ciBrokerStations)
                 .pageInfo(creditorInstitutionsView.getPageInfo())
                 .build();
+    }
+
+    /**
+     * Deletes the Creditor Institution's broker
+     *
+     * @param brokerTaxCode Tax code of the broker to delete
+     */
+    public void deleteCIBroker(String brokerTaxCode) {
+        this.apiConfigClient.deleteCIBroker(brokerTaxCode);
     }
 
     private CIBrokerDelegationPage buildDelegationPageResponse(

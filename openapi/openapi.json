@@ -175,6 +175,119 @@
       }
     },
     "/brokers/{broker-tax-code}": {
+      "delete": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "deleteCIBroker",
+        "parameters": [
+          {
+            "description": "Broker tax code",
+            "in": "path",
+            "name": "broker-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not Found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Deletes the Creditor Institution's broker",
+        "tags": [
+          "Creditor institution's Brokers"
+        ]
+      },
       "parameters": [
         {
           "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
@@ -6038,7 +6151,7 @@
           {
             "description": "Broker's code",
             "in": "query",
-            "name": "broker-code",
+            "name": "brokerTaxCode",
             "required": true,
             "schema": {
               "type": "string"
@@ -6158,7 +6271,120 @@
         ]
       }
     },
-    "/psp-brokers/{broker-code}": {
+    "/psp-brokers/{broker-tax-code}": {
+      "delete": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "deletePspBroker",
+        "parameters": [
+          {
+            "description": "Broker tax code",
+            "in": "path",
+            "name": "broker-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not Found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Deletes the Payment Service Provider's broker",
+        "tags": [
+          "Payment Service Provider's Brokers"
+        ]
+      },
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId": "getBrokerPsp",
@@ -6166,7 +6392,7 @@
           {
             "description": "Broker's code",
             "in": "path",
-            "name": "broker-code",
+            "name": "broker-tax-code",
             "required": true,
             "schema": {
               "type": "string"
@@ -6220,7 +6446,7 @@
           {
             "description": "Broker code",
             "in": "path",
-            "name": "broker-code",
+            "name": "broker-tax-code",
             "required": true,
             "schema": {
               "type": "string"
@@ -6268,14 +6494,14 @@
         ]
       }
     },
-    "/psp-brokers/{broker-code}/channels": {
+    "/psp-brokers/{broker-tax-code}/channels": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId": "getChannelListByBroker",
         "parameters": [
           {
             "in": "path",
-            "name": "broker-code",
+            "name": "broker-tax-code",
             "required": true,
             "schema": {
               "type": "string"
@@ -6351,7 +6577,7 @@
         }
       ]
     },
-    "/psp-brokers/{broker-code}/payment-service-providers": {
+    "/psp-brokers/{broker-tax-code}/payment-service-providers": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId": "getPspBrokerPsp",
@@ -6379,7 +6605,7 @@
           {
             "description": "Broker code of a PSP",
             "in": "path",
-            "name": "broker-code",
+            "name": "broker-tax-code",
             "required": true,
             "schema": {
               "type": "string"

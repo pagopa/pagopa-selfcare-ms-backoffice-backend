@@ -30,6 +30,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -206,10 +207,10 @@ public class BrokerController {
      * the specified broker's tax code and creditor institution's tax code.
      *
      * @param brokerTaxCode broker's tax code
-     * @param ciTaxCode creditor institution's tax code
-     * @param stationCode station identifier
-     * @param page page number
-     * @param limit page size
+     * @param ciTaxCode     creditor institution's tax code
+     * @param stationCode   station identifier
+     * @param page          page number
+     * @param limit         page size
      * @return the association info
      */
     @GetMapping("/{broker-tax-code}/creditor-institutions/{ci-tax-code}/stations")
@@ -233,5 +234,28 @@ public class BrokerController {
             @RequestParam(required = false, defaultValue = "0") Integer page
     ) {
         return this.brokerService.getCIBrokerStations(brokerTaxCode, ciTaxCode, stationCode, page, limit);
+    }
+
+    /**
+     * Deletes the Creditor Institution's broker
+     *
+     * @param brokerTaxCode Tax code of the broker to delete
+     */
+    @DeleteMapping(value = "/{broker-tax-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Deletes the Creditor Institution's broker", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    public void deleteCIBroker(
+            @Parameter(description = "Broker tax code") @PathVariable("broker-tax-code") String brokerTaxCode
+    ) {
+        this.brokerService.deleteCIBroker(brokerTaxCode);
     }
 }

@@ -454,6 +454,11 @@ class BrokerServiceTest {
         assertNull(stationResource.getActivationDate());
     }
 
+    @Test
+    void deleteCIBroker() {
+        assertDoesNotThrow(() -> sut.deleteCIBroker(anyString()));
+    }
+
     private WrapperEntities<Object> buildWrapper(Instant modifiedAt, Instant activationDate) {
         WrapperEntities<Object> entities = new WrapperEntities<>();
 
