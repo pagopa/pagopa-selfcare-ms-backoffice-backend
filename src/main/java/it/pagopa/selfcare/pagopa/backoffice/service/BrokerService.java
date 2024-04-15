@@ -121,11 +121,8 @@ public class BrokerService {
         List<DelegationExternal> delegationResponse =
                 this.externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
 
-        List<CIBrokerDelegationResource> delegationList = delegationResponse.stream()
-                .map(elem -> modelMapper.map(elem, CIBrokerDelegationResource.class)).toList();
-
         // filter by roles
-        delegationList = delegationList.parallelStream()
+        delegationResponse = delegationResponse.parallelStream()
                 .filter(Objects::nonNull)
                 .filter(delegation -> RoleType.EC
                         .equals(RoleType.fromSelfcareRole(delegation.getInstitutionType())))
@@ -133,24 +130,28 @@ public class BrokerService {
                 .toList();
 
         int fromIndex = page * limit;
-        if (delegationList.size() < fromIndex) {
-            return buildDelegationPageResponse(Collections.emptyList(), limit, page, delegationList.size());
+        if (delegationResponse.size() < fromIndex) {
+            return buildDelegationPageResponse(Collections.emptyList(), limit, page, delegationResponse.size());
         }
-        List<CIBrokerDelegationResource> selectedDelegationPage =
-                delegationList.subList(fromIndex, Math.min(fromIndex + limit, delegationList.size()));
+        List<DelegationExternal> subList =
+                delegationResponse.subList(fromIndex, Math.min(fromIndex + limit, delegationResponse.size()));
 
-        selectedDelegationPage.parallelStream().forEach(delegation -> {
-            String institutionTaxCode = delegation.getInstitutionTaxCode();
-            delegation.setInstitutionStationCount(getInstitutionsStationCount(brokerCode, institutionTaxCode));
-            try {
-                delegation.setCbillCode(getInstitutionCBILLCode(institutionTaxCode));
-                delegation.setIsInstitutionSignedIn(true);
-            } catch (FeignException.NotFound e) {
-                delegation.setIsInstitutionSignedIn(false);
-            }
-        });
+        List<CIBrokerDelegationResource> selectedDelegationPage = subList.parallelStream()
+                .map(elem -> modelMapper.map(elem, CIBrokerDelegationResource.class))
+                .map(delegation -> {
+                    String institutionTaxCode = delegation.getInstitutionTaxCode();
+                    delegation.setInstitutionStationCount(getInstitutionsStationCount(brokerCode, institutionTaxCode));
+                    try {
+                        delegation.setCbillCode(getInstitutionCBILLCode(institutionTaxCode));
+                        delegation.setIsInstitutionSignedIn(true);
+                    } catch (FeignException.NotFound e) {
+                        delegation.setIsInstitutionSignedIn(false);
+                    }
+                    return delegation;
+                })
+                .toList();
 
-        return buildDelegationPageResponse(selectedDelegationPage, limit, page, delegationList.size());
+        return buildDelegationPageResponse(selectedDelegationPage, limit, page, delegationResponse.size());
     }
 
     /**

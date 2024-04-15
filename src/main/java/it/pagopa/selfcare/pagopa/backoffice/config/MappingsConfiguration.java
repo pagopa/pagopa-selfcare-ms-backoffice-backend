@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.config;
 
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ConvertCreditorInstitutionViewToCIBrokerStationResource;
-import it.pagopa.selfcare.pagopa.backoffice.mapper.ConvertDelegationExternalToMyCIResource;
+import it.pagopa.selfcare.pagopa.backoffice.mapper.ConvertDelegationExternalToCIBrokerDelegationResource;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ConvertIbanToIbanCreateApiconfig;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ConvertInstitutionInfoToInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.LocalDateToOffset;
@@ -34,7 +34,7 @@ public class MappingsConfiguration {
         mapper.createTypeMap(Iban.class, IbanCreateApiconfig.class).setConverter(new ConvertIbanToIbanCreateApiconfig());
         mapper.createTypeMap(LocalDate.class, OffsetDateTime.class).setConverter(new LocalDateToOffset());
         mapper.createTypeMap(OffsetDateTime.class, LocalDate.class).setConverter(new OffsetToLocalDate());
-        mapper.createTypeMap(DelegationExternal.class, CIBrokerDelegationResource.class).setConverter(new ConvertDelegationExternalToMyCIResource());
+        mapper.createTypeMap(DelegationExternal.class, CIBrokerDelegationResource.class).setConverter(new ConvertDelegationExternalToCIBrokerDelegationResource());
         mapper.createTypeMap(CreditorInstitutionView.class, CIBrokerStationResource.class).setConverter(new ConvertCreditorInstitutionViewToCIBrokerStationResource());
 
         return mapper;

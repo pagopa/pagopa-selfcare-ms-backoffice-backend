@@ -8,7 +8,7 @@ import org.modelmapper.spi.MappingContext;
 /**
  * Converter class that specify how to convert a {@link DelegationExternal} instance to a {@link CIBrokerDelegationResource} instance
  */
-public class ConvertDelegationExternalToMyCIResource implements Converter<DelegationExternal, CIBrokerDelegationResource> {
+public class ConvertDelegationExternalToCIBrokerDelegationResource implements Converter<DelegationExternal, CIBrokerDelegationResource> {
 
     @Override
     public CIBrokerDelegationResource convert(MappingContext<DelegationExternal, CIBrokerDelegationResource> context) {
