@@ -51,6 +51,10 @@ public class CIBrokerDelegationResource {
     @ApiModelProperty(value = "Number of institution's stations")
     @JsonProperty(value = "institution_station_count")
     private Long institutionStationCount;
+
+    @ApiModelProperty(value = "Describe if the institution has completed the process of sign in")
+    @JsonProperty(value = "is_institution_signed_in")
+    private Boolean isInstitutionSignedIn;
 }
 
 

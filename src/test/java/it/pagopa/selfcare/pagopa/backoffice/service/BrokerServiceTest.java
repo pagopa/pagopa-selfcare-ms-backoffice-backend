@@ -7,7 +7,6 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
-import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
@@ -142,7 +141,7 @@ class BrokerServiceTest {
                 .thenReturn(buildStationDetailsList(3L));
         when(apiConfigSelfcareIntegrationClient.getStationsDetailsListByBroker(
                 eq(BROKER_CODE), eq(null), eq(INSTITUTION_TAX_CODE_3), anyInt(), anyInt()))
-                .thenReturn(new StationDetailsList());
+                .thenReturn(buildStationDetailsList(null));
 
         when(apiConfigClient.getCreditorInstitutionDetails(INSTITUTION_TAX_CODE_1))
                 .thenReturn(buildCreditorInstitutionDetails(CBILL_1));
@@ -164,25 +163,28 @@ class BrokerServiceTest {
                         .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_1))
                 .findFirst();
         assertTrue(first.isPresent());
-        CIBrokerDelegationResource CIBrokerDelegationResource1 = first.get();
-        assertEquals(3L, CIBrokerDelegationResource1.getInstitutionStationCount());
-        assertEquals(CBILL_1, CIBrokerDelegationResource1.getCbillCode());
+        CIBrokerDelegationResource ciBrokerDelegationResource1 = first.get();
+        assertEquals(3L, ciBrokerDelegationResource1.getInstitutionStationCount());
+        assertEquals(CBILL_1, ciBrokerDelegationResource1.getCbillCode());
+        assertTrue(ciBrokerDelegationResource1.getIsInstitutionSignedIn());
 
         Optional<CIBrokerDelegationResource> second = delegationResources.stream().filter(delegation -> delegation
                         .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_2))
                 .findFirst();
         assertTrue(second.isPresent());
-        CIBrokerDelegationResource CIBrokerDelegationResource2 = second.get();
-        assertEquals(3L, CIBrokerDelegationResource2.getInstitutionStationCount());
-        assertEquals(CBILL_2, CIBrokerDelegationResource2.getCbillCode());
+        CIBrokerDelegationResource ciBrokerDelegationResource2 = second.get();
+        assertEquals(3L, ciBrokerDelegationResource2.getInstitutionStationCount());
+        assertEquals(CBILL_2, ciBrokerDelegationResource2.getCbillCode());
+        assertTrue(ciBrokerDelegationResource2.getIsInstitutionSignedIn());
 
         Optional<CIBrokerDelegationResource> third = delegationResources.stream().filter(delegation -> delegation
                         .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_3))
                 .findFirst();
         assertTrue(third.isPresent());
-        CIBrokerDelegationResource CIBrokerDelegationResource3 = third.get();
-        assertEquals(0L, CIBrokerDelegationResource3.getInstitutionStationCount());
-        assertNull(CIBrokerDelegationResource3.getCbillCode());
+        CIBrokerDelegationResource ciBrokerDelegationResource3 = third.get();
+        assertEquals(0L, ciBrokerDelegationResource3.getInstitutionStationCount());
+        assertNull(ciBrokerDelegationResource3.getCbillCode());
+        assertTrue(ciBrokerDelegationResource3.getIsInstitutionSignedIn());
 
         verify(externalApiClient).getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString());
         verify(apiConfigSelfcareIntegrationClient, times(3))
@@ -228,17 +230,19 @@ class BrokerServiceTest {
                         .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_1))
                 .findFirst();
         assertTrue(first.isPresent());
-        CIBrokerDelegationResource CIBrokerDelegationResource1 = first.get();
-        assertEquals(3L, CIBrokerDelegationResource1.getInstitutionStationCount());
-        assertEquals(CBILL_1, CIBrokerDelegationResource1.getCbillCode());
+        CIBrokerDelegationResource ciBrokerDelegationResource1 = first.get();
+        assertEquals(3L, ciBrokerDelegationResource1.getInstitutionStationCount());
+        assertEquals(CBILL_1, ciBrokerDelegationResource1.getCbillCode());
+        assertTrue(ciBrokerDelegationResource1.getIsInstitutionSignedIn());
 
         Optional<CIBrokerDelegationResource> second = delegationResources.stream().filter(delegation -> delegation
                         .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_2))
                 .findFirst();
         assertTrue(second.isPresent());
-        CIBrokerDelegationResource CIBrokerDelegationResource2 = second.get();
-        assertEquals(3L, CIBrokerDelegationResource2.getInstitutionStationCount());
-        assertEquals(CBILL_2, CIBrokerDelegationResource2.getCbillCode());
+        CIBrokerDelegationResource ciBrokerDelegationResource2 = second.get();
+        assertEquals(3L, ciBrokerDelegationResource2.getInstitutionStationCount());
+        assertEquals(CBILL_2, ciBrokerDelegationResource2.getCbillCode());
+        assertTrue(ciBrokerDelegationResource2.getIsInstitutionSignedIn());
 
         verify(externalApiClient).getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString());
         verify(apiConfigSelfcareIntegrationClient, times(2))
@@ -339,9 +343,10 @@ class BrokerServiceTest {
                         .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_1))
                 .findFirst();
         assertTrue(first.isPresent());
-        CIBrokerDelegationResource CIBrokerDelegationResource1 = first.get();
-        assertEquals(stationCount, CIBrokerDelegationResource1.getInstitutionStationCount());
-        assertNull(CIBrokerDelegationResource1.getCbillCode());
+        CIBrokerDelegationResource ciBrokerDelegationResource1 = first.get();
+        assertEquals(stationCount, ciBrokerDelegationResource1.getInstitutionStationCount());
+        assertNull(ciBrokerDelegationResource1.getCbillCode());
+        assertFalse(ciBrokerDelegationResource1.getIsInstitutionSignedIn());
 
         verify(externalApiClient).getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString());
         verify(apiConfigSelfcareIntegrationClient, times(1))
@@ -490,7 +495,7 @@ class BrokerServiceTest {
                 .build();
     }
 
-    private StationDetailsList buildStationDetailsList(long totalItems) {
+    private StationDetailsList buildStationDetailsList(Long totalItems) {
         PageInfo pageInfo = new PageInfo();
         pageInfo.setTotalItems(totalItems);
         StationDetailsList stationDetailsList = new StationDetailsList();

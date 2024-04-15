@@ -5,7 +5,6 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
@@ -130,12 +129,12 @@ public class BrokerService {
                 .filter(Objects::nonNull)
                 .filter(delegation -> RoleType.EC
                         .equals(RoleType.fromSelfcareRole(delegation.getInstitutionType())))
-                .filter(delegation -> institutionNameMatchFilter(ciName, delegation))
+                .filter(delegation -> institutionNameMatchFilter(ciName, delegation.getInstitutionName()))
                 .toList();
 
         int fromIndex = page * limit;
         if (delegationList.size() < fromIndex) {
-            return buildDelegationPageResponse(Collections.emptyList(), limit, page, delegationList);
+            return buildDelegationPageResponse(Collections.emptyList(), limit, page, delegationList.size());
         }
         List<CIBrokerDelegationResource> selectedDelegationPage =
                 delegationList.subList(fromIndex, Math.min(fromIndex + limit, delegationList.size()));
@@ -143,10 +142,15 @@ public class BrokerService {
         selectedDelegationPage.parallelStream().forEach(delegation -> {
             String institutionTaxCode = delegation.getInstitutionTaxCode();
             delegation.setInstitutionStationCount(getInstitutionsStationCount(brokerCode, institutionTaxCode));
-            delegation.setCbillCode(getInstitutionCBILLCode(institutionTaxCode));
+            try {
+                delegation.setCbillCode(getInstitutionCBILLCode(institutionTaxCode));
+                delegation.setIsInstitutionSignedIn(true);
+            } catch (FeignException.NotFound e) {
+                delegation.setIsInstitutionSignedIn(false);
+            }
         });
 
-        return buildDelegationPageResponse(selectedDelegationPage, limit, page, delegationList);
+        return buildDelegationPageResponse(selectedDelegationPage, limit, page, delegationList.size());
     }
 
     /**
@@ -204,7 +208,7 @@ public class BrokerService {
             List<CIBrokerDelegationResource> delegationPage,
             Integer limit,
             Integer page,
-            List<CIBrokerDelegationResource> delegationList
+            int completeDelegationListSize
     ) {
         return CIBrokerDelegationPage.builder()
                 .ciBrokerDelegationResources(delegationPage)
@@ -212,42 +216,37 @@ public class BrokerService {
                         .itemsFound(delegationPage.size())
                         .limit(limit)
                         .page(page)
-                        .totalPages((int) Math.ceil(delegationList.size() * 1.0 / limit))
-                        .totalItems((long) delegationList.size())
+                        .totalPages((int) Math.ceil(completeDelegationListSize * 1.0 / limit))
+                        .totalItems((long) completeDelegationListSize)
                         .build())
                 .build();
     }
 
-    private boolean institutionNameMatchFilter(String ciName, CIBrokerDelegationResource delegation) {
-        if (ciName == null || ciName.trim().isEmpty()) {
+    private boolean institutionNameMatchFilter(String filterCIName, String delegationInstitutionName) {
+        if (filterCIName == null || filterCIName.trim().isEmpty()) {
             return true;
         }
-        if (delegation.getInstitutionName() == null) {
+        if (delegationInstitutionName == null) {
             return false;
         }
-        return delegation.getInstitutionName().toLowerCase().contains(ciName.toLowerCase());
+        return delegationInstitutionName.toLowerCase().contains(filterCIName.toLowerCase());
     }
 
     private Long getInstitutionsStationCount(String brokerCode, String institutionTaxCode) {
         StationDetailsList response = this.apiConfigSelfcareIntegrationClient
                 .getStationsDetailsListByBroker(brokerCode, null, institutionTaxCode, 1, 0);
-        if (response.getPageInfo() != null && response.getPageInfo().getTotalItems() != null) {
+        if (response.getPageInfo().getTotalItems() != null) {
             return response.getPageInfo().getTotalItems();
         }
         return 0L;
     }
 
     private String getInstitutionCBILLCode(String institutionTaxCode) {
-        try {
-            CreditorInstitutionDetails dto =
-                    this.apiConfigClient.getCreditorInstitutionDetails(institutionTaxCode);
-            if (dto != null) {
-                return dto.getCbillCode();
-            }
-            return null;
-        } catch (FeignException.NotFound e) {
-            return null;
+        CreditorInstitutionDetails dto = this.apiConfigClient.getCreditorInstitutionDetails(institutionTaxCode);
+        if (dto != null) {
+            return dto.getCbillCode();
         }
+        return null;
     }
 
     private CIBrokerStationResource enrichBrokerStation(CIBrokerStationResource ciBrokerStation) {
