@@ -5921,6 +5921,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "description": "Dynamic filter for both IUV and debtor tax code",
+            "in": "query",
+            "name": "debtorOrIuv",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -5928,7 +5937,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ReceiptsInfo"
+                  "$ref": "#/components/schemas/PaymentsResult"
                 }
               }
             },
@@ -9552,6 +9561,29 @@
           }
         }
       },
+      "PaymentsResult": {
+        "type": "object",
+        "properties": {
+          "currentPageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "length": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "ProblemJson": {
         "required": [
           "detail",
@@ -9689,37 +9721,6 @@
           },
           "vat_number_group": {
             "type": "boolean"
-          }
-        }
-      },
-      "ReceiptModelResponse": {
-        "type": "object",
-        "properties": {
-          "debtor": {
-            "type": "string"
-          },
-          "iuv": {
-            "type": "string"
-          },
-          "organizationFiscalCode": {
-            "type": "string"
-          },
-          "paymentDateTime": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string"
-          }
-        }
-      },
-      "ReceiptsInfo": {
-        "type": "object",
-        "properties": {
-          "receipts_list": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ReceiptModelResponse"
-            }
           }
         }
       },
