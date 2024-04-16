@@ -55,6 +55,7 @@ class PaymentsReceiptsControllerTest {
                         .param("debtorTaxCode", DEBTOR_TAX_CODE)
                         .param("fromDate", FROM_DATE)
                         .param("toDate", TO_DATE)
+                        .param("debtorOrIuv", IUV)
                 ).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
