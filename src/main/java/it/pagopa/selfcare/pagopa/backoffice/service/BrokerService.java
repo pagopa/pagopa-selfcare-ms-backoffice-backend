@@ -5,7 +5,6 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
@@ -17,23 +16,26 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.BrokerEcDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationPage;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerStationPage;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerStationResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokersResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsResourceList;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import org.mapstruct.factory.Mappers;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 
@@ -119,35 +121,25 @@ public class BrokerService {
             Integer page,
             Integer limit
     ) {
-        List<DelegationExternal> delegationResponse =
-                this.externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
-
-        List<CIBrokerDelegationResource> delegationList = delegationResponse.stream()
-                .map(elem -> modelMapper.map(elem, CIBrokerDelegationResource.class)).toList();
-
-        // filter by roles
-        delegationList = delegationList.parallelStream()
-                .filter(Objects::nonNull)
-                .filter(delegation -> RoleType.EC
-                        .equals(RoleType.fromSelfcareRole(delegation.getInstitutionType())))
-                .filter(delegation -> institutionNameMatchFilter(ciName, delegation))
-                .toList();
+        List<DelegationExternal> delegationResponse = getDelegationResponse(brokerId, ciName);
 
         int fromIndex = page * limit;
-        if (delegationList.size() < fromIndex) {
-            return buildDelegationPageResponse(Collections.emptyList(), limit, page, delegationList);
+        List<CIBrokerDelegationResource> selectedDelegationPage;
+        if (fromIndex > delegationResponse.size()) {
+            // if the index is out of bound 
+            selectedDelegationPage = Collections.emptyList();
+        } else {
+            // we simulate the pagination of the response, so we split the response
+            List<DelegationExternal> subList = delegationResponse.subList(fromIndex, Math.min(fromIndex + limit, delegationResponse.size()));
+
+            selectedDelegationPage = subList.parallelStream()
+                    .map(elem -> enrichDelegationResponse(brokerCode, elem))
+                    .toList();
         }
-        List<CIBrokerDelegationResource> selectedDelegationPage =
-                delegationList.subList(fromIndex, Math.min(fromIndex + limit, delegationList.size()));
 
-        selectedDelegationPage.parallelStream().forEach(delegation -> {
-            String institutionTaxCode = delegation.getInstitutionTaxCode();
-            delegation.setInstitutionStationCount(getInstitutionsStationCount(brokerCode, institutionTaxCode));
-            delegation.setCbillCode(getInstitutionCBILLCode(institutionTaxCode));
-        });
-
-        return buildDelegationPageResponse(selectedDelegationPage, limit, page, delegationList);
+        return buildDelegationPageResponse(selectedDelegationPage, limit, page, delegationResponse.size());
     }
+
 
     /**
      * Retrieve the paginated association info between broker's stations and creditor institutions for
@@ -204,7 +196,7 @@ public class BrokerService {
             List<CIBrokerDelegationResource> delegationPage,
             Integer limit,
             Integer page,
-            List<CIBrokerDelegationResource> delegationList
+            int completeDelegationListSize
     ) {
         return CIBrokerDelegationPage.builder()
                 .ciBrokerDelegationResources(delegationPage)
@@ -212,42 +204,37 @@ public class BrokerService {
                         .itemsFound(delegationPage.size())
                         .limit(limit)
                         .page(page)
-                        .totalPages((int) Math.ceil(delegationList.size() * 1.0 / limit))
-                        .totalItems((long) delegationList.size())
+                        .totalPages((int) Math.ceil(completeDelegationListSize * 1.0 / limit))
+                        .totalItems((long) completeDelegationListSize)
                         .build())
                 .build();
     }
 
-    private boolean institutionNameMatchFilter(String ciName, CIBrokerDelegationResource delegation) {
-        if (ciName == null || ciName.trim().isEmpty()) {
+    private boolean institutionNameMatchFilter(String filterCIName, String delegationInstitutionName) {
+        if (filterCIName == null || filterCIName.trim().isEmpty()) {
             return true;
         }
-        if (delegation.getInstitutionName() == null) {
+        if (delegationInstitutionName == null) {
             return false;
         }
-        return delegation.getInstitutionName().toLowerCase().contains(ciName.toLowerCase());
+        return delegationInstitutionName.toLowerCase().contains(filterCIName.toLowerCase());
     }
 
     private Long getInstitutionsStationCount(String brokerCode, String institutionTaxCode) {
         StationDetailsList response = this.apiConfigSelfcareIntegrationClient
                 .getStationsDetailsListByBroker(brokerCode, null, institutionTaxCode, 1, 0);
-        if (response.getPageInfo() != null && response.getPageInfo().getTotalItems() != null) {
+        if (response.getPageInfo().getTotalItems() != null) {
             return response.getPageInfo().getTotalItems();
         }
         return 0L;
     }
 
     private String getInstitutionCBILLCode(String institutionTaxCode) {
-        try {
-            CreditorInstitutionDetails dto =
-                    this.apiConfigClient.getCreditorInstitutionDetails(institutionTaxCode);
-            if (dto != null) {
-                return dto.getCbillCode();
-            }
-            return null;
-        } catch (FeignException.NotFound e) {
-            return null;
+        CreditorInstitutionDetails dto = this.apiConfigClient.getCreditorInstitutionDetails(institutionTaxCode);
+        if (dto != null) {
+            return dto.getCbillCode();
         }
+        return null;
     }
 
     private CIBrokerStationResource enrichBrokerStation(CIBrokerStationResource ciBrokerStation) {
@@ -262,5 +249,43 @@ public class BrokerService {
         ciBrokerStation.setActivationDate(details.getActivationDate());
         ciBrokerStation.setModifiedAt(result.getModifiedAt());
         return ciBrokerStation;
+    }
+
+    /**
+     * Add some data (number of the stations and CBILL code) from ApiConfig
+     *
+     * @param brokerCode         the broker code
+     * @param delegationExternal delegation info from selfcare
+     * @return a new Delegation with the number of the stations and CBILL code
+     */
+    private CIBrokerDelegationResource enrichDelegationResponse(String brokerCode, DelegationExternal delegationExternal) {
+        var delegation = modelMapper.map(delegationExternal, CIBrokerDelegationResource.class);
+        String institutionTaxCode = delegation.getInstitutionTaxCode();
+        delegation.setInstitutionStationCount(getInstitutionsStationCount(brokerCode, institutionTaxCode));
+        try {
+            delegation.setCbillCode(getInstitutionCBILLCode(institutionTaxCode));
+            delegation.setIsInstitutionSignedIn(true);
+        } catch (FeignException.NotFound e) {
+            delegation.setIsInstitutionSignedIn(false);
+        }
+        return delegation;
+    }
+
+    /**
+     * It retrieves the Creditor Institution with delegate for the broker from selfcare
+     *
+     * @param brokerId filtered by broker
+     * @param ciName   filtered by name
+     * @return a filtered list of delegations
+     */
+    private List<DelegationExternal> getDelegationResponse(String brokerId, String ciName) {
+        List<DelegationExternal> delegationResponse = this.externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
+
+        // filter by roles
+        return delegationResponse.parallelStream()
+                .filter(Objects::nonNull)
+                .filter(delegation -> RoleType.EC.equals(RoleType.fromSelfcareRole(delegation.getInstitutionType())))
+                .filter(delegation -> institutionNameMatchFilter(ciName, delegation.getInstitutionName()))
+                .toList();
     }
 }
