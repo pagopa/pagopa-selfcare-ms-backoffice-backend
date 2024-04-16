@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.3.43" #improve
+    tag: "2.3.44" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
