@@ -1,7 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.GpdFeignConfig;
-import it.pagopa.selfcare.pagopa.backoffice.model.paymentsreceipts.ReceiptsInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.paymentsreceipts.PaymentsResult;
+import it.pagopa.selfcare.pagopa.backoffice.model.paymentsreceipts.ReceiptModelResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,13 +15,14 @@ public interface GpdClient {
 
     @GetMapping(value = "/payments/{organizationTaxCode}/receipts", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    ReceiptsInfo getPaymentsReceipts(@PathVariable String organizationTaxCode,
-                                     @RequestParam Integer pageNum,
-                                     @RequestParam(required = false) Integer pageSize,
-                                     @RequestParam(required = false) String debtor,
-                                     @RequestParam(required = false) String service,
-                                     @RequestParam(required = false) String from,
-                                     @RequestParam(required = false) String to);
+    PaymentsResult<ReceiptModelResponse> getPaymentsReceipts(@PathVariable String organizationTaxCode,
+                                                             @RequestParam Integer pageNum,
+                                                             @RequestParam(required = false) Integer pageSize,
+                                                             @RequestParam(required = false) String debtor,
+                                                             @RequestParam(required = false) String service,
+                                                             @RequestParam(required = false) String from,
+                                                             @RequestParam(required = false) String to,
+                                                             @RequestParam(required = false) String debtorOrIuv);
 
     @GetMapping(value = "/payments/{organizationTaxCode}/receipts/{iuv}", produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody

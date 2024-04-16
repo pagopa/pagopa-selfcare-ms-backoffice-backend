@@ -1,6 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
-import it.pagopa.selfcare.pagopa.backoffice.model.paymentsreceipts.ReceiptsInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.paymentsreceipts.PaymentsResult;
 import it.pagopa.selfcare.pagopa.backoffice.service.PaymentsReceiptsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +35,8 @@ class PaymentsReceiptsControllerTest {
     @Test
     void getPaymentsReceiptsWithDefaultParamsOK() throws Exception {
         String url = "/payments-receipts/{organization-tax-code}";
-        when(service.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, null, null, null)).thenReturn(
-                new ReceiptsInfo()
+        when(service.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, null, null, null, null)).thenReturn(
+                new PaymentsResult<>()
         );
         mvc.perform(get(url, ORGANIZATION_TAX_CODE)
                 ).andExpect(status().isOk())
@@ -46,8 +46,8 @@ class PaymentsReceiptsControllerTest {
     @Test
     void getPaymentsReceiptsWithCustomParamsOK() throws Exception {
         String url = "/payments-receipts/{organization-tax-code}";
-        when(service.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 5, 25, DEBTOR_TAX_CODE, FROM_DATE, TO_DATE)).thenReturn(
-                new ReceiptsInfo()
+        when(service.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 5, 25, DEBTOR_TAX_CODE, FROM_DATE, TO_DATE, IUV)).thenReturn(
+                new PaymentsResult<>()
         );
         mvc.perform(get(url, ORGANIZATION_TAX_CODE)
                         .param("page", String.valueOf(5))
@@ -67,6 +67,6 @@ class PaymentsReceiptsControllerTest {
         );
         mvc.perform(get(url, ORGANIZATION_TAX_CODE, IUV)
                 ).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_XML_VALUE+";charset=UTF-8"));
+                .andExpect(content().contentType(MediaType.APPLICATION_XML_VALUE + ";charset=UTF-8"));
     }
 }

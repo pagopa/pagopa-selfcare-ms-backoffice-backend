@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.GpdClient;
-import it.pagopa.selfcare.pagopa.backoffice.model.paymentsreceipts.ReceiptsInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.paymentsreceipts.PaymentsResult;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,10 +25,10 @@ class PaymentsReceiptsServiceTest {
     private PaymentsReceiptsService service;
     @Test
     void getPaymentsReceipts() {
-        when(client.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, DEBTOR_TAX_CODE, SERVICE_CODE, FROM_DATE, TO_DATE)).thenReturn(
-                new ReceiptsInfo());
+        when(client.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, DEBTOR_TAX_CODE, SERVICE_CODE, FROM_DATE, TO_DATE, IUV)).thenReturn(
+                new PaymentsResult<>());
         assertDoesNotThrow(
-                () -> service.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, DEBTOR_TAX_CODE, FROM_DATE, TO_DATE));
+                () -> service.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, DEBTOR_TAX_CODE, FROM_DATE, TO_DATE, IUV));
     }
     @Test
     void getPaymentReceiptDetail() {
