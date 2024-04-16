@@ -3,8 +3,6 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 import feign.Headers;
 import feign.Param;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.ForwarderFeignConfig;
-import it.pagopa.selfcare.pagopa.backoffice.config.feign.GpdFeignConfig;
-import it.pagopa.selfcare.pagopa.backoffice.model.paymentsreceipts.ReceiptsInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
