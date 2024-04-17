@@ -8,6 +8,9 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiFiscalCodeList;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -28,71 +31,117 @@ import java.util.List;
 @FeignClient(name = "gec", url = "${rest-client.gec.base-url}", configuration = GecFeignConfig.class)
 public interface GecClient {
 
-    @GetMapping(value = "/cis/{cifiscalcode}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/cis/{ci-tax-code}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    Bundles getBundlesByCI(@PathVariable(required = true) String cifiscalcode,
-                           @RequestParam(required = false) Integer limit,
-                           @RequestParam(required = false) Integer page);
+    Bundles getBundlesByCI(
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer page
+    );
 
     @GetMapping(value = "/touchpoints", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    TouchpointsDTO getTouchpoints(@RequestParam(required = false) Integer limit,
-                                  @RequestParam(required = false) Integer page);
+    TouchpointsDTO getTouchpoints(
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer page
+    );
 
-    @GetMapping(value = "/psps/{idpsp}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/psps/{psp-code}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    Bundles getBundlesByPSP(@PathVariable(required = true) String idpsp,
-                            @RequestParam(required = false) List<BundleType> types,
-                            @RequestParam(required = false) String name,
-                            @RequestParam(required = false) Integer limit,
-                            @RequestParam(required = false) Integer page);
+    Bundles getBundlesByPSP(
+            @PathVariable("psp-code") String pspCode,
+            @RequestParam(required = false) List<BundleType> types,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer page
+    );
 
-    @PostMapping(value = "/psps/{idpsp}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/psps/{psp-code}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    BundleCreateResponse createPSPBundle(@PathVariable(required = true) String idpsp,
-                                         @RequestBody @NotNull BundleRequest bundle);
+    BundleCreateResponse createPSPBundle(
+            @PathVariable("psp-code") String pspCode,
+            @RequestBody @NotNull BundleRequest bundle
+    );
 
     @GetMapping(value = "/paymenttypes", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    BundlePaymentTypesDTO getPaymenttypes(@RequestParam(required = false) Integer limit,
-                                          @RequestParam(required = false) Integer page);
+    BundlePaymentTypesDTO getPaymenttypes(
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer page
+    );
 
-    @GetMapping(value = "/psps/{idpsp}/bundles/{idbundle}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/psps/{psp-code}/bundles/{id-bundle}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    Bundle getBundleDetailByPSP(@PathVariable() String idpsp,
-                                @PathVariable() String idbundle);
+    Bundle getBundleDetailByPSP(
+            @PathVariable("psp-code") String pspCode,
+            @PathVariable("id-bundle") String idBundle
+    );
 
-    @PutMapping(value = "/psps/{idpsp}/bundles/{idbundle}", produces = MediaType.APPLICATION_JSON_VALUE)
-    void updatePSPBundle(@PathVariable() String idpsp,
-                         @PathVariable() String idbundle,
-                         @RequestBody @NotNull BundleRequest bundle);
+    @PutMapping(value = "/psps/{psp-code}/bundles/{id-bundle}", produces = MediaType.APPLICATION_JSON_VALUE)
+    void updatePSPBundle(
+            @PathVariable("psp-code") String pspCode,
+            @PathVariable("id-bundle") String idBundle,
+            @RequestBody @NotNull BundleRequest bundle
+    );
 
-    @DeleteMapping(value = "/psps/{idpsp}/bundles/{idbundle}", produces = MediaType.APPLICATION_JSON_VALUE)
-    void deletePSPBundle(@PathVariable() String idpsp,
-                         @PathVariable() String idbundle);
+    @DeleteMapping(value = "/psps/{psp-code}/bundles/{id-bundle}", produces = MediaType.APPLICATION_JSON_VALUE)
+    void deletePSPBundle(
+            @PathVariable("psp-code") String pspCode,
+            @PathVariable("id-bundle") String idBundle
+    );
 
     @PostMapping(value = "/psps/{psp-code}/requests/{id-bundle-request}/accept")
     @Retryable(
             exclude = FeignException.FeignClientException.class,
             maxAttemptsExpression = "${retry.utils.maxAttempts}",
             backoff = @Backoff(delayExpression = "${retry.utils.maxDelay}"))
-    void acceptPublicBundleSubscriptionsByPSP(@PathVariable("psp-code") String pspCode,
-                                              @PathVariable("id-bundle-request") String idBundleRequest);
-
+    void acceptPublicBundleSubscriptionsByPSP(
+            @PathVariable("psp-code") String pspCode,
+            @PathVariable("id-bundle-request") String idBundleRequest
+    );
 
     @GetMapping(value = "/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    Bundles getBundles(@RequestParam(required = false) List<BundleType> types,
-                       @RequestParam(required = false) String name,
-                       @RequestParam(required = false) Integer limit,
-                       @RequestParam(required = false) Integer page);
+    Bundles getBundles(
+            @RequestParam(required = false) List<BundleType> types,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer page
+    );
 
     @PostMapping(value = "/psps/{psp-code}/requests/{id-bundle-request}/reject")
     @Retryable(
             exclude = FeignException.FeignClientException.class,
             maxAttemptsExpression = "${retry.utils.maxAttempts}",
             backoff = @Backoff(delayExpression = "${retry.utils.maxDelay}"))
-    void rejectPublicBundleSubscriptionByPSP(@PathVariable("psp-code") String pspCode,
-                                              @PathVariable("id-bundle-request") String idBundleRequest);
+    void rejectPublicBundleSubscriptionByPSP(
+            @PathVariable("psp-code") String pspCode,
+            @PathVariable("id-bundle-request") String idBundleRequest
+    );
+
+    @GetMapping(value = "/psps/{psp-code}/requests")
+    PspRequests getPublicBundleSubscriptionRequestByPSP(
+            @PathVariable("psp-code") String pspCode,
+            @RequestParam(name = "ciFiscalCode", required = false) String ciTaxCode,
+            @RequestParam(required = false) String idBundle,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer page
+    );
+
+    @GetMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/creditorInstitutions")
+    CiFiscalCodeList getPublicBundleSubscriptionByPSP(
+            @PathVariable("psp-code") String pspCode,
+            @PathVariable("id-bundle") String idBundle,
+            @RequestParam(name = "ciFiscalCode", required = false) String ciTaxCode,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer page
+    );
+
+    @GetMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/creditorInstitutions/{ci-tax-code}")
+    CiBundleDetails getPublicBundleSubscriptionDetailByPSP(
+            @PathVariable("psp-code") String pspCode,
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @PathVariable("id-bundle") String idBundle
+    );
 
 }
