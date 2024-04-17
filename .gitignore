@@ -44,3 +44,4 @@ build/
 **/secrets
 **/decrypted_env
 **/.DS_Store
+**/node_modules/

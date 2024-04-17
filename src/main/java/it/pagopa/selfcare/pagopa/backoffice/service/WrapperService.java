@@ -273,6 +273,7 @@ public class WrapperService {
                 .collect(Collectors.toSet());
         return generator(validCodes, taxCode);
     }
+
     public String getFirstValidChannelCodeV2(String taxCode) {
         Channels channels = apiConfigClient.getChannels(100, 0, null, taxCode, "DESC");
         WrapperEntitiesList channelMongoList = findByIdLikeOrTypeOrBrokerCode(null, WrapperType.CHANNEL, taxCode, 0, 100);
