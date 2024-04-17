@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionRespon
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +41,7 @@ public interface ExternalApiClient {
     );
 
     @GetMapping(value = "/delegations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Cacheable(cacheNames = "getBrokerDelegation")
     @ResponseBody
     List<DelegationExternal> getBrokerDelegation(@RequestParam String institutionId, @RequestParam String brokerId, @RequestParam String productId, @RequestParam String mode);
 }
