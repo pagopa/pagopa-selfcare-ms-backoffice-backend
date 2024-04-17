@@ -139,16 +139,16 @@ public class ApiManagementService {
             Authorization authorizationSecondaryKey = buildBOAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, false);
             this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
         }
-        if(subscriptionCode == Subscription.FDR_ORG || subscriptionCode == Subscription.FDR_PSP) {
-            InstitutionApiKeys apiKeys = apiSubscriptions.stream()
-                    .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
-                    .findFirst()
-                    .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
-            Authorization authorizationPrimaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, true);
-            this.authorizerConfigClient.createAuthorization(authorizationPrimaryKey);
-            Authorization authorizationSecondaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, false);
-            this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
-        }
+//        if(subscriptionCode == Subscription.FDR_ORG || subscriptionCode == Subscription.FDR_PSP) {
+//            InstitutionApiKeys apiKeys = apiSubscriptions.stream()
+//                    .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
+//                    .findFirst()
+//                    .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
+//            Authorization authorizationPrimaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, true);
+//            this.authorizerConfigClient.createAuthorization(authorizationPrimaryKey);
+//            Authorization authorizationSecondaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, false);
+//            this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
+//        }
 
         return apiSubscriptions;
     }
