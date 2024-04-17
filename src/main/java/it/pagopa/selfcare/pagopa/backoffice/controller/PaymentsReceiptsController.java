@@ -9,7 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
-import it.pagopa.selfcare.pagopa.backoffice.model.paymentsreceipts.ReceiptsInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.paymentsreceipts.PaymentsResult;
+import it.pagopa.selfcare.pagopa.backoffice.model.paymentsreceipts.ReceiptModelResponse;
 import it.pagopa.selfcare.pagopa.backoffice.service.PaymentsReceiptsService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -40,27 +41,29 @@ public class PaymentsReceiptsController {
      * @param debtorTaxCode       Debtor tax code
      * @param fromDate            Filter date (after this date)
      * @param toDate              Filter date (before this date)
+     * @param debtorOrIuv         Dynamic filter by debtor tax code or iuv
      * @return paged list of the organization's receipts
      */
     @GetMapping(value = "/{organization-tax-code}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a paginated list of the organization receipts", security = {@SecurityRequirement(name = "JWT")})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ReceiptsInfo.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PaymentsResult.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public ReceiptsInfo getPaymentsReceipts(
+    public PaymentsResult<ReceiptModelResponse> getPaymentsReceipts(
             @Parameter(description = "Tax code of the organization") @PathVariable("organization-tax-code") String organizationTaxCode,
             @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = false, defaultValue = "0") Integer page,
             @Parameter(description = "Number of elements on one page. Default = 50") @RequestParam(required = false, defaultValue = "50") Integer limit,
             @Parameter(description = "Filter by debtor tax code") @RequestParam(required = false) String debtorTaxCode,
             @Parameter(description = "Filter by date, after this date") @RequestParam(required = false) String fromDate,
-            @Parameter(description = "Filter by date, before this date") @RequestParam(required = false) String toDate
+            @Parameter(description = "Filter by date, before this date") @RequestParam(required = false) String toDate,
+            @Parameter(description = "Dynamic filter for both IUV and debtor tax code") @RequestParam(required = false) String debtorOrIuv
     ) {
-        return paymentsReceiptsService.getPaymentsReceipts(organizationTaxCode, page, limit, debtorTaxCode, fromDate, toDate);
+        return paymentsReceiptsService.getPaymentsReceipts(organizationTaxCode, page, limit, debtorTaxCode, fromDate, toDate, debtorOrIuv);
     }
 
     /**
