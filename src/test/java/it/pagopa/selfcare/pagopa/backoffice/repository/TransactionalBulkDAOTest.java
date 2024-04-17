@@ -2,20 +2,26 @@ package it.pagopa.selfcare.pagopa.backoffice.repository;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoException;
 import com.mongodb.TransactionOptions;
-import com.mongodb.client.*;
+import com.mongodb.client.ClientSession;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbanEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
 import lombok.SneakyThrows;
 import org.bson.conversions.Bson;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.InjectMocks;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
@@ -23,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
+import utils.MemoryAppender;
 
 import java.time.Instant;
 import java.util.Date;
@@ -33,12 +40,17 @@ import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.util.AssertionErrors.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.springframework.test.util.AssertionErrors.assertFalse;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
-@SpringBootTest
+@SpringBootTest(classes = {TransactionalBulkDAO.class})
 class TransactionalBulkDAOTest {
-
 
     @MockBean
     private MongoDatabase db;
@@ -47,21 +59,31 @@ class TransactionalBulkDAOTest {
     private MongoCollection<BrokerIbansEntity> collection;
 
     @MockBean
+    private MongoClientSettings mongoClientSettings;
+
+    @MockBean
     private ClientSession session;
 
     @Autowired
-    @InjectMocks
     private TransactionalBulkDAO dao;
 
-    private final ListAppender<ILoggingEvent> listAppender = getMockLoggerListAppender();
+    private MemoryAppender listAppender;
+
+    @BeforeEach
+    void before() {
+        Logger logger = (Logger) LoggerFactory.getLogger(TransactionalBulkDAO.class);
+        listAppender = new MemoryAppender();
+        listAppender.setContext((LoggerContext) LoggerFactory.getILoggerFactory());
+        logger.setLevel(Level.DEBUG);
+        logger.addAppender(listAppender);
+        listAppender.start();
+    }
 
     @Test
     void save_errorInInit() {
-
         ReflectionTestUtils.setField(dao, "dbName", "fake");
 
         try (MockedStatic<MongoClients> mockStatic = Mockito.mockStatic(MongoClients.class)) {
-
             // mocking components
             MongoClient client = spy(MongoClient.class);
             mockStatic.when(() -> MongoClients.create(any(MongoClientSettings.class))).thenReturn(client);
@@ -86,11 +108,9 @@ class TransactionalBulkDAOTest {
             "20,10"
     })
     void save_ok(int numberOfIbans, int ibansBatchSize) {
-
         ReflectionTestUtils.setField(dao, "ibansBatchSize", ibansBatchSize);
 
         try (MockedStatic<MongoClients> mockStatic = Mockito.mockStatic(MongoClients.class)) {
-
             // mocking components
             MongoClient client = mockMongoClientInit(mockStatic);
 
@@ -121,18 +141,15 @@ class TransactionalBulkDAOTest {
             ILoggingEvent logLine3 = getLog();
             assertTrue("The log message does not contains the required string", logLine3.getMessage().contains("[Export IBANs] - Persistence of IBANs extraction"));
             assertEquals("The log message does not contains the required error level string", Level.INFO, logLine3.getLevel());
-
         }
     }
 
     @SneakyThrows
     @Test
     void save_errorInSave() {
-
         ReflectionTestUtils.setField(dao, "ibansBatchSize", 10);
 
         try (MockedStatic<MongoClients> mockStatic = Mockito.mockStatic(MongoClients.class)) {
-
             // mocking components
             MongoClient client = mockMongoClientInit(mockStatic);
             when(collection.deleteOne(any(Bson.class))).thenAnswer(invocation -> {
@@ -172,11 +189,9 @@ class TransactionalBulkDAOTest {
             "true"
     })
     void getAllBrokerCodeGreaterThan_ok(String gotEntities) {
-
         boolean hasEntities = Boolean.parseBoolean(gotEntities);
 
         try (MockedStatic<MongoClients> mockStatic = Mockito.mockStatic(MongoClients.class)) {
-
             // mocking components
             MongoClient client = mockMongoClientInit(mockStatic);
             MongoCursor cursor = mock(MongoCursor.class);
@@ -219,9 +234,7 @@ class TransactionalBulkDAOTest {
     @SneakyThrows
     @Test
     void clean_ok() {
-
         try (MockedStatic<MongoClients> mockStatic = Mockito.mockStatic(MongoClients.class)) {
-
             // mocking components
             MongoClient client = mockMongoClientInit(mockStatic);
 
@@ -243,7 +256,6 @@ class TransactionalBulkDAOTest {
             ILoggingEvent logLine2 = getLog();
             assertTrue("The log message does not contains the required string", logLine2.getMessage().contains("[Export IBANs] - Cleaning of all extractions"));
             assertEquals("The log message does not contains the required error level string", Level.DEBUG, logLine2.getLevel());
-
         }
     }
 
@@ -251,9 +263,7 @@ class TransactionalBulkDAOTest {
     @SneakyThrows
     @Test
     void clean_errorOnDeleteMany() {
-
         try (MockedStatic<MongoClients> mockStatic = Mockito.mockStatic(MongoClients.class)) {
-
             // mocking components
             MongoClient client = mockMongoClientInit(mockStatic);
             when(collection.deleteMany(any(Bson.class))).thenAnswer(invocation -> {
@@ -281,7 +291,6 @@ class TransactionalBulkDAOTest {
             ILoggingEvent logLine3 = getLog();
             assertTrue("The log message does not contains the required string", logLine3.getMessage().contains("[Export IBANs] - Cleaning of all extractions"));
             assertEquals("The log message does not contains the required error level string", Level.DEBUG, logLine3.getLevel());
-
         }
     }
 
@@ -292,15 +301,6 @@ class TransactionalBulkDAOTest {
         logsList.remove(0);
         return log;
     }
-
-    private ListAppender<ILoggingEvent> getMockLoggerListAppender() {
-        Logger mockLogger = (Logger) LoggerFactory.getLogger(TransactionalBulkDAO.class);
-        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
-        listAppender.start();
-        mockLogger.addAppender(listAppender);
-        return listAppender;
-    }
-
 
     private MongoClient mockMongoClientInit(MockedStatic<MongoClients> mockStatic) {
         MongoClient client = spy(MongoClient.class);
