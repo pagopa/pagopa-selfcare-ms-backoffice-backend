@@ -3,12 +3,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>it.pagopa.selfcare.pagopa</groupId>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.14</version>
+        <version>2.7.18</version>
     </parent>
+
+    <groupId>it.pagopa.selfcare.pagopa</groupId>
     <artifactId>pagopa-selfcare-ms-backoffice</artifactId>
     <version>2.4.0</version>
     <name>SelfCare Backoffice</name>
@@ -28,10 +29,9 @@
         <pagopa_parent_pom.version>0.0.27</pagopa_parent_pom.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring-cloud.version>2020.0.4</spring-cloud.version>
+        <spring-cloud.version>2021.0.9</spring-cloud.version>
         <spring-security.version>5.7.7</spring-security.version>
     </properties>
-
 
     <repositories>
         <repository>
@@ -48,6 +48,7 @@
             </releases>
         </repository>
     </repositories>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -126,11 +127,6 @@
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>1.6.15</version>
         </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.1.0</version>
-        </dependency>
 
         <!-- Spring Security -->
         <dependency>
@@ -166,12 +162,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
             <version>3.1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>de.flapdoodle.embed</groupId>
-            <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <version>3.4.3</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- ShedLock -->
