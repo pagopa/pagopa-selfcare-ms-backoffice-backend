@@ -17,6 +17,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBund
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiFiscalCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
@@ -376,27 +377,37 @@ class CommissionBundleServiceTest {
                 .requestsList(
                         Collections.singletonList(
                                 PspBundleRequest.builder()
-                                        .ciFiscalCode(CI_TAX_CODE)
+                                        .ciBundleAttributes(
+                                                Collections.singletonList(
+                                                        PspCiBundleAttribute.builder()
+                                                                .maxPaymentAmount(100L)
+                                                                .transferCategory(TRANSFER_CATEGORY)
+                                                                .build()
+                                                )
+                                        )
                                         .id(ID_BUNDLE_REQUEST)
                                         .build()
                         )
                 )
                 .pageInfo(buildPageInfo())
                 .build();
-        CreditorInstitutionInfo ciInfo = buildCIInfo();
+        Taxonomy taxonomy = Taxonomy.builder()
+                .serviceType(TRANSFER_CATEGORY)
+                .specificBuiltInData(SPECIFIC_BUILT_IN_DATA)
+                .build();
 
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
         when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, null))
                 .thenReturn(pspRequests);
-        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(Collections.singletonList(CI_TAX_CODE)))
-                .thenReturn(Collections.singletonList(ciInfo));
+        when(taxonomyService.getTaxonomiesByCodes(Collections.singletonList(TRANSFER_CATEGORY)))
+                .thenReturn(Collections.singletonList(taxonomy));
 
         PublicBundleCISubscriptionsDetail result = assertDoesNotThrow(() -> sut
                 .getPublicBundleCISubscriptionsDetail(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
                         CI_TAX_CODE,
-                        PublicBundleSubscriptionStatus.ACCEPTED)
+                        PublicBundleSubscriptionStatus.WAITING)
         );
 
         assertNotNull(result);

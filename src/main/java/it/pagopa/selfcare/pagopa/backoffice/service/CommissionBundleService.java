@@ -211,7 +211,7 @@ public class CommissionBundleService {
         }
 
         PspRequests subscriptionRequest = this.gecClient
-                .getPublicBundleSubscriptionRequestByPSP(pspCode, idBundle, ciTaxCode, limit, page);
+                .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, limit, page);
 
         List<String> taxCodeList = subscriptionRequest.getRequestsList().parallelStream()
                 .map(PspBundleRequest::getCiFiscalCode)
@@ -270,7 +270,7 @@ public class CommissionBundleService {
         }
 
         PspRequests subscriptionRequest = this.gecClient
-                .getPublicBundleSubscriptionRequestByPSP(pspCode, idBundle, ciTaxCode, 1, null);
+                .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, 1, null);
 
         PspBundleRequest pspBundleRequest = subscriptionRequest.getRequestsList().get(0);
         List<String> transferCategoryList = pspBundleRequest
