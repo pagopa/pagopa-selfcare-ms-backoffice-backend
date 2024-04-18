@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @FeignClient(name = "forwarder-test", url = "${rest-client.forwarder.base-url}", configuration = ForwarderFeignConfig.class)
 public interface ForwarderTestClient {
 
-    @PostMapping(value = "/forward", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.TEXT_XML_VALUE)
+    @PostMapping(value = "/forward", consumes = MediaType.TEXT_XML_VALUE)
     String testForwardConnection(
             @RequestHeader("X-Host-Url") String host,
             @RequestHeader("X-Host-Port") Integer port,
