@@ -21,4 +21,8 @@ public class PublicBundleCISubscriptionsDetail {
     @JsonProperty("ci_bundle_fee_list")
     @Schema(description = "Creditor Institution's fees details")
     private List<CIBundleFee> ciBundleFeeList;
+
+    @JsonProperty("bundle_request_id")
+    @Schema(description = "Public bundle request id")
+    private String bundleRequestId;
 }

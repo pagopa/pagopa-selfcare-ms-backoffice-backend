@@ -54,9 +54,10 @@ public class CommissionBundleController {
 
     /**
      * Retrieve creditor institution paged bundle list, expanded with taxonomy data
+     *
      * @param cisTaxCode optional parameter used for filter by creditor institution tax code
-     * @param limit page limit parameter
-     * @param page page number parameter
+     * @param limit      page limit parameter
+     * @param page       page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
     @GetMapping("/creditor_institutions")
@@ -175,7 +176,7 @@ public class CommissionBundleController {
     /**
      * Reject a subscription requests to a public bundle
      *
-     * @param pspTaxCode          the tax code of the PSP that owns the public bundle
+     * @param pspTaxCode      the tax code of the PSP that owns the public bundle
      * @param bundleRequestId the request id to be rejected
      */
     @PostMapping(value = "/requests/payment-service-providers/{psp-tax-code}/request/{bundle-request-id}/reject", consumes = {MediaType.APPLICATION_JSON_VALUE})
@@ -191,12 +192,12 @@ public class CommissionBundleController {
     /**
      * Retrieve a paginated list of creditor institution's subscriptions to a public bundle of a PSP
      *
-     * @param idBundle the id of the public bundle
+     * @param idBundle   the id of the public bundle
      * @param pspTaxCode the payment service provider's tax code
-     * @param status the status of the subscription
-     * @param ciTaxCode the creditor institution's tax code
-     * @param limit the size of the page
-     * @param page the page number
+     * @param status     the status of the subscription
+     * @param ciTaxCode  the creditor institution's tax code
+     * @param limit      the size of the page
+     * @param page       the page number
      * @return a paginated list of creditor institution's info
      */
     @GetMapping("/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions")
@@ -225,10 +226,10 @@ public class CommissionBundleController {
     /**
      * Retrieve the detail of a creditor institution's subscription to a public bundle of a PSP
      *
-     * @param idBundle the id of the public bundle
+     * @param idBundle   the id of the public bundle
      * @param pspTaxCode the payment service provider's tax code
-     * @param ciTaxCode the creditor institution's tax code
-     * @param status the status of the subscription
+     * @param ciTaxCode  the creditor institution's tax code
+     * @param status     the status of the subscription
      * @return the detail of a creditor institution's subscription
      */
     @GetMapping("/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}/detail")

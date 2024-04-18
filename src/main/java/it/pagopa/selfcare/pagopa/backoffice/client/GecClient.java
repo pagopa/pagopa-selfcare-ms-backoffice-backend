@@ -120,6 +120,7 @@ public interface GecClient {
     );
 
     @GetMapping(value = "/psps/{psp-code}/requests")
+    @ResponseBody
     PspRequests getPublicBundleSubscriptionRequestByPSP(
             @PathVariable("psp-code") String pspCode,
             @RequestParam(name = "ciFiscalCode", required = false) String ciTaxCode,
@@ -129,6 +130,7 @@ public interface GecClient {
     );
 
     @GetMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/creditorInstitutions")
+    @ResponseBody
     CiFiscalCodeList getPublicBundleSubscriptionByPSP(
             @PathVariable("psp-code") String pspCode,
             @PathVariable("id-bundle") String idBundle,
@@ -138,6 +140,7 @@ public interface GecClient {
     );
 
     @GetMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/creditorInstitutions/{ci-tax-code}")
+    @ResponseBody
     CiBundleDetails getPublicBundleSubscriptionDetailByPSP(
             @PathVariable("psp-code") String pspCode,
             @PathVariable("ci-tax-code") String ciTaxCode,

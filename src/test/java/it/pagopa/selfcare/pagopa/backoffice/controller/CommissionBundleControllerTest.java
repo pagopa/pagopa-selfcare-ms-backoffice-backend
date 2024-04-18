@@ -30,9 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CommissionBundleControllerTest {
 
     private static final String PSP_TAX_CODE = "pspTaxCode";
-
-    private static final String EC_TAX_CODE = "ecTaxCode";
-
+    private static final String CI_TAX_CODE = "ciTaxCode";
     public static final String BUNDLE_ID = "bundleId";
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -198,13 +196,13 @@ class CommissionBundleControllerTest {
         int limit = 25;
         int page = 2;
         when(service.getCisBundles(Collections.singletonList(BundleType.PRIVATE),
-                    EC_TAX_CODE, "name", limit, page)).thenReturn(
+                CI_TAX_CODE, "name", limit, page)).thenReturn(
                 new BundlesResource()
         );
         mvc.perform(get(url)
                         .param("name", "name")
                         .param("types", BundleType.PRIVATE.name())
-                        .param("cisTaxCode",EC_TAX_CODE)
+                        .param("cisTaxCode", CI_TAX_CODE)
                         .param("limit", String.valueOf(limit))
                         .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -226,12 +224,35 @@ class CommissionBundleControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
+    @Test
     void rejectPublicBundleSubscriptionsOK() throws Exception {
         String url = "/bundles/requests/payment-service-providers/{psp-tax-code}/request/{bundle-request-id}/reject";
         mvc.perform(post(url, PSP_TAX_CODE, "idBundleRequest")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
         verify(service).rejectPublicBundleSubscriptionByPSP(PSP_TAX_CODE, "idBundleRequest");
+    }
+
+    @Test
+    void getPublicBundleCISubscriptions() throws Exception {
+        String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions";
+        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE)
+                        .param("status", PublicBundleSubscriptionStatus.ACCEPTED.name())
+                        .param("limit", "10")
+                        .param("page", "0")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        verify(service).getPublicBundleCISubscriptions(BUNDLE_ID, PSP_TAX_CODE, PublicBundleSubscriptionStatus.ACCEPTED, null, 10, 0);
+    }
+
+    @Test
+    void getPublicBundleCISubscriptionsDetail() throws Exception {
+        String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}/detail";
+        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE)
+                        .param("status", PublicBundleSubscriptionStatus.ACCEPTED.name())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        verify(service).getPublicBundleCISubscriptionsDetail(BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE, PublicBundleSubscriptionStatus.ACCEPTED);
     }
 
 }

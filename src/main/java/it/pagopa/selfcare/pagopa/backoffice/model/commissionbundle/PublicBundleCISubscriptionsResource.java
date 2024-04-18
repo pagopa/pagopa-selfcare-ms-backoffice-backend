@@ -19,7 +19,7 @@ import java.util.List;
 public class PublicBundleCISubscriptionsResource {
 
     @JsonProperty("creditor_institutions_subscriptions")
-    private List<CISubscriptionInfo> bundles;
+    private List<CISubscriptionInfo> ciSubscriptionInfoList;
 
     @JsonProperty("page_info")
     private PageInfo pageInfo;

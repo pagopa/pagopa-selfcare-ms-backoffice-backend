@@ -35,7 +35,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -202,7 +201,7 @@ public class CommissionBundleService {
                     .getCreditorInstitutionInfo(acceptedSubscription.getCiTaxCodeList());
 
             return PublicBundleCISubscriptionsResource.builder()
-                    .bundles(
+                    .ciSubscriptionInfoList(
                             ciInfoList.parallelStream()
                                     .map(ciInfo -> this.modelMapper.map(ciInfo, CISubscriptionInfo.class))
                                     .toList()
@@ -221,7 +220,7 @@ public class CommissionBundleService {
                 .getCreditorInstitutionInfo(taxCodeList);
 
         return PublicBundleCISubscriptionsResource.builder()
-                .bundles(
+                .ciSubscriptionInfoList(
                         ciInfoList.parallelStream()
                                 .map(ciInfo -> this.modelMapper.map(ciInfo, CISubscriptionInfo.class))
                                 .toList()
@@ -271,7 +270,7 @@ public class CommissionBundleService {
         }
 
         PspRequests subscriptionRequest = this.gecClient
-                .getPublicBundleSubscriptionRequestByPSP(pspCode, idBundle, ciTaxCode, 1, 0);
+                .getPublicBundleSubscriptionRequestByPSP(pspCode, idBundle, ciTaxCode, 1, null);
 
         PspBundleRequest pspBundleRequest = subscriptionRequest.getRequestsList().get(0);
         List<String> transferCategoryList = pspBundleRequest
@@ -291,6 +290,7 @@ public class CommissionBundleService {
                                 )
                                 .toList()
                 )
+                .bundleRequestId(pspBundleRequest.getId())
                 .build();
     }
 

@@ -27,5 +27,5 @@ public class CreditorInstitutionInfo {
     @JsonProperty("creditor_institution_code")
     @Schema(example = "02438750586", description = "The tax code of the creditor institution", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank
-    private String creditorInstitutionCode;
+    private String ciTaxCode;
 }
