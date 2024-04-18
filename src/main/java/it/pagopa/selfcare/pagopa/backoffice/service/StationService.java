@@ -282,7 +282,7 @@ public class StationService {
             );
             return TestStationResource.builder().testResult(TestResultEnum.SUCCESS).message("OK").build();
         } catch (FeignException feignException) {
-            if (feignException.responseHeaders().containsKey("X-Station-Status")) {
+            if (feignException.status() != 404 && feignException.responseHeaders().containsKey("X-Station-Status")) {
                 String message = feignException.responseHeaders().get("X-Station-Status").stream()
                         .findFirst().orElse(null);
                 if ("OK".equals(message) || "KO".equals(message)) {

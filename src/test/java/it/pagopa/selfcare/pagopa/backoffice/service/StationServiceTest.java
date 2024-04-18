@@ -117,4 +117,20 @@ class StationServiceTest {
         verify(forwarderTestClient).testForwardConnection(any(),any(),any(),any());
     }
 
+    @Test
+    void testStationShouldReturnErrorOnNotFoundForwardCall() {
+        HashMap<String, Collection<String>> map = new HashMap<>();
+        map.put("X-Station-Status", Collections.singletonList("KO"));
+        Response response = Response.builder().status(404).headers(map).request(
+                Request.create(Request.HttpMethod.POST, "test", new HashMap<>(),
+                        "".getBytes(), null, null)).build();
+        FeignException feignException = FeignException.errorStatus("test", response);
+        when(forwarderTestClient.testForwardConnection(any(),any(),any(),any())).thenThrow(feignException);
+        TestStationResource testStationResource = assertDoesNotThrow(() ->
+                service.testStation(StationTestDto.builder().build()));
+        assertNotNull(testStationResource);
+        assertEquals(TestResultEnum.ERROR, testStationResource.getTestResult());
+        verify(forwarderTestClient).testForwardConnection(any(),any(),any(),any());
+    }
+
 }
