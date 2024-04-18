@@ -282,9 +282,16 @@ public class StationService {
             );
             return TestStationResource.builder().testResult(TestResultEnum.SUCCESS).message("OK").build();
         } catch (FeignException feignException) {
-            if (feignException.status() == 400) {
-                return TestStationResource.builder().testResult(TestResultEnum.SUCCESS)
-                        .message("Success connection with 400 status").build();
+            if (feignException.responseHeaders().containsKey("X-Station-Status")) {
+                String message = feignException.responseHeaders().get("X-Station-Status").stream()
+                        .findFirst().orElse(null);
+                if ("OK".equals(message) || "KO".equals(message)) {
+                    return TestStationResource.builder().testResult(TestResultEnum.SUCCESS)
+                            .message("Success connection with" + feignException.status() + " status").build();
+                } else if ("CERTIFICATE ERROR".equals(message)) {
+                    return TestStationResource.builder().testResult(TestResultEnum.CERTIFICATE_ERROR)
+                            .message("Success connection with " + feignException.status() + " status").build();
+                }
             }
             return TestStationResource.builder().testResult(TestResultEnum.ERROR)
                     .message("Connection Error with status: " + feignException.status()).build();
