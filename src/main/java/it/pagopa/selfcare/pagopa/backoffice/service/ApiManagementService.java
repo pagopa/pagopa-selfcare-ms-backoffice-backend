@@ -90,6 +90,7 @@ public class ApiManagementService {
             result = result.parallelStream()
                     .filter(Objects::nonNull)
                     .filter(delegation -> {
+                        log.info(delegation.toString());
                         RoleType roleType = RoleType.fromSelfcareRole(delegation.getInstitutionType());
                         return roles.contains(roleType);
                     })
