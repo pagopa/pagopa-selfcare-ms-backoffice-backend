@@ -6,14 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionResponse;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
 import org.junit.jupiter.api.Test;
@@ -26,16 +19,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = {MappingsConfiguration.class, ApiManagementService.class})
 class ApiManagementServiceTest {
@@ -60,7 +47,7 @@ class ApiManagementServiceTest {
     void getInstitutions() {
         when(externalApiClient.getInstitutions(any()))
                 .thenReturn(Collections.singletonList(new InstitutionInfo()));
-        List<InstitutionDetail> institutions = service.getInstitutions();
+        List<InstitutionDetail> institutions = service.getInstitutions(null);
         assertNotNull(institutions);
         assertFalse(institutions.isEmpty());
         verify(externalApiClient).getInstitutions(any());

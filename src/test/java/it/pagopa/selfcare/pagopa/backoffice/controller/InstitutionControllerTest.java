@@ -1,11 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.service.ApiManagementService;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +43,7 @@ class InstitutionControllerTest {
     void setUp() {
         when(apiManagementService.getInstitution(anyString()))
                 .thenReturn(new Institution());
-        when(apiManagementService.getInstitutions())
+        when(apiManagementService.getInstitutions(null))
                 .thenReturn(Collections.singletonList(new InstitutionDetail()));
         when(apiManagementService.getBrokerDelegation(anyString(),anyString(),any()))
                 .thenReturn(Collections.singletonList(new Delegation()));

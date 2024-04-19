@@ -4,12 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.service.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
@@ -17,13 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
@@ -48,9 +37,8 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieves all the onboarded institutions related to the logged user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public List<InstitutionDetail> getInstitutions() {
-
-        return apiManagementService.getInstitutions();
+    public List<InstitutionDetail> getInstitutions(@Parameter(description = "filter by the tax code of the Creditor Institution") @RequestParam(required = false, value = "tax-code") String taxCode) {
+        return apiManagementService.getInstitutions(taxCode);
     }
 
     @GetMapping("/delegations")
