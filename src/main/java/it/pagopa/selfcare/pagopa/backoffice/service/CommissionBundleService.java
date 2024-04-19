@@ -19,7 +19,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiFiscalCodeList;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspRequests;
@@ -194,7 +194,7 @@ public class CommissionBundleService {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
 
         if (status.equals(PublicBundleSubscriptionStatus.ACCEPTED)) {
-            CiFiscalCodeList acceptedSubscription = this.gecClient
+            BundleCreditorInstitutionResource acceptedSubscription = this.gecClient
                     .getPublicBundleSubscriptionByPSP(pspCode, idBundle, ciTaxCode, limit, page);
 
             List<CreditorInstitutionInfo> ciInfoList = this.apiConfigSelfcareIntegrationClient
@@ -206,7 +206,7 @@ public class CommissionBundleService {
                                     .map(ciInfo -> this.modelMapper.map(ciInfo, CISubscriptionInfo.class))
                                     .toList()
                     )
-                    .pageInfo(null) // TODO missing pagination info
+                    .pageInfo(acceptedSubscription.getPageInfo())
                     .build();
         }
 
@@ -270,7 +270,7 @@ public class CommissionBundleService {
         }
 
         PspRequests subscriptionRequest = this.gecClient
-                .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, 1, null);
+                .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, 1, 0);
 
         PspBundleRequest pspBundleRequest = subscriptionRequest.getRequestsList().get(0);
         List<String> transferCategoryList = pspBundleRequest

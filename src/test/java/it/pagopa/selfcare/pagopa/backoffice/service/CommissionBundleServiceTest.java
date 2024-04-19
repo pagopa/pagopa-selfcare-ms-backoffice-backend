@@ -15,7 +15,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiFiscalCodeList;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspRequests;
@@ -260,8 +260,9 @@ class CommissionBundleServiceTest {
 
     @Test
     void getPublicBundleCISubscriptionsAccepted() {
-        CiFiscalCodeList codeList = CiFiscalCodeList.builder()
+        BundleCreditorInstitutionResource codeList = BundleCreditorInstitutionResource.builder()
                 .ciTaxCodeList(Collections.singletonList(CI_TAX_CODE))
+                .pageInfo(buildPageInfo())
                 .build();
         CreditorInstitutionInfo ciInfo = buildCIInfo();
 
@@ -283,7 +284,10 @@ class CommissionBundleServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.getCiSubscriptionInfoList().size());
-        // TODO assert page
+        assertNotNull(result.getPageInfo());
+        assertEquals(LIMIT, result.getPageInfo().getLimit());
+        assertEquals(PAGE, result.getPageInfo().getPage());
+        assertEquals(1, result.getPageInfo().getTotalPages());
 
         assertEquals(CI_TAX_CODE, result.getCiSubscriptionInfoList().get(0).getCiTaxCode());
         assertEquals(ciInfo.getBusinessName(), result.getCiSubscriptionInfoList().get(0).getBusinessName());
@@ -397,7 +401,7 @@ class CommissionBundleServiceTest {
                 .build();
 
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
-        when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, null))
+        when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, PAGE))
                 .thenReturn(pspRequests);
         when(taxonomyService.getTaxonomiesByCodes(Collections.singletonList(TRANSFER_CATEGORY)))
                 .thenReturn(Collections.singletonList(taxonomy));

@@ -9,7 +9,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiFiscalCodeList;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -131,7 +131,7 @@ public interface GecClient {
 
     @GetMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/creditorInstitutions")
     @ResponseBody
-    CiFiscalCodeList getPublicBundleSubscriptionByPSP(
+    BundleCreditorInstitutionResource getPublicBundleSubscriptionByPSP(
             @PathVariable("psp-code") String pspCode,
             @PathVariable("id-bundle") String idBundle,
             @RequestParam(name = "ciFiscalCode", required = false) String ciTaxCode,
