@@ -50,7 +50,7 @@ class StationControllerTest {
         StationTestDto stationTestDto = StationTestDto.builder().hostUrl("hostUrk").hostPort(80).hostPath("test").build();
         when(stationService.testStation(stationTestDto))
                 .thenReturn(TestStationResource.builder().testResult(TestResultEnum.SUCCESS).build());
-        String content = mvc.perform(post("/stations/test")
+        String content = mvc.perform(post("/stations/connection/test")
                         .content(objectMapper.writeValueAsBytes(stationTestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -65,7 +65,7 @@ class StationControllerTest {
         StationTestDto stationTestDto = StationTestDto.builder().hostUrl("hostUrk").hostPort(80).hostPath("test").build();
         when(stationService.testStation(stationTestDto))
                 .thenReturn(TestStationResource.builder().testResult(TestResultEnum.ERROR).build());
-        String content = mvc.perform(post("/stations/test")
+        String content = mvc.perform(post("/stations/connection/test")
                         .content(objectMapper.writeValueAsBytes(stationTestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -80,7 +80,7 @@ class StationControllerTest {
         StationTestDto stationTestDto = StationTestDto.builder().hostUrl("hostUrk").hostPort(80).hostPath("test").build();
         when(stationService.testStation(stationTestDto))
                 .thenReturn(TestStationResource.builder().testResult(TestResultEnum.ERROR).build());
-        mvc.perform(post("/stations/test")
+        mvc.perform(post("/stations/connection/test")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -90,7 +90,7 @@ class StationControllerTest {
         StationTestDto stationTestDto = StationTestDto.builder().hostPort(80).hostPath("test").build();
         when(stationService.testStation(stationTestDto))
                 .thenReturn(TestStationResource.builder().testResult(TestResultEnum.ERROR).build());
-        mvc.perform(post("/stations/test")
+        mvc.perform(post("/stations/connection/test")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }

@@ -10,7 +10,7 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.APIM_SUBSCRIPT
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.HEADER_REQUEST_ID;
 
 @Service
-public class ForwarderTestClient {
+public class ForwarderClient {
 
     public static final String FAKE_PA_VERIFY = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n    xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n    xmlns:tns=\"http://pagopa-api.pagopa.gov.it/paForNode\"\n    xmlns:common=\"http://pagopa-api.pagopa.gov.it/xsd/common-types/v1.0.0/\"\n    xmlns:pafn=\"http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd\">\n    <soapenv:Body>\n        <pafn:paVerifyPaymentNoticeReq>\n            <idPA>77777777777</idPA>\n            <idBrokerPA>77777777777</idBrokerPA>\n            <idStation>77777777777_01</idStation>\n            <qrCode>\n                <fiscalCode>77777777777</fiscalCode>\n                <noticeNumber>311111111112222222</noticeNumber>\n            </qrCode>\n        </pafn:paVerifyPaymentNoticeReq>\n    </soapenv:Body>\n</soapenv:Envelope>";
 
