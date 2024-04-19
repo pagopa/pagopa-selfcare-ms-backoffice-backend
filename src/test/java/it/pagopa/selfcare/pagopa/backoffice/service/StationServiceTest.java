@@ -16,7 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,33 +53,76 @@ class StationServiceTest {
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
         assertEquals(TestResultEnum.SUCCESS, testStationResource.getTestResult());
-        verify(forwarderTestClient).testForwardConnection(any(),any(),any(),any());
+        verify(forwarderTestClient).testForwardConnection(any(),any(),any());
     }
 
     @Test
     void testStationShouldSuccessOnBadRequestForwardCall() {
         Response response = Response.builder().status(400).request(
-                Request.create(Request.HttpMethod.POST, "test", new HashMap<>(), "".getBytes(), null)).build();
+                Request.create(Request.HttpMethod.POST, "test",
+                        new HashMap<>(), "".getBytes(), null, null)).build();
         FeignException feignException = FeignException.errorStatus("test", response);
-        when(forwarderTestClient.testForwardConnection(any(),any(),any(),any())).thenThrow(feignException);
-        TestStationResource testStationResource = assertDoesNotThrow(() ->
-                service.testStation(StationTestDto.builder().build()));
-        assertNotNull(testStationResource);
-        assertEquals(TestResultEnum.SUCCESS, testStationResource.getTestResult());
-        verify(forwarderTestClient).testForwardConnection(any(),any(),any(),any());
-    }
-
-    @Test
-    void testStationShouldReturnKOOnErrorForwardCall() {
-        Response response = Response.builder().status(500).request(
-                Request.create(Request.HttpMethod.POST, "test", new HashMap<>(), "".getBytes(), null)).build();
-        FeignException feignException = FeignException.errorStatus("test", response);
-        when(forwarderTestClient.testForwardConnection(any(),any(),any(),any())).thenThrow(feignException);
+        when(forwarderTestClient.testForwardConnection(any(),any(),any())).thenThrow(feignException);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
         assertEquals(TestResultEnum.ERROR, testStationResource.getTestResult());
-        verify(forwarderTestClient).testForwardConnection(any(),any(),any(),any());
+        verify(forwarderTestClient).testForwardConnection(any(),any(),any());
+    }
+
+    @Test
+    void testStationShouldReturnSuccessOnErrorForwardCall() {
+        Response response = Response.builder().status(500).request(
+                Request.create(Request.HttpMethod.POST, "test", new HashMap<>(),
+                        "".getBytes(), null, null)).build();
+        FeignException feignException = FeignException.errorStatus("test", response);
+        when(forwarderTestClient.testForwardConnection(any(),any(),any())).thenThrow(feignException);
+        TestStationResource testStationResource = assertDoesNotThrow(() ->
+                service.testStation(StationTestDto.builder().build()));
+        assertNotNull(testStationResource);
+        assertEquals(TestResultEnum.ERROR, testStationResource.getTestResult());
+        verify(forwarderTestClient).testForwardConnection(any(),any(),any());
+    }
+    @Test
+    void testStationShouldReturnKOOnErrorForwardCall() {
+        Response response = Response.builder().status(500).request(
+                Request.create(Request.HttpMethod.POST, "test",
+                        new HashMap<>(), "".getBytes(), null, null)).build();
+        FeignException feignException = FeignException.errorStatus("test", response);
+        when(forwarderTestClient.testForwardConnection(any(),any(),any())).thenThrow(feignException);
+        TestStationResource testStationResource = assertDoesNotThrow(() ->
+                service.testStation(StationTestDto.builder().build()));
+        assertNotNull(testStationResource);
+        assertEquals(TestResultEnum.ERROR, testStationResource.getTestResult());
+        verify(forwarderTestClient).testForwardConnection(any(),any(),any());
+    }
+
+    @Test
+    void testStationShouldReturnCertErrorOnCertErrorForwardCall() {
+        Response response = Response.builder().status(401).request(
+                Request.create(Request.HttpMethod.POST, "test", new HashMap<>(),
+                        "".getBytes(), null, null)).build();
+        FeignException feignException = FeignException.errorStatus("test", response);
+        when(forwarderTestClient.testForwardConnection(any(),any(),any())).thenThrow(feignException);
+        TestStationResource testStationResource = assertDoesNotThrow(() ->
+                service.testStation(StationTestDto.builder().build()));
+        assertNotNull(testStationResource);
+        assertEquals(TestResultEnum.CERTIFICATE_ERROR, testStationResource.getTestResult());
+        verify(forwarderTestClient).testForwardConnection(any(),any(),any());
+    }
+
+    @Test
+    void testStationShouldReturnErrorOnNotFoundForwardCall() {
+        Response response = Response.builder().status(404).request(
+                Request.create(Request.HttpMethod.POST, "test", new HashMap<>(),
+                        "".getBytes(), null, null)).build();
+        FeignException feignException = FeignException.errorStatus("test", response);
+        when(forwarderTestClient.testForwardConnection(any(),any(),any())).thenThrow(feignException);
+        TestStationResource testStationResource = assertDoesNotThrow(() ->
+                service.testStation(StationTestDto.builder().build()));
+        assertNotNull(testStationResource);
+        assertEquals(TestResultEnum.ERROR, testStationResource.getTestResult());
+        verify(forwarderTestClient).testForwardConnection(any(),any(),any());
     }
 
 }
