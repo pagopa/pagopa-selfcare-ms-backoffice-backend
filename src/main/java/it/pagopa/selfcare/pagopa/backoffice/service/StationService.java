@@ -3,7 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
-import it.pagopa.selfcare.pagopa.backoffice.client.ForwarderTestClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.ForwarderClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
@@ -55,7 +55,7 @@ public class StationService {
     private AwsSesClient awsSesClient;
 
     @Autowired
-    private ForwarderTestClient forwarderTestClient;
+    private ForwarderClient forwarderClient;
 
     @Autowired
     private JiraServiceManagerClient jiraServiceManagerClient;
@@ -274,7 +274,7 @@ public class StationService {
 
     public TestStationResource testStation(StationTestDto stationTestDto) {
         try {
-            forwarderTestClient.testForwardConnection(
+            forwarderClient.testForwardConnection(
                     stationTestDto.getHostUrl(),
                     stationTestDto.getHostPort(),
                     stationTestDto.getHostPath()
