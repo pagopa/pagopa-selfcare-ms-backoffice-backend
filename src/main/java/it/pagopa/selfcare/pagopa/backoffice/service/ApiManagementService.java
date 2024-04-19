@@ -82,6 +82,10 @@ public class ApiManagementService {
         if(elem.getPaymentServiceProvider() != null) {
             pspData = PspData.builder()
                     .abiCode(elem.getPaymentServiceProvider().getAbiCode())
+                    .businessRegisterNumber(elem.getPaymentServiceProvider().getBusinessRegisterNumber())
+                    .vatNumberGroup(elem.getPaymentServiceProvider().getVatNumberGroup())
+                    .legalRegisterName(elem.getPaymentServiceProvider().getLegalRegisterName())
+                    .legalRegisterNumber(elem.getPaymentServiceProvider().getBusinessRegisterNumber())
                     .build();
         }
         return InstitutionDetail.builder()
