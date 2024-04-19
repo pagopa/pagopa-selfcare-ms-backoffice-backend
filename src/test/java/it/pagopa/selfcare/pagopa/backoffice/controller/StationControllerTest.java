@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestResultEnum;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomies;
 import it.pagopa.selfcare.pagopa.backoffice.service.StationService;
-import it.pagopa.selfcare.pagopa.backoffice.service.TaxonomyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,11 +18,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.inject.Inject;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -52,7 +50,7 @@ class StationControllerTest {
         StationTestDto stationTestDto = StationTestDto.builder().hostUrl("hostUrk").hostPort(80).hostPath("test").build();
         when(stationService.testStation(stationTestDto))
                 .thenReturn(TestStationResource.builder().testResult(TestResultEnum.SUCCESS).build());
-        String content = mvc.perform(post("/stations/forward/test")
+        String content = mvc.perform(post("/stations/test")
                         .content(objectMapper.writeValueAsBytes(stationTestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -67,7 +65,7 @@ class StationControllerTest {
         StationTestDto stationTestDto = StationTestDto.builder().hostUrl("hostUrk").hostPort(80).hostPath("test").build();
         when(stationService.testStation(stationTestDto))
                 .thenReturn(TestStationResource.builder().testResult(TestResultEnum.ERROR).build());
-        String content = mvc.perform(post("/stations/forward/test")
+        String content = mvc.perform(post("/stations/test")
                         .content(objectMapper.writeValueAsBytes(stationTestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -82,7 +80,7 @@ class StationControllerTest {
         StationTestDto stationTestDto = StationTestDto.builder().hostUrl("hostUrk").hostPort(80).hostPath("test").build();
         when(stationService.testStation(stationTestDto))
                 .thenReturn(TestStationResource.builder().testResult(TestResultEnum.ERROR).build());
-        mvc.perform(post("/stations/forward/test")
+        mvc.perform(post("/stations/test")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -92,7 +90,7 @@ class StationControllerTest {
         StationTestDto stationTestDto = StationTestDto.builder().hostPort(80).hostPath("test").build();
         when(stationService.testStation(stationTestDto))
                 .thenReturn(TestStationResource.builder().testResult(TestResultEnum.ERROR).build());
-        mvc.perform(post("/stations/forward/test")
+        mvc.perform(post("/stations/test")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
