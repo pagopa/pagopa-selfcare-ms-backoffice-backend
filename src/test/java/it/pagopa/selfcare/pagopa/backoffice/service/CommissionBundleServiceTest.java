@@ -55,8 +55,8 @@ class CommissionBundleServiceTest {
     private static final String ID_BUNDLE = "idBundle";
     private static final String ID_BUNDLE_REQUEST = "idBundleRequest";
     private static final String ID_BUNDLE_REQUEST_2 = "idBundleRequest2";
-    private static final String TRANSFER_CATEGORY = "transferCategory";
-    private static final String SPECIFIC_BUILT_IN_DATA = "SpecificBuiltInData";
+    private static final String TRANSFER_CATEGORY = "9/0105107TS/";
+    private static final String SERVICE_TYPE = "Diritti Pratiche SUAP e SUE";
 
     @MockBean
     private GecClient gecClient;
@@ -348,8 +348,8 @@ class CommissionBundleServiceTest {
                 )
                 .build();
         Taxonomy taxonomy = Taxonomy.builder()
-                .serviceType(TRANSFER_CATEGORY)
-                .specificBuiltInData(SPECIFIC_BUILT_IN_DATA)
+                .serviceType(SERVICE_TYPE)
+                .specificBuiltInData(TRANSFER_CATEGORY)
                 .build();
 
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
@@ -369,35 +369,18 @@ class CommissionBundleServiceTest {
         assertNotNull(result);
         assertEquals(1, result.getCiBundleFeeList().size());
 
-        assertEquals(TRANSFER_CATEGORY, result.getCiBundleFeeList().get(0).getServiceType());
-        assertEquals(SPECIFIC_BUILT_IN_DATA, result.getCiBundleFeeList().get(0).getSpecificBuiltInData());
+        assertEquals(SERVICE_TYPE, result.getCiBundleFeeList().get(0).getServiceType());
+        assertEquals(TRANSFER_CATEGORY, result.getCiBundleFeeList().get(0).getSpecificBuiltInData());
         assertEquals(100L, result.getCiBundleFeeList().get(0).getPaymentAmount());
 
     }
 
     @Test
     void getPublicBundleCISubscriptionsDetailWaiting() {
-        PspRequests pspRequests = PspRequests.builder()
-                .requestsList(
-                        Collections.singletonList(
-                                PspBundleRequest.builder()
-                                        .ciBundleAttributes(
-                                                Collections.singletonList(
-                                                        PspCiBundleAttribute.builder()
-                                                                .maxPaymentAmount(100L)
-                                                                .transferCategory(TRANSFER_CATEGORY)
-                                                                .build()
-                                                )
-                                        )
-                                        .id(ID_BUNDLE_REQUEST)
-                                        .build()
-                        )
-                )
-                .pageInfo(buildPageInfo())
-                .build();
+        PspRequests pspRequests = buildPspRequests();
         Taxonomy taxonomy = Taxonomy.builder()
-                .serviceType(TRANSFER_CATEGORY)
-                .specificBuiltInData(SPECIFIC_BUILT_IN_DATA)
+                .serviceType(SERVICE_TYPE)
+                .specificBuiltInData(TRANSFER_CATEGORY)
                 .build();
 
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
@@ -418,10 +401,31 @@ class CommissionBundleServiceTest {
         assertEquals(1, result.getCiBundleFeeList().size());
         assertEquals(ID_BUNDLE_REQUEST, result.getBundleRequestId());
 
-        assertEquals(TRANSFER_CATEGORY, result.getCiBundleFeeList().get(0).getServiceType());
-        assertEquals(SPECIFIC_BUILT_IN_DATA, result.getCiBundleFeeList().get(0).getSpecificBuiltInData());
+        assertEquals(SERVICE_TYPE, result.getCiBundleFeeList().get(0).getServiceType());
+        assertEquals(TRANSFER_CATEGORY, result.getCiBundleFeeList().get(0).getSpecificBuiltInData());
         assertEquals(100L, result.getCiBundleFeeList().get(0).getPaymentAmount());
 
+    }
+
+    private PspRequests buildPspRequests() {
+        return PspRequests.builder()
+                .requestsList(
+                        Collections.singletonList(
+                                PspBundleRequest.builder()
+                                        .ciBundleAttributes(
+                                                Collections.singletonList(
+                                                        PspCiBundleAttribute.builder()
+                                                                .maxPaymentAmount(100L)
+                                                                .transferCategory(TRANSFER_CATEGORY)
+                                                                .build()
+                                                )
+                                        )
+                                        .id(ID_BUNDLE_REQUEST)
+                                        .build()
+                        )
+                )
+                .pageInfo(buildPageInfo())
+                .build();
     }
 
     private CreditorInstitutionInfo buildCIInfo() {

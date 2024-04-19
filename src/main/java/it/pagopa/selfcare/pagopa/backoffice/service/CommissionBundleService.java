@@ -294,15 +294,15 @@ public class CommissionBundleService {
                 .build();
     }
 
-    private CIBundleFee buildCIBundleFee(Long paymentAmount, String serviceType, List<Taxonomy> taxonomies) {
+    private CIBundleFee buildCIBundleFee(Long paymentAmount, String transferCategory, List<Taxonomy> taxonomies) {
         return CIBundleFee.builder()
                 .paymentAmount(paymentAmount)
-                .serviceType(serviceType)
-                .specificBuiltInData(taxonomies.stream()
-                        .filter(taxonomy -> taxonomy.getServiceType().equals(serviceType))
+                .specificBuiltInData(transferCategory)
+                .serviceType(taxonomies.stream()
+                        .filter(taxonomy -> taxonomy.getSpecificBuiltInData().equals(transferCategory))
                         .findFirst()
                         .orElse(new Taxonomy())
-                        .getSpecificBuiltInData())
+                        .getServiceType())
                 .build();
     }
 }
