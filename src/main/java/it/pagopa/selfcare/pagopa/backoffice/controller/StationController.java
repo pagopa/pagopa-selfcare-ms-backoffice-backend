@@ -165,7 +165,7 @@ public class StationController {
 
     }
 
-    @PostMapping(value = "/test", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/connection/test", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Test station connectivity", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
