@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
-import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ForwarderClient;
@@ -273,20 +272,19 @@ public class StationService {
     }
 
     public TestStationResource testStation(StationTestDto stationTestDto) {
-        try {
-            forwarderClient.testForwardConnection(
-                    stationTestDto.getHostUrl(),
-                    stationTestDto.getHostPort(),
-                    stationTestDto.getHostPath()
-            );
+        var response = forwarderClient.testForwardConnection(
+                stationTestDto.getHostUrl(),
+                stationTestDto.getHostPort(),
+                stationTestDto.getHostPath()
+        );
+        if(response.getStatus() == 200) {
             return TestStationResource.builder().testResult(TestResultEnum.SUCCESS).message("OK").build();
-        } catch (FeignException feignException) {
-            if (feignException.status() == 401) {
-                return TestStationResource.builder().testResult(TestResultEnum.CERTIFICATE_ERROR)
-                        .message("Connection error due to invalid connection on the station endpoint").build();
-            }
+        } else if(response.getStatus() == 401) {
+            return TestStationResource.builder().testResult(TestResultEnum.CERTIFICATE_ERROR)
+                    .message("Connection error due to invalid connection on the station endpoint").build();
+        } else {
             return TestStationResource.builder().testResult(TestResultEnum.ERROR)
-                    .message("Connection Error with status: " + feignException.status()).build();
+                    .message("Connection Error with status: " + response.getStatus()).build();
         }
     }
 

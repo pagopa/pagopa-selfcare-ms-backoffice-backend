@@ -1,8 +1,5 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
-import feign.FeignException;
-import feign.Request;
-import feign.Response;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ForwarderClient;
@@ -10,17 +7,15 @@ import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestResultEnum;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
+import kong.unirest.HttpResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.HashMap;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = {StationService.class})
 class StationServiceTest {
@@ -45,6 +40,9 @@ class StationServiceTest {
 
     @Test
     void testStationShouldReturnSuccessOnValidForwardCall() {
+        HttpResponse<String> response = mock(HttpResponse.class);
+        when(response.getStatus()).thenReturn(200);
+        when(forwarderClient.testForwardConnection(any(),any(),any())).thenReturn(response);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
@@ -54,11 +52,9 @@ class StationServiceTest {
 
     @Test
     void testStationShouldSuccessOnBadRequestForwardCall() {
-        Response response = Response.builder().status(400).request(
-                Request.create(Request.HttpMethod.POST, "test",
-                        new HashMap<>(), "".getBytes(), null, null)).build();
-        FeignException feignException = FeignException.errorStatus("test", response);
-        when(forwarderClient.testForwardConnection(any(),any(),any())).thenThrow(feignException);
+        HttpResponse<String> response = mock(HttpResponse.class);
+        when(response.getStatus()).thenReturn(400);
+        when(forwarderClient.testForwardConnection(any(),any(),any())).thenReturn(response);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
@@ -68,11 +64,9 @@ class StationServiceTest {
 
     @Test
     void testStationShouldReturnSuccessOnErrorForwardCall() {
-        Response response = Response.builder().status(500).request(
-                Request.create(Request.HttpMethod.POST, "test", new HashMap<>(),
-                        "".getBytes(), null, null)).build();
-        FeignException feignException = FeignException.errorStatus("test", response);
-        when(forwarderClient.testForwardConnection(any(),any(),any())).thenThrow(feignException);
+        HttpResponse<String> response = mock(HttpResponse.class);
+        when(response.getStatus()).thenReturn(500);
+        when(forwarderClient.testForwardConnection(any(),any(),any())).thenReturn(response);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
@@ -81,11 +75,9 @@ class StationServiceTest {
     }
     @Test
     void testStationShouldReturnKOOnErrorForwardCall() {
-        Response response = Response.builder().status(500).request(
-                Request.create(Request.HttpMethod.POST, "test",
-                        new HashMap<>(), "".getBytes(), null, null)).build();
-        FeignException feignException = FeignException.errorStatus("test", response);
-        when(forwarderClient.testForwardConnection(any(),any(),any())).thenThrow(feignException);
+        HttpResponse<String> response = mock(HttpResponse.class);
+        when(response.getStatus()).thenReturn(500);
+        when(forwarderClient.testForwardConnection(any(),any(),any())).thenReturn(response);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
@@ -95,11 +87,9 @@ class StationServiceTest {
 
     @Test
     void testStationShouldReturnCertErrorOnCertErrorForwardCall() {
-        Response response = Response.builder().status(401).request(
-                Request.create(Request.HttpMethod.POST, "test", new HashMap<>(),
-                        "".getBytes(), null, null)).build();
-        FeignException feignException = FeignException.errorStatus("test", response);
-        when(forwarderClient.testForwardConnection(any(),any(),any())).thenThrow(feignException);
+        HttpResponse<String> response = mock(HttpResponse.class);
+        when(response.getStatus()).thenReturn(401);
+        when(forwarderClient.testForwardConnection(any(),any(),any())).thenReturn(response);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
@@ -109,11 +99,9 @@ class StationServiceTest {
 
     @Test
     void testStationShouldReturnErrorOnNotFoundForwardCall() {
-        Response response = Response.builder().status(404).request(
-                Request.create(Request.HttpMethod.POST, "test", new HashMap<>(),
-                        "".getBytes(), null, null)).build();
-        FeignException feignException = FeignException.errorStatus("test", response);
-        when(forwarderClient.testForwardConnection(any(),any(),any())).thenThrow(feignException);
+        HttpResponse<String> response = mock(HttpResponse.class);
+        when(response.getStatus()).thenReturn(404);
+        when(forwarderClient.testForwardConnection(any(),any(),any())).thenReturn(response);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
