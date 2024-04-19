@@ -36,9 +36,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -405,6 +408,34 @@ class CommissionBundleServiceTest {
         assertEquals(TRANSFER_CATEGORY, result.getCiBundleFeeList().get(0).getSpecificBuiltInData());
         assertEquals(100L, result.getCiBundleFeeList().get(0).getPaymentAmount());
 
+    }
+
+    @Test
+    void getPublicBundleCISubscriptionsDetailWaitingNoResult() {
+        PspRequests pspRequests = PspRequests.builder()
+                .requestsList(Collections.emptyList())
+                .build();
+        Taxonomy taxonomy = Taxonomy.builder()
+                .serviceType(SERVICE_TYPE)
+                .specificBuiltInData(TRANSFER_CATEGORY)
+                .build();
+
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
+        when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, PAGE))
+                .thenReturn(pspRequests);
+
+        PublicBundleCISubscriptionsDetail result = assertDoesNotThrow(() -> sut
+                .getPublicBundleCISubscriptionsDetail(
+                        ID_BUNDLE,
+                        PSP_TAX_CODE,
+                        CI_TAX_CODE,
+                        PublicBundleSubscriptionStatus.WAITING)
+        );
+
+        assertNotNull(result);
+        assertTrue(result.getCiBundleFeeList().isEmpty());
+
+        verify(taxonomyService, never()).getTaxonomiesByCodes(anyList());
     }
 
     private PspRequests buildPspRequests() {

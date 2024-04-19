@@ -14,12 +14,12 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleC
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspRequests;
@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -201,11 +202,7 @@ public class CommissionBundleService {
                     .getCreditorInstitutionInfo(acceptedSubscription.getCiTaxCodeList());
 
             return PublicBundleCISubscriptionsResource.builder()
-                    .ciSubscriptionInfoList(
-                            ciInfoList.parallelStream()
-                                    .map(ciInfo -> this.modelMapper.map(ciInfo, CISubscriptionInfo.class))
-                                    .toList()
-                    )
+                    .ciSubscriptionInfoList(getCiSubscriptionInfoList(ciInfoList))
                     .pageInfo(acceptedSubscription.getPageInfo())
                     .build();
         }
@@ -213,18 +210,10 @@ public class CommissionBundleService {
         PspRequests subscriptionRequest = this.gecClient
                 .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, limit, page);
 
-        List<String> taxCodeList = subscriptionRequest.getRequestsList().parallelStream()
-                .map(PspBundleRequest::getCiFiscalCode)
-                .toList();
-        List<CreditorInstitutionInfo> ciInfoList = this.apiConfigSelfcareIntegrationClient
-                .getCreditorInstitutionInfo(taxCodeList);
+        List<CreditorInstitutionInfo> ciInfoList = getCIInfos(subscriptionRequest);
 
         return PublicBundleCISubscriptionsResource.builder()
-                .ciSubscriptionInfoList(
-                        ciInfoList.parallelStream()
-                                .map(ciInfo -> this.modelMapper.map(ciInfo, CISubscriptionInfo.class))
-                                .toList()
-                )
+                .ciSubscriptionInfoList(getCiSubscriptionInfoList(ciInfoList))
                 .pageInfo(subscriptionRequest.getPageInfo())
                 .build();
     }
@@ -250,48 +239,79 @@ public class CommissionBundleService {
             CiBundleDetails ciBundleDetails = this.gecClient
                     .getPublicBundleSubscriptionDetailByPSP(pspCode, ciTaxCode, idBundle);
 
-            List<String> transferCategoryList = ciBundleDetails.getAttributes().parallelStream()
-                    .map(CiBundleAttribute::getTransferCategory)
-                    .toList();
-
-            List<Taxonomy> taxonomies = this.taxonomyService.getTaxonomiesByCodes(transferCategoryList);
+            List<Taxonomy> taxonomies = getTaxonomiesByCIBundleDetails(ciBundleDetails);
 
             return PublicBundleCISubscriptionsDetail.builder()
-                    .ciBundleFeeList(
-                            ciBundleDetails.getAttributes().parallelStream()
-                                    .map(ciBundleAttribute -> buildCIBundleFee(
-                                            ciBundleAttribute.getMaxPaymentAmount(),
-                                            ciBundleAttribute.getTransferCategory(),
-                                            taxonomies)
-                                    )
-                                    .toList()
-                    )
+                    .ciBundleFeeList(getBundleFeeList(ciBundleDetails, taxonomies))
                     .build();
         }
 
         PspRequests subscriptionRequest = this.gecClient
                 .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, 1, 0);
 
+        if (subscriptionRequest.getRequestsList().isEmpty()) {
+            return PublicBundleCISubscriptionsDetail.builder()
+                    .ciBundleFeeList(Collections.emptyList())
+                    .build();
+        }
+
         PspBundleRequest pspBundleRequest = subscriptionRequest.getRequestsList().get(0);
+        List<Taxonomy> taxonomies = getTaxonomiesByPSPBundleRequest(pspBundleRequest);
+
+        return PublicBundleCISubscriptionsDetail.builder()
+                .ciBundleFeeList(getCiBundleFeeList(pspBundleRequest, taxonomies))
+                .bundleRequestId(pspBundleRequest.getId())
+                .build();
+    }
+
+    private List<CISubscriptionInfo> getCiSubscriptionInfoList(List<CreditorInstitutionInfo> ciInfoList) {
+        return ciInfoList.parallelStream()
+                .map(ciInfo -> this.modelMapper.map(ciInfo, CISubscriptionInfo.class))
+                .toList();
+    }
+
+    private List<CIBundleFee> getCiBundleFeeList(PspBundleRequest pspBundleRequest, List<Taxonomy> taxonomies) {
+        return pspBundleRequest.getCiBundleAttributes().parallelStream()
+                .map(attribute -> buildCIBundleFee(
+                        attribute.getMaxPaymentAmount(),
+                        attribute.getTransferCategory(),
+                        taxonomies)
+                )
+                .toList();
+    }
+
+    private List<CIBundleFee> getBundleFeeList(CiBundleDetails ciBundleDetails, List<Taxonomy> taxonomies) {
+        return ciBundleDetails.getAttributes().parallelStream()
+                .map(attribute -> buildCIBundleFee(
+                        attribute.getMaxPaymentAmount(),
+                        attribute.getTransferCategory(),
+                        taxonomies)
+                )
+                .toList();
+    }
+
+    private List<CreditorInstitutionInfo> getCIInfos(PspRequests subscriptionRequest) {
+        List<String> taxCodeList = subscriptionRequest.getRequestsList().parallelStream()
+                .map(PspBundleRequest::getCiFiscalCode)
+                .toList();
+        return this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(taxCodeList);
+    }
+
+    private List<Taxonomy> getTaxonomiesByPSPBundleRequest(PspBundleRequest pspBundleRequest) {
         List<String> transferCategoryList = pspBundleRequest
                 .getCiBundleAttributes().parallelStream()
                 .map(PspCiBundleAttribute::getTransferCategory)
                 .toList();
 
-        List<Taxonomy> taxonomies = this.taxonomyService.getTaxonomiesByCodes(transferCategoryList);
+        return this.taxonomyService.getTaxonomiesByCodes(transferCategoryList);
+    }
 
-        return PublicBundleCISubscriptionsDetail.builder()
-                .ciBundleFeeList(
-                        pspBundleRequest.getCiBundleAttributes().parallelStream()
-                                .map(ciBundleAttribute -> buildCIBundleFee(
-                                        ciBundleAttribute.getMaxPaymentAmount(),
-                                        ciBundleAttribute.getTransferCategory(),
-                                        taxonomies)
-                                )
-                                .toList()
-                )
-                .bundleRequestId(pspBundleRequest.getId())
-                .build();
+    private List<Taxonomy> getTaxonomiesByCIBundleDetails(CiBundleDetails ciBundleDetails) {
+        List<String> transferCategoryList = ciBundleDetails.getAttributes().parallelStream()
+                .map(CiBundleAttribute::getTransferCategory)
+                .toList();
+
+        return this.taxonomyService.getTaxonomiesByCodes(transferCategoryList);
     }
 
     private CIBundleFee buildCIBundleFee(Long paymentAmount, String transferCategory, List<Taxonomy> taxonomies) {
