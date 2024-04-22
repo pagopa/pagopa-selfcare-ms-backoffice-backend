@@ -23,10 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -156,16 +153,17 @@ public class ApiManagementService {
             Authorization authorizationSecondaryKey = buildBOAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, false);
             this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
         }
-//        if(subscriptionCode == Subscription.FDR_ORG || subscriptionCode == Subscription.FDR_PSP) {
-//            InstitutionApiKeys apiKeys = apiSubscriptions.stream()
-//                    .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
-//                    .findFirst()
-//                    .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
-//            Authorization authorizationPrimaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, true);
-//            this.authorizerConfigClient.createAuthorization(authorizationPrimaryKey);
-//            Authorization authorizationSecondaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, false);
-//            this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
-//        }
+        if(subscriptionCode == Subscription.FDR_ORG || subscriptionCode == Subscription.FDR_PSP) {
+            InstitutionApiKeys apiKeys = apiSubscriptions.stream()
+                    .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
+                    .findFirst()
+                    .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
+            List<DelegationExternal> delegationResponse = this.externalApiClient.getBrokerDelegation(null, institutionId, "prod-pagopa", "FULL");
+            Authorization authorizationPrimaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, delegationResponse, true);
+            this.authorizerConfigClient.createAuthorization(authorizationPrimaryKey);
+            Authorization authorizationSecondaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, delegationResponse, false);
+            this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
+        }
 
         return apiSubscriptions;
     }
@@ -264,8 +262,20 @@ public class ApiManagementService {
             String subscriptionPrefixId,
             String subscriptionKey,
             InstitutionResponse institution,
+            List<DelegationExternal> delegationResponse,
             boolean isPrimaryKey
     ) {
+
+        ArrayList<AuthorizationEntity> authorizedEntities = new ArrayList<>(delegationResponse.stream()
+                .map(elem -> AuthorizationEntity.builder()
+                        .name(elem.getInstitutionName())
+                        .value(elem.getTaxCode())
+                        .build())
+                .toList());
+        authorizedEntities.add(AuthorizationEntity.builder()
+                .name(institution.getDescription())
+                .value(institution.getTaxCode())
+                .build());
         return Authorization.builder()
                 .id(createAuthorizationBOId(subscriptionPrefixId, institution.getId(), isPrimaryKey))
                 .domain("fdr")
@@ -276,11 +286,7 @@ public class ApiManagementService {
                         .name(institution.getDescription())
                         .type(AuthorizationOwnerType.fromSelfcareRole(institution.getInstitutionType().name()))
                         .build())
-                .authorizedEntities(Collections.singletonList(AuthorizationEntity.builder()
-                        .name(institution.getDescription())
-                        .value(institution.getTaxCode())
-                        .values(null)
-                        .build()))
+                .authorizedEntities(authorizedEntities)
                 .otherMetadata(Collections.emptyList())
                 .build();
     }
