@@ -273,9 +273,11 @@ public class StationService {
 
     public TestStationResource testStation(StationTestDto stationTestDto) {
         var response = forwarderClient.testForwardConnection(
+                stationTestDto.getHostProtocol(),
                 stationTestDto.getHostUrl(),
                 stationTestDto.getHostPort(),
-                stationTestDto.getHostPath()
+                stationTestDto.getHostPath(),
+                stationTestDto.getTestStationType()
         );
         if(response.getStatus() == 200) {
             return TestStationResource.builder().testResult(TestResultEnum.SUCCESS).message("OK").build();

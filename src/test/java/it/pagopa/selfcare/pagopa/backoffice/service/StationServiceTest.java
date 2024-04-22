@@ -42,71 +42,71 @@ class StationServiceTest {
     void testStationShouldReturnSuccessOnValidForwardCall() {
         HttpResponse<String> response = mock(HttpResponse.class);
         when(response.getStatus()).thenReturn(200);
-        when(forwarderClient.testForwardConnection(any(),any(),any())).thenReturn(response);
+        when(forwarderClient.testForwardConnection(any(),any(),any(),any(),any())).thenReturn(response);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
         assertEquals(TestResultEnum.SUCCESS, testStationResource.getTestResult());
-        verify(forwarderClient).testForwardConnection(any(),any(),any());
+        verify(forwarderClient).testForwardConnection(any(),any(),any(),any(),any());
     }
 
     @Test
     void testStationShouldSuccessOnBadRequestForwardCall() {
         HttpResponse<String> response = mock(HttpResponse.class);
         when(response.getStatus()).thenReturn(400);
-        when(forwarderClient.testForwardConnection(any(),any(),any())).thenReturn(response);
+        when(forwarderClient.testForwardConnection(any(),any(),any(),any(),any())).thenReturn(response);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
         assertEquals(TestResultEnum.ERROR, testStationResource.getTestResult());
-        verify(forwarderClient).testForwardConnection(any(),any(),any());
+        verify(forwarderClient).testForwardConnection(any(),any(),any(),any(),any());
     }
 
     @Test
     void testStationShouldReturnSuccessOnErrorForwardCall() {
         HttpResponse<String> response = mock(HttpResponse.class);
         when(response.getStatus()).thenReturn(500);
-        when(forwarderClient.testForwardConnection(any(),any(),any())).thenReturn(response);
+        when(forwarderClient.testForwardConnection(any(),any(),any(),any(),any())).thenReturn(response);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
         assertEquals(TestResultEnum.ERROR, testStationResource.getTestResult());
-        verify(forwarderClient).testForwardConnection(any(),any(),any());
+        verify(forwarderClient).testForwardConnection(any(),any(),any(),any(),any());
     }
     @Test
     void testStationShouldReturnKOOnErrorForwardCall() {
         HttpResponse<String> response = mock(HttpResponse.class);
         when(response.getStatus()).thenReturn(500);
-        when(forwarderClient.testForwardConnection(any(),any(),any())).thenReturn(response);
+        when(forwarderClient.testForwardConnection(any(),any(),any(),any(),any())).thenReturn(response);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
         assertEquals(TestResultEnum.ERROR, testStationResource.getTestResult());
-        verify(forwarderClient).testForwardConnection(any(),any(),any());
+        verify(forwarderClient).testForwardConnection(any(),any(),any(),any(),any());
     }
 
     @Test
     void testStationShouldReturnCertErrorOnCertErrorForwardCall() {
         HttpResponse<String> response = mock(HttpResponse.class);
         when(response.getStatus()).thenReturn(401);
-        when(forwarderClient.testForwardConnection(any(),any(),any())).thenReturn(response);
+        when(forwarderClient.testForwardConnection(any(),any(),any(),any(),any())).thenReturn(response);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
         assertEquals(TestResultEnum.CERTIFICATE_ERROR, testStationResource.getTestResult());
-        verify(forwarderClient).testForwardConnection(any(),any(),any());
+        verify(forwarderClient).testForwardConnection(any(),any(),any(),any(),any());
     }
 
     @Test
     void testStationShouldReturnErrorOnNotFoundForwardCall() {
         HttpResponse<String> response = mock(HttpResponse.class);
         when(response.getStatus()).thenReturn(404);
-        when(forwarderClient.testForwardConnection(any(),any(),any())).thenReturn(response);
+        when(forwarderClient.testForwardConnection(any(),any(),any(),any(),any())).thenReturn(response);
         TestStationResource testStationResource = assertDoesNotThrow(() ->
                 service.testStation(StationTestDto.builder().build()));
         assertNotNull(testStationResource);
         assertEquals(TestResultEnum.ERROR, testStationResource.getTestResult());
-        verify(forwarderClient).testForwardConnection(any(),any(),any());
+        verify(forwarderClient).testForwardConnection(any(),any(),any(),any(),any());
     }
 
 }
