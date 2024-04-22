@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import com.azure.spring.cloud.feature.management.FeatureManager;
 import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
 import it.pagopa.selfcare.pagopa.backoffice.client.AuthorizerConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
@@ -39,6 +40,9 @@ class ApiManagementServiceTest {
     private ExternalApiClient externalApiClient;
 
     @MockBean
+    private FeatureManager featureManager;
+
+    @MockBean
     private AuthorizerConfigClient authorizerConfigClient;
 
     @Autowired
@@ -65,6 +69,7 @@ class ApiManagementServiceTest {
                 .build();
         when(externalApiClient.getInstitutionsFiltered(any()))
                 .thenReturn(body);
+        when(featureManager.isEnabled(anyString())).thenReturn(true);
         List<InstitutionDetail> institutions = service.getInstitutions("123BCS");
         assertNotNull(institutions);
         assertFalse(institutions.isEmpty());

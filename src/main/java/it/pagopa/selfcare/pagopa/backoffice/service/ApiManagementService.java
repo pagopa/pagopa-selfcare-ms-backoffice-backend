@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import com.azure.spring.cloud.feature.management.FeatureManager;
 import it.pagopa.selfcare.pagopa.backoffice.client.AuthorizerConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
@@ -45,24 +46,31 @@ public class ApiManagementService {
 
     private final AuthorizerConfigClient authorizerConfigClient;
 
+    private final FeatureManager featureManager;
+
     @Autowired
     public ApiManagementService(AzureApiManagerClient apimClient,
                                 ExternalApiClient externalApiClient,
                                 ModelMapper modelMapper,
+                                AuthorizerConfigClient authorizerConfigClient,
+                                FeatureManager featureManager,
                                 @Value("${institution.subscription.test-email}") String testEmail,
-                                @Value("${info.properties.environment}") String environment,
-                                AuthorizerConfigClient authorizerConfigClient
+                                @Value("${info.properties.environment}") String environment
     ) {
         this.apimClient = apimClient;
         this.externalApiClient = externalApiClient;
         this.modelMapper = modelMapper;
         this.testEmail = testEmail;
-        this.authorizerConfigClient = authorizerConfigClient;
         this.environment = environment;
+        this.authorizerConfigClient = authorizerConfigClient;
+        this.featureManager = featureManager;
     }
 
     public List<InstitutionDetail> getInstitutions(String taxCode) {
         if(taxCode != null && !taxCode.isEmpty()) {
+            if(!featureManager.isEnabled("isOperator")) {
+                throw new AppException(AppError.UNAUTHORIZED);
+            }
             return externalApiClient.getInstitutionsFiltered(taxCode).getInstitutions().stream()
                     .map(elem -> modelMapper.map(elem, InstitutionDetail.class))
                     .toList();
@@ -75,7 +83,6 @@ public class ApiManagementService {
                     .toList();
         }
     }
-
 
 
     public Institution getInstitution(String institutionId) {
