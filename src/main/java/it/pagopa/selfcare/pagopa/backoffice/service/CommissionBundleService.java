@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
@@ -33,10 +34,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -52,19 +57,23 @@ public class CommissionBundleService {
 
     private final ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
+    private final AwsSesClient awsSesClient;
+
     @Autowired
     public CommissionBundleService(
             GecClient gecClient,
             ModelMapper modelMapper,
             TaxonomyService taxonomyService,
             LegacyPspCodeUtil legacyPspCodeUtil,
-            ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient
+            ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
+            AwsSesClient awsSesClient
     ) {
         this.gecClient = gecClient;
         this.modelMapper = modelMapper;
         this.taxonomyService = taxonomyService;
         this.legacyPspCodeUtil = legacyPspCodeUtil;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
+        this.awsSesClient = awsSesClient;
     }
 
     public BundlePaymentTypes getBundlesPaymentTypes(Integer limit, Integer page) {
@@ -265,6 +274,31 @@ public class CommissionBundleService {
                 .build();
     }
 
+    public void deleteCIBundleSubscription(String idBundle, String ciTaxCode, String bundleName) {
+        final String emailSubject = "Conferma rimozione da pacchetto";
+        final String emailBody = String
+                .format("Ciao %n%n%n sei stato rimosso dal pacchetto %s.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nBack-office pagoPa",
+                        bundleName);
+
+        // Thymeleaf Context
+        Context context = new Context();
+
+        // Properties to show up in Template after stored in Context
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("bundleName", bundleName);
+
+        context.setVariables(properties);
+
+        this.gecClient.deleteCIBundle(ciTaxCode, idBundle);
+
+        awsSesClient.sendEmail(
+                emailSubject,
+                emailBody,
+                "deleteBundleSubscriptionEmail.html",
+                context,
+                "mail");
+    }
+
     private List<CISubscriptionInfo> getCiSubscriptionInfoList(List<CreditorInstitutionInfo> ciInfoList) {
         return ciInfoList.parallelStream()
                 .map(ciInfo -> this.modelMapper.map(ciInfo, CISubscriptionInfo.class))
@@ -314,7 +348,6 @@ public class CommissionBundleService {
 
         return this.taxonomyService.getTaxonomiesByCodes(transferCategoryList);
     }
-
     private CIBundleFee buildCIBundleFee(Long paymentAmount, String transferCategory, List<Taxonomy> taxonomies) {
         return CIBundleFee.builder()
                 .paymentAmount(paymentAmount)

@@ -28,9 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 
@@ -111,7 +114,13 @@ public class ChannelService {
         PspChannelPaymentTypes paymentType = apiConfigClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
         WrapperChannelDetailsResource resource = ChannelMapper.toResource(getWrapperEntityOperationsSortedList(response).get(0), paymentType);
 
-        awsSesClient.sendEmail(CREATE_CHANEL_SUBJECT, CREATE_CHANEL_EMAIL_BODY, channelDetailsDto.getEmail());
+        awsSesClient.sendEmail(
+                CREATE_CHANEL_SUBJECT,
+                CREATE_CHANEL_EMAIL_BODY,
+                "channelCreationValidatedEmail.html",
+                buildChannelHtmlEmailBodyContext(channelDetailsDto),
+                channelDetailsDto.getEmail()
+        );
         return resource;
     }
 
@@ -124,7 +133,14 @@ public class ChannelService {
         ChannelDetails response = apiConfigClient.updateChannel(channelDetails, channelCode);
         wrapperService.update(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
         ChannelDetailsResource resource = ChannelMapper.toResource(response, null);
-        awsSesClient.sendEmail(UPDATE_CHANEL_SUBJECT, UPDATE_CHANEL_EMAIL_BODY, channelDetailsDto.getEmail());
+
+        awsSesClient.sendEmail(
+                UPDATE_CHANEL_SUBJECT,
+                UPDATE_CHANEL_EMAIL_BODY,
+                "channelUpdateValidatedEmail.html",
+                buildChannelHtmlEmailBodyContext(channelDetailsDto),
+                channelDetailsDto.getEmail()
+        );
         return resource;
     }
 
@@ -188,5 +204,17 @@ public class ChannelService {
     public ChannelPspListResource getPSPsByChannel(Integer limit, Integer page, String channelCode, String pspName) {
         ChannelPspList dto = apiConfigClient.getChannelPaymentServiceProviders(channelCode, limit, page, pspName);
         return ChannelMapper.toResource(dto);
+    }
+
+    private Context buildChannelHtmlEmailBodyContext(ChannelDetailsDto channelDetailsDto) {
+        // Thymeleaf Context
+        Context context = new Context();
+
+        // Properties to show up in Template after stored in Context
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("channelCode", channelDetailsDto.getChannelCode());
+
+        context.setVariables(properties);
+        return context;
     }
 }
