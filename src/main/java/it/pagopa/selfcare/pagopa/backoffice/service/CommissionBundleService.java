@@ -24,6 +24,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBun
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
@@ -193,6 +194,8 @@ public class CommissionBundleService {
             Integer page
     ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
+        PageInfo pageInfo;
+        List<CISubscriptionInfo> ciSubscriptionInfoList;
 
         if (status.equals(PublicBundleSubscriptionStatus.ACCEPTED)) {
             BundleCreditorInstitutionResource acceptedSubscription = this.gecClient
@@ -200,21 +203,20 @@ public class CommissionBundleService {
 
             List<CreditorInstitutionInfo> ciInfoList = this.apiConfigSelfcareIntegrationClient
                     .getCreditorInstitutionInfo(acceptedSubscription.getCiTaxCodeList());
+            ciSubscriptionInfoList = getCiSubscriptionInfoList(ciInfoList);
+            pageInfo = acceptedSubscription.getPageInfo();
+        } else {
+            PspRequests subscriptionRequest = this.gecClient
+                    .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, limit, page);
 
-            return PublicBundleCISubscriptionsResource.builder()
-                    .ciSubscriptionInfoList(getCiSubscriptionInfoList(ciInfoList))
-                    .pageInfo(acceptedSubscription.getPageInfo())
-                    .build();
+            List<CreditorInstitutionInfo> ciInfoList = getCIInfos(subscriptionRequest);
+            ciSubscriptionInfoList = getCiSubscriptionInfoList(ciInfoList);
+            pageInfo = subscriptionRequest.getPageInfo();
         }
 
-        PspRequests subscriptionRequest = this.gecClient
-                .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, limit, page);
-
-        List<CreditorInstitutionInfo> ciInfoList = getCIInfos(subscriptionRequest);
-
         return PublicBundleCISubscriptionsResource.builder()
-                .ciSubscriptionInfoList(getCiSubscriptionInfoList(ciInfoList))
-                .pageInfo(subscriptionRequest.getPageInfo())
+                .ciSubscriptionInfoList(ciSubscriptionInfoList)
+                .pageInfo(pageInfo)
                 .build();
     }
 
@@ -234,6 +236,8 @@ public class CommissionBundleService {
             PublicBundleSubscriptionStatus status
     ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
+        List<CIBundleFee> ciBundleFeeList = Collections.emptyList();
+        String bundleRequestId = null;
 
         if (status.equals(PublicBundleSubscriptionStatus.ACCEPTED)) {
             CiBundleDetails ciBundleDetails = this.gecClient
@@ -241,26 +245,23 @@ public class CommissionBundleService {
 
             List<Taxonomy> taxonomies = getTaxonomiesByCIBundleDetails(ciBundleDetails);
 
-            return PublicBundleCISubscriptionsDetail.builder()
-                    .ciBundleFeeList(getBundleFeeList(ciBundleDetails, taxonomies))
-                    .build();
+            ciBundleFeeList = getBundleFeeList(ciBundleDetails, taxonomies);
+        } else {
+            PspRequests subscriptionRequest = this.gecClient
+                    .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, 1, 0);
+
+            if (!subscriptionRequest.getRequestsList().isEmpty()) {
+                PspBundleRequest pspBundleRequest = subscriptionRequest.getRequestsList().get(0);
+                List<Taxonomy> taxonomies = getTaxonomiesByPSPBundleRequest(pspBundleRequest);
+
+                ciBundleFeeList = getCiBundleFeeList(pspBundleRequest, taxonomies);
+                bundleRequestId = pspBundleRequest.getId();
+            }
         }
-
-        PspRequests subscriptionRequest = this.gecClient
-                .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, 1, 0);
-
-        if (subscriptionRequest.getRequestsList().isEmpty()) {
-            return PublicBundleCISubscriptionsDetail.builder()
-                    .ciBundleFeeList(Collections.emptyList())
-                    .build();
-        }
-
-        PspBundleRequest pspBundleRequest = subscriptionRequest.getRequestsList().get(0);
-        List<Taxonomy> taxonomies = getTaxonomiesByPSPBundleRequest(pspBundleRequest);
 
         return PublicBundleCISubscriptionsDetail.builder()
-                .ciBundleFeeList(getCiBundleFeeList(pspBundleRequest, taxonomies))
-                .bundleRequestId(pspBundleRequest.getId())
+                .ciBundleFeeList(ciBundleFeeList)
+                .bundleRequestId(bundleRequestId)
                 .build();
     }
 
