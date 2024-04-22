@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 @Data
@@ -49,7 +48,6 @@ public class InstitutionDetail {
 
     @ApiModelProperty(value = "Institution onboarding status", required = true)
     @JsonProperty(value = "status", required = true)
-    @NotBlank
     private String status;
 
     @ApiModelProperty(value = "Institution's physical address", required = true)
@@ -72,7 +70,6 @@ public class InstitutionDetail {
 
     @ApiModelProperty(value = "Logged user's roles on product", required = true)
     @JsonProperty(value = "user_product_roles", required = true)
-    @NotNull
     private Collection<String> userProductRoles;
 
     @ApiModelProperty(value = "GPS, SCP, PT optional data")

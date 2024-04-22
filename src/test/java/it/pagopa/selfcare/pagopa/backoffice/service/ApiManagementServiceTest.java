@@ -1,21 +1,16 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import com.azure.spring.cloud.feature.management.FeatureManager;
 import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
 import it.pagopa.selfcare.pagopa.backoffice.client.AuthorizerConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionResponse;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,16 +21,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = {MappingsConfiguration.class, ApiManagementService.class})
 class ApiManagementServiceTest {
@@ -51,6 +40,9 @@ class ApiManagementServiceTest {
     private ExternalApiClient externalApiClient;
 
     @MockBean
+    private FeatureManager featureManager;
+
+    @MockBean
     private AuthorizerConfigClient authorizerConfigClient;
 
     @Autowired
@@ -60,10 +52,28 @@ class ApiManagementServiceTest {
     void getInstitutions() {
         when(externalApiClient.getInstitutions(any()))
                 .thenReturn(Collections.singletonList(new InstitutionInfo()));
-        List<InstitutionDetail> institutions = service.getInstitutions();
+        List<InstitutionDetail> institutions = service.getInstitutions(null);
         assertNotNull(institutions);
         assertFalse(institutions.isEmpty());
         verify(externalApiClient).getInstitutions(any());
+    }
+
+    @Test
+    void getInstitutionsFilteredByName() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution elem = it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.builder()
+                .id("1")
+                .institutionType("PA")
+                .build();
+        Institutions body = Institutions.builder()
+                .institutions(Collections.singletonList(elem))
+                .build();
+        when(externalApiClient.getInstitutionsFiltered(any()))
+                .thenReturn(body);
+        when(featureManager.isEnabled(anyString())).thenReturn(true);
+        List<InstitutionDetail> institutions = service.getInstitutions("123BCS");
+        assertNotNull(institutions);
+        assertFalse(institutions.isEmpty());
+        verify(externalApiClient, never()).getInstitutions(any());
     }
 
     @Test
@@ -105,7 +115,7 @@ class ApiManagementServiceTest {
     @Test
     void getBrokerDelegationCombinedRoles() {
         when(externalApiClient.getBrokerDelegation(any(), any(), any(), any())).thenReturn(createDelegations());
-        List<Delegation> delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, List.of(RoleType.EC,RoleType.PSP));
+        List<Delegation> delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, List.of(RoleType.EC, RoleType.PSP));
         assertNotNull(delegations);
         assertEquals(2, delegations.size());
     }

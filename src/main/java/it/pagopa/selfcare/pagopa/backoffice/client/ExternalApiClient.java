@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionRespon
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -26,6 +27,10 @@ public interface ExternalApiClient {
     @GetMapping(value = "/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     List<InstitutionInfo> getInstitutions(@RequestParam(value = "userIdForAuth") String userIdForAuth);
+
+    @GetMapping(value = "/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    Institutions getInstitutionsFiltered(@RequestParam(value = "taxCode") String taxCode);
 
     @GetMapping(value = "/institutions/{institutionId}/products", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
