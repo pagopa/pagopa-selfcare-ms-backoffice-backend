@@ -41,6 +41,11 @@ import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWra
 @Service
 public class ChannelService {
 
+    private static final String CREATE_CHANEL_SUBJECT = "Nuovo canale attivo";
+    private static final String CREATE_CHANEL_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato il canale %s che hai creato. Da questo momento puoi utilizzarlo per attivare i tuoi servizi.%n%n%nA presto,%n%n Back-office pagoPA";
+    private static final String UPDATE_CHANEL_SUBJECT = "Modifica canale attiva";
+    private static final String UPDATE_CHANEL_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato il canale %s che hai modificato. Da questo momento la modifica effettuata risulta attiva.%n%n%nA presto,%n%n Back-office pagoPA";
+
     private final ApiConfigClient apiConfigClient;
 
     private final WrapperService wrapperService;
@@ -99,9 +104,6 @@ public class ChannelService {
     }
 
     public WrapperChannelDetailsResource validateChannelCreation(ChannelDetailsDto channelDetailsDto) {
-        final String CREATE_CHANEL_SUBJECT = "Creazione Canale";
-        final String CREATE_CHANEL_EMAIL_BODY = String.format("Buongiorno %n%n Il canale %s è stato validato da un operatore e risulta essere attivo%n%nSaluti", channelDetailsDto.getChannelCode());
-
         PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
         List<String> paymentTypeList = channelDetailsDto.getPaymentTypeList();
         String channelCode = channelDetailsDto.getChannelCode();
@@ -116,7 +118,7 @@ public class ChannelService {
 
         awsSesClient.sendEmail(
                 CREATE_CHANEL_SUBJECT,
-                CREATE_CHANEL_EMAIL_BODY,
+                String.format(CREATE_CHANEL_EMAIL_BODY, channelDetailsDto.getChannelCode()),
                 "channelCreationValidatedEmail.html",
                 buildChannelHtmlEmailBodyContext(channelDetailsDto.getChannelCode()),
                 channelDetailsDto.getEmail()
@@ -126,9 +128,6 @@ public class ChannelService {
 
 
     public ChannelDetailsResource validateChannelUpdate(String channelCode, ChannelDetailsDto channelDetailsDto) {
-        final String UPDATE_CHANEL_SUBJECT = "Update Canale";
-        final String UPDATE_CHANEL_EMAIL_BODY = String.format("Buongiorno%n%n la modifica per Il canale %s è stata validata da un operatore e risulta essere attiva%n%nSaluti", channelDetailsDto.getChannelCode());
-
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         ChannelDetails response = apiConfigClient.updateChannel(channelDetails, channelCode);
         wrapperService.update(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
@@ -136,7 +135,7 @@ public class ChannelService {
 
         awsSesClient.sendEmail(
                 UPDATE_CHANEL_SUBJECT,
-                UPDATE_CHANEL_EMAIL_BODY,
+                String.format(UPDATE_CHANEL_EMAIL_BODY, channelDetailsDto.getChannelCode()),
                 "channelUpdateValidatedEmail.html",
                 buildChannelHtmlEmailBodyContext(channelDetailsDto.getChannelCode()),
                 channelDetailsDto.getEmail()

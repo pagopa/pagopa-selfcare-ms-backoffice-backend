@@ -54,6 +54,11 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
 @Service
 public class StationService {
 
+    private static final String CREATE_STATION_SUBJECT = "Nuova stazione attivo";
+    private static final String CREATE_STATION_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato la stazione %s che hai creato. Da questo momento puoi utilizzarla per attivare i tuoi servizi.%n%n%nA presto,%n%n Back-office pagoPA";
+    private static final String UPDATE_STATION_SUBJECT = "Modifica stazione attiva";
+    private static final String UPDATE_STATION_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato la stazione %s che hai modificato. Da questo momento la modifica effettuata risulta attiva.%n%n%nA presto,%n%n Back-office pagoPA";
+
     private final CreditorInstitutionMapper creditorInstitutionMapper = Mappers.getMapper(CreditorInstitutionMapper.class);
 
     private final StationMapper stationMapper = Mappers.getMapper(StationMapper.class);
@@ -84,10 +89,6 @@ public class StationService {
     }
 
     public WrapperEntityOperations<StationDetails> createStation(@NotNull StationDetailsDto stationDetailsDto) {
-        final String CREATE_STATION_SUBJECT = "Creazione Stazione";
-        final String CREATE_STATION_EMAIL_BODY = String.format("Buongiorno %n%n la stazione %s è stata validata da un operatore e risulta essere attiva%n%nSaluti",
-                stationDetailsDto.getStationCode());
-
         StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
         apiConfigClient.createStation(stationDetails);
 
@@ -201,10 +202,6 @@ public class StationService {
     }
 
     public StationDetailResource updateStation(@NotNull StationDetailsDto stationDetailsDto, String stationCode) {
-        final String UPDATE_STATION_SUBJECT = "Update Stazione";
-        final String UPDATE_STATION_EMAIL_BODY = String.format("Buongiorno%n%n la modifica per la stazione %s è stata validata da un operatore e risulta essere attiva%n%nSaluti",
-                stationDetailsDto.getStationCode());
-
         StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
         StationDetails response = apiConfigClient.updateStation(stationCode, stationDetails);
         wrapperService.update(stationDetails, stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
