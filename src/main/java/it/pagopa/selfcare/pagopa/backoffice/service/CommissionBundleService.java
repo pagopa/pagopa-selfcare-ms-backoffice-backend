@@ -274,6 +274,13 @@ public class CommissionBundleService {
                 .build();
     }
 
+    /**
+     * Delete the creditor institution's subscription to the specified bundle
+     *
+     * @param idBundle bundle's id
+     * @param ciTaxCode creditor institution's tax code
+     * @param bundleName bundle's name
+     */
     public void deleteCIBundleSubscription(String idBundle, String ciTaxCode, String bundleName) {
         final String emailSubject = "Conferma rimozione da pacchetto";
         final String emailBody = String

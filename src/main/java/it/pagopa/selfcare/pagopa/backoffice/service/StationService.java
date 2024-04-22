@@ -21,15 +21,30 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStati
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationCodeResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestResultEnum;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationsResource;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
@@ -39,37 +54,52 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
 @Service
 public class StationService {
 
-
     private final CreditorInstitutionMapper creditorInstitutionMapper = Mappers.getMapper(CreditorInstitutionMapper.class);
 
     private final StationMapper stationMapper = Mappers.getMapper(StationMapper.class);
 
-    @Autowired
-    private ApiConfigClient apiConfigClient;
+    private final ApiConfigClient apiConfigClient;
+
+    private final WrapperService wrapperService;
+
+    private final AwsSesClient awsSesClient;
+
+    private final ForwarderClient forwarderClient;
+
+    private final JiraServiceManagerClient jiraServiceManagerClient;
 
     @Autowired
-    private WrapperService wrapperService;
-
-    @Autowired
-    private AwsSesClient awsSesClient;
-
-    @Autowired
-    private ForwarderClient forwarderClient;
-
-    @Autowired
-    private JiraServiceManagerClient jiraServiceManagerClient;
-
+    public StationService(
+            ApiConfigClient apiConfigClient,
+            WrapperService wrapperService,
+            AwsSesClient awsSesClient,
+            ForwarderClient forwarderClient,
+            JiraServiceManagerClient jiraServiceManagerClient
+    ) {
+        this.apiConfigClient = apiConfigClient;
+        this.wrapperService = wrapperService;
+        this.awsSesClient = awsSesClient;
+        this.forwarderClient = forwarderClient;
+        this.jiraServiceManagerClient = jiraServiceManagerClient;
+    }
 
     public WrapperEntityOperations<StationDetails> createStation(@NotNull StationDetailsDto stationDetailsDto) {
         final String CREATE_STATION_SUBJECT = "Creazione Stazione";
-        final String CREATE_STATION_EMAIL_BODY = String.format("Buongiorno %n%n la stazione %s è stata validata da un operatore e risulta essere attiva%n%nSaluti", stationDetailsDto.getStationCode());
+        final String CREATE_STATION_EMAIL_BODY = String.format("Buongiorno %n%n la stazione %s è stata validata da un operatore e risulta essere attiva%n%nSaluti",
+                stationDetailsDto.getStationCode());
 
         StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
         apiConfigClient.createStation(stationDetails);
 
         WrapperEntities<StationDetails> response = wrapperService.updateByOpt(stationDetails, stationDetailsDto.getNote(), WrapperStatus.APPROVED.name());
         WrapperEntityOperations<StationDetails> result = getWrapperEntityOperationsSortedList(response).get(0);
-        awsSesClient.sendEmail(CREATE_STATION_SUBJECT, CREATE_STATION_EMAIL_BODY, stationDetailsDto.getEmail());
+        awsSesClient.sendEmail(
+                CREATE_STATION_SUBJECT,
+                CREATE_STATION_EMAIL_BODY,
+                "stationCreationValidatedEmail.html",
+                buildStationHtmlEmailBodyContext(stationDetailsDto.getStationCode()),
+                stationDetailsDto.getEmail()
+        );
         return result;
     }
 
@@ -89,14 +119,12 @@ public class StationService {
 
     }
 
-
     public StationsResource getStations(Integer limit,
                                         Integer page,
                                         String stationCode,
                                         String creditorInstitutionCode,
-                                        String sort) {
-
-
+                                        String sort
+    ) {
         Stations stations = getStations(limit, page, sort, null, creditorInstitutionCode, stationCode);
         return stationMapper.toResource(stations);
     }
@@ -109,7 +137,6 @@ public class StationService {
     }
 
     public StationDetailResource getStationDetail(String stationCode) {
-
         StationDetails stationDetails;
         WrapperStatus status;
         String createdBy = "";
@@ -132,7 +159,7 @@ public class StationService {
     }
 
     public StationCodeResource getStationCode(String ecCode, Boolean v2) {
-        if(Boolean.TRUE.equals(v2)) {
+        if (Boolean.TRUE.equals(v2)) {
             return new StationCodeResource(wrapperService.getFirstValidStationCodeV2(ecCode));
         } else {
             return new StationCodeResource(getFirstValidStationCodeAux(ecCode));
@@ -142,7 +169,7 @@ public class StationService {
     private String getFirstValidStationCodeAux(String ecCode) {
         WrapperEntitiesList entitiesList = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_CHECK, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
         WrapperEntitiesList entitiesList2 = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_FIX, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
-        if(!entitiesList.getWrapperEntities().isEmpty() || !entitiesList2.getWrapperEntities().isEmpty())
+        if (!entitiesList.getWrapperEntities().isEmpty() || !entitiesList2.getWrapperEntities().isEmpty())
             throw new AppException(AppError.STATION_CONFLICT);
         return generateStationCode(ecCode);
     }
@@ -151,7 +178,6 @@ public class StationService {
     public WrapperEntities updateWrapperStationDetails(@Valid StationDetailsDto stationDetailsDto) {
         final String UPDATE_STATION_SUMMARY = "Station creation validation: %s";
         final String UPDATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validated: %s";
-
 
         apiConfigClient.getStation(stationDetailsDto.getStationCode());
 
@@ -163,11 +189,7 @@ public class StationService {
         return createdWrapperEntities;
     }
 
-    public WrapperEntities updateWrapperStationDetailsByOpt(
-            @Valid
-            StationDetailsDto stationDetailsDto) {
-
-
+    public WrapperEntities updateWrapperStationDetailsByOpt(@Valid StationDetailsDto stationDetailsDto) {
         return wrapperService.
                 updateByOpt(stationMapper.
                         fromDto(stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name());
@@ -179,16 +201,21 @@ public class StationService {
     }
 
     public StationDetailResource updateStation(@NotNull StationDetailsDto stationDetailsDto, String stationCode) {
-
-
         final String UPDATE_STATION_SUBJECT = "Update Stazione";
-        final String UPDATE_STATION_EMAIL_BODY = String.format("Buongiorno%n%n la modifica per la stazione %s è stata validata da un operatore e risulta essere attiva%n%nSaluti", stationDetailsDto.getStationCode());
+        final String UPDATE_STATION_EMAIL_BODY = String.format("Buongiorno%n%n la modifica per la stazione %s è stata validata da un operatore e risulta essere attiva%n%nSaluti",
+                stationDetailsDto.getStationCode());
 
         StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
         StationDetails response = apiConfigClient.updateStation(stationCode, stationDetails);
         wrapperService.update(stationDetails, stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
         StationDetailResource resource = stationMapper.toResource(response);
-        awsSesClient.sendEmail(UPDATE_STATION_SUBJECT, UPDATE_STATION_EMAIL_BODY, stationDetailsDto.getEmail());
+        awsSesClient.sendEmail(
+                UPDATE_STATION_SUBJECT,
+                UPDATE_STATION_EMAIL_BODY,
+                "stationUpdateValidatedEmail.html",
+                buildStationHtmlEmailBodyContext(stationDetailsDto.getStationCode()),
+                stationDetailsDto.getEmail()
+        );
 
         return resource;
     }
@@ -199,7 +226,6 @@ public class StationService {
 
 
     public WrapperStationsResource getAllStationsMerged(Integer limit, String stationCode, String brokerCode, Integer page, String sorting) {
-
         Stations stations = getStations(limit, page, sorting, brokerCode, null, stationCode);
         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
 
@@ -217,7 +243,7 @@ public class StationService {
         try {
             response = apiConfigClient.getStations(limit, page, sort, brokerCode, ecCode, stationCode);
         } catch (Exception e) {
-            if(e.getMessage().contains("[404 Not Found]")) {
+            if (e.getMessage().contains("[404 Not Found]")) {
                 response = new Stations();
                 response.setStationsList(new ArrayList<>());
                 PageInfo pageInfo = new PageInfo();
@@ -245,7 +271,6 @@ public class StationService {
 
 
     private WrapperStations mergeAndSortWrapperStations(WrapperStations wrapperStationsApiConfig, WrapperStations wrapperStationsMongo, String sorting) {
-
         List<WrapperStation> mergedList = new ArrayList<>();
         mergedList.addAll(wrapperStationsMongo.getStationsList());
         mergedList.addAll(
@@ -254,9 +279,9 @@ public class StationService {
                         .toList()
         );
 
-        if("asc".equalsIgnoreCase(sorting)) {
+        if ("asc".equalsIgnoreCase(sorting)) {
             mergedList.sort(Comparator.comparing(WrapperStation::getStationCode));
-        } else if("desc".equalsIgnoreCase(sorting)) {
+        } else if ("desc".equalsIgnoreCase(sorting)) {
             mergedList.sort(Comparator.comparing(WrapperStation::getStationCode, Comparator.reverseOrder()));
         }
         WrapperStations result = new WrapperStations();
@@ -277,9 +302,9 @@ public class StationService {
                 stationTestDto.getHostPort(),
                 stationTestDto.getHostPath()
         );
-        if(response.getStatus() == 200) {
+        if (response.getStatus() == 200) {
             return TestStationResource.builder().testResult(TestResultEnum.SUCCESS).message("OK").build();
-        } else if(response.getStatus() == 401) {
+        } else if (response.getStatus() == 401) {
             return TestStationResource.builder().testResult(TestResultEnum.CERTIFICATE_ERROR)
                     .message("Connection error due to invalid connection on the station endpoint").build();
         } else {
@@ -288,4 +313,15 @@ public class StationService {
         }
     }
 
+    private Context buildStationHtmlEmailBodyContext(String stationCode) {
+        // Thymeleaf Context
+        Context context = new Context();
+
+        // Properties to show up in Template after stored in Context
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("stationCode", stationCode);
+
+        context.setVariables(properties);
+        return context;
+    }
 }

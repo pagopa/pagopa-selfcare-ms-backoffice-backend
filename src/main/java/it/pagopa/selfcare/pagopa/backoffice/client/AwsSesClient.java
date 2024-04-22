@@ -62,5 +62,4 @@ public class AwsSesClient {
         SendEmailResponse response = sesClient.sendEmail(request);
         return "Email sent! Message ID: " + response.messageId();
     }
-
 }

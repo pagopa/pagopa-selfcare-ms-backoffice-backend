@@ -255,4 +255,13 @@ class CommissionBundleControllerTest {
         verify(service).getPublicBundleCISubscriptionsDetail(BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE, PublicBundleSubscriptionStatus.ACCEPTED);
     }
 
+    @Test
+    void deleteCIBundleSubscriptionOK() throws Exception {
+        String url = "/bundles/{id-bundle}/creditor-institutions/{ci-tax-code}";
+        mvc.perform(delete(url, BUNDLE_ID, EC_TAX_CODE)
+                        .param("bundleName", "bundleName")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        verify(service).deleteCIBundleSubscription(BUNDLE_ID, EC_TAX_CODE, "bundleName");
+    }
 }

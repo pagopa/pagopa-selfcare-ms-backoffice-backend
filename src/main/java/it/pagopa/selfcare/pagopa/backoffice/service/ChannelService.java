@@ -118,7 +118,7 @@ public class ChannelService {
                 CREATE_CHANEL_SUBJECT,
                 CREATE_CHANEL_EMAIL_BODY,
                 "channelCreationValidatedEmail.html",
-                buildChannelHtmlEmailBodyContext(channelDetailsDto),
+                buildChannelHtmlEmailBodyContext(channelDetailsDto.getChannelCode()),
                 channelDetailsDto.getEmail()
         );
         return resource;
@@ -138,7 +138,7 @@ public class ChannelService {
                 UPDATE_CHANEL_SUBJECT,
                 UPDATE_CHANEL_EMAIL_BODY,
                 "channelUpdateValidatedEmail.html",
-                buildChannelHtmlEmailBodyContext(channelDetailsDto),
+                buildChannelHtmlEmailBodyContext(channelDetailsDto.getChannelCode()),
                 channelDetailsDto.getEmail()
         );
         return resource;
@@ -206,13 +206,13 @@ public class ChannelService {
         return ChannelMapper.toResource(dto);
     }
 
-    private Context buildChannelHtmlEmailBodyContext(ChannelDetailsDto channelDetailsDto) {
+    private Context buildChannelHtmlEmailBodyContext(String channelCode) {
         // Thymeleaf Context
         Context context = new Context();
 
         // Properties to show up in Template after stored in Context
         Map<String, Object> properties = new HashMap<>();
-        properties.put("channelCode", channelDetailsDto.getChannelCode());
+        properties.put("channelCode", channelCode);
 
         context.setVariables(properties);
         return context;

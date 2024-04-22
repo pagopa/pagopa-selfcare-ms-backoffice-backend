@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
@@ -75,6 +76,9 @@ class CommissionBundleServiceTest {
 
     @MockBean
     private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
+
+    @MockBean
+    private AwsSesClient awsSesClient;
 
     @Test
     void getBundlesPaymentTypes() {
@@ -459,6 +463,12 @@ class CommissionBundleServiceTest {
                 .build();
     }
 
+    @Test
+    void deleteCIBundleSubscriptionSuccess() {
+        assertDoesNotThrow(() ->
+                service.deleteCIBundleSubscription(EC_TAX_CODE, ID_BUNDLE, "bundleName"));
+    }
+
     private CreditorInstitutionInfo buildCIInfo() {
         CreditorInstitutionInfo ciInfo = CreditorInstitutionInfo.builder()
                 .businessName("businessName")
@@ -466,7 +476,6 @@ class CommissionBundleServiceTest {
                 .build();
         return ciInfo;
     }
-
     private PageInfo buildPageInfo() {
         return PageInfo.builder()
                 .limit(LIMIT)
