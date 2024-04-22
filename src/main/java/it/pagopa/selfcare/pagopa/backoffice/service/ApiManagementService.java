@@ -13,7 +13,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -65,7 +64,7 @@ public class ApiManagementService {
     public List<InstitutionDetail> getInstitutions(String taxCode) {
         if(taxCode != null && !taxCode.isEmpty()) {
             return externalApiClient.getInstitutionsFiltered(taxCode).getInstitutions().stream()
-                    .map(ApiManagementService::mapInstitutionsList)
+                    .map(elem -> modelMapper.map(elem, InstitutionDetail.class))
                     .toList();
         } else {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -77,37 +76,7 @@ public class ApiManagementService {
         }
     }
 
-    private static InstitutionDetail mapInstitutionsList(it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution elem) {
-        PspData pspData = null;
-        if(elem.getPaymentServiceProvider() != null) {
-            pspData = PspData.builder()
-                    .abiCode(elem.getPaymentServiceProvider().getAbiCode())
-                    .businessRegisterNumber(elem.getPaymentServiceProvider().getBusinessRegisterNumber())
-                    .vatNumberGroup(elem.getPaymentServiceProvider().getVatNumberGroup())
-                    .legalRegisterName(elem.getPaymentServiceProvider().getLegalRegisterName())
-                    .legalRegisterNumber(elem.getPaymentServiceProvider().getBusinessRegisterNumber())
-                    .build();
-        }
-        return InstitutionDetail.builder()
-                .address(elem.getAddress())
-                .id(elem.getId())
-                .originId(elem.getOriginId())
-                .digitalAddress(elem.getDigitalAddress())
-                .address(elem.getAddress())
-                .taxCode(elem.getTaxCode())
-                .userProductRoles(List.of("admin"))
-                .status("ACTIVE")
-                .origin(elem.getOrigin())
-                .externalId(elem.getExternalId())
-                .description(elem.getDescription())
-                .institutionType(InstitutionType.valueOf(elem.getInstitutionType()))
-                .assistanceContacts(AssistanceContact.builder()
-                        .supportEmail(elem.getSupportEmail())
-                        .supportPhone(elem.getSupportPhone())
-                        .build())
-                .pspData(pspData)
-                .build();
-    }
+
 
     public Institution getInstitution(String institutionId) {
         return modelMapper.map(externalApiClient.getInstitution(institutionId), Institution.class);

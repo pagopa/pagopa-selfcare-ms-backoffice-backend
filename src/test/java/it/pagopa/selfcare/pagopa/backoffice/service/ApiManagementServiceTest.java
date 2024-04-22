@@ -9,6 +9,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,6 +55,23 @@ class ApiManagementServiceTest {
     }
 
     @Test
+    void getInstitutionsFilteredByName() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution elem = it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.builder()
+                .id("1")
+                .institutionType("PA")
+                .build();
+        Institutions body = Institutions.builder()
+                .institutions(Collections.singletonList(elem))
+                .build();
+        when(externalApiClient.getInstitutionsFiltered(any()))
+                .thenReturn(body);
+        List<InstitutionDetail> institutions = service.getInstitutions("123BCS");
+        assertNotNull(institutions);
+        assertFalse(institutions.isEmpty());
+        verify(externalApiClient, never()).getInstitutions(any());
+    }
+
+    @Test
     void getInstitution() throws IOException {
         when(externalApiClient.getInstitution(any()))
                 .thenReturn(TestUtil.fileToObject(
@@ -92,7 +110,7 @@ class ApiManagementServiceTest {
     @Test
     void getBrokerDelegationCombinedRoles() {
         when(externalApiClient.getBrokerDelegation(any(), any(), any(), any())).thenReturn(createDelegations());
-        List<Delegation> delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, List.of(RoleType.EC,RoleType.PSP));
+        List<Delegation> delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, List.of(RoleType.EC, RoleType.PSP));
         assertNotNull(delegations);
         assertEquals(2, delegations.size());
     }
