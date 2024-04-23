@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestResultEnum;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationTypeEnum;
 import it.pagopa.selfcare.pagopa.backoffice.service.StationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,11 @@ class StationControllerTest {
 
     @Test
     void testStationShouldReturnSuccess() throws Exception {
-        StationTestDto stationTestDto = StationTestDto.builder().hostUrl("hostUrk").hostPort(80).hostPath("test").build();
+        StationTestDto stationTestDto = StationTestDto.builder()
+                .hostUrl("hostUrk").hostPort(80)
+                .hostPath("test")
+                .testStationType(TestStationTypeEnum.PA_REDIRECT)
+                .build();
         when(stationService.testStation(stationTestDto))
                 .thenReturn(TestStationResource.builder().testResult(TestResultEnum.SUCCESS).build());
         String content = mvc.perform(post("/stations/connection/test")
@@ -62,7 +67,8 @@ class StationControllerTest {
 
     @Test
     void testStationShouldReturnErrorResponse() throws Exception {
-        StationTestDto stationTestDto = StationTestDto.builder().hostUrl("hostUrk").hostPort(80).hostPath("test").build();
+        StationTestDto stationTestDto = StationTestDto.builder().hostUrl("hostUrk").hostPort(80)
+                .hostPath("test").testStationType(TestStationTypeEnum.PA_VERIFY).build();
         when(stationService.testStation(stationTestDto))
                 .thenReturn(TestStationResource.builder().testResult(TestResultEnum.ERROR).build());
         String content = mvc.perform(post("/stations/connection/test")
