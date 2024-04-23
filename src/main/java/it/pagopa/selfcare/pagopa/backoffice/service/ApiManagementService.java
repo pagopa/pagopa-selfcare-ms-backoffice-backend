@@ -147,7 +147,6 @@ public class ApiManagementService {
                     .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
                     .findFirst()
                     .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
-
             Authorization authorizationPrimaryKey = buildBOAuthorization(subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, true);
             this.authorizerConfigClient.createAuthorization(authorizationPrimaryKey);
             Authorization authorizationSecondaryKey = buildBOAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, false);
@@ -186,6 +185,12 @@ public class ApiManagementService {
         if(subscriptionId.startsWith(Subscription.BO_EXT_PSP.getPrefixId())) {
             updateAuthorization(institutionId, subscriptionId, Subscription.BO_EXT_PSP.getPrefixId(), true);
         }
+        if(subscriptionId.startsWith(Subscription.FDR_ORG.getPrefixId())) {
+            updateAuthorization(institutionId, subscriptionId, Subscription.FDR_ORG.getPrefixId(), true);
+        }
+        if(subscriptionId.startsWith(Subscription.FDR_PSP.getPrefixId())) {
+            updateAuthorization(institutionId, subscriptionId, Subscription.FDR_PSP.getPrefixId(), true);
+        }
     }
 
     /**
@@ -205,6 +210,12 @@ public class ApiManagementService {
         }
         if(subscriptionId.startsWith(Subscription.BO_EXT_PSP.getPrefixId())) {
             updateAuthorization(institutionId, subscriptionId, Subscription.BO_EXT_PSP.getPrefixId(), false);
+        }
+        if(subscriptionId.startsWith(Subscription.FDR_ORG.getPrefixId())) {
+            updateAuthorization(institutionId, subscriptionId, Subscription.FDR_ORG.getPrefixId(), false);
+        }
+        if(subscriptionId.startsWith(Subscription.FDR_PSP.getPrefixId())) {
+            updateAuthorization(institutionId, subscriptionId, Subscription.FDR_PSP.getPrefixId(), false);
         }
     }
 
