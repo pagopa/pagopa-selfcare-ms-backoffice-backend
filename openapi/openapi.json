@@ -1478,6 +1478,73 @@
         }
       ]
     },
+    "/bundles/{id-bundle}/creditor-institutions/{ci-tax-code}": {
+      "delete": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "deleteCIBundleSubscription",
+        "parameters": [
+          {
+            "description": "Bundle's id",
+            "in": "path",
+            "name": "id-bundle",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Creditor Institution's tax code",
+            "in": "path",
+            "name": "ci-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Bundle's name",
+            "in": "query",
+            "name": "bundleName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Delete a creditor institution's subscription to a public/private bundle",
+        "tags": [
+          "Commission bundles"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
     "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}": {
       "delete": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",

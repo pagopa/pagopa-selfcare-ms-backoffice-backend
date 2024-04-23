@@ -252,10 +252,11 @@ public class CommissionBundleController {
     ) {
         return commissionBundleService.getPublicBundleCISubscriptionsDetail(idBundle, pspTaxCode, ciTaxCode, status);
     }
+
     /**
      * Remove the creditor institution's subscription to the specified public/private bundle
      *
-     * @param idBundle Bundle's id
+     * @param idBundle  Bundle's id
      * @param ciTaxCode Creditor Institution's tax code
      */
     @DeleteMapping(value = "/{id-bundle}/creditor-institutions/{ci-tax-code}")
@@ -266,7 +267,7 @@ public class CommissionBundleController {
             @Parameter(description = "Bundle's id") @PathVariable("id-bundle") String idBundle,
             @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
             @Parameter(description = "Bundle's name") @RequestParam String bundleName
-            ) {
+    ) {
         commissionBundleService.deleteCIBundleSubscription(idBundle, ciTaxCode, bundleName);
     }
 

@@ -466,7 +466,7 @@ class CommissionBundleServiceTest {
     @Test
     void deleteCIBundleSubscriptionSuccess() {
         assertDoesNotThrow(() ->
-                service.deleteCIBundleSubscription(EC_TAX_CODE, ID_BUNDLE, "bundleName"));
+                sut.deleteCIBundleSubscription(CI_TAX_CODE, ID_BUNDLE, "bundleName"));
     }
 
     private CreditorInstitutionInfo buildCIInfo() {

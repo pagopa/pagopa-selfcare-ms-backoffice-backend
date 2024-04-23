@@ -258,10 +258,10 @@ class CommissionBundleControllerTest {
     @Test
     void deleteCIBundleSubscriptionOK() throws Exception {
         String url = "/bundles/{id-bundle}/creditor-institutions/{ci-tax-code}";
-        mvc.perform(delete(url, BUNDLE_ID, EC_TAX_CODE)
+        mvc.perform(delete(url, BUNDLE_ID, CI_TAX_CODE)
                         .param("bundleName", "bundleName")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
-        verify(service).deleteCIBundleSubscription(BUNDLE_ID, EC_TAX_CODE, "bundleName");
+        verify(service).deleteCIBundleSubscription(BUNDLE_ID, CI_TAX_CODE, "bundleName");
     }
 }
