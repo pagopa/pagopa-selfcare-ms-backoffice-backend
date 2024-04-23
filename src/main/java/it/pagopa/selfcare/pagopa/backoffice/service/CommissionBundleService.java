@@ -249,6 +249,7 @@ public class CommissionBundleService {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
         List<CIBundleFee> ciBundleFeeList = Collections.emptyList();
         String bundleRequestId = null;
+        String idCIBundle = null;
 
         if (status.equals(PublicBundleSubscriptionStatus.ACCEPTED)) {
             CiBundleDetails ciBundleDetails = this.gecClient
@@ -257,6 +258,7 @@ public class CommissionBundleService {
             List<Taxonomy> taxonomies = getTaxonomiesByCIBundleDetails(ciBundleDetails);
 
             ciBundleFeeList = getBundleFeeList(ciBundleDetails, taxonomies);
+            idCIBundle = ciBundleDetails.getIdCIBundle();
         } else {
             PspRequests subscriptionRequest = this.gecClient
                     .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, 1, 0);
@@ -273,18 +275,19 @@ public class CommissionBundleService {
         return PublicBundleCISubscriptionsDetail.builder()
                 .ciBundleFeeList(ciBundleFeeList)
                 .bundleRequestId(bundleRequestId)
+                .idCIBundle(idCIBundle)
                 .build();
     }
 
     /**
      * Delete the creditor institution's subscription to the specified bundle
      *
-     * @param idBundle   bundle's id
+     * @param ciBundleId subscription's id of a creditor institution to a bundle
      * @param ciTaxCode  creditor institution's tax code
      * @param bundleName bundle's name
      */
-    public void deleteCIBundleSubscription(String idBundle, String ciTaxCode, String bundleName) {
-        this.gecClient.deleteCIBundle(ciTaxCode, idBundle);
+    public void deleteCIBundleSubscription(String ciBundleId, String ciTaxCode, String bundleName) {
+        this.gecClient.deleteCIBundle(ciTaxCode, ciBundleId);
 
         Context context = buildEmailHtmlBodyContext(bundleName);
 

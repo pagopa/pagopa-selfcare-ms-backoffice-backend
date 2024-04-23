@@ -25,4 +25,8 @@ public class PublicBundleCISubscriptionsDetail {
     @JsonProperty("bundle_request_id")
     @Schema(description = "Public bundle request id")
     private String bundleRequestId;
+
+    @JsonProperty("ci_bundle_id")
+    @Schema(description = "Subscription's id of a creditor institution to a public bundle")
+    private String idCIBundle;
 }

@@ -37,6 +37,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -57,6 +58,7 @@ class CommissionBundleServiceTest {
     private static final int LIMIT = 50;
     private static final int PAGE = 0;
     private static final String ID_BUNDLE = "idBundle";
+    private static final String CI_BUNDLE_ID = "ciBundleId";
     private static final String ID_BUNDLE_REQUEST = "idBundleRequest";
     private static final String ID_BUNDLE_REQUEST_2 = "idBundleRequest2";
     private static final String TRANSFER_CATEGORY = "9/0105107TS/";
@@ -345,6 +347,7 @@ class CommissionBundleServiceTest {
     @Test
     void getPublicBundleCISubscriptionsDetailAccepted() {
         CiBundleDetails bundleDetails = CiBundleDetails.builder()
+                .idCIBundle(CI_BUNDLE_ID)
                 .attributes(
                         Collections.singletonList(
                                 CiBundleAttribute.builder()
@@ -375,6 +378,8 @@ class CommissionBundleServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.getCiBundleFeeList().size());
+        assertNull(result.getBundleRequestId());
+        assertEquals(CI_BUNDLE_ID, result.getIdCIBundle());
 
         assertEquals(SERVICE_TYPE, result.getCiBundleFeeList().get(0).getServiceType());
         assertEquals(TRANSFER_CATEGORY, result.getCiBundleFeeList().get(0).getSpecificBuiltInData());
@@ -407,6 +412,7 @@ class CommissionBundleServiceTest {
         assertNotNull(result);
         assertEquals(1, result.getCiBundleFeeList().size());
         assertEquals(ID_BUNDLE_REQUEST, result.getBundleRequestId());
+        assertNull(result.getIdCIBundle());
 
         assertEquals(SERVICE_TYPE, result.getCiBundleFeeList().get(0).getServiceType());
         assertEquals(TRANSFER_CATEGORY, result.getCiBundleFeeList().get(0).getSpecificBuiltInData());
@@ -418,10 +424,6 @@ class CommissionBundleServiceTest {
     void getPublicBundleCISubscriptionsDetailWaitingNoResult() {
         PspRequests pspRequests = PspRequests.builder()
                 .requestsList(Collections.emptyList())
-                .build();
-        Taxonomy taxonomy = Taxonomy.builder()
-                .serviceType(SERVICE_TYPE)
-                .specificBuiltInData(TRANSFER_CATEGORY)
                 .build();
 
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
@@ -438,6 +440,8 @@ class CommissionBundleServiceTest {
 
         assertNotNull(result);
         assertTrue(result.getCiBundleFeeList().isEmpty());
+        assertNull(result.getIdCIBundle());
+        assertNull(result.getBundleRequestId());
 
         verify(taxonomyService, never()).getTaxonomiesByCodes(anyList());
     }
