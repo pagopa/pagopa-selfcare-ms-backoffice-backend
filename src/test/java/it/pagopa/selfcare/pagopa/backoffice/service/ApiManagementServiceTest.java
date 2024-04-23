@@ -185,6 +185,27 @@ class ApiManagementServiceTest {
     }
 
     @Test
+    void createSubscriptionKeysForFdrPsp() throws IOException {
+        InstitutionResponse institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        InstitutionApiKeys institutionApiKeys =
+                buildInstitutionApiKeys(String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode()));
+
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
+        when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
+
+        List<InstitutionApiKeys> result = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.FDR_PSP);
+
+        assertNotNull(result);
+        verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
+        verify(apimClient).getInstitution(INSTITUTION_ID);
+        verify(apimClient, never()).createInstitution(anyString(), any());
+        verify(apimClient).createInstitutionSubscription(any(), any(), any(), any(), any());
+        verify(externalApiClient).getInstitution(INSTITUTION_ID);
+        verify(authorizerConfigClient, times(2)).createAuthorization(any());
+    }
+
+    @Test
     void regeneratePrimaryKey() {
         assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, SUBSCRIPTION_ID));
 

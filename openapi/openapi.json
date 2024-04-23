@@ -1,10 +1,10 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "description": "Microservice to manage PagoPA Backoffice",
+    "description": "@project.description@",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "title": "SelfCare Backoffice",
-    "version": "2.4.12"
+    "title": "@project.name@",
+    "version": "2.4.14"
   },
   "servers": [
     {
@@ -10832,7 +10832,8 @@
         "required": [
           "hostPath",
           "hostPort",
-          "hostUrl"
+          "hostUrl",
+          "testStationType"
         ],
         "type": "object",
         "properties": {
@@ -10843,8 +10844,19 @@
             "type": "integer",
             "format": "int32"
           },
+          "hostProtocol": {
+            "type": "string"
+          },
           "hostUrl": {
             "type": "string"
+          },
+          "testStationType": {
+            "type": "string",
+            "enum": [
+              "PA_VERIFY",
+              "PA_INVIA_RT",
+              "PA_REDIRECT"
+            ]
           }
         }
       },
