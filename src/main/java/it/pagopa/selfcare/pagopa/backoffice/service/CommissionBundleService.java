@@ -26,6 +26,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiB
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
@@ -289,14 +290,15 @@ public class CommissionBundleService {
     public void deleteCIBundleSubscription(String ciBundleId, String ciTaxCode, String bundleName) {
         this.gecClient.deleteCIBundle(ciTaxCode, ciBundleId);
 
-        Context context = buildEmailHtmlBodyContext(bundleName);
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(ciTaxCode)
+                .subject(BUNDLE_DELETE_SUBSCRIPTION_SUBJECT)
+                .textBody(String.format(BUNDLE_DELETE_SUBSCRIPTION_BODY, bundleName))
+                .htmlBodyFileName("deleteBundleSubscriptionEmail.html")
+                .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                .build();
 
-        awsSesClient.sendEmail(
-                BUNDLE_DELETE_SUBSCRIPTION_SUBJECT,
-                String.format(BUNDLE_DELETE_SUBSCRIPTION_BODY, bundleName),
-                "deleteBundleSubscriptionEmail.html",
-                context,
-                "mail");
+        awsSesClient.sendEmail(messageDetail);
     }
 
     private Context buildEmailHtmlBodyContext(String bundleName) {

@@ -30,7 +30,7 @@ public interface ExternalApiClient {
 
     @GetMapping(value = "/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    Institutions getInstitutionsFiltered(@RequestParam(value = "taxCode") String taxCode);
+    Institutions getInstitutionsFiltered(@RequestParam(value = "taxCode") String institutionTaxCode);
 
     @GetMapping(value = "/institutions/{institutionId}/products", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody

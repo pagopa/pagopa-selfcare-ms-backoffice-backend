@@ -1,5 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.client;
 
+import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +15,9 @@ import software.amazon.awssdk.services.ses.model.SendEmailResponse;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -23,14 +29,62 @@ public class AwsSesClient {
 
     private final SpringTemplateEngine templateEngine;
 
+    private final ExternalApiClient externalApiClient;
+
+    private final String environment;
+
     @Autowired
     public AwsSesClient(
             SesClient sesClient,
             @Value("${aws.ses.user}") String from,
-            SpringTemplateEngine templateEngine) {
+            SpringTemplateEngine templateEngine,
+            ExternalApiClient externalApiClient,
+            @Value("${info.properties.environment}") String environment
+    ) {
         this.sesClient = sesClient;
         this.from = from;
         this.templateEngine = templateEngine;
+        this.externalApiClient = externalApiClient;
+        this.environment = environment;
+    }
+
+    public void sendEmail(EmailMessageDetail email) {
+        String taxCode = email.getInstitutionTaxCode();
+        if (!environment.equals("prod") || taxCode == null) {
+            log.warn("Skip send email process");
+            return;
+        }
+
+        String[] toAddressList = getToAddressList(taxCode);
+        if (toAddressList.length == 0) {
+            log.warn("No email to be notified found for the institution with tax code {}, skip send email process", taxCode);
+            return;
+        }
+
+        try {
+            SendEmailRequest request = buildEmailRequest(email, toAddressList);
+            SendEmailResponse response = sesClient.sendEmail(request);
+            log.debug("Email sent! Message ID: {}", response.messageId());
+        } catch (Exception e) {
+            log.error("An error occurred while sending email with subject {} to institution with tax code {}",
+                    email.getSubject(), email.getInstitutionTaxCode(), e);
+        }
+    }
+
+    private SendEmailRequest buildEmailRequest(EmailMessageDetail email, String[] toAddressList) {
+        String html = templateEngine.process(email.getHtmlBodyFileName(), email.getHtmlBodyContext());
+
+        return SendEmailRequest.builder()
+                .source(from)
+                .destination(d -> d.toAddresses(toAddressList))
+                .message(m -> m
+                        .subject(c -> c.data(email.getSubject()))
+                        .body(b -> b
+                                .html(c -> c.data(html).charset(StandardCharsets.UTF_8.name()))
+                                .text(c -> c.data(email.getTextBody()))
+                                .build())
+                        .build())
+                .build();
     }
 
     public String sendEmail(String subject, String textBody, String htmlBodyFileName, Context htmlContext, String... to) {
@@ -61,5 +115,29 @@ public class AwsSesClient {
                 .build();
         SendEmailResponse response = sesClient.sendEmail(request);
         return "Email sent! Message ID: " + response.messageId();
+    }
+
+    private String[] getToAddressList(String taxCode) {
+        Optional<Institution> optionalInstitution = this.externalApiClient.getInstitutionsFiltered(taxCode)
+                .getInstitutions().stream()
+                .findFirst();
+
+        if (optionalInstitution.isEmpty()) {
+            log.debug("Unable to find the institution with tax code {}, skip send email process", taxCode);
+            return new String[0];
+        }
+        Institution institution = optionalInstitution.get();
+        List<InstitutionProductUsers> institutionUserList =
+                this.externalApiClient.getInstitutionProductUsers(
+                        institution.getId(),
+                        null,
+                        null,
+                        Collections.singletonList("admin")
+                );
+
+        return institutionUserList.stream()
+                .map(InstitutionProductUsers::getEmail)
+                .toList()
+                .toArray(new String[0]);
     }
 }
