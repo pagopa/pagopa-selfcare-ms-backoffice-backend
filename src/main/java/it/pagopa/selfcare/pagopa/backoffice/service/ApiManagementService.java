@@ -159,9 +159,9 @@ public class ApiManagementService {
                     .findFirst()
                     .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
             List<DelegationExternal> delegationResponse = this.externalApiClient.getBrokerDelegation(null, institutionId, "prod-pagopa", "FULL");
-            Authorization authorizationPrimaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, delegationResponse, true);
+            Authorization authorizationPrimaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, delegationResponse, true, subscriptionCode);
             this.authorizerConfigClient.createAuthorization(authorizationPrimaryKey);
-            Authorization authorizationSecondaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, delegationResponse, false);
+            Authorization authorizationSecondaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, delegationResponse, false, subscriptionCode);
             this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
         }
 
@@ -263,8 +263,8 @@ public class ApiManagementService {
             String subscriptionKey,
             InstitutionResponse institution,
             List<DelegationExternal> delegationResponse,
-            boolean isPrimaryKey
-    ) {
+            boolean isPrimaryKey,
+            Subscription subscriptionCode) {
 
         ArrayList<AuthorizationEntity> authorizedEntities = new ArrayList<>(delegationResponse.stream()
                 .map(elem -> AuthorizationEntity.builder()
@@ -280,7 +280,7 @@ public class ApiManagementService {
                 .id(createAuthorizationBOId(subscriptionPrefixId, institution.getId(), isPrimaryKey))
                 .domain("fdr")
                 .subscriptionKey(subscriptionKey)
-                .description(String.format("%s key configuration for fdr", isPrimaryKey ? PRIMARY : SECONDARY))
+                .description(String.format("%s key configuration for %s", isPrimaryKey ? PRIMARY : SECONDARY, subscriptionCode.name()))
                 .owner(AuthorizationOwner.builder()
                         .id(institution.getTaxCode())
                         .name(institution.getDescription())
