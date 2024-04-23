@@ -7,6 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreditorInstitutionInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
@@ -69,4 +70,7 @@ public interface ApiConfigSelfcareIntegrationClient {
 
     @GetMapping(value = "/payment-service-providers/{psp-tax-code}/channels", produces = MediaType.APPLICATION_JSON_VALUE)
     PspChannels getPspChannels(@PathVariable(value = "psp-tax-code") String pspTaxCode);
+
+    @GetMapping(value = "/creditorinstitutions", produces = MediaType.APPLICATION_JSON_VALUE)
+    List<CreditorInstitutionInfo> getCreditorInstitutionInfo(@RequestParam List<String> taxCodeList);
 }

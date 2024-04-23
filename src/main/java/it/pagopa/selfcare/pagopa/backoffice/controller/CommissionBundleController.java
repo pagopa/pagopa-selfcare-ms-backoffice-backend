@@ -2,9 +2,20 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
@@ -14,7 +25,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -34,9 +54,10 @@ public class CommissionBundleController {
 
     /**
      * Retrieve creditor institution paged bundle list, expanded with taxonomy data
+     *
      * @param cisTaxCode optional parameter used for filter by creditor institution tax code
-     * @param limit page limit parameter
-     * @param page page number parameter
+     * @param limit      page limit parameter
+     * @param page       page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
     @GetMapping("/creditor_institutions")
@@ -155,7 +176,7 @@ public class CommissionBundleController {
     /**
      * Reject a subscription requests to a public bundle
      *
-     * @param pspTaxCode          the tax code of the PSP that owns the public bundle
+     * @param pspTaxCode      the tax code of the PSP that owns the public bundle
      * @param bundleRequestId the request id to be rejected
      */
     @PostMapping(value = "/requests/payment-service-providers/{psp-tax-code}/request/{bundle-request-id}/reject", consumes = {MediaType.APPLICATION_JSON_VALUE})
@@ -168,4 +189,67 @@ public class CommissionBundleController {
         commissionBundleService.rejectPublicBundleSubscriptionByPSP(pspTaxCode, bundleRequestId);
     }
 
+    /**
+     * Retrieve a paginated list of creditor institution's subscriptions to a public bundle of a PSP
+     *
+     * @param idBundle   the id of the public bundle
+     * @param pspTaxCode the payment service provider's tax code
+     * @param status     the status of the subscription
+     * @param ciTaxCode  the creditor institution's tax code
+     * @param limit      the size of the page
+     * @param page       the page number
+     * @return a paginated list of creditor institution's info
+     */
+    @GetMapping("/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PublicBundleCISubscriptionsResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @Operation(summary = "Get a paginated list of creditor institution's subscriptions to a public bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    public PublicBundleCISubscriptionsResource getPublicBundleCISubscriptions(
+            @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
+            @Parameter(description = "Payment Service Provider's tax code") @PathVariable("psp-tax-code") String pspTaxCode,
+            @Parameter(description = "Subscription status") @RequestParam PublicBundleSubscriptionStatus status,
+            @Parameter(description = "Creditor Institution's tax code, used for filtering results") @RequestParam(required = false) String ciTaxCode,
+            @Parameter(description = "Number of elements in one page") @RequestParam(required = false, defaultValue = "50") Integer limit,
+            @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") Integer page
+    ) {
+        return commissionBundleService.getPublicBundleCISubscriptions(idBundle, pspTaxCode, status, ciTaxCode, limit, page);
+    }
+
+    /**
+     * Retrieve the detail of a creditor institution's subscription to a public bundle of a PSP
+     *
+     * @param idBundle   the id of the public bundle
+     * @param pspTaxCode the payment service provider's tax code
+     * @param ciTaxCode  the creditor institution's tax code
+     * @param status     the status of the subscription
+     * @return the detail of a creditor institution's subscription
+     */
+    @GetMapping("/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}/detail")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PublicBundleCISubscriptionsDetail.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @Operation(summary = "Get the detail of a creditor institution's subscription to a public bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    public PublicBundleCISubscriptionsDetail getPublicBundleCISubscriptionsDetail(
+            @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
+            @Parameter(description = "Payment Service Provider's tax code") @PathVariable("psp-tax-code") String pspTaxCode,
+            @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
+            @Parameter(description = "Subscription status") @RequestParam PublicBundleSubscriptionStatus status
+    ) {
+        return commissionBundleService.getPublicBundleCISubscriptionsDetail(idBundle, pspTaxCode, ciTaxCode, status);
+    }
 }
