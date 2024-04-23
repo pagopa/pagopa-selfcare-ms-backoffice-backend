@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "description": "@project.description@",
+    "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "title": "@project.name@",
+    "title": "SelfCare Backoffice",
     "version": "2.4.14"
   },
   "servers": [
@@ -1478,15 +1478,15 @@
         }
       ]
     },
-    "/bundles/{id-bundle}/creditor-institutions/{ci-tax-code}": {
+    "/bundles/{ci-bundle-id}/creditor-institutions/{ci-tax-code}": {
       "delete": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId": "deleteCIBundleSubscription",
         "parameters": [
           {
-            "description": "Bundle's id",
+            "description": "Subscription's id of a creditor institution to a bundle",
             "in": "path",
-            "name": "id-bundle",
+            "name": "ci-bundle-id",
             "required": true,
             "schema": {
               "type": "string"
@@ -10199,6 +10199,10 @@
             "items": {
               "$ref": "#/components/schemas/CIBundleFee"
             }
+          },
+          "ci_bundle_id": {
+            "type": "string",
+            "description": "Subscription's id of a creditor institution to a public bundle"
           }
         }
       },
