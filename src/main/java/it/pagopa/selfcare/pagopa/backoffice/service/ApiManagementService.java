@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Slf4j
@@ -147,8 +148,12 @@ public class ApiManagementService {
                     .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
                     .findFirst()
                     .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
+
+            // configure primary key
             Authorization authorizationPrimaryKey = buildBOAuthorization(subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, true);
             this.authorizerConfigClient.createAuthorization(authorizationPrimaryKey);
+
+            // configure secondary key
             Authorization authorizationSecondaryKey = buildBOAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, false);
             this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
         }
@@ -158,8 +163,12 @@ public class ApiManagementService {
                     .findFirst()
                     .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
             List<DelegationExternal> delegationResponse = this.externalApiClient.getBrokerDelegation(null, institutionId, "prod-pagopa", "FULL");
+
+            // configure primary key
             Authorization authorizationPrimaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, delegationResponse, true, subscriptionCode);
             this.authorizerConfigClient.createAuthorization(authorizationPrimaryKey);
+
+            // configure secondary key
             Authorization authorizationSecondaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, delegationResponse, false, subscriptionCode);
             this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
         }
@@ -176,20 +185,14 @@ public class ApiManagementService {
      * @param institutionId  the id of the institution
      * @param subscriptionId the id of the subscription
      */
-    public void regeneratePrimaryKey(String institutionId, String subscriptionId) {
+    public void regeneratePrimaryKey(@NotNull String institutionId, @NotNull String subscriptionId) {
         this.apimClient.regeneratePrimaryKey(subscriptionId);
 
-        if(subscriptionId.startsWith(Subscription.BO_EXT_EC.getPrefixId())) {
-            updateAuthorization(institutionId, subscriptionId, Subscription.BO_EXT_EC.getPrefixId(), true);
-        }
-        if(subscriptionId.startsWith(Subscription.BO_EXT_PSP.getPrefixId())) {
-            updateAuthorization(institutionId, subscriptionId, Subscription.BO_EXT_PSP.getPrefixId(), true);
-        }
-        if(subscriptionId.startsWith(Subscription.FDR_ORG.getPrefixId())) {
-            updateAuthorization(institutionId, subscriptionId, Subscription.FDR_ORG.getPrefixId(), true);
-        }
-        if(subscriptionId.startsWith(Subscription.FDR_PSP.getPrefixId())) {
-            updateAuthorization(institutionId, subscriptionId, Subscription.FDR_PSP.getPrefixId(), true);
+        var prefix = subscriptionId.split("-")[0] + "-";
+        if(prefix.equals(Subscription.BO_EXT_EC.getPrefixId()) || prefix.equals(Subscription.BO_EXT_PSP.getPrefixId()) // BO
+                || prefix.equals(Subscription.FDR_ORG.getPrefixId()) || prefix.equals(Subscription.FDR_PSP.getPrefixId()) // Fdr
+        ) {
+            updateAuthorization(institutionId, subscriptionId, prefix, true);
         }
     }
 
@@ -202,20 +205,14 @@ public class ApiManagementService {
      * @param institutionId  the id of the institution
      * @param subscriptionId the id of the subscription
      */
-    public void regenerateSecondaryKey(String institutionId, String subscriptionId) {
+    public void regenerateSecondaryKey(@NotNull String institutionId, @NotNull String subscriptionId) {
         this.apimClient.regenerateSecondaryKey(subscriptionId);
 
-        if(subscriptionId.startsWith(Subscription.BO_EXT_EC.getPrefixId())) {
-            updateAuthorization(institutionId, subscriptionId, Subscription.BO_EXT_EC.getPrefixId(), false);
-        }
-        if(subscriptionId.startsWith(Subscription.BO_EXT_PSP.getPrefixId())) {
-            updateAuthorization(institutionId, subscriptionId, Subscription.BO_EXT_PSP.getPrefixId(), false);
-        }
-        if(subscriptionId.startsWith(Subscription.FDR_ORG.getPrefixId())) {
-            updateAuthorization(institutionId, subscriptionId, Subscription.FDR_ORG.getPrefixId(), false);
-        }
-        if(subscriptionId.startsWith(Subscription.FDR_PSP.getPrefixId())) {
-            updateAuthorization(institutionId, subscriptionId, Subscription.FDR_PSP.getPrefixId(), false);
+        var prefix = subscriptionId.split("-")[0] + "-";
+        if(prefix.equals(Subscription.BO_EXT_EC.getPrefixId()) || prefix.equals(Subscription.BO_EXT_PSP.getPrefixId()) // BO
+                || prefix.equals(Subscription.FDR_ORG.getPrefixId()) || prefix.equals(Subscription.FDR_PSP.getPrefixId()) // Fdr
+        ) {
+            updateAuthorization(institutionId, subscriptionId, prefix, false);
         }
     }
 
