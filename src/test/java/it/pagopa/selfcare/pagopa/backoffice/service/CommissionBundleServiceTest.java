@@ -431,7 +431,7 @@ class CommissionBundleServiceTest {
         assertEquals(1, result.getPageInfo().getTotalPages());
 
         assertEquals(CI_TAX_CODE, result.getCiSubscriptionInfoList().get(0).getCiTaxCode());
-        assertFalse(result.getCiSubscriptionInfoList().get(0).getOnRemoval());
+        assertNull(result.getCiSubscriptionInfoList().get(0).getOnRemoval());
         assertEquals(ciInfo.getBusinessName(), result.getCiSubscriptionInfoList().get(0).getBusinessName());
     }
 
