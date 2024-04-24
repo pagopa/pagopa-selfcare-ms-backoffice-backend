@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
@@ -25,6 +26,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiB
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
@@ -33,14 +36,21 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
 public class CommissionBundleService {
+
+    private static final String BUNDLE_DELETE_SUBSCRIPTION_SUBJECT = "Conferma rimozione da pacchetto";
+    private static final String BUNDLE_DELETE_SUBSCRIPTION_BODY = "Ciao %n%n%n sei stato rimosso dal pacchetto %s.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nBack-office pagoPa";
 
     private final GecClient gecClient;
 
@@ -52,19 +62,23 @@ public class CommissionBundleService {
 
     private final ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
+    private final AwsSesClient awsSesClient;
+
     @Autowired
     public CommissionBundleService(
             GecClient gecClient,
             ModelMapper modelMapper,
             TaxonomyService taxonomyService,
             LegacyPspCodeUtil legacyPspCodeUtil,
-            ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient
+            ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
+            AwsSesClient awsSesClient
     ) {
         this.gecClient = gecClient;
         this.modelMapper = modelMapper;
         this.taxonomyService = taxonomyService;
         this.legacyPspCodeUtil = legacyPspCodeUtil;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
+        this.awsSesClient = awsSesClient;
     }
 
     public BundlePaymentTypes getBundlesPaymentTypes(Integer limit, Integer page) {
@@ -201,16 +215,15 @@ public class CommissionBundleService {
             BundleCreditorInstitutionResource acceptedSubscription = this.gecClient
                     .getPublicBundleSubscriptionByPSP(pspCode, idBundle, ciTaxCode, limit, page);
 
-            List<CreditorInstitutionInfo> ciInfoList = this.apiConfigSelfcareIntegrationClient
-                    .getCreditorInstitutionInfo(acceptedSubscription.getCiTaxCodeList());
-            ciSubscriptionInfoList = getCiSubscriptionInfoList(ciInfoList);
+            List<CreditorInstitutionInfo> ciInfoList = getCIInfo(acceptedSubscription);
+            ciSubscriptionInfoList = buildCISubscriptionInfoList(ciInfoList, acceptedSubscription);
             pageInfo = acceptedSubscription.getPageInfo();
         } else {
             PspRequests subscriptionRequest = this.gecClient
                     .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, limit, page);
 
-            List<CreditorInstitutionInfo> ciInfoList = getCIInfos(subscriptionRequest);
-            ciSubscriptionInfoList = getCiSubscriptionInfoList(ciInfoList);
+            List<CreditorInstitutionInfo> ciInfoList = getCIInfo(subscriptionRequest);
+            ciSubscriptionInfoList = buildCISubscriptionInfoList(ciInfoList);
             pageInfo = subscriptionRequest.getPageInfo();
         }
 
@@ -238,6 +251,7 @@ public class CommissionBundleService {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
         List<CIBundleFee> ciBundleFeeList = Collections.emptyList();
         String bundleRequestId = null;
+        String idCIBundle = null;
 
         if (status.equals(PublicBundleSubscriptionStatus.ACCEPTED)) {
             CiBundleDetails ciBundleDetails = this.gecClient
@@ -246,6 +260,7 @@ public class CommissionBundleService {
             List<Taxonomy> taxonomies = getTaxonomiesByCIBundleDetails(ciBundleDetails);
 
             ciBundleFeeList = getBundleFeeList(ciBundleDetails, taxonomies);
+            idCIBundle = ciBundleDetails.getIdCIBundle();
         } else {
             PspRequests subscriptionRequest = this.gecClient
                     .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, 1, 0);
@@ -262,10 +277,64 @@ public class CommissionBundleService {
         return PublicBundleCISubscriptionsDetail.builder()
                 .ciBundleFeeList(ciBundleFeeList)
                 .bundleRequestId(bundleRequestId)
+                .idCIBundle(idCIBundle)
                 .build();
     }
 
-    private List<CISubscriptionInfo> getCiSubscriptionInfoList(List<CreditorInstitutionInfo> ciInfoList) {
+    /**
+     * Delete the creditor institution's subscription to the specified bundle
+     *
+     * @param ciBundleId subscription's id of a creditor institution to a bundle
+     * @param ciTaxCode  creditor institution's tax code
+     * @param bundleName bundle's name
+     */
+    public void deleteCIBundleSubscription(String ciBundleId, String ciTaxCode, String bundleName) {
+        this.gecClient.deleteCIBundle(ciTaxCode, ciBundleId);
+
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(ciTaxCode)
+                .subject(BUNDLE_DELETE_SUBSCRIPTION_SUBJECT)
+                .textBody(String.format(BUNDLE_DELETE_SUBSCRIPTION_BODY, bundleName))
+                .htmlBodyFileName("deleteBundleSubscriptionEmail.html")
+                .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                .destinationUserType(SelfcareProductUser.ADMIN)
+                .build();
+
+        awsSesClient.sendEmail(messageDetail);
+    }
+
+    private Context buildEmailHtmlBodyContext(String bundleName) {
+        // Thymeleaf Context
+        Context context = new Context();
+
+        // Properties to show up in Template after stored in Context
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("bundleName", bundleName);
+
+        context.setVariables(properties);
+        return context;
+    }
+
+    private List<CISubscriptionInfo> buildCISubscriptionInfoList(List<CreditorInstitutionInfo> ciInfoList, BundleCreditorInstitutionResource acceptedSubscription) {
+        LocalDate today = LocalDate.now();
+
+        return ciInfoList.parallelStream()
+                .map(ciInfo -> {
+                    CISubscriptionInfo subscriptionInfo = this.modelMapper.map(ciInfo, CISubscriptionInfo.class);
+                    LocalDate validityDateTo = acceptedSubscription.getCiBundleDetails().stream()
+                            .filter(s -> s.getCiTaxCode().equals(ciInfo.getCiTaxCode()))
+                            .findFirst()
+                            .orElse(new CiBundleDetails())
+                            .getValidityDateTo();
+
+                    subscriptionInfo.setOnRemoval(validityDateTo != null && (validityDateTo.isBefore(today) || validityDateTo.isEqual(today)));
+
+                    return subscriptionInfo;
+                })
+                .toList();
+    }
+
+    private List<CISubscriptionInfo> buildCISubscriptionInfoList(List<CreditorInstitutionInfo> ciInfoList) {
         return ciInfoList.parallelStream()
                 .map(ciInfo -> this.modelMapper.map(ciInfo, CISubscriptionInfo.class))
                 .toList();
@@ -291,7 +360,14 @@ public class CommissionBundleService {
                 .toList();
     }
 
-    private List<CreditorInstitutionInfo> getCIInfos(PspRequests subscriptionRequest) {
+    private List<CreditorInstitutionInfo> getCIInfo(BundleCreditorInstitutionResource acceptedSubscription) {
+        List<String> taxCodeList = acceptedSubscription.getCiBundleDetails().parallelStream()
+                .map(CiBundleDetails::getCiTaxCode)
+                .toList();
+        return this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(taxCodeList);
+    }
+
+    private List<CreditorInstitutionInfo> getCIInfo(PspRequests subscriptionRequest) {
         List<String> taxCodeList = subscriptionRequest.getRequestsList().parallelStream()
                 .map(PspBundleRequest::getCiFiscalCode)
                 .toList();

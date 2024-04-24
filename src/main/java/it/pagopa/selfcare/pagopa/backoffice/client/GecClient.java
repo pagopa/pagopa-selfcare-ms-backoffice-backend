@@ -147,4 +147,10 @@ public interface GecClient {
             @PathVariable("id-bundle") String idBundle
     );
 
+    @DeleteMapping(value = "/cis/{ci-tax-code}/bundles/{id-bundle}")
+    @ResponseBody
+    void deleteCIBundle(
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @PathVariable("id-bundle") String idBundle
+    );
 }
