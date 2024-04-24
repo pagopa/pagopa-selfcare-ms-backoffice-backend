@@ -39,7 +39,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -224,7 +223,7 @@ public class CommissionBundleService {
                     .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, limit, page);
 
             List<CreditorInstitutionInfo> ciInfoList = getCIInfo(subscriptionRequest);
-            ciSubscriptionInfoList = buildCISubscriptionInfoList(ciInfoList, subscriptionRequest);
+            ciSubscriptionInfoList = buildCISubscriptionInfoList(ciInfoList);
             pageInfo = subscriptionRequest.getPageInfo();
         }
 
@@ -328,27 +327,16 @@ public class CommissionBundleService {
                             .orElse(new CiBundleDetails())
                             .getValidityDateTo();
 
-                    subscriptionInfo.setOnRemoval(validityDateTo.isBefore(today) || validityDateTo.isEqual(today));
+                    subscriptionInfo.setOnRemoval(validityDateTo != null && (validityDateTo.isBefore(today) || validityDateTo.isEqual(today)));
 
                     return subscriptionInfo;
                 })
                 .toList();
     }
 
-    private List<CISubscriptionInfo> buildCISubscriptionInfoList(List<CreditorInstitutionInfo> ciInfoList, PspRequests subscriptionRequest) {
+    private List<CISubscriptionInfo> buildCISubscriptionInfoList(List<CreditorInstitutionInfo> ciInfoList) {
         return ciInfoList.parallelStream()
-                .map(ciInfo -> {
-                    CISubscriptionInfo subscriptionInfo = this.modelMapper.map(ciInfo, CISubscriptionInfo.class);
-                    LocalDateTime rejectionDate = subscriptionRequest.getRequestsList().stream()
-                            .filter(s -> s.getCiFiscalCode().equals(ciInfo.getCiTaxCode()))
-                            .findFirst()
-                            .orElse(new PspBundleRequest())
-                            .getRejectionDate();
-
-                    subscriptionInfo.setOnRemoval(rejectionDate != null);
-
-                    return subscriptionInfo;
-                })
+                .map(ciInfo -> this.modelMapper.map(ciInfo, CISubscriptionInfo.class))
                 .toList();
     }
 

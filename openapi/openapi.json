@@ -8747,6 +8747,10 @@
           "creditor_institution_code": {
             "type": "string",
             "description": "Creditor Institution's tax code"
+          },
+          "on_removal": {
+            "type": "boolean",
+            "description": "Describes if the subscription has been marked for deletion"
           }
         }
       },

@@ -436,49 +436,6 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void getPublicBundleCISubscriptionsWaitingOnRemoval() {
-        PspRequests pspRequests = PspRequests.builder()
-                .requestsList(
-                        Collections.singletonList(
-                                PspBundleRequest.builder()
-                                        .ciFiscalCode(CI_TAX_CODE)
-                                        .rejectionDate(LocalDateTime.now())
-                                        .build()
-                        )
-                )
-                .pageInfo(buildPageInfo())
-                .build();
-        CreditorInstitutionInfo ciInfo = buildCIInfo();
-
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
-        when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, LIMIT, PAGE))
-                .thenReturn(pspRequests);
-        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(Collections.singletonList(CI_TAX_CODE)))
-                .thenReturn(Collections.singletonList(ciInfo));
-
-        PublicBundleCISubscriptionsResource result = assertDoesNotThrow(() -> sut
-                .getPublicBundleCISubscriptions(
-                        ID_BUNDLE,
-                        PSP_TAX_CODE,
-                        PublicBundleSubscriptionStatus.WAITING,
-                        null,
-                        LIMIT,
-                        PAGE)
-        );
-
-        assertNotNull(result);
-        assertEquals(1, result.getCiSubscriptionInfoList().size());
-        assertNotNull(result.getPageInfo());
-        assertEquals(LIMIT, result.getPageInfo().getLimit());
-        assertEquals(PAGE, result.getPageInfo().getPage());
-        assertEquals(1, result.getPageInfo().getTotalPages());
-
-        assertEquals(CI_TAX_CODE, result.getCiSubscriptionInfoList().get(0).getCiTaxCode());
-        assertTrue(result.getCiSubscriptionInfoList().get(0).getOnRemoval());
-        assertEquals(ciInfo.getBusinessName(), result.getCiSubscriptionInfoList().get(0).getBusinessName());
-    }
-
-    @Test
     void getPublicBundleCISubscriptionsDetailAccepted() {
         CiBundleDetails bundleDetails = CiBundleDetails.builder()
                 .idCIBundle(CI_BUNDLE_ID)
