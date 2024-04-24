@@ -73,7 +73,7 @@ public class AwsSesClient {
         String[] toAddressList = getToAddressList(taxCode, email.getDestinationUserType());
         if (toAddressList.length == 0) {
             log.warn("No email to be notified found for the institution with tax code {}, skip send email process",
-                    loggingUtils.checkLogParam(taxCode));
+                    loggingUtils.sanitizeLogParam(taxCode));
             return;
         }
 
@@ -83,7 +83,7 @@ public class AwsSesClient {
             log.debug("Email sent! Message ID: {}", response.messageId());
         } catch (Exception e) {
             log.error("An error occurred while sending email with subject {} to institution with tax code {}",
-                    email.getSubject(), loggingUtils.checkLogParam(email.getInstitutionTaxCode()), e);
+                    email.getSubject(), loggingUtils.sanitizeLogParam(email.getInstitutionTaxCode()), e);
         }
     }
 
@@ -109,7 +109,7 @@ public class AwsSesClient {
                 .findFirst();
 
         if (optionalInstitution.isEmpty()) {
-            log.debug("Unable to find the institution with tax code {}, skip send email process", loggingUtils.checkLogParam(taxCode));
+            log.debug("Unable to find the institution with tax code {}, skip send email process", loggingUtils.sanitizeLogParam(taxCode));
             return new String[0];
         }
         Institution institution = optionalInstitution.get();

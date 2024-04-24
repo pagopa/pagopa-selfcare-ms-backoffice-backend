@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoggingUtils {
 
-    public String checkLogParam(String logParam) {
+    public String sanitizeLogParam(String logParam) {
         if (logParam.matches("\\w*")) {
             return logParam;
         }
