@@ -4,7 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
-import it.pagopa.selfcare.pagopa.backoffice.util.LoggingUtils;
+import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,23 +33,19 @@ public class AwsSesClient {
 
     private final String environment;
 
-    private final LoggingUtils loggingUtils;
-
     @Autowired
     public AwsSesClient(
             SesClient sesClient,
             @Value("${aws.ses.user}") String from,
             SpringTemplateEngine templateEngine,
             ExternalApiClient externalApiClient,
-            @Value("${info.properties.environment}") String environment,
-            LoggingUtils loggingUtils
+            @Value("${info.properties.environment}") String environment
     ) {
         this.sesClient = sesClient;
         this.from = from;
         this.templateEngine = templateEngine;
         this.externalApiClient = externalApiClient;
         this.environment = environment;
-        this.loggingUtils = loggingUtils;
     }
 
     /**
@@ -73,7 +69,7 @@ public class AwsSesClient {
         String[] toAddressList = getToAddressList(taxCode, email.getDestinationUserType());
         if (toAddressList.length == 0) {
             log.warn("No email to be notified found for the institution with tax code {}, skip send email process",
-                    loggingUtils.sanitizeLogParam(taxCode));
+                    Utility.sanitizeLogParam(taxCode));
             return;
         }
 
@@ -83,7 +79,7 @@ public class AwsSesClient {
             log.debug("Email sent! Message ID: {}", response.messageId());
         } catch (Exception e) {
             log.error("An error occurred while sending email with subject {} to institution with tax code {}",
-                    email.getSubject(), loggingUtils.sanitizeLogParam(email.getInstitutionTaxCode()), e);
+                    email.getSubject(), Utility.sanitizeLogParam(email.getInstitutionTaxCode()), e);
         }
     }
 
@@ -109,7 +105,7 @@ public class AwsSesClient {
                 .findFirst();
 
         if (optionalInstitution.isEmpty()) {
-            log.debug("Unable to find the institution with tax code {}, skip send email process", loggingUtils.sanitizeLogParam(taxCode));
+            log.debug("Unable to find the institution with tax code {}, skip send email process", Utility.sanitizeLogParam(taxCode));
             return new String[0];
         }
         Institution institution = optionalInstitution.get();

@@ -5,7 +5,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUs
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
-import it.pagopa.selfcare.pagopa.backoffice.util.LoggingUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,9 +42,6 @@ class AwsSesClientTest {
 
     @MockBean
     private ExternalApiClient externalApiClient;
-
-    @MockBean
-    private LoggingUtils loggingUtils;
 
     @Autowired
     private AwsSesClient sut;

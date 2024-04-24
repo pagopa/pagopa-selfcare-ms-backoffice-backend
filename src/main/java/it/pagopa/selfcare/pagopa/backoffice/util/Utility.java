@@ -84,5 +84,17 @@ public class Utility {
         return Calendar.getInstance().getTimeInMillis() - startTime;
     }
 
+    /**
+     * Utility method to sanitize log params
+     *
+     * @param logParam log param to be sanitized
+     * @return the sanitized param
+     */
+    public static String sanitizeLogParam(String logParam) {
+        if (logParam.matches("\\w*")) {
+            return logParam;
+        }
+        return "suspicious log param";
+    }
 
 }
