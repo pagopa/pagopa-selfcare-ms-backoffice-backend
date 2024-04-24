@@ -1,10 +1,15 @@
 package it.pagopa.selfcare.pagopa.backoffice.client;
 
+import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import software.amazon.awssdk.services.ses.SesClient;
@@ -12,13 +17,22 @@ import software.amazon.awssdk.services.ses.model.MessageRejectedException;
 import software.amazon.awssdk.services.ses.model.SendEmailRequest;
 import software.amazon.awssdk.services.ses.model.SendEmailResponse;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = AwsSesClient.class)
 class AwsSesClientTest {
+
+    private static final String INSTITUTION_TAX_CODE = "institutionTaxCode";
+    private static final String HTML_TEMPLATE_FILE_NAME = "htmlTemplateFile.html";
+    private static final String INSTITUTION_ID = "institutionId";
 
     @MockBean
     private SesClient sesClient;
@@ -26,40 +40,134 @@ class AwsSesClientTest {
     @MockBean
     private SpringTemplateEngine templateEngine;
 
+    @MockBean
+    private ExternalApiClient externalApiClient;
+
     @Autowired
     private AwsSesClient sut;
 
     @Test
-    void sendEmailSuccess() {
+    void sendEmailPRODSuccess() {
+        ReflectionTestUtils.setField(sut, "environment", "prod");
+
+        Institutions institutions = buildInstitutions();
+        List<InstitutionProductUsers> institutionProductUsers = buildInstitutionProductUsers();
+
+        when(externalApiClient.getInstitutionsFiltered(INSTITUTION_TAX_CODE)).thenReturn(institutions);
+        when(externalApiClient.getInstitutionProductUsers(
+                INSTITUTION_ID,
+                null,
+                null,
+                Collections.singletonList(SelfcareProductUser.ADMIN.getProductUser()))
+        ).thenReturn(institutionProductUsers);
         when(templateEngine.process(anyString(), any())).thenReturn("html template");
         when(sesClient.sendEmail(any(SendEmailRequest.class))).thenReturn(SendEmailResponse.builder().build());
 
-        String result = assertDoesNotThrow(() -> sut.sendEmail(
-                "subject",
-                "textBody",
-                "htmlTemplateFile.html",
-                new Context(),
-                "destination"
-        ));
-
-        assertNotNull(result);
-        assertTrue(result.contains("Email sent!"));
+        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail()));
     }
 
     @Test
-    void sendEmailError() {
+    void sendEmailPRODFail() {
+        ReflectionTestUtils.setField(sut, "environment", "prod");
+
+        Institutions institutions = buildInstitutions();
+        List<InstitutionProductUsers> institutionProductUsers = buildInstitutionProductUsers();
+
+        when(externalApiClient.getInstitutionsFiltered(INSTITUTION_TAX_CODE)).thenReturn(institutions);
+        when(externalApiClient.getInstitutionProductUsers(
+                INSTITUTION_ID,
+                null,
+                null,
+                Collections.singletonList(SelfcareProductUser.ADMIN.getProductUser()))
+        ).thenReturn(institutionProductUsers);
         when(templateEngine.process(anyString(), any())).thenReturn("html template");
         when(sesClient.sendEmail(any(SendEmailRequest.class))).thenThrow(MessageRejectedException.class);
 
-        String result = assertDoesNotThrow(() -> sut.sendEmail(
-                "subject",
-                "textBody",
-                "htmlTemplateFile.html",
-                new Context(),
-                "destination"
-        ));
+        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail()));
+    }
 
-        assertNotNull(result);
-        assertTrue(result.contains("sendEmail error"));
+    @Test
+    void sendEmailNoInstitutionFoundSkipped() {
+        ReflectionTestUtils.setField(sut, "environment", "prod");
+
+        when(externalApiClient.getInstitutionsFiltered(INSTITUTION_TAX_CODE))
+                .thenReturn(Institutions.builder().institutions(Collections.emptyList()).build());
+
+        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail()));
+
+        verify(externalApiClient, never()).getInstitutionProductUsers(
+                INSTITUTION_ID,
+                null,
+                null,
+                Collections.singletonList(SelfcareProductUser.ADMIN.getProductUser())
+        );
+        verify(templateEngine, never()).process(anyString(), any());
+        verify(sesClient, never()).sendEmail(any(SendEmailRequest.class));
+    }
+
+    @Test
+    void sendEmailNoDestinationSkipped() {
+        ReflectionTestUtils.setField(sut, "environment", "prod");
+
+        Institutions institutions = buildInstitutions();
+
+        when(externalApiClient.getInstitutionsFiltered(INSTITUTION_TAX_CODE)).thenReturn(institutions);
+        when(externalApiClient.getInstitutionProductUsers(
+                INSTITUTION_ID,
+                null,
+                null,
+                Collections.singletonList(SelfcareProductUser.ADMIN.getProductUser()))
+        ).thenReturn(Collections.emptyList());
+
+        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail()));
+
+        verify(templateEngine, never()).process(anyString(), any());
+        verify(sesClient, never()).sendEmail(any(SendEmailRequest.class));
+    }
+
+    @Test
+    void sendEmailNotPRODSkipped() {
+        ReflectionTestUtils.setField(sut, "environment", "dev");
+
+        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail()));
+
+        verify(externalApiClient, never()).getInstitutionsFiltered(INSTITUTION_TAX_CODE);
+        verify(externalApiClient, never()).getInstitutionProductUsers(
+                INSTITUTION_ID,
+                null,
+                null,
+                Collections.singletonList(SelfcareProductUser.ADMIN.getProductUser())
+        );
+        verify(templateEngine, never()).process(anyString(), any());
+        verify(sesClient, never()).sendEmail(any(SendEmailRequest.class));
+    }
+
+    private EmailMessageDetail buildEmailMessageDetail() {
+        return EmailMessageDetail.builder()
+                .institutionTaxCode(INSTITUTION_TAX_CODE)
+                .htmlBodyFileName(HTML_TEMPLATE_FILE_NAME)
+                .htmlBodyContext(new Context())
+                .textBody("textBody")
+                .subject("subject")
+                .destinationUserType(SelfcareProductUser.ADMIN)
+                .build();
+    }
+
+    private List<InstitutionProductUsers> buildInstitutionProductUsers() {
+        return Collections.singletonList(
+                InstitutionProductUsers.builder()
+                        .email("email")
+                        .build()
+        );
+    }
+
+    private Institutions buildInstitutions() {
+        return Institutions.builder()
+                .institutions(Collections.singletonList(
+                        Institution.builder()
+                                .id(INSTITUTION_ID)
+                                .build()
+                ))
+                .build();
     }
 }

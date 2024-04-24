@@ -21,6 +21,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStati
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationCodeResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
@@ -89,18 +91,22 @@ public class StationService {
     }
 
     public WrapperEntityOperations<StationDetails> createStation(@NotNull StationDetailsDto stationDetailsDto) {
-        StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
-        apiConfigClient.createStation(stationDetails);
+        StationDetails stationDetails = this.stationMapper.fromDto(stationDetailsDto);
+        this.apiConfigClient.createStation(stationDetails);
 
-        WrapperEntities<StationDetails> response = wrapperService.updateByOpt(stationDetails, stationDetailsDto.getNote(), WrapperStatus.APPROVED.name());
+        WrapperEntities<StationDetails> response = this.wrapperService.updateByOpt(stationDetails, stationDetailsDto.getNote(), WrapperStatus.APPROVED.name());
         WrapperEntityOperations<StationDetails> result = getWrapperEntityOperationsSortedList(response).get(0);
-        awsSesClient.sendEmail(
-                CREATE_STATION_SUBJECT,
-                CREATE_STATION_EMAIL_BODY,
-                "stationCreationValidatedEmail.html",
-                buildStationHtmlEmailBodyContext(stationDetailsDto.getStationCode()),
-                stationDetailsDto.getEmail()
-        );
+
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(stationDetails.getBrokerCode())
+                .subject(CREATE_STATION_SUBJECT)
+                .textBody(String.format(CREATE_STATION_EMAIL_BODY, stationDetails.getStationCode()))
+                .htmlBodyFileName("stationCreationValidatedEmail.html")
+                .htmlBodyContext(buildStationHtmlEmailBodyContext(stationDetails.getStationCode()))
+                .destinationUserType(SelfcareProductUser.OPERATOR)
+                .build();
+
+        this.awsSesClient.sendEmail(messageDetail);
         return result;
     }
 
@@ -202,18 +208,21 @@ public class StationService {
     }
 
     public StationDetailResource updateStation(@NotNull StationDetailsDto stationDetailsDto, String stationCode) {
-        StationDetails stationDetails = stationMapper.fromDto(stationDetailsDto);
-        StationDetails response = apiConfigClient.updateStation(stationCode, stationDetails);
-        wrapperService.update(stationDetails, stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
-        StationDetailResource resource = stationMapper.toResource(response);
-        awsSesClient.sendEmail(
-                UPDATE_STATION_SUBJECT,
-                UPDATE_STATION_EMAIL_BODY,
-                "stationUpdateValidatedEmail.html",
-                buildStationHtmlEmailBodyContext(stationDetailsDto.getStationCode()),
-                stationDetailsDto.getEmail()
-        );
+        StationDetails stationDetails = this.stationMapper.fromDto(stationDetailsDto);
+        StationDetails response = this.apiConfigClient.updateStation(stationCode, stationDetails);
+        this.wrapperService.update(stationDetails, stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
+        StationDetailResource resource = this.stationMapper.toResource(response);
 
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(stationDetails.getBrokerCode())
+                .subject(UPDATE_STATION_SUBJECT)
+                .textBody(String.format(UPDATE_STATION_EMAIL_BODY, stationDetails.getStationCode()))
+                .htmlBodyFileName("stationUpdateValidatedEmail.html")
+                .htmlBodyContext(buildStationHtmlEmailBodyContext(stationDetails.getStationCode()))
+                .destinationUserType(SelfcareProductUser.OPERATOR)
+                .build();
+
+        this.awsSesClient.sendEmail(messageDetail);
         return resource;
     }
 

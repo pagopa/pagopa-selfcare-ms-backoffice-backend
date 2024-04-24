@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.email;
 
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,4 +22,5 @@ public class EmailMessageDetail {
     private String textBody;
     private String htmlBodyFileName;
     private Context htmlBodyContext;
+    private SelfcareProductUser destinationUserType;
 }

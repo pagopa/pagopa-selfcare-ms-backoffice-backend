@@ -22,6 +22,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntit
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,36 +112,43 @@ public class ChannelService {
         pspChannelPaymentTypes.setPaymentTypeList(paymentTypeList);
 
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
-        apiConfigClient.createChannel(channelDetails);
+        this.apiConfigClient.createChannel(channelDetails);
 
-        WrapperEntities<ChannelDetails> response = wrapperService.updateByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
-        PspChannelPaymentTypes paymentType = apiConfigClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
+        WrapperEntities<ChannelDetails> response = this.wrapperService
+                .updateByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
+        PspChannelPaymentTypes paymentType = this.apiConfigClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
         WrapperChannelDetailsResource resource = ChannelMapper.toResource(getWrapperEntityOperationsSortedList(response).get(0), paymentType);
 
-        awsSesClient.sendEmail(
-                CREATE_CHANEL_SUBJECT,
-                String.format(CREATE_CHANEL_EMAIL_BODY, channelDetailsDto.getChannelCode()),
-                "channelCreationValidatedEmail.html",
-                buildChannelHtmlEmailBodyContext(channelDetailsDto.getChannelCode()),
-                channelDetailsDto.getEmail()
-        );
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(channelDetailsDto.getBrokerPspCode())
+                .subject(CREATE_CHANEL_SUBJECT)
+                .textBody(String.format(CREATE_CHANEL_EMAIL_BODY, channelCode))
+                .htmlBodyFileName("channelCreationValidatedEmail.html")
+                .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode))
+                .destinationUserType(SelfcareProductUser.OPERATOR)
+                .build();
+
+        this.awsSesClient.sendEmail(messageDetail);
         return resource;
     }
 
 
     public ChannelDetailsResource validateChannelUpdate(String channelCode, ChannelDetailsDto channelDetailsDto) {
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
-        ChannelDetails response = apiConfigClient.updateChannel(channelDetails, channelCode);
-        wrapperService.update(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
+        ChannelDetails response = this.apiConfigClient.updateChannel(channelDetails, channelCode);
+        this.wrapperService.update(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
         ChannelDetailsResource resource = ChannelMapper.toResource(response, null);
 
-        awsSesClient.sendEmail(
-                UPDATE_CHANEL_SUBJECT,
-                String.format(UPDATE_CHANEL_EMAIL_BODY, channelDetailsDto.getChannelCode()),
-                "channelUpdateValidatedEmail.html",
-                buildChannelHtmlEmailBodyContext(channelDetailsDto.getChannelCode()),
-                channelDetailsDto.getEmail()
-        );
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(channelDetailsDto.getBrokerPspCode())
+                .subject(UPDATE_CHANEL_SUBJECT)
+                .textBody(String.format(UPDATE_CHANEL_EMAIL_BODY, channelCode))
+                .htmlBodyFileName("channelUpdateValidatedEmail.html")
+                .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode))
+                .destinationUserType(SelfcareProductUser.OPERATOR)
+                .build();
+
+        this.awsSesClient.sendEmail(messageDetail);
         return resource;
     }
 

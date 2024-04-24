@@ -27,6 +27,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspReq
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
@@ -296,6 +297,7 @@ public class CommissionBundleService {
                 .textBody(String.format(BUNDLE_DELETE_SUBSCRIPTION_BODY, bundleName))
                 .htmlBodyFileName("deleteBundleSubscriptionEmail.html")
                 .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                .destinationUserType(SelfcareProductUser.ADMIN)
                 .build();
 
         awsSesClient.sendEmail(messageDetail);

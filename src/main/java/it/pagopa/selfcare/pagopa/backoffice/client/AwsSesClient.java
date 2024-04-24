@@ -1,20 +1,19 @@
 package it.pagopa.selfcare.pagopa.backoffice.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import software.amazon.awssdk.services.ses.SesClient;
 import software.amazon.awssdk.services.ses.model.SendEmailRequest;
 import software.amazon.awssdk.services.ses.model.SendEmailResponse;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -48,14 +47,25 @@ public class AwsSesClient {
         this.environment = environment;
     }
 
+    /**
+     * Build and send an email with the provided info.
+     * <p> The email is sent only if the environment is prod.
+     * <p> Retrieve the destination of the mail based on the specified {@link SelfcareProductUser}:
+     * <ul>
+     *     <li> if {@link SelfcareProductUser#ADMIN} notify all payment contacts
+     *     <li> if {@link SelfcareProductUser#OPERATOR} notify all technical contacts
+     * </ul>
+     *
+     * @param email contains all the necessary info to build and send the email
+     */
     public void sendEmail(EmailMessageDetail email) {
         String taxCode = email.getInstitutionTaxCode();
-        if (!environment.equals("prod") || taxCode == null) {
+        if (!this.environment.equals("prod") || taxCode == null) {
             log.warn("Skip send email process");
             return;
         }
 
-        String[] toAddressList = getToAddressList(taxCode);
+        String[] toAddressList = getToAddressList(taxCode, email.getDestinationUserType());
         if (toAddressList.length == 0) {
             log.warn("No email to be notified found for the institution with tax code {}, skip send email process", taxCode);
             return;
@@ -63,7 +73,7 @@ public class AwsSesClient {
 
         try {
             SendEmailRequest request = buildEmailRequest(email, toAddressList);
-            SendEmailResponse response = sesClient.sendEmail(request);
+            SendEmailResponse response = this.sesClient.sendEmail(request);
             log.debug("Email sent! Message ID: {}", response.messageId());
         } catch (Exception e) {
             log.error("An error occurred while sending email with subject {} to institution with tax code {}",
@@ -72,10 +82,10 @@ public class AwsSesClient {
     }
 
     private SendEmailRequest buildEmailRequest(EmailMessageDetail email, String[] toAddressList) {
-        String html = templateEngine.process(email.getHtmlBodyFileName(), email.getHtmlBodyContext());
+        String html = this.templateEngine.process(email.getHtmlBodyFileName(), email.getHtmlBodyContext());
 
         return SendEmailRequest.builder()
-                .source(from)
+                .source(this.from)
                 .destination(d -> d.toAddresses(toAddressList))
                 .message(m -> m
                         .subject(c -> c.data(email.getSubject()))
@@ -87,37 +97,7 @@ public class AwsSesClient {
                 .build();
     }
 
-    public String sendEmail(String subject, String textBody, String htmlBodyFileName, Context htmlContext, String... to) {
-        String result = null;
-        try {
-            result = sendEmailAux(subject, textBody, htmlBodyFileName, htmlContext, to);
-        } catch (Exception e) {
-            log.error("An error occurred while sending email with subject {}", subject, e);
-            result = "sendEmail error to = " + Arrays.toString(to) + ", subject = " + subject;
-        }
-        return result;
-    }
-
-
-    private String sendEmailAux(String subject, String textBody, String htmlBodyFileName, Context htmlContext, String... to) {
-        String html = templateEngine.process(htmlBodyFileName, htmlContext);
-
-        SendEmailRequest request = SendEmailRequest.builder()
-                .source(from)
-                .destination(d -> d.toAddresses(to))
-                .message(m -> m
-                        .subject(c -> c.data(subject))
-                        .body(b -> b
-                                .html(c -> c.data(html).charset(StandardCharsets.UTF_8.name()))
-                                .text(c -> c.data(textBody))
-                                .build())
-                        .build())
-                .build();
-        SendEmailResponse response = sesClient.sendEmail(request);
-        return "Email sent! Message ID: " + response.messageId();
-    }
-
-    private String[] getToAddressList(String taxCode) {
+    private String[] getToAddressList(String taxCode, SelfcareProductUser destinationUserType) {
         Optional<Institution> optionalInstitution = this.externalApiClient.getInstitutionsFiltered(taxCode)
                 .getInstitutions().stream()
                 .findFirst();
@@ -132,7 +112,7 @@ public class AwsSesClient {
                         institution.getId(),
                         null,
                         null,
-                        Collections.singletonList("admin")
+                        Collections.singletonList(destinationUserType.getProductUser())
                 );
 
         return institutionUserList.stream()
