@@ -38,6 +38,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -214,16 +216,15 @@ public class CommissionBundleService {
             BundleCreditorInstitutionResource acceptedSubscription = this.gecClient
                     .getPublicBundleSubscriptionByPSP(pspCode, idBundle, ciTaxCode, limit, page);
 
-            List<CreditorInstitutionInfo> ciInfoList = this.apiConfigSelfcareIntegrationClient
-                    .getCreditorInstitutionInfo(acceptedSubscription.getCiTaxCodeList());
-            ciSubscriptionInfoList = getCiSubscriptionInfoList(ciInfoList);
+            List<CreditorInstitutionInfo> ciInfoList = getCIInfo(acceptedSubscription);
+            ciSubscriptionInfoList = buildCISubscriptionInfoList(ciInfoList, acceptedSubscription);
             pageInfo = acceptedSubscription.getPageInfo();
         } else {
             PspRequests subscriptionRequest = this.gecClient
                     .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, limit, page);
 
-            List<CreditorInstitutionInfo> ciInfoList = getCIInfos(subscriptionRequest);
-            ciSubscriptionInfoList = getCiSubscriptionInfoList(ciInfoList);
+            List<CreditorInstitutionInfo> ciInfoList = getCIInfo(subscriptionRequest);
+            ciSubscriptionInfoList = buildCISubscriptionInfoList(ciInfoList, subscriptionRequest);
             pageInfo = subscriptionRequest.getPageInfo();
         }
 
@@ -315,9 +316,39 @@ public class CommissionBundleService {
         return context;
     }
 
-    private List<CISubscriptionInfo> getCiSubscriptionInfoList(List<CreditorInstitutionInfo> ciInfoList) {
+    private List<CISubscriptionInfo> buildCISubscriptionInfoList(List<CreditorInstitutionInfo> ciInfoList, BundleCreditorInstitutionResource acceptedSubscription) {
+        LocalDate today = LocalDate.now();
+
         return ciInfoList.parallelStream()
-                .map(ciInfo -> this.modelMapper.map(ciInfo, CISubscriptionInfo.class))
+                .map(ciInfo -> {
+                    CISubscriptionInfo subscriptionInfo = this.modelMapper.map(ciInfo, CISubscriptionInfo.class);
+                    LocalDate validityDateTo = acceptedSubscription.getCiBundleDetails().stream()
+                            .filter(s -> s.getCiTaxCode().equals(ciInfo.getCiTaxCode()))
+                            .findFirst()
+                            .orElse(new CiBundleDetails())
+                            .getValidityDateTo();
+
+                    subscriptionInfo.setOnRemoval(validityDateTo.isBefore(today) || validityDateTo.isEqual(today));
+
+                    return subscriptionInfo;
+                })
+                .toList();
+    }
+
+    private List<CISubscriptionInfo> buildCISubscriptionInfoList(List<CreditorInstitutionInfo> ciInfoList, PspRequests subscriptionRequest) {
+        return ciInfoList.parallelStream()
+                .map(ciInfo -> {
+                    CISubscriptionInfo subscriptionInfo = this.modelMapper.map(ciInfo, CISubscriptionInfo.class);
+                    LocalDateTime rejectionDate = subscriptionRequest.getRequestsList().stream()
+                            .filter(s -> s.getCiFiscalCode().equals(ciInfo.getCiTaxCode()))
+                            .findFirst()
+                            .orElse(new PspBundleRequest())
+                            .getRejectionDate();
+
+                    subscriptionInfo.setOnRemoval(rejectionDate != null);
+
+                    return subscriptionInfo;
+                })
                 .toList();
     }
 
@@ -341,7 +372,14 @@ public class CommissionBundleService {
                 .toList();
     }
 
-    private List<CreditorInstitutionInfo> getCIInfos(PspRequests subscriptionRequest) {
+    private List<CreditorInstitutionInfo> getCIInfo(BundleCreditorInstitutionResource acceptedSubscription) {
+        List<String> taxCodeList = acceptedSubscription.getCiBundleDetails().parallelStream()
+                .map(CiBundleDetails::getCiTaxCode)
+                .toList();
+        return this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(taxCodeList);
+    }
+
+    private List<CreditorInstitutionInfo> getCIInfo(PspRequests subscriptionRequest) {
         List<String> taxCodeList = subscriptionRequest.getRequestsList().parallelStream()
                 .map(PspBundleRequest::getCiFiscalCode)
                 .toList();
