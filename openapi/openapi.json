@@ -1308,6 +1308,63 @@
         }
       } ]
     },
+    "/bundles/{ci-bundle-id}/creditor-institutions/{ci-tax-code}" : {
+      "delete" : {
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId" : "deleteCIBundleSubscription",
+        "parameters" : [ {
+          "description" : "Subscription's id of a creditor institution to a bundle",
+          "in" : "path",
+          "name" : "ci-bundle-id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Creditor Institution's tax code",
+          "in" : "path",
+          "name" : "ci-tax-code",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Bundle's name",
+          "in" : "query",
+          "name" : "bundleName",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "JWT" : [ ]
+        } ],
+        "summary" : "Delete a creditor institution's subscription to a public/private bundle",
+        "tags" : [ "Commission bundles" ]
+      },
+      "parameters" : [ {
+        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+        "in" : "header",
+        "name" : "X-Request-Id",
+        "schema" : {
+          "type" : "string"
+        }
+      } ]
+    },
     "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}" : {
       "delete" : {
         "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
@@ -4582,7 +4639,7 @@
             "type" : "string"
           }
         }, {
-          "description" : "Broker's role to consider when filtering institution types (PSP,EC,PT_EC,PT_PSP,PT_ALL)",
+          "description" : "Broker's role to consider when filtering institution types",
           "in" : "query",
           "name" : "roles",
           "required" : false,
@@ -7763,6 +7820,10 @@
           "creditor_institution_code" : {
             "type" : "string",
             "description" : "Creditor Institution's tax code"
+          },
+          "on_removal" : {
+            "type" : "boolean",
+            "description" : "Describes if the subscription has been marked for deletion"
           }
         }
       },
@@ -9053,6 +9114,10 @@
             "items" : {
               "$ref" : "#/components/schemas/CIBundleFee"
             }
+          },
+          "ci_bundle_id" : {
+            "type" : "string",
+            "description" : "Subscription's id of a creditor institution to a public bundle"
           }
         }
       },
