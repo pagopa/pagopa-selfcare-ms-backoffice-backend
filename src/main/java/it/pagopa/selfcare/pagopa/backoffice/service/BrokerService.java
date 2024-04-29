@@ -273,9 +273,10 @@ public class BrokerService {
         List<DelegationExternal> delegationResponse = this.externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
 
         // filter by roles
+        log.info(delegationResponse.toString());
         return delegationResponse.parallelStream()
                 .filter(Objects::nonNull)
-                .filter(delegation -> RoleType.EC.equals(RoleType.fromSelfcareRole(delegation.getInstitutionType())))
+                .filter(delegation -> RoleType.CI.equals(RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType())))
                 .filter(delegation -> institutionNameMatchFilter(ciName, delegation.getInstitutionName()))
                 .toList();
     }

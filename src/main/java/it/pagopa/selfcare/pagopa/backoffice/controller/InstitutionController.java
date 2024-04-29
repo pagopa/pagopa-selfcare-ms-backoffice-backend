@@ -47,7 +47,7 @@ public class InstitutionController {
     @OpenApiTableMetadata
     public List<Delegation> getBrokerDelegation(@Parameter(description = "Institution's unique internal identifier") @RequestParam(required = false, value = "institution-id") String institutionId,
                                                 @Parameter(description = "Broker's unique id") @RequestParam(required = false, value = "brokerId") String brokerId,
-                                                @Parameter(description = "Broker's role to consider when filtering institution types (PSP,EC,PT_EC,PT_PSP,PT_ALL)") @RequestParam(required = false, value = "roles") List<RoleType> roles
+                                                @Parameter(description = "Broker's role to consider when filtering institution types") @RequestParam(required = false, value = "roles") List<RoleType> roles
     ) {
         return apiManagementService.getBrokerDelegation(institutionId, brokerId, roles);
     }

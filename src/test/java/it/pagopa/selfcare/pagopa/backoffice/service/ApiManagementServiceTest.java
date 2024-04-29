@@ -106,7 +106,7 @@ class ApiManagementServiceTest {
     @Test
     void getBrokerDelegationEC() {
         when(externalApiClient.getBrokerDelegation(any(), any(), any(), any())).thenReturn(createDelegations());
-        List<Delegation> delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, Collections.singletonList(RoleType.EC));
+        List<Delegation> delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, Collections.singletonList(RoleType.CI));
         assertNotNull(delegations);
         assertEquals(1, delegations.size());
         assertEquals("00002", delegations.get(0).getBrokerId());
@@ -115,7 +115,7 @@ class ApiManagementServiceTest {
     @Test
     void getBrokerDelegationCombinedRoles() {
         when(externalApiClient.getBrokerDelegation(any(), any(), any(), any())).thenReturn(createDelegations());
-        List<Delegation> delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, List.of(RoleType.EC, RoleType.PSP));
+        List<Delegation> delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, List.of(RoleType.CI, RoleType.PSP));
         assertNotNull(delegations);
         assertEquals(2, delegations.size());
     }
