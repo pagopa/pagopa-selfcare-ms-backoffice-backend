@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Channel's creation validated mail</title>
+</head>
+
+<body>
+<img width="100" height="30" src="https://raw.githubusercontent.com/pagopa/pagopa-selfcare-ms-backoffice-backend/main/src/main/resources/templates/logo-pagopa.png">
+<h1>Nuovo canale attivo</h1>
+<p>
+    Ciao,
+</p>
+<br/>
+<p>
+    pagoPA ha revisionato e validato il canale <span th:text="${channelCode}" th:remove="tag"></span> che hai creato. Da
+    questo momento puoi utilizzarlo per attivare i tuoi servizi.
+</p>
+<br/>
+<p>
+    A presto,
+</p>
+<p>
+    Back-office pagoPA
+</p>
+<hr style="color:grey">
+<p style="color:grey">
+    Ricevi questo messaggio perchè hai un utenza attiva nel Portale Bonus dell'ente.
+</p>
+
+</body>
+</html>

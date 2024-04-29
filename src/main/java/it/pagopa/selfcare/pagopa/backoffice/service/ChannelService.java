@@ -22,21 +22,31 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntit
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 
 @Slf4j
 @Service
 public class ChannelService {
+
+    private static final String CREATE_CHANEL_SUBJECT = "Nuovo canale attivo";
+    private static final String CREATE_CHANEL_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato il canale %s che hai creato. Da questo momento puoi utilizzarlo per attivare i tuoi servizi.%n%n%nA presto,%n%n Back-office pagoPA";
+    private static final String UPDATE_CHANEL_SUBJECT = "Modifica canale attiva";
+    private static final String UPDATE_CHANEL_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato il canale %s che hai modificato. Da questo momento la modifica effettuata risulta attiva.%n%n%nA presto,%n%n Back-office pagoPA";
 
     private final ApiConfigClient apiConfigClient;
 
@@ -96,35 +106,49 @@ public class ChannelService {
     }
 
     public WrapperChannelDetailsResource validateChannelCreation(ChannelDetailsDto channelDetailsDto) {
-        final String CREATE_CHANEL_SUBJECT = "Creazione Canale";
-        final String CREATE_CHANEL_EMAIL_BODY = String.format("Buongiorno %n%n Il canale %s è stato validato da un operatore e risulta essere attivo%n%nSaluti", channelDetailsDto.getChannelCode());
-
         PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
         List<String> paymentTypeList = channelDetailsDto.getPaymentTypeList();
         String channelCode = channelDetailsDto.getChannelCode();
         pspChannelPaymentTypes.setPaymentTypeList(paymentTypeList);
 
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
-        apiConfigClient.createChannel(channelDetails);
+        this.apiConfigClient.createChannel(channelDetails);
 
-        WrapperEntities<ChannelDetails> response = wrapperService.updateByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
-        PspChannelPaymentTypes paymentType = apiConfigClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
+        WrapperEntities<ChannelDetails> response = this.wrapperService
+                .updateByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
+        PspChannelPaymentTypes paymentType = this.apiConfigClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
         WrapperChannelDetailsResource resource = ChannelMapper.toResource(getWrapperEntityOperationsSortedList(response).get(0), paymentType);
 
-        awsSesClient.sendEmail(CREATE_CHANEL_SUBJECT, CREATE_CHANEL_EMAIL_BODY, channelDetailsDto.getEmail());
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(channelDetailsDto.getBrokerPspCode())
+                .subject(CREATE_CHANEL_SUBJECT)
+                .textBody(String.format(CREATE_CHANEL_EMAIL_BODY, channelCode))
+                .htmlBodyFileName("channelCreationValidatedEmail.html")
+                .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode))
+                .destinationUserType(SelfcareProductUser.OPERATOR)
+                .build();
+
+        this.awsSesClient.sendEmail(messageDetail);
         return resource;
     }
 
 
     public ChannelDetailsResource validateChannelUpdate(String channelCode, ChannelDetailsDto channelDetailsDto) {
-        final String UPDATE_CHANEL_SUBJECT = "Update Canale";
-        final String UPDATE_CHANEL_EMAIL_BODY = String.format("Buongiorno%n%n la modifica per Il canale %s è stata validata da un operatore e risulta essere attiva%n%nSaluti", channelDetailsDto.getChannelCode());
-
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
-        ChannelDetails response = apiConfigClient.updateChannel(channelDetails, channelCode);
-        wrapperService.update(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
+        ChannelDetails response = this.apiConfigClient.updateChannel(channelDetails, channelCode);
+        this.wrapperService.update(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
         ChannelDetailsResource resource = ChannelMapper.toResource(response, null);
-        awsSesClient.sendEmail(UPDATE_CHANEL_SUBJECT, UPDATE_CHANEL_EMAIL_BODY, channelDetailsDto.getEmail());
+
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(channelDetailsDto.getBrokerPspCode())
+                .subject(UPDATE_CHANEL_SUBJECT)
+                .textBody(String.format(UPDATE_CHANEL_EMAIL_BODY, channelCode))
+                .htmlBodyFileName("channelUpdateValidatedEmail.html")
+                .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode))
+                .destinationUserType(SelfcareProductUser.OPERATOR)
+                .build();
+
+        this.awsSesClient.sendEmail(messageDetail);
         return resource;
     }
 
@@ -188,5 +212,17 @@ public class ChannelService {
     public ChannelPspListResource getPSPsByChannel(Integer limit, Integer page, String channelCode, String pspName) {
         ChannelPspList dto = apiConfigClient.getChannelPaymentServiceProviders(channelCode, limit, page, pspName);
         return ChannelMapper.toResource(dto);
+    }
+
+    private Context buildChannelHtmlEmailBodyContext(String channelCode) {
+        // Thymeleaf Context
+        Context context = new Context();
+
+        // Properties to show up in Template after stored in Context
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("channelCode", channelCode);
+
+        context.setVariables(properties);
+        return context;
     }
 }

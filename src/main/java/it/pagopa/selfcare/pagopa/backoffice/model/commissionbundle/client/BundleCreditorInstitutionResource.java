@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class BundleCreditorInstitutionResource {
 
-    private List<String> ciTaxCodeList;
+    private List<CiBundleDetails> ciBundleDetails;
 
     @JsonProperty("pageInfo")
     @NotNull

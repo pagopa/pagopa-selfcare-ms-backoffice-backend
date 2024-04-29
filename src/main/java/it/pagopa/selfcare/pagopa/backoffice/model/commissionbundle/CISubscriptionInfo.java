@@ -24,4 +24,8 @@ public class CISubscriptionInfo {
     @JsonProperty("creditor_institution_code")
     @Schema(description = "Creditor Institution's tax code")
     private String ciTaxCode;
+
+    @JsonProperty("on_removal")
+    @Schema(description = "Describes if the subscription has been marked for deletion")
+    private Boolean onRemoval;
 }
