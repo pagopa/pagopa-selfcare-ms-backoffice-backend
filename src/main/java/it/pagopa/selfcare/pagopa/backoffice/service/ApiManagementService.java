@@ -9,7 +9,6 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationEntity;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationOwner;
-import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationOwnerType;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
@@ -105,7 +104,7 @@ public class ApiManagementService {
                     .filter(Objects::nonNull)
                     .filter(delegation -> {
                         log.info(delegation.toString());
-                        RoleType roleType = RoleType.fromSelfcareRole(delegation.getInstitutionType());
+                        RoleType roleType = RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType());
                         return roles.contains(roleType);
                     })
                     .toList();
@@ -247,6 +246,7 @@ public class ApiManagementService {
             InstitutionResponse institution,
             boolean isPrimaryKey
     ) {
+        log.info(institution.toString());
         return Authorization.builder()
                 .id(createAuthorizationBOId(subscriptionPrefixId, institution.getId(), isPrimaryKey))
                 .domain("backoffice_external")
@@ -255,7 +255,7 @@ public class ApiManagementService {
                 .owner(AuthorizationOwner.builder()
                         .id(institution.getTaxCode())
                         .name(institution.getDescription())
-                        .type(AuthorizationOwnerType.fromSelfcareRole(institution.getInstitutionType().name()))
+                        .type(RoleType.fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType().name()))
                         .build())
                 .authorizedEntities(Collections.singletonList(AuthorizationEntity.builder()
                         .name(institution.getDescription())
@@ -284,6 +284,7 @@ public class ApiManagementService {
                 .name(institution.getDescription())
                 .value(institution.getTaxCode())
                 .build());
+        log.info(institution.toString());
         return Authorization.builder()
                 .id(createAuthorizationBOId(subscriptionPrefixId, institution.getId(), isPrimaryKey))
                 .domain("fdr")
@@ -292,7 +293,7 @@ public class ApiManagementService {
                 .owner(AuthorizationOwner.builder()
                         .id(institution.getTaxCode())
                         .name(institution.getDescription())
-                        .type(AuthorizationOwnerType.fromSelfcareRole(institution.getInstitutionType().name()))
+                        .type(RoleType.fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType().name()))
                         .build())
                 .authorizedEntities(authorizedEntities)
                 .otherMetadata(Collections.emptyList())
