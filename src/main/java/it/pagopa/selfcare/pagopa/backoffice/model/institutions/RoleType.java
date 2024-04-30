@@ -21,9 +21,9 @@ public enum RoleType {
     private final List<String> selfcareRole;
 
 
-    public static RoleType fromSelfcareRole(String institutionCode ,String role) {
+    public static RoleType fromSelfcareRole(String institutionCode, String role) {
         return Arrays.stream(RoleType.values())
-                .filter(elem -> elem.selfcareRole.contains(role))
+                .filter(elem -> role != null && elem.selfcareRole.contains(role))
                 .findFirst()
                 .orElseThrow(() -> new AppException(AppError.SELFCARE_ROLE_NOT_FOUND, deNull(institutionCode), deNull(role)));
     }
