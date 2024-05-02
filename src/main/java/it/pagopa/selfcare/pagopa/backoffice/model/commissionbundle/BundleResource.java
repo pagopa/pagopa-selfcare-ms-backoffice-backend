@@ -54,5 +54,6 @@ public class BundleResource {
     private Boolean digitalStamp;
     @Schema(description = "If the payment can be payed only with a tax stamp, mutually exclusive with digitalStamp")
     private Boolean digitalStampRestriction;
-
+    @Schema(description = "")
+    private CIBundleStatus ciBundleStatus;
 }
