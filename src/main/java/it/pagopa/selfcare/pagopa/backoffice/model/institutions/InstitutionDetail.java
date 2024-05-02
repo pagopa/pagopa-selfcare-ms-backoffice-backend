@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.util.Collection;
+import java.util.List;
 
 @Data
 @Builder
@@ -70,7 +70,7 @@ public class InstitutionDetail {
 
     @ApiModelProperty(value = "Logged user's roles on product", required = true)
     @JsonProperty(value = "user_product_roles", required = true)
-    private Collection<String> userProductRoles;
+    private List<@NotBlank String> userProductRoles;
 
     @ApiModelProperty(value = "GPS, SCP, PT optional data")
     @JsonProperty(value = "company_informations")

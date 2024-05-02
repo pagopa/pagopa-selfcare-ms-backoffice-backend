@@ -5,6 +5,10 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.*;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Optional;
+
 public class ConvertInstitutionInfoToInstitutionResource implements Converter<InstitutionInfo, InstitutionDetail> {
 
 
@@ -67,7 +71,9 @@ public class ConvertInstitutionInfoToInstitutionResource implements Converter<In
             resource.setOrigin(model.getOrigin());
             resource.setOriginId(model.getOriginId());
             resource.setTaxCode(model.getTaxCode());
-            resource.setUserProductRoles(model.getUserProductRoles());
+            resource.setUserProductRoles(Optional.ofNullable(model.getUserProductRoles()).orElse(new ArrayList<>()).stream()
+                    .filter(Objects::nonNull)
+                    .toList());
             if(model.getBilling() != null) {
                 resource.setRecipientCode(model.getBilling().getRecipientCode());
             }

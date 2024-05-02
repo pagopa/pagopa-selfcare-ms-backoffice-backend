@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -11,6 +13,8 @@ import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@SuperBuilder
+@NoArgsConstructor
 public class PaymentServiceProvidersResource {
 
     @JsonProperty("payment_service_providers")

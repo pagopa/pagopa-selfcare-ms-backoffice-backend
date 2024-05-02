@@ -1,11 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.BrokerPspDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.BrokerPspDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.BrokersPspResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResourceList;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProvidersResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.service.PspBrokerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,14 +14,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -43,13 +37,30 @@ class PspBrokerControllerTest {
     @BeforeEach
     void setUp() {
         when(pspBrokerService.getBrokersForPSP(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(new BrokersPspResource());
-        when(pspBrokerService.getBrokerForPsp(anyString())).thenReturn(new BrokerPspDetailsResource());
-        when(pspBrokerService.createBrokerForPSP(any())).thenReturn(new BrokerPspDetailsResource());
+                .thenReturn(BrokersPspResource.builder()
+                        .brokerPspList(List.of())
+                        .pageInfo(PageInfo.builder().build())
+                        .build()
+                );
+        when(pspBrokerService.getBrokerForPsp(anyString())).thenReturn(BrokerPspDetailsResource.builder()
+                        .brokerPspCode("1")
+                        .description("description")
+                        .enabled(true)
+                        .extendedFaultBean(true)
+                .build());
+        when(pspBrokerService.createBrokerForPSP(any())).thenReturn(BrokerPspDetailsResource.builder()
+                .brokerPspCode("1")
+                .description("description")
+                .enabled(true)
+                .extendedFaultBean(true)
+                .build());
         when(pspBrokerService.getChannelByBroker(anyString(), anyString(), anyInt(), anyInt()))
                 .thenReturn(new ChannelDetailsResourceList());
         when(pspBrokerService.getPSPAssociatedToBroker(anyString(), anyInt(), anyInt()))
-                .thenReturn(new PaymentServiceProvidersResource());
+                .thenReturn(PaymentServiceProvidersResource.builder()
+                        .paymentServiceProviderList(List.of())
+                        .pageInfo(PageInfo.builder().build())
+                        .build());
     }
 
     @Test

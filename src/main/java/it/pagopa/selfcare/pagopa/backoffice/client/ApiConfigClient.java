@@ -7,14 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.configuration.PaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.configuration.WfespPluginConfs;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.BrokerPspDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.BrokersPsp;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelPspList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviderDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviders;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
@@ -29,25 +22,22 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @FeignClient(name = "api-config", url = "${rest-client.api-config.base-url}", configuration = ApiConfigFeignConfig.class)
 public interface ApiConfigClient {
 
     @PutMapping(value = "/brokers/{brokercode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     BrokerDetails updateBrokerEc(@RequestBody BrokerDetails brokerDetails, @PathVariable("brokercode") String brokerCode);
 
 
     @GetMapping(value = "/brokerspsp", produces = MediaType.APPLICATION_JSON_VALUE)
     @RequestLine("getBrokersPsp")
+    @Valid
     BrokersPsp getBrokersPsp(@RequestParam(required = false, defaultValue = "50") Integer limit,
                              @RequestParam(required = true) Integer page,
                              @RequestParam(required = false, name = "code") String filterByCode,
@@ -56,9 +46,11 @@ public interface ApiConfigClient {
                              @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort);
 
     @GetMapping(value = "/brokerspsp/{brokerpspcode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     BrokerPspDetails getBrokerPsp(@RequestParam(required = false, name = "brokerpspcode") String brokerpspcode);
 
     @GetMapping(value = "/channels", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     Channels getChannels(@RequestParam(required = false, defaultValue = "50") Integer limit,
                          @RequestParam(required = true) Integer page,
                          @RequestParam(required = false) String code,
@@ -66,34 +58,43 @@ public interface ApiConfigClient {
                          @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort);
 
     @PostMapping(value = "/channels", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     ChannelDetails createChannel(@RequestBody @NotNull ChannelDetails detailsDto);
 
     @PutMapping(value = "/channels/{channelcode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     ChannelDetails updateChannel(@RequestBody ChannelDetails channelDetails,
                                  @PathVariable("channelcode") String channelCode);
 
     @GetMapping(value = "/channels/{channelcode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     ChannelDetails getChannelDetails(@PathVariable("channelcode") String channelcode);
 
     @PostMapping(value = "/channels/{channelcode}/paymenttypes", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     PspChannelPaymentTypes createChannelPaymentType(@RequestBody PspChannelPaymentTypes pspChannelPaymentTypes,
                                                     @PathVariable("channelcode") String channelCode);
 
     @GetMapping(value = "/configuration/paymenttypes", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     PaymentTypes getPaymentTypes();
 
 
     @GetMapping(value = "/channels/{channelcode}/paymenttypes", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     PspChannelPaymentTypes getChannelPaymentTypes(@PathVariable("channelcode") String channelCode);
 
     @DeleteMapping(value = "/channels/{channelcode}/paymenttypes/{paymenttypecode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     void deleteChannelPaymentType(@PathVariable("channelcode") String channelCode,
                                   @PathVariable("paymenttypecode") String paymentTypeCode);
 
     @DeleteMapping(value = "/paymentserviceproviders/{pspcode}/channels/{channelcode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     void deletePaymentServiceProvidersChannels(@PathVariable("pspcode") String pspCode, @PathVariable("channelcode") String channelCode);
 
     @PutMapping(value = "/paymentserviceproviders/{pspcode}/channels/{channelcode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     PspChannelPaymentTypes updatePaymentServiceProvidersChannels(@PathVariable("pspcode") String pspCode, @PathVariable("channelcode") String channelCode,
                                                                  @RequestBody PspChannelPaymentTypes pspChannelPaymentTypes);
 
@@ -101,6 +102,7 @@ public interface ApiConfigClient {
     void deleteChannel(@PathVariable("channelcode") String channelCode);
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     Stations getStations(@RequestParam(required = false, defaultValue = "50") Integer limit,
                          @RequestParam(required = true) Integer page,
                          @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort,
@@ -109,27 +111,33 @@ public interface ApiConfigClient {
                          @RequestParam(required = false) String code);
 
     @GetMapping(value = "/stations/{stationcode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     StationDetails getStation(@PathVariable("stationcode") String stationCode);
 
     @PostMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     StationDetails createStation(@RequestBody @NotNull StationDetails stationDetails);
 
     @GetMapping(value = "/brokerspsp/{brokerpspcode}/paymentserviceproviders", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     PaymentServiceProviders getPspBrokerPsp(@RequestParam(required = false, defaultValue = "50") Integer limit,
                                             @RequestParam Integer page,
                                             @PathVariable("brokerpspcode") String brokerPspCode);
 
     @GetMapping(value = "/channels/csv", produces = {MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @Valid
     Resource getChannelsCSV();
 
 
     @GetMapping(value = "/channels/{channelcode}/paymentserviceproviders", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     ChannelPspList getChannelPaymentServiceProviders(@PathVariable("channelcode") String channelcode,
                                                      @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                      @RequestParam Integer page,
                                                      @RequestParam("pspName") String pspName);
 
     @GetMapping(value = "/paymentserviceproviders", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     PaymentServiceProviders getPaymentServiceProviders(@RequestParam(required = false, defaultValue = "50") Integer limit,
                                                        @RequestParam(required = false) Integer page,
                                                        @RequestParam(required = false) String code,
@@ -137,29 +145,37 @@ public interface ApiConfigClient {
                                                        @RequestParam(required = false) String taxCode);
 
     @PostMapping(value = "/brokerspsp", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     BrokerPspDetails createBrokerPsp(@RequestBody BrokerPspDetails brokerPspDetails);
 
     @PostMapping(value = "/paymentserviceproviders", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     PaymentServiceProviderDetails createPaymentServiceProvider(PaymentServiceProviderDetails paymentServiceProviderDetails);
 
 
     @GetMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     CreditorInstitutionStations getEcStations(@PathVariable("creditorinstitutioncode") String ecCode);
 
     @PostMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     CreditorInstitutionStationEdit createCreditorInstitutionStationRelationship(@PathVariable("creditorinstitutioncode") String ecCode,
                                                                                 @RequestBody CreditorInstitutionStationEdit station);
 
     @GetMapping(value = "/paymentserviceproviders/{pspcode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     PaymentServiceProviderDetails getPSPDetails(@PathVariable("pspcode") String pspCode);
 
     @PostMapping(value = "/creditorinstitutions")
+    @Valid
     CreditorInstitutionDetails createCreditorInstitution(@RequestBody CreditorInstitutionDetails request);
 
     @GetMapping(value = "/creditorinstitutions/{creditorinstitutioncode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     CreditorInstitutionDetails getCreditorInstitutionDetails(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode);
 
     @GetMapping(value = "/creditorinstitutions", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     CreditorInstitutions getCreditorInstitutions(@RequestParam(required = false, defaultValue = "50") Integer limit,
                                                  @RequestParam(required = true) Integer page,
                                                  @RequestParam(required = false, name = "code") String ecCode,
@@ -167,24 +183,30 @@ public interface ApiConfigClient {
                                                  @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sorting);
 
     @PutMapping(value = "/creditorinstitutions/{creditorinstitutioncode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     CreditorInstitutionDetails updateCreditorInstitutionDetails(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
                                                                 @RequestBody CreditorInstitutionDetails request);
 
     @GetMapping(value = "/brokers/{brokercode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     BrokerDetails getBroker(@RequestParam(required = false, name = "brokercode") String brokerCode);
 
     @PostMapping(value = "/brokers", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     BrokerDetails createBroker(@RequestBody BrokerDetails request);
 
 
     @PutMapping(value = "/stations/{stationcode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     StationDetails updateStation(@PathVariable("stationcode") String stationCode,
                                  @RequestBody StationDetails stationDetails);
 
     @GetMapping(value = "/configuration/wfespplugins", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     WfespPluginConfs getWfespPlugins();
 
     @GetMapping(value = "/stations/{stationcode}/creditorinstitutions", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     CreditorInstitutions getCreditorInstitutionsByStation(@PathVariable(required = false, name = "stationcode") String stationcode,
                                                           @RequestParam(required = false, defaultValue = "50") Integer limit,
                                                           @RequestParam Integer page,
@@ -195,21 +217,25 @@ public interface ApiConfigClient {
                                                       @PathVariable(required = false, name = "stationcode") String stationcode);
 
     @GetMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/ibans/list")
+    @Valid
     Ibans getCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
                                       @RequestParam String label);
 
     @PostMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/ibans", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     IbanCreateApiconfig createCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
                                                        @RequestBody IbanCreateApiconfig ibanCreate);
 
 
     @PutMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/ibans/{ibanId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     IbanCreateApiconfig updateCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
                                                        @PathVariable("ibanId") String ibanId,
                                                        @RequestBody IbanCreateApiconfig ibanCreate);
 
 
     @DeleteMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/ibans/{ibanValue}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     void deleteCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode") String creditorinstitutioncode,
                                         @PathVariable("ibanValue") String ibanValue);
 
@@ -219,6 +245,7 @@ public interface ApiConfigClient {
             exclude = FeignException.FeignClientException.class,
             maxAttemptsExpression = "${retry.utils.maxAttempts}",
             backoff = @Backoff(delayExpression = "${retry.utils.maxDelay}"))
+    @Valid
     Brokers getBrokersEC(@RequestParam(required = false, defaultValue = "50") Integer limit,
                          @RequestParam Integer page,
                          @RequestParam(required = false) String code,
@@ -227,10 +254,12 @@ public interface ApiConfigClient {
                          @RequestParam(required = false, defaultValue = "DESC") String ordering);
 
     @PutMapping(value = "/paymentserviceproviders/{pspcode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     PaymentServiceProviderDetails updatePSP(@PathVariable("pspcode") String pspcode,
                                             @RequestBody PaymentServiceProviderDetails paymentServiceProviderDetails);
 
     @PutMapping(value = "/brokerspsp/{brokerpspcode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
     BrokerPspDetails updateBrokerPSP(@PathVariable("brokerpspcode") String brokerpspcode,
                                      @RequestBody BrokerPspDetails brokerPspDetails);
 
@@ -239,6 +268,7 @@ public interface ApiConfigClient {
             exclude = FeignException.FeignClientException.class,
             maxAttemptsExpression = "${retry.utils.maxAttempts}",
             backoff = @Backoff(delayExpression = "${retry.utils.maxDelay}"))
+    @Valid
     CreditorInstitutionsView getCreditorInstitutionsAssociatedToBrokerStations(
             @RequestParam(required = false, defaultValue = "50") Integer limit,
             @RequestParam Integer page,

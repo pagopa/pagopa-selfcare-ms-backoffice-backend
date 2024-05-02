@@ -16,6 +16,9 @@ public enum AppError {
     FORBIDDEN(HttpStatus.FORBIDDEN, "Forbidden", "This method is forbidden"),
     RESPONSE_NOT_READABLE(HttpStatus.BAD_GATEWAY, "Response Not Readable", "The response body is not readable"),
     BAD_GATEWAY(HttpStatus.BAD_GATEWAY, "Error with external dependency", "%s"),
+
+    OUR_RESPONSE_NOT_VALID(HttpStatus.INTERNAL_SERVER_ERROR, "Response is not compliance with our Openapi", "%s"),
+    DEPENDENCY_RESPONSE_NOT_VALID(HttpStatus.BAD_GATEWAY, "Dependency Response is not valid", "dependency %s: %s"),
     SELFCARE_ROLE_NOT_FOUND(HttpStatus.BAD_GATEWAY, "SelfCare Role Not Found", "Unexpected role %s for %s institution from Selfcare response"),
 
     ACTOR_NOT_FOUND(HttpStatus.NOT_FOUND, "Actor Not Found", "No Broker and No CreditorInstitution found with code %s"),

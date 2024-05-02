@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @FeignClient(name = "external-api", url = "${rest-client.external-api.base-url}", configuration = ExternalFeignConfig.class)
@@ -22,22 +23,27 @@ public interface ExternalApiClient {
 
     @GetMapping(value = "/institutions/{institutionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
+    @Valid
     InstitutionResponse getInstitution(@PathVariable(value = "institutionId") String id);
 
     @GetMapping(value = "/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
+    @Valid
     List<InstitutionInfo> getInstitutions(@RequestParam(value = "userIdForAuth") String userIdForAuth);
 
     @GetMapping(value = "/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
+    @Valid
     Institutions getInstitutionsFiltered(@RequestParam(value = "taxCode") String institutionTaxCode);
 
     @GetMapping(value = "/institutions/{institutionId}/products", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
+    @Valid
     List<Product> getInstitutionUserProducts(@PathVariable(value = "institutionId") String institutionId, @RequestParam(value = "userId") String userId);
 
     @GetMapping(value = "/institutions/{institution-id}/users", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
+    @Valid
     List<InstitutionProductUsers> getInstitutionProductUsers(
             @PathVariable(value = "institution-id") String id,
             @RequestParam(required = false) String userIdForAuth,
@@ -48,5 +54,6 @@ public interface ExternalApiClient {
     @GetMapping(value = "/delegations", produces = MediaType.APPLICATION_JSON_VALUE)
     @Cacheable(cacheNames = "getBrokerDelegation")
     @ResponseBody
+    @Valid
     List<DelegationExternal> getBrokerDelegation(@RequestParam String institutionId, @RequestParam String brokerId, @RequestParam String productId, @RequestParam String mode);
 }
