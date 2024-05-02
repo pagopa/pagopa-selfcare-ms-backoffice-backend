@@ -116,7 +116,7 @@ public interface GecClient {
     @GetMapping(value = "/psps/{psp-code}/requests")
     @ResponseBody
     @Valid
-    PspRequests getPublicBundleSubscriptionRequestByPSP(
+    PublicBundleRequests getPublicBundleSubscriptionRequestByPSP(
             @PathVariable("psp-code") String pspCode,
             @RequestParam(name = "ciFiscalCode", required = false) String ciTaxCode,
             @RequestParam(required = false) String idBundle,
@@ -150,5 +150,22 @@ public interface GecClient {
     void deleteCIBundle(
             @PathVariable("ci-tax-code") String ciTaxCode,
             @PathVariable("id-bundle") String idBundle
+    );
+
+    @GetMapping(value = "/cis/{ci-tax-code}/bundles/{id-bundle}")
+    @ResponseBody
+    Bundle getCIBundle(
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @PathVariable("id-bundle") String idBundle
+    );
+
+    @GetMapping(value = "/cis/{ci-tax-code}/request")
+    @ResponseBody
+    PublicBundleRequests getCIPublicBundleRequest(
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @RequestParam(required = false) String pspCode,
+            @RequestParam(required = false) String idBundle,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer page
     );
 }
