@@ -3,8 +3,12 @@ package it.pagopa.selfcare.pagopa.backoffice.model.channels;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@SuperBuilder
+@NoArgsConstructor
 public class PaymentServiceProviderDetailsResource extends PaymentServiceProviderResource {
 
     @JsonProperty("abi")

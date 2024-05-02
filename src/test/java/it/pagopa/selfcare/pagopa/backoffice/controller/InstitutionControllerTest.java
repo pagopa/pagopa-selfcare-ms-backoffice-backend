@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
 import it.pagopa.selfcare.pagopa.backoffice.service.ApiManagementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -42,9 +44,24 @@ class InstitutionControllerTest {
     @BeforeEach
     void setUp() {
         when(apiManagementService.getInstitution(anyString()))
-                .thenReturn(new Institution());
+                .thenReturn(Institution.builder()
+                        .id("1")
+                        .taxCode("123")
+                        .description("description")
+                        .zipCode("123")
+                        .externalId("1")
+                        .institutionType(InstitutionType.PA)
+                        .origin("origin")
+                        .originId("1")
+                        .attributes(List.of())
+                        .build());
         when(apiManagementService.getInstitutions(null))
-                .thenReturn(Collections.singletonList(new InstitutionDetail()));
+                .thenReturn(Collections.singletonList(InstitutionDetail.builder()
+                                .id("1")
+                                .description("some description")
+                                .originId("1")
+                                .institutionType(InstitutionType.PA)
+                        .build()));
         when(apiManagementService.getBrokerDelegation(anyString(),anyString(),any()))
                 .thenReturn(Collections.singletonList(new Delegation()));
         when(apiManagementService.getInstitutionProducts(anyString()))

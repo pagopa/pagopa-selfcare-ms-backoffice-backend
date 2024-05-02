@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.service.CommissionBundleService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,7 +48,10 @@ class CommissionBundleControllerTest {
     void getBundlesPaymentTypesWithDefaultParamsOK() throws Exception {
         String url = "/bundles/payment-types";
         when(service.getBundlesPaymentTypes(50, 0)).thenReturn(
-                new BundlePaymentTypes()
+                BundlePaymentTypes.builder()
+                        .paymentTypes(new ArrayList<>())
+                        .pageInfo(PageInfo.builder().build())
+                        .build()
         );
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -59,7 +64,10 @@ class CommissionBundleControllerTest {
         int limit = 25;
         int page = 2;
         when(service.getBundlesPaymentTypes(limit, page)).thenReturn(
-                new BundlePaymentTypes()
+                BundlePaymentTypes.builder()
+                        .paymentTypes(new ArrayList<>())
+                        .pageInfo(PageInfo.builder().build())
+                        .build()
         );
         mvc.perform(get(url)
                         .param("limit", String.valueOf(limit))

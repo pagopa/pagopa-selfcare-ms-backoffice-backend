@@ -1,13 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.BrokerOrPspDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelCodeResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProviderDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProviderDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProvidersResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.service.PaymentServiceProviderService;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,15 +15,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -50,17 +41,30 @@ class PaymentServiceProviderControllerTest {
     @BeforeEach
     void setUp() {
         when(pspServiceMock.getPaymentServiceProviders(anyInt(), anyInt(), anyString(), anyString(), anyString()))
-                .thenReturn(new PaymentServiceProvidersResource());
+                .thenReturn(PaymentServiceProvidersResource.builder()
+                        .paymentServiceProviderList(List.of())
+                        .pageInfo(PageInfo.builder().build())
+                        .build());
         when(pspServiceMock.getBrokerAndPspDetails(anyString()))
                 .thenReturn(new BrokerOrPspDetailsResource());
         when(pspServiceMock.getPSPChannels(anyString()))
-                .thenReturn(new PspChannelsResource());
+                .thenReturn(PspChannelsResource.builder()
+                        .channelsList(List.of())
+                        .build());
         when(pspServiceMock.getFirstValidChannelCode(anyString(), anyBoolean()))
                 .thenReturn(new ChannelCodeResource(""));
         when(pspServiceMock.createPSP(any(), anyBoolean()))
-                .thenReturn(new PaymentServiceProviderDetailsResource());
+                .thenReturn(PaymentServiceProviderDetailsResource.builder()
+                        .enabled(true)
+                        .businessName("name")
+                        .pspCode("1")
+                        .build());
         when(pspServiceMock.updatePSP(anyString(), any()))
-                .thenReturn(new PaymentServiceProviderDetailsResource());
+                .thenReturn(PaymentServiceProviderDetailsResource.builder()
+                        .enabled(true)
+                        .businessName("name")
+                        .pspCode("1")
+                        .build());
         when(pspServiceMock.updatePSPChannel(anyString(), anyString(), any()))
                 .thenReturn(new PspChannelPaymentTypesResource());
     }

@@ -1,21 +1,29 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.institutions.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
 
-import java.util.Collection;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
+@Builder
 public class InstitutionInfo {
 
+    @NotNull
     private String id;
 
     private String description;
 
+    @NotNull
     private String externalId;
 
+    @NotNull
     private String originId;
 
+    @NotNull
     private InstitutionType institutionType;
 
     private String digitalAddress;
@@ -32,7 +40,8 @@ public class InstitutionInfo {
 
     private Billing billing;
 
-    private Collection<String> userProductRoles;
+    @NotNull
+    private List<@NotBlank String> userProductRoles;
 
     @JsonProperty("companyInformations")
     private BusinessData businessData;

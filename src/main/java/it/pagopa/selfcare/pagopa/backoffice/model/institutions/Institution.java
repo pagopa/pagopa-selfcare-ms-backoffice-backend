@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -64,10 +65,12 @@ public class Institution {
     @ApiModelProperty(value = "Institution's type", required = true)
     @JsonProperty(value = "institution_type", required = true)
     @NotNull
+    @Valid
     private InstitutionType institutionType;
 
     @ApiModelProperty(value = "Institution's attributes", required = true)
     @JsonProperty(required = true)
     @NotNull
-    private List<Attribute> attributes;
+    @Valid
+    private List<   @Valid Attribute> attributes;
 }

@@ -51,7 +51,9 @@ class ApiManagementServiceTest {
     @Test
     void getInstitutions() {
         when(externalApiClient.getInstitutions(any()))
-                .thenReturn(Collections.singletonList(new InstitutionInfo()));
+                .thenReturn(Collections.singletonList(InstitutionInfo.builder()
+                                .userProductRoles(List.of("admin"))
+                        .build()));
         List<InstitutionDetail> institutions = service.getInstitutions(null);
         assertNotNull(institutions);
         assertFalse(institutions.isEmpty());

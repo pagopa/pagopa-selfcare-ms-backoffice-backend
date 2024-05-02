@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @FeignClient(name = "taxonomy", url = "${rest-client.taxonomy.base-url}", configuration = TaxonomyFeignConfig.class)
@@ -14,6 +15,7 @@ public interface TaxonomyClient {
 
     @GetMapping(value = "/taxonomy", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
+    @Valid
     List<TaxonomyDTO> getTaxonomies();
 
 }
