@@ -17,9 +17,9 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiBundleAttribute;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspRequests;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreditorInstitutionInfo;
@@ -31,7 +31,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -200,8 +199,7 @@ class CommissionBundleServiceTest {
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
 
         BundlesResource bundlesResource = assertDoesNotThrow(
-                () -> sut.getCisBundles(
-                        Collections.singletonList(BundleType.PRIVATE), CI_TAX_CODE, "name", 10, 0));
+                () -> sut.getCIBundles(BundleType.PRIVATE, CI_TAX_CODE, "name", 10, 0));
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
@@ -228,7 +226,7 @@ class CommissionBundleServiceTest {
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
 
         BundlesResource bundlesResource = assertDoesNotThrow(
-                () -> sut.getCisBundles(
+                () -> sut.getCIBundles(
                         null, CI_TAX_CODE, "name", 10, 0));
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
@@ -252,7 +250,7 @@ class CommissionBundleServiceTest {
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
 
         BundlesResource bundlesResource = assertDoesNotThrow(
-                () -> sut.getCisBundles(Collections.singletonList(BundleType.GLOBAL), null, "bundleName", 10, 0));
+                () -> sut.getCIBundles(BundleType.GLOBAL, null, "bundleName", 10, 0));
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
@@ -395,10 +393,10 @@ class CommissionBundleServiceTest {
 
     @Test
     void getPublicBundleCISubscriptionsWaiting() {
-        PspRequests pspRequests = PspRequests.builder()
+        PublicBundleRequests publicBundleRequests = PublicBundleRequests.builder()
                 .requestsList(
                         Collections.singletonList(
-                                PspBundleRequest.builder()
+                                PublicBundleRequest.builder()
                                         .ciFiscalCode(CI_TAX_CODE)
                                         .build()
                         )
@@ -409,7 +407,7 @@ class CommissionBundleServiceTest {
 
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
         when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, LIMIT, PAGE))
-                .thenReturn(pspRequests);
+                .thenReturn(publicBundleRequests);
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(Collections.singletonList(CI_TAX_CODE)))
                 .thenReturn(Collections.singletonList(ciInfo));
 
@@ -480,7 +478,7 @@ class CommissionBundleServiceTest {
 
     @Test
     void getPublicBundleCISubscriptionsDetailWaiting() {
-        PspRequests pspRequests = buildPspRequests();
+        PublicBundleRequests publicBundleRequests = buildPspRequests();
         Taxonomy taxonomy = Taxonomy.builder()
                 .serviceType(SERVICE_TYPE)
                 .specificBuiltInData(TRANSFER_CATEGORY)
@@ -488,7 +486,7 @@ class CommissionBundleServiceTest {
 
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
         when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, PAGE))
-                .thenReturn(pspRequests);
+                .thenReturn(publicBundleRequests);
         when(taxonomyService.getTaxonomiesByCodes(Collections.singletonList(TRANSFER_CATEGORY)))
                 .thenReturn(Collections.singletonList(taxonomy));
 
@@ -513,13 +511,13 @@ class CommissionBundleServiceTest {
 
     @Test
     void getPublicBundleCISubscriptionsDetailWaitingNoResult() {
-        PspRequests pspRequests = PspRequests.builder()
+        PublicBundleRequests publicBundleRequests = PublicBundleRequests.builder()
                 .requestsList(Collections.emptyList())
                 .build();
 
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
         when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, PAGE))
-                .thenReturn(pspRequests);
+                .thenReturn(publicBundleRequests);
 
         PublicBundleCISubscriptionsDetail result = assertDoesNotThrow(() -> sut
                 .getPublicBundleCISubscriptionsDetail(
@@ -537,11 +535,11 @@ class CommissionBundleServiceTest {
         verify(taxonomyService, never()).getTaxonomiesByCodes(anyList());
     }
 
-    private PspRequests buildPspRequests() {
-        return PspRequests.builder()
+    private PublicBundleRequests buildPspRequests() {
+        return PublicBundleRequests.builder()
                 .requestsList(
                         Collections.singletonList(
-                                PspBundleRequest.builder()
+                                PublicBundleRequest.builder()
                                         .ciBundleAttributes(
                                                 Collections.singletonList(
                                                         PspCiBundleAttribute.builder()
