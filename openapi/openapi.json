@@ -978,7 +978,7 @@
             }
           },
           {
-            "description": "Creditor Institution's tax code",
+            "description": "Creditor institution's tax code, required in case of public bundle, otherwise is optional and used to filter the results",
             "in": "query",
             "name": "ciTaxCode",
             "required": false,
