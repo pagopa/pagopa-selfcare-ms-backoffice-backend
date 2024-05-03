@@ -252,10 +252,12 @@ class CommissionBundleServiceTest {
     void getCIBundlesPublicWithAvailableBundleSuccess() {
         List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
         Bundles bundles = buildBundles(transferCategoryList, BundleType.PUBLIC);
+        PublicBundleRequests requests = new PublicBundleRequests();
+        requests.setPageInfo(PageInfo.builder().totalItems(0L).build());
 
         when(gecClient.getBundles(any(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
         when(gecClient.getCIBundle(CI_TAX_CODE, ID_BUNDLE)).thenThrow(FeignException.NotFound.class);
-        when(gecClient.getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0)).thenThrow(FeignException.NotFound.class);
+        when(gecClient.getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0)).thenReturn(requests);
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
 
@@ -280,10 +282,12 @@ class CommissionBundleServiceTest {
     void getCIBundlesPublicWithRequestedBundleSuccess() {
         List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
         Bundles bundles = buildBundles(transferCategoryList, BundleType.PUBLIC);
+        PublicBundleRequests requests = new PublicBundleRequests();
+        requests.setPageInfo(PageInfo.builder().totalItems(1L).build());
 
         when(gecClient.getBundles(any(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
         when(gecClient.getCIBundle(CI_TAX_CODE, ID_BUNDLE)).thenThrow(FeignException.NotFound.class);
-        when(gecClient.getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0)).thenReturn(new PublicBundleRequests());
+        when(gecClient.getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0)).thenReturn(requests);
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
 

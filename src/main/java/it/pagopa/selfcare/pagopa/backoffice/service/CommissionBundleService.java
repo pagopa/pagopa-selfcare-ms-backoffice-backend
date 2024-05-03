@@ -156,9 +156,9 @@ public class CommissionBundleService {
      * from the repository instance
      *
      * @param bundleType the requested type of bundles
-     * @param ciTaxCode creditor institution's tax code, required in case of {@link BundleType#PUBLIC} otherwise is optional and used to filter the results
-     * @param limit     page limit parameter
-     * @param page      page number parameter
+     * @param ciTaxCode  creditor institution's tax code, required in case of {@link BundleType#PUBLIC} otherwise is optional and used to filter the results
+     * @param limit      page limit parameter
+     * @param page       page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
     public BundlesResource getCIBundles(BundleType bundleType, String ciTaxCode, String name, Integer limit, Integer page) {
@@ -448,12 +448,11 @@ public class CommissionBundleService {
             }
             return CIBundleStatus.ON_REMOVAL;
         } catch (FeignException.NotFound ignore) {
-            try {
-                this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
+            PublicBundleRequests request = this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
+            if (request != null && request.getPageInfo().getTotalItems() != null && request.getPageInfo().getTotalItems() > 0) {
                 return CIBundleStatus.REQUESTED;
-            } catch (FeignException.NotFound ignored) {
-                return CIBundleStatus.AVAILABLE;
             }
+            return CIBundleStatus.AVAILABLE;
         }
     }
 }
