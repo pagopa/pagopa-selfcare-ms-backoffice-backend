@@ -8490,6 +8490,7 @@
         "properties": {
           "ciBundleStatus": {
             "type": "string",
+            "description": "Creditor institution bundle's status",
             "enum": [
               "ENABLED",
               "ON_REMOVAL",
