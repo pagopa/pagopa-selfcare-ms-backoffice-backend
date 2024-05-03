@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationC
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -229,6 +232,20 @@ class CommissionBundleServiceTest {
         verify(gecClient).getBundles(Collections.singletonList(BundleType.GLOBAL), "bundleName", 10, 0);
         verifyNoMoreInteractions(gecClient);
         verify(taxonomyService).getTaxonomiesByCodes(any());
+    }
+
+    @Test
+    void getCIBundlesPublicErrorNoCITaxCodeSpecified() {
+        AppException e = assertThrows(AppException.class,
+                () -> sut.getCIBundles(BundleType.PUBLIC, null, null, 10, 0));
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus());
+
+        verify(gecClient, never()).getBundles(any(), eq(null), anyInt(), anyInt());
+        verify(gecClient, never()).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
+        verify(gecClient, never()).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
+        verify(taxonomyService, never()).getTaxonomiesByCodes(any());
     }
 
     @Test

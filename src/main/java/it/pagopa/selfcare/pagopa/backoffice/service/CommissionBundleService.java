@@ -4,6 +4,8 @@ import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
@@ -35,7 +37,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.time.StopWatch;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +104,12 @@ public class CommissionBundleService {
     ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
         Bundles bundles = this.gecClient.getBundlesByPSP(pspCode, bundleType, name, limit, page);
-        return getBundlesResource(bundles);
+        List<BundleResource> bundlesResource = new ArrayList<>();
+        if (bundles.getBundles() != null) {
+            bundlesResource = getBundlesResource(bundles);
+        }
+        return BundlesResource.builder().bundles(bundlesResource).pageInfo(bundles.getPageInfo()).build();
+
     }
 
     public BundleCreateResponse createPSPBundle(String pspTaxCode, BundleRequest bundle) {
@@ -145,39 +151,35 @@ public class CommissionBundleService {
     }
 
     /**
-     * Retrieve creditor institution paged bundle list, using optionally a filter by creditor institution tax code,
-     * using a dedicate API. the result contains an expanded version of the bundle, using the taxonomy detail extracted
+     * Retrieve creditor institution paged bundle list of the specified type {@link CIBundleStatus}.
+     * The result contains an expanded version of the bundle, using the taxonomy detail extracted
      * from the repository instance
      *
-     * @param ciTaxCode optional parameter used for filter by creditor institution tax code
+     * @param bundleType the requested type of bundles
+     * @param ciTaxCode creditor institution's tax code, required in case of {@link BundleType#PUBLIC} otherwise is optional and used to filter the results
      * @param limit     page limit parameter
      * @param page      page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
     public BundlesResource getCIBundles(BundleType bundleType, String ciTaxCode, String name, Integer limit, Integer page) {
+        List<BundleResource> bundlesResource = new ArrayList<>();
+        PageInfo pageInfo = new PageInfo();
+
         List<BundleType> bundleTypes = Collections.singletonList(bundleType);
         if (bundleType.equals(BundleType.GLOBAL) || bundleType.equals(BundleType.PRIVATE)) {
             Bundles bundles = this.gecClient.getBundles(bundleTypes, name, limit, page);
-            return getBundlesResource(bundles);
+            pageInfo = bundles.getPageInfo();
+            bundlesResource = getBundlesResource(bundles);
         } else if (bundleType.equals(BundleType.PUBLIC)) {
-            StopWatch stopWatch = StopWatch.createStarted();
+            if (ciTaxCode == null) {
+                throw new AppException(AppError.BAD_REQUEST,
+                        "Creditor institution's tax code is required to retrieve creditor institution's public bundles");
+            }
             Bundles bundles = gecClient.getBundles(bundleTypes, name, limit, page);
-
-            List<BundleResource> bundleResources = bundles.getBundles().parallelStream()
-                    .map(bundle -> {
-                        BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
-                        bundleResource.setCiBundleStatus(getPublicBundleStatus(ciTaxCode, bundle));
-                        bundleResource.setTransferCategoryList(
-                                this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
-                        );
-                        return bundleResource;
-                    })
-                    .toList();
-            stopWatch.stop();
-            log.info("GET PUBLIC BUNDLE TERMINATED IN {}", stopWatch);
-            return BundlesResource.builder().bundles(bundleResources).pageInfo(bundles.getPageInfo()).build();
+            pageInfo = bundles.getPageInfo();
+            bundlesResource = getPublicBundleResources(ciTaxCode, bundles);
         }
-        return BundlesResource.builder().bundles(Collections.emptyList()).pageInfo(new PageInfo()).build();
+        return BundlesResource.builder().bundles(bundlesResource).pageInfo(pageInfo).build();
     }
 
     /**
@@ -413,17 +415,27 @@ public class CommissionBundleService {
                 .build();
     }
 
-    private BundlesResource getBundlesResource(Bundles bundles) {
-        List<BundleResource> bundleResources = bundles.getBundles() != null ?
-                bundles.getBundles().stream().map(bundle -> {
+    private List<BundleResource> getBundlesResource(Bundles bundles) {
+        return bundles.getBundles().stream().map(bundle -> {
+            BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
+            bundleResource.setTransferCategoryList(
+                    this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
+            );
+            return bundleResource;
+        }).toList();
+    }
+
+    private List<BundleResource> getPublicBundleResources(String ciTaxCode, Bundles bundles) {
+        return bundles.getBundles().parallelStream()
+                .map(bundle -> {
                     BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
+                    bundleResource.setCiBundleStatus(getPublicBundleStatus(ciTaxCode, bundle));
                     bundleResource.setTransferCategoryList(
                             this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
                     );
                     return bundleResource;
-                }).toList() :
-                new ArrayList<>();
-        return BundlesResource.builder().bundles(bundleResources).pageInfo(bundles.getPageInfo()).build();
+                })
+                .toList();
     }
 
     private CIBundleStatus getPublicBundleStatus(String ciTaxCode, Bundle bundle) {

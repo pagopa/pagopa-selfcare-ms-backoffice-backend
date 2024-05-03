@@ -67,7 +67,7 @@ public class CommissionBundleController {
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public BundlesResource getCisBundles(
             @Parameter(description = "Commission bundle's type") @RequestParam BundleType bundleType,
-            @Parameter(description = "Creditor Institution's tax code") @RequestParam(required = false) String ciTaxCode,
+            @Parameter(description = "Creditor institution's tax code, required in case of public bundle, otherwise is optional and used to filter the results") @RequestParam(required = false) String ciTaxCode,
             @Parameter(description = "Commission bundle's name") @RequestParam(required = false) String name,
             @Parameter(description = "Number of elements in one page") @RequestParam(required = false, defaultValue = "50") Integer limit,
             @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") @Min(0) Integer page
