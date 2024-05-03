@@ -160,11 +160,11 @@ public interface GecClient {
             @PathVariable("id-bundle") String idBundle
     );
 
-    @GetMapping(value = "/cis/{ci-tax-code}/request")
+    @GetMapping(value = "/cis/{ci-tax-code}/requests")
     @ResponseBody
     PublicBundleRequests getCIPublicBundleRequest(
             @PathVariable("ci-tax-code") String ciTaxCode,
-            @RequestParam(required = false) String pspCode,
+            @RequestParam(required = false) String idPsp,
             @RequestParam(required = false) String idBundle,
             @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) Integer page
