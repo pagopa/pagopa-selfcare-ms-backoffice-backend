@@ -210,8 +210,8 @@ class CommissionBundleControllerTest {
         );
         mvc.perform(get(url)
                         .param("name", "name")
-                        .param("types", BundleType.PRIVATE.name())
-                        .param("cisTaxCode", CI_TAX_CODE)
+                        .param("bundleType", BundleType.PRIVATE.name())
+                        .param("ciTaxCode", CI_TAX_CODE)
                         .param("limit", String.valueOf(limit))
                         .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -227,6 +227,7 @@ class CommissionBundleControllerTest {
                 new BundlesResource()
         );
         mvc.perform(get(url)
+                        .param("bundleType", BundleType.PRIVATE.name())
                         .param("limit", String.valueOf(limit))
                         .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
