@@ -57,8 +57,8 @@ public class CommissionBundleController {
      * Retrieve creditor institution paged bundle list, expanded with taxonomy data
      *
      * @param ciTaxCode optional parameter used for filter by creditor institution tax code
-     * @param limit      page limit parameter
-     * @param page       page number parameter
+     * @param limit     page limit parameter
+     * @param page      page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
     @GetMapping("/creditor_institutions")

@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
@@ -8,17 +9,19 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiBundleAttribute;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
@@ -43,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.never;
@@ -183,39 +187,162 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void getCIBundlesShouldReturnEmptyResponseWithPrivateBundle() {
+    void getCIBundlesPrivateSuccess() {
+        List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
+        Bundles bundles = buildBundles(transferCategoryList, BundleType.PRIVATE);
+
+        when(gecClient.getBundles(any(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
+        when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(
+                Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
+
         BundlesResource bundlesResource = assertDoesNotThrow(
-                () -> sut.getCIBundles(
-                        BundleType.PRIVATE, CI_TAX_CODE, "name", 10, 0));
+                () -> sut.getCIBundles(BundleType.PRIVATE, CI_TAX_CODE, null, 10, 0));
+
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
-        assertTrue(bundlesResource.getBundles().isEmpty());
-        verify(gecClient, never()).getBundlesByCI(CI_TAX_CODE, 10, 0);
-        verify(taxonomyService, never()).getTaxonomiesByCodes(any());
+        assertEquals(1, bundlesResource.getBundles().size());
+        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+
+        verify(gecClient).getBundles(any(), eq(null), anyInt(), anyInt());
+        verifyNoMoreInteractions(gecClient);
+        verify(taxonomyService).getTaxonomiesByCodes(transferCategoryList);
     }
 
     @Test
     void getCIBundlesShouldReturnExpandedResultFromGlobalAPI() {
-        when(gecClient.getBundles(any(), anyString(), anyInt(), anyInt())).thenReturn(Bundles.builder()
-                .bundles(
-                        Collections.singletonList(Bundle.builder()
-                                .transferCategoryList(Collections.singletonList("test")).build())
-                )
-                .pageInfo(PageInfo.builder().build()
-                ).build());
-        when(taxonomyService.getTaxonomiesByCodes(any())).thenReturn(
+        List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
+        Bundles bundles = buildBundles(transferCategoryList, BundleType.GLOBAL);
+
+        when(gecClient.getBundles(any(), anyString(), anyInt(), anyInt())).thenReturn(bundles);
+        when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
 
         BundlesResource bundlesResource = assertDoesNotThrow(
                 () -> sut.getCIBundles(BundleType.GLOBAL, null, "bundleName", 10, 0));
+
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
         assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+
         verify(gecClient).getBundles(Collections.singletonList(BundleType.GLOBAL), "bundleName", 10, 0);
         verifyNoMoreInteractions(gecClient);
         verify(taxonomyService).getTaxonomiesByCodes(any());
+    }
+
+    @Test
+    void getCIBundlesPublicWithAvailableBundleSuccess() {
+        List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
+        Bundles bundles = buildBundles(transferCategoryList, BundleType.PUBLIC);
+
+        when(gecClient.getBundles(any(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
+        when(gecClient.getCIBundle(CI_TAX_CODE, ID_BUNDLE)).thenThrow(FeignException.NotFound.class);
+        when(gecClient.getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0)).thenThrow(FeignException.NotFound.class);
+        when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(
+                Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
+
+        BundlesResource bundlesResource = assertDoesNotThrow(
+                () -> sut.getCIBundles(BundleType.PUBLIC, CI_TAX_CODE, null, 10, 0));
+
+        assertNotNull(bundlesResource);
+        assertNotNull(bundlesResource.getPageInfo());
+        assertNotNull(bundlesResource.getBundles());
+        assertEquals(1, bundlesResource.getBundles().size());
+        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+        assertEquals(CIBundleStatus.AVAILABLE, bundlesResource.getBundles().get(0).getCiBundleStatus());
+
+        verify(gecClient).getBundles(any(), eq(null), anyInt(), anyInt());
+        verify(gecClient).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
+        verify(gecClient).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
+        verifyNoMoreInteractions(gecClient);
+        verify(taxonomyService).getTaxonomiesByCodes(transferCategoryList);
+    }
+
+    @Test
+    void getCIBundlesPublicWithRequestedBundleSuccess() {
+        List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
+        Bundles bundles = buildBundles(transferCategoryList, BundleType.PUBLIC);
+
+        when(gecClient.getBundles(any(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
+        when(gecClient.getCIBundle(CI_TAX_CODE, ID_BUNDLE)).thenThrow(FeignException.NotFound.class);
+        when(gecClient.getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0)).thenReturn(new PublicBundleRequests());
+        when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(
+                Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
+
+        BundlesResource bundlesResource = assertDoesNotThrow(
+                () -> sut.getCIBundles(BundleType.PUBLIC, CI_TAX_CODE, null, 10, 0));
+
+        assertNotNull(bundlesResource);
+        assertNotNull(bundlesResource.getPageInfo());
+        assertNotNull(bundlesResource.getBundles());
+        assertEquals(1, bundlesResource.getBundles().size());
+        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+        assertEquals(CIBundleStatus.REQUESTED, bundlesResource.getBundles().get(0).getCiBundleStatus());
+
+        verify(gecClient).getBundles(any(), eq(null), anyInt(), anyInt());
+        verify(gecClient).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
+        verify(gecClient).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
+        verifyNoMoreInteractions(gecClient);
+        verify(taxonomyService).getTaxonomiesByCodes(transferCategoryList);
+    }
+
+    @Test
+    void getCIBundlesPublicWithOnRemovalBundleSuccess() {
+        List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
+        Bundles bundles = buildBundles(transferCategoryList, BundleType.PUBLIC);
+        CIBundle ciBundle = new CIBundle();
+        ciBundle.setValidityDateTo(LocalDate.now());
+
+        when(gecClient.getBundles(any(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
+        when(gecClient.getCIBundle(CI_TAX_CODE, ID_BUNDLE)).thenReturn(ciBundle);
+        when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(
+                Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
+
+        BundlesResource bundlesResource = assertDoesNotThrow(
+                () -> sut.getCIBundles(BundleType.PUBLIC, CI_TAX_CODE, null, 10, 0));
+
+        assertNotNull(bundlesResource);
+        assertNotNull(bundlesResource.getPageInfo());
+        assertNotNull(bundlesResource.getBundles());
+        assertEquals(1, bundlesResource.getBundles().size());
+        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+        assertEquals(CIBundleStatus.ON_REMOVAL, bundlesResource.getBundles().get(0).getCiBundleStatus());
+
+        verify(gecClient).getBundles(any(), eq(null), anyInt(), anyInt());
+        verify(gecClient).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
+        verify(gecClient, never()).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
+        verifyNoMoreInteractions(gecClient);
+        verify(taxonomyService).getTaxonomiesByCodes(transferCategoryList);
+    }
+
+    @Test
+    void getCIBundlesPublicWithEnabledBundleSuccess() {
+        List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
+        Bundles bundles = buildBundles(transferCategoryList, BundleType.PUBLIC);
+        CIBundle ciBundle = new CIBundle();
+        ciBundle.setValidityDateTo(LocalDate.now().plusDays(1));
+
+        when(gecClient.getBundles(any(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
+        when(gecClient.getCIBundle(CI_TAX_CODE, ID_BUNDLE)).thenReturn(ciBundle);
+        when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(
+                Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
+
+        BundlesResource bundlesResource = assertDoesNotThrow(
+                () -> sut.getCIBundles(BundleType.PUBLIC, CI_TAX_CODE, null, 10, 0));
+
+        assertNotNull(bundlesResource);
+        assertNotNull(bundlesResource.getPageInfo());
+        assertNotNull(bundlesResource.getBundles());
+        assertEquals(1, bundlesResource.getBundles().size());
+        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+        assertEquals(CIBundleStatus.ENABLED, bundlesResource.getBundles().get(0).getCiBundleStatus());
+
+        verify(gecClient).getBundles(any(), eq(null), anyInt(), anyInt());
+        verify(gecClient).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
+        verify(gecClient, never()).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
+        verifyNoMoreInteractions(gecClient);
+        verify(taxonomyService).getTaxonomiesByCodes(transferCategoryList);
     }
 
     @Test
@@ -493,6 +620,12 @@ class CommissionBundleServiceTest {
         verify(taxonomyService, never()).getTaxonomiesByCodes(anyList());
     }
 
+    @Test
+    void deleteCIBundleSubscriptionSuccess() {
+        assertDoesNotThrow(() ->
+                sut.deleteCIBundleSubscription(CI_TAX_CODE, ID_BUNDLE, "bundleName"));
+    }
+
     private PublicBundleRequests buildPspRequests() {
         return PublicBundleRequests.builder()
                 .requestsList(
@@ -514,12 +647,6 @@ class CommissionBundleServiceTest {
                 .build();
     }
 
-    @Test
-    void deleteCIBundleSubscriptionSuccess() {
-        assertDoesNotThrow(() ->
-                sut.deleteCIBundleSubscription(CI_TAX_CODE, ID_BUNDLE, "bundleName"));
-    }
-
     private CreditorInstitutionInfo buildCIInfo() {
         CreditorInstitutionInfo ciInfo = CreditorInstitutionInfo.builder()
                 .businessName("businessName")
@@ -527,11 +654,27 @@ class CommissionBundleServiceTest {
                 .build();
         return ciInfo;
     }
+
     private PageInfo buildPageInfo() {
         return PageInfo.builder()
                 .limit(LIMIT)
                 .page(PAGE)
                 .totalPages(1)
+                .build();
+    }
+
+    private Bundles buildBundles(List<String> transferCategoryList, BundleType bundleType) {
+        return Bundles.builder()
+                .bundles(
+                        Collections.singletonList(
+                                Bundle.builder()
+                                        .id(ID_BUNDLE)
+                                        .name("ecName")
+                                        .type(bundleType)
+                                        .transferCategoryList(transferCategoryList)
+                                        .build())
+                )
+                .pageInfo(PageInfo.builder().build())
                 .build();
     }
 }
