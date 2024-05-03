@@ -210,31 +210,16 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void getCIBundlesShouldReturnExpandedResultFromFilteredAPIWithoutType() {
-        when(gecClient.getBundlesByCI(any(), any(), any())).thenReturn(Bundles.builder()
-                .bundles(
-                        Collections.singletonList(
-                                Bundle.builder()
-                                        .name("ecName")
-                                        .type(BundleType.PRIVATE)
-                                        .transferCategoryList(Collections.singletonList("test"))
-                                        .build())
-                )
-                .pageInfo(PageInfo.builder().build()
-                ).build());
-        when(taxonomyService.getTaxonomiesByCodes(any())).thenReturn(
-                Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
-
+    void getCIBundlesShouldReturnEmptyResponseWithPrivateBundle() {
         BundlesResource bundlesResource = assertDoesNotThrow(
                 () -> sut.getCIBundles(
-                        null, CI_TAX_CODE, "name", 10, 0));
+                        BundleType.PRIVATE, CI_TAX_CODE, "name", 10, 0));
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
-        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
-        verify(gecClient).getBundlesByCI(CI_TAX_CODE, 10, 0);
-        verifyNoMoreInteractions(gecClient);
-        verify(taxonomyService).getTaxonomiesByCodes(any());
+        assertTrue(bundlesResource.getBundles().isEmpty());
+        verify(gecClient, never()).getBundlesByCI(CI_TAX_CODE, 10, 0);
+        verify(taxonomyService, never()).getTaxonomiesByCodes(any());
     }
 
     @Test
