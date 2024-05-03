@@ -56,7 +56,7 @@ public class CommissionBundleController {
     /**
      * Retrieve creditor institution paged bundle list, expanded with taxonomy data
      *
-     * @param cisTaxCode optional parameter used for filter by creditor institution tax code
+     * @param ciTaxCode optional parameter used for filter by creditor institution tax code
      * @param limit      page limit parameter
      * @param page       page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
@@ -66,13 +66,13 @@ public class CommissionBundleController {
     @Operation(summary = "Get a paginated list of bundles to be used by creditor institutions", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public BundlesResource getCisBundles(
-            @Parameter(description = "Commission bundle's type") @RequestParam List<BundleType> types,
-            @Parameter(description = "Creditor Institution's tax code") @RequestParam(required = false) String cisTaxCode,
+            @Parameter(description = "Commission bundle's type") @RequestParam BundleType bundleType,
+            @Parameter(description = "Creditor Institution's tax code") @RequestParam(required = false) String ciTaxCode,
             @Parameter(description = "Commission bundle's name") @RequestParam(required = false) String name,
             @Parameter(description = "Number of elements in one page") @RequestParam(required = false, defaultValue = "50") Integer limit,
             @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") @Min(0) Integer page
     ) {
-        return commissionBundleService.getCIBundles(types.get(0), cisTaxCode, name, limit, page);
+        return commissionBundleService.getCIBundles(bundleType, ciTaxCode, name, limit, page);
     }
 
     @GetMapping("/payment-types")
