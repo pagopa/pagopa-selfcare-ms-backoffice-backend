@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class CIBundle extends Bundle {

@@ -168,39 +168,48 @@ public class CommissionBundleService {
      * @param page      page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
-    public BundlesResource getCIBundles(BundleType bundleTypes, String ciTaxCode, String name, Integer limit, Integer page) {
-        StopWatch stopWatch = StopWatch.createStarted();
-        Bundles bundles = gecClient.getBundles(Collections.singletonList(bundleTypes), name, limit, page);
+    public BundlesResource getCIBundles(BundleType bundleType, String ciTaxCode, String name, Integer limit, Integer page) {
+        if (bundleType.equals(BundleType.GLOBAL)) {
+            Bundles bundles = this.gecClient.getBundles(Collections.singletonList(bundleType), name, limit, page);
+            return getBundlesResource(bundles);
+        } else if (bundleType.equals(BundleType.PUBLIC)) {
+            StopWatch stopWatch = StopWatch.createStarted();
+            Bundles bundles = gecClient.getBundles(Collections.singletonList(bundleType), name, limit, page);
 
-        List<BundleResource> bundleResources = bundles.getBundles().stream()
-                .map(bundle -> {
-                    BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
-                    try {
-                        CIBundle ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundle.getId());
-                        LocalDate today = LocalDate.now();
-                        LocalDate validityDateTo = ciBundle.getValidityDateTo();
-                        if (validityDateTo == null || validityDateTo.isAfter(today)) {
-                            bundleResource.setCiBundleStatus(CIBundleStatus.ENABLED);
-                        } else {
-                            bundleResource.setCiBundleStatus(CIBundleStatus.ON_REMOVAL);
-                        }
-                    } catch (FeignException.NotFound e) {
-                        try {
-                            this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
-                            bundleResource.setCiBundleStatus(CIBundleStatus.REQUESTED);
-                        } catch (FeignException.NotFound ex) {
-                            bundleResource.setCiBundleStatus(CIBundleStatus.AVAILABLE);
-                        }
-                    }
-                    bundleResource.setTransferCategoryList(
-                            this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
-                    );
-                    return bundleResource;
-                })
-                .toList();
-        stopWatch.stop();
-        log.info("GET PUBLIC BUNDLE TERMINATED IN {}", stopWatch);
-        return BundlesResource.builder().bundles(bundleResources).pageInfo(bundles.getPageInfo()).build();
+            List<BundleResource> bundleResources = bundles.getBundles().stream()
+                    .map(bundle -> {
+                        BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
+                        bundleResource.setCiBundleStatus(getPublicBundleStatus(ciTaxCode, bundle));
+                        bundleResource.setTransferCategoryList(
+                                this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
+                        );
+                        return bundleResource;
+                    })
+                    .toList();
+            stopWatch.stop();
+            log.info("GET PUBLIC BUNDLE TERMINATED IN {}", stopWatch);
+            return BundlesResource.builder().bundles(bundleResources).pageInfo(bundles.getPageInfo()).build();
+        }
+        return BundlesResource.builder().bundles(Collections.emptyList()).pageInfo(new PageInfo()).build();
+    }
+
+    private CIBundleStatus getPublicBundleStatus(String ciTaxCode, Bundle bundle) {
+        try {
+            CIBundle ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundle.getId());
+            LocalDate today = LocalDate.now();
+            LocalDate validityDateTo = ciBundle.getValidityDateTo();
+            if (validityDateTo == null || validityDateTo.isAfter(today)) {
+                return CIBundleStatus.ENABLED;
+            }
+            return CIBundleStatus.ON_REMOVAL;
+        } catch (FeignException.NotFound ignore) {
+            try {
+                this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
+                return CIBundleStatus.REQUESTED;
+            } catch (FeignException.NotFound ignored) {
+                return CIBundleStatus.AVAILABLE;
+            }
+        }
     }
 
     /**
