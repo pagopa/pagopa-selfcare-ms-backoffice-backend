@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.4.20"
+    "version": "2.4.19-3-VAS-974-add-ci-public-bundle-table"
   },
   "servers": [
     {
@@ -966,31 +966,37 @@
           {
             "description": "Commission bundle's type",
             "in": "query",
-            "name": "types",
-            "required": false,
+            "name": "bundleType",
+            "required": true,
             "schema": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": [
-                  "GLOBAL",
-                  "PUBLIC",
-                  "PRIVATE"
-                ]
-              }
+              "type": "string",
+              "enum": [
+                "GLOBAL",
+                "PUBLIC",
+                "PRIVATE"
+              ]
             }
           },
           {
-            "description": "Creditor Institution Tax Code",
+            "description": "Creditor institution's tax code, required in case of public bundle, otherwise is optional and used to filter the results",
             "in": "query",
-            "name": "cisTaxCode",
+            "name": "ciTaxCode",
             "required": false,
             "schema": {
               "type": "string"
             }
           },
           {
-            "description": "Number of elements on one page. Default = 50",
+            "description": "Commission bundle's name",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Number of elements in one page",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -1001,23 +1007,15 @@
             }
           },
           {
-            "description": "Page number. Page value starts from 0",
+            "description": "Page number",
             "in": "query",
             "name": "page",
             "required": false,
             "schema": {
+              "minimum": 0,
               "type": "integer",
               "format": "int32",
               "default": 0
-            }
-          },
-          {
-            "description": "Commission bundle's name",
-            "in": "query",
-            "name": "name",
-            "required": false,
-            "schema": {
-              "type": "string"
             }
           }
         ],
@@ -8490,6 +8488,16 @@
       "BundleResource": {
         "type": "object",
         "properties": {
+          "ciBundleStatus": {
+            "type": "string",
+            "description": "Creditor institution bundle's status",
+            "enum": [
+              "ENABLED",
+              "ON_REMOVAL",
+              "REQUESTED",
+              "AVAILABLE"
+            ]
+          },
           "description": {
             "type": "string"
           },

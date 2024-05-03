@@ -1,14 +1,19 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleFee;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CISubscriptionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
@@ -21,9 +26,9 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiBundleAttribute;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspRequests;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
@@ -99,21 +104,12 @@ public class CommissionBundleService {
     ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
         Bundles bundles = this.gecClient.getBundlesByPSP(pspCode, bundleType, name, limit, page);
-        return getBundlesResource(bundles);
-    }
+        List<BundleResource> bundlesResource = new ArrayList<>();
+        if (bundles.getBundles() != null) {
+            bundlesResource = getBundlesResource(bundles);
+        }
+        return BundlesResource.builder().bundles(bundlesResource).pageInfo(bundles.getPageInfo()).build();
 
-    private BundlesResource getBundlesResource(Bundles bundles) {
-        List<BundleResource> bundleResources = bundles.getBundles() != null ?
-                bundles.getBundles().stream().map(bundle -> {
-                    BundleResource bundleResource = new BundleResource();
-                    BeanUtils.copyProperties(bundle, bundleResource);
-                    bundleResource.setTransferCategoryList(
-                            this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
-                    );
-                    return bundleResource;
-                }).toList() :
-                new ArrayList<>();
-        return BundlesResource.builder().bundles(bundleResources).pageInfo(bundles.getPageInfo()).build();
     }
 
     public BundleCreateResponse createPSPBundle(String pspTaxCode, BundleRequest bundle) {
@@ -155,25 +151,35 @@ public class CommissionBundleService {
     }
 
     /**
-     * Retrieve creditor institution paged bundle list, using optionally a filter by creditor institution tax code,
-     * using a dedicate API. the result contains an expanded version of the bundle, using the taxonomy detail extracted
+     * Retrieve creditor institution paged bundle list of the specified type {@link CIBundleStatus}.
+     * The result contains an expanded version of the bundle, using the taxonomy detail extracted
      * from the repository instance
      *
-     * @param cisTaxCode optional parameter used for filter by creditor institution tax code
+     * @param bundleType the requested type of bundles
+     * @param ciTaxCode  creditor institution's tax code, required in case of {@link BundleType#PUBLIC} otherwise is optional and used to filter the results
      * @param limit      page limit parameter
      * @param page       page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
-    public BundlesResource getCisBundles(List<BundleType> bundleType, String cisTaxCode, String name, Integer limit, Integer page) {
-        Bundles bundles = cisTaxCode != null ?
-                gecClient.getBundlesByCI(cisTaxCode, limit, page) : gecClient.getBundles(bundleType, name, limit, page);
-        if (cisTaxCode != null && (bundleType != null || name != null)) {
-            bundles.setBundles(bundles.getBundles().stream().filter(
-                            item -> (bundleType == null || bundleType.contains(item.getType())) &&
-                                    (name == null || item.getName().toLowerCase().contains(name.toLowerCase())))
-                    .toList());
+    public BundlesResource getCIBundles(BundleType bundleType, String ciTaxCode, String name, Integer limit, Integer page) {
+        List<BundleResource> bundlesResource = new ArrayList<>();
+        PageInfo pageInfo = new PageInfo();
+
+        List<BundleType> bundleTypes = Collections.singletonList(bundleType);
+        if (bundleType.equals(BundleType.GLOBAL) || bundleType.equals(BundleType.PRIVATE)) {
+            Bundles bundles = this.gecClient.getBundles(bundleTypes, name, limit, page);
+            pageInfo = bundles.getPageInfo();
+            bundlesResource = getBundlesResource(bundles);
+        } else if (bundleType.equals(BundleType.PUBLIC)) {
+            if (ciTaxCode == null) {
+                throw new AppException(AppError.BAD_REQUEST,
+                        "Creditor institution's tax code is required to retrieve creditor institution's public bundles");
+            }
+            Bundles bundles = gecClient.getBundles(bundleTypes, name, limit, page);
+            pageInfo = bundles.getPageInfo();
+            bundlesResource = getPublicBundleResources(ciTaxCode, bundles);
         }
-        return getBundlesResource(bundles);
+        return BundlesResource.builder().bundles(bundlesResource).pageInfo(pageInfo).build();
     }
 
     /**
@@ -219,7 +225,7 @@ public class CommissionBundleService {
             ciSubscriptionInfoList = buildCISubscriptionInfoList(ciInfoList, acceptedSubscription);
             pageInfo = acceptedSubscription.getPageInfo();
         } else {
-            PspRequests subscriptionRequest = this.gecClient
+            PublicBundleRequests subscriptionRequest = this.gecClient
                     .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, limit, page);
 
             List<CreditorInstitutionInfo> ciInfoList = getCIInfo(subscriptionRequest);
@@ -262,15 +268,15 @@ public class CommissionBundleService {
             ciBundleFeeList = getBundleFeeList(ciBundleDetails, taxonomies);
             idCIBundle = ciBundleDetails.getIdCIBundle();
         } else {
-            PspRequests subscriptionRequest = this.gecClient
+            PublicBundleRequests subscriptionRequest = this.gecClient
                     .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, 1, 0);
 
             if (!subscriptionRequest.getRequestsList().isEmpty()) {
-                PspBundleRequest pspBundleRequest = subscriptionRequest.getRequestsList().get(0);
-                List<Taxonomy> taxonomies = getTaxonomiesByPSPBundleRequest(pspBundleRequest);
+                PublicBundleRequest publicBundleRequest = subscriptionRequest.getRequestsList().get(0);
+                List<Taxonomy> taxonomies = getTaxonomiesByPSPBundleRequest(publicBundleRequest);
 
-                ciBundleFeeList = getCiBundleFeeList(pspBundleRequest, taxonomies);
-                bundleRequestId = pspBundleRequest.getId();
+                ciBundleFeeList = getCiBundleFeeList(publicBundleRequest, taxonomies);
+                bundleRequestId = publicBundleRequest.getId();
             }
         }
 
@@ -315,23 +321,29 @@ public class CommissionBundleService {
         return context;
     }
 
-    private List<CISubscriptionInfo> buildCISubscriptionInfoList(List<CreditorInstitutionInfo> ciInfoList, BundleCreditorInstitutionResource acceptedSubscription) {
+    private List<CISubscriptionInfo> buildCISubscriptionInfoList(
+            List<CreditorInstitutionInfo> ciInfoList,
+            BundleCreditorInstitutionResource acceptedSubscription
+    ) {
         LocalDate today = LocalDate.now();
 
         return ciInfoList.parallelStream()
                 .map(ciInfo -> {
                     CISubscriptionInfo subscriptionInfo = this.modelMapper.map(ciInfo, CISubscriptionInfo.class);
-                    LocalDate validityDateTo = acceptedSubscription.getCiBundleDetails().stream()
-                            .filter(s -> s.getCiTaxCode().equals(ciInfo.getCiTaxCode()))
-                            .findFirst()
-                            .orElse(new CiBundleDetails())
-                            .getValidityDateTo();
-
-                    subscriptionInfo.setOnRemoval(validityDateTo != null && (validityDateTo.isBefore(today) || validityDateTo.isEqual(today)));
-
+                    subscriptionInfo.setOnRemoval(isOnRemoval(acceptedSubscription, ciInfo, today));
                     return subscriptionInfo;
                 })
                 .toList();
+    }
+
+    private boolean isOnRemoval(BundleCreditorInstitutionResource acceptedSubscription, CreditorInstitutionInfo ciInfo, LocalDate today) {
+        LocalDate validityDateTo = acceptedSubscription.getCiBundleDetails().stream()
+                .filter(s -> s.getCiTaxCode().equals(ciInfo.getCiTaxCode()))
+                .findFirst()
+                .orElse(new CiBundleDetails())
+                .getValidityDateTo();
+
+        return validityDateTo != null && (validityDateTo.isBefore(today) || validityDateTo.isEqual(today));
     }
 
     private List<CISubscriptionInfo> buildCISubscriptionInfoList(List<CreditorInstitutionInfo> ciInfoList) {
@@ -340,8 +352,8 @@ public class CommissionBundleService {
                 .toList();
     }
 
-    private List<CIBundleFee> getCiBundleFeeList(PspBundleRequest pspBundleRequest, List<Taxonomy> taxonomies) {
-        return pspBundleRequest.getCiBundleAttributes().parallelStream()
+    private List<CIBundleFee> getCiBundleFeeList(PublicBundleRequest publicBundleRequest, List<Taxonomy> taxonomies) {
+        return publicBundleRequest.getCiBundleAttributes().parallelStream()
                 .map(attribute -> buildCIBundleFee(
                         attribute.getMaxPaymentAmount(),
                         attribute.getTransferCategory(),
@@ -367,15 +379,15 @@ public class CommissionBundleService {
         return this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(taxCodeList);
     }
 
-    private List<CreditorInstitutionInfo> getCIInfo(PspRequests subscriptionRequest) {
+    private List<CreditorInstitutionInfo> getCIInfo(PublicBundleRequests subscriptionRequest) {
         List<String> taxCodeList = subscriptionRequest.getRequestsList().parallelStream()
-                .map(PspBundleRequest::getCiFiscalCode)
+                .map(PublicBundleRequest::getCiFiscalCode)
                 .toList();
         return this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(taxCodeList);
     }
 
-    private List<Taxonomy> getTaxonomiesByPSPBundleRequest(PspBundleRequest pspBundleRequest) {
-        List<String> transferCategoryList = pspBundleRequest
+    private List<Taxonomy> getTaxonomiesByPSPBundleRequest(PublicBundleRequest publicBundleRequest) {
+        List<String> transferCategoryList = publicBundleRequest
                 .getCiBundleAttributes().parallelStream()
                 .map(PspCiBundleAttribute::getTransferCategory)
                 .toList();
@@ -401,5 +413,46 @@ public class CommissionBundleService {
                         .orElse(new Taxonomy())
                         .getServiceType())
                 .build();
+    }
+
+    private List<BundleResource> getBundlesResource(Bundles bundles) {
+        return bundles.getBundles().stream().map(bundle -> {
+            BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
+            bundleResource.setTransferCategoryList(
+                    this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
+            );
+            return bundleResource;
+        }).toList();
+    }
+
+    private List<BundleResource> getPublicBundleResources(String ciTaxCode, Bundles bundles) {
+        return bundles.getBundles().parallelStream()
+                .map(bundle -> {
+                    BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
+                    bundleResource.setCiBundleStatus(getPublicBundleStatus(ciTaxCode, bundle));
+                    bundleResource.setTransferCategoryList(
+                            this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
+                    );
+                    return bundleResource;
+                })
+                .toList();
+    }
+
+    private CIBundleStatus getPublicBundleStatus(String ciTaxCode, Bundle bundle) {
+        try {
+            CIBundle ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundle.getId());
+            LocalDate today = LocalDate.now();
+            LocalDate validityDateTo = ciBundle.getValidityDateTo();
+            if (validityDateTo == null || validityDateTo.isAfter(today)) {
+                return CIBundleStatus.ENABLED;
+            }
+            return CIBundleStatus.ON_REMOVAL;
+        } catch (FeignException.NotFound ignore) {
+            PublicBundleRequests request = this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
+            if (request != null && request.getPageInfo().getTotalItems() != null && request.getPageInfo().getTotalItems() > 0) {
+                return CIBundleStatus.REQUESTED;
+            }
+            return CIBundleStatus.AVAILABLE;
+        }
     }
 }

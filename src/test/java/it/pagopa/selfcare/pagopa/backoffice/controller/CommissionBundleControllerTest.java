@@ -1,7 +1,11 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
@@ -22,7 +26,10 @@ import java.util.List;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -204,14 +211,14 @@ class CommissionBundleControllerTest {
         String url = "/bundles/creditor_institutions";
         int limit = 25;
         int page = 2;
-        when(service.getCisBundles(Collections.singletonList(BundleType.PRIVATE),
+        when(service.getCIBundles(BundleType.PRIVATE,
                 CI_TAX_CODE, "name", limit, page)).thenReturn(
                 new BundlesResource()
         );
         mvc.perform(get(url)
                         .param("name", "name")
-                        .param("types", BundleType.PRIVATE.name())
-                        .param("cisTaxCode", CI_TAX_CODE)
+                        .param("bundleType", BundleType.PRIVATE.name())
+                        .param("ciTaxCode", CI_TAX_CODE)
                         .param("limit", String.valueOf(limit))
                         .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -223,10 +230,11 @@ class CommissionBundleControllerTest {
         String url = "/bundles/creditor_institutions";
         int limit = 25;
         int page = 2;
-        when(service.getCisBundles(null, null, null, limit, page)).thenReturn(
+        when(service.getCIBundles(BundleType.PRIVATE, null, null, limit, page)).thenReturn(
                 new BundlesResource()
         );
         mvc.perform(get(url)
+                        .param("bundleType", BundleType.PRIVATE.name())
                         .param("limit", String.valueOf(limit))
                         .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
