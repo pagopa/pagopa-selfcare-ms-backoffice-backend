@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.4.19-1-VAS-974-add-ci-public-bundle-table"
+    tag: "2.4.19-2-VAS-974-add-ci-public-bundle-table"
     pullPolicy: Always
   livenessProbe:
     httpGet:
