@@ -10,7 +10,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
@@ -304,7 +303,7 @@ class CommissionBundleServiceTest {
     void getCIBundlesPublicWithOnRemovalBundleSuccess() {
         List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
         Bundles bundles = buildBundles(transferCategoryList, BundleType.PUBLIC);
-        CIBundle ciBundle = new CIBundle();
+        CiBundleDetails ciBundle = new CiBundleDetails();
         ciBundle.setValidityDateTo(LocalDate.now());
 
         when(gecClient.getBundles(any(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
@@ -333,7 +332,7 @@ class CommissionBundleServiceTest {
     void getCIBundlesPublicWithEnabledBundleSuccess() {
         List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
         Bundles bundles = buildBundles(transferCategoryList, BundleType.PUBLIC);
-        CIBundle ciBundle = new CIBundle();
+        CiBundleDetails ciBundle = new CiBundleDetails();
         ciBundle.setValidityDateTo(LocalDate.now().plusDays(1));
 
         when(gecClient.getBundles(any(), eq(null), anyInt(), anyInt())).thenReturn(bundles);

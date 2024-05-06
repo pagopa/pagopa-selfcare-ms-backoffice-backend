@@ -11,7 +11,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePayment
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleFee;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CISubscriptionInfo;
@@ -461,8 +460,9 @@ public class CommissionBundleService {
 
     private BundleResource enrichCiPublicBundle(String ciTaxCode, Bundle bundle) {
         BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(bundle.getIdBrokerPsp(), true);
         try {
-            CIBundle ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundle.getId());
+            CiBundleDetails ciBundle = this.gecClient.getPublicBundleSubscriptionDetailByPSP(pspCode, ciTaxCode, bundle.getId()); //TODO put back getCIBundle
             LocalDate today = LocalDate.now();
             LocalDate validityDateTo = ciBundle.getValidityDateTo();
             if (validityDateTo == null || validityDateTo.isAfter(today)) {
@@ -470,7 +470,7 @@ public class CommissionBundleService {
             } else {
                 bundleResource.setCiBundleStatus(CIBundleStatus.ON_REMOVAL);
             }
-            bundleResource.setCiBundleId(ciBundle.getId());
+            bundleResource.setCiBundleId(ciBundle.getIdCIBundle());
         } catch (FeignException.NotFound ignore) {
             PublicBundleRequests request = this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
             if (request != null && request.getPageInfo().getTotalItems() != null && request.getPageInfo().getTotalItems() > 0) {
