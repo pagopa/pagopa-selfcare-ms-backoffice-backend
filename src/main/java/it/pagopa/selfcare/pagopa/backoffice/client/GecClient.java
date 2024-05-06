@@ -176,4 +176,12 @@ public interface GecClient {
             @PathVariable("ci-tax-code") String ciTaxCode,
             @PathVariable("id-bundle-request") String idBundleRequest
     );
+
+    @PostMapping(value = "/cis/{ci-tax-code}/requests")
+    @ResponseBody
+    @Valid
+    BundleRequestId createCIBundleRequest(
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @RequestBody @NotNull PublicBundleRequest bundleRequest
+    );
 }

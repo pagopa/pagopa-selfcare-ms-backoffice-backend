@@ -9,6 +9,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.service.CommissionBundleService;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,7 @@ class CommissionBundleControllerTest {
     public static final String BUNDLE_ID = "bundleId";
     private static final String CI_BUNDLE_ID = "ciBundleId";
     public static final String ID_BUNDLE_REQUEST = "idBundleRequest";
+    public static final String BUNDLE_NAME = "bundleName";
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -277,10 +279,10 @@ class CommissionBundleControllerTest {
     void deleteCIBundleSubscriptionOK() throws Exception {
         String url = "/bundles/{ci-bundle-id}/creditor-institutions/{ci-tax-code}";
         mvc.perform(delete(url, CI_BUNDLE_ID, CI_TAX_CODE)
-                        .param("bundleName", "bundleName")
+                        .param(BUNDLE_NAME, BUNDLE_NAME)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
-        verify(service).deleteCIBundleSubscription(CI_BUNDLE_ID, CI_TAX_CODE, "bundleName");
+        verify(service).deleteCIBundleSubscription(CI_BUNDLE_ID, CI_TAX_CODE, BUNDLE_NAME);
     }
 
     @Test
@@ -290,5 +292,19 @@ class CommissionBundleControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
         verify(service).deleteCIBundleRequest(ID_BUNDLE_REQUEST, CI_TAX_CODE);
+    }
+
+    @Test
+    void createCIBundleRequestOK() throws Exception {
+        PublicBundleRequest bundleRequest = new PublicBundleRequest();
+
+        String url = "/bundles/creditor-institutions/{ci-tax-code}";
+        mvc.perform(post(url, CI_TAX_CODE)
+                        .param(BUNDLE_NAME, BUNDLE_NAME)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapper.writeValueAsString(bundleRequest))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        verify(service).createCIBundleRequest(CI_TAX_CODE, bundleRequest, BUNDLE_NAME);
     }
 }

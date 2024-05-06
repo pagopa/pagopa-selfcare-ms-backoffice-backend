@@ -15,16 +15,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatu
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleAttribute;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiBundleAttribute;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
@@ -72,6 +63,7 @@ class CommissionBundleServiceTest {
     private static final String ID_BUNDLE_REQUEST_2 = "idBundleRequest2";
     private static final String TRANSFER_CATEGORY = "9/0105107TS/";
     private static final String SERVICE_TYPE = "Diritti Pratiche SUAP e SUE";
+    public static final String BUNDLE_NAME = "bundleName";
 
     @MockBean
     private GecClient gecClient;
@@ -222,14 +214,14 @@ class CommissionBundleServiceTest {
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
 
         BundlesResource bundlesResource = assertDoesNotThrow(
-                () -> sut.getCIBundles(BundleType.GLOBAL, null, "bundleName", 10, 0));
+                () -> sut.getCIBundles(BundleType.GLOBAL, null, BUNDLE_NAME, 10, 0));
 
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
         assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
 
-        verify(gecClient).getBundles(Collections.singletonList(BundleType.GLOBAL), "bundleName", 10, 0);
+        verify(gecClient).getBundles(Collections.singletonList(BundleType.GLOBAL), BUNDLE_NAME, 10, 0);
         verifyNoMoreInteractions(gecClient);
         verify(taxonomyService).getTaxonomiesByCodes(any());
     }
@@ -644,13 +636,24 @@ class CommissionBundleServiceTest {
     @Test
     void deleteCIBundleSubscriptionSuccess() {
         assertDoesNotThrow(() ->
-                sut.deleteCIBundleSubscription(CI_TAX_CODE, ID_BUNDLE, "bundleName"));
+                sut.deleteCIBundleSubscription(CI_TAX_CODE, ID_BUNDLE, BUNDLE_NAME));
     }
 
     @Test
     void deleteCIBundleRequestSuccess() {
         assertDoesNotThrow(() ->
                 sut.deleteCIBundleRequest(ID_BUNDLE_REQUEST, ID_BUNDLE));
+    }
+
+    @Test
+    void createCIBundleRequestSuccess(){
+        PublicBundleRequest bundleRequest = new PublicBundleRequest();
+        BundleRequestId bundleRequestId = new BundleRequestId();
+        bundleRequestId.setIdBundleRequest(ID_BUNDLE_REQUEST);
+        when(gecClient.createCIBundleRequest(CI_TAX_CODE, bundleRequest)).thenReturn(bundleRequestId);
+
+        assertDoesNotThrow(() ->
+                sut.createCIBundleRequest(CI_TAX_CODE, bundleRequest, BUNDLE_NAME));
     }
 
     private PublicBundleRequests buildPspRequests() {
