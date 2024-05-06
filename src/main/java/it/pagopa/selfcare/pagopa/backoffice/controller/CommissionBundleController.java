@@ -59,7 +59,7 @@ public class CommissionBundleController {
      * @param page      page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
-    @GetMapping("/creditor_institutions")
+    @GetMapping("/creditor-institutions")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a paginated list of bundles to be used by creditor institutions", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
@@ -278,7 +278,7 @@ public class CommissionBundleController {
      * @param idBundleRequest Subscription request's id of a creditor institution to a bundle
      * @param ciTaxCode Creditor Institution's tax code
      */
-    @DeleteMapping(value = "bundle-request/{id-bundle-request}/creditor-institutions/{ci-tax-code}")
+    @DeleteMapping(value = "/creditor-institutions/{ci-tax-code}/requests/{bundle-request-id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Delete a creditor institution's subscription request to a public bundle", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
@@ -295,7 +295,7 @@ public class CommissionBundleController {
      * @param ciTaxCode Creditor Institution's tax code
      * @param publicBundleRequest Bundle request object with bundle and psp information
      */
-    @PostMapping(value = "creditor-institutions/{ci-tax-code}")
+    @PostMapping(value = "/creditor-institutions/{ci-tax-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Create a creditor institution's subscription request to a public bundle", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
