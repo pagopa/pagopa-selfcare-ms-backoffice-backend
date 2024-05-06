@@ -266,7 +266,7 @@ public class CommissionBundleController {
     public void deleteCIBundleSubscription(
             @Parameter(description = "Subscription's id of a creditor institution to a bundle") @PathVariable("ci-bundle-id") String ciBundleId,
             @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
-            @Parameter(description = "Bundle's name, if present sends an email to notify the Creditor Institution") @RequestParam String bundleName
+            @Parameter(description = "Bundle's name, if present sends an email to notify the Creditor Institution") @RequestParam(required = false) String bundleName
     ) {
         commissionBundleService.deleteCIBundleSubscription(ciBundleId, ciTaxCode, bundleName);
     }
@@ -300,7 +300,7 @@ public class CommissionBundleController {
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public void createCIBundleRequest(
             @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
-            @Parameter(description = "Bundle's name, if present sends an email to notify the Payment Service Provider") @RequestParam String bundleName,
+            @Parameter(description = "Bundle's name, if present sends an email to notify the Payment Service Provider") @RequestParam(required = false) String bundleName,
             @RequestBody @NotNull PublicBundleRequest publicBundleRequest
     ){
         commissionBundleService.createCIBundleRequest(ciTaxCode, publicBundleRequest, bundleName);
