@@ -268,6 +268,7 @@ class CommissionBundleServiceTest {
         List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
         Bundles bundles = buildBundles(transferCategoryList, BundleType.PUBLIC);
         PublicBundleRequests requests = new PublicBundleRequests();
+        requests.setRequestsList(Collections.singletonList(PublicBundleRequest.builder().id(ID_BUNDLE_REQUEST).build()));
         requests.setPageInfo(PageInfo.builder().totalItems(1L).build());
 
         when(gecClient.getBundles(any(), eq(null), anyInt(), anyInt())).thenReturn(bundles);

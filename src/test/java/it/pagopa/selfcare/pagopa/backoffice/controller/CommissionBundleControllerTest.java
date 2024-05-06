@@ -209,7 +209,7 @@ class CommissionBundleControllerTest {
 
     @Test
     void getCiBundlesWithTaxCodeOK() throws Exception {
-        String url = "/bundles/creditor_institutions";
+        String url = "/bundles/creditor-institutions";
         int limit = 25;
         int page = 2;
         when(service.getCIBundles(BundleType.PRIVATE,
@@ -228,7 +228,7 @@ class CommissionBundleControllerTest {
 
     @Test
     void getCiBundlesWithoutTaxCodeOK() throws Exception {
-        String url = "/bundles/creditor_institutions";
+        String url = "/bundles/creditor-institutions";
         int limit = 25;
         int page = 2;
         when(service.getCIBundles(BundleType.PRIVATE, null, null, limit, page)).thenReturn(
@@ -285,8 +285,8 @@ class CommissionBundleControllerTest {
 
     @Test
     void deleteCIBundleRequestOK() throws Exception {
-        String url = "/bundles/bundle-request/{id-bundle-request}/creditor-institutions/{ci-tax-code}";
-        mvc.perform(delete(url, ID_BUNDLE_REQUEST, CI_TAX_CODE)
+        String url = "/bundles/creditor-institutions/{ci-tax-code}/requests/{bundle-request-id}";
+        mvc.perform(delete(url, CI_TAX_CODE, ID_BUNDLE_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
         verify(service).deleteCIBundleRequest(ID_BUNDLE_REQUEST, CI_TAX_CODE);
