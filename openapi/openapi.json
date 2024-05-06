@@ -10418,16 +10418,6 @@
           "rejectionDate": {
             "type": "string",
             "format": "date-time"
-          },
-          "validityDateFrom": {
-            "type": "string",
-            "description": "the start date of the bundle if accepted",
-            "format": "date"
-          },
-          "validityDateTo": {
-            "type": "string",
-            "description": "the end date of the bundle if accepted",
-            "format": "date"
           }
         }
       },

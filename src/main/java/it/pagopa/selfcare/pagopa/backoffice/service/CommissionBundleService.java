@@ -458,9 +458,9 @@ public class CommissionBundleService {
 
     private BundleResource enrichCiPublicBundle(String ciTaxCode, Bundle bundle) {
         BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
-        String pspCode = this.legacyPspCodeUtil.retrievePspCode(bundle.getIdBrokerPsp(), true);
+
         try {
-            CiBundleDetails ciBundle = this.gecClient.getPublicBundleSubscriptionDetailByPSP(pspCode, ciTaxCode, bundle.getId()); //TODO put back getCIBundle
+            CiBundleDetails ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundle.getId());
             LocalDate today = LocalDate.now();
             LocalDate validityDateTo = ciBundle.getValidityDateTo();
             if (validityDateTo == null || validityDateTo.isAfter(today)) {
