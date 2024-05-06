@@ -36,7 +36,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,7 +68,6 @@ class CommissionBundleServiceTest {
     private static final String ID_BUNDLE = "idBundle";
     private static final String CI_BUNDLE_ID = "ciBundleId";
     private static final String ID_BUNDLE_REQUEST = "idBundleRequest";
-    private static final String ID_BUNDLE_REQUEST_2 = "idBundleRequest2";
     private static final String TRANSFER_CATEGORY = "9/0105107TS/";
     private static final String SERVICE_TYPE = "Diritti Pratiche SUAP e SUE";
 
@@ -178,15 +176,11 @@ class CommissionBundleServiceTest {
     @Test
     void acceptPublicBundleSubscriptionsByPSPSuccess() {
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
-        List<String> bundleRequestIdList = new ArrayList<>();
-        bundleRequestIdList.add(ID_BUNDLE_REQUEST);
-        bundleRequestIdList.add(ID_BUNDLE_REQUEST_2);
 
         assertDoesNotThrow(() ->
-                sut.acceptPublicBundleSubscriptionsByPSP(PSP_TAX_CODE, bundleRequestIdList));
+                sut.acceptPublicBundleSubscriptionsByPSP(PSP_TAX_CODE, ID_BUNDLE_REQUEST));
 
         verify(gecClient).acceptPublicBundleSubscriptionsByPSP(PSP_CODE, ID_BUNDLE_REQUEST);
-        verify(gecClient).acceptPublicBundleSubscriptionsByPSP(PSP_CODE, ID_BUNDLE_REQUEST_2);
     }
 
     @Test
