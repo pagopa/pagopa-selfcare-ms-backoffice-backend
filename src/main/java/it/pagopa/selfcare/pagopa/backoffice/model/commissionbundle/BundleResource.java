@@ -56,4 +56,8 @@ public class BundleResource {
     private Boolean digitalStampRestriction;
     @Schema(description = "Creditor institution bundle's status")
     private CIBundleStatus ciBundleStatus;
+    @Schema(description = "Creditor institution bundle's id")
+    private String ciBundleId;
+    @Schema(description = "Creditor institution bundle's subscription request's id")
+    private String ciRequestId;
 }

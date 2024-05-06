@@ -430,8 +430,7 @@ public class CommissionBundleService {
     private List<BundleResource> getPublicBundleResources(String ciTaxCode, Bundles bundles) {
         return bundles.getBundles().parallelStream()
                 .map(bundle -> {
-                    BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
-                    bundleResource.setCiBundleStatus(getPublicBundleStatus(ciTaxCode, bundle));
+                    BundleResource bundleResource = enrichCiPublicBundle(ciTaxCode, bundle);
                     bundleResource.setTransferCategoryList(
                             this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
                     );
@@ -440,21 +439,26 @@ public class CommissionBundleService {
                 .toList();
     }
 
-    private CIBundleStatus getPublicBundleStatus(String ciTaxCode, Bundle bundle) {
+    private BundleResource enrichCiPublicBundle(String ciTaxCode, Bundle bundle) {
+        BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
         try {
             CIBundle ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundle.getId());
             LocalDate today = LocalDate.now();
             LocalDate validityDateTo = ciBundle.getValidityDateTo();
             if (validityDateTo == null || validityDateTo.isAfter(today)) {
-                return CIBundleStatus.ENABLED;
+                bundleResource.setCiBundleStatus(CIBundleStatus.ENABLED);
             }
-            return CIBundleStatus.ON_REMOVAL;
+            bundleResource.setCiBundleStatus(CIBundleStatus.ON_REMOVAL);
+            bundleResource.setCiBundleId(ciBundle.getId());
         } catch (FeignException.NotFound ignore) {
             PublicBundleRequests request = this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
             if (request != null && request.getPageInfo().getTotalItems() != null && request.getPageInfo().getTotalItems() > 0) {
-                return CIBundleStatus.REQUESTED;
+                bundleResource.setCiBundleStatus(CIBundleStatus.REQUESTED);
+                bundleResource.setCiRequestId(request.getRequestsList().get(0).getId());
             }
-            return CIBundleStatus.AVAILABLE;
+            bundleResource.setCiBundleStatus(CIBundleStatus.AVAILABLE);
         }
+
+        return bundleResource;
     }
 }
