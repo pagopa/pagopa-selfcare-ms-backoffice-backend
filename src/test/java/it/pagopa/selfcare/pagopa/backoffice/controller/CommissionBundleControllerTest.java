@@ -42,6 +42,7 @@ class CommissionBundleControllerTest {
     private static final String CI_TAX_CODE = "ciTaxCode";
     public static final String BUNDLE_ID = "bundleId";
     private static final String CI_BUNDLE_ID = "ciBundleId";
+    private static final String ID_BUNDLE_REQUEST = "idBundleRequest";
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -196,14 +197,12 @@ class CommissionBundleControllerTest {
 
     @Test
     void acceptPublicBundleSubscriptionsOK() throws Exception {
-        String url = "/bundles/requests/payment-service-providers/{tax-code}/accept";
-        List<String> idBundleRequest = Collections.singletonList("idBundleRequest");
+        String url = "/bundles/payment-service-providers/{tax-code}/requests/{bundle-request-id}/accept";
 
-        mvc.perform(post(url, PSP_TAX_CODE)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(mapper.writeValueAsString(idBundleRequest)))
+        mvc.perform(post(url, PSP_TAX_CODE, ID_BUNDLE_REQUEST)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
-        verify(service).acceptPublicBundleSubscriptionsByPSP(PSP_TAX_CODE, idBundleRequest);
+        verify(service).acceptPublicBundleSubscriptionsByPSP(PSP_TAX_CODE, ID_BUNDLE_REQUEST);
     }
 
     @Test
@@ -243,11 +242,11 @@ class CommissionBundleControllerTest {
 
     @Test
     void rejectPublicBundleSubscriptionsOK() throws Exception {
-        String url = "/bundles/requests/payment-service-providers/{psp-tax-code}/request/{bundle-request-id}/reject";
-        mvc.perform(post(url, PSP_TAX_CODE, "idBundleRequest")
+        String url = "/bundles/payment-service-providers/{psp-tax-code}/requests/{bundle-request-id}/reject";
+        mvc.perform(post(url, PSP_TAX_CODE, ID_BUNDLE_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
-        verify(service).rejectPublicBundleSubscriptionByPSP(PSP_TAX_CODE, "idBundleRequest");
+        verify(service).rejectPublicBundleSubscriptionByPSP(PSP_TAX_CODE, ID_BUNDLE_REQUEST);
     }
 
     @Test
