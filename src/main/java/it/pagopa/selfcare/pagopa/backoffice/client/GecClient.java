@@ -169,4 +169,11 @@ public interface GecClient {
             @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) Integer page
     );
+
+    @DeleteMapping(value = "/cis/{ci-tax-code}/requests/{id-bundle-request}")
+    @ResponseBody
+    void deleteCIBundleRequest(
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @PathVariable("id-bundle-request") String idBundleRequest
+    );
 }

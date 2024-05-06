@@ -647,6 +647,12 @@ class CommissionBundleServiceTest {
                 sut.deleteCIBundleSubscription(CI_TAX_CODE, ID_BUNDLE, "bundleName"));
     }
 
+    @Test
+    void deleteCIBundleRequestSuccess() {
+        assertDoesNotThrow(() ->
+                sut.deleteCIBundleRequest(ID_BUNDLE_REQUEST, ID_BUNDLE));
+    }
+
     private PublicBundleRequests buildPspRequests() {
         return PublicBundleRequests.builder()
                 .requestsList(

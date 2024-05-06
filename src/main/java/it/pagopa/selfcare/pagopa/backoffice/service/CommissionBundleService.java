@@ -311,6 +311,16 @@ public class CommissionBundleService {
         }
     }
 
+    /**
+     * Delete the creditor institution's subscription request to the specified bundle
+     *
+     * @param idBundleRequest subscription's id of a creditor institution to a bundle
+     * @param ciTaxCode  creditor institution's tax code
+     */
+    public void deleteCIBundleRequest(String idBundleRequest, String ciTaxCode) {
+        this.gecClient.deleteCIBundleRequest(ciTaxCode, idBundleRequest);
+    }
+
     private Context buildEmailHtmlBodyContext(String bundleName) {
         // Thymeleaf Context
         Context context = new Context();

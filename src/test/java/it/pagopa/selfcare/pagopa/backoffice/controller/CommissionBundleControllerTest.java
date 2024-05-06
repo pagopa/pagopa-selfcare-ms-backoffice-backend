@@ -42,6 +42,7 @@ class CommissionBundleControllerTest {
     private static final String CI_TAX_CODE = "ciTaxCode";
     public static final String BUNDLE_ID = "bundleId";
     private static final String CI_BUNDLE_ID = "ciBundleId";
+    public static final String ID_BUNDLE_REQUEST = "idBundleRequest";
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -197,7 +198,7 @@ class CommissionBundleControllerTest {
     @Test
     void acceptPublicBundleSubscriptionsOK() throws Exception {
         String url = "/bundles/requests/payment-service-providers/{tax-code}/accept";
-        List<String> idBundleRequest = Collections.singletonList("idBundleRequest");
+        List<String> idBundleRequest = Collections.singletonList(ID_BUNDLE_REQUEST);
 
         mvc.perform(post(url, PSP_TAX_CODE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -244,10 +245,10 @@ class CommissionBundleControllerTest {
     @Test
     void rejectPublicBundleSubscriptionsOK() throws Exception {
         String url = "/bundles/requests/payment-service-providers/{psp-tax-code}/request/{bundle-request-id}/reject";
-        mvc.perform(post(url, PSP_TAX_CODE, "idBundleRequest")
+        mvc.perform(post(url, PSP_TAX_CODE, ID_BUNDLE_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
-        verify(service).rejectPublicBundleSubscriptionByPSP(PSP_TAX_CODE, "idBundleRequest");
+        verify(service).rejectPublicBundleSubscriptionByPSP(PSP_TAX_CODE, ID_BUNDLE_REQUEST);
     }
 
     @Test
@@ -280,5 +281,14 @@ class CommissionBundleControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
         verify(service).deleteCIBundleSubscription(CI_BUNDLE_ID, CI_TAX_CODE, "bundleName");
+    }
+
+    @Test
+    void deleteCIBundleRequestOK() throws Exception {
+        String url = "/bundles/bundle-request/{id-bundle-request}/creditor-institutions/{ci-tax-code}";
+        mvc.perform(delete(url, ID_BUNDLE_REQUEST, CI_TAX_CODE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        verify(service).deleteCIBundleRequest(ID_BUNDLE_REQUEST, CI_TAX_CODE);
     }
 }

@@ -273,4 +273,14 @@ public class CommissionBundleController {
         commissionBundleService.deleteCIBundleSubscription(ciBundleId, ciTaxCode, bundleName);
     }
 
+    @DeleteMapping(value = "bundle-request/{id-bundle-request}/creditor-institutions/{ci-tax-code}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Delete a creditor institution's subscription request to a public bundle", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public void deleteCIBundleRequest(
+            @Parameter(description = "Subscription request's id of a creditor institution to a bundle") @PathVariable("id-bundle-request") String ciBundleId,
+            @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode
+    ) {
+        commissionBundleService.deleteCIBundleRequest(ciBundleId, ciTaxCode);
+    }
 }
