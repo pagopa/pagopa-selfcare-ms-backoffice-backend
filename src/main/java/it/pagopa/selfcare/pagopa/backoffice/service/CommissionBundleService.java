@@ -467,16 +467,18 @@ public class CommissionBundleService {
             LocalDate validityDateTo = ciBundle.getValidityDateTo();
             if (validityDateTo == null || validityDateTo.isAfter(today)) {
                 bundleResource.setCiBundleStatus(CIBundleStatus.ENABLED);
+            } else {
+                bundleResource.setCiBundleStatus(CIBundleStatus.ON_REMOVAL);
             }
-            bundleResource.setCiBundleStatus(CIBundleStatus.ON_REMOVAL);
             bundleResource.setCiBundleId(ciBundle.getId());
         } catch (FeignException.NotFound ignore) {
             PublicBundleRequests request = this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
             if (request != null && request.getPageInfo().getTotalItems() != null && request.getPageInfo().getTotalItems() > 0) {
                 bundleResource.setCiBundleStatus(CIBundleStatus.REQUESTED);
                 bundleResource.setCiRequestId(request.getRequestsList().get(0).getId());
+            } else {
+                bundleResource.setCiBundleStatus(CIBundleStatus.AVAILABLE);
             }
-            bundleResource.setCiBundleStatus(CIBundleStatus.AVAILABLE);
         }
 
         return bundleResource;
