@@ -137,6 +137,8 @@ public class CommissionBundleService {
      *
      * @param pspTaxCode the tax code of the PSP that owns the public bundle
      * @param requestId  the bundle request id to be accepted
+     * @param ciTaxCode  creditor institution's tax code
+     * @param bundleName bundle's name
      */
     public void acceptPublicBundleSubscriptionsByPSP(String pspTaxCode, String requestId, String ciTaxCode, String bundleName) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
@@ -191,6 +193,8 @@ public class CommissionBundleService {
      *
      * @param pspTaxCode      the tax code of the PSP that owns the public bundle
      * @param bundleRequestId the request id to be rejected
+     * @param ciTaxCode       creditor institution's tax code
+     * @param bundleName      bundle's name
      */
     public void rejectPublicBundleSubscriptionByPSP(String pspTaxCode, String bundleRequestId, String ciTaxCode, String bundleName) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
