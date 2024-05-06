@@ -297,16 +297,18 @@ public class CommissionBundleService {
     public void deleteCIBundleSubscription(String ciBundleId, String ciTaxCode, String bundleName) {
         this.gecClient.deleteCIBundle(ciTaxCode, ciBundleId);
 
-        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
-                .institutionTaxCode(ciTaxCode)
-                .subject(BUNDLE_DELETE_SUBSCRIPTION_SUBJECT)
-                .textBody(String.format(BUNDLE_DELETE_SUBSCRIPTION_BODY, bundleName))
-                .htmlBodyFileName("deleteBundleSubscriptionEmail.html")
-                .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
-                .destinationUserType(SelfcareProductUser.ADMIN)
-                .build();
+        if(bundleName != null && !bundleName.isBlank()){
+            EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                    .institutionTaxCode(ciTaxCode)
+                    .subject(BUNDLE_DELETE_SUBSCRIPTION_SUBJECT)
+                    .textBody(String.format(BUNDLE_DELETE_SUBSCRIPTION_BODY, bundleName))
+                    .htmlBodyFileName("deleteBundleSubscriptionEmail.html")
+                    .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                    .destinationUserType(SelfcareProductUser.ADMIN)
+                    .build();
 
-        awsSesClient.sendEmail(messageDetail);
+            awsSesClient.sendEmail(messageDetail);
+        }
     }
 
     private Context buildEmailHtmlBodyContext(String bundleName) {

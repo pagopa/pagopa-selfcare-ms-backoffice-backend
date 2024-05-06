@@ -255,10 +255,11 @@ public class CommissionBundleController {
     }
 
     /**
-     * Remove the creditor institution's subscription to the specified public/private bundle
+     * Remove the creditor institution's subscription to the specified public/private bundle and notify the Creditor Institution by email
      *
      * @param ciBundleId Subscription's id of a creditor institution to a bundle
      * @param ciTaxCode  Creditor Institution's tax code
+     * @param bundleName Bundle's name, if present sends an email to notify the Creditor Institution
      */
     @DeleteMapping(value = "/{ci-bundle-id}/creditor-institutions/{ci-tax-code}")
     @ResponseStatus(HttpStatus.OK)
@@ -267,7 +268,7 @@ public class CommissionBundleController {
     public void deleteCIBundleSubscription(
             @Parameter(description = "Subscription's id of a creditor institution to a bundle") @PathVariable("ci-bundle-id") String ciBundleId,
             @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
-            @Parameter(description = "Bundle's name") @RequestParam String bundleName
+            @Parameter(description = "Bundle's name, if present sends an email to notify the Creditor Institution") @RequestParam String bundleName
     ) {
         commissionBundleService.deleteCIBundleSubscription(ciBundleId, ciTaxCode, bundleName);
     }
