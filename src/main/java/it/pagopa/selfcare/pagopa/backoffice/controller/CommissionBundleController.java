@@ -283,7 +283,7 @@ public class CommissionBundleController {
     @Operation(summary = "Delete a creditor institution's subscription request to a public bundle", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public void deleteCIBundleRequest(
-            @Parameter(description = "Subscription request's id of a creditor institution to a bundle") @PathVariable("id-bundle-request") String idBundleRequest,
+            @Parameter(description = "Subscription request's id of a creditor institution to a bundle") @PathVariable("bundle-request-id") String idBundleRequest,
             @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode
     ) {
         commissionBundleService.deleteCIBundleRequest(idBundleRequest, ciTaxCode);

@@ -1134,6 +1134,15 @@
         "operationId": "deleteCIBundleRequest",
         "parameters": [
           {
+            "description": "Subscription request's id of a creditor institution to a bundle",
+            "in": "path",
+            "name": "bundle-request-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "description": "Creditor Institution's tax code",
             "in": "path",
             "name": "ci-tax-code",
