@@ -296,7 +296,7 @@ public class CommissionBundleController {
      */
     @PostMapping(value = "creditor-institutions/{ci-tax-code}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Delete a creditor institution's subscription request to a public bundle", security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Create a creditor institution's subscription request to a public bundle", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public void createCIBundleRequest(
             @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
