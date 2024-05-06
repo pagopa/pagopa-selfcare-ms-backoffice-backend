@@ -11,7 +11,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePayment
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleFee;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CISubscriptionInfo;
@@ -19,17 +18,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleC
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleAttribute;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiBundleAttribute;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
@@ -55,7 +44,10 @@ import java.util.Map;
 public class CommissionBundleService {
 
     private static final String BUNDLE_DELETE_SUBSCRIPTION_SUBJECT = "Conferma rimozione da pacchetto";
-    private static final String BUNDLE_DELETE_SUBSCRIPTION_BODY = "Ciao %n%n%n sei stato rimosso dal pacchetto %s.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nBack-office pagoPa";
+    private static final String BUNDLE_DELETE_SUBSCRIPTION_BODY = "Ciao, %n%n%n sei stato rimosso dal pacchetto %s.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nBack-office pagoPa";
+
+    private static final String BUNDLE_CREATE_SUBSCRIPTION_REQUEST_SUBJECT = "Nuova richiesta di attivazione pacchetto commissionale";
+    private static final String BUNDLE_CREATE_SUBSCRIPTION_REQUEST_BODY = "Ciao, %n%n%n ci sono nuove richieste di attivazione per il pacchetto commissionale %s.%n%n%n Puoi gestire i tuoi pacchetti qui https://selfcare.platform.pagopa.it/ui/comm-bundles ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nBack-office pagoPa";
 
     private final GecClient gecClient;
 
@@ -295,16 +287,45 @@ public class CommissionBundleService {
     public void deleteCIBundleSubscription(String ciBundleId, String ciTaxCode, String bundleName) {
         this.gecClient.deleteCIBundle(ciTaxCode, ciBundleId);
 
-        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
-                .institutionTaxCode(ciTaxCode)
-                .subject(BUNDLE_DELETE_SUBSCRIPTION_SUBJECT)
-                .textBody(String.format(BUNDLE_DELETE_SUBSCRIPTION_BODY, bundleName))
-                .htmlBodyFileName("deleteBundleSubscriptionEmail.html")
-                .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
-                .destinationUserType(SelfcareProductUser.ADMIN)
-                .build();
+        if (bundleName != null && !bundleName.isBlank()) {
+            EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                    .institutionTaxCode(ciTaxCode)
+                    .subject(BUNDLE_DELETE_SUBSCRIPTION_SUBJECT)
+                    .textBody(String.format(BUNDLE_DELETE_SUBSCRIPTION_BODY, bundleName))
+                    .htmlBodyFileName("deleteBundleSubscriptionEmail.html")
+                    .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                    .destinationUserType(SelfcareProductUser.ADMIN)
+                    .build();
 
-        awsSesClient.sendEmail(messageDetail);
+            awsSesClient.sendEmail(messageDetail);
+        }
+    }
+
+    /**
+     * Delete the creditor institution's subscription request to the specified bundle
+     *
+     * @param idBundleRequest subscription's id of a creditor institution to a bundle
+     * @param ciTaxCode       creditor institution's tax code
+     */
+    public void deleteCIBundleRequest(String idBundleRequest, String ciTaxCode) {
+        this.gecClient.deleteCIBundleRequest(ciTaxCode, idBundleRequest);
+    }
+
+    public void createCIBundleRequest(String ciTaxCode, PublicBundleRequest bundleRequest, String bundleName) {
+        this.gecClient.createCIBundleRequest(ciTaxCode, bundleRequest);
+
+        if (bundleName != null && !bundleName.isBlank()) {
+            EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                    .institutionTaxCode(bundleRequest.getIdPsp())
+                    .subject(BUNDLE_CREATE_SUBSCRIPTION_REQUEST_SUBJECT)
+                    .textBody(String.format(BUNDLE_CREATE_SUBSCRIPTION_REQUEST_BODY, bundleName))
+                    .htmlBodyFileName("createBundleSubscriptionRequestEmail.html")
+                    .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                    .destinationUserType(SelfcareProductUser.ADMIN)
+                    .build();
+
+            awsSesClient.sendEmail(messageDetail);
+        }
     }
 
     private Context buildEmailHtmlBodyContext(String bundleName) {
@@ -426,8 +447,7 @@ public class CommissionBundleService {
     private List<BundleResource> getPublicBundleResources(String ciTaxCode, Bundles bundles) {
         return bundles.getBundles().parallelStream()
                 .map(bundle -> {
-                    BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
-                    bundleResource.setCiBundleStatus(getPublicBundleStatus(ciTaxCode, bundle));
+                    BundleResource bundleResource = enrichCiPublicBundle(ciTaxCode, bundle);
                     bundleResource.setTransferCategoryList(
                             this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
                     );
@@ -436,21 +456,29 @@ public class CommissionBundleService {
                 .toList();
     }
 
-    private CIBundleStatus getPublicBundleStatus(String ciTaxCode, Bundle bundle) {
+    private BundleResource enrichCiPublicBundle(String ciTaxCode, Bundle bundle) {
+        BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
+
         try {
-            CIBundle ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundle.getId());
+            CiBundleDetails ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundle.getId());
             LocalDate today = LocalDate.now();
             LocalDate validityDateTo = ciBundle.getValidityDateTo();
             if (validityDateTo == null || validityDateTo.isAfter(today)) {
-                return CIBundleStatus.ENABLED;
+                bundleResource.setCiBundleStatus(CIBundleStatus.ENABLED);
+            } else {
+                bundleResource.setCiBundleStatus(CIBundleStatus.ON_REMOVAL);
             }
-            return CIBundleStatus.ON_REMOVAL;
+            bundleResource.setCiBundleId(ciBundle.getIdCIBundle());
         } catch (FeignException.NotFound ignore) {
             PublicBundleRequests request = this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
             if (request != null && request.getPageInfo().getTotalItems() != null && request.getPageInfo().getTotalItems() > 0) {
-                return CIBundleStatus.REQUESTED;
+                bundleResource.setCiBundleStatus(CIBundleStatus.REQUESTED);
+                bundleResource.setCiRequestId(request.getRequestsList().get(0).getId());
+            } else {
+                bundleResource.setCiBundleStatus(CIBundleStatus.AVAILABLE);
             }
-            return CIBundleStatus.AVAILABLE;
         }
+
+        return bundleResource;
     }
 }

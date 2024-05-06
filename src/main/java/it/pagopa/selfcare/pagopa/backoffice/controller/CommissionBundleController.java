@@ -16,9 +16,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleC
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
 import it.pagopa.selfcare.pagopa.backoffice.service.CommissionBundleService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +59,7 @@ public class CommissionBundleController {
      * @param page      page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
-    @GetMapping("/creditor_institutions")
+    @GetMapping("/creditor-institutions")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a paginated list of bundles to be used by creditor institutions", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
@@ -256,21 +254,56 @@ public class CommissionBundleController {
     }
 
     /**
-     * Remove the creditor institution's subscription to the specified public/private bundle
+     * Remove the creditor institution's subscription to the specified public/private bundle and notify the Creditor Institution by email
      *
      * @param ciBundleId Subscription's id of a creditor institution to a bundle
      * @param ciTaxCode  Creditor Institution's tax code
+     * @param bundleName Bundle's name, if present sends an email to notify the Creditor Institution
      */
     @DeleteMapping(value = "/{ci-bundle-id}/creditor-institutions/{ci-tax-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Delete a creditor institution's subscription to a public/private bundle", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public void deleteCIBundleSubscription(
             @Parameter(description = "Subscription's id of a creditor institution to a bundle") @PathVariable("ci-bundle-id") String ciBundleId,
             @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
-            @Parameter(description = "Bundle's name") @RequestParam String bundleName
+            @Parameter(description = "Bundle's name, if present sends an email to notify the Creditor Institution") @RequestParam(required = false) String bundleName
     ) {
         commissionBundleService.deleteCIBundleSubscription(ciBundleId, ciTaxCode, bundleName);
     }
 
+    /**
+     * Remove the creditor institution's subscription request to the specified public bundle
+     *
+     * @param idBundleRequest Subscription request's id of a creditor institution to a bundle
+     * @param ciTaxCode Creditor Institution's tax code
+     */
+    @DeleteMapping(value = "/creditor-institutions/{ci-tax-code}/requests/{bundle-request-id}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Delete a creditor institution's subscription request to a public bundle", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
+    public void deleteCIBundleRequest(
+            @Parameter(description = "Subscription request's id of a creditor institution to a bundle") @PathVariable("bundle-request-id") String idBundleRequest,
+            @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode
+    ) {
+        commissionBundleService.deleteCIBundleRequest(idBundleRequest, ciTaxCode);
+    }
+
+    /**
+     * Create the request to subscribe to the specified bundle from the Creditor Institution and notify the Payment Service Provider by email
+     *
+     * @param ciTaxCode Creditor Institution's tax code
+     * @param publicBundleRequest Bundle request object with bundle and psp information
+     */
+    @PostMapping(value = "/creditor-institutions/{ci-tax-code}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Create a creditor institution's subscription request to a public bundle", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
+    public void createCIBundleRequest(
+            @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
+            @Parameter(description = "Bundle's name, if present sends an email to notify the Payment Service Provider") @RequestParam(required = false) String bundleName,
+            @RequestBody @NotNull PublicBundleRequest publicBundleRequest
+    ){
+        commissionBundleService.createCIBundleRequest(ciTaxCode, publicBundleRequest, bundleName);
+    }
 }

@@ -4,7 +4,6 @@ import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.GecFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -155,7 +154,7 @@ public interface GecClient {
 
     @GetMapping(value = "/cis/{ci-tax-code}/bundles/{id-bundle}")
     @ResponseBody
-    CIBundle getCIBundle(
+    CiBundleDetails getCIBundle(
             @PathVariable("ci-tax-code") String ciTaxCode,
             @PathVariable("id-bundle") String idBundle
     );
@@ -168,5 +167,20 @@ public interface GecClient {
             @RequestParam(required = false) String idBundle,
             @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) Integer page
+    );
+
+    @DeleteMapping(value = "/cis/{ci-tax-code}/requests/{id-bundle-request}")
+    @ResponseBody
+    void deleteCIBundleRequest(
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @PathVariable("id-bundle-request") String idBundleRequest
+    );
+
+    @PostMapping(value = "/cis/{ci-tax-code}/requests")
+    @ResponseBody
+    @Valid
+    BundleRequestId createCIBundleRequest(
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @RequestBody @NotNull PublicBundleRequest bundleRequest
     );
 }

@@ -958,7 +958,7 @@
         }
       ]
     },
-    "/bundles/creditor_institutions": {
+    "/bundles/creditor-institutions": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId": "getCisBundles",
@@ -1045,6 +1045,132 @@
           }
         ],
         "summary": "Get a paginated list of bundles to be used by creditor institutions",
+        "tags": [
+          "Commission bundles"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/bundles/creditor-institutions/{ci-tax-code}": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
+        "operationId": "createCIBundleRequest",
+        "parameters": [
+          {
+            "description": "Creditor Institution's tax code",
+            "in": "path",
+            "name": "ci-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Bundle's name, if present sends an email to notify the Payment Service Provider",
+            "in": "query",
+            "name": "bundleName",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicBundleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Create a creditor institution's subscription request to a public bundle",
+        "tags": [
+          "Commission bundles"
+        ]
+      }
+    },
+    "/bundles/creditor-institutions/{ci-tax-code}/requests/{bundle-request-id}": {
+      "delete": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
+        "operationId": "deleteCIBundleRequest",
+        "parameters": [
+          {
+            "description": "Subscription request's id of a creditor institution to a bundle",
+            "in": "path",
+            "name": "bundle-request-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Creditor Institution's tax code",
+            "in": "path",
+            "name": "ci-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Delete a creditor institution's subscription request to a public bundle",
         "tags": [
           "Commission bundles"
         ]
@@ -1474,7 +1600,7 @@
     },
     "/bundles/{ci-bundle-id}/creditor-institutions/{ci-tax-code}": {
       "delete": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
         "operationId": "deleteCIBundleSubscription",
         "parameters": [
           {
@@ -1496,10 +1622,10 @@
             }
           },
           {
-            "description": "Bundle's name",
+            "description": "Bundle's name, if present sends an email to notify the Creditor Institution",
             "in": "query",
             "name": "bundleName",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -8484,6 +8610,10 @@
       "BundleResource": {
         "type": "object",
         "properties": {
+          "ciBundleId": {
+            "type": "string",
+            "description": "Creditor institution bundle's id"
+          },
           "ciBundleStatus": {
             "type": "string",
             "description": "Creditor institution bundle's status",
@@ -8493,6 +8623,10 @@
               "REQUESTED",
               "AVAILABLE"
             ]
+          },
+          "ciRequestId": {
+            "type": "string",
+            "description": "Creditor institution bundle's subscription request's id"
           },
           "description": {
             "type": "string"
@@ -10167,6 +10301,25 @@
           }
         }
       },
+      "PspCiBundleAttribute": {
+        "type": "object",
+        "properties": {
+          "maxPaymentAmount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "transferCategory": {
+            "type": "string"
+          },
+          "transferCategoryRelation": {
+            "type": "string",
+            "enum": [
+              "EQUAL",
+              "NOT_EQUAL"
+            ]
+          }
+        }
+      },
       "PspData": {
         "required": [
           "abi_code",
@@ -10225,6 +10378,46 @@
           },
           "page_info": {
             "$ref": "#/components/schemas/PageInfo"
+          }
+        }
+      },
+      "PublicBundleRequest": {
+        "required": [
+          "ciFiscalCode",
+          "idBundle",
+          "idBundleRequest"
+        ],
+        "type": "object",
+        "properties": {
+          "acceptedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "attributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PspCiBundleAttribute"
+            }
+          },
+          "ciFiscalCode": {
+            "type": "string"
+          },
+          "idBundle": {
+            "type": "string"
+          },
+          "idBundleRequest": {
+            "type": "string"
+          },
+          "idPsp": {
+            "type": "string"
+          },
+          "insertedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "rejectionDate": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
