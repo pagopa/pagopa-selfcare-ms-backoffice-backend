@@ -155,20 +155,20 @@ public class CommissionBundleController {
     }
 
     /**
-     * Accept a list of EC subscription requests to a public bundle
+     * Accept a subscription requests of a CI to a public bundle
      *
-     * @param pspTaxCode          the tax code of the PSP that owns the public bundle
-     * @param bundleRequestIdList the list of bundle request id to be accepted
+     * @param pspTaxCode payment service provider's tax code that owns the public bundle
+     * @param bundleRequestId bundle request id to be accepted
      */
-    @PostMapping(value = "/requests/payment-service-providers/{psp-tax-code}/accept", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/payment-service-providers/{psp-tax-code}/requests/{bundle-request-id}/accept", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Accept a list of subscription to a public bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Accept a subscription to a public bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public void acceptPublicBundleSubscriptions(
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
-            @RequestBody @NotNull List<String> bundleRequestIdList
+            @Parameter(description = "Public bundle request's id") @PathVariable("bundle-request-id") String bundleRequestId
     ) {
-        commissionBundleService.acceptPublicBundleSubscriptionsByPSP(pspTaxCode, bundleRequestIdList);
+        commissionBundleService.acceptPublicBundleSubscriptionsByPSP(pspTaxCode, bundleRequestId);
     }
 
 
@@ -178,13 +178,14 @@ public class CommissionBundleController {
      * @param pspTaxCode      the tax code of the PSP that owns the public bundle
      * @param bundleRequestId the request id to be rejected
      */
-    @PostMapping(value = "/requests/payment-service-providers/{psp-tax-code}/request/{bundle-request-id}/reject", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/payment-service-providers/{psp-tax-code}/requests/{bundle-request-id}/reject", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "reject of subscription to a public bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public void rejectPublicBundleSubscription(
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
-            @Parameter(description = "Bundle request id") @PathVariable("bundle-request-id") String bundleRequestId) {
+            @Parameter(description = "Public bundle request's id") @PathVariable("bundle-request-id") String bundleRequestId
+    ) {
         commissionBundleService.rejectPublicBundleSubscriptionByPSP(pspTaxCode, bundleRequestId);
     }
 

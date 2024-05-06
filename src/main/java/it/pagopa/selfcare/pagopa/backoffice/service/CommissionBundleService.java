@@ -132,14 +132,12 @@ public class CommissionBundleService {
      * Retrieve the PSP code with the psp tax code and accept the list of EC subscription requests to a public bundle
      * by invoking the {@link GecClient}
      *
-     * @param pspTaxCode          the tax code of the PSP that owns the public bundle
-     * @param bundleRequestIdList the list of bundle request id to be accepted
+     * @param pspTaxCode the tax code of the PSP that owns the public bundle
+     * @param requestId  the bundle request id to be accepted
      */
-    public void acceptPublicBundleSubscriptionsByPSP(String pspTaxCode, List<String> bundleRequestIdList) {
+    public void acceptPublicBundleSubscriptionsByPSP(String pspTaxCode, String requestId) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
-        for (String requestId : bundleRequestIdList) {
-            this.gecClient.acceptPublicBundleSubscriptionsByPSP(pspCode, requestId);
-        }
+        this.gecClient.acceptPublicBundleSubscriptionsByPSP(pspCode, requestId);
     }
 
     /**
