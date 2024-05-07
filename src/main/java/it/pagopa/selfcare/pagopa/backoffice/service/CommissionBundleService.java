@@ -173,7 +173,7 @@ public class CommissionBundleService {
 
         List<BundleType> bundleTypes = Collections.singletonList(bundleType);
         if (bundleType.equals(BundleType.GLOBAL) || bundleType.equals(BundleType.PRIVATE)) {
-            Bundles bundles = this.gecClient.getBundles(bundleTypes, name, limit, page);
+            Bundles bundles = this.gecClient.getBundles(bundleTypes, name, null, limit, page);
             pageInfo = bundles.getPageInfo();
             bundlesResource = getBundlesResource(bundles);
         } else if (bundleType.equals(BundleType.PUBLIC)) {
@@ -181,7 +181,7 @@ public class CommissionBundleService {
                 throw new AppException(AppError.BAD_REQUEST,
                         "Creditor institution's tax code is required to retrieve creditor institution's public bundles");
             }
-            Bundles bundles = gecClient.getBundles(bundleTypes, name, limit, page);
+            Bundles bundles = gecClient.getBundles(bundleTypes, name, LocalDate.now(), limit, page);
             pageInfo = bundles.getPageInfo();
             bundlesResource = getPublicBundleResources(ciTaxCode, bundles);
         }
