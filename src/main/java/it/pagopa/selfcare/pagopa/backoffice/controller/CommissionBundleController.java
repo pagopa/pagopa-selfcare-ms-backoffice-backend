@@ -157,8 +157,10 @@ public class CommissionBundleController {
     /**
      * Accept a subscription requests of a CI to a public bundle
      *
-     * @param pspTaxCode payment service provider's tax code that owns the public bundle
+     * @param pspTaxCode      payment service provider's tax code that owns the public bundle
      * @param bundleRequestId bundle request id to be accepted
+     * @param ciTaxCode       creditor institution's tax code
+     * @param bundleName      bundle's name
      */
     @PostMapping(value = "/payment-service-providers/{psp-tax-code}/requests/{bundle-request-id}/accept", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
@@ -166,9 +168,11 @@ public class CommissionBundleController {
     @OpenApiTableMetadata
     public void acceptPublicBundleSubscriptions(
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
-            @Parameter(description = "Public bundle request's id") @PathVariable("bundle-request-id") String bundleRequestId
+            @Parameter(description = "Public bundle request's id") @PathVariable("bundle-request-id") String bundleRequestId,
+            @Parameter(description = "Creditor institution's tax code") @RequestParam String ciTaxCode,
+            @Parameter(description = "Bundle's name") @RequestParam String bundleName
     ) {
-        commissionBundleService.acceptPublicBundleSubscriptionsByPSP(pspTaxCode, bundleRequestId);
+        commissionBundleService.acceptPublicBundleSubscriptionsByPSP(pspTaxCode, bundleRequestId, ciTaxCode, bundleName);
     }
 
 
@@ -177,6 +181,8 @@ public class CommissionBundleController {
      *
      * @param pspTaxCode      the tax code of the PSP that owns the public bundle
      * @param bundleRequestId the request id to be rejected
+     * @param ciTaxCode       creditor institution's tax code
+     * @param bundleName      bundle's name
      */
     @PostMapping(value = "/payment-service-providers/{psp-tax-code}/requests/{bundle-request-id}/reject", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
@@ -184,9 +190,11 @@ public class CommissionBundleController {
     @OpenApiTableMetadata
     public void rejectPublicBundleSubscription(
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
-            @Parameter(description = "Public bundle request's id") @PathVariable("bundle-request-id") String bundleRequestId
+            @Parameter(description = "Public bundle request's id") @PathVariable("bundle-request-id") String bundleRequestId,
+            @Parameter(description = "Creditor institution's tax code") @RequestParam String ciTaxCode,
+            @Parameter(description = "Bundle's name") @RequestParam String bundleName
     ) {
-        commissionBundleService.rejectPublicBundleSubscriptionByPSP(pspTaxCode, bundleRequestId);
+        commissionBundleService.rejectPublicBundleSubscriptionByPSP(pspTaxCode, bundleRequestId, ciTaxCode, bundleName);
     }
 
     /**

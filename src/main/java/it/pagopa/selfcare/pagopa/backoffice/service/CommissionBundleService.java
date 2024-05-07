@@ -45,9 +45,12 @@ public class CommissionBundleService {
 
     private static final String BUNDLE_DELETE_SUBSCRIPTION_SUBJECT = "Conferma rimozione da pacchetto";
     private static final String BUNDLE_DELETE_SUBSCRIPTION_BODY = "Ciao, %n%n%n sei stato rimosso dal pacchetto %s.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nBack-office pagoPa";
-
     private static final String BUNDLE_CREATE_SUBSCRIPTION_REQUEST_SUBJECT = "Nuova richiesta di attivazione pacchetto commissionale";
     private static final String BUNDLE_CREATE_SUBSCRIPTION_REQUEST_BODY = "Ciao, %n%n%n ci sono nuove richieste di attivazione per il pacchetto commissionale %s.%n%n%n Puoi gestire i tuoi pacchetti qui https://selfcare.platform.pagopa.it/ui/comm-bundles ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nBack-office pagoPa";
+    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_SUBJECT = "Richiesta di adesione confermata";
+    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto pubblico %s è stata accettata.%n%n%n Puoi vedere e gestire il pacchetto da qui ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nBack-office pagoPa";
+    private static final String BUNDLE_REJECT_SUBSCRIPTION_SUBJECT = "Richiesta di adesione rifiutata";
+    private static final String BUNDLE_REJECT_SUBSCRIPTION_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto pubblico %s è stata rifiutata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nBack-office pagoPa";
 
     private final GecClient gecClient;
 
@@ -134,10 +137,23 @@ public class CommissionBundleService {
      *
      * @param pspTaxCode the tax code of the PSP that owns the public bundle
      * @param requestId  the bundle request id to be accepted
+     * @param ciTaxCode  creditor institution's tax code
+     * @param bundleName bundle's name
      */
-    public void acceptPublicBundleSubscriptionsByPSP(String pspTaxCode, String requestId) {
+    public void acceptPublicBundleSubscriptionsByPSP(String pspTaxCode, String requestId, String ciTaxCode, String bundleName) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
         this.gecClient.acceptPublicBundleSubscriptionsByPSP(pspCode, requestId);
+
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(ciTaxCode)
+                .subject(BUNDLE_ACCEPT_SUBSCRIPTION_SUBJECT)
+                .textBody(String.format(BUNDLE_ACCEPT_SUBSCRIPTION_BODY, bundleName))
+                .htmlBodyFileName("acceptPublicBundleSubscriptionEmail.html")
+                .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                .destinationUserType(SelfcareProductUser.ADMIN)
+                .build();
+
+        awsSesClient.sendEmail(messageDetail);
     }
 
     /**
@@ -177,10 +193,23 @@ public class CommissionBundleService {
      *
      * @param pspTaxCode      the tax code of the PSP that owns the public bundle
      * @param bundleRequestId the request id to be rejected
+     * @param ciTaxCode       creditor institution's tax code
+     * @param bundleName      bundle's name
      */
-    public void rejectPublicBundleSubscriptionByPSP(String pspTaxCode, String bundleRequestId) {
+    public void rejectPublicBundleSubscriptionByPSP(String pspTaxCode, String bundleRequestId, String ciTaxCode, String bundleName) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
         this.gecClient.rejectPublicBundleSubscriptionByPSP(pspCode, bundleRequestId);
+
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(ciTaxCode)
+                .subject(BUNDLE_REJECT_SUBSCRIPTION_SUBJECT)
+                .textBody(String.format(BUNDLE_REJECT_SUBSCRIPTION_BODY, bundleName))
+                .htmlBodyFileName("rejectPublicBundleSubscriptionEmail.html")
+                .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                .destinationUserType(SelfcareProductUser.ADMIN)
+                .build();
+
+        awsSesClient.sendEmail(messageDetail);
     }
 
     /**

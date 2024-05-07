@@ -1376,6 +1376,24 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "description": "Creditor institution's tax code",
+            "in": "query",
+            "name": "ciTaxCode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Bundle's name",
+            "in": "query",
+            "name": "bundleName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1430,6 +1448,24 @@
             "description": "Public bundle request's id",
             "in": "path",
             "name": "bundle-request-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Creditor institution's tax code",
+            "in": "query",
+            "name": "ciTaxCode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Bundle's name",
+            "in": "query",
+            "name": "bundleName",
             "required": true,
             "schema": {
               "type": "string"
