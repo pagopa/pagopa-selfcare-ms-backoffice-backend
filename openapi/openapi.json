@@ -8676,6 +8676,13 @@
       "BundleResource": {
         "type": "object",
         "properties": {
+          "ciBundleFeeList": {
+            "type": "array",
+            "description": "Creditor institution bundle's attributes that describe for each taxonomy the fee paid by the CI",
+            "items": {
+              "$ref": "#/components/schemas/CIBundleFee"
+            }
+          },
           "ciBundleId": {
             "type": "string",
             "description": "Creditor institution bundle's id"
@@ -8915,21 +8922,44 @@
           }
         }
       },
+      "CIBundleAttribute": {
+        "type": "object",
+        "properties": {
+          "insertedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "maxPaymentAmount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "transferCategory": {
+            "type": "string"
+          },
+          "transferCategoryRelation": {
+            "type": "string",
+            "enum": [
+              "EQUAL",
+              "NOT_EQUAL"
+            ]
+          }
+        }
+      },
       "CIBundleFee": {
         "type": "object",
         "properties": {
           "payment_amount": {
             "type": "integer",
-            "description": "Applied commission fee",
+            "description": "Fee paid by the creditor institution's",
             "format": "int64"
           },
           "service_type": {
             "type": "string",
-            "description": "Service type"
+            "description": "Taxonomy description"
           },
           "specific_built_in_data": {
             "type": "string",
-            "description": "Specific collection data"
+            "description": "Taxonomy identifier"
           }
         },
         "description": "Creditor Institution's fees details"
@@ -10691,25 +10721,6 @@
           }
         }
       },
-      "PspCiBundleAttribute": {
-        "type": "object",
-        "properties": {
-          "maxPaymentAmount": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "transferCategory": {
-            "type": "string"
-          },
-          "transferCategoryRelation": {
-            "type": "string",
-            "enum": [
-              "EQUAL",
-              "NOT_EQUAL"
-            ]
-          }
-        }
-      },
       "PspData": {
         "required": [
           "abi_code",
@@ -10792,7 +10803,7 @@
           "attributes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PspCiBundleAttribute"
+              "$ref": "#/components/schemas/CIBundleAttribute"
             }
           },
           "ciFiscalCode": {
