@@ -14,6 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CIPaymentContact;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionAndBrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionContactsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDetailsResource;
@@ -22,6 +23,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.UpdateCreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerAndEcDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResource;
@@ -35,6 +37,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -282,12 +285,12 @@ class CreditorInstitutionServiceTest {
         TavoloOpEntity entity = buildTavoloOpEntity();
         InstitutionProductUsers users = buildInstitutionProductUsers();
         when(operativeTableRepository.findByTaxCode("ciTaxCode")).thenReturn(Optional.of(entity));
-        /*when(externalApiClient.getInstitutionProductUsers(
+        when(externalApiClient.getInstitutionProductUsers(
                 "institutionId",
                 null,
                 null,
-                Collections.singletonList("admin"))
-        ).thenReturn(Collections.singletonList(users));*/
+                Collections.singletonList(SelfcareProductUser.ADMIN.getProductUser()))
+        ).thenReturn(Collections.singletonList(users));
 
         CreditorInstitutionContactsResource result = assertDoesNotThrow(() ->
                 service.getCreditorInstitutionContacts("ciTaxCode", "institutionId"));
@@ -297,42 +300,40 @@ class CreditorInstitutionServiceTest {
         assertEquals(entity.getName(), result.getOperativeTable().getName());
         assertEquals(entity.getEmail(), result.getOperativeTable().getEmail());
         assertEquals(entity.getTelephone(), result.getOperativeTable().getTelephone());
-        assertNull(result.getCiPaymentContacts());
-        /*assertNotNull(result.getCiPaymentContacts());
+        assertNotNull(result.getCiPaymentContacts());
         assertEquals(1, result.getCiPaymentContacts().size());
 
         CIPaymentContact actualPaymentContact = result.getCiPaymentContacts().get(0);
         assertEquals(users.getEmail(), actualPaymentContact.getEmail());
         assertEquals(users.getName(), actualPaymentContact.getName());
         assertEquals(users.getSurname(), actualPaymentContact.getSurname());
-        assertEquals(users.getFiscalCode(), actualPaymentContact.getFiscalCode());*/
+        assertEquals(users.getFiscalCode(), actualPaymentContact.getFiscalCode());
     }
 
     @Test
     void getCreditorInstitutionContactsWithOperativeTableNotFound() {
         InstitutionProductUsers users = buildInstitutionProductUsers();
         when(operativeTableRepository.findByTaxCode("ciTaxCode")).thenReturn(Optional.empty());
-        /*when(externalApiClient.getInstitutionProductUsers(
+        when(externalApiClient.getInstitutionProductUsers(
                 "institutionId",
                 null,
                 null,
-                Collections.singletonList("admin"))
-        ).thenReturn(Collections.singletonList(users));*/
+                Collections.singletonList(SelfcareProductUser.ADMIN.getProductUser()))
+        ).thenReturn(Collections.singletonList(users));
 
         CreditorInstitutionContactsResource result = assertDoesNotThrow(() ->
                 service.getCreditorInstitutionContacts("ciTaxCode", "institutionId"));
 
         assertNotNull(result);
         assertNull(result.getOperativeTable());
-        assertNull(result.getCiPaymentContacts());
-        /*assertNotNull(result.getCiPaymentContacts());
+        assertNotNull(result.getCiPaymentContacts());
         assertEquals(1, result.getCiPaymentContacts().size());
 
         CIPaymentContact actualPaymentContact = result.getCiPaymentContacts().get(0);
         assertEquals(users.getEmail(), actualPaymentContact.getEmail());
         assertEquals(users.getName(), actualPaymentContact.getName());
         assertEquals(users.getSurname(), actualPaymentContact.getSurname());
-        assertEquals(users.getFiscalCode(), actualPaymentContact.getFiscalCode());*/
+        assertEquals(users.getFiscalCode(), actualPaymentContact.getFiscalCode());
     }
 
     private TavoloOpEntity buildTavoloOpEntity() {
