@@ -415,11 +415,7 @@ public class CommissionBundleService {
         List<Taxonomy> taxonomies = getTaxonomiesByBundleAttributes(attributes);
 
         return attributes.parallelStream()
-                .map(attribute -> buildCIBundleFee(
-                        attribute.getMaxPaymentAmount(),
-                        attribute.getTransferCategory(),
-                        taxonomies)
-                )
+                .map(attribute -> buildCIBundleFee(attribute, taxonomies))
                 .toList();
     }
 
@@ -445,9 +441,10 @@ public class CommissionBundleService {
         return this.taxonomyService.getTaxonomiesByCodes(transferCategoryList);
     }
 
-    private CIBundleFee buildCIBundleFee(Long paymentAmount, String transferCategory, List<Taxonomy> taxonomies) {
+    private CIBundleFee buildCIBundleFee(CIBundleAttribute attribute, List<Taxonomy> taxonomies) {
+        String transferCategory = attribute.getTransferCategory();
         return CIBundleFee.builder()
-                .paymentAmount(paymentAmount)
+                .paymentAmount(attribute.getMaxPaymentAmount())
                 .specificBuiltInData(transferCategory)
                 .serviceType(taxonomies.stream()
                         .filter(taxonomy -> taxonomy.getSpecificBuiltInData().equals(transferCategory))
@@ -469,17 +466,11 @@ public class CommissionBundleService {
 
     private List<BundleResource> getPublicBundleResources(String ciTaxCode, Bundles bundles) {
         return bundles.getBundles().parallelStream()
-                .map(bundle -> {
-                    BundleResource bundleResource = enrichCiPublicBundle(ciTaxCode, bundle);
-                    bundleResource.setTransferCategoryList(
-                            this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
-                    );
-                    return bundleResource;
-                })
+                .map(bundle -> buildCIPublicBundle(ciTaxCode, bundle))
                 .toList();
     }
 
-    private BundleResource enrichCiPublicBundle(String ciTaxCode, Bundle bundle) {
+    private BundleResource buildCIPublicBundle(String ciTaxCode, Bundle bundle) {
         BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
 
         try {
@@ -492,13 +483,20 @@ public class CommissionBundleService {
                 bundleResource.setCiBundleStatus(CIBundleStatus.ON_REMOVAL);
             }
             bundleResource.setCiBundleId(ciBundle.getIdCIBundle());
+            List<CIBundleFee> ciBundleFeeList = getCIBundleFeeList(ciBundle.getAttributes());
+            bundleResource.setCiBundleFeeList(ciBundleFeeList);
         } catch (FeignException.NotFound ignore) {
-            PublicBundleRequests request = this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
-            if (request != null && request.getPageInfo().getTotalItems() != null && request.getPageInfo().getTotalItems() > 0) {
+            PublicBundleRequests bundleRequests = this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
+            if (bundleRequests != null && bundleRequests.getPageInfo().getTotalItems() != null && bundleRequests.getPageInfo().getTotalItems() > 0) {
                 bundleResource.setCiBundleStatus(CIBundleStatus.REQUESTED);
-                bundleResource.setCiRequestId(request.getRequestsList().get(0).getId());
+                PublicBundleRequest request = bundleRequests.getRequestsList().get(0);
+                bundleResource.setCiRequestId(request.getId());
+                List<CIBundleFee> ciBundleFeeList = getCIBundleFeeList(request.getCiBundleAttributes());
+                bundleResource.setCiBundleFeeList(ciBundleFeeList);
             } else {
                 bundleResource.setCiBundleStatus(CIBundleStatus.AVAILABLE);
+                List<Taxonomy> taxonomies = this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList());
+                bundleResource.setTransferCategoryList(taxonomies);
             }
         }
 

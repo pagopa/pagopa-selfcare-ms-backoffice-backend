@@ -60,4 +60,6 @@ public class BundleResource {
     private String ciBundleId;
     @Schema(description = "Creditor institution bundle's subscription request's id")
     private String ciRequestId;
+    @Schema(description = "Creditor institution bundle's attributes that describe for each taxonomy the fee paid by the CI")
+    private List<CIBundleFee> ciBundleFeeList;
 }

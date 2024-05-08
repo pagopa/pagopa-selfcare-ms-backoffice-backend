@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Model class that contains the taxonomy fee
+ * Model class that contains the taxonomy fee specified by a creditor institution
  */
 @Data
 @Builder
@@ -16,15 +16,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CIBundleFee {
 
-    @Schema(description = "Service type")
+    @Schema(description = "Taxonomy description")
     @JsonProperty(value = "service_type")
     private String serviceType;
 
-    @Schema(description = "Specific collection data")
+    @Schema(description = "Taxonomy identifier")
     @JsonProperty(value = "specific_built_in_data")
     private String specificBuiltInData;
 
-    @Schema(description = "Applied commission fee")
+    @Schema(description = "Fee paid by the creditor institution's")
     @JsonProperty(value = "payment_amount")
     private Long paymentAmount;
 }
