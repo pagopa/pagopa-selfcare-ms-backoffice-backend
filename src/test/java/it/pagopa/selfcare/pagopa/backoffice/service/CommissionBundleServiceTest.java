@@ -531,7 +531,7 @@ class CommissionBundleServiceTest {
                 .idCIBundle(CI_BUNDLE_ID)
                 .attributes(
                         Collections.singletonList(
-                                CiBundleAttribute.builder()
+                                CIBundleAttribute.builder()
                                         .maxPaymentAmount(100L)
                                         .transferCategory(TRANSFER_CATEGORY)
                                         .build()
@@ -657,7 +657,7 @@ class CommissionBundleServiceTest {
                                 PublicBundleRequest.builder()
                                         .ciBundleAttributes(
                                                 Collections.singletonList(
-                                                        PspCiBundleAttribute.builder()
+                                                        CIBundleAttribute.builder()
                                                                 .maxPaymentAmount(100L)
                                                                 .transferCategory(TRANSFER_CATEGORY)
                                                                 .build()
