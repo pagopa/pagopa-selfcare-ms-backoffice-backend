@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.stations;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import lombok.Data;
 
@@ -11,47 +11,47 @@ import java.time.Instant;
 
 @Data
 public class WrapperStationResource {
-    @ApiModelProperty(value = "Station's unique identifier", required = true)
+    @Schema(description = "Station's unique identifier",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotBlank
     private String stationCode;
-    @ApiModelProperty(value = "Station's activation state", required = true)
+    @Schema(description = "Station's activation state",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private Boolean enabled;
-    @ApiModelProperty(value = "Station broker's description")
+    @Schema(description = "Station broker's description")
     private String brokerDescription;
-    @ApiModelProperty("Station's version")
+    @Schema(description = "Station's version")
     @JsonProperty(required = true)
     @NotNull
     private Long version;
-    @ApiModelProperty("Number of station's creditor institutions")
+    @Schema(description = "Number of station's creditor institutions")
     @JsonProperty(required = true)
     @NotNull
     private Integer associatedCreditorInstitutions;
-    @ApiModelProperty("Station's activation date")
+    @Schema(description = "Station's activation date")
     private Instant activationDate;
-    @ApiModelProperty("Station created on")
+    @Schema(description = "Station created on")
     private Instant createdAt;
-    @ApiModelProperty("Station's last modified date")
+    @Schema(description = "Station's last modified date")
     private Instant modifiedAt;
-    @ApiModelProperty(value = "Station's status", required = true)
+    @Schema(description = "Station's status",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotNull
     private WrapperStatus wrapperStatus;
-    @ApiModelProperty("Station's service")
+    @Schema(description = "Station's service")
     private String service;
-    @ApiModelProperty("Station's pof service")
+    @Schema(description = "Station's pof service")
     private String pofService;
-    @ApiModelProperty(value = "Station's target host")
+    @Schema(description = "Station's target host")
     private String targetHost;
-    @ApiModelProperty(value = "Station target's port")
+    @Schema(description = "Station target's port")
     private Long targetPort;
-    @ApiModelProperty(value = "Station's target path")
+    @Schema(description = "Station's target path")
     private String targetPath;
-    @ApiModelProperty(value = "Station's target host POF")
+    @Schema(description = "Station's target host POF")
     private String targetHostPof;
-    @ApiModelProperty(value = "Station's target port POF")
+    @Schema(description = "Station's target port POF")
     private Long targetPortPof;
-    @ApiModelProperty(value = "Station's target path POF")
+    @Schema(description = "Station's target path POF")
     private String targetPathPof;
 }

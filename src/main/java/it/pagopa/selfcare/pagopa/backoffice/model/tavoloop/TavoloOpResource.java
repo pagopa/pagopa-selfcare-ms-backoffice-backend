@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.tavoloop;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,38 +16,38 @@ import java.time.Instant;
 public class TavoloOpResource {
 
 
-    @ApiModelProperty(value = "Fiscal code", required = true)
+    @Schema(description = "Fiscal code",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private String taxCode;
 
-    @ApiModelProperty(value = "Psp", required = true)
+    @Schema(description = "Psp",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private String name;
 
-    @ApiModelProperty(value = "referent", required = true)
+    @Schema(description = "referent",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private String referent;
 
-    @ApiModelProperty(value = "contact person's email address", required = true)
+    @Schema(description = "contact person's email address",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private String email;
 
-    @ApiModelProperty(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private String telephone;
 
-    @ApiModelProperty(value = "Date of update", required = true)
+    @Schema(description = "Date of update",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private Instant modifiedAt;
 
-    @ApiModelProperty(value = "person who made the change", required = true)
+    @Schema(description = "person who made the change",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private String modifiedBy;
 
-    @ApiModelProperty(value = "Date of insert")
+    @Schema(description = "Date of insert")
     private Instant createdAt;
 
-    @ApiModelProperty(value = "Person who made the change", required = true)
+    @Schema(description = "Person who made the change",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private String createdBy;
 

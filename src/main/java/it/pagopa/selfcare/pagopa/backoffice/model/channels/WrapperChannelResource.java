@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.channels;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import lombok.Data;
 
@@ -13,7 +13,7 @@ import java.time.Instant;
 public class WrapperChannelResource {
 
     @JsonProperty("channel_code")
-    @ApiModelProperty(value = "Channel code")
+    @Schema(description = "Channel code")
     @NotBlank
     protected String channelCode;
 
@@ -21,14 +21,14 @@ public class WrapperChannelResource {
     protected Boolean enabled;
 
     @JsonProperty("broker_description")
-    @ApiModelProperty(value = "Broker description. Read only field")
+    @Schema(description = "Broker description. Read only field")
     protected String brokerDescription;
 
-    @ApiModelProperty(" creation date")
+    @Schema(description = " creation date")
     private Instant createdAt;
-    @ApiModelProperty(" modification date")
+    @Schema(description = " modification date")
     private Instant modifiedAt;
-    @ApiModelProperty(value = "channel's validation status", required = true)
+    @Schema(description = "channel's validation status",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotNull
     private WrapperStatus wrapperStatus;

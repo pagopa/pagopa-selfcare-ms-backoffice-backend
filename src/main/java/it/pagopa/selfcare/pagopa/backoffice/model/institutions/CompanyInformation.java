@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.institutions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,14 +13,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CompanyInformation {
 
-    @ApiModelProperty(value = "Institution's REA")
+    @Schema(description = "Institution's REA")
     private String rea;
 
-    @ApiModelProperty(value = "Institution's share capital value")
+    @Schema(description = "Institution's share capital value")
     @JsonProperty(value = "share_capital")
     private String shareCapital;
 
-    @ApiModelProperty(value = "Institution's business register place")
+    @Schema(description = "Institution's business register place")
     @JsonProperty(value = "business_register_place")
     private String businessRegisterPlace;
 

@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.channels;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +17,7 @@ import java.util.List;
 public class PspChannelsResource {
 
     @JsonProperty("channels")
-    @ApiModelProperty(value = " Channel list", required = true)
+    @Schema(description = " Channel list",requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private List<PspChannelResource> channelsList;
 

@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.taxonomies;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,68 +15,68 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class Taxonomy {
 
-    @ApiModelProperty(value = "Creditor institution type code", required = true)
+    @Schema(description = "Creditor institution type code",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "ci_type_code", required = true)
     @NotBlank
     private String ecTypeCode;
 
-    @ApiModelProperty(value = "Creditor Institution type", required = true)
+    @Schema(description = "Creditor Institution type",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "ci_type", required = true)
     @NotBlank
     private String ecType;
 
 
-    @ApiModelProperty(value = "Macro Area Progressive", required = true)
+    @Schema(description = "Macro Area Progressive",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "macro_area_ci_progressive", required = true)
     @NotBlank
     private String macroAreaEcProgressive;
 
-    @ApiModelProperty(value = "Macro area name", required = true)
+    @Schema(description = "Macro area name",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "macro_area_name", required = true)
     @NotBlank
     private String macroAreaName;
 
-    @ApiModelProperty(value = "Macro area description", required = true)
+    @Schema(description = "Macro area description",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "macro_area_description", required = true)
     @NotBlank
     private String macroAreaDescription;
 
-    @ApiModelProperty(value = "Service type code", required = true)
+    @Schema(description = "Service type code",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "service_type_code", required = true)
     @NotBlank
     private String serviceTypeCode;
 
-    @ApiModelProperty(value = "Service type", required = true)
+    @Schema(description = "Service type",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "service_type", required = true)
     @NotBlank
     private String serviceType;
 
-    @ApiModelProperty(value = "Legal reason for collection", required = true)
+    @Schema(description = "Legal reason for collection",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "legal_reason_collection", required = true)
     @NotBlank
     private String legalReasonCollection;
 
-    @ApiModelProperty(value = "Service description", required = true)
+    @Schema(description = "Service description",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "service_type_description", required = true)
     @NotBlank
     private String serviceTypeDescription;
 
-    @ApiModelProperty(value = "Taxonomy version", required = true)
+    @Schema(description = "Taxonomy version",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "taxonomy_version", required = true)
     @NotBlank
     private String taxonomyVersion;
 
-    @ApiModelProperty(value = "Specific collection data", required = true)
+    @Schema(description = "Specific collection data",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "specific_built_in_data", required = true)
     @NotBlank
     private String specificBuiltInData;
 
-    @ApiModelProperty(value = "Start date of validity", required = true)
+    @Schema(description = "Start date of validity",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "start_date", required = true)
     @NotBlank
     private String startDate;
 
-    @ApiModelProperty(value = "End date of validity", required = true)
+    @Schema(description = "End date of validity",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "end_date", required = true)
     @NotBlank
     private String endDate;

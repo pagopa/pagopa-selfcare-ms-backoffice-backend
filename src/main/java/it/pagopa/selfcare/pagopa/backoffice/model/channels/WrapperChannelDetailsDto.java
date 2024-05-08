@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.channels;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import lombok.Data;
@@ -15,74 +15,74 @@ import java.util.List;
 public class WrapperChannelDetailsDto {
 
     @JsonProperty("channel_code")
-    @ApiModelProperty(value = "Channel code")
+    @Schema(description = "Channel code")
     @NotBlank
-    private String channelCode;//ok
+    private String channelCode;
 
     @JsonProperty("broker_description")
-    @ApiModelProperty(value = "Broker description. Read only field")
+    @Schema(description = "Broker description. Read only field")
     @NotBlank
-    private String brokerDescription;//ok
+    private String brokerDescription;
 
 
     @JsonProperty("broker_psp_code")
-    @ApiModelProperty(value = " psp code")
+    @Schema(description = " psp code")
     @NotBlank
-    private String brokerPspCode;//ok
+    private String brokerPspCode;
 
 
     @JsonProperty("target_host")
-    @ApiModelProperty(value = " target host")
+    @Schema(description = " target host")
     @NotBlank
-    private String targetHost;//ok
+    private String targetHost;
 
     @JsonProperty("target_port")
-    @ApiModelProperty(value = " target port")
+    @Schema(description = " target port")
     @NotNull
-    private Long targetPort;//ok
+    private Long targetPort;
 
     @JsonProperty("target_path")
-    @ApiModelProperty(value = " target path's")
+    @Schema(description = " target path's")
     @NotBlank
-    private String targetPath;//ok
+    private String targetPath;
 
 
     // CANALI_NODO
 
     @JsonProperty("redirect_ip")
-    @ApiModelProperty(value = " redirect ip")
-    private String redirectIp;//ok
+    @Schema(description = " redirect ip")
+    private String redirectIp;
 
     @JsonProperty("redirect_path")
-    @ApiModelProperty(value = " redirect path")
-    private String redirectPath;//ok
+    @Schema(description = " redirect path")
+    private String redirectPath;
 
     @JsonProperty("redirect_port")
-    @ApiModelProperty(value = " redirect port")
-    private Long redirectPort;//ok
+    @Schema(description = " redirect port")
+    private Long redirectPort;
 
     @JsonProperty("redirect_query_string")
-    @ApiModelProperty(value = " redirect query string")
-    private String redirectQueryString;//ok
+    @Schema(description = " redirect query string")
+    private String redirectQueryString;
 
     @JsonProperty("redirect_protocol")
-    @ApiModelProperty(value = " redirect protocol")
+    @Schema(description = " redirect protocol")
     @NotNull
-    private Protocol redirectProtocol;//ok
+    private Protocol redirectProtocol;
 
     @JsonProperty("payment_types")
-    @ApiModelProperty(value = " List of payment types")
+    @Schema(description = " List of payment types")
     @NotNull
-    private List<String> paymentTypeList;//ok
+    private List<String> paymentTypeList;
 
-    @ApiModelProperty(value = "channel note description by operation team")
+    @Schema(description = "channel note description by operation team")
     private String note = "";
 
-    @ApiModelProperty(value = "channel's validation status")
+    @Schema(description = "channel's validation status")
     private WrapperStatus status = WrapperStatus.TO_CHECK;
 
     @JsonProperty(required = true)
     @NotBlank
-    @ApiModelProperty(value = "Url jira for ChannelDetail validation")
+    @Schema(description = "Url jira for ChannelDetail validation")
     private String validationUrl;
 }

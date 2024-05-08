@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.channels;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import lombok.Data;
 
@@ -11,24 +11,24 @@ import java.time.Instant;
 public class WrapperChannelDetailsResource extends ChannelDetailsResource {
 
     @JsonProperty("id")
-    @ApiModelProperty(value = " entities id(mongodb)")
+    @Schema(description = " entities id(mongodb)")
     private String id;
     @JsonProperty("type")
-    @ApiModelProperty(value = " entities type")
+    @Schema(description = " entities type")
     private WrapperType type;
     @JsonProperty("created_at")
-    @ApiModelProperty(value = " creation date")
+    @Schema(description = " creation date")
     private Instant createdAt;
     @JsonProperty("modified_at")
-    @ApiModelProperty(value = " modification date")
+    @Schema(description = " modification date")
     private Instant modifiedAt;
     @JsonProperty("modified_by")
-    @ApiModelProperty(value = " modified by")
+    @Schema(description = " modified by")
     private String modifiedBy;
     @JsonProperty("modified_by_opt")
-    @ApiModelProperty(value = " modified byoperator")
+    @Schema(description = " modified byoperator")
     private String modifiedByOpt;
 
-    @ApiModelProperty(value = "channel note description by operation team")
+    @Schema(description = "channel note description by operation team")
     private String note;
 }

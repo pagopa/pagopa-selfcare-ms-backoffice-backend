@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,16 +15,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BundlePaymentType {
 
-    @ApiModelProperty(value = "The payment type unique identifier", required = true)
+    @Schema(description = "The payment type unique identifier",requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
 
-    @ApiModelProperty(value = "A user-friendly name for the payment type", required = true)
+    @Schema(description = "A user-friendly name for the payment type",requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
-    @ApiModelProperty(value = "The description related to the payment type", required = true)
+    @Schema(description = "The description related to the payment type",requiredMode = Schema.RequiredMode.REQUIRED)
     private String description;
 
-    @ApiModelProperty(value = "The date on which the payment type was created", required = true)
+    @Schema(description = "The date on which the payment type was created",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("created_date")
     private LocalDateTime createdDate;
 }
