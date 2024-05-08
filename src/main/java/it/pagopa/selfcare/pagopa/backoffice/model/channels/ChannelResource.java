@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.channels;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 public class ChannelResource {
 
     @JsonProperty("channel_code")
-    @ApiModelProperty(value = "Channel code")
+    @Schema(description = "Channel code")
     @NotBlank
     protected String channelCode;
 
@@ -18,6 +18,6 @@ public class ChannelResource {
     protected Boolean enabled;
 
     @JsonProperty("broker_description")
-    @ApiModelProperty(value = "Broker description. Read only field")
+    @Schema(description = "Broker description. Read only field")
     protected String brokerDescription;
 }

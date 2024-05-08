@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.iban;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,27 +16,27 @@ import java.util.List;
 @AllArgsConstructor
 public class IbanCreateApiconfig {
 
-    @ApiModelProperty(value = "The description the Creditor Institution gives to the iban about its usage")
+    @Schema(description = "The description the Creditor Institution gives to the iban about its usage")
     @JsonProperty("description")
     private String description;
 
-    @ApiModelProperty(value = "The date on which the iban will expire", required = true)
+    @Schema(description = "The date on which the iban will expire",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("due_date")
     private OffsetDateTime dueDate;
 
-    @ApiModelProperty(value = "the iban code", required = true)
+    @Schema(description = "the iban code",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("iban")
     private String iban;
 
-    @ApiModelProperty(value = "True if the iban is active", required = true)
+    @Schema(description = "True if the iban is active",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("is_active")
     private boolean active;
 
-    @ApiModelProperty(value = "The labels array associated with the iban")
+    @Schema(description = "The labels array associated with the iban")
     @JsonProperty("labels")
     private List<IbanLabel> labels;
 
-    @ApiModelProperty(value = "The date the Creditor Institution wants the iban to be used for its payments", required = true)
+    @Schema(description = "The date the Creditor Institution wants the iban to be used for its payments",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("validity_date")
     private OffsetDateTime validityDate;
 }

@@ -1,14 +1,14 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
 public class IbanLabel {
 
-    @ApiModelProperty(value = "Label name", required = true)
+    @Schema(description = "Label name",requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
-    @ApiModelProperty(value = "Label description", required = true)
+    @Schema(description = "Label description",requiredMode = Schema.RequiredMode.REQUIRED)
     private String description;
 }

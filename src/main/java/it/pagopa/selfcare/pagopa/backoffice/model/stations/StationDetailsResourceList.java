@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.stations;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import lombok.Data;
 
@@ -12,7 +12,7 @@ public class StationDetailsResourceList {
 
     @JsonProperty("page_info")
     PageInfo pageInfo;
-    @ApiModelProperty(value = "Object that contains List of ec stations", required = true)
+    @Schema(description = "Object that contains List of ec stations",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("stations")
     private List<StationDetailResource> stationsDetailsList;
 }

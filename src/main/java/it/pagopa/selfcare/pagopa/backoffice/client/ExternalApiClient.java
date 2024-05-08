@@ -10,6 +10,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutio
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +20,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @FeignClient(name = "external-api", url = "${rest-client.external-api.base-url}", configuration = ExternalFeignConfig.class)
+@Validated
 public interface ExternalApiClient {
 
     @GetMapping(value = "/institutions/{institutionId}", produces = MediaType.APPLICATION_JSON_VALUE)

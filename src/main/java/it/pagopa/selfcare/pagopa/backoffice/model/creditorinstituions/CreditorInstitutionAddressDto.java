@@ -1,34 +1,34 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 
 @Data
 public class CreditorInstitutionAddressDto {
-    @ApiModelProperty(value = "Creditor Institution's physical address", required = true)
+    @Schema(description = "Creditor Institution's physical address",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
 //    @NotBlank
     private String location;
 
-    @ApiModelProperty(value = "Creditor Institution's city", required = true)
+    @Schema(description = "Creditor Institution's city",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotBlank
     private String city;
 
-    @ApiModelProperty(value = "Creditor Institution's zip code", required = true)
+    @Schema(description = "Creditor Institution's zip code",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
 //    @NotBlank
     private String zipCode;
 
-    @ApiModelProperty(value = "Creditor Institution's country code", required = true)
+    @Schema(description = "Creditor Institution's country code",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
 //    @NotBlank
     private String countryCode;
 
-    @ApiModelProperty(value = "Creditor Institution's tax domicile", required = true)
+    @Schema(description = "Creditor Institution's tax domicile",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
 //    @NotBlank
     private String taxDomicile;

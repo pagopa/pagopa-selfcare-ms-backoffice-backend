@@ -1,6 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.Valid;
@@ -9,16 +9,16 @@ import javax.validation.Valid;
 public class CreditorInstitutionDetailsResource extends CreditorInstitutionResource {
 
 
-    @ApiModelProperty(value = "Creditor Institution's address object", required = true)
+    @Schema(description = "Creditor Institution's address object",requiredMode = Schema.RequiredMode.REQUIRED)
     @Valid
     private CreditorInstitutionAddressResource address;
 
-    @ApiModelProperty(value = "Enables the zipping of the content that goes through fstp", required = true)
+    @Schema(description = "Enables the zipping of the content that goes through fstp",requiredMode = Schema.RequiredMode.REQUIRED)
     private Boolean pspPayment;
 
-    @ApiModelProperty(value = "Enables the zipping of the content that goes through fstp", required = true)
+    @Schema(description = "Enables the zipping of the content that goes through fstp",requiredMode = Schema.RequiredMode.REQUIRED)
     private Boolean reportingFtp;
 
-    @ApiModelProperty(value = "Enables the zipping of the content that goes through fstp", required = true)
+    @Schema(description = "Enables the zipping of the content that goes through fstp",requiredMode = Schema.RequiredMode.REQUIRED)
     private Boolean reportingZip;
 }

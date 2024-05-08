@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Data
@@ -40,8 +42,8 @@ public class InstitutionInfo {
 
     private Billing billing;
 
-    @NotNull
-    private List<@NotBlank String> userProductRoles;
+    @Valid
+    private List<@NotBlank @Pattern(regexp = "admin|operator", flags = Pattern.Flag.CASE_INSENSITIVE) String> userProductRoles;
 
     @JsonProperty("companyInformations")
     private BusinessData businessData;

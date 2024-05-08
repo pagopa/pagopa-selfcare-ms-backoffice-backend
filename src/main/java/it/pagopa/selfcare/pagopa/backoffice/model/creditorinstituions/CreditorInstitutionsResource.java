@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import lombok.Data;
 
@@ -10,11 +10,11 @@ import java.util.List;
 @Data
 public class CreditorInstitutionsResource {
 
-    @ApiModelProperty(value = "A list of Creditor Institution's", required = true)
+    @Schema(description = "A list of Creditor Institution's",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("creditor_institutions")
     private List<CreditorInstitutionResource> creditorInstitutionList;
 
-    @ApiModelProperty(value = "info pageable", required = true)
+    @Schema(description = "info pageable",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("page_info")
     private PageInfo pageInfo;
 }

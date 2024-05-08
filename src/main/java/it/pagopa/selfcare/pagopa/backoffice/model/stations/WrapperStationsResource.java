@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.stations;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import lombok.Data;
 
@@ -9,10 +9,10 @@ import java.util.List;
 
 @Data
 public class WrapperStationsResource {
-    @ApiModelProperty(value = "List of ec stations", required = true)
+    @Schema(description = "List of ec stations",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private List<WrapperStationResource> stationsList;
-    @ApiModelProperty(value = "info pageable", required = true)
+    @Schema(description = "info pageable",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private PageInfo pageInfo;
 }

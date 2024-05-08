@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResource;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,11 +19,11 @@ import java.util.List;
 @AllArgsConstructor
 public class CreditorInstitutionContactsResource {
 
-    @ApiModelProperty(value = "Operative table")
+    @Schema(description = "Operative table")
     @JsonProperty(value = "operative_table")
     private TavoloOpResource operativeTable;
 
-    @ApiModelProperty(value = "Creditor institution's payment contacts")
+    @Schema(description = "Creditor institution's payment contacts")
     @JsonProperty(value = "ci_payment_contacts")
     private List<CIPaymentContact> ciPaymentContacts;
 }

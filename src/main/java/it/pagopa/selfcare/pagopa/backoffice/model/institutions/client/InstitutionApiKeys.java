@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.institutions.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -10,22 +10,22 @@ import javax.validation.constraints.NotBlank;
 public class InstitutionApiKeys {
 
 
-    @ApiModelProperty(value = "Institution's subscription id", required = true)
+    @Schema(description = "Institution's subscription id",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotBlank
     private String id;
 
-    @ApiModelProperty(value = "Institution's name Api Key", required = true)
+    @Schema(description = "Institution's name Api Key",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotBlank
     private String displayName;
 
-    @ApiModelProperty(value = "Institution's primary Api Key", required = true)
+    @Schema(description = "Institution's primary Api Key",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotBlank
     private String primaryKey;
 
-    @ApiModelProperty(value = "Institution's secondary Api Key", required = true)
+    @Schema(description = "Institution's secondary Api Key",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotBlank
     private String secondaryKey;

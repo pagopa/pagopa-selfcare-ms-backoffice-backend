@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.institutions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,18 +16,18 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class DpoData {
 
-    @ApiModelProperty(value = "DPO's address", required = true)
+    @Schema(description = "DPO's address",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotBlank
     private String address;
 
-    @ApiModelProperty(value = "DPO's PEC", required = true)
+    @Schema(description = "DPO's PEC",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotBlank
     @Email
     private String pec;
 
-    @ApiModelProperty(value = "DPO's email", required = true)
+    @Schema(description = "DPO's email",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotBlank
     @Email

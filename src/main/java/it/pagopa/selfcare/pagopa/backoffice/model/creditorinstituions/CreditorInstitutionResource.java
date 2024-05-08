@@ -1,6 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -9,34 +9,34 @@ import javax.validation.constraints.Size;
 
 @Data
 public class CreditorInstitutionResource {
-    @ApiModelProperty(value = "Creditor Institution's code(Fiscal Code)", required = true)
+    @Schema(description = "Creditor Institution's code(Fiscal Code)",requiredMode = Schema.RequiredMode.REQUIRED)
     @Size(max = 30)
     @NotBlank
     private String creditorInstitutionCode;
 
-    @ApiModelProperty(value = "Creditor Institution activation state on ApiConfig", required = true)
+    @Schema(description = "Creditor Institution activation state on ApiConfig",requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private Boolean enabled;
 
-    @ApiModelProperty(value = "Creditor Institution's business name", required = true)
+    @Schema(description = "Creditor Institution's business name",requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank
     private String businessName;
 
-    @ApiModelProperty(value = "Creditor Institution's CBill interbank code")
+    @Schema(description = "Creditor Institution's CBill interbank code")
     private String cbillCode;
 
-    @ApiModelProperty(value = "ApplicationCode")
+    @Schema(description = "ApplicationCode")
     private String applicationCode;
 
-    @ApiModelProperty(value = "AuxDigit maximum:3 minimum:0")
+    @Schema(description = "AuxDigit maximum:3 minimum:0")
     private String auxDigit;
 
-    @ApiModelProperty(value = "SegregationCode")
+    @Schema(description = "SegregationCode")
     private String segregationCode;
 
-    @ApiModelProperty(value = "Mod4")
+    @Schema(description = "Mod4")
     private String mod4;
 
-    @ApiModelProperty(value = "Broadcast")
+    @Schema(description = "Broadcast")
     private Boolean broadcast;
 }

@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.institutions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Data
@@ -18,74 +19,74 @@ import java.util.List;
 @AllArgsConstructor
 public class InstitutionDetail {
 
-    @ApiModelProperty(value = "Institution's unique internal identifier", required = true)
+    @Schema(description = "Institution's unique internal identifier",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "id", required = true)
     @NotBlank
     private String id;
 
-    @ApiModelProperty(value = "Institution's name", required = true)
+    @Schema(description = "Institution's name",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "name", required = true)
     @NotBlank
     private String description;
 
-    @ApiModelProperty(value = "Institution's unique external identifier", required = true)
+    @Schema(description = "Institution's unique external identifier",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "external_id", required = true)
     @NotBlank
     private String externalId;
 
-    @ApiModelProperty(value = "Institution's details origin Id", required = true)
+    @Schema(description = "Institution's details origin Id",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "origin_id", required = true)
     @NotBlank
     private String originId;
 
-    @ApiModelProperty(value = "Institution's type")
+    @Schema(description = "Institution's type")
     @JsonProperty(value = "institution_type")
     private InstitutionType institutionType;
 
-    @ApiModelProperty(value = "Institution's digitalAddress", required = true)
+    @Schema(description = "Institution's digitalAddress",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "mail_address")
     private String digitalAddress;
 
-    @ApiModelProperty(value = "Institution onboarding status", required = true)
+    @Schema(description = "Institution onboarding status",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "status", required = true)
     private String status;
 
-    @ApiModelProperty(value = "Institution's physical address", required = true)
+    @Schema(description = "Institution's physical address",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "address")
     private String address;
 
-    @ApiModelProperty(value = "Institution's taxCode", required = true)
+    @Schema(description = "Institution's taxCode",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "tax_code", required = true)
     @NotBlank
     private String taxCode;
 
-    @ApiModelProperty(value = "Institution data origin", required = true)
+    @Schema(description = "Institution data origin",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "origin", required = true)
     @NotBlank
     private String origin;
 
-    @ApiModelProperty(value = "Billing recipient code")
+    @Schema(description = "Billing recipient code")
     @JsonProperty(value = "recipient_code")
     private String recipientCode;
 
-    @ApiModelProperty(value = "Logged user's roles on product", required = true)
+    @Schema(description = "Logged user's roles on product", required = true, allowableValues = "admin, operator")
     @JsonProperty(value = "user_product_roles", required = true)
-    private List<@NotBlank String> userProductRoles;
+    private List<@NotBlank @Pattern(regexp = "admin|operator", flags = Pattern.Flag.CASE_INSENSITIVE) String> userProductRoles;
 
-    @ApiModelProperty(value = "GPS, SCP, PT optional data")
+    @Schema(description = "GPS, SCP, PT optional data")
     @JsonProperty(value = "company_informations")
     private CompanyInformation companyInformations;
 
-    @ApiModelProperty(value = "Institution's assistance contacts")
+    @Schema(description = "Institution's assistance contacts")
     @JsonProperty(value = "assistance_contacts")
     private AssistanceContact assistanceContacts;
 
-    @ApiModelProperty(value = "Payment Service Provider (PSP) specific data")
+    @Schema(description = "Payment Service Provider (PSP) specific data")
     @JsonProperty(value = "psp_data")
     @Valid
     private PspData pspData;
 
-    @ApiModelProperty(value = "Data Protection Officer (DPO) specific data")
+    @Schema(description = "Data Protection Officer (DPO) specific data")
     @JsonProperty(value = "dpo_data")
     @Valid
     private DpoData dpoData;
