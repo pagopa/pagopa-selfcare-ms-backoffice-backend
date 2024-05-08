@@ -14,6 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CIPaymentContact;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionAndBrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionContactsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDetailsResource;
@@ -22,6 +23,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.UpdateCreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerAndEcDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResource;
@@ -34,6 +37,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -164,22 +169,21 @@ public class CreditorInstitutionService {
             operativeTable = this.modelMapper.map(optionalOperativeTable.get(), TavoloOpResource.class);
         }
 
-        // TODO: check if can be enabled or must be deleted
-        /*List<InstitutionProductUsers> institutionUserList =
+        List<InstitutionProductUsers> institutionUserList =
                 this.externalApiClient.getInstitutionProductUsers(
                         institutionId,
                         null,
                         null,
-                        Collections.singletonList("admin")
-                );*/
+                        Collections.singletonList(SelfcareProductUser.ADMIN.getProductUser())
+                );
 
         return CreditorInstitutionContactsResource.builder()
                 .operativeTable(operativeTable)
-                /*.ciPaymentContacts(
+                .ciPaymentContacts(
                         institutionUserList.stream()
                                 .map(user -> modelMapper.map(user, CIPaymentContact.class))
                                 .toList()
-                )*/
+                )
                 .build();
     }
 }
