@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.channels;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -13,18 +13,18 @@ public class PspChannelResource {
 
 
     @JsonProperty("enabled")
-    @ApiModelProperty(value = "Channel enabled", required = true)
+    @Schema(description = "Channel enabled",requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private Boolean enabled;
 
     @JsonProperty("channel_code")
-    @ApiModelProperty(value = "Channel's unique identifier", required = true)
+    @Schema(description = "Channel's unique identifier",requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank
     private String channelCode;
 
 
     @JsonProperty("payment_types")
-    @ApiModelProperty(value = "List of payment types", required = true)
+    @Schema(description = "List of payment types",requiredMode = Schema.RequiredMode.REQUIRED)
     private List<String> paymentTypeList;
 
 }

@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.stations;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import lombok.Data;
 
@@ -12,30 +12,30 @@ import java.time.Instant;
 @Data
 public class StationResource {
 
-    @ApiModelProperty(value = "Station's unique identifier", required = true)
+    @Schema(description = "Station's unique identifier",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotBlank
     private String stationCode;
-    @ApiModelProperty(value = "Station's activation state", required = true)
+    @Schema(description = "Station's activation state",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private Boolean enabled;
-    @ApiModelProperty(value = "Station broker's description")
+    @Schema(description = "Station broker's description")
     private String brokerDescription;
-    @ApiModelProperty("Station's version")
+    @Schema(description = "Station's version")
     @JsonProperty(required = true)
     @NotNull
     private Long version;
-    @ApiModelProperty(value = "Station's status")
+    @Schema(description = "Station's status")
     private WrapperStatus wrapperStatus;
-    @ApiModelProperty("Number of station's creditor institutions")
+    @Schema(description = "Number of station's creditor institutions")
     @JsonProperty(required = true)
     @NotNull
     private Integer associatedCreditorInstitutions;
-    @ApiModelProperty("Station's activation date")
+    @Schema(description = "Station's activation date")
     private Instant activationDate;
-    @ApiModelProperty("Station created on")
+    @Schema(description = "Station created on")
     private Instant createdAt;
-    @ApiModelProperty("Station's last modified date")
+    @Schema(description = "Station's last modified date")
     private Instant modifiedAt;
 
 }

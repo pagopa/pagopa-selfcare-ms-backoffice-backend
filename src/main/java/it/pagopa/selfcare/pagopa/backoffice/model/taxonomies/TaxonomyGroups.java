@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.taxonomies;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class TaxonomyGroups {
 
-    @ApiModelProperty(value = "List of taxonomy groups", required = true)
+    @Schema(description = "List of taxonomy groups",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private List<TaxonomyGroup> taxonomyGroups;
 

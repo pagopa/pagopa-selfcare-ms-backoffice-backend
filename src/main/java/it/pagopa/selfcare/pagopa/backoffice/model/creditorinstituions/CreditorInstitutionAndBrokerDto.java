@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDto;
 import lombok.Data;
 
@@ -10,12 +10,12 @@ import javax.validation.constraints.NotNull;
 @Data
 public class CreditorInstitutionAndBrokerDto {
 
-    @ApiModelProperty(value = "Creditor Institution", required = true)
+    @Schema(description = "Creditor Institution",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotNull
     private CreditorInstitutionDto creditorInstitutionDto;
 
-    @ApiModelProperty(value = "Broker", required = true)
+    @Schema(description = "Broker",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotNull
     private BrokerDto brokerDto;

@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class PaymentTypes {
 
-    @ApiModelProperty(value = "List of payment types", required = true)
+    @Schema(description = "List of payment types",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("payment_types")
     private List<PaymentType> paymentTypeList;
 }

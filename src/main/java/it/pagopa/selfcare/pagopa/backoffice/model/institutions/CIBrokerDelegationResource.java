@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.institutions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,43 +16,43 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CIBrokerDelegationResource {
 
-    @ApiModelProperty(value = "Delegation Id")
+    @Schema(description = "Delegation Id")
     @JsonProperty(value = "id")
     private String id;
 
-    @ApiModelProperty(value = "Institution Id")
+    @Schema(description = "Institution Id")
     @JsonProperty(value = "institution_id")
     private String institutionId;
 
-    @ApiModelProperty(value = "Institution name")
+    @Schema(description = "Institution name")
     @JsonProperty(value = "institution_name")
     private String institutionName;
 
-    @ApiModelProperty(value = "Institution tax code")
+    @Schema(description = "Institution tax code")
     @JsonProperty(value = "institution_tax_code")
     private String institutionTaxCode;
 
-    @ApiModelProperty(value = "Broker code")
+    @Schema(description = "Broker code")
     @JsonProperty(value = "broker_id")
     private String brokerId;
 
-    @ApiModelProperty(value = "Broker's name")
+    @Schema(description = "Broker's name")
     @JsonProperty(value = "broker_name")
     private String brokerName;
 
-    @ApiModelProperty(value = "Institution type")
+    @Schema(description = "Institution type")
     @JsonProperty(value = "institution_type")
     private String institutionType;
 
-    @ApiModelProperty(value = "Creditor Institution's CBill interbank code")
+    @Schema(description = "Creditor Institution's CBill interbank code")
     @JsonProperty(value = "cbill_code")
     private String cbillCode;
 
-    @ApiModelProperty(value = "Number of institution's stations")
+    @Schema(description = "Number of institution's stations")
     @JsonProperty(value = "institution_station_count")
     private Long institutionStationCount;
 
-    @ApiModelProperty(value = "Describe if the institution has completed the process of sign in")
+    @Schema(description = "Describe if the institution has completed the process of sign in")
     @JsonProperty(value = "is_institution_signed_in")
     private Boolean isInstitutionSignedIn;
 }

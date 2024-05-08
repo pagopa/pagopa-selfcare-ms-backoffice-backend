@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.channels;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,10 +17,10 @@ import java.util.List;
 public class BrokersPspResource {
 
     @JsonProperty("brokers_psp")
-    @ApiModelProperty(value = " Psp's broker")
+    @Schema(description = " Psp's broker")
     List<BrokerPspResource> brokerPspList;
 
     @JsonProperty("page_info")
-    @ApiModelProperty(value = "info pageable")
+    @Schema(description = "info pageable")
     private PageInfo pageInfo;
 }
