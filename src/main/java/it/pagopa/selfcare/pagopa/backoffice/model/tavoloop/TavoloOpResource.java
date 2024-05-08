@@ -32,7 +32,7 @@ public class TavoloOpResource {
     @JsonProperty(required = true)
     private String email;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private String telephone;
 
