@@ -1024,7 +1024,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BundlesResource"
+                  "$ref": "#/components/schemas/CIBundlesResource"
                 }
               }
             },
@@ -1254,7 +1254,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BundlesResource"
+                  "$ref": "#/components/schemas/PSPBundlesResource"
                 }
               }
             },
@@ -1776,7 +1776,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BundleResource"
+                  "$ref": "#/components/schemas/PSPBundleResource"
                 }
               }
             },
@@ -8673,135 +8673,6 @@
         },
         "description": "Commission bundle related to PSP to be created"
       },
-      "BundleResource": {
-        "type": "object",
-        "properties": {
-          "ciBundleFeeList": {
-            "type": "array",
-            "description": "Creditor institution bundle's attributes that describe for each taxonomy the fee paid by the CI",
-            "items": {
-              "$ref": "#/components/schemas/CIBundleFee"
-            }
-          },
-          "ciBundleId": {
-            "type": "string",
-            "description": "Creditor institution bundle's id"
-          },
-          "ciBundleStatus": {
-            "type": "string",
-            "description": "Creditor institution bundle's status",
-            "enum": [
-              "ENABLED",
-              "ON_REMOVAL",
-              "REQUESTED",
-              "AVAILABLE"
-            ]
-          },
-          "ciRequestId": {
-            "type": "string",
-            "description": "Creditor institution bundle's subscription request's id"
-          },
-          "description": {
-            "type": "string"
-          },
-          "digitalStamp": {
-            "type": "boolean",
-            "description": "If the payment needs a tax stamp, mutually exclusive with digitalStampRestriction"
-          },
-          "digitalStampRestriction": {
-            "type": "boolean",
-            "description": "If the payment can be payed only with a tax stamp, mutually exclusive with digitalStamp"
-          },
-          "idBrokerPsp": {
-            "type": "string",
-            "description": "TaxCode of the linked broker PSP"
-          },
-          "idBundle": {
-            "type": "string",
-            "description": "Document ID"
-          },
-          "idChannel": {
-            "type": "string",
-            "description": "ID of the linked channel"
-          },
-          "insertedDate": {
-            "type": "string",
-            "description": "Date of creation",
-            "format": "date-time"
-          },
-          "lastUpdatedDate": {
-            "type": "string",
-            "description": "Date of the last change",
-            "format": "date-time"
-          },
-          "maxPaymentAmount": {
-            "type": "integer",
-            "description": "Maximum commission fee that can bee applied",
-            "format": "int64"
-          },
-          "minPaymentAmount": {
-            "type": "integer",
-            "description": "Minimum commission fee that can be applied",
-            "format": "int64"
-          },
-          "name": {
-            "type": "string"
-          },
-          "paymentAmount": {
-            "type": "integer",
-            "description": "Applied commission fee",
-            "format": "int64"
-          },
-          "paymentType": {
-            "type": "string",
-            "description": "Payment type for which the bundle can be applied"
-          },
-          "touchpoint": {
-            "type": "string",
-            "description": "Touch-point where the bundle can be applied"
-          },
-          "transferCategoryList": {
-            "type": "array",
-            "description": "List of taxonomies that relates to the bundle",
-            "items": {
-              "$ref": "#/components/schemas/Taxonomy"
-            }
-          },
-          "type": {
-            "type": "string",
-            "description": "Bundle enum type",
-            "enum": [
-              "GLOBAL",
-              "PUBLIC",
-              "PRIVATE"
-            ]
-          },
-          "validityDateFrom": {
-            "type": "string",
-            "description": "Date from which the bundle is valid",
-            "format": "date"
-          },
-          "validityDateTo": {
-            "type": "string",
-            "description": "Date after which the bundle is expired",
-            "format": "date"
-          }
-        }
-      },
-      "BundlesResource": {
-        "type": "object",
-        "properties": {
-          "bundles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/BundleResource"
-            }
-          },
-          "pageInfo": {
-            "$ref": "#/components/schemas/PageInfo"
-          }
-        }
-      },
       "CIBrokerDelegationPage": {
         "type": "object",
         "properties": {
@@ -8946,6 +8817,11 @@
         }
       },
       "CIBundleFee": {
+        "required": [
+          "payment_amount",
+          "serviceType",
+          "specificBuiltInData"
+        ],
         "type": "object",
         "properties": {
           "payment_amount": {
@@ -8953,16 +8829,144 @@
             "description": "Fee paid by the creditor institution's",
             "format": "int64"
           },
-          "service_type": {
+          "serviceType": {
             "type": "string",
             "description": "Taxonomy description"
           },
-          "specific_built_in_data": {
+          "specificBuiltInData": {
             "type": "string",
             "description": "Taxonomy identifier"
           }
         },
         "description": "Creditor Institution's fees details"
+      },
+      "CIBundleResource": {
+        "required": [
+          "bundleTaxonomies",
+          "ciBundleId",
+          "ciBundleStatus",
+          "ciRequestId"
+        ],
+        "type": "object",
+        "properties": {
+          "bundleTaxonomies": {
+            "type": "array",
+            "description": "Creditor institution bundle's attributes that describe for each taxonomy the fee paid by the CI",
+            "items": {
+              "$ref": "#/components/schemas/CIBundleFee"
+            }
+          },
+          "ciBundleId": {
+            "type": "string",
+            "description": "Creditor institution bundle's id"
+          },
+          "ciBundleStatus": {
+            "type": "string",
+            "description": "Creditor institution bundle's status",
+            "enum": [
+              "ENABLED",
+              "ON_REMOVAL",
+              "REQUESTED",
+              "AVAILABLE"
+            ]
+          },
+          "ciRequestId": {
+            "type": "string",
+            "description": "Creditor institution bundle's subscription request's id"
+          },
+          "description": {
+            "type": "string"
+          },
+          "digitalStamp": {
+            "type": "boolean",
+            "description": "If the payment needs a tax stamp, mutually exclusive with digitalStampRestriction"
+          },
+          "digitalStampRestriction": {
+            "type": "boolean",
+            "description": "If the payment can be payed only with a tax stamp, mutually exclusive with digitalStamp"
+          },
+          "idBrokerPsp": {
+            "type": "string",
+            "description": "TaxCode of the linked broker PSP"
+          },
+          "idBundle": {
+            "type": "string",
+            "description": "Bundle's id"
+          },
+          "idChannel": {
+            "type": "string",
+            "description": "ID of the linked channel"
+          },
+          "insertedDate": {
+            "type": "string",
+            "description": "Date of creation",
+            "format": "date-time"
+          },
+          "lastUpdatedDate": {
+            "type": "string",
+            "description": "Date of the last change",
+            "format": "date-time"
+          },
+          "maxPaymentAmount": {
+            "type": "integer",
+            "description": "Maximum commission fee that can bee applied",
+            "format": "int64"
+          },
+          "minPaymentAmount": {
+            "type": "integer",
+            "description": "Minimum commission fee that can be applied",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "paymentAmount": {
+            "type": "integer",
+            "description": "Applied commission fee",
+            "format": "int64"
+          },
+          "paymentType": {
+            "type": "string",
+            "description": "Payment type for which the bundle can be applied"
+          },
+          "touchpoint": {
+            "type": "string",
+            "description": "Touch-point where the bundle can be applied"
+          },
+          "type": {
+            "type": "string",
+            "description": "Bundle enum type",
+            "enum": [
+              "GLOBAL",
+              "PUBLIC",
+              "PRIVATE"
+            ]
+          },
+          "validityDateFrom": {
+            "type": "string",
+            "description": "Date from which the bundle is valid",
+            "format": "date"
+          },
+          "validityDateTo": {
+            "type": "string",
+            "description": "Date after which the bundle is expired",
+            "format": "date"
+          }
+        }
+      },
+      "CIBundlesResource": {
+        "type": "object",
+        "properties": {
+          "bundles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CIBundleResource"
+            }
+          },
+          "pageInfo": {
+            "$ref": "#/components/schemas/PageInfo"
+          }
+        }
       },
       "CIPaymentContact": {
         "type": "object",
@@ -10379,6 +10383,141 @@
             "enum": [
               "admin, operator"
             ]
+          }
+        }
+      },
+      "PSPBundleResource": {
+        "required": [
+          "bundleTaxonomies"
+        ],
+        "type": "object",
+        "properties": {
+          "bundleTaxonomies": {
+            "type": "array",
+            "description": "List of taxonomies that relates to the bundle",
+            "items": {
+              "$ref": "#/components/schemas/PSPBundleTaxonomy"
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "digitalStamp": {
+            "type": "boolean",
+            "description": "If the payment needs a tax stamp, mutually exclusive with digitalStampRestriction"
+          },
+          "digitalStampRestriction": {
+            "type": "boolean",
+            "description": "If the payment can be payed only with a tax stamp, mutually exclusive with digitalStamp"
+          },
+          "idBrokerPsp": {
+            "type": "string",
+            "description": "TaxCode of the linked broker PSP"
+          },
+          "idBundle": {
+            "type": "string",
+            "description": "Bundle's id"
+          },
+          "idChannel": {
+            "type": "string",
+            "description": "ID of the linked channel"
+          },
+          "insertedDate": {
+            "type": "string",
+            "description": "Date of creation",
+            "format": "date-time"
+          },
+          "lastUpdatedDate": {
+            "type": "string",
+            "description": "Date of the last change",
+            "format": "date-time"
+          },
+          "maxPaymentAmount": {
+            "type": "integer",
+            "description": "Maximum commission fee that can bee applied",
+            "format": "int64"
+          },
+          "minPaymentAmount": {
+            "type": "integer",
+            "description": "Minimum commission fee that can be applied",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "paymentAmount": {
+            "type": "integer",
+            "description": "Applied commission fee",
+            "format": "int64"
+          },
+          "paymentType": {
+            "type": "string",
+            "description": "Payment type for which the bundle can be applied"
+          },
+          "touchpoint": {
+            "type": "string",
+            "description": "Touch-point where the bundle can be applied"
+          },
+          "type": {
+            "type": "string",
+            "description": "Bundle enum type",
+            "enum": [
+              "GLOBAL",
+              "PUBLIC",
+              "PRIVATE"
+            ]
+          },
+          "validityDateFrom": {
+            "type": "string",
+            "description": "Date from which the bundle is valid",
+            "format": "date"
+          },
+          "validityDateTo": {
+            "type": "string",
+            "description": "Date after which the bundle is expired",
+            "format": "date"
+          }
+        }
+      },
+      "PSPBundleTaxonomy": {
+        "required": [
+          "endDate",
+          "macroAreaName",
+          "serviceType",
+          "specificBuiltInData"
+        ],
+        "type": "object",
+        "properties": {
+          "endDate": {
+            "type": "string",
+            "description": "End date of validity"
+          },
+          "macroAreaName": {
+            "type": "string",
+            "description": "Macro area name"
+          },
+          "serviceType": {
+            "type": "string",
+            "description": "Taxonomy description"
+          },
+          "specificBuiltInData": {
+            "type": "string",
+            "description": "Taxonomy identifier"
+          }
+        },
+        "description": "List of taxonomies that relates to the bundle"
+      },
+      "PSPBundlesResource": {
+        "type": "object",
+        "properties": {
+          "bundles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PSPBundleResource"
+            }
+          },
+          "pageInfo": {
+            "$ref": "#/components/schemas/PageInfo"
           }
         }
       },

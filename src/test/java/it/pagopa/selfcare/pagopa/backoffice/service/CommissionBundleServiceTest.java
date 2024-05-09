@@ -6,10 +6,12 @@ import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
@@ -135,11 +137,11 @@ class CommissionBundleServiceTest {
         when(taxonomyService.getTaxonomiesByCodes(any())).thenReturn(
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
 
-        BundleResource bundleResource = assertDoesNotThrow(
+        PSPBundleResource bundleResource = assertDoesNotThrow(
                 () -> sut.getBundleDetailByPSP(PSP_TAX_CODE, ID_BUNDLE));
         assertNotNull(bundleResource);
-        assertNotNull(bundleResource.getTransferCategoryList());
-        assertEquals(1, bundleResource.getTransferCategoryList().size());
+        assertNotNull(bundleResource.getBundleTaxonomies());
+        assertEquals(1, bundleResource.getBundleTaxonomies().size());
         verify(gecClient).getBundleDetailByPSP(PSP_CODE, ID_BUNDLE);
     }
 
@@ -182,14 +184,14 @@ class CommissionBundleServiceTest {
         when(gecClient.getBundles(any(), eq(null), eq(null), anyInt(), anyInt())).thenReturn(bundles);
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
 
-        BundlesResource bundlesResource = assertDoesNotThrow(
+        CIBundlesResource bundlesResource = assertDoesNotThrow(
                 () -> sut.getCIBundles(BundleType.PRIVATE, CI_TAX_CODE, null, 10, 0));
 
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
         assertEquals(1, bundlesResource.getBundles().size());
-        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+        assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
 
         verify(gecClient).getBundles(any(), eq(null), eq(null), anyInt(), anyInt());
         verifyNoMoreInteractions(gecClient);
@@ -204,13 +206,13 @@ class CommissionBundleServiceTest {
         when(gecClient.getBundles(any(), anyString(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
 
-        BundlesResource bundlesResource = assertDoesNotThrow(
+        CIBundlesResource bundlesResource = assertDoesNotThrow(
                 () -> sut.getCIBundles(BundleType.GLOBAL, null, BUNDLE_NAME, 10, 0));
 
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
-        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+        assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
 
         verify(gecClient).getBundles(Collections.singletonList(BundleType.GLOBAL), BUNDLE_NAME, null, 10, 0);
         verifyNoMoreInteractions(gecClient);
@@ -243,14 +245,14 @@ class CommissionBundleServiceTest {
         when(gecClient.getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0)).thenReturn(requests);
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
 
-        BundlesResource bundlesResource = assertDoesNotThrow(
+        CIBundlesResource bundlesResource = assertDoesNotThrow(
                 () -> sut.getCIBundles(BundleType.PUBLIC, CI_TAX_CODE, null, 10, 0));
 
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
         assertEquals(1, bundlesResource.getBundles().size());
-        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+        assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
         assertEquals(CIBundleStatus.AVAILABLE, bundlesResource.getBundles().get(0).getCiBundleStatus());
 
         verify(gecClient).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
@@ -278,14 +280,14 @@ class CommissionBundleServiceTest {
         when(gecClient.getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0)).thenReturn(requests);
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
 
-        BundlesResource bundlesResource = assertDoesNotThrow(
+        CIBundlesResource bundlesResource = assertDoesNotThrow(
                 () -> sut.getCIBundles(BundleType.PUBLIC, CI_TAX_CODE, null, 10, 0));
 
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
         assertEquals(1, bundlesResource.getBundles().size());
-        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+        assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
         assertEquals(CIBundleStatus.REQUESTED, bundlesResource.getBundles().get(0).getCiBundleStatus());
 
         verify(gecClient).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
@@ -307,14 +309,14 @@ class CommissionBundleServiceTest {
         when(gecClient.getCIBundle(CI_TAX_CODE, ID_BUNDLE)).thenReturn(ciBundle);
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
 
-        BundlesResource bundlesResource = assertDoesNotThrow(
+        CIBundlesResource bundlesResource = assertDoesNotThrow(
                 () -> sut.getCIBundles(BundleType.PUBLIC, CI_TAX_CODE, null, 10, 0));
 
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
         assertEquals(1, bundlesResource.getBundles().size());
-        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+        assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
         assertEquals(CIBundleStatus.ON_REMOVAL, bundlesResource.getBundles().get(0).getCiBundleStatus());
 
         verify(gecClient).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
@@ -336,14 +338,14 @@ class CommissionBundleServiceTest {
         when(gecClient.getCIBundle(CI_TAX_CODE, ID_BUNDLE)).thenReturn(ciBundle);
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
 
-        BundlesResource bundlesResource = assertDoesNotThrow(
+        CIBundlesResource bundlesResource = assertDoesNotThrow(
                 () -> sut.getCIBundles(BundleType.PUBLIC, CI_TAX_CODE, null, 10, 0));
 
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
         assertNotNull(bundlesResource.getBundles());
         assertEquals(1, bundlesResource.getBundles().size());
-        assertEquals(1, bundlesResource.getBundles().get(0).getTransferCategoryList().size());
+        assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
         assertEquals(CIBundleStatus.ENABLED, bundlesResource.getBundles().get(0).getCiBundleStatus());
 
         verify(gecClient).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());

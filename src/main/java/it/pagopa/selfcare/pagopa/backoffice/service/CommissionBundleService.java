@@ -6,23 +6,27 @@ import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleTaxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleFee;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CISubscriptionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleTaxonomy;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
@@ -36,7 +40,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -103,7 +106,7 @@ public class CommissionBundleService {
         return modelMapper.map(dto, Touchpoints.class);
     }
 
-    public BundlesResource getBundlesByPSP(
+    public PSPBundlesResource getBundlesByPSP(
             String pspTaxCode,
             List<BundleType> bundleType,
             String name, Integer limit,
@@ -111,11 +114,11 @@ public class CommissionBundleService {
     ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
         Bundles bundles = this.gecClient.getBundlesByPSP(pspCode, bundleType, name, limit, page);
-        List<BundleResource> bundlesResource = new ArrayList<>();
+        List<PSPBundleResource> bundlesResource = new ArrayList<>();
         if (bundles.getBundles() != null) {
-            bundlesResource = getBundlesResource(bundles);
+            bundlesResource = getPSPBundlesResource(bundles);
         }
-        return BundlesResource.builder().bundles(bundlesResource).pageInfo(bundles.getPageInfo()).build();
+        return PSPBundlesResource.builder().bundles(bundlesResource).pageInfo(bundles.getPageInfo()).build();
 
     }
 
@@ -124,12 +127,11 @@ public class CommissionBundleService {
         return this.gecClient.createPSPBundle(pspCode, bundle);
     }
 
-    public BundleResource getBundleDetailByPSP(String pspTaxCode, String idBundle) {
+    public PSPBundleResource getBundleDetailByPSP(String pspTaxCode, String idBundle) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
         Bundle bundle = this.gecClient.getBundleDetailByPSP(pspCode, idBundle);
-        BundleResource bundleResource = new BundleResource();
-        BeanUtils.copyProperties(bundle, bundleResource);
-        bundleResource.setTransferCategoryList(this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList()));
+        PSPBundleResource bundleResource = this.modelMapper.map(bundle, PSPBundleResource.class);
+        bundleResource.setBundleTaxonomies(getBundleTaxonomies(bundle.getTransferCategoryList(), PSPBundleTaxonomy.class));
         return bundleResource;
     }
 
@@ -179,15 +181,15 @@ public class CommissionBundleService {
      * @param page       page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
-    public BundlesResource getCIBundles(BundleType bundleType, String ciTaxCode, String name, Integer limit, Integer page) {
-        List<BundleResource> bundlesResource = new ArrayList<>();
+    public CIBundlesResource getCIBundles(BundleType bundleType, String ciTaxCode, String name, Integer limit, Integer page) {
+        List<CIBundleResource> bundlesResource = new ArrayList<>();
         PageInfo pageInfo = new PageInfo();
 
         List<BundleType> bundleTypes = Collections.singletonList(bundleType);
         if (bundleType.equals(BundleType.GLOBAL) || bundleType.equals(BundleType.PRIVATE)) {
             Bundles bundles = this.gecClient.getBundles(bundleTypes, name, null, limit, page);
             pageInfo = bundles.getPageInfo();
-            bundlesResource = getBundlesResource(bundles);
+            bundlesResource = getCIBundlesResource(bundles);
         } else if (bundleType.equals(BundleType.PUBLIC)) {
             if (ciTaxCode == null) {
                 throw new AppException(AppError.BAD_REQUEST,
@@ -198,7 +200,7 @@ public class CommissionBundleService {
             pageInfo = bundles.getPageInfo();
             bundlesResource = getPublicBundleResources(ciTaxCode, bundles);
         }
-        return BundlesResource.builder().bundles(bundlesResource).pageInfo(pageInfo).build();
+        return CIBundlesResource.builder().bundles(bundlesResource).pageInfo(pageInfo).build();
     }
 
     /**
@@ -453,25 +455,40 @@ public class CommissionBundleService {
                 .build();
     }
 
-    private List<BundleResource> getBundlesResource(Bundles bundles) {
+    private List<PSPBundleResource> getPSPBundlesResource(Bundles bundles) {
         return bundles.getBundles().stream().map(bundle -> {
-            BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
-            bundleResource.setTransferCategoryList(
-                    this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
-            );
+            PSPBundleResource bundleResource = this.modelMapper.map(bundle, PSPBundleResource.class);
+            List<PSPBundleTaxonomy> bundleTaxonomies = getBundleTaxonomies(bundle.getTransferCategoryList(), PSPBundleTaxonomy.class);
+            bundleResource.setBundleTaxonomies(bundleTaxonomies);
             return bundleResource;
         }).toList();
     }
 
-    private List<BundleResource> getPublicBundleResources(String ciTaxCode, Bundles bundles) {
+    private <T extends BundleTaxonomy> List<T> getBundleTaxonomies(List<String> transferCategoryList, Class<T> bundleTaxonomyClazz) {
+        List<Taxonomy> taxonomies = this.taxonomyService.getTaxonomiesByCodes(transferCategoryList);
+        return taxonomies.parallelStream()
+                .map(taxonomy -> this.modelMapper.map(taxonomy, bundleTaxonomyClazz))
+                .toList();
+    }
+
+    private List<CIBundleResource> getCIBundlesResource(Bundles bundles) {
+        return bundles.getBundles().stream().map(bundle -> {
+            CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
+            List<CIBundleFee> bundleTaxonomies = getBundleTaxonomies(bundle.getTransferCategoryList(), CIBundleFee.class);
+            bundleResource.setCiBundleFeeList(bundleTaxonomies);
+            return bundleResource;
+        }).toList();
+    }
+
+    private List<CIBundleResource> getPublicBundleResources(String ciTaxCode, Bundles bundles) {
         return bundles.getBundles().parallelStream()
                 .map(bundle -> buildCIPublicBundle(ciTaxCode, bundle))
                 .toList();
     }
 
-    private BundleResource buildCIPublicBundle(String ciTaxCode, Bundle bundle) {
-        BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
-        BundleResource ciBundleResource;
+    private CIBundleResource buildCIPublicBundle(String ciTaxCode, Bundle bundle) {
+        CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
+        CIBundleResource ciBundleResource;
 
         try {
             ciBundleResource = enrichFromSubscribedCIBundle(ciTaxCode, bundle.getId());
@@ -483,11 +500,11 @@ public class CommissionBundleService {
         bundleResource.setCiBundleId(ciBundleResource.getCiBundleId());
         bundleResource.setCiRequestId(ciBundleResource.getCiRequestId());
         bundleResource.setCiBundleFeeList(ciBundleResource.getCiBundleFeeList());
-        bundleResource.setTransferCategoryList(ciBundleResource.getTransferCategoryList());
+        bundleResource.setCiBundleFeeList(ciBundleResource.getCiBundleFeeList());
         return bundleResource;
     }
 
-    private BundleResource enrichFromSubscribedCIBundle(String ciTaxCode, String bundleId) {
+    private CIBundleResource enrichFromSubscribedCIBundle(String ciTaxCode, String bundleId) {
         CiBundleDetails ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundleId);
         CIBundleStatus bundleStatus;
         if (ciBundle.getValidityDateTo() == null || ciBundle.getValidityDateTo().isAfter(LocalDate.now())) {
@@ -496,18 +513,17 @@ public class CommissionBundleService {
             bundleStatus = CIBundleStatus.ON_REMOVAL;
         }
 
-        return BundleResource.builder()
+        return CIBundleResource.builder()
                 .ciBundleStatus(bundleStatus)
                 .ciBundleId(ciBundle.getIdCIBundle())
                 .ciBundleFeeList(getCIBundleFeeList(ciBundle.getAttributes()))
                 .build();
     }
 
-    private BundleResource enrichFromUnsubscribedCIBundle(String ciTaxCode, Bundle bundle) {
+    private CIBundleResource enrichFromUnsubscribedCIBundle(String ciTaxCode, Bundle bundle) {
         CIBundleStatus bundleStatus;
         String ciRequestId = null;
         List<CIBundleFee> bundleFees = null;
-        List<Taxonomy> taxonomies = null;
 
         PublicBundleRequests bundleRequests = this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
         if (isBundleRequested(bundleRequests)) {
@@ -517,14 +533,13 @@ public class CommissionBundleService {
             bundleFees = getCIBundleFeeList(request.getCiBundleAttributes());
         } else {
             bundleStatus = CIBundleStatus.AVAILABLE;
-            taxonomies = this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList());
+            bundleFees = getBundleTaxonomies(bundle.getTransferCategoryList(), CIBundleFee.class);
         }
 
-        return BundleResource.builder()
+        return CIBundleResource.builder()
                 .ciBundleStatus(bundleStatus)
                 .ciRequestId(ciRequestId)
                 .ciBundleFeeList(bundleFees)
-                .transferCategoryList(taxonomies)
                 .build();
     }
 

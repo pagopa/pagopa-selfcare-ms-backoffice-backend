@@ -2,8 +2,8 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.GecFeignConfig;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
