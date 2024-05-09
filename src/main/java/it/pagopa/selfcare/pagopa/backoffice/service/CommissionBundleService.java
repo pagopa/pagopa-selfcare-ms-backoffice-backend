@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -181,7 +182,7 @@ public class CommissionBundleService {
                 throw new AppException(AppError.BAD_REQUEST,
                         "Creditor institution's tax code is required to retrieve creditor institution's public bundles");
             }
-            Bundles bundles = gecClient.getBundles(bundleTypes, name, LocalDate.now(), limit, page);
+            Bundles bundles = gecClient.getBundles(bundleTypes, name, Instant.now(), limit, page);
             pageInfo = bundles.getPageInfo();
             bundlesResource = getPublicBundleResources(ciTaxCode, bundles);
         }
