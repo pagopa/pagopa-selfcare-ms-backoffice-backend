@@ -23,9 +23,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleAttribute;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
@@ -472,34 +471,64 @@ public class CommissionBundleService {
 
     private BundleResource buildCIPublicBundle(String ciTaxCode, Bundle bundle) {
         BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
+        BundleResource ciBundleResource;
 
         try {
-            CiBundleDetails ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundle.getId());
-            LocalDate today = LocalDate.now();
-            LocalDate validityDateTo = ciBundle.getValidityDateTo();
-            if (validityDateTo == null || validityDateTo.isAfter(today)) {
-                bundleResource.setCiBundleStatus(CIBundleStatus.ENABLED);
-            } else {
-                bundleResource.setCiBundleStatus(CIBundleStatus.ON_REMOVAL);
-            }
-            bundleResource.setCiBundleId(ciBundle.getIdCIBundle());
-            List<CIBundleFee> ciBundleFeeList = getCIBundleFeeList(ciBundle.getAttributes());
-            bundleResource.setCiBundleFeeList(ciBundleFeeList);
+            ciBundleResource = enrichFromSubscribedCIBundle(ciTaxCode, bundle.getId());
         } catch (FeignException.NotFound ignore) {
-            PublicBundleRequests bundleRequests = this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
-            if (bundleRequests != null && bundleRequests.getPageInfo().getTotalItems() != null && bundleRequests.getPageInfo().getTotalItems() > 0) {
-                bundleResource.setCiBundleStatus(CIBundleStatus.REQUESTED);
-                PublicBundleRequest request = bundleRequests.getRequestsList().get(0);
-                bundleResource.setCiRequestId(request.getId());
-                List<CIBundleFee> ciBundleFeeList = getCIBundleFeeList(request.getCiBundleAttributes());
-                bundleResource.setCiBundleFeeList(ciBundleFeeList);
-            } else {
-                bundleResource.setCiBundleStatus(CIBundleStatus.AVAILABLE);
-                List<Taxonomy> taxonomies = this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList());
-                bundleResource.setTransferCategoryList(taxonomies);
-            }
+            ciBundleResource = enrichFromUnsubscribedCIBundle(ciTaxCode, bundle);
         }
 
+        bundleResource.setCiBundleStatus(ciBundleResource.getCiBundleStatus());
+        bundleResource.setCiBundleId(ciBundleResource.getCiBundleId());
+        bundleResource.setCiRequestId(ciBundleResource.getCiRequestId());
+        bundleResource.setCiBundleFeeList(ciBundleResource.getCiBundleFeeList());
+        bundleResource.setTransferCategoryList(ciBundleResource.getTransferCategoryList());
         return bundleResource;
+    }
+
+    private BundleResource enrichFromSubscribedCIBundle(String ciTaxCode, String bundleId) {
+        CiBundleDetails ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundleId);
+        CIBundleStatus bundleStatus;
+        if (ciBundle.getValidityDateTo() == null || ciBundle.getValidityDateTo().isAfter(LocalDate.now())) {
+            bundleStatus = CIBundleStatus.ENABLED;
+        } else {
+            bundleStatus = CIBundleStatus.ON_REMOVAL;
+        }
+
+        return BundleResource.builder()
+                .ciBundleStatus(bundleStatus)
+                .ciBundleId(ciBundle.getIdCIBundle())
+                .ciBundleFeeList(getCIBundleFeeList(ciBundle.getAttributes()))
+                .build();
+    }
+
+    private BundleResource enrichFromUnsubscribedCIBundle(String ciTaxCode, Bundle bundle) {
+        CIBundleStatus bundleStatus;
+        String ciRequestId = null;
+        List<CIBundleFee> bundleFees = null;
+        List<Taxonomy> taxonomies = null;
+
+        PublicBundleRequests bundleRequests = this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
+        if (isBundleRequested(bundleRequests)) {
+            bundleStatus = CIBundleStatus.REQUESTED;
+            PublicBundleRequest request = bundleRequests.getRequestsList().get(0);
+            ciRequestId = request.getId();
+            bundleFees = getCIBundleFeeList(request.getCiBundleAttributes());
+        } else {
+            bundleStatus = CIBundleStatus.AVAILABLE;
+            taxonomies = this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList());
+        }
+
+        return BundleResource.builder()
+                .ciBundleStatus(bundleStatus)
+                .ciRequestId(ciRequestId)
+                .ciBundleFeeList(bundleFees)
+                .transferCategoryList(taxonomies)
+                .build();
+    }
+
+    private boolean isBundleRequested(PublicBundleRequests bundleRequests) {
+        return bundleRequests != null && bundleRequests.getPageInfo().getTotalItems() != null && bundleRequests.getPageInfo().getTotalItems() > 0;
     }
 }
