@@ -8818,13 +8818,13 @@
       },
       "CIBundleFee": {
         "required": [
-          "payment_amount",
+          "paymentAmount",
           "serviceType",
           "specificBuiltInData"
         ],
         "type": "object",
         "properties": {
-          "payment_amount": {
+          "paymentAmount": {
             "type": "integer",
             "description": "Fee paid by the creditor institution's",
             "format": "int64"

@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -21,6 +20,5 @@ import lombok.experimental.SuperBuilder;
 public class CIBundleFee extends BundleTaxonomy {
 
     @Schema(description = "Fee paid by the creditor institution's", requiredMode = Schema.RequiredMode.REQUIRED)
-    @JsonProperty(value = "payment_amount")
     private Long paymentAmount;
 }
