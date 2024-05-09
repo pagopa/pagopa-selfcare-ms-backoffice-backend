@@ -63,7 +63,25 @@ class AwsSesClientTest {
         when(templateEngine.process(anyString(), any())).thenReturn("html template");
         when(sesClient.sendEmail(any(SendEmailRequest.class))).thenReturn(SendEmailResponse.builder().build());
 
-        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail()));
+        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail(INSTITUTION_TAX_CODE)));
+    }
+
+    @Test
+    void sendEmailNotPRODSuccess() {
+        ReflectionTestUtils.setField(sut, "environment", "dev");
+
+        when(templateEngine.process(anyString(), any())).thenReturn("html template");
+        when(sesClient.sendEmail(any(SendEmailRequest.class))).thenReturn(SendEmailResponse.builder().build());
+
+        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail(INSTITUTION_TAX_CODE)));
+
+        verify(externalApiClient, never()).getInstitutionsFiltered(INSTITUTION_TAX_CODE);
+        verify(externalApiClient, never()).getInstitutionProductUsers(
+                INSTITUTION_ID,
+                null,
+                null,
+                Collections.singletonList(SelfcareProductUser.ADMIN.getProductUser())
+        );
     }
 
     @Test
@@ -83,7 +101,25 @@ class AwsSesClientTest {
         when(templateEngine.process(anyString(), any())).thenReturn("html template");
         when(sesClient.sendEmail(any(SendEmailRequest.class))).thenThrow(MessageRejectedException.class);
 
-        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail()));
+        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail(INSTITUTION_TAX_CODE)));
+    }
+
+    @Test
+    void sendEmailPRODNoInstitutionTaxCodeSkipped() {
+        ReflectionTestUtils.setField(sut, "environment", "prod");
+        ReflectionTestUtils.setField(sut, "testEmailAddress", "test@mail.it");
+
+        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail(null)));
+
+        verify(externalApiClient, never()).getInstitutionsFiltered(INSTITUTION_TAX_CODE);
+        verify(externalApiClient, never()).getInstitutionProductUsers(
+                INSTITUTION_ID,
+                null,
+                null,
+                Collections.singletonList(SelfcareProductUser.ADMIN.getProductUser())
+        );
+        verify(templateEngine, never()).process(anyString(), any());
+        verify(sesClient, never()).sendEmail(any(SendEmailRequest.class));
     }
 
     @Test
@@ -93,7 +129,7 @@ class AwsSesClientTest {
         when(externalApiClient.getInstitutionsFiltered(INSTITUTION_TAX_CODE))
                 .thenReturn(Institutions.builder().institutions(Collections.emptyList()).build());
 
-        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail()));
+        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail(INSTITUTION_TAX_CODE)));
 
         verify(externalApiClient, never()).getInstitutionProductUsers(
                 INSTITUTION_ID,
@@ -119,17 +155,18 @@ class AwsSesClientTest {
                 Collections.singletonList(SelfcareProductUser.ADMIN.getProductUser()))
         ).thenReturn(Collections.emptyList());
 
-        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail()));
+        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail(INSTITUTION_TAX_CODE)));
 
         verify(templateEngine, never()).process(anyString(), any());
         verify(sesClient, never()).sendEmail(any(SendEmailRequest.class));
     }
 
     @Test
-    void sendEmailNotPRODSkipped() {
+    void sendEmailNotPRODAndNoTestEmailSkipped() {
         ReflectionTestUtils.setField(sut, "environment", "dev");
+        ReflectionTestUtils.setField(sut, "testEmailAddress", null);
 
-        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail()));
+        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail(INSTITUTION_TAX_CODE)));
 
         verify(externalApiClient, never()).getInstitutionsFiltered(INSTITUTION_TAX_CODE);
         verify(externalApiClient, never()).getInstitutionProductUsers(
@@ -142,9 +179,9 @@ class AwsSesClientTest {
         verify(sesClient, never()).sendEmail(any(SendEmailRequest.class));
     }
 
-    private EmailMessageDetail buildEmailMessageDetail() {
+    private EmailMessageDetail buildEmailMessageDetail(String institutionTaxCode) {
         return EmailMessageDetail.builder()
-                .institutionTaxCode(INSTITUTION_TAX_CODE)
+                .institutionTaxCode(institutionTaxCode)
                 .htmlBodyFileName(HTML_TEMPLATE_FILE_NAME)
                 .htmlBodyContext(new Context())
                 .textBody("textBody")
