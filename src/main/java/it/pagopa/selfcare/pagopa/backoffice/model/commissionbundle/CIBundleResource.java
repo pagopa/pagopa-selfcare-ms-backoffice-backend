@@ -22,11 +22,11 @@ import java.util.List;
 @NoArgsConstructor
 public class CIBundleResource extends BundleResource {
 
-    @Schema(description = "Creditor institution bundle's status", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Creditor institution bundle's status")
     private CIBundleStatus ciBundleStatus;
-    @Schema(description = "Creditor institution bundle's id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Creditor institution bundle's id")
     private String ciBundleId;
-    @Schema(description = "Creditor institution bundle's subscription request's id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Creditor institution bundle's subscription request's id")
     private String ciRequestId;
     @Schema(description = "Creditor institution bundle's attributes that describe for each taxonomy the fee paid by the CI", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("bundleTaxonomies")

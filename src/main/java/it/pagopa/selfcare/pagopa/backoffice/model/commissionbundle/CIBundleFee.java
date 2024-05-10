@@ -19,6 +19,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class CIBundleFee extends BundleTaxonomy {
 
-    @Schema(description = "Fee paid by the creditor institution's", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Fee paid by the creditor institution's")
     private Long paymentAmount;
 }

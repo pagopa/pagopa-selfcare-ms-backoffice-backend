@@ -8818,7 +8818,6 @@
       },
       "CIBundleFee": {
         "required": [
-          "paymentAmount",
           "serviceType",
           "specificBuiltInData"
         ],
@@ -8842,10 +8841,7 @@
       },
       "CIBundleResource": {
         "required": [
-          "bundleTaxonomies",
-          "ciBundleId",
-          "ciBundleStatus",
-          "ciRequestId"
+          "bundleTaxonomies"
         ],
         "type": "object",
         "properties": {
