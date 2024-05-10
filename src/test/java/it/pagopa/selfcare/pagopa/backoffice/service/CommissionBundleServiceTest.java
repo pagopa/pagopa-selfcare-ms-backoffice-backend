@@ -9,9 +9,7 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
@@ -106,7 +104,7 @@ class CommissionBundleServiceTest {
     void getBundlesByPSP() {
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
         when(gecClient.getBundlesByPSP(any(), any(), any(), any(), any())).thenReturn(
-                Bundles.builder().bundles(Collections.singletonList(
+                Bundles.builder().bundleList(Collections.singletonList(
                         Bundle.builder().transferCategoryList(Collections.singletonList("test")).build())).build()
         );
         when(taxonomyService.getTaxonomiesByCodes(any())).thenReturn(
@@ -674,7 +672,7 @@ class CommissionBundleServiceTest {
 
     private Bundles buildBundles(List<String> transferCategoryList, BundleType bundleType) {
         return Bundles.builder()
-                .bundles(
+                .bundleList(
                         Collections.singletonList(
                                 Bundle.builder()
                                         .id(ID_BUNDLE)

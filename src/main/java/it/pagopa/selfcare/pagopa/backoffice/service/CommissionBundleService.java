@@ -115,7 +115,7 @@ public class CommissionBundleService {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
         Bundles bundles = this.gecClient.getBundlesByPSP(pspCode, bundleType, name, limit, page);
         List<PSPBundleResource> bundlesResource = new ArrayList<>();
-        if (bundles.getBundles() != null) {
+        if (bundles.getBundleList() != null) {
             bundlesResource = getPSPBundlesResource(bundles);
         }
         return PSPBundlesResource.builder().bundles(bundlesResource).pageInfo(bundles.getPageInfo()).build();
@@ -456,7 +456,7 @@ public class CommissionBundleService {
     }
 
     private List<PSPBundleResource> getPSPBundlesResource(Bundles bundles) {
-        return bundles.getBundles().stream().map(bundle -> {
+        return bundles.getBundleList().stream().map(bundle -> {
             PSPBundleResource bundleResource = this.modelMapper.map(bundle, PSPBundleResource.class);
             List<PSPBundleTaxonomy> bundleTaxonomies = getBundleTaxonomies(bundle.getTransferCategoryList(), PSPBundleTaxonomy.class);
             bundleResource.setBundleTaxonomies(bundleTaxonomies);
@@ -472,7 +472,7 @@ public class CommissionBundleService {
     }
 
     private List<CIBundleResource> getCIBundlesResource(Bundles bundles) {
-        return bundles.getBundles().stream().map(bundle -> {
+        return bundles.getBundleList().stream().map(bundle -> {
             CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
             List<CIBundleFee> bundleTaxonomies = getBundleTaxonomies(bundle.getTransferCategoryList(), CIBundleFee.class);
             bundleResource.setCiBundleFeeList(bundleTaxonomies);
@@ -481,7 +481,7 @@ public class CommissionBundleService {
     }
 
     private List<CIBundleResource> getPublicBundleResources(String ciTaxCode, Bundles bundles) {
-        return bundles.getBundles().parallelStream()
+        return bundles.getBundleList().parallelStream()
                 .map(bundle -> buildCIPublicBundle(ciTaxCode, bundle))
                 .toList();
     }

@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Bundles {
 
-    private List<Bundle> bundles;
+    @JsonProperty("bundles")
+    private List<Bundle> bundleList;
     private PageInfo pageInfo;
 }
