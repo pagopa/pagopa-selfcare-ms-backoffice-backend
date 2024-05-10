@@ -9054,9 +9054,6 @@
             "type": "boolean",
             "description": " digital stamp brand"
           },
-          "email": {
-            "type": "string"
-          },
           "enabled": {
             "type": "boolean"
           },
@@ -11404,9 +11401,6 @@
           "ec_email": {
             "type": "string",
             "description": " email of the ec"
-          },
-          "email": {
-            "type": "string"
           },
           "enabled": {
             "type": "boolean",
