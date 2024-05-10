@@ -3,24 +3,25 @@ package it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
+/**
+ * Model class that contains the commons info about a bundle
+ */
 @Data
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 public class BundleResource {
 
     @JsonProperty("idBundle")
-    @Schema(description = "Document ID")
+    @Schema(description = "Bundle's id")
     private String id;
     private String name;
     private String description;
@@ -36,8 +37,6 @@ public class BundleResource {
     private String touchpoint;
     @Schema(description = "Bundle enum type")
     private BundleType type;
-    @Schema(description = "List of taxonomies that relates to the bundle")
-    private List<Taxonomy> transferCategoryList;
     @Schema(description = "Date from which the bundle is valid")
     private LocalDate validityDateFrom;
     @Schema(description = "Date after which the bundle is expired")
@@ -54,10 +53,4 @@ public class BundleResource {
     private Boolean digitalStamp;
     @Schema(description = "If the payment can be payed only with a tax stamp, mutually exclusive with digitalStamp")
     private Boolean digitalStampRestriction;
-    @Schema(description = "Creditor institution bundle's status")
-    private CIBundleStatus ciBundleStatus;
-    @Schema(description = "Creditor institution bundle's id")
-    private String ciBundleId;
-    @Schema(description = "Creditor institution bundle's subscription request's id")
-    private String ciRequestId;
 }

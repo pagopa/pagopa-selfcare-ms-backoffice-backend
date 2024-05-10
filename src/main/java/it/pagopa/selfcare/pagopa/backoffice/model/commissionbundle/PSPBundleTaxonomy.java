@@ -9,7 +9,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 /**
- * Model class that contains the taxonomy fee specified by a creditor institution
+ * Model class that contains a PSP bundle's taxonomy info
  */
 @Getter
 @Setter
@@ -17,8 +17,11 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class CIBundleFee extends BundleTaxonomy {
+public class PSPBundleTaxonomy extends BundleTaxonomy {
 
-    @Schema(description = "Fee paid by the creditor institution's")
-    private Long paymentAmount;
+    @Schema(description = "Macro area name",requiredMode = Schema.RequiredMode.REQUIRED)
+    private String macroAreaName;
+
+    @Schema(description = "End date of validity",requiredMode = Schema.RequiredMode.REQUIRED)
+    private String endDate;
 }

@@ -3,7 +3,9 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
@@ -116,7 +118,7 @@ class CommissionBundleControllerTest {
     void getBundleByPSPWithDefaultParamsOK() throws Exception {
         String url = "/bundles/payment-service-providers/{psp-code}";
         when(service.getBundlesByPSP(PSP_TAX_CODE, null, null, 50, 0)).thenReturn(
-                new BundlesResource()
+                new PSPBundlesResource()
         );
         mvc.perform(get(url, PSP_TAX_CODE)
                 ).andExpect(status().isOk())
@@ -131,7 +133,7 @@ class CommissionBundleControllerTest {
         Integer page = 2;
         String name = "pspName";
         when(service.getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, name, limit, page)).thenReturn(
-                new BundlesResource()
+                new PSPBundlesResource()
         );
         mvc.perform(get(url, PSP_TAX_CODE)
                         .param("limit", String.valueOf(limit))
@@ -168,7 +170,7 @@ class CommissionBundleControllerTest {
     @Test
     void getBundleDetailByPSPOK() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-code}";
-        when(service.getBundleDetailByPSP(PSP_TAX_CODE, BUNDLE_ID)).thenReturn(new BundleResource());
+        when(service.getBundleDetailByPSP(PSP_TAX_CODE, BUNDLE_ID)).thenReturn(new PSPBundleResource());
 
         mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE))
                 .andExpect(status().isOk())
@@ -216,7 +218,7 @@ class CommissionBundleControllerTest {
         int page = 2;
         when(service.getCIBundles(BundleType.PRIVATE,
                 CI_TAX_CODE, "name", limit, page)).thenReturn(
-                new BundlesResource()
+                new CIBundlesResource()
         );
         mvc.perform(get(url)
                         .param("name", "name")
@@ -234,7 +236,7 @@ class CommissionBundleControllerTest {
         int limit = 25;
         int page = 2;
         when(service.getCIBundles(BundleType.PRIVATE, null, null, limit, page)).thenReturn(
-                new BundlesResource()
+                new CIBundlesResource()
         );
         mvc.perform(get(url)
                         .param("bundleType", BundleType.PRIVATE.name())

@@ -6,26 +6,29 @@ import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleTaxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleFee;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CISubscriptionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleTaxonomy;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleAttribute;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
@@ -37,7 +40,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -104,7 +106,7 @@ public class CommissionBundleService {
         return modelMapper.map(dto, Touchpoints.class);
     }
 
-    public BundlesResource getBundlesByPSP(
+    public PSPBundlesResource getBundlesByPSP(
             String pspTaxCode,
             List<BundleType> bundleType,
             String name, Integer limit,
@@ -112,11 +114,11 @@ public class CommissionBundleService {
     ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
         Bundles bundles = this.gecClient.getBundlesByPSP(pspCode, bundleType, name, limit, page);
-        List<BundleResource> bundlesResource = new ArrayList<>();
-        if (bundles.getBundles() != null) {
-            bundlesResource = getBundlesResource(bundles);
+        List<PSPBundleResource> bundlesResource = new ArrayList<>();
+        if (bundles.getBundleList() != null) {
+            bundlesResource = getPSPBundlesResource(bundles);
         }
-        return BundlesResource.builder().bundles(bundlesResource).pageInfo(bundles.getPageInfo()).build();
+        return PSPBundlesResource.builder().bundles(bundlesResource).pageInfo(bundles.getPageInfo()).build();
 
     }
 
@@ -125,12 +127,11 @@ public class CommissionBundleService {
         return this.gecClient.createPSPBundle(pspCode, bundle);
     }
 
-    public BundleResource getBundleDetailByPSP(String pspTaxCode, String idBundle) {
+    public PSPBundleResource getBundleDetailByPSP(String pspTaxCode, String idBundle) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, false);
         Bundle bundle = this.gecClient.getBundleDetailByPSP(pspCode, idBundle);
-        BundleResource bundleResource = new BundleResource();
-        BeanUtils.copyProperties(bundle, bundleResource);
-        bundleResource.setTransferCategoryList(this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList()));
+        PSPBundleResource bundleResource = this.modelMapper.map(bundle, PSPBundleResource.class);
+        bundleResource.setBundleTaxonomies(getBundleTaxonomies(bundle.getTransferCategoryList(), PSPBundleTaxonomy.class));
         return bundleResource;
     }
 
@@ -180,15 +181,15 @@ public class CommissionBundleService {
      * @param page       page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
-    public BundlesResource getCIBundles(BundleType bundleType, String ciTaxCode, String name, Integer limit, Integer page) {
-        List<BundleResource> bundlesResource = new ArrayList<>();
+    public CIBundlesResource getCIBundles(BundleType bundleType, String ciTaxCode, String name, Integer limit, Integer page) {
+        List<CIBundleResource> bundlesResource = new ArrayList<>();
         PageInfo pageInfo = new PageInfo();
 
         List<BundleType> bundleTypes = Collections.singletonList(bundleType);
         if (bundleType.equals(BundleType.GLOBAL) || bundleType.equals(BundleType.PRIVATE)) {
             Bundles bundles = this.gecClient.getBundles(bundleTypes, name, null, limit, page);
             pageInfo = bundles.getPageInfo();
-            bundlesResource = getBundlesResource(bundles);
+            bundlesResource = getCIBundlesResource(bundles);
         } else if (bundleType.equals(BundleType.PUBLIC)) {
             if (ciTaxCode == null) {
                 throw new AppException(AppError.BAD_REQUEST,
@@ -199,7 +200,7 @@ public class CommissionBundleService {
             pageInfo = bundles.getPageInfo();
             bundlesResource = getPublicBundleResources(ciTaxCode, bundles);
         }
-        return BundlesResource.builder().bundles(bundlesResource).pageInfo(pageInfo).build();
+        return CIBundlesResource.builder().bundles(bundlesResource).pageInfo(pageInfo).build();
     }
 
     /**
@@ -296,9 +297,7 @@ public class CommissionBundleService {
             CiBundleDetails ciBundleDetails = this.gecClient
                     .getPublicBundleSubscriptionDetailByPSP(pspCode, ciTaxCode, idBundle);
 
-            List<Taxonomy> taxonomies = getTaxonomiesByCIBundleDetails(ciBundleDetails);
-
-            ciBundleFeeList = getBundleFeeList(ciBundleDetails, taxonomies);
+            ciBundleFeeList = getCIBundleFeeList(ciBundleDetails.getAttributes());
             idCIBundle = ciBundleDetails.getIdCIBundle();
         } else {
             PublicBundleRequests subscriptionRequest = this.gecClient
@@ -306,9 +305,8 @@ public class CommissionBundleService {
 
             if (!subscriptionRequest.getRequestsList().isEmpty()) {
                 PublicBundleRequest publicBundleRequest = subscriptionRequest.getRequestsList().get(0);
-                List<Taxonomy> taxonomies = getTaxonomiesByPSPBundleRequest(publicBundleRequest);
 
-                ciBundleFeeList = getCiBundleFeeList(publicBundleRequest, taxonomies);
+                ciBundleFeeList = getCIBundleFeeList(publicBundleRequest.getCiBundleAttributes());
                 bundleRequestId = publicBundleRequest.getId();
             }
         }
@@ -414,23 +412,11 @@ public class CommissionBundleService {
                 .toList();
     }
 
-    private List<CIBundleFee> getCiBundleFeeList(PublicBundleRequest publicBundleRequest, List<Taxonomy> taxonomies) {
-        return publicBundleRequest.getCiBundleAttributes().parallelStream()
-                .map(attribute -> buildCIBundleFee(
-                        attribute.getMaxPaymentAmount(),
-                        attribute.getTransferCategory(),
-                        taxonomies)
-                )
-                .toList();
-    }
+    private List<CIBundleFee> getCIBundleFeeList(List<CIBundleAttribute> attributes) {
+        List<Taxonomy> taxonomies = getTaxonomiesByBundleAttributes(attributes);
 
-    private List<CIBundleFee> getBundleFeeList(CiBundleDetails ciBundleDetails, List<Taxonomy> taxonomies) {
-        return ciBundleDetails.getAttributes().parallelStream()
-                .map(attribute -> buildCIBundleFee(
-                        attribute.getMaxPaymentAmount(),
-                        attribute.getTransferCategory(),
-                        taxonomies)
-                )
+        return attributes.parallelStream()
+                .map(attribute -> buildCIBundleFee(attribute, taxonomies))
                 .toList();
     }
 
@@ -448,26 +434,18 @@ public class CommissionBundleService {
         return this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(taxCodeList);
     }
 
-    private List<Taxonomy> getTaxonomiesByPSPBundleRequest(PublicBundleRequest publicBundleRequest) {
-        List<String> transferCategoryList = publicBundleRequest
-                .getCiBundleAttributes().parallelStream()
-                .map(PspCiBundleAttribute::getTransferCategory)
+    private List<Taxonomy> getTaxonomiesByBundleAttributes(List<CIBundleAttribute> ciBundleAttributes) {
+        List<String> transferCategoryList = ciBundleAttributes.parallelStream()
+                .map(CIBundleAttribute::getTransferCategory)
                 .toList();
 
         return this.taxonomyService.getTaxonomiesByCodes(transferCategoryList);
     }
 
-    private List<Taxonomy> getTaxonomiesByCIBundleDetails(CiBundleDetails ciBundleDetails) {
-        List<String> transferCategoryList = ciBundleDetails.getAttributes().parallelStream()
-                .map(CiBundleAttribute::getTransferCategory)
-                .toList();
-
-        return this.taxonomyService.getTaxonomiesByCodes(transferCategoryList);
-    }
-
-    private CIBundleFee buildCIBundleFee(Long paymentAmount, String transferCategory, List<Taxonomy> taxonomies) {
+    private CIBundleFee buildCIBundleFee(CIBundleAttribute attribute, List<Taxonomy> taxonomies) {
+        String transferCategory = attribute.getTransferCategory();
         return CIBundleFee.builder()
-                .paymentAmount(paymentAmount)
+                .paymentAmount(attribute.getMaxPaymentAmount())
                 .specificBuiltInData(transferCategory)
                 .serviceType(taxonomies.stream()
                         .filter(taxonomy -> taxonomy.getSpecificBuiltInData().equals(transferCategory))
@@ -477,51 +455,95 @@ public class CommissionBundleService {
                 .build();
     }
 
-    private List<BundleResource> getBundlesResource(Bundles bundles) {
-        return bundles.getBundles().stream().map(bundle -> {
-            BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
-            bundleResource.setTransferCategoryList(
-                    this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
-            );
+    private List<PSPBundleResource> getPSPBundlesResource(Bundles bundles) {
+        return bundles.getBundleList().stream().map(bundle -> {
+            PSPBundleResource bundleResource = this.modelMapper.map(bundle, PSPBundleResource.class);
+            List<PSPBundleTaxonomy> bundleTaxonomies = getBundleTaxonomies(bundle.getTransferCategoryList(), PSPBundleTaxonomy.class);
+            bundleResource.setBundleTaxonomies(bundleTaxonomies);
             return bundleResource;
         }).toList();
     }
 
-    private List<BundleResource> getPublicBundleResources(String ciTaxCode, Bundles bundles) {
-        return bundles.getBundles().parallelStream()
-                .map(bundle -> {
-                    BundleResource bundleResource = enrichCiPublicBundle(ciTaxCode, bundle);
-                    bundleResource.setTransferCategoryList(
-                            this.taxonomyService.getTaxonomiesByCodes(bundle.getTransferCategoryList())
-                    );
-                    return bundleResource;
-                })
+    private <T extends BundleTaxonomy> List<T> getBundleTaxonomies(List<String> transferCategoryList, Class<T> bundleTaxonomyClazz) {
+        List<Taxonomy> taxonomies = this.taxonomyService.getTaxonomiesByCodes(transferCategoryList);
+        return taxonomies.parallelStream()
+                .map(taxonomy -> this.modelMapper.map(taxonomy, bundleTaxonomyClazz))
                 .toList();
     }
 
-    private BundleResource enrichCiPublicBundle(String ciTaxCode, Bundle bundle) {
-        BundleResource bundleResource = this.modelMapper.map(bundle, BundleResource.class);
+    private List<CIBundleResource> getCIBundlesResource(Bundles bundles) {
+        return bundles.getBundleList().stream().map(bundle -> {
+            CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
+            List<CIBundleFee> bundleTaxonomies = getBundleTaxonomies(bundle.getTransferCategoryList(), CIBundleFee.class);
+            bundleResource.setCiBundleFeeList(bundleTaxonomies);
+            return bundleResource;
+        }).toList();
+    }
+
+    private List<CIBundleResource> getPublicBundleResources(String ciTaxCode, Bundles bundles) {
+        return bundles.getBundleList().parallelStream()
+                .map(bundle -> buildCIPublicBundle(ciTaxCode, bundle))
+                .toList();
+    }
+
+    private CIBundleResource buildCIPublicBundle(String ciTaxCode, Bundle bundle) {
+        CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
+        CIBundleResource ciBundleResource;
 
         try {
-            CiBundleDetails ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundle.getId());
-            LocalDate today = LocalDate.now();
-            LocalDate validityDateTo = ciBundle.getValidityDateTo();
-            if (validityDateTo == null || validityDateTo.isAfter(today)) {
-                bundleResource.setCiBundleStatus(CIBundleStatus.ENABLED);
-            } else {
-                bundleResource.setCiBundleStatus(CIBundleStatus.ON_REMOVAL);
-            }
-            bundleResource.setCiBundleId(ciBundle.getIdCIBundle());
+            ciBundleResource = enrichFromSubscribedCIBundle(ciTaxCode, bundle.getId());
         } catch (FeignException.NotFound ignore) {
-            PublicBundleRequests request = this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
-            if (request != null && request.getPageInfo().getTotalItems() != null && request.getPageInfo().getTotalItems() > 0) {
-                bundleResource.setCiBundleStatus(CIBundleStatus.REQUESTED);
-                bundleResource.setCiRequestId(request.getRequestsList().get(0).getId());
-            } else {
-                bundleResource.setCiBundleStatus(CIBundleStatus.AVAILABLE);
-            }
+            ciBundleResource = enrichFromUnsubscribedCIBundle(ciTaxCode, bundle);
         }
 
+        bundleResource.setCiBundleStatus(ciBundleResource.getCiBundleStatus());
+        bundleResource.setCiBundleId(ciBundleResource.getCiBundleId());
+        bundleResource.setCiRequestId(ciBundleResource.getCiRequestId());
+        bundleResource.setCiBundleFeeList(ciBundleResource.getCiBundleFeeList());
+        bundleResource.setCiBundleFeeList(ciBundleResource.getCiBundleFeeList());
         return bundleResource;
+    }
+
+    private CIBundleResource enrichFromSubscribedCIBundle(String ciTaxCode, String bundleId) {
+        CiBundleDetails ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundleId);
+        CIBundleStatus bundleStatus;
+        if (ciBundle.getValidityDateTo() == null || ciBundle.getValidityDateTo().isAfter(LocalDate.now())) {
+            bundleStatus = CIBundleStatus.ENABLED;
+        } else {
+            bundleStatus = CIBundleStatus.ON_REMOVAL;
+        }
+
+        return CIBundleResource.builder()
+                .ciBundleStatus(bundleStatus)
+                .ciBundleId(ciBundle.getIdCIBundle())
+                .ciBundleFeeList(getCIBundleFeeList(ciBundle.getAttributes()))
+                .build();
+    }
+
+    private CIBundleResource enrichFromUnsubscribedCIBundle(String ciTaxCode, Bundle bundle) {
+        CIBundleStatus bundleStatus;
+        String ciRequestId = null;
+        List<CIBundleFee> bundleFees = null;
+
+        PublicBundleRequests bundleRequests = this.gecClient.getCIPublicBundleRequest(ciTaxCode, null, bundle.getId(), 1, 0);
+        if (isBundleRequested(bundleRequests)) {
+            bundleStatus = CIBundleStatus.REQUESTED;
+            PublicBundleRequest request = bundleRequests.getRequestsList().get(0);
+            ciRequestId = request.getId();
+            bundleFees = getCIBundleFeeList(request.getCiBundleAttributes());
+        } else {
+            bundleStatus = CIBundleStatus.AVAILABLE;
+            bundleFees = getBundleTaxonomies(bundle.getTransferCategoryList(), CIBundleFee.class);
+        }
+
+        return CIBundleResource.builder()
+                .ciBundleStatus(bundleStatus)
+                .ciRequestId(ciRequestId)
+                .ciBundleFeeList(bundleFees)
+                .build();
+    }
+
+    private boolean isBundleRequested(PublicBundleRequests bundleRequests) {
+        return bundleRequests != null && bundleRequests.getPageInfo().getTotalItems() != null && bundleRequests.getPageInfo().getTotalItems() > 0;
     }
 }
