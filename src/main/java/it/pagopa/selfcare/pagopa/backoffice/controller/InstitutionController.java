@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieves all the onboarded institutions related to the logged user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public List<InstitutionDetail> getInstitutions(@Parameter(description = "filter by the tax code of the Creditor Institution") @RequestParam(required = false, value = "tax-code") String taxCode) {
+    public @Valid List<InstitutionDetail> getInstitutions(@Parameter(description = "filter by the tax code of the Creditor Institution") @RequestParam(required = false, value = "tax-code") String taxCode) {
         return apiManagementService.getInstitutions(taxCode);
     }
 
@@ -45,7 +46,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve all active delegations for given institution broker and logged user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public List<Delegation> getBrokerDelegation(@Parameter(description = "Institution's unique internal identifier") @RequestParam(required = false, value = "institution-id") String institutionId,
+    public @Valid List<Delegation> getBrokerDelegation(@Parameter(description = "Institution's unique internal identifier") @RequestParam(required = false, value = "institution-id") String institutionId,
                                                 @Parameter(description = "Broker's unique id") @RequestParam(required = false, value = "brokerId") String brokerId,
                                                 @Parameter(description = "Broker's role to consider when filtering institution types") @RequestParam(required = false, value = "roles") List<RoleType> roles
     ) {
@@ -65,7 +66,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve all active products for given institution and logged user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public List<Product> getInstitutionProducts(@Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId) {
+    public @Valid List<Product> getInstitutionProducts(@Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId) {
 
         return apiManagementService.getInstitutionProducts(institutionId);
     }
@@ -74,7 +75,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve an institution's key pair, including primary and secondary keys", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public List<InstitutionApiKeys> getInstitutionApiKeys(@Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId) {
+    public @Valid List<InstitutionApiKeys> getInstitutionApiKeys(@Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId) {
 
         return apiManagementService.getInstitutionApiKeys(institutionId);
     }
@@ -83,7 +84,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Creates a new subscription for a given Institution and returns its primary and secondary keys", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public List<InstitutionApiKeys> createInstitutionApiKeys(
+    public @Valid List<InstitutionApiKeys> createInstitutionApiKeys(
             @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId,
             @Parameter(description = "Subscription's unique internal identifier") @RequestParam("subscription-code") Subscription subscriptionCode
     ) {

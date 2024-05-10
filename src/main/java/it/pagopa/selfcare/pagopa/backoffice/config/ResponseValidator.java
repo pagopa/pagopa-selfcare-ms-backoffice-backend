@@ -43,7 +43,7 @@ public class ResponseValidator {
      * @param joinPoint not used
      * @param result    the response to validate
      */
-    @AfterReturning(pointcut = "restController()", returning = "result")
+    @AfterReturning(pointcut = "restController() || dependencyClient()", returning = "result")
     public void validateResponse(JoinPoint joinPoint, Object result) {
         if(result instanceof ResponseEntity) {
             validateResponse(((ResponseEntity<?>) result).getBody(), joinPoint);
@@ -51,11 +51,6 @@ public class ResponseValidator {
         else{
             validateResponse(result, joinPoint);
         }
-    }
-
-    @AfterReturning(pointcut = "dependencyClient()", returning = "result")
-    public void validateClientResponse(JoinPoint joinPoint, Object result) {
-        validateResponse(result, joinPoint);
     }
 
     private void validateResponse(Object response, JoinPoint joinPoint) {
