@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutio
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,19 +34,23 @@ public class AwsSesClient {
 
     private final String environment;
 
+    private final String testEmailAddress;
+
     @Autowired
     public AwsSesClient(
             SesClient sesClient,
             @Value("${aws.ses.user}") String from,
             SpringTemplateEngine templateEngine,
             ExternalApiClient externalApiClient,
-            @Value("${info.properties.environment}") String environment
+            @Value("${info.properties.environment}") String environment,
+            @Value("${institution.subscription.test-email}") String testEmailAddress
     ) {
         this.sesClient = sesClient;
         this.from = from;
         this.templateEngine = templateEngine;
         this.externalApiClient = externalApiClient;
         this.environment = environment;
+        this.testEmailAddress = testEmailAddress;
     }
 
     /**
@@ -61,7 +66,7 @@ public class AwsSesClient {
      */
     public void sendEmail(EmailMessageDetail email) {
         String taxCode = email.getInstitutionTaxCode();
-        if (!this.environment.equals("prod") || taxCode == null) {
+        if (isNotProdWithoutTestEmail() || isProdWithNullDestinationInstitutionTaxCode(taxCode)) {
             log.warn("Skip send email process");
             return;
         }
@@ -100,6 +105,9 @@ public class AwsSesClient {
     }
 
     private String[] getToAddressList(String taxCode, SelfcareProductUser destinationUserType) {
+        if (!this.environment.equals("prod")) {
+            return new String[]{testEmailAddress};
+        }
         Optional<Institution> optionalInstitution = this.externalApiClient.getInstitutionsFiltered(taxCode)
                 .getInstitutions().stream()
                 .findFirst();
@@ -121,5 +129,13 @@ public class AwsSesClient {
                 .map(InstitutionProductUsers::getEmail)
                 .toList()
                 .toArray(new String[0]);
+    }
+
+    private boolean isProdWithNullDestinationInstitutionTaxCode(String taxCode) {
+        return this.environment.equals("prod") && taxCode == null;
+    }
+
+    private boolean isNotProdWithoutTestEmail() {
+        return !this.environment.equals("prod") && StringUtils.isBlank(testEmailAddress);
     }
 }
