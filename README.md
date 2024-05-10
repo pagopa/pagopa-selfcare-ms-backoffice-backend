@@ -17,7 +17,7 @@ Microservice to manage PagoPA Backoffice
             - [Integration testing](#integration-testing)
             - [Performance testing](#performance-testing)
     * [Contributors 👥](#contributors---)
-        + [Mainteiners](#mainteiners)
+        + [Maintainers](#maintainers)
 
 ---
 
@@ -118,6 +118,6 @@ From `./integration-test/src`
 
 Made with ❤️ by PagoPa S.p.A.
 
-### Mainteiners
+### Maintainers
 
 See `CODEOWNERS` file
