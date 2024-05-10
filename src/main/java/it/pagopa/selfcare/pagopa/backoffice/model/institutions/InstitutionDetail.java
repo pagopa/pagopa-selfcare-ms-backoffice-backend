@@ -19,22 +19,22 @@ import java.util.List;
 @AllArgsConstructor
 public class InstitutionDetail {
 
-    @Schema(description = "Institution's unique internal identifier",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Institution's unique internal identifier", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "id", required = true)
     @NotBlank
     private String id;
 
-    @Schema(description = "Institution's name",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Institution's name", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "name", required = true)
     @NotBlank
     private String description;
 
-    @Schema(description = "Institution's unique external identifier",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Institution's unique external identifier", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "external_id", required = true)
     @NotBlank
     private String externalId;
 
-    @Schema(description = "Institution's details origin Id",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Institution's details origin Id", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "origin_id", required = true)
     @NotBlank
     private String originId;
@@ -43,24 +43,24 @@ public class InstitutionDetail {
     @JsonProperty(value = "institution_type")
     private InstitutionType institutionType;
 
-    @Schema(description = "Institution's digitalAddress",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Institution's digitalAddress")
     @JsonProperty(value = "mail_address")
     private String digitalAddress;
 
-    @Schema(description = "Institution onboarding status",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Institution onboarding status", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "status", required = true)
     private String status;
 
-    @Schema(description = "Institution's physical address",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Institution's physical address", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "address")
     private String address;
 
-    @Schema(description = "Institution's taxCode",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Institution's taxCode", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "tax_code", required = true)
     @NotBlank
     private String taxCode;
 
-    @Schema(description = "Institution data origin",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Institution data origin", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "origin", required = true)
     @NotBlank
     private String origin;
