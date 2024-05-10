@@ -108,51 +108,10 @@ jobs:
     steps:
       - name: Make Release
         id: release
-        uses: pagopa/github-actions-template/maven-release@v1.12.0
+        uses: pagopa/github-actions-template/maven-release@fix-release
         with:
           semver: ${{ needs.setup.outputs.semver }}
           github_token: ${{ secrets.BOT_TOKEN_GITHUB }}
           beta: ${{ inputs.beta }}
           prerelease: ${{ inputs.environment != 'prod' }}
           skip_ci: false
-
-  image:
-    needs: [ setup, release ]
-    name: Build and Push Docker Image
-    runs-on: ubuntu-latest
-    if: ${{ needs.setup.outputs.semver != 'skip' }}
-    steps:
-      - name: Build and Push
-        id: semver
-        uses: pagopa/github-actions-template/ghcr-build-push@v1.5.4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ needs.release.outputs.version }}
-
-  deploy_aks:
-    name: Deploy on AKS
-    needs: [ setup, release, image ]
-    if: ${{ always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
-    uses: ./.github/workflows/deploy_with_github_runner.yml
-    with:
-      environment: ${{ needs.setup.outputs.environment }}
-    secrets: inherit
-
-  notify:
-    needs: [ setup, release, deploy_aks ]
-    runs-on: ubuntu-latest
-    name: Notify
-    if: always()
-    steps:
-      - name: Report Status
-        if: ${{ needs.setup.outputs.environment == 'prod' }}
-        uses: ravsamhq/notify-slack-action@v2
-        with:
-          status: ${{ needs.deploy_aks.result }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          notification_title: 'New Release on Production ${{ needs.release.outputs.version }} has {status_message}'
-          message_format: '{emoji} <{run_url}|{workflow}> {status_message} in <{repo_url}|{repo}>'
-          footer: 'Linked to <{workflow_url}| workflow file>'
-          icon_success: ':white_check_mark:'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
