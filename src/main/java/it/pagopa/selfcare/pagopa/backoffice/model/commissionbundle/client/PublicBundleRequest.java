@@ -31,5 +31,5 @@ public class PublicBundleRequest {
     private LocalDateTime insertedDate;
 
     @JsonProperty("attributes")
-    private List<PspCiBundleAttribute> ciBundleAttributes;
+    private List<CIBundleAttribute> ciBundleAttributes;
 }

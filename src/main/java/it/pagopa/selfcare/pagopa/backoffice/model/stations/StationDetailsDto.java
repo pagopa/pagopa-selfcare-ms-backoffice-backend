@@ -120,9 +120,4 @@ public class StationDetailsDto {
     @JsonProperty(required = true)
     @Schema(description = "Url jira for StationDetail validation")
     private String validationUrl;
-
-    public String getEmail() {
-        String environment = System.getenv("env") != null ? System.getenv("env") : "local";
-        return environment.equals("prod") ? getEcEmail() : System.getenv("TEST_EMAIL");
-    }
 }

@@ -12,9 +12,9 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BundlesResource {
+public class PSPBundlesResource {
 
-    private List<BundleResource> bundles;
+    private List<PSPBundleResource> bundles;
     private PageInfo pageInfo;
 
 }

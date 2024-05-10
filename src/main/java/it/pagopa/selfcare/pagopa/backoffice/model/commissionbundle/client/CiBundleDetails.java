@@ -18,5 +18,5 @@ public class CiBundleDetails {
     private LocalDate validityDateTo;
     private String idCIBundle;
     private String ciTaxCode;
-    private List<CiBundleAttribute> attributes;
+    private List<CIBundleAttribute> attributes;
 }
