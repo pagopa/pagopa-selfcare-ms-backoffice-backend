@@ -18,7 +18,17 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleC
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleAttribute;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspCiBundleAttribute;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
@@ -33,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,6 +62,8 @@ public class CommissionBundleService {
     private static final String BUNDLE_ACCEPT_SUBSCRIPTION_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto pubblico %s è stata accettata.%n%n%n Puoi vedere e gestire il pacchetto da qui ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nBack-office pagoPa";
     private static final String BUNDLE_REJECT_SUBSCRIPTION_SUBJECT = "Richiesta di adesione rifiutata";
     private static final String BUNDLE_REJECT_SUBSCRIPTION_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto pubblico %s è stata rifiutata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nBack-office pagoPa";
+
+    private static final String VALID_FROM_DATE_FORMAT = "yyyy-MM-dd";
 
     private final GecClient gecClient;
 
@@ -181,7 +194,8 @@ public class CommissionBundleService {
                 throw new AppException(AppError.BAD_REQUEST,
                         "Creditor institution's tax code is required to retrieve creditor institution's public bundles");
             }
-            Bundles bundles = gecClient.getBundles(bundleTypes, name, LocalDate.now(), limit, page);
+            String validFrom = LocalDate.now().format(DateTimeFormatter.ofPattern(VALID_FROM_DATE_FORMAT));
+            Bundles bundles = gecClient.getBundles(bundleTypes, name, validFrom, limit, page);
             pageInfo = bundles.getPageInfo();
             bundlesResource = getPublicBundleResources(ciTaxCode, bundles);
         }
