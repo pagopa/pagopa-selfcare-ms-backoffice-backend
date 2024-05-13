@@ -30,9 +30,10 @@ class MaintenanceServiceTest {
 
     @Test
     void getMaintenanceMessageSuccess() {
-        MaintenanceEntity maintenanceMessage = new MaintenanceEntity();
-        maintenanceMessage.setBannerMessage("bannerMessage");
-        maintenanceMessage.setPageMessage("pageMessage");
+        MaintenanceEntity maintenanceMessage = MaintenanceEntity.builder()
+                .bannerMessage("bannerMessage")
+                .pageMessage("pageMessage")
+                .build();
 
         when(maintenanceRepository.findAll()).thenReturn(Collections.singletonList(maintenanceMessage));
 
