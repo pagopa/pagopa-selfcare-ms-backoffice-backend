@@ -39,7 +39,7 @@ public class MaintenanceController {
             security = {@SecurityRequirement(name = "JWT")},
             tags = {"Home"}
     )
-    @GetMapping(value = "/messages")
+    @GetMapping(value = "/message")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<@Valid MaintenanceMessage> getMaintenanceMessage() {
         return ResponseEntity.ok(this.maintenanceService.getMaintenanceMessages());

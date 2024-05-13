@@ -29,7 +29,7 @@ class MaintenanceControllerTest {
 
     @Test
     void getMaintenanceMessage() throws Exception {
-        String url = "/maintenance/messages";
+        String url = "/maintenance/message";
         when(maintenanceService.getMaintenanceMessages()).thenReturn(
                 MaintenanceMessage.builder()
                         .pageMessage("pageMessage")
