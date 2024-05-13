@@ -22,7 +22,7 @@ public class MaintenanceEntity implements Persistable<String> {
 
     private String bannerMessage;
 
-    private String maintenancePageMessage;
+    private String pageMessage;
 
     @Override
     public boolean isNew() {

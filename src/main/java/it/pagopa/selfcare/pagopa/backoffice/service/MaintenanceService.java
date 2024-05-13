@@ -4,12 +4,10 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.maintenance.MaintenanceMessage;
 import it.pagopa.selfcare.pagopa.backoffice.repository.MaintenanceRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 public class MaintenanceService {
 

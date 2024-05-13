@@ -23,8 +23,8 @@ public class MaintenanceMessage {
     @NotBlank
     private String bannerMessage;
 
-    @Schema(description = "Creditor institution type code",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Maintenance page message",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     @NotBlank
-    private String maintenancePageMessage;
+    private String pageMessage;
 }
