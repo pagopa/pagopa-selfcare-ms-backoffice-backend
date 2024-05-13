@@ -5741,6 +5741,51 @@
         }
       ]
     },
+    "/maintenance/message": {
+      "get": {
+        "description": "Return the maintenance message for the specific environment",
+        "operationId": "getMaintenanceMessage",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceMessage"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Return the maintenance message",
+        "tags": [
+          "Home"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
     "/operative-tables": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
@@ -10375,6 +10420,23 @@
             "enum": [
               "admin, operator"
             ]
+          }
+        }
+      },
+      "MaintenanceMessage": {
+        "required": [
+          "bannerMessage",
+          "pageMessage"
+        ],
+        "type": "object",
+        "properties": {
+          "bannerMessage": {
+            "type": "string",
+            "description": "Maintenance banner message"
+          },
+          "pageMessage": {
+            "type": "string",
+            "description": "Maintenance page message"
           }
         }
       },
