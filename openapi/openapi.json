@@ -8862,10 +8862,6 @@
         }
       },
       "CIBundleFee": {
-        "required": [
-          "serviceType",
-          "specificBuiltInData"
-        ],
         "type": "object",
         "properties": {
           "paymentAmount": {
@@ -10536,9 +10532,7 @@
       "PSPBundleTaxonomy": {
         "required": [
           "endDate",
-          "macroAreaName",
-          "serviceType",
-          "specificBuiltInData"
+          "macroAreaName"
         ],
         "type": "object",
         "properties": {

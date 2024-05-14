@@ -15,9 +15,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class BundleTaxonomy {
 
-    @Schema(description = "Taxonomy description", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Taxonomy description")
     private String serviceType;
 
-    @Schema(description = "Taxonomy identifier", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Taxonomy identifier")
     private String specificBuiltInData;
 }
