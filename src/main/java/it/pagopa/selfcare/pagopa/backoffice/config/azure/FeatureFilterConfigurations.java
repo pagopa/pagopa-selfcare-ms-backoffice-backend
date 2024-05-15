@@ -16,7 +16,7 @@ public class FeatureFilterConfigurations {
         return new PercentageFilter();
     }
 
-    @Bean
+    @Bean(name = "Microsoft.TimeWindow")
     public TimeWindowFilter timeWindowFilter() {
         return new TimeWindowFilter();
     }
