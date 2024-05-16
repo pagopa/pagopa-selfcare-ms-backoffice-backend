@@ -144,6 +144,8 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setModifiedBy(modifiedBy);
         stationDetailResource.setCreatedAt(createdAt);
 
+        stationDetailResource.setIsConnectionSync(model.getService() != null && !model.getService().contains("gpd"));
+
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
         BrokerDetails brokerDetails = model.getIntermediarioPa();
         if(brokerDetails != null) {
@@ -235,8 +237,7 @@ public class StationMapperImpl implements StationMapper {
             return null;
         }
         StationDetailsResourceList resource = new StationDetailsResourceList();
-        resource.setStationsDetailsList(model.getStationsDetailsList().stream().map(i ->
-                toResource(i)).toList());
+        resource.setStationsDetailsList(model.getStationsDetailsList().stream().map(this::toResource).toList());
 
         resource.setPageInfo(model.getPageInfo());
         return resource;
@@ -270,7 +271,7 @@ public class StationMapperImpl implements StationMapper {
         WrapperStations wrapperStations = new WrapperStations();
 
         wrapperStations.setStationsList(model.getStationsList().stream()
-                .map(station -> toWrapperStation(station))
+                .map(this::toWrapperStation)
                 .toList());
         wrapperStations.setPageInfo(model.getPageInfo());
 
@@ -331,7 +332,7 @@ public class StationMapperImpl implements StationMapper {
         WrapperStationsResource wrapperStationsResource = new WrapperStationsResource();
 
         wrapperStationsResource.setStationsList(wrapperStations.getStationsList().stream()
-                .map(station -> toWrapperStationResource(station))
+                .map(this::toWrapperStationResource)
                 .toList());
         wrapperStationsResource.setPageInfo(wrapperStations.getPageInfo());
 
