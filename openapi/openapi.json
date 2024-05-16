@@ -10531,11 +10531,16 @@
       },
       "PSPBundleTaxonomy": {
         "required": [
+          "ecType",
           "endDate",
           "macroAreaName"
         ],
         "type": "object",
         "properties": {
+          "ecType": {
+            "type": "string",
+            "description": "Creditor Institution type"
+          },
           "endDate": {
             "type": "string",
             "description": "End date of validity"

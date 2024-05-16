@@ -19,6 +19,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class PSPBundleTaxonomy extends BundleTaxonomy {
 
+    @Schema(description = "Creditor Institution type",requiredMode = Schema.RequiredMode.REQUIRED)
+    private String ecType;
+
     @Schema(description = "Macro area name",requiredMode = Schema.RequiredMode.REQUIRED)
     private String macroAreaName;
 
