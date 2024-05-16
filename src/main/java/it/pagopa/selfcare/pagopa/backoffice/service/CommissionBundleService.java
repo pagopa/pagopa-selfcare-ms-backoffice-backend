@@ -61,9 +61,9 @@ public class CommissionBundleService {
     private static final String BUNDLE_CREATE_SUBSCRIPTION_REQUEST_SUBJECT = "Nuova richiesta di attivazione pacchetto commissionale";
     private static final String BUNDLE_CREATE_SUBSCRIPTION_REQUEST_BODY = "Ciao, %n%n%n ci sono nuove richieste di attivazione per il pacchetto commissionale %s.%n%n%n Puoi gestire i tuoi pacchetti qui https://selfcare.platform.pagopa.it/ui/comm-bundles ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nBack-office pagoPa";
     private static final String BUNDLE_ACCEPT_SUBSCRIPTION_SUBJECT = "Richiesta di adesione confermata";
-    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto pubblico %s è stata accettata.%n%n%n Puoi vedere e gestire il pacchetto da qui ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nBack-office pagoPa";
+    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto %s è stata accettata.%n%n%n Puoi vedere e gestire il pacchetto da qui ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nBack-office pagoPa";
     private static final String BUNDLE_REJECT_SUBSCRIPTION_SUBJECT = "Richiesta di adesione rifiutata";
-    private static final String BUNDLE_REJECT_SUBSCRIPTION_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto pubblico %s è stata rifiutata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nBack-office pagoPa";
+    private static final String BUNDLE_REJECT_SUBSCRIPTION_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto %s è stata rifiutata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nBack-office pagoPa";
 
     private static final String VALID_FROM_DATE_FORMAT = "yyyy-MM-dd";
 
