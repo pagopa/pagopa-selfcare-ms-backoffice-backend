@@ -88,5 +88,7 @@ public class StationDetailResource extends StationResource {
     private String createdBy;
     @Schema(description = "Last user that modified the station")
     private String modifiedBy;
+    @Schema(description = "Describe the station connection's type, true synchronous, false asynchronous")
+    private Boolean isConnectionSync;
 
 }
