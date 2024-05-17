@@ -76,8 +76,7 @@ public class StationController {
     @Operation(summary = "Get station's details", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public StationDetailResource getStation(
-            @Parameter(description = "Station's unique identifier")
-            @PathVariable("station-code") String stationCode
+            @Parameter(description = "Station's unique identifier") @PathVariable("station-code") String stationCode
     ) {
         return stationService.getStation(stationCode);
 
@@ -102,8 +101,7 @@ public class StationController {
     @OpenApiTableMetadata
     public StationDetailResource updateStation(
             @RequestBody @NotNull StationDetailsDto stationDetailsDto,
-            @Parameter(description = "Station's unique identifier")
-            @PathVariable("station-code") String stationCode
+            @Parameter(description = "Station's unique identifier") @PathVariable("station-code") String stationCode
     ) {
         return stationService.updateStation(stationDetailsDto, stationCode);
     }

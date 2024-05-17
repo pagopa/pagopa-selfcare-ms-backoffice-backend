@@ -192,15 +192,6 @@ public class StationService {
         }
     }
 
-    private String getFirstValidStationCodeAux(String ecCode) {
-        WrapperEntitiesList entitiesList = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_CHECK, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
-        WrapperEntitiesList entitiesList2 = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_FIX, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
-        if (!entitiesList.getWrapperEntities().isEmpty() || !entitiesList2.getWrapperEntities().isEmpty())
-            throw new AppException(AppError.STATION_CONFLICT);
-        return generateStationCode(ecCode);
-    }
-
-
     public WrapperEntities updateWrapperStationDetails(@Valid StationDetailsDto stationDetailsDto) {
         final String UPDATE_STATION_SUMMARY = "Station creation validation: %s";
         final String UPDATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validated: %s";
@@ -249,7 +240,6 @@ public class StationService {
         return wrapperService.findById(code);
     }
 
-
     public WrapperStationsResource getAllStationsMerged(Integer limit, String stationCode, String brokerCode, Integer page, String sorting) {
         Stations stations = getStations(limit, page, sorting, brokerCode, null, stationCode);
         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
@@ -262,6 +252,44 @@ public class StationService {
         return stationMapper.toWrapperStationsResource(stationsMergedAndSorted);
     }
 
+    public TestStationResource testStation(StationTestDto stationTestDto) {
+        var response = forwarderClient.testForwardConnection(
+                stationTestDto.getHostProtocol(),
+                stationTestDto.getHostUrl(),
+                stationTestDto.getHostPort(),
+                stationTestDto.getHostPath(),
+                stationTestDto.getTestStationType()
+        );
+        if (response.getStatus() == 200) {
+            return TestStationResource.builder().testResult(TestResultEnum.SUCCESS).message("OK").build();
+        } else if (response.getStatus() == 401) {
+            return TestStationResource.builder().testResult(TestResultEnum.CERTIFICATE_ERROR)
+                    .message("Connection error due to invalid connection on the station endpoint").build();
+        } else {
+            return TestStationResource.builder().testResult(TestResultEnum.ERROR)
+                    .message("Connection Error with status: " + response.getStatus()).build();
+        }
+    }
+
+    private Context buildStationHtmlEmailBodyContext(String stationCode) {
+        // Thymeleaf Context
+        Context context = new Context();
+
+        // Properties to show up in Template after stored in Context
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("stationCode", stationCode);
+
+        context.setVariables(properties);
+        return context;
+    }
+
+    private String getFirstValidStationCodeAux(String ecCode) {
+        WrapperEntitiesList entitiesList = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_CHECK, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
+        WrapperEntitiesList entitiesList2 = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_FIX, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
+        if (!entitiesList.getWrapperEntities().isEmpty() || !entitiesList2.getWrapperEntities().isEmpty())
+            throw new AppException(AppError.STATION_CONFLICT);
+        return generateStationCode(ecCode);
+    }
 
     private Stations getStations(Integer limit, Integer page, String sort, String brokerCode, String ecCode, String stationCode) {
         Stations response = null;
@@ -319,36 +347,5 @@ public class StationService {
         pageInfo.setTotalItems(wrapperStationsApiConfig.getPageInfo().getTotalItems());
         result.setPageInfo(pageInfo);
         return result;
-    }
-
-    public TestStationResource testStation(StationTestDto stationTestDto) {
-        var response = forwarderClient.testForwardConnection(
-                stationTestDto.getHostProtocol(),
-                stationTestDto.getHostUrl(),
-                stationTestDto.getHostPort(),
-                stationTestDto.getHostPath(),
-                stationTestDto.getTestStationType()
-        );
-        if (response.getStatus() == 200) {
-            return TestStationResource.builder().testResult(TestResultEnum.SUCCESS).message("OK").build();
-        } else if (response.getStatus() == 401) {
-            return TestStationResource.builder().testResult(TestResultEnum.CERTIFICATE_ERROR)
-                    .message("Connection error due to invalid connection on the station endpoint").build();
-        } else {
-            return TestStationResource.builder().testResult(TestResultEnum.ERROR)
-                    .message("Connection Error with status: " + response.getStatus()).build();
-        }
-    }
-
-    private Context buildStationHtmlEmailBodyContext(String stationCode) {
-        // Thymeleaf Context
-        Context context = new Context();
-
-        // Properties to show up in Template after stored in Context
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("stationCode", stationCode);
-
-        context.setVariables(properties);
-        return context;
     }
 }
