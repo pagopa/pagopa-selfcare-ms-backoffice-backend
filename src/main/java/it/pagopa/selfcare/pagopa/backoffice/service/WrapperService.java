@@ -19,11 +19,20 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.REGEX_GENERATE;
@@ -32,14 +41,18 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
 @Service
 public class WrapperService {
 
-    @Autowired
-    private ApiConfigClient apiConfigClient;
+    private final ApiConfigClient apiConfigClient;
+
+    private final WrapperRepository repository;
+
+    private final AuditorAware<String> auditorAware;
 
     @Autowired
-    private WrapperRepository repository;
-
-    @Autowired
-    private AuditorAware<String> auditorAware;
+    public WrapperService(ApiConfigClient apiConfigClient, WrapperRepository repository, AuditorAware<String> auditorAware) {
+        this.apiConfigClient = apiConfigClient;
+        this.repository = repository;
+        this.auditorAware = auditorAware;
+    }
 
     public static List<WrapperEntityOperations> getWrapperEntityOperationsSortedList(WrapperEntities wrapperEntities) {
         List<WrapperEntityOperations> list = new ArrayList<>(wrapperEntities.getEntities());
@@ -99,7 +112,7 @@ public class WrapperService {
     public WrapperEntities<ChannelDetails> update(ChannelDetails channelDetails, String note, String status, String createdBy) {
         String channelCode = channelDetails.getChannelCode();
         Optional<WrapperEntities> opt = repository.findById(channelCode);
-        if(opt.isEmpty()) {
+        if (opt.isEmpty()) {
             throw new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode);
         }
         WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) opt.get();
@@ -110,7 +123,7 @@ public class WrapperService {
         wrapperEntity.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
         wrapperEntities.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.getEntities().add(wrapperEntity);
-        if(createdBy != null)
+        if (createdBy != null)
             wrapperEntities.setCreatedBy(createdBy);
         return repository.save(wrapperEntities);
 
@@ -119,7 +132,7 @@ public class WrapperService {
     public WrapperEntities<ChannelDetails> updateByOpt(ChannelDetails channelDetails, String note, String status) {
         String channelCode = channelDetails.getChannelCode();
         Optional<WrapperEntities> opt = repository.findById(channelCode);
-        if(opt.isEmpty()) {
+        if (opt.isEmpty()) {
             throw new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode);
         }
         WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) opt.get();
@@ -133,7 +146,7 @@ public class WrapperService {
     public WrapperEntities<StationDetails> updateByOpt(StationDetails stationDetails, String note, String status) {
         String stationCode = stationDetails.getStationCode();
         Optional<WrapperEntities> opt = repository.findById(stationCode);
-        if(opt.isEmpty()) {
+        if (opt.isEmpty()) {
             throw new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode);
         }
         WrapperEntities<StationDetails> wrapperEntities = (WrapperEntities) opt.get();
@@ -147,7 +160,7 @@ public class WrapperService {
     public WrapperEntities<StationDetails> update(StationDetails stationDetails, String note, String status, String createdBy) {
         String stationCode = stationDetails.getStationCode();
         Optional<WrapperEntities> opt = repository.findById(stationCode);
-        if(opt.isEmpty()) {
+        if (opt.isEmpty()) {
             throw new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode);
         }
         WrapperEntities<StationDetails> wrapperEntities = (WrapperEntities) opt.get();
@@ -156,7 +169,7 @@ public class WrapperService {
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.getEntities().add(wrapperEntity);
-        if(createdBy != null)
+        if (createdBy != null)
             wrapperEntities.setCreatedBy(createdBy);
         return repository.save(wrapperEntities);
     }
@@ -164,7 +177,7 @@ public class WrapperService {
     public WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus status, WrapperType wrapperType, String brokerCode, String idLike, Integer page, Integer size, String sorting) {
 
         Sort sort;
-        if("DESC".equalsIgnoreCase(sorting)) {
+        if ("DESC".equalsIgnoreCase(sorting)) {
             sort = Sort.by(Sort.Order.desc("id"));
         } else {
             sort = Sort.by(Sort.Order.asc("id"));
@@ -174,7 +187,7 @@ public class WrapperService {
         Page<WrapperEntities<?>> response = null;
 
         int switchCase = (brokerCode != null ? 1 : 0) | (idLike != null ? 2 : 0);
-        if(status != null) {
+        if (status != null) {
             switch (switchCase) {
                 case 0:
                     response = repository.findByStatusAndType(status, wrapperType, paging);
@@ -238,11 +251,11 @@ public class WrapperService {
         Pageable paging = PageRequest.of(page, size);
         Page<WrapperEntities<?>> response;
 
-        if(brokerCode == null && idLike == null) {
+        if (brokerCode == null && idLike == null) {
             response = repository.findByType(wrapperType, paging);
-        } else if(brokerCode == null) {
+        } else if (brokerCode == null) {
             response = repository.findByIdLikeAndType(idLike, wrapperType, paging);
-        } else if(idLike == null) {
+        } else if (idLike == null) {
             response = repository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
         } else {
             response = repository.findByIdLikeAndTypeAndBrokerCode(idLike, wrapperType, brokerCode, paging);
@@ -260,11 +273,20 @@ public class WrapperService {
                 .build();
     }
 
+    /**
+     * Retrieve a paginated list of wrapper station filtered by broker's code and optionally by station's code
+     *
+     * @param stationCode station's code
+     * @param brokerCode broker's code
+     * @param page page number
+     * @param size page size
+     * @return the paginated list
+     */
     public WrapperEntitiesList getWrapperStations(String stationCode, String brokerCode, Integer page, Integer size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
 
         Page<WrapperEntities<?>> response;
-        if(stationCode == null) {
+        if (stationCode == null) {
             response = this.repository.findByTypeAndBrokerCode(WrapperType.STATION, brokerCode, paging);
         } else {
             response = this.repository.findByIdLikeAndTypeAndBrokerCode(stationCode, WrapperType.STATION, brokerCode, paging);
@@ -319,7 +341,7 @@ public class WrapperService {
      */
     public WrapperEntities<StationDetails> upsert(StationDetails details, String note, String status, String createBy) {
         var entity = repository.findById(details.getStationCode());
-        if(entity.isPresent()) {
+        if (entity.isPresent()) {
             return update(details, note, status, createBy);
         } else {
             details.setActivationDate(null);

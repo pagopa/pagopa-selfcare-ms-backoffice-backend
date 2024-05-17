@@ -126,6 +126,17 @@ public class StationService {
 
     }
 
+    /**
+     * Retrieve a paginated list of stations from api-config if the provided status is {@link ConfigurationStatus#ACTIVE},
+     * from wrapper otherwise. The result is filter out by station's code and broker's code.
+     *
+     * @param status station's status
+     * @param stationCode station's code
+     * @param brokerCode broker's code
+     * @param limit page size
+     * @param page page number
+     * @return the paginated list
+     */
     public WrapperStationsResource getStations(
             ConfigurationStatus status,
             String stationCode,
