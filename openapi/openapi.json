@@ -7295,23 +7295,16 @@
         "operationId": "getStations",
         "parameters": [
           {
+            "description": "Station's status",
             "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 50
-            }
-          },
-          {
-            "description": "Page number. Page value starts from 0",
-            "in": "query",
-            "name": "page",
+            "name": "status",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string",
+              "enum": [
+                "ACTIVE",
+                "TO_BE_VALIDATED"
+              ]
             }
           },
           {
@@ -7324,35 +7317,106 @@
             }
           },
           {
-            "description": "Creditor institution associated to given station",
+            "description": "Broker's code",
             "in": "query",
-            "name": "creditorInstitutionCode",
-            "required": false,
+            "name": "brokerCode",
+            "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
-            "description": "Sort Direction ordering",
+            "description": "Number of elements in one page",
             "in": "query",
-            "name": "ordering",
+            "name": "limit",
             "required": false,
             "schema": {
-              "type": "string",
-              "default": "DESC"
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          },
+          {
+            "description": "Page number",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32",
+              "default": 0
             }
           }
         ],
         "responses": {
           "200": {
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/StationsResource"
+                  "$ref": "#/components/schemas/WrapperStationsResource"
                 }
               }
             },
             "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
@@ -7488,6 +7552,7 @@
         "operationId": "getAllStationsMerged",
         "parameters": [
           {
+            "description": "Number of elements in one page",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -7516,11 +7581,12 @@
             }
           },
           {
-            "description": "Page number. Page value starts from 0",
+            "description": "Page number",
             "in": "query",
             "name": "page",
             "required": true,
             "schema": {
+              "minimum": 0,
               "type": "integer",
               "format": "int32"
             }
@@ -8089,6 +8155,7 @@
             }
           },
           {
+            "description": "Number of elements in one page",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -8099,6 +8166,7 @@
             }
           },
           {
+            "description": "Page number",
             "in": "query",
             "name": "page",
             "required": true,
@@ -8108,7 +8176,7 @@
             }
           },
           {
-            "description": "Filter by creditor institution name or creditor instiitution fiscal code",
+            "description": "Filter by creditor institution name or creditor institution fiscal code",
             "in": "query",
             "name": "ci-name-or-fiscalcode",
             "required": false,
@@ -11679,66 +11747,6 @@
           }
         }
       },
-      "StationResource": {
-        "required": [
-          "associatedCreditorInstitutions",
-          "enabled",
-          "stationCode",
-          "version"
-        ],
-        "type": "object",
-        "properties": {
-          "activationDate": {
-            "type": "string",
-            "description": "Station's activation date",
-            "format": "date-time"
-          },
-          "associatedCreditorInstitutions": {
-            "type": "integer",
-            "description": "Number of station's creditor institutions",
-            "format": "int32"
-          },
-          "brokerDescription": {
-            "type": "string",
-            "description": "Station broker's description"
-          },
-          "createdAt": {
-            "type": "string",
-            "description": "Station created on",
-            "format": "date-time"
-          },
-          "enabled": {
-            "type": "boolean",
-            "description": "Station's activation state"
-          },
-          "modifiedAt": {
-            "type": "string",
-            "description": "Station's last modified date",
-            "format": "date-time"
-          },
-          "stationCode": {
-            "type": "string",
-            "description": "Station's unique identifier"
-          },
-          "version": {
-            "type": "integer",
-            "description": "Station's version",
-            "format": "int64"
-          },
-          "wrapperStatus": {
-            "type": "string",
-            "description": "Station's status",
-            "enum": [
-              "APPROVED",
-              "TO_CHECK",
-              "TO_FIX",
-              "TO_CHECK_UPDATE",
-              "TO_FIX_UPDATE"
-            ]
-          }
-        },
-        "description": "List of ec stations"
-      },
       "StationTestDto": {
         "required": [
           "hostPath",
@@ -11768,25 +11776,6 @@
               "PA_INVIA_RT",
               "PA_REDIRECT"
             ]
-          }
-        }
-      },
-      "StationsResource": {
-        "required": [
-          "pageInfo",
-          "stationsList"
-        ],
-        "type": "object",
-        "properties": {
-          "pageInfo": {
-            "$ref": "#/components/schemas/PageInfo"
-          },
-          "stationsList": {
-            "type": "array",
-            "description": "List of ec stations",
-            "items": {
-              "$ref": "#/components/schemas/StationResource"
-            }
           }
         }
       },
@@ -13085,7 +13074,7 @@
           },
           "enabled": {
             "type": "boolean",
-            "description": "Station's activation state"
+            "description": "Describe if the station is active"
           },
           "modifiedAt": {
             "type": "string",
@@ -13147,7 +13136,7 @@
             ]
           }
         },
-        "description": "List of ec stations"
+        "description": "List of creditor institution's stations"
       },
       "WrapperStationsResource": {
         "required": [
@@ -13161,7 +13150,7 @@
           },
           "stationsList": {
             "type": "array",
-            "description": "List of ec stations",
+            "description": "List of creditor institution's stations",
             "items": {
               "$ref": "#/components/schemas/WrapperStationResource"
             }
