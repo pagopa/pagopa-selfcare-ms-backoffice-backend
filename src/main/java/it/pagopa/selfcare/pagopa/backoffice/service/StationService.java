@@ -16,6 +16,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStation;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
@@ -27,7 +28,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationCodeResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestResultEnum;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationDetailsDto;
@@ -126,14 +126,22 @@ public class StationService {
 
     }
 
-    public StationsResource getStations(Integer limit,
-                                        Integer page,
-                                        String stationCode,
-                                        String creditorInstitutionCode,
-                                        String sort
+    public WrapperStationsResource getStations(
+            ConfigurationStatus status,
+            String stationCode,
+            String brokerCode,
+            Integer limit,
+            Integer page
     ) {
-        Stations stations = getStations(limit, page, sort, null, creditorInstitutionCode, stationCode);
-        return stationMapper.toResource(stations);
+        WrapperStations response;
+        if (status.equals(ConfigurationStatus.ACTIVE)) {
+            Stations stations = this.apiConfigClient.getStations(limit, page, "DESC", brokerCode, null, stationCode);
+            response = this.stationMapper.toWrapperStations(stations);
+        } else {
+            WrapperEntitiesList wrapperStations = wrapperService.getWrapperStations(stationCode, brokerCode, page, limit);
+            response = this.stationMapper.toWrapperStations(wrapperStations);
+        }
+        return this.stationMapper.toWrapperStationsResource(response);
     }
 
     public StationDetailResource getStation(String stationCode) {

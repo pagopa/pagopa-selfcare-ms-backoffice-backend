@@ -15,7 +15,7 @@ public class WrapperStationResource {
     @JsonProperty(required = true)
     @NotBlank
     private String stationCode;
-    @Schema(description = "Station's activation state",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Describe if the station is active",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private Boolean enabled;
     @Schema(description = "Station broker's description")

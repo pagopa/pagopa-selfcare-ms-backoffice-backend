@@ -235,7 +235,6 @@ public class WrapperService {
     }
 
     public WrapperEntitiesList findByIdLikeOrTypeOrBrokerCode(String idLike, WrapperType wrapperType, String brokerCode, Integer page, Integer size) {
-
         Pageable paging = PageRequest.of(page, size);
         Page<WrapperEntities<?>> response;
 
@@ -249,15 +248,38 @@ public class WrapperService {
             response = repository.findByIdLikeAndTypeAndBrokerCode(idLike, wrapperType, brokerCode, paging);
         }
 
-        PageInfo pi = new PageInfo();
-        pi.setPage(page);
-        pi.setLimit(size);
-        pi.setItemsFound(response.getTotalPages());
-        WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
-        wrapperEntitiesList.setWrapperEntities(response.getContent());
-        wrapperEntitiesList.setPageInfo(pi);
+        return WrapperEntitiesList.builder()
+                .wrapperEntities(response.getContent())
+                .pageInfo(PageInfo.builder()
+                        .page(page)
+                        .limit(size)
+                        .totalItems(response.getTotalElements())
+                        .totalPages(response.getTotalPages())
+                        .itemsFound(response.getNumberOfElements())
+                        .build())
+                .build();
+    }
 
-        return wrapperEntitiesList;
+    public WrapperEntitiesList getWrapperStations(String stationCode, String brokerCode, Integer page, Integer size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+
+        Page<WrapperEntities<?>> response;
+        if(stationCode == null) {
+            response = this.repository.findByTypeAndBrokerCode(WrapperType.STATION, brokerCode, paging);
+        } else {
+            response = this.repository.findByIdLikeAndTypeAndBrokerCode(stationCode, WrapperType.STATION, brokerCode, paging);
+        }
+
+        return WrapperEntitiesList.builder()
+                .wrapperEntities(response.getContent())
+                .pageInfo(PageInfo.builder()
+                        .page(page)
+                        .limit(size)
+                        .totalItems(response.getTotalElements())
+                        .totalPages(response.getTotalPages())
+                        .itemsFound(response.getNumberOfElements())
+                        .build())
+                .build();
     }
 
     public String getFirstValidStationCodeV2(String taxCode) {
@@ -318,6 +340,4 @@ public class WrapperService {
             return repository.insert(wrapperEntities);
         }
     }
-
-
 }

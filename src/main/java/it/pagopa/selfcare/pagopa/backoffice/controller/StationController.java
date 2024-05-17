@@ -7,25 +7,46 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationCodeResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationsResource;
 import it.pagopa.selfcare.pagopa.backoffice.service.StationService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @RestController
 @RequestMapping(value = "/stations")
 @Tag(name = "Stations")
 public class StationController {
 
+    private final StationService stationService;
+
     @Autowired
-    private StationService stationService;
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
+    }
 
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
@@ -35,17 +56,18 @@ public class StationController {
         return stationService.createStation(stationDetailsDto);
     }
 
-
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get paginated list of stations", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public StationsResource getStations(@Parameter(description = "") @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                        @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = true) Integer page,
-                                        @Parameter(description = "Station's unique identifier") @RequestParam(required = false) String stationCode,
-                                        @Parameter(description = "Creditor institution associated to given station") @RequestParam(required = false) String creditorInstitutionCode,
-                                        @Parameter(description = "Sort Direction ordering") @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort) {
-        return stationService.getStations(limit, page, stationCode, creditorInstitutionCode, sort);
+    public WrapperStationsResource getStations(
+            @Parameter(description = "Station's status") @RequestParam ConfigurationStatus status,
+            @Parameter(description = "Station's unique identifier") @RequestParam(required = false) String stationCode,
+            @Parameter(description = "Broker's code") @RequestParam("brokerCode") String brokerCode,
+            @Parameter(description = "Number of elements in one page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
+            @Parameter(description = "Page number") @RequestParam(defaultValue = "0") @PositiveOrZero Integer page
+    ) {
+        return stationService.getStations(status, stationCode, brokerCode, limit, page);
     }
 
     @GetMapping(value = "/{station-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -57,7 +79,6 @@ public class StationController {
         return stationService.getStation(stationCode);
 
     }
-
 
     @GetMapping(value = "/{station-code}/creditor-institutions")
     @ResponseStatus(HttpStatus.OK)
@@ -88,7 +109,6 @@ public class StationController {
         return stationService.getWrapperEntitiesStation(code);
     }
 
-
     @GetMapping(value = "/merged", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get All Stations from cosmos db merged whit apiConfig", security = {@SecurityRequirement(name = "JWT")})
@@ -105,7 +125,6 @@ public class StationController {
                                                         @RequestParam(required = false, value = "sorting") String sorting) {
         return stationService.getAllStationsMerged(limit, stationCode, brokerCode, page, sorting);
     }
-
 
     @PostMapping(value = "/wrapper", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -154,7 +173,6 @@ public class StationController {
         return stationService.updateWrapperStationDetails(stationDetailsDto);
 
     }
-
 
     @PutMapping(value = "/wrapper/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
