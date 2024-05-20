@@ -54,4 +54,6 @@ public class WrapperStationResource {
     private Long targetPortPof;
     @Schema(description = "Station's target path POF")
     private String targetPathPof;
+    @Schema(description = "Describe the station connection's type, true synchronous, false asynchronous")
+    private Boolean isConnectionSync;
 }

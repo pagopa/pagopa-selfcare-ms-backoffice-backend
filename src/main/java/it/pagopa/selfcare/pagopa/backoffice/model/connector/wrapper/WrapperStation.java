@@ -37,4 +37,6 @@ public class WrapperStation {
     @JsonProperty(required = true)
     @NotNull
     private WrapperStatus wrapperStatus;
+
+    private String service;
 }

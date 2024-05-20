@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -130,11 +131,11 @@ public class StationService {
      * Retrieve a paginated list of stations from api-config if the provided status is {@link ConfigurationStatus#ACTIVE},
      * from wrapper otherwise. The result is filter out by station's code and broker's code.
      *
-     * @param status station's status
+     * @param status      station's status
      * @param stationCode station's code
-     * @param brokerCode broker's code
-     * @param limit page size
-     * @param page page number
+     * @param brokerCode  broker's code
+     * @param limit       page size
+     * @param page        page number
      * @return the paginated list
      */
     public WrapperStationsResource getStations(
@@ -147,9 +148,9 @@ public class StationService {
         WrapperStations response;
         if (status.equals(ConfigurationStatus.ACTIVE)) {
             Stations stations = this.apiConfigClient.getStations(limit, page, "DESC", brokerCode, null, stationCode);
-            response = this.stationMapper.toWrapperStations(stations);
+            response = buildEnrichedWrapperStations(stations);
         } else {
-            WrapperEntitiesList wrapperStations = wrapperService.getWrapperStations(stationCode, brokerCode, page, limit);
+            WrapperEntitiesList wrapperStations = this.wrapperService.getWrapperStations(stationCode, brokerCode, page, limit);
             response = this.stationMapper.toWrapperStations(wrapperStations);
         }
         return this.stationMapper.toWrapperStationsResource(response);
@@ -347,5 +348,26 @@ public class StationService {
         pageInfo.setTotalItems(wrapperStationsApiConfig.getPageInfo().getTotalItems());
         result.setPageInfo(pageInfo);
         return result;
+    }
+
+    private WrapperStations buildEnrichedWrapperStations(Stations stations) {
+        WrapperStations response;
+        List<WrapperStation> wrapperStations = stations.getStationsList().parallelStream()
+                .map(station -> {
+                    WrapperStation wrapperStation = this.stationMapper.toWrapperStation(station);
+                    Optional<WrapperEntities> optionalWrapperEntities = this.wrapperService.findByIdOptional(station.getStationCode());
+                    if (optionalWrapperEntities.isPresent()) {
+                        WrapperEntities<StationDetails> wrapperEntities = optionalWrapperEntities.get();
+                        StationDetails stationDetails = (StationDetails) getWrapperEntityOperationsSortedList(wrapperEntities).get(0).getEntity();
+                        wrapperStation.setCreatedAt(wrapperEntities.getCreatedAt());
+                        wrapperStation.setService(stationDetails.getService());
+                    }
+                    return wrapperStation;
+                }).toList();
+        response = WrapperStations.builder()
+                .stationsList(wrapperStations)
+                .pageInfo(stations.getPageInfo())
+                .build();
+        return response;
     }
 }

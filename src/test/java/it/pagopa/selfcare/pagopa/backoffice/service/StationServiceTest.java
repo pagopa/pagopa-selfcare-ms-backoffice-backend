@@ -38,7 +38,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 
+import java.time.Instant;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -117,11 +119,12 @@ class StationServiceTest {
     }
 
     @Test
-    void getStationsActiveSuccess() {
+    void getStationsActiveSuccessWithWrapperFound() {
         Stations stations = buildStations(STATION_CODE);
 
         when(apiConfigClient.getStations(LIMIT, PAGE, SORTING_DESC, BROKER_CODE, null, STATION_CODE))
                 .thenReturn(stations);
+        when(wrapperService.findByIdOptional(STATION_CODE)).thenReturn(Optional.of(buildStationDetailsWrapperEntities()));
 
         WrapperStationsResource result =
                 assertDoesNotThrow(() -> service.getStations(ConfigurationStatus.ACTIVE, STATION_CODE, BROKER_CODE, LIMIT, PAGE));
@@ -132,7 +135,25 @@ class StationServiceTest {
         assertEquals(STATION_CODE, result.getStationsList().get(0).getStationCode());
         assertEquals(true, result.getStationsList().get(0).getEnabled());
         assertEquals(1L, result.getStationsList().get(0).getVersion());
+    }
 
+    @Test
+    void getStationsActiveSuccessWithWrapperNotFound() {
+        Stations stations = buildStations(STATION_CODE);
+
+        when(apiConfigClient.getStations(LIMIT, PAGE, SORTING_DESC, BROKER_CODE, null, STATION_CODE))
+                .thenReturn(stations);
+        when(wrapperService.findByIdOptional(STATION_CODE)).thenReturn(Optional.empty());
+
+        WrapperStationsResource result =
+                assertDoesNotThrow(() -> service.getStations(ConfigurationStatus.ACTIVE, STATION_CODE, BROKER_CODE, LIMIT, PAGE));
+
+        assertNotNull(result);
+        assertNotNull(result.getStationsList());
+        assertEquals(1, result.getStationsList().size());
+        assertEquals(STATION_CODE, result.getStationsList().get(0).getStationCode());
+        assertEquals(true, result.getStationsList().get(0).getEnabled());
+        assertEquals(1L, result.getStationsList().get(0).getVersion());
     }
 
     @Test
@@ -469,6 +490,7 @@ class StationServiceTest {
         WrapperEntity<StationDetails> entity = new WrapperEntity<>();
         entity.setEntity(buildStationDetails());
         WrapperEntities<StationDetails> entities = new WrapperEntities<>();
+        entities.setCreatedAt(Instant.now());
         entities.setEntities(Collections.singletonList(entity));
         return entities;
     }
@@ -478,6 +500,7 @@ class StationServiceTest {
         stationDetails.setStationCode(STATION_CODE);
         stationDetails.setEnabled(true);
         stationDetails.setVersion(1L);
+        stationDetails.setService("service");
         return stationDetails;
     }
 
