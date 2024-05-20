@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.AvailableCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerAndEcDetailsResource;
@@ -13,6 +14,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
@@ -52,10 +55,10 @@ class CreditorInstitutionControllerTest {
     }
 
     @Test
-    void getCreditorInstitutionSegregationcodes() throws Exception {
+    void getCreditorInstitutionSegregationCodes() throws Exception {
         String url = "/creditor-institutions/12345678900/segregation-codes";
-        CreditorInstitutionAssociatedCodeList response = TestUtil.fileToObject("response/service/get_creditor_institution_segregationcodes_ok.json", CreditorInstitutionAssociatedCodeList.class);
-        when(ciService.getCreditorInstitutionSegregationcodes(anyString())).thenReturn(response);
+        AvailableCodes response = AvailableCodes.builder().availableCodeList(Collections.singletonList("2")).build();
+        when(ciService.getCreditorInstitutionSegregationCodes(anyString())).thenReturn(response);
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));

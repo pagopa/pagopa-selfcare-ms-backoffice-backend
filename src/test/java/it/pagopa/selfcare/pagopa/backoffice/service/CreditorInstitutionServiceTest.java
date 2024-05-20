@@ -10,6 +10,7 @@ import it.pagopa.selfcare.pagopa.backoffice.entity.TavoloOpEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.AvailableCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
@@ -26,7 +27,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.UpdateCred
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerAndEcDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResource;
 import it.pagopa.selfcare.pagopa.backoffice.repository.TavoloOpRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -36,7 +36,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -114,21 +113,21 @@ class CreditorInstitutionServiceTest {
     }
 
     @Test
-    void getCreditorInstitutionSegregationcodes_ok() throws IOException {
-        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationcodes(anyString()))
-                .thenReturn(TestUtil.fileToObject("response/apiconfig/get_creditor_institution_segregationcodes_ok.json", CreditorInstitutionAssociatedCodeList.class));
+    void getCreditorInstitutionSegregationCodes_ok() throws IOException {
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(anyString()))
+                .thenReturn(AvailableCodes.builder().availableCodeList(Collections.singletonList("2")).build());
 
-        CreditorInstitutionAssociatedCodeList result = service.getCreditorInstitutionSegregationcodes("12345678900");
+        AvailableCodes result = assertDoesNotThrow(() -> service.getCreditorInstitutionSegregationCodes("12345678900"));
 
         assertNotNull(result);
     }
 
     @Test
-    void getCreditorInstitutionSegregationcodes_ko() {
+    void getCreditorInstitutionSegregationCodes_ko() {
         FeignException feignException = mock(FeignException.InternalServerError.class);
-        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationcodes(anyString())).thenThrow(feignException);
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(anyString())).thenThrow(feignException);
 
-        assertThrows(FeignException.class, () -> service.getCreditorInstitutionSegregationcodes("12345678900"));
+        assertThrows(FeignException.class, () -> service.getCreditorInstitutionSegregationCodes("12345678900"));
     }
 
     @Test

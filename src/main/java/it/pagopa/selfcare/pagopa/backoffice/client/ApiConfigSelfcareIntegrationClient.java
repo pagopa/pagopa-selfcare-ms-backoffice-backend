@@ -3,8 +3,8 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.ApiConfigSelfcareIntFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.AvailableCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.BrokerCreditorInstitutionDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreditorInstitutionInfo;
@@ -43,8 +43,7 @@ public interface ApiConfigSelfcareIntegrationClient {
     @GetMapping(value = "/creditorinstitutions/{creditorInstitutionCode}/segregationcodes", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Valid
-    CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationcodes(
-            @PathVariable("creditorInstitutionCode") String creditorInstitutionCode);
+    AvailableCodes getCreditorInstitutionSegregationCodes(@PathVariable("creditorInstitutionCode") String creditorInstitutionCode);
 
 
     @PostMapping(value = "/ibans", produces = MediaType.APPLICATION_JSON_VALUE)

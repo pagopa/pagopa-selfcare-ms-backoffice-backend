@@ -4621,7 +4621,7 @@
     "/creditor-institutions/{ci-tax-code}/segregation-codes": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "getCreditorInstitutionSegregationcodes",
+        "operationId": "getCreditorInstitutionSegregationCodes",
         "parameters": [
           {
             "description": "Creditor institution's tax code",
@@ -4638,7 +4638,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CreditorInstitutionAssociatedCodeList"
+                  "$ref": "#/components/schemas/AvailableCodes"
                 }
               }
             },
@@ -8406,6 +8406,19 @@
         },
         "description": "Institution's attributes"
       },
+      "AvailableCodes": {
+        "type": "object",
+        "properties": {
+          "availableCodes": {
+            "type": "array",
+            "description": "List of codes not used for existing associations",
+            "items": {
+              "type": "string",
+              "description": "List of codes not used for existing associations"
+            }
+          }
+        }
+      },
       "BrokerAndEcDetailsResource": {
         "type": "object",
         "properties": {
@@ -9787,34 +9800,6 @@
           },
           "creditorInstitutionDto": {
             "$ref": "#/components/schemas/CreditorInstitutionDto"
-          }
-        }
-      },
-      "CreditorInstitutionAssociatedCode": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "CreditorInstitutionAssociatedCodeList": {
-        "type": "object",
-        "properties": {
-          "unused": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CreditorInstitutionAssociatedCode"
-            }
-          },
-          "used": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CreditorInstitutionAssociatedCode"
-            }
           }
         }
       },

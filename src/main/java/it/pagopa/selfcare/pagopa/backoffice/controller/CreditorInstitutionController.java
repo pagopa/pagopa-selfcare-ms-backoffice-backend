@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionAssociatedCodeList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.AvailableCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionAndBrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionContactsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDetailsResource;
@@ -97,7 +97,7 @@ public class CreditorInstitutionController {
 
     @GetMapping(value = "/{ci-tax-code}/segregation-codes", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = CreditorInstitutionAssociatedCodeList.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AvailableCodes.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
@@ -108,10 +108,10 @@ public class CreditorInstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get segregation code associations with creditor institution", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationcodes(
+    public AvailableCodes getCreditorInstitutionSegregationCodes(
             @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") @NotBlank String ciTaxCode
     ) {
-            return ciService.getCreditorInstitutionSegregationcodes(ciTaxCode);
+            return ciService.getCreditorInstitutionSegregationCodes(ciTaxCode);
     }
 
     @PostMapping(value = "/{ci-tax-code}/station", produces = {MediaType.APPLICATION_JSON_VALUE})
