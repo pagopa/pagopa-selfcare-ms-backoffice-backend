@@ -287,9 +287,11 @@ public class WrapperService {
 
         Page<WrapperEntities<?>> response;
         if (stationCode == null) {
-            response = this.repository.findByTypeAndBrokerCode(WrapperType.STATION, brokerCode, paging);
+            response = this.repository
+                    .findByTypeAndBrokerCodeAndStatusNot(WrapperType.STATION, brokerCode, WrapperStatus.APPROVED, paging);
         } else {
-            response = this.repository.findByIdLikeAndTypeAndBrokerCode(stationCode, WrapperType.STATION, brokerCode, paging);
+            response = this.repository
+                    .findByIdLikeAndTypeAndBrokerCodeAndStatusNot(stationCode, WrapperType.STATION, brokerCode, WrapperStatus.APPROVED, paging);
         }
 
         return WrapperEntitiesList.builder()
