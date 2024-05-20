@@ -13076,6 +13076,10 @@
             "type": "boolean",
             "description": "Describe if the station is active"
           },
+          "isConnectionSync": {
+            "type": "boolean",
+            "description": "Describe the station connection's type, true synchronous, false asynchronous"
+          },
           "modifiedAt": {
             "type": "string",
             "description": "Station's last modified date",
