@@ -176,8 +176,8 @@ public class StationService {
             createdAt = result.getCreatedAt();
             modifiedBy = result.getModifiedBy();
             status = result.getStatus();
-            WrapperEntityOperations wrapperEntity = getWrapperEntityOperationsSortedList(result).get(0);
-            stationDetails = (StationDetails) wrapperEntity.getEntity();
+            WrapperEntityOperations<StationDetails> wrapperEntity = getWrapperEntityOperationsSortedList(result).get(0);
+            stationDetails = wrapperEntity.getEntity();
             note = wrapperEntity.getNote();
         } catch (AppException e) {
 
