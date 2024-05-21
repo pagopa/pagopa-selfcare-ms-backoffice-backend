@@ -90,5 +90,7 @@ public class StationDetailResource extends StationResource {
     private String modifiedBy;
     @Schema(description = "Describe the station connection's type, true synchronous, false asynchronous")
     private Boolean isConnectionSync;
+    @Schema(description = "Operator review note")
+    private String note;
 
 }
