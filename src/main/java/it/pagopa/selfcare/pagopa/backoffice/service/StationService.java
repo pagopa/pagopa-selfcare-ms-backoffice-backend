@@ -102,12 +102,10 @@ public class StationService {
                 insert(stationMapper.
                         fromWrapperStationDetailsDto(wrapperStationDetailsDto), wrapperStationDetailsDto.getNote(), wrapperStationDetailsDto.getStatus().name());
 
-
         jiraServiceManagerClient.createTicket(String.format(CREATE_STATION_SUMMARY, wrapperStationDetailsDto.getStationCode()),
                 String.format(CREATE_STATION_DESCRIPTION, wrapperStationDetailsDto.getStationCode(), wrapperStationDetailsDto.getValidationUrl()));
 
         return createdWrapperEntities;
-
     }
 
     /**
@@ -193,10 +191,17 @@ public class StationService {
         return createdWrapperEntities;
     }
 
-    public WrapperEntities updateWrapperStationDetailsByOpt(@Valid StationDetailsDto stationDetailsDto) {
-        return wrapperService.
-                updateByOpt(stationMapper.
-                        fromDto(stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name());
+    public StationDetailResource updateWrapperStationWithOperatorReview(String stationCode, String note) {
+        WrapperEntities<StationDetails> updatedWrapper = this.wrapperService.updateStationWithOperatorReview(stationCode, note);
+        WrapperEntityOperations<StationDetails> entityOperations = getWrapperEntityOperationsSortedList(updatedWrapper).get(0);
+        return this.stationMapper.toResource(
+                entityOperations.getEntity(),
+                updatedWrapper.getStatus(),
+                updatedWrapper.getCreatedBy(),
+                updatedWrapper.getModifiedBy(),
+                updatedWrapper.getCreatedAt(),
+                entityOperations.getNote()
+        );
     }
 
     public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(String stationcode, Integer limit, Integer page, String ciNameOrFiscalCode) {

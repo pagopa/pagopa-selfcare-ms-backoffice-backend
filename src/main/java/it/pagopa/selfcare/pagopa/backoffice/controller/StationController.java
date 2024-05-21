@@ -194,12 +194,15 @@ public class StationController {
         return stationService.updateWrapperStationDetails(stationDetailsDto);
     }
 
-    @PutMapping(value = "/wrapper/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/wrapper/{station-code}/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Update a WrapperStation on Cosmodb", security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Update a WrapperStation with Operator review", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public WrapperEntities updateWrapperStationDetailsByOpt(@RequestBody @Valid StationDetailsDto stationDetailsDto) {
-        return stationService.updateWrapperStationDetailsByOpt(stationDetailsDto);
+    public StationDetailResource updateWrapperStationWithOperatorReview(
+            @Parameter(description = "Station code") @PathVariable(value = "station-code") String stationCode,
+            @Parameter(description = "Operator review note") @RequestParam String note
+    ) {
+        return this.stationService.updateWrapperStationWithOperatorReview(stationCode, note);
 
     }
 
