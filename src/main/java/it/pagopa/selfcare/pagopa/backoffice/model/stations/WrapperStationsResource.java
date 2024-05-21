@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 public class WrapperStationsResource {
-    @Schema(description = "List of ec stations",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "List of creditor institution's stations",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(required = true)
     private List<WrapperStationResource> stationsList;
     @Schema(description = "info pageable",requiredMode = Schema.RequiredMode.REQUIRED)
