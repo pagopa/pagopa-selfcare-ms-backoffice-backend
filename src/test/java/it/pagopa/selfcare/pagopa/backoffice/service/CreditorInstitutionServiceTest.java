@@ -10,10 +10,9 @@ import it.pagopa.selfcare.pagopa.backoffice.entity.TavoloOpEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.AvailableCodes;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionAssociatedCodeList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.AvailableCodes;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CIPaymentContact;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionAndBrokerDto;
@@ -113,7 +112,7 @@ class CreditorInstitutionServiceTest {
     }
 
     @Test
-    void getCreditorInstitutionSegregationCodes_ok() throws IOException {
+    void getCreditorInstitutionSegregationCodes_ok() {
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(anyString()))
                 .thenReturn(AvailableCodes.builder().availableCodeList(Collections.singletonList("2")).build());
 

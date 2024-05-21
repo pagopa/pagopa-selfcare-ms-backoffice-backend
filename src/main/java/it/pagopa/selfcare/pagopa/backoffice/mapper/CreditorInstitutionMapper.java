@@ -1,10 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.mapper;
 
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitution;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionAddress;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitution;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionAddress;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDetailsResource;
