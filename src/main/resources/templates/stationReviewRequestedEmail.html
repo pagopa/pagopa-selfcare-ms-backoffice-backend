@@ -2,24 +2,31 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Delete bundle's subscription mail</title>
+    <title>Station review requested mail</title>
 </head>
 
 <body>
 <img width="100" height="30"
      src="https://raw.githubusercontent.com/pagopa/pagopa-selfcare-ms-backoffice-backend/main/src/main/resources/templates/logo-pagopa.png">
-<h1>La tua richiesta di adesione al pacchetto è stata confermata</h1>
+<h1>Modifiche richieste</h1>
 <p>
     Ciao,
 </p>
 <br/>
 <p>
-    la tua richiesta di adesione al pacchetto <span th:text="${bundleName}" th:remove="tag"></span> è stata accettata.
+    pagoPA ha richiesto delle modifiche alla stazione <span th:text="${stationCode}" th:remove="tag"></span> che hai
+    creato.
 </p>
-<br/>
 <p>
-    Puoi vedere e gestire il tuo pacchetto da qui <a
-        href="https://selfcare.platform.pagopa.it/ui/comm-bundles">https://selfcare.platform.pagopa.it/ui/comm-bundles</a>.
+    Puoi vedere le modifiche qui sotto oppure nel <a
+        th:href="@{https://selfcare.platform.pagopa.it/ui/stations/${stationCode}">dettaglio
+    della stazione</a>.
+</p>
+<p>
+    <code>
+        <strong>Modifiche richieste</strong>
+        "<span th:text="${reviewNote}" th:remove="tag"></span>".
+    </code>
 </p>
 <br/>
 <p>

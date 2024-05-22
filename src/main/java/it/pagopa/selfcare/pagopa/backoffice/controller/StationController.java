@@ -197,12 +197,21 @@ public class StationController {
     @PutMapping(value = "/wrapper/{station-code}/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a WrapperStation with Operator review", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = StationDetailResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @OpenApiTableMetadata
     public StationDetailResource updateWrapperStationWithOperatorReview(
             @Parameter(description = "Station code") @PathVariable(value = "station-code") String stationCode,
+            @Parameter(description = "Tax code of the creditor institution's that own the station") @PathVariable("ci-tax-code") String ciTaxCode,
             @Parameter(description = "Operator review note") @RequestParam String note
     ) {
-        return this.stationService.updateWrapperStationWithOperatorReview(stationCode, note);
+        return this.stationService.updateWrapperStationWithOperatorReview(stationCode, ciTaxCode, note);
 
     }
 
