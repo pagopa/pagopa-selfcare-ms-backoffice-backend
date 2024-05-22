@@ -3,10 +3,10 @@ locals {
 
   display_name = "Selfcare Backoffice"
   description  = "API to manage pagoPA Selcare Backoffice"
-  path  = "backoffice"
+  path         = "backoffice"
 
-  host         = "api.${var.apim_dns_zone_prefix}.${var.external_domain}"
-  hostname     = var.hostname
+  host     = "api.${var.apim_dns_zone_prefix}.${var.external_domain}"
+  hostname = var.hostname
 
   selfcare_fe_hostname = var.env == "prod" ? "selfcare.platform.pagopa.it" : "selfcare.${var.env}.platform.pagopa.it"
 
@@ -41,14 +41,13 @@ module "apim_api_backoffice_api_v1" {
 
   content_format = "openapi"
   content_value  = templatefile("../openapi/openapi.json", {
-    host = local.host
+    host     = local.host
     basePath = "selfcare"
   })
 
   xml_content = templatefile("./policy/_base_policy.xml", {
     hostname = var.hostname
-    origin       = local.selfcare_fe_hostname
-    local_origin = var.env_short == "d" ? "<origin>https://localhost:3000</origin>" : ""
+    origin   = var.env_short == "d" ? "<origin>*</origin>" : "<origin>https://${local.selfcare_fe_hostname}</origin>"
   })
 }
 

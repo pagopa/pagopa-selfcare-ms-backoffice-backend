@@ -2,8 +2,7 @@
   <inbound>
     <cors>
       <allowed-origins>
-        <origin>https://${origin}</origin>
-        ${local_origin}
+        ${origin}
       </allowed-origins>
       <allowed-methods>
         <method>GET</method>
