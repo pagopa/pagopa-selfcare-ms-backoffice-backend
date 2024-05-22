@@ -88,7 +88,7 @@ public class StationMapperImpl implements StationMapper {
     }
 
     @Override
-    public StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy, Instant createdAt) {
+    public StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy, Instant createdAt, String note) {
         if(model == null) {
             return null;
         }
@@ -145,6 +145,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setCreatedAt(createdAt);
 
         stationDetailResource.setIsConnectionSync(model.getService() != null && !model.getService().contains("gpd"));
+        stationDetailResource.setNote(note);
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
         BrokerDetails brokerDetails = model.getIntermediarioPa();
@@ -314,6 +315,7 @@ public class StationMapperImpl implements StationMapper {
         wrapperStation.setVersion(wrapperEntityOperations.getEntity().getVersion());
         wrapperStation.setActivationDate(wrapperEntityOperations.getEntity().getActivationDate());
         wrapperStation.setAssociatedCreditorInstitutions(wrapperEntityOperations.getEntity().getAssociatedCreditorInstitutions());
+        wrapperStation.setService(wrapperEntityOperations.getEntity().getService());
 
         wrapperStation.setWrapperStatus(wrapperEntityOperations.getStatus());
         wrapperStation.setCreatedAt(wrapperEntityOperations.getCreatedAt());
@@ -356,6 +358,7 @@ public class StationMapperImpl implements StationMapper {
         wrapperStationResource.setWrapperStatus(wrapperStation.getWrapperStatus());
         wrapperStationResource.setCreatedAt(wrapperStation.getCreatedAt());
         wrapperStationResource.setModifiedAt(wrapperStation.getModifiedAt());
+        wrapperStationResource.setIsConnectionSync(wrapperStation.getService() != null && !wrapperStation.getService().contains("gpd"));
 
         return wrapperStationResource;
     }

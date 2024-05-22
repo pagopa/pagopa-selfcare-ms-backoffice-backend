@@ -10,9 +10,9 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionAssociatedCodeList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutionDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.AvailableCodes;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CIPaymentContact;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionAndBrokerDto;
@@ -80,8 +80,8 @@ public class CreditorInstitutionService {
         return mapper.toResource(dto);
     }
 
-    public CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationcodes(String ciCode) {
-        return apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationcodes(ciCode);
+    public AvailableCodes getCreditorInstitutionSegregationCodes(String ciCode) {
+        return this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(ciCode);
     }
 
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(String ecCode, @NotNull CreditorInstitutionStationDto dto) {

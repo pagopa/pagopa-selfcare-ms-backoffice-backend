@@ -12,10 +12,11 @@ import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution.CreditorInstitutions;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStation;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
@@ -27,7 +28,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationCodeResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestResultEnum;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationDetailsDto;
@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -126,14 +127,33 @@ public class StationService {
 
     }
 
-    public StationsResource getStations(Integer limit,
-                                        Integer page,
-                                        String stationCode,
-                                        String creditorInstitutionCode,
-                                        String sort
+    /**
+     * Retrieve a paginated list of stations from api-config if the provided status is {@link ConfigurationStatus#ACTIVE},
+     * from wrapper otherwise. The result is filter out by station's code and broker's code.
+     *
+     * @param status      station's status
+     * @param stationCode station's code
+     * @param brokerCode  broker's code
+     * @param limit       page size
+     * @param page        page number
+     * @return the paginated list
+     */
+    public WrapperStationsResource getStations(
+            ConfigurationStatus status,
+            String stationCode,
+            String brokerCode,
+            Integer limit,
+            Integer page
     ) {
-        Stations stations = getStations(limit, page, sort, null, creditorInstitutionCode, stationCode);
-        return stationMapper.toResource(stations);
+        WrapperStations response;
+        if (status.equals(ConfigurationStatus.ACTIVE)) {
+            Stations stations = this.apiConfigClient.getStations(limit, page, "DESC", brokerCode, null, stationCode);
+            response = buildEnrichedWrapperStations(stations);
+        } else {
+            WrapperEntitiesList wrapperStations = this.wrapperService.getWrapperStations(stationCode, brokerCode, page, limit);
+            response = this.stationMapper.toWrapperStations(wrapperStations);
+        }
+        return this.stationMapper.toWrapperStationsResource(response);
     }
 
     public StationDetailResource getStation(String stationCode) {
@@ -149,20 +169,23 @@ public class StationService {
         String createdBy = "";
         Instant createdAt = null;
         String modifiedBy = "";
+        String note = "";
         try {
             WrapperEntities<StationDetails> result = wrapperService.findById(stationCode);
             createdBy = result.getCreatedBy();
             createdAt = result.getCreatedAt();
             modifiedBy = result.getModifiedBy();
-            stationDetails = (StationDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
             status = result.getStatus();
+            WrapperEntityOperations<StationDetails> wrapperEntity = getWrapperEntityOperationsSortedList(result).get(0);
+            stationDetails = wrapperEntity.getEntity();
+            note = wrapperEntity.getNote();
         } catch (AppException e) {
 
             stationDetails = apiConfigClient.getStation(stationCode);
             status = WrapperStatus.APPROVED;
         }
 
-        return stationMapper.toResource(stationDetails, status, createdBy, modifiedBy, createdAt);
+        return stationMapper.toResource(stationDetails, status, createdBy, modifiedBy, createdAt, note);
     }
 
     public StationCodeResource getStationCode(String ecCode, Boolean v2) {
@@ -172,15 +195,6 @@ public class StationService {
             return new StationCodeResource(getFirstValidStationCodeAux(ecCode));
         }
     }
-
-    private String getFirstValidStationCodeAux(String ecCode) {
-        WrapperEntitiesList entitiesList = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_CHECK, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
-        WrapperEntitiesList entitiesList2 = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_FIX, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
-        if (!entitiesList.getWrapperEntities().isEmpty() || !entitiesList2.getWrapperEntities().isEmpty())
-            throw new AppException(AppError.STATION_CONFLICT);
-        return generateStationCode(ecCode);
-    }
-
 
     public WrapperEntities updateWrapperStationDetails(@Valid StationDetailsDto stationDetailsDto) {
         final String UPDATE_STATION_SUMMARY = "Station creation validation: %s";
@@ -230,7 +244,6 @@ public class StationService {
         return wrapperService.findById(code);
     }
 
-
     public WrapperStationsResource getAllStationsMerged(Integer limit, String stationCode, String brokerCode, Integer page, String sorting) {
         Stations stations = getStations(limit, page, sorting, brokerCode, null, stationCode);
         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
@@ -243,6 +256,44 @@ public class StationService {
         return stationMapper.toWrapperStationsResource(stationsMergedAndSorted);
     }
 
+    public TestStationResource testStation(StationTestDto stationTestDto) {
+        var response = forwarderClient.testForwardConnection(
+                stationTestDto.getHostProtocol(),
+                stationTestDto.getHostUrl(),
+                stationTestDto.getHostPort(),
+                stationTestDto.getHostPath(),
+                stationTestDto.getTestStationType()
+        );
+        if (response.getStatus() == 200) {
+            return TestStationResource.builder().testResult(TestResultEnum.SUCCESS).message("OK").build();
+        } else if (response.getStatus() == 401) {
+            return TestStationResource.builder().testResult(TestResultEnum.CERTIFICATE_ERROR)
+                    .message("Connection error due to invalid connection on the station endpoint").build();
+        } else {
+            return TestStationResource.builder().testResult(TestResultEnum.ERROR)
+                    .message("Connection Error with status: " + response.getStatus()).build();
+        }
+    }
+
+    private Context buildStationHtmlEmailBodyContext(String stationCode) {
+        // Thymeleaf Context
+        Context context = new Context();
+
+        // Properties to show up in Template after stored in Context
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("stationCode", stationCode);
+
+        context.setVariables(properties);
+        return context;
+    }
+
+    private String getFirstValidStationCodeAux(String ecCode) {
+        WrapperEntitiesList entitiesList = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_CHECK, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
+        WrapperEntitiesList entitiesList2 = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_FIX, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
+        if (!entitiesList.getWrapperEntities().isEmpty() || !entitiesList2.getWrapperEntities().isEmpty())
+            throw new AppException(AppError.STATION_CONFLICT);
+        return generateStationCode(ecCode);
+    }
 
     private Stations getStations(Integer limit, Integer page, String sort, String brokerCode, String ecCode, String stationCode) {
         Stations response = null;
@@ -302,34 +353,24 @@ public class StationService {
         return result;
     }
 
-    public TestStationResource testStation(StationTestDto stationTestDto) {
-        var response = forwarderClient.testForwardConnection(
-                stationTestDto.getHostProtocol(),
-                stationTestDto.getHostUrl(),
-                stationTestDto.getHostPort(),
-                stationTestDto.getHostPath(),
-                stationTestDto.getTestStationType()
-        );
-        if (response.getStatus() == 200) {
-            return TestStationResource.builder().testResult(TestResultEnum.SUCCESS).message("OK").build();
-        } else if (response.getStatus() == 401) {
-            return TestStationResource.builder().testResult(TestResultEnum.CERTIFICATE_ERROR)
-                    .message("Connection error due to invalid connection on the station endpoint").build();
-        } else {
-            return TestStationResource.builder().testResult(TestResultEnum.ERROR)
-                    .message("Connection Error with status: " + response.getStatus()).build();
-        }
-    }
-
-    private Context buildStationHtmlEmailBodyContext(String stationCode) {
-        // Thymeleaf Context
-        Context context = new Context();
-
-        // Properties to show up in Template after stored in Context
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("stationCode", stationCode);
-
-        context.setVariables(properties);
-        return context;
+    private WrapperStations buildEnrichedWrapperStations(Stations stations) {
+        WrapperStations response;
+        List<WrapperStation> wrapperStations = stations.getStationsList().parallelStream()
+                .map(station -> {
+                    WrapperStation wrapperStation = this.stationMapper.toWrapperStation(station);
+                    Optional<WrapperEntities> optionalWrapperEntities = this.wrapperService.findByIdOptional(station.getStationCode());
+                    if (optionalWrapperEntities.isPresent()) {
+                        WrapperEntities<StationDetails> wrapperEntities = optionalWrapperEntities.get();
+                        StationDetails stationDetails = (StationDetails) getWrapperEntityOperationsSortedList(wrapperEntities).get(0).getEntity();
+                        wrapperStation.setCreatedAt(wrapperEntities.getCreatedAt());
+                        wrapperStation.setService(stationDetails.getService());
+                    }
+                    return wrapperStation;
+                }).toList();
+        response = WrapperStations.builder()
+                .stationsList(wrapperStations)
+                .pageInfo(stations.getPageInfo())
+                .build();
+        return response;
     }
 }
