@@ -208,8 +208,8 @@ public class StationController {
     @OpenApiTableMetadata
     public StationDetailResource updateWrapperStationWithOperatorReview(
             @Parameter(description = "Station code") @PathVariable(value = "station-code") String stationCode,
-            @Parameter(description = "Tax code of the creditor institution's that own the station") @PathVariable("ci-tax-code") String ciTaxCode,
-            @Parameter(description = "Operator review note") @RequestParam String note
+            @Parameter(description = "Tax code of the creditor institution's that own the station") @RequestParam String ciTaxCode,
+            @RequestBody @Valid String note
     ) {
         return this.stationService.updateWrapperStationWithOperatorReview(stationCode, ciTaxCode, note);
 

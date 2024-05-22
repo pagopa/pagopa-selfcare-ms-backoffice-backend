@@ -19,14 +19,14 @@
 </p>
 <p>
     Puoi vedere le modifiche qui sotto oppure nel <a
-        th:href="@{https://selfcare.platform.pagopa.it/ui/stations/${stationCode}">dettaglio
+        th:href="@{https://selfcare.platform.pagopa.it/ui/stations/{pathVar}(pathVar=${stationCode})}">dettaglio
     della stazione</a>.
 </p>
 <p>
-    <code>
-        <strong>Modifiche richieste</strong>
-        "<span th:text="${reviewNote}" th:remove="tag"></span>".
-    </code>
+    <div style="background: #F2F6FA; padding:10px; padding-left:20px; width:500px; overflow-wrap:break-word;">
+    <p><strong>Modifiche richieste</strong></p>
+    <p>"<span th:text="${reviewNote}" th:remove="tag"></span>".</p>
+    </div>
 </p>
 <br/>
 <p>
