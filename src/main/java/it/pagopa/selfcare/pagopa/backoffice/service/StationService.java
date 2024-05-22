@@ -193,6 +193,14 @@ public class StationService {
         return createdWrapperEntities;
     }
 
+    /**
+     * Update the wrapper station with the operator review's note and notify the station owner via email.
+     *
+     * @param stationCode station's code
+     * @param ciTaxCode   creditor institution's tax code that own the station
+     * @param note        operator review note
+     * @return the updated station wrapper
+     */
     public StationDetailResource updateWrapperStationWithOperatorReview(String stationCode, String ciTaxCode, String note) {
         WrapperEntities<StationDetails> updatedWrapper = this.wrapperService.updateStationWithOperatorReview(stationCode, note);
 

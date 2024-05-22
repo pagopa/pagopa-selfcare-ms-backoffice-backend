@@ -14,6 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.OperatorStationReview;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationCodeResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
@@ -194,6 +195,14 @@ public class StationController {
         return stationService.updateWrapperStationDetails(stationDetailsDto);
     }
 
+    /**
+     * Updates a station wrapper with the operator review's note
+     *
+     * @param stationCode station's code
+     * @param ciTaxCode   creditor institution's tax code that own the station
+     * @param note        operator review note
+     * @return the updated station wrapper
+     */
     @PutMapping(value = "/wrapper/{station-code}/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a WrapperStation with Operator review", security = {@SecurityRequirement(name = "JWT")})
@@ -208,10 +217,10 @@ public class StationController {
     @OpenApiTableMetadata
     public StationDetailResource updateWrapperStationWithOperatorReview(
             @Parameter(description = "Station code") @PathVariable(value = "station-code") String stationCode,
-            @Parameter(description = "Tax code of the creditor institution's that own the station") @RequestParam String ciTaxCode,
-            @RequestBody @Valid String note
+            @Parameter(description = "Creditor institution's tax code that own the station") @RequestParam String ciTaxCode,
+            @RequestBody @Valid OperatorStationReview note
     ) {
-        return this.stationService.updateWrapperStationWithOperatorReview(stationCode, ciTaxCode, note);
+        return this.stationService.updateWrapperStationWithOperatorReview(stationCode, ciTaxCode, note.getNote());
 
     }
 

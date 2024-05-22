@@ -8000,7 +8000,7 @@
             }
           },
           {
-            "description": "Tax code of the creditor institution's that own the station",
+            "description": "Creditor institution's tax code that own the station",
             "in": "query",
             "name": "ciTaxCode",
             "required": true,
@@ -8013,7 +8013,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "string"
+                "$ref": "#/components/schemas/OperatorStationReview"
               }
             }
           },
@@ -10582,6 +10582,15 @@
           "pageMessage": {
             "type": "string",
             "description": "Maintenance page message"
+          }
+        }
+      },
+      "OperatorStationReview": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "description": "Operator review note"
           }
         }
       },
