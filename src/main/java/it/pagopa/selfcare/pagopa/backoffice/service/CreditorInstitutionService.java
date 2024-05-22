@@ -81,7 +81,7 @@ public class CreditorInstitutionService {
     }
 
     public AvailableCodes getCreditorInstitutionSegregationCodes(String ciCode) {
-        return apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(ciCode);
+        return this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(ciCode);
     }
 
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(String ecCode, @NotNull CreditorInstitutionStationDto dto) {

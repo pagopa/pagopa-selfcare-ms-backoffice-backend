@@ -111,7 +111,7 @@ public class CreditorInstitutionController {
     public AvailableCodes getCreditorInstitutionSegregationCodes(
             @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") @NotBlank String ciTaxCode
     ) {
-            return ciService.getCreditorInstitutionSegregationCodes(ciTaxCode);
+            return this.ciService.getCreditorInstitutionSegregationCodes(ciTaxCode);
     }
 
     @PostMapping(value = "/{ci-tax-code}/station", produces = {MediaType.APPLICATION_JSON_VALUE})
