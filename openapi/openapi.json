@@ -11178,6 +11178,10 @@
             "type": "string",
             "description": "Station's new password"
           },
+          "note": {
+            "type": "string",
+            "description": "Operator review note"
+          },
           "password": {
             "type": "string",
             "description": "Station's password"

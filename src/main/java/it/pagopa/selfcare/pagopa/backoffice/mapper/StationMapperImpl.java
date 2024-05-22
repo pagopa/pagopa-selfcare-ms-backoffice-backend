@@ -88,7 +88,7 @@ public class StationMapperImpl implements StationMapper {
     }
 
     @Override
-    public StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy, Instant createdAt) {
+    public StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy, Instant createdAt, String note) {
         if(model == null) {
             return null;
         }
@@ -145,6 +145,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setCreatedAt(createdAt);
 
         stationDetailResource.setIsConnectionSync(model.getService() != null && !model.getService().contains("gpd"));
+        stationDetailResource.setNote(note);
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
         BrokerDetails brokerDetails = model.getIntermediarioPa();

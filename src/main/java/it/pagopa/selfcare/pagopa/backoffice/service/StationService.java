@@ -169,20 +169,23 @@ public class StationService {
         String createdBy = "";
         Instant createdAt = null;
         String modifiedBy = "";
+        String note = "";
         try {
             WrapperEntities<StationDetails> result = wrapperService.findById(stationCode);
             createdBy = result.getCreatedBy();
             createdAt = result.getCreatedAt();
             modifiedBy = result.getModifiedBy();
-            stationDetails = (StationDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
             status = result.getStatus();
+            WrapperEntityOperations<StationDetails> wrapperEntity = getWrapperEntityOperationsSortedList(result).get(0);
+            stationDetails = wrapperEntity.getEntity();
+            note = wrapperEntity.getNote();
         } catch (AppException e) {
 
             stationDetails = apiConfigClient.getStation(stationCode);
             status = WrapperStatus.APPROVED;
         }
 
-        return stationMapper.toResource(stationDetails, status, createdBy, modifiedBy, createdAt);
+        return stationMapper.toResource(stationDetails, status, createdBy, modifiedBy, createdAt, note);
     }
 
     public StationCodeResource getStationCode(String ecCode, Boolean v2) {
