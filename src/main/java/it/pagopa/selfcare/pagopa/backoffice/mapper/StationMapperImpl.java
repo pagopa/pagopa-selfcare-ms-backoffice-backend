@@ -144,7 +144,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setModifiedBy(modifiedBy);
         stationDetailResource.setCreatedAt(createdAt);
 
-        stationDetailResource.setIsConnectionSync(model.getService() != null && !model.getService().contains("gpd"));
+        stationDetailResource.setIsConnectionSync(isConnectionSync(model));
         stationDetailResource.setNote(note);
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
@@ -315,7 +315,7 @@ public class StationMapperImpl implements StationMapper {
         wrapperStation.setVersion(wrapperEntityOperations.getEntity().getVersion());
         wrapperStation.setActivationDate(wrapperEntityOperations.getEntity().getActivationDate());
         wrapperStation.setAssociatedCreditorInstitutions(wrapperEntityOperations.getEntity().getAssociatedCreditorInstitutions());
-        wrapperStation.setService(wrapperEntityOperations.getEntity().getService());
+        wrapperStation.setIsConnectionSync(isConnectionSync(wrapperEntityOperations.getEntity()));
 
         wrapperStation.setWrapperStatus(wrapperEntityOperations.getStatus());
         wrapperStation.setCreatedAt(wrapperEntityOperations.getCreatedAt());
@@ -358,7 +358,7 @@ public class StationMapperImpl implements StationMapper {
         wrapperStationResource.setWrapperStatus(wrapperStation.getWrapperStatus());
         wrapperStationResource.setCreatedAt(wrapperStation.getCreatedAt());
         wrapperStationResource.setModifiedAt(wrapperStation.getModifiedAt());
-        wrapperStationResource.setIsConnectionSync(wrapperStation.getService() != null && !wrapperStation.getService().contains("gpd"));
+        wrapperStationResource.setIsConnectionSync(wrapperStation.getIsConnectionSync());
 
         return wrapperStationResource;
     }
@@ -501,4 +501,7 @@ public class StationMapperImpl implements StationMapper {
         return stationDetails;
     }
 
+    private boolean isConnectionSync(StationDetails model) {
+        return (model.getTargetPath() != null && model.getRedirectIp() != null) || model.getTargetPathPof() != null;
+    }
 }

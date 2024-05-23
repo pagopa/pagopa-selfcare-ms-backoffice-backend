@@ -106,10 +106,10 @@ public class CreditorInstitutionController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get segregation code associations with creditor institution", security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Get the available creditor institution's segregation code", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public AvailableCodes getCreditorInstitutionSegregationCodes(
-            @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") @NotBlank String ciTaxCode
+            @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode
     ) {
             return this.ciService.getCreditorInstitutionSegregationCodes(ciTaxCode);
     }

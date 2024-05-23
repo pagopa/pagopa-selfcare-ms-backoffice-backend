@@ -11,6 +11,8 @@ import it.pagopa.selfcare.pagopa.backoffice.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.AvailableCodes;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionAssociatedCode;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
@@ -80,8 +82,22 @@ public class CreditorInstitutionService {
         return mapper.toResource(dto);
     }
 
-    public AvailableCodes getCreditorInstitutionSegregationCodes(String ciCode) {
-        return this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(ciCode);
+    /**
+     * Retrieve the creditor institution's segregation codes
+     *
+     * @param ciTaxCode creditor institution's tax code that own the station
+     * @return the available segregation codes
+     */
+    public AvailableCodes getCreditorInstitutionSegregationCodes(String ciTaxCode) {
+        CreditorInstitutionAssociatedCodeList segregationCodes =
+                this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(ciTaxCode);
+
+        return AvailableCodes.builder()
+                .availableCodeList(
+                        segregationCodes.getUnused().stream()
+                                .map(CreditorInstitutionAssociatedCode::getCode)
+                                .toList())
+                .build();
     }
 
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(String ecCode, @NotNull CreditorInstitutionStationDto dto) {
