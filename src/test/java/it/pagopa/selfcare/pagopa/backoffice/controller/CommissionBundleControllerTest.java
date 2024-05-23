@@ -2,7 +2,6 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundlesResource;
@@ -319,15 +318,6 @@ class CommissionBundleControllerTest {
 
         mvc.perform(post(url, BUNDLE_OFFER_ID, CI_TAX_CODE))
                 .andExpect(status().isOk());
-        verify(service).ciAcceptPrivateBundleOffer(CI_CODE, BUNDLE_OFFER_ID);
-    }
-
-    @Test
-    void removeCIBundleTest() throws Exception {
-        String url = "/bundles/{id-bundle}/creditor-institutions/{ci-code}";
-
-        mvc.perform(delete(url, BUNDLE_ID, CI_TAX_CODE))
-                .andExpect(status().isOk());
-        verify(service).removeCIBundle(CI_CODE, BUNDLE_ID);
+        verify(service).ciAcceptPrivateBundleOffer(CI_TAX_CODE, BUNDLE_OFFER_ID);
     }
 }

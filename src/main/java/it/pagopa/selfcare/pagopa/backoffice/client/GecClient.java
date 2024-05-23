@@ -3,12 +3,17 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.GecFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequestId;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -197,11 +202,10 @@ public interface GecClient {
             @RequestBody @NotNull PublicBundleRequest bundleRequest
     );
 
-    @PostMapping(value = "/cis/{ci-code}/offers/{id-bundle-offer}/accept", produces = MediaType.APPLICATION_JSON_VALUE)
-    CIBundleId ciAcceptPrivateBundleOffer(@PathVariable("ci-code") String ciTaxCode,
-                                          @PathVariable("id-bundle-offer") String idBundleOffer);
-
-    @DeleteMapping(value = "/cis/{ci-code}/bundles/{id-bundle}")
-    void removeCIBundle(@PathVariable("ci-code") String ciTaxCode,
-                        @PathVariable("id-bundle") String idBundle);
+    @PostMapping(value = "/cis/{ci-tax-code}/offers/{id-bundle-offer}/accept", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    CIBundleId ciAcceptPrivateBundleOffer(
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @PathVariable("id-bundle-offer") String idBundleOffer
+    );
 }

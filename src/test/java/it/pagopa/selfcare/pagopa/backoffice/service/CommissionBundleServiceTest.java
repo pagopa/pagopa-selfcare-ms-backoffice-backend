@@ -6,25 +6,26 @@ import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreditorInstitutionInfo;
-import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundle;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequestId;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleAttribute;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import org.junit.jupiter.api.Test;
@@ -639,7 +640,7 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void createCIBundleRequestSuccess(){
+    void createCIBundleRequestSuccess() {
         PublicBundleRequest bundleRequest = new PublicBundleRequest();
         BundleRequestId bundleRequestId = new BundleRequestId();
         bundleRequestId.setIdBundleRequest(ID_BUNDLE_REQUEST);
@@ -647,6 +648,14 @@ class CommissionBundleServiceTest {
 
         assertDoesNotThrow(() ->
                 sut.createCIBundleRequest(CI_TAX_CODE, bundleRequest, BUNDLE_NAME));
+    }
+
+    @Test
+    void ciAcceptPrivateBundleOfferTest() {
+        assertDoesNotThrow(
+                () -> sut.ciAcceptPrivateBundleOffer(CI_TAX_CODE, BUNDLE_OFFER_ID)
+        );
+        verify(gecClient).ciAcceptPrivateBundleOffer(CI_TAX_CODE, BUNDLE_OFFER_ID);
     }
 
     private PublicBundleRequests buildPspRequests() {
@@ -706,21 +715,5 @@ class CommissionBundleServiceTest {
                 .maxPaymentAmount(100L)
                 .transferCategory(TRANSFER_CATEGORY)
                 .build();
-    }
-
-    @Test
-    void ciAcceptPrivateBundleOfferTest() {
-        Assertions.assertDoesNotThrow(
-                () -> service.ciAcceptPrivateBundleOffer(CI_CODE, BUNDLE_OFFER_ID)
-        );
-        verify(client).ciAcceptPrivateBundleOffer(CI_CODE, BUNDLE_OFFER_ID);
-    }
-
-    @Test
-    void removeCIBundleTest() {
-        Assertions.assertDoesNotThrow(
-                () -> service.removeCIBundle(CI_CODE, ID_BUNDLE)
-        );
-        verify(client).removeCIBundle(CI_CODE, ID_BUNDLE);
     }
 }

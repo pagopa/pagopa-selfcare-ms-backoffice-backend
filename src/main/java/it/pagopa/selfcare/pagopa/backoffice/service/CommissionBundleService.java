@@ -28,6 +28,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleAttribute;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
@@ -338,7 +339,7 @@ public class CommissionBundleService {
                     .destinationUserType(SelfcareProductUser.ADMIN)
                     .build();
 
-            awsSesClient.sendEmail(messageDetail);
+            this.awsSesClient.sendEmail(messageDetail);
         }
     }
 
@@ -365,8 +366,20 @@ public class CommissionBundleService {
                     .destinationUserType(SelfcareProductUser.ADMIN)
                     .build();
 
-            awsSesClient.sendEmail(messageDetail);
+            this.awsSesClient.sendEmail(messageDetail);
         }
+    }
+
+    /**
+     * Accept the private bundle offer with the provided id.
+     * The provided tax code identifies the creditor institution that accept the offer
+     *
+     * @param ciTaxCode     the tax code of the creditor institution
+     * @param idBundleOffer th id of the bundle offer
+     * @return the id of the accepted private bundle
+     */
+    public CIBundleId ciAcceptPrivateBundleOffer(String ciTaxCode, String idBundleOffer) {
+        return this.gecClient.ciAcceptPrivateBundleOffer(ciTaxCode, idBundleOffer);
     }
 
     private Context buildEmailHtmlBodyContext(String bundleName) {
@@ -545,27 +558,5 @@ public class CommissionBundleService {
 
     private boolean isBundleRequested(PublicBundleRequests bundleRequests) {
         return bundleRequests != null && bundleRequests.getPageInfo().getTotalItems() != null && bundleRequests.getPageInfo().getTotalItems() > 0;
-    }
-
-    /**
-     * Accept the private bundle offer with the provided id.
-     * The provided tax code identifies the creditor institution that accept the offer
-     *
-     * @param ciTaxCode the tax code of the creditor institution
-     * @param idBundleOffer th id of the bundle offer
-     * @return the id of the accepted private bundle
-     */
-    public CIBundleId ciAcceptPrivateBundleOffer(String ciTaxCode, String idBundleOffer) {
-        return gecClient.ciAcceptPrivateBundleOffer(ciTaxCode, idBundleOffer);
-    }
-
-    /**
-     * Remove the subscription of a creditor institution to a bundle
-     *
-     * @param ciTaxCode the creditor institution tax code
-     * @param idBundle the bundle id
-     */
-    public void removeCIBundle(String ciTaxCode, String idBundle){
-        gecClient.removeCIBundle(ciTaxCode, idBundle);
     }
 }

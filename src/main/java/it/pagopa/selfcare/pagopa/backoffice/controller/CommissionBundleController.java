@@ -17,15 +17,11 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleC
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.service.CommissionBundleService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -79,7 +75,7 @@ public class CommissionBundleController {
             @Parameter(description = "Number of elements in one page") @RequestParam(required = false, defaultValue = "50") Integer limit,
             @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") @Min(0) Integer page
     ) {
-        return commissionBundleService.getCIBundles(bundleType, ciTaxCode, name, limit, page);
+        return this.commissionBundleService.getCIBundles(bundleType, ciTaxCode, name, limit, page);
     }
 
     @GetMapping("/payment-types")
@@ -90,7 +86,7 @@ public class CommissionBundleController {
             @Parameter(description = "Number of elements on one page. Default = 50") @RequestParam(required = false, defaultValue = "50") Integer limit,
             @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = false, defaultValue = "0") Integer page
     ) {
-        return commissionBundleService.getBundlesPaymentTypes(limit, page);
+        return this.commissionBundleService.getBundlesPaymentTypes(limit, page);
     }
 
     @GetMapping("/touchpoints")
@@ -101,7 +97,7 @@ public class CommissionBundleController {
             @Parameter(description = "Number of elements on one page. Default = 10") @RequestParam(required = false, defaultValue = "10") Integer limit,
             @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = false, defaultValue = "0") Integer page
     ) {
-        return commissionBundleService.getTouchpoints(limit, page);
+        return this.commissionBundleService.getTouchpoints(limit, page);
     }
 
     @GetMapping("/payment-service-providers/{psp-tax-code}")
@@ -115,7 +111,7 @@ public class CommissionBundleController {
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
             @Parameter(description = "Commission bundle's name") @RequestParam(required = false) String name
     ) {
-        return commissionBundleService.getBundlesByPSP(pspTaxCode, bundleType, name, limit, page);
+        return this.commissionBundleService.getBundlesByPSP(pspTaxCode, bundleType, name, limit, page);
     }
 
     @PostMapping(value = "/payment-service-providers/{psp-tax-code}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -126,7 +122,7 @@ public class CommissionBundleController {
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
             @Parameter(description = "Commission bundle related to PSP to be created") @RequestBody @NotNull BundleRequest bundleRequest
     ) {
-        return commissionBundleService.createPSPBundle(pspTaxCode, bundleRequest);
+        return this.commissionBundleService.createPSPBundle(pspTaxCode, bundleRequest);
     }
 
     @GetMapping(value = "/{id-bundle}/payment-service-providers/{psp-tax-code}")
@@ -137,7 +133,7 @@ public class CommissionBundleController {
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
             @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle
     ) {
-        return commissionBundleService.getBundleDetailByPSP(pspTaxCode, idBundle);
+        return this.commissionBundleService.getBundleDetailByPSP(pspTaxCode, idBundle);
     }
 
     @PutMapping(value = "/{id-bundle}/payment-service-providers/{psp-tax-code}")
@@ -149,7 +145,7 @@ public class CommissionBundleController {
             @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
             @Parameter(description = "Commission bundle related to PSP to be updated") @RequestBody @NotNull BundleRequest bundle
     ) {
-        commissionBundleService.updatePSPBundle(pspTaxCode, idBundle, bundle);
+        this.commissionBundleService.updatePSPBundle(pspTaxCode, idBundle, bundle);
     }
 
     @DeleteMapping(value = "/{id-bundle}/payment-service-providers/{psp-tax-code}")
@@ -160,7 +156,7 @@ public class CommissionBundleController {
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
             @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle
     ) {
-        commissionBundleService.deletePSPBundle(pspTaxCode, idBundle);
+        this.commissionBundleService.deletePSPBundle(pspTaxCode, idBundle);
     }
 
     /**
@@ -181,7 +177,7 @@ public class CommissionBundleController {
             @Parameter(description = "Creditor institution's tax code") @RequestParam String ciTaxCode,
             @Parameter(description = "Bundle's name") @RequestParam String bundleName
     ) {
-        commissionBundleService.acceptPublicBundleSubscriptionsByPSP(pspTaxCode, bundleRequestId, ciTaxCode, bundleName);
+        this.commissionBundleService.acceptPublicBundleSubscriptionsByPSP(pspTaxCode, bundleRequestId, ciTaxCode, bundleName);
     }
 
 
@@ -203,7 +199,7 @@ public class CommissionBundleController {
             @Parameter(description = "Creditor institution's tax code") @RequestParam String ciTaxCode,
             @Parameter(description = "Bundle's name") @RequestParam String bundleName
     ) {
-        commissionBundleService.rejectPublicBundleSubscriptionByPSP(pspTaxCode, bundleRequestId, ciTaxCode, bundleName);
+        this.commissionBundleService.rejectPublicBundleSubscriptionByPSP(pspTaxCode, bundleRequestId, ciTaxCode, bundleName);
     }
 
     /**
@@ -237,7 +233,7 @@ public class CommissionBundleController {
             @Parameter(description = "Number of elements in one page") @RequestParam(required = false, defaultValue = "50") Integer limit,
             @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") Integer page
     ) {
-        return commissionBundleService.getPublicBundleCISubscriptions(idBundle, pspTaxCode, status, ciTaxCode, limit, page);
+        return this.commissionBundleService.getPublicBundleCISubscriptions(idBundle, pspTaxCode, status, ciTaxCode, limit, page);
     }
 
     /**
@@ -267,7 +263,7 @@ public class CommissionBundleController {
             @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
             @Parameter(description = "Subscription status") @RequestParam PublicBundleSubscriptionStatus status
     ) {
-        return commissionBundleService.getPublicBundleCISubscriptionsDetail(idBundle, pspTaxCode, ciTaxCode, status);
+        return this.commissionBundleService.getPublicBundleCISubscriptionsDetail(idBundle, pspTaxCode, ciTaxCode, status);
     }
 
     /**
@@ -286,7 +282,7 @@ public class CommissionBundleController {
             @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
             @Parameter(description = "Bundle's name, if present sends an email to notify the Creditor Institution") @RequestParam(required = false) String bundleName
     ) {
-        commissionBundleService.deleteCIBundleSubscription(ciBundleId, ciTaxCode, bundleName);
+        this.commissionBundleService.deleteCIBundleSubscription(ciBundleId, ciTaxCode, bundleName);
     }
 
     /**
@@ -303,7 +299,7 @@ public class CommissionBundleController {
             @Parameter(description = "Subscription request's id of a creditor institution to a bundle") @PathVariable("bundle-request-id") String idBundleRequest,
             @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode
     ) {
-        commissionBundleService.deleteCIBundleRequest(idBundleRequest, ciTaxCode);
+        this.commissionBundleService.deleteCIBundleRequest(idBundleRequest, ciTaxCode);
     }
 
     /**
@@ -321,8 +317,9 @@ public class CommissionBundleController {
             @Parameter(description = "Bundle's name, if present sends an email to notify the Payment Service Provider") @RequestParam(required = false) String bundleName,
             @RequestBody @NotNull PublicBundleRequest publicBundleRequest
     ){
-        commissionBundleService.createCIBundleRequest(ciTaxCode, publicBundleRequest, bundleName);
+        this.commissionBundleService.createCIBundleRequest(ciTaxCode, publicBundleRequest, bundleName);
     }
+
     @PostMapping(value = "/offers/{id-bundle-offer}/creditor-institutions/{ci-code}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Accept a private bundle offer by bundle offer id and ci tax code", security = {@SecurityRequirement(name = "JWT")})
@@ -330,16 +327,6 @@ public class CommissionBundleController {
     public CIBundleId acceptPrivateBundleOffer(
             @Parameter(description = "Commission bundle offer's id") @PathVariable("id-bundle-offer") String idBundleOffer,
             @Parameter(description = "Tax code of the creditor institution") @PathVariable("ci-code") String ciTaxCode) {
-        return commissionBundleService.ciAcceptPrivateBundleOffer(ciTaxCode, idBundleOffer);
-    }
-
-    @DeleteMapping(value = "/{id-bundle}/creditor-institutions/{ci-code}")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Remove bundle by ci tax code and bundle id", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
-    public void removeCIBundle(
-            @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
-            @Parameter(description = "Tax code of the creditor institution") @PathVariable("ci-code") String ciTaxCode) {
-        commissionBundleService.removeCIBundle(ciTaxCode, idBundle);
+        return this.commissionBundleService.ciAcceptPrivateBundleOffer(ciTaxCode, idBundleOffer);
     }
 }
