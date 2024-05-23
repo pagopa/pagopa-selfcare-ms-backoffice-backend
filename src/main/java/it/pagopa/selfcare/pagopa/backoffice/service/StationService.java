@@ -363,7 +363,7 @@ public class StationService {
                         WrapperEntities<StationDetails> wrapperEntities = optionalWrapperEntities.get();
                         StationDetails stationDetails = (StationDetails) getWrapperEntityOperationsSortedList(wrapperEntities).get(0).getEntity();
                         wrapperStation.setCreatedAt(wrapperEntities.getCreatedAt());
-                        wrapperStation.setService(stationDetails.getService());
+                        wrapperStation.setIsConnectionSync(isConnectionSync(stationDetails));
                     }
                     return wrapperStation;
                 }).toList();
@@ -372,5 +372,9 @@ public class StationService {
                 .pageInfo(stations.getPageInfo())
                 .build();
         return response;
+    }
+
+    private boolean isConnectionSync(StationDetails model) {
+        return (model.getTargetPath() != null && model.getRedirectIp() != null) || model.getTargetPathPof() != null;
     }
 }

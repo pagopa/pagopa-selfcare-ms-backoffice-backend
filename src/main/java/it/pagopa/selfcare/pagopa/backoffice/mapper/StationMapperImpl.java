@@ -315,7 +315,7 @@ public class StationMapperImpl implements StationMapper {
         wrapperStation.setVersion(wrapperEntityOperations.getEntity().getVersion());
         wrapperStation.setActivationDate(wrapperEntityOperations.getEntity().getActivationDate());
         wrapperStation.setAssociatedCreditorInstitutions(wrapperEntityOperations.getEntity().getAssociatedCreditorInstitutions());
-        wrapperStation.setService(wrapperEntityOperations.getEntity().getService());
+        wrapperStation.setIsConnectionSync(isConnectionSync(wrapperEntityOperations.getEntity()));
 
         wrapperStation.setWrapperStatus(wrapperEntityOperations.getStatus());
         wrapperStation.setCreatedAt(wrapperEntityOperations.getCreatedAt());
@@ -358,7 +358,7 @@ public class StationMapperImpl implements StationMapper {
         wrapperStationResource.setWrapperStatus(wrapperStation.getWrapperStatus());
         wrapperStationResource.setCreatedAt(wrapperStation.getCreatedAt());
         wrapperStationResource.setModifiedAt(wrapperStation.getModifiedAt());
-        wrapperStationResource.setIsConnectionSync(wrapperStation.getService() != null && !wrapperStation.getService().contains("gpd"));
+        wrapperStationResource.setIsConnectionSync(wrapperStation.getIsConnectionSync());
 
         return wrapperStationResource;
     }
