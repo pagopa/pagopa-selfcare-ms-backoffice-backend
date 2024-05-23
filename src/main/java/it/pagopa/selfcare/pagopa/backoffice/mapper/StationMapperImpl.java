@@ -144,7 +144,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setModifiedBy(modifiedBy);
         stationDetailResource.setCreatedAt(createdAt);
 
-        stationDetailResource.setIsConnectionSync(model.getService() != null && !model.getService().contains("gpd"));
+        stationDetailResource.setIsConnectionSync(isConnectionSync(model));
         stationDetailResource.setNote(note);
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
@@ -501,4 +501,7 @@ public class StationMapperImpl implements StationMapper {
         return stationDetails;
     }
 
+    private boolean isConnectionSync(StationDetails model) {
+        return (model.getTargetPath() != null && model.getRedirectIp() != null) || model.getTargetPathPof() != null;
+    }
 }
