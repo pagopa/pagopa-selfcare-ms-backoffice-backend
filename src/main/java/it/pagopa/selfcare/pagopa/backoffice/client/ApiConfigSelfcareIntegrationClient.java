@@ -40,10 +40,13 @@ public interface ApiConfigSelfcareIntegrationClient {
             @RequestParam(required = false, defaultValue = "10") Integer limit,
             @RequestParam(required = false, defaultValue = "0") Integer page);
 
-    @GetMapping(value = "/creditorinstitutions/{creditorInstitutionCode}/segregationcodes", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/creditorinstitutions/{ci-tax-code}/segregationcodes", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Valid
-    AvailableCodes getCreditorInstitutionSegregationCodes(@PathVariable("creditorInstitutionCode") String creditorInstitutionCode);
+    AvailableCodes getCreditorInstitutionSegregationCodes(
+            @PathVariable("ci-tax-code") String creditorInstitutionCode,
+            @RequestParam String targetCITaxCode
+    );
 
 
     @PostMapping(value = "/ibans", produces = MediaType.APPLICATION_JSON_VALUE)

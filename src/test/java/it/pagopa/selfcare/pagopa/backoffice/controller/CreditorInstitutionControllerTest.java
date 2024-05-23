@@ -69,8 +69,10 @@ class CreditorInstitutionControllerTest {
     void getCreditorInstitutionSegregationCodes() throws Exception {
         String url = "/creditor-institutions/12345678900/segregation-codes";
         AvailableCodes response = AvailableCodes.builder().availableCodeList(Collections.singletonList("2")).build();
-        when(ciService.getCreditorInstitutionSegregationCodes(anyString())).thenReturn(response);
-        mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
+        when(ciService.getCreditorInstitutionSegregationCodes(anyString(), anyString())).thenReturn(response);
+        mvc.perform(get(url)
+                        .param("targetCITaxCode", "targetCITaxCode")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
 
