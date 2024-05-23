@@ -11,6 +11,8 @@ import it.pagopa.selfcare.pagopa.backoffice.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.AvailableCodes;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionAssociatedCode;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
@@ -81,15 +83,21 @@ public class CreditorInstitutionService {
     }
 
     /**
-     * Retrieve the creditor institution's segregation codes that are not already associated with the specified target
-     * creditor institution.
+     * Retrieve the creditor institution's segregation codes
      *
      * @param ciTaxCode creditor institution's tax code that own the station
-     * @param targetCITaxCode tax code of the creditor institution that will be associated to the station
      * @return the available segregation codes
      */
-    public AvailableCodes getCreditorInstitutionSegregationCodes(String ciTaxCode, String targetCITaxCode) {
-        return this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(ciTaxCode, targetCITaxCode);
+    public AvailableCodes getCreditorInstitutionSegregationCodes(String ciTaxCode) {
+        CreditorInstitutionAssociatedCodeList segregationCodes =
+                this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(ciTaxCode);
+
+        return AvailableCodes.builder()
+                .availableCodeList(
+                        segregationCodes.getUnused().stream()
+                                .map(CreditorInstitutionAssociatedCode::getCode)
+                                .toList())
+                .build();
     }
 
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(String ecCode, @NotNull CreditorInstitutionStationDto dto) {

@@ -3,8 +3,8 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.ApiConfigSelfcareIntFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.AvailableCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.BrokerCreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreditorInstitutionInfo;
@@ -12,7 +12,12 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -43,9 +48,8 @@ public interface ApiConfigSelfcareIntegrationClient {
     @GetMapping(value = "/creditorinstitutions/{ci-tax-code}/segregationcodes", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Valid
-    AvailableCodes getCreditorInstitutionSegregationCodes(
-            @PathVariable("ci-tax-code") String creditorInstitutionCode,
-            @RequestParam String targetCITaxCode
+    CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationCodes(
+            @PathVariable("ci-tax-code") String creditorInstitutionCode
     );
 
 

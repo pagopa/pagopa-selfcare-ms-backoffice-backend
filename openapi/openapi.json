@@ -4745,7 +4745,7 @@
             "JWT": []
           }
         ],
-        "summary": "Get segregation code associations with creditor institution",
+        "summary": "Get the available creditor institution's segregation code",
         "tags": [
           "Creditor institutions"
         ]

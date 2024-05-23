@@ -11,6 +11,8 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.AvailableCodes;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionAssociatedCode;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
@@ -113,10 +115,12 @@ class CreditorInstitutionServiceTest {
 
     @Test
     void getCreditorInstitutionSegregationCodes_ok() {
-        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(anyString(), anyString()))
-                .thenReturn(AvailableCodes.builder().availableCodeList(Collections.singletonList("2")).build());
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(anyString()))
+                .thenReturn(CreditorInstitutionAssociatedCodeList.builder()
+                        .unused(Collections.singletonList(CreditorInstitutionAssociatedCode.builder().code("2").build()))
+                        .build());
 
-        AvailableCodes result = assertDoesNotThrow(() -> service.getCreditorInstitutionSegregationCodes("12345678900", "111111"));
+        AvailableCodes result = assertDoesNotThrow(() -> service.getCreditorInstitutionSegregationCodes("12345678900"));
 
         assertNotNull(result);
     }
@@ -124,9 +128,9 @@ class CreditorInstitutionServiceTest {
     @Test
     void getCreditorInstitutionSegregationCodes_ko() {
         FeignException feignException = mock(FeignException.InternalServerError.class);
-        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(anyString(), anyString())).thenThrow(feignException);
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(anyString())).thenThrow(feignException);
 
-        assertThrows(FeignException.class, () -> service.getCreditorInstitutionSegregationCodes("12345678900", "111111"));
+        assertThrows(FeignException.class, () -> service.getCreditorInstitutionSegregationCodes("12345678900"));
     }
 
     @Test
