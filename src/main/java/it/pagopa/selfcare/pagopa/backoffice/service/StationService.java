@@ -16,22 +16,12 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStation;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStations;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationCodeResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestResultEnum;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
+import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,14 +30,7 @@ import org.thymeleaf.context.Context;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
@@ -146,7 +129,7 @@ public class StationService {
             Integer page
     ) {
         WrapperStations response;
-        if (status.equals(ConfigurationStatus.ACTIVE)) {
+        if(status.equals(ConfigurationStatus.ACTIVE)) {
             Stations stations = this.apiConfigClient.getStations(limit, page, "DESC", brokerCode, null, stationCode);
             response = buildEnrichedWrapperStations(stations);
         } else {
@@ -189,7 +172,7 @@ public class StationService {
     }
 
     public StationCodeResource getStationCode(String ecCode, Boolean v2) {
-        if (Boolean.TRUE.equals(v2)) {
+        if(Boolean.TRUE.equals(v2)) {
             return new StationCodeResource(wrapperService.getFirstValidStationCodeV2(ecCode));
         } else {
             return new StationCodeResource(getFirstValidStationCodeAux(ecCode));
@@ -264,9 +247,9 @@ public class StationService {
                 stationTestDto.getHostPath(),
                 stationTestDto.getTestStationType()
         );
-        if (response.getStatus() == 200) {
+        if(response.getStatus() == 200) {
             return TestStationResource.builder().testResult(TestResultEnum.SUCCESS).message("OK").build();
-        } else if (response.getStatus() == 401) {
+        } else if(response.getStatus() == 401) {
             return TestStationResource.builder().testResult(TestResultEnum.CERTIFICATE_ERROR)
                     .message("Connection error due to invalid connection on the station endpoint").build();
         } else {
@@ -290,7 +273,7 @@ public class StationService {
     private String getFirstValidStationCodeAux(String ecCode) {
         WrapperEntitiesList entitiesList = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_CHECK, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
         WrapperEntitiesList entitiesList2 = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_FIX, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
-        if (!entitiesList.getWrapperEntities().isEmpty() || !entitiesList2.getWrapperEntities().isEmpty())
+        if(!entitiesList.getWrapperEntities().isEmpty() || !entitiesList2.getWrapperEntities().isEmpty())
             throw new AppException(AppError.STATION_CONFLICT);
         return generateStationCode(ecCode);
     }
@@ -300,7 +283,7 @@ public class StationService {
         try {
             response = apiConfigClient.getStations(limit, page, sort, brokerCode, ecCode, stationCode);
         } catch (Exception e) {
-            if (e.getMessage().contains("[404 Not Found]")) {
+            if(e.getMessage().contains("[404 Not Found]")) {
                 response = new Stations();
                 response.setStationsList(new ArrayList<>());
                 PageInfo pageInfo = new PageInfo();
@@ -336,9 +319,9 @@ public class StationService {
                         .toList()
         );
 
-        if ("asc".equalsIgnoreCase(sorting)) {
+        if("asc".equalsIgnoreCase(sorting)) {
             mergedList.sort(Comparator.comparing(WrapperStation::getStationCode));
-        } else if ("desc".equalsIgnoreCase(sorting)) {
+        } else if("desc".equalsIgnoreCase(sorting)) {
             mergedList.sort(Comparator.comparing(WrapperStation::getStationCode, Comparator.reverseOrder()));
         }
         WrapperStations result = new WrapperStations();
@@ -359,11 +342,11 @@ public class StationService {
                 .map(station -> {
                     WrapperStation wrapperStation = this.stationMapper.toWrapperStation(station);
                     Optional<WrapperEntities> optionalWrapperEntities = this.wrapperService.findByIdOptional(station.getStationCode());
-                    if (optionalWrapperEntities.isPresent()) {
+                    if(optionalWrapperEntities.isPresent()) {
                         WrapperEntities<StationDetails> wrapperEntities = optionalWrapperEntities.get();
                         StationDetails stationDetails = (StationDetails) getWrapperEntityOperationsSortedList(wrapperEntities).get(0).getEntity();
                         wrapperStation.setCreatedAt(wrapperEntities.getCreatedAt());
-                        wrapperStation.setIsConnectionSync(isConnectionSync(stationDetails));
+                        wrapperStation.setIsConnectionSync(Utility.isConnectionSync(stationDetails));
                     }
                     return wrapperStation;
                 }).toList();
@@ -372,9 +355,5 @@ public class StationService {
                 .pageInfo(stations.getPageInfo())
                 .build();
         return response;
-    }
-
-    private boolean isConnectionSync(StationDetails model) {
-        return (model.getTargetPath() != null && model.getRedirectIp() != null) || model.getTargetPathPof() != null;
     }
 }
