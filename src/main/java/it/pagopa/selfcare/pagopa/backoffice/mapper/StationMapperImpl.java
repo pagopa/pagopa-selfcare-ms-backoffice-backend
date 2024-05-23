@@ -11,6 +11,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStati
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
+import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -144,7 +145,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setModifiedBy(modifiedBy);
         stationDetailResource.setCreatedAt(createdAt);
 
-        stationDetailResource.setIsConnectionSync(isConnectionSync(model));
+        stationDetailResource.setIsConnectionSync(Utility.isConnectionSync(model));
         stationDetailResource.setNote(note);
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
@@ -315,7 +316,7 @@ public class StationMapperImpl implements StationMapper {
         wrapperStation.setVersion(wrapperEntityOperations.getEntity().getVersion());
         wrapperStation.setActivationDate(wrapperEntityOperations.getEntity().getActivationDate());
         wrapperStation.setAssociatedCreditorInstitutions(wrapperEntityOperations.getEntity().getAssociatedCreditorInstitutions());
-        wrapperStation.setIsConnectionSync(isConnectionSync(wrapperEntityOperations.getEntity()));
+        wrapperStation.setIsConnectionSync(Utility.isConnectionSync(wrapperEntityOperations.getEntity()));
 
         wrapperStation.setWrapperStatus(wrapperEntityOperations.getStatus());
         wrapperStation.setCreatedAt(wrapperEntityOperations.getCreatedAt());
@@ -501,7 +502,4 @@ public class StationMapperImpl implements StationMapper {
         return stationDetails;
     }
 
-    private boolean isConnectionSync(StationDetails model) {
-        return (model.getTargetPath() != null && model.getRedirectIp() != null) || model.getTargetPathPof() != null;
-    }
 }

@@ -2,8 +2,10 @@ package it.pagopa.selfcare.pagopa.backoffice.util;
 
 import it.pagopa.selfcare.pagopa.backoffice.model.SelfCareUser;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannel;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 
 import java.util.*;
@@ -95,6 +97,12 @@ public class Utility {
             return logParam;
         }
         return "suspicious log param";
+    }
+
+
+    public static boolean isConnectionSync(StationDetails model) {
+        return (org.apache.commons.lang3.StringUtils.isNotBlank(model.getTargetPath()) && org.apache.commons.lang3.StringUtils.isNotBlank(model.getRedirectIp()))
+                || StringUtils.isNotBlank(model.getTargetPathPof());
     }
 
 }
