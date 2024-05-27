@@ -157,6 +157,13 @@ public class WrapperService {
         return repository.save(wrapperEntities);
     }
 
+    /**
+     * Retrieve the wrapper station and updates the last entity with the operator review
+     *
+     * @param stationCode station code of the wrapper station to be updated
+     * @param note operator review note
+     * @return the updated wrapper station
+     */
     public WrapperEntities<StationDetails> updateStationWithOperatorReview(String stationCode, String note) {
         Optional<WrapperEntities> optionalWrapperEntities = this.repository.findById(stationCode);
         if (optionalWrapperEntities.isEmpty()) {
