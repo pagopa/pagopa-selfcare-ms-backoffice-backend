@@ -115,12 +115,10 @@ class CreditorInstitutionServiceTest {
 
     @Test
     void getCreditorInstitutionSegregationCodes_ok() {
-        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(anyString()))
-                .thenReturn(CreditorInstitutionAssociatedCodeList.builder()
-                        .unused(Collections.singletonList(CreditorInstitutionAssociatedCode.builder().code("2").build()))
-                        .build());
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(anyString(), anyString()))
+                .thenReturn(AvailableCodes.builder().availableCodeList(Collections.singletonList("2")).build());
 
-        AvailableCodes result = assertDoesNotThrow(() -> service.getCreditorInstitutionSegregationCodes("12345678900"));
+        AvailableCodes result = assertDoesNotThrow(() -> service.getCreditorInstitutionSegregationCodes("12345678900", "111111"));
 
         assertNotNull(result);
     }
@@ -128,9 +126,9 @@ class CreditorInstitutionServiceTest {
     @Test
     void getCreditorInstitutionSegregationCodes_ko() {
         FeignException feignException = mock(FeignException.InternalServerError.class);
-        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(anyString())).thenThrow(feignException);
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(anyString(), anyString())).thenThrow(feignException);
 
-        assertThrows(FeignException.class, () -> service.getCreditorInstitutionSegregationCodes("12345678900"));
+        assertThrows(FeignException.class, () -> service.getCreditorInstitutionSegregationCodes("12345678900", "111111"));
     }
 
     @Test

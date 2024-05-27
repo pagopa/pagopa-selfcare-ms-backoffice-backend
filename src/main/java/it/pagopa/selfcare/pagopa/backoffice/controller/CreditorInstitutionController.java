@@ -109,9 +109,10 @@ public class CreditorInstitutionController {
     @Operation(summary = "Get the available creditor institution's segregation code", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public AvailableCodes getCreditorInstitutionSegregationCodes(
-            @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode
+            @Parameter(description = "Creditor institution's tax code that own the station") @PathVariable("ci-tax-code") String ciTaxCode,
+            @Parameter(description = "Tax code of the creditor institution that will be associated to the station") @RequestParam @NotBlank String targetCITaxCode
     ) {
-            return this.ciService.getCreditorInstitutionSegregationCodes(ciTaxCode);
+            return this.ciService.getCreditorInstitutionSegregationCodes(ciTaxCode, targetCITaxCode);
     }
 
     @PostMapping(value = "/{ci-tax-code}/station", produces = {MediaType.APPLICATION_JSON_VALUE})

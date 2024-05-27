@@ -83,21 +83,14 @@ public class CreditorInstitutionService {
     }
 
     /**
-     * Retrieve the creditor institution's segregation codes
+     * Retrieve the creditor institution's segregation codes except those already used by the target creditor institution.
      *
      * @param ciTaxCode creditor institution's tax code that own the station
+     * @param targetCITaxCode tax code of the target creditor institution that will be associated to the station
      * @return the available segregation codes
      */
-    public AvailableCodes getCreditorInstitutionSegregationCodes(String ciTaxCode) {
-        CreditorInstitutionAssociatedCodeList segregationCodes =
-                this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(ciTaxCode);
-
-        return AvailableCodes.builder()
-                .availableCodeList(
-                        segregationCodes.getUnused().stream()
-                                .map(CreditorInstitutionAssociatedCode::getCode)
-                                .toList())
-                .build();
+    public AvailableCodes getCreditorInstitutionSegregationCodes(String ciTaxCode, String targetCITaxCode) {
+        return this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(ciTaxCode, targetCITaxCode);
     }
 
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(String ecCode, @NotNull CreditorInstitutionStationDto dto) {

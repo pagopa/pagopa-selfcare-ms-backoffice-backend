@@ -3,8 +3,8 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.ApiConfigSelfcareIntFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.AvailableCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.BrokerCreditorInstitutionDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionAssociatedCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreditorInstitutionInfo;
@@ -48,8 +48,9 @@ public interface ApiConfigSelfcareIntegrationClient {
     @GetMapping(value = "/creditorinstitutions/{ci-tax-code}/segregationcodes", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Valid
-    CreditorInstitutionAssociatedCodeList getCreditorInstitutionSegregationCodes(
-            @PathVariable("ci-tax-code") String creditorInstitutionCode
+    AvailableCodes getCreditorInstitutionSegregationCodes(
+            @PathVariable("ci-tax-code") String creditorInstitutionCode,
+            @RequestParam String targetCITaxCode
     );
 
 
