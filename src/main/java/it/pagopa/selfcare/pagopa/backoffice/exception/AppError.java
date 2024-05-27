@@ -37,6 +37,13 @@ public enum AppError {
 
     STATION_CONFLICT(HttpStatus.CONFLICT, "Station Conflict", "There is a Station not completed."),
 
+    INSTITUTION_DATA_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error uploading institution data",
+            "Error occured while attempting to upload institution data"),
+
+    LOGO_FILE_INPUT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error managing logo input",
+            "Exception has been thrown while managing the logo file passed as input," +
+                    " could not create either the working directory or the file"),
+
     UNKNOWN(null, null, null);
 
     public final HttpStatus httpStatus;
