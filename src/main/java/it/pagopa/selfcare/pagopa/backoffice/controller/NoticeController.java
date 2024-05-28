@@ -85,4 +85,44 @@ public class NoticeController {
         institutionsService.uploadInstitutionsData(institutionsDataContent, logo);
     }
 
+    /**
+     * Retrieving institution data, related to the provided taxCode
+     * @param taxCode institution data to be used retrieval
+     * @return institution data
+     */
+    @Operation(summary = "getInstitutionData",
+            description = "Retrieves saved institution data and logo on the related storage," +
+                    " to be used in the payment notice generation process",
+            security = {@SecurityRequirement(name = "ApiKey")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE,
+            external = true, internal = false)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401",
+                    description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "403",
+                    description = "Forbidden", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found", content = @Content(
+                    schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429",
+                    description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500",
+                    description = "Service unavailable",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @GetMapping(value = "/institutions/data/{taxCode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public InstitutionUploadData getInstitutionData(
+            @Parameter(description = "tax code of the CI to use for retrieval")
+            @PathVariable(name = "taxCode") String taxCode) {
+        return institutionsService.getInstitutionData(taxCode);
+    }
+
 }
