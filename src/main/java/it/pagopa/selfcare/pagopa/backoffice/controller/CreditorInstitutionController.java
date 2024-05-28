@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,6 +15,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionContactsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
@@ -39,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -112,7 +115,7 @@ public class CreditorInstitutionController {
             @Parameter(description = "Creditor institution's tax code that own the station") @PathVariable("ci-tax-code") String ciTaxCode,
             @Parameter(description = "Tax code of the creditor institution that will be associated to the station") @RequestParam @NotBlank String targetCITaxCode
     ) {
-            return this.ciService.getCreditorInstitutionSegregationCodes(ciTaxCode, targetCITaxCode);
+        return this.ciService.getCreditorInstitutionSegregationCodes(ciTaxCode, targetCITaxCode);
     }
 
     @PostMapping(value = "/{ci-tax-code}/station", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -240,7 +243,7 @@ public class CreditorInstitutionController {
      * Retrieve the operative table and the payment contacts list of the creditor institution with the provided
      * tax code and institution's id
      *
-     * @param ciTaxCode creditor institution's tax code
+     * @param ciTaxCode     creditor institution's tax code
      * @param institutionId creditor institution's identifier
      * @return the creditor institution's contacts
      */
@@ -262,5 +265,37 @@ public class CreditorInstitutionController {
             @Parameter(description = "Institution's identifier") @RequestParam String institutionId
     ) {
         return ciService.getCreditorInstitutionContacts(ciTaxCode, institutionId);
+    }
+
+
+    /**
+     * Retrieve the list of creditor institutions that can be associated to the specified station of the specified broker
+     *
+     * @param stationCode station's code
+     * @param brokerId    identifier of the broker that own the station
+     * @return the list of creditor institution's
+     */
+    @GetMapping(value = "/stations/{station-code}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            array = @ArraySchema(schema = @Schema(implementation = CreditorInstitutionInfo.class)))),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get the list of Creditor Institutions that can be associated to the station", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public List<CreditorInstitutionInfo> getStation(
+            @Parameter(description = "Station's code") @PathVariable("station-code") String stationCode,
+            @Parameter(description = "Broker's unique id") @RequestParam String brokerId
+    ) {
+        return this.ciService.getAvailableCreditorInstitutionsForStation(stationCode, brokerId);
     }
 }

@@ -83,4 +83,8 @@ public interface ApiConfigSelfcareIntegrationClient {
     @GetMapping(value = "/creditorinstitutions", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid
     List<CreditorInstitutionInfo> getCreditorInstitutionInfo(@RequestParam List<String> taxCodeList);
+
+    @GetMapping(value = "/creditorinstitutions/stations/{station-code}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
+    List<String> getStationCreditorInstitutions(@PathVariable(value = "station-code") String stationCode);
 }

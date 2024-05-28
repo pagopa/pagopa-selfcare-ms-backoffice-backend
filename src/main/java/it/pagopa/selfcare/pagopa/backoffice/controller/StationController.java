@@ -96,7 +96,7 @@ public class StationController {
 
     @GetMapping(value = "/{station-code}/creditor-institutions")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get Creditor Institutions By Station Code", security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Get a paginated list of Creditor Institutions associated to a station", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(
             @Parameter(description = "Station Code") @PathVariable("station-code") String stationCode,
