@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channel;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
@@ -17,12 +18,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -122,9 +126,34 @@ class WrapperServiceTest {
                 any());
     }
 
+    @Test
+    void updateStationWithOperatorReviewSuccess() {
+        when(repository.findById(STATION_CODE)).thenReturn(Optional.of(buildStationDetailsWrapperEntities()));
+
+        assertDoesNotThrow(() -> sut.updateStationWithOperatorReview(STATION_CODE, "operator review note"));
+
+        verify(auditorAware).getCurrentAuditor();
+        verify(repository).save(any());
+    }
+
+    @Test
+    void updateStationWithOperatorReviewSuccessFailNotFound() {
+        when(repository.findById(STATION_CODE)).thenReturn(Optional.empty());
+
+        AppException e = assertThrows(AppException.class,
+                () -> sut.updateStationWithOperatorReview(STATION_CODE, "operator review note"));
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.NOT_FOUND, e.getHttpStatus());
+
+        verify(auditorAware, never()).getCurrentAuditor();
+        verify(repository, never()).save(any());
+    }
+
     private @NotNull WrapperEntities<StationDetails> buildStationDetailsWrapperEntities() {
         WrapperEntity<StationDetails> entity = new WrapperEntity<>();
         entity.setEntity(buildStationDetails());
+        entity.setStatus(WrapperStatus.TO_CHECK);
         WrapperEntities<StationDetails> entities = new WrapperEntities<>();
         entities.setEntities(Collections.singletonList(entity));
         return entities;
