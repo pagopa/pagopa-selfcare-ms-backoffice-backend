@@ -157,6 +157,37 @@ public class WrapperService {
         return repository.save(wrapperEntities);
     }
 
+    /**
+     * Retrieve the wrapper station and updates the last entity with the operator review
+     *
+     * @param stationCode station code of the wrapper station to be updated
+     * @param note operator review note
+     * @return the updated wrapper station
+     */
+    public WrapperEntities<StationDetails> updateStationWithOperatorReview(String stationCode, String note) {
+        Optional<WrapperEntities> optionalWrapperEntities = this.repository.findById(stationCode);
+        if (optionalWrapperEntities.isEmpty()) {
+            throw new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode);
+        }
+        WrapperEntities<StationDetails> wrapperEntities = (WrapperEntities) optionalWrapperEntities.get();
+        wrapperEntities.getEntities().sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
+
+        WrapperEntity<StationDetails> wrapper = wrapperEntities.getEntities().get(0);
+        WrapperStatus newWrapperStatus = getNewWrapperStatus(stationCode, wrapper.getStatus());
+        String modifiedByOpt = this.auditorAware.getCurrentAuditor().orElse(null);
+
+        wrapperEntities.setStatus(newWrapperStatus);
+        wrapperEntities.setModifiedAt(Instant.now());
+        wrapperEntities.setModifiedByOpt(modifiedByOpt);
+
+        wrapper.setNote(note);
+        wrapper.setModifiedAt(Instant.now());
+        wrapper.setModifiedByOpt(modifiedByOpt);
+        wrapper.setStatus(newWrapperStatus);
+
+        return this.repository.save(wrapperEntities);
+    }
+
     public WrapperEntities<StationDetails> update(StationDetails stationDetails, String note, String status, String createdBy) {
         String stationCode = stationDetails.getStationCode();
         Optional<WrapperEntities> opt = repository.findById(stationCode);
@@ -363,5 +394,17 @@ public class WrapperService {
 
             return repository.insert(wrapperEntities);
         }
+    }
+
+    private WrapperStatus getNewWrapperStatus(String stationCode, WrapperStatus oldWrapperStatus) {
+        WrapperStatus newWrapperStatus;
+        if (oldWrapperStatus.equals(WrapperStatus.TO_CHECK)) {
+            newWrapperStatus = WrapperStatus.TO_FIX;
+        } else if (oldWrapperStatus.equals(WrapperStatus.TO_CHECK_UPDATE)) {
+            newWrapperStatus = WrapperStatus.TO_FIX_UPDATE;
+        } else {
+            throw new AppException(AppError.WRAPPER_STATION_INVALID_STATUS, stationCode);
+        }
+        return newWrapperStatus;
     }
 }
