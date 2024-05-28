@@ -292,7 +292,7 @@ public class CreditorInstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get the list of Creditor Institutions that can be associated to the station", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public List<CreditorInstitutionInfo> getStation(
+    public List<CreditorInstitutionInfo> getAvailableCreditorInstitutionsForStation(
             @Parameter(description = "Station's code") @PathVariable("station-code") String stationCode,
             @Parameter(description = "Broker's unique id") @RequestParam String brokerId
     ) {
