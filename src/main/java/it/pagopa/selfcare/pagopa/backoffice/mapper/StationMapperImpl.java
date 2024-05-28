@@ -146,7 +146,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setModifiedBy(modifiedBy);
         stationDetailResource.setCreatedAt(createdAt);
 
-        stationDetailResource.setIsConnectionSync(model.getIsConnectionSync());
+        stationDetailResource.setIsConnectionSync(model.getIsConnectionSync() != null ? model.getIsConnectionSync() : Utility.isConnectionSync(model));
         stationDetailResource.setNote(note);
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();

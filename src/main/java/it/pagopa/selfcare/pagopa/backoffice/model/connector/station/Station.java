@@ -26,7 +26,6 @@ public class Station {
     @NotNull
     protected Long version;
 
-    @NotNull
     private Boolean isConnectionSync;
 
     @JsonIgnore
