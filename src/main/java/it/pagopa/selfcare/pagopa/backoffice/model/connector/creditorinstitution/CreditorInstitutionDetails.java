@@ -2,7 +2,9 @@ package it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class CreditorInstitutionDetails extends CreditorInstitution {
     @JsonProperty("address")
