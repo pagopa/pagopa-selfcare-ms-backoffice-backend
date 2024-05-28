@@ -74,6 +74,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setTargetPortPof(model.getTargetPortPof());
         stationDetailResource.setTargetPathPof(model.getTargetPathPof());
         stationDetailResource.setPrimitiveVersion(model.getPrimitiveVersion());
+        stationDetailResource.setIsConnectionSync(model.getIsConnectionSync());
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
         BrokerDetails brokerDetails = model.getIntermediarioPa();
@@ -145,7 +146,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setModifiedBy(modifiedBy);
         stationDetailResource.setCreatedAt(createdAt);
 
-        stationDetailResource.setIsConnectionSync(Utility.isConnectionSync(model));
+        stationDetailResource.setIsConnectionSync(model.getIsConnectionSync());
         stationDetailResource.setNote(note);
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
@@ -258,6 +259,7 @@ public class StationMapperImpl implements StationMapper {
         wrapperStation.setVersion(model.getVersion());
         wrapperStation.setActivationDate(model.getActivationDate());
         wrapperStation.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
+        wrapperStation.setIsConnectionSync(model.getIsConnectionSync());
         //default per gli ogetti di apiconfig poiche non hanno questi campi
         wrapperStation.setWrapperStatus(WrapperStatus.APPROVED);
 
