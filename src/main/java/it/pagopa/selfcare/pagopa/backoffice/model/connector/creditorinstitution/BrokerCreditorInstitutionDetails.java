@@ -1,4 +1,4 @@
-package it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution;
+package it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -26,7 +26,7 @@ public class BrokerCreditorInstitutionDetails {
     @JsonProperty("creditor_institutions")
     @NotNull
     @Schema(description = "List of creditor institutions associated to the same broker by different stations")
-    private List<CreditorInstitutionDetail> creditorInstitutions;
+    private List<it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetail> creditorInstitutions;
 
     @JsonProperty("page_info")
     @Schema()

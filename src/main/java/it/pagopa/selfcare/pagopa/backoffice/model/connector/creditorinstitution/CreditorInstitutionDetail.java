@@ -1,4 +1,4 @@
-package it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution;
+package it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorInstitution;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
