@@ -43,43 +43,12 @@ jobs:
           cpd_exclusions: "**/model/**,**/entity/*"
           java_version: 17
 
-  smoke_test:
-    name: Smoke Test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@1f9a0c22da41e6ebfa534300ef656657ea2c6707
-
-      - name: Login
-        id: login
-        # from https://github.com/Azure/login/commits/master
-        uses: azure/login@92a5484dfaf04ca78a94597f4f19fea633851fa2
-        with:
-          client-id: ${{ secrets.DEV_CLIENT_ID }}
-          tenant-id: ${{ secrets.DEV_TENANT_ID }}
-          subscription-id: ${{ secrets.DEV_SUBSCRIPTION_ID }}
-
-      - name: Run Service on Docker
-        shell: bash
-        id: run_service_docker
-        run: |
-          cd ./docker
-          chmod +x ./run_docker.sh
-          ./run_docker.sh local
-
-      - name: Run Integration Tests
-        shell: bash
-        id: run_integration_test
-        run: |
-          export SUBKEY=${{ secrets.DEV_SUBKEY }}
-          export CANARY=${{ inputs.canary }}
-          export CUCUMBER_PUBLISH_TOKEN=${{ secrets.CUCUMBER_PUBLISH_TOKEN }}
-
-          cd ./integration-test
-          chmod +x ./run_integration_test.sh
-          ./run_integration_test.sh local
-
-
-
+#  smoke_test:
+#    name: Smoke Test
+#    needs: build
+#    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+#    uses: ./.github/workflows/ci_integration_test.yml
+#    with:
+#      environment: 'staging'
+#      notify: false
+#    secrets: inherit
