@@ -4,7 +4,6 @@ import it.pagopa.selfcare.pagopa.backoffice.config.feign.InstitutionsFeignClient
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,10 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
         configuration = InstitutionsFeignClientConfig.class)
 public interface InstitutionsClient {
 
-    @PostMapping(value = "/data", consumes = {
+    @PostMapping(value = "/institutions/data", consumes = {
             MediaType.MULTIPART_FORM_DATA_VALUE})
     public void updateInstitutions(
             @RequestPart("institutions-data") String institutionsDataContent,
-            @RequestParam(value = "file", required = false) MultipartFile logo);
+            @RequestPart(value = "file") MultipartFile logo);
 
 }
