@@ -3658,6 +3658,161 @@
         ]
       }
     },
+    "/creditor-institutions/stations/{station-code}": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "getAvailableCreditorInstitutionsForStation",
+        "parameters": [
+          {
+            "description": "Station's code",
+            "in": "path",
+            "name": "station-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker's unique id",
+            "in": "query",
+            "name": "brokerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CreditorInstitutionInfo"
+                  }
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Get the list of Creditor Institutions that can be associated to the station",
+        "tags": [
+          "Creditor institutions"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
     "/creditor-institutions/{ci-code}/ibans": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
@@ -4624,9 +4779,18 @@
         "operationId": "getCreditorInstitutionSegregationCodes",
         "parameters": [
           {
-            "description": "Creditor institution's tax code",
+            "description": "Creditor institution's tax code that own the station",
             "in": "path",
             "name": "ci-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Tax code of the creditor institution that will be associated to the station",
+            "in": "query",
+            "name": "targetCITaxCode",
             "required": true,
             "schema": {
               "type": "string"
@@ -8210,7 +8374,7 @@
             "JWT": []
           }
         ],
-        "summary": "Get Creditor Institutions By Station Code",
+        "summary": "Get a paginated list of Creditor Institutions associated to a station",
         "tags": [
           "Stations"
         ]
@@ -9930,6 +10094,25 @@
           "reportingZip": {
             "type": "boolean",
             "description": "Enables the zipping of the content that goes through fstp"
+          }
+        }
+      },
+      "CreditorInstitutionInfo": {
+        "required": [
+          "business_name",
+          "ci_tax_code"
+        ],
+        "type": "object",
+        "properties": {
+          "business_name": {
+            "type": "string",
+            "description": "The business name of the creditor institution",
+            "example": "Comune di Roma"
+          },
+          "ci_tax_code": {
+            "type": "string",
+            "description": "The tax code of the creditor institution",
+            "example": "02438750586"
           }
         }
       },
