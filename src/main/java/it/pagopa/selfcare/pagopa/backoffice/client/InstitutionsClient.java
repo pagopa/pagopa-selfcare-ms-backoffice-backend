@@ -13,7 +13,7 @@ public interface InstitutionsClient {
 
     @PostMapping(value = "/institutions/data", consumes = {
             MediaType.MULTIPART_FORM_DATA_VALUE})
-    void updateInstitutions(
+    public void updateInstitutions(
             @RequestPart("institutions-data") String institutionsDataContent,
             @RequestPart(value = "file") MultipartFile logo);
 
