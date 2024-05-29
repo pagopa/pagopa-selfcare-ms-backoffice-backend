@@ -13,7 +13,7 @@ locals {
 }
 
 resource "azurerm_api_management_api_version_set" "api_backoffice_api" {
-  name                = format("%s-${local.repo_name}", var.env_short)
+  name                = "${var.env_short}-${local.repo_name}"
   resource_group_name = local.apim.rg
   api_management_name = local.apim.name
   display_name        = local.display_name
@@ -23,10 +23,50 @@ resource "azurerm_api_management_api_version_set" "api_backoffice_api" {
 module "apim_api_backoffice_api_v1" {
   source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v6.7.0"
 
-  name                  = format("%s-${local.repo_name}", var.env_short)
+  name                = "${var.env_short}-${local.repo_name}"
   api_management_name   = local.apim.name
   resource_group_name   = local.apim.rg
   product_ids           = [local.apim.product_id]
+  subscription_required = false
+
+  version_set_id = azurerm_api_management_api_version_set.api_backoffice_api.id
+  api_version    = "v1"
+
+  description  = local.description
+  display_name = local.display_name
+  path         = local.path
+  protocols    = ["https"]
+
+  service_url = null
+
+  content_format = "openapi"
+  content_value  = templatefile("../openapi/openapi.json", {
+    host     = local.host
+    basePath = "selfcare"
+  })
+
+  xml_content = templatefile("./policy/_base_policy.xml", {
+    hostname = var.hostname
+    origin   = var.env_short == "d" ? "<origin>*</origin>" : "<origin>https://${local.selfcare_fe_hostname}</origin>"
+  })
+}
+
+
+resource "azurerm_api_management_api_version_set" "api_backoffice_api" {
+  name                = "${var.env_short}-${local.repo_name}"
+  resource_group_name = local.apim_weu_core.rg
+  api_management_name = local.apim_weu_core.name
+  display_name        = local.display_name
+  versioning_scheme   = "Segment"
+}
+
+module "apim_api_backoffice_api_v1" {
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v6.7.0"
+
+  name                = "${var.env_short}-${local.repo_name}"
+  api_management_name   = local.apim_weu_core.name
+  resource_group_name   = local.apim_weu_core.rg
+  product_ids           = [local.apim_weu_core.product_id]
   subscription_required = false
 
   version_set_id = azurerm_api_management_api_version_set.api_backoffice_api.id
