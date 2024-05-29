@@ -39,12 +39,6 @@ jobs:
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
 
-      - id: get_app_version
-        name: Get Version
-        run: |
-          echo "version=$(mvn -f pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
-        shell: bash
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2
         with:
@@ -58,7 +52,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            ${{ steps.get_app_version.outputs.version }}
+            ${{ needs.pre_release.outputs.version }}
             type=ref,event=branch
             type=sha
 
