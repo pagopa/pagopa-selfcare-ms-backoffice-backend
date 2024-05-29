@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.config;
 
 import it.pagopa.selfcare.pagopa.backoffice.mapper.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionView;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Iban;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
@@ -33,6 +34,7 @@ public class MappingsConfiguration {
         mapper.createTypeMap(DelegationExternal.class, CIBrokerDelegationResource.class).setConverter(new ConvertDelegationExternalToCIBrokerDelegationResource());
         mapper.createTypeMap(CreditorInstitutionView.class, CIBrokerStationResource.class).setConverter(new ConvertCreditorInstitutionViewToCIBrokerStationResource());
         mapper.createTypeMap(Institution.class, InstitutionDetail.class).setConverter(new InstitutionToInstitutionDetail());
+        mapper.createTypeMap(DelegationExternal.class, CreditorInstitutionInfo.class).setConverter(new ConvertDelegationExternalToCreditorInstitutionInfo());
 
         return mapper;
     }

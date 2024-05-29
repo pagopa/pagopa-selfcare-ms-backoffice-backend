@@ -12,10 +12,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -63,6 +59,38 @@ class InstitutionsServiceTest {
                 () -> institutionsService.uploadInstitutionsData("", multipartFile));
         assertEquals(AppError.INSTITUTION_DATA_UPLOAD_ERROR.title, appException.getTitle());
         verify(institutionsClient).updateInstitutions(any(),any());
+    }
+
+    @Test
+    void shouldReturnCreditorInstitutionDataOnValidRequest() {
+        when(institutionsClient.getInstitutionData(any())).thenReturn(
+                InstitutionUploadData.builder().build());
+        InstitutionUploadData uploadData = assertDoesNotThrow(
+                () -> institutionsService.getInstitutionData("test"));
+        assertNotNull(uploadData);
+        verify(institutionsClient).getInstitutionData(any());
+    }
+
+    @Test
+    void shouldThrowExceptionOnInstitutionDataRecoveryKO() {
+        when(institutionsClient.getInstitutionData(any())).thenAnswer(item -> {
+            throw new AppException(AppError.INSTITUTION_NOT_FOUND);
+        });
+        AppException appException = assertThrows(AppException.class,
+                () -> institutionsService.getInstitutionData("test"));
+        assertNotNull(appException);
+        assertEquals(AppError.INSTITUTION_NOT_FOUND.title, appException.getTitle());
+    }
+
+    @Test
+    void shouldThrowExceptionOnInstitutionDataRecoveryKOUnexpected() {
+        when(institutionsClient.getInstitutionData(any())).thenAnswer(item -> {
+            throw new RuntimeException("error");
+        });
+        AppException appException = assertThrows(AppException.class,
+                () -> institutionsService.getInstitutionData("test"));
+        assertNotNull(appException);
+        assertEquals(AppError.INSTITUTION_RETRIEVE_ERROR.title, appException.getTitle());
     }
 
 }
