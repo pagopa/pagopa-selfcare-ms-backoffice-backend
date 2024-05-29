@@ -32,6 +32,12 @@ jobs:
 
       - name: Update OpenApi/Swagger file
         run: |
+          git config --local user.email "pagopa-github-bot@pagopa.it"
+          git config --local user.name "pagopa-github-bot"
+          
+          git merge next
+          git checkout --theirs ./openapi/openapi.json
+          
           cd ./openapi
           chmod +x ./generate_openapi.sh
           ./generate_openapi.sh
