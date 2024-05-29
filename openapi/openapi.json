@@ -11369,6 +11369,10 @@
           "ip_4mod": {
             "type": "string"
           },
+          "is_connection_sync": {
+            "type": "boolean",
+            "readOnly": true
+          },
           "new_password": {
             "type": "string"
           },
