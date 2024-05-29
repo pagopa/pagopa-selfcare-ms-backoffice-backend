@@ -109,7 +109,7 @@ jobs:
           semver: ${{ needs.setup.outputs.semver }}
           github_token: ${{ secrets.BOT_TOKEN_GITHUB }}
           beta: ${{ inputs.beta }}
-          prerelease: true
+          prerelease: ${{ needs.setup.outputs.environment != 'prod' }}
           skip_ci: false
 
       - name: Checkout code

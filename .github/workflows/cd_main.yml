@@ -66,7 +66,7 @@ jobs:
           skip_ci: false
 
   image:
-    needs: [ setup ]
+    needs: [ setup, pre_release ]
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     if: ${{ needs.setup.outputs.semver != 'skip' }}
@@ -100,6 +100,7 @@ jobs:
     needs:
       - setup
 #      - integration_test
+      - deploy_aks_uat
     uses: ./.github/workflows/deploy_with_github_runner.yml
     with:
       environment: prod
