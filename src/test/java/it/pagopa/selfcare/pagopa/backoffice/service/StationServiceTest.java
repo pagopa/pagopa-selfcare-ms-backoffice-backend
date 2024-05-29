@@ -311,13 +311,28 @@ class StationServiceTest {
     }
 
     @Test
-    void updateWrapperStationDetailsByOptSuccess() {
-        when(wrapperService.updateByOpt(any(StationDetails.class), anyString(), anyString()))
+    void updateWrapperStationWithOperatorReviewSuccess() {
+        when(wrapperService.updateStationWithOperatorReview(anyString(), anyString()))
                 .thenReturn(buildStationDetailsWrapperEntities());
 
-        WrapperEntities result = assertDoesNotThrow(() -> service.updateWrapperStationDetailsByOpt(buildStationDetailsDto()));
+        StationDetailResource result = assertDoesNotThrow(() -> service.updateWrapperStationWithOperatorReview(STATION_CODE, BROKER_CODE, "nota"));
 
         assertNotNull(result);
+
+        verify(awsSesClient).sendEmail(any());
+    }
+
+    @Test
+    void updateWrapperStationWithOperatorReviewFail() {
+        when(wrapperService.updateStationWithOperatorReview(anyString(), anyString()))
+                .thenThrow(AppException.class);
+
+        AppException e = assertThrows(AppException.class,
+                () -> service.updateWrapperStationWithOperatorReview(STATION_CODE, BROKER_CODE, "nota"));
+
+        assertNotNull(e);
+
+        verify(awsSesClient, never()).sendEmail(any());
     }
 
     @Test
