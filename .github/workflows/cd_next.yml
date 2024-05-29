@@ -15,11 +15,10 @@ permissions:
 
 
 jobs:
-
   pre_release:
     name: Create a New Pre-Release
     runs-on: ubuntu-latest
-    if: ${{ needs.setup.outputs.semver != 'skip' }}
+    needs: [ setup ]
     outputs:
       version: ${{ steps.release.outputs.version }}
     steps:
@@ -32,7 +31,6 @@ jobs:
           beta: false
           prerelease: true
           skip_ci: false
-
   image:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
