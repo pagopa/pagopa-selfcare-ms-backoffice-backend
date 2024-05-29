@@ -51,7 +51,6 @@ public class InstitutionUploadData {
     @Schema(description = "Poste auth code")
     private String posteAuth;
 
-    @Schema(hidden = true)
     private String logo;
 
 }
