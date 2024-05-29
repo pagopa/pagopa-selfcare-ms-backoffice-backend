@@ -16,6 +16,7 @@ public class InstitutionsService {
 
     private final InstitutionsClient institutionClient;
 
+
     public InstitutionsService(InstitutionsClient institutionClient) {
         this.institutionClient = institutionClient;
     }

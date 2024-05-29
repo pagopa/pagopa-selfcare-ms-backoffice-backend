@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -32,8 +34,14 @@ public class NoticeController {
 
     private final InstitutionsService institutionsService;
 
-    public NoticeController(InstitutionsService institutionsService) {
+    private final ObjectMapper objectMapper;
+
+    private final Validator validator;
+
+    public NoticeController(InstitutionsService institutionsService, ObjectMapper objectMapper, Validator validator) {
         this.institutionsService = institutionsService;
+        this.objectMapper = objectMapper;
+        this.validator = validator;
     }
 
     /**
@@ -73,7 +81,7 @@ public class NoticeController {
                     schema = @Schema(implementation = InstitutionUploadData.class))
             @Valid @NotNull @RequestPart("institutions-data") String institutionsDataContent,
             @Parameter(description = "logo file to upload (not to send on update unless it is changed)")
-            @RequestPart(value = "file", required = false) MultipartFile logo
+            @Valid @NotNull @RequestParam(value = "file", required = false) MultipartFile logo
     ) {
         institutionsService.uploadInstitutionsData(institutionsDataContent, logo);
     }
