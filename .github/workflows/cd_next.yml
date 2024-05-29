@@ -18,7 +18,6 @@ jobs:
   pre_release:
     name: Create a New Pre-Release
     runs-on: ubuntu-latest
-    needs: [ setup ]
     outputs:
       version: ${{ steps.release.outputs.version }}
     steps:
