@@ -1,8 +1,11 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.notices.InstitutionUploadData;
 import it.pagopa.selfcare.pagopa.backoffice.service.InstitutionsService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -13,12 +16,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockPart;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -86,6 +90,54 @@ class InstitutionsControllerTest {
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andExpect(status().is5xxServerError());
         verify(institutionsService).uploadInstitutionsData(any(), any());
+    }
+
+    @Test
+    void getInstitutionsShouldReturnOk() throws Exception {
+        InstitutionUploadData uploadData =
+                InstitutionUploadData.builder()
+                        .cbill("cbill")
+                        .info("info")
+                        .webChannel(true)
+                        .taxCode("123132")
+                        .posteAccountNumber("1313")
+                        .fullName("121212")
+                        .organization("test")
+                        .physicalChannel("1212")
+                        .build();
+        doReturn(uploadData).when(institutionsService).getInstitutionData(any());
+        String url = "/notice/institutions/data/211212";
+        MvcResult mvcResult = mvc.perform(get(url))
+                .andExpect(status().isOk())
+                .andReturn();
+        InstitutionUploadData result = objectMapper.readValue(mvcResult.getResponse()
+                .getContentAsString(), InstitutionUploadData.class);
+        Assertions.assertEquals(uploadData, result);
+        verify(institutionsService).getInstitutionData(any());
+    }
+
+    @Test
+    void getInstitutionsShouldReturnKOForNotFound() throws Exception {
+        doAnswer(item -> {
+            throw new AppException(AppError.INSTITUTION_NOT_FOUND);
+        }).when(institutionsService).getInstitutionData(any());
+        String url = "/notice/institutions/data/211212";
+        MvcResult mvcResult = mvc.perform(get(url))
+                .andExpect(status().isNotFound())
+                .andReturn();
+        verify(institutionsService).getInstitutionData(any());
+    }
+
+    @Test
+    void getInstitutionsShouldReturnKOForUnexpectedError() throws Exception {
+        doAnswer(item -> {
+            throw new AppException(AppError.INSTITUTION_RETRIEVE_ERROR);
+        }).when(institutionsService).getInstitutionData(any());
+        String url = "/notice/institutions/data/211212";
+        MvcResult mvcResult = mvc.perform(get(url))
+                .andExpect(status().isInternalServerError())
+                .andReturn();
+        verify(institutionsService).getInstitutionData(any());
     }
 
 }
