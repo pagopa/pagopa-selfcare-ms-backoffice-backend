@@ -29,7 +29,7 @@ jobs:
           github_token: ${{ secrets.BOT_TOKEN_GITHUB }}
           beta: false
           prerelease: true
-          skip_ci: false
+          skip_ci: true
   image:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
