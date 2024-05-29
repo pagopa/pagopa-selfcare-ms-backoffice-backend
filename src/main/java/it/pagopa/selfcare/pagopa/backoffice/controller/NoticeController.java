@@ -80,7 +80,7 @@ public class NoticeController {
                     schema = @Schema(implementation = InstitutionUploadData.class))
             @Valid @NotNull @RequestPart("institutions-data") String institutionsDataContent,
             @Parameter(description = "logo file to upload", required = true)
-            @Valid @NotNull @RequestParam(value = "file", required = false) MultipartFile logo
+            @Valid @NotNull @RequestPart(value = "file") MultipartFile logo
     ) {
         institutionsService.uploadInstitutionsData(institutionsDataContent, logo);
     }
