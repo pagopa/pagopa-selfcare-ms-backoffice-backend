@@ -45,6 +45,12 @@ public enum AppError {
             "Exception has been thrown while managing the logo file passed as input," +
                     " could not create either the working directory or the file"),
 
+    INSTITUTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Institution Not Found",
+            "Required institution data has not been found on the storage"),
+
+    INSTITUTION_RETRIEVE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error while retrieving Institution data",
+            "Unexpected error occurred while retrieving institution data"),
+
     UNKNOWN(null, null, null);
 
     public final HttpStatus httpStatus;
