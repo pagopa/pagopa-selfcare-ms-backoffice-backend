@@ -11336,7 +11336,6 @@
         "required": [
           "broker_code",
           "enabled",
-          "isConnectionSync",
           "station_code",
           "thread_number",
           "timeout_a",
@@ -11370,8 +11369,9 @@
           "ip_4mod": {
             "type": "string"
           },
-          "isConnectionSync": {
-            "type": "boolean"
+          "is_connection_sync": {
+            "type": "boolean",
+            "readOnly": true
           },
           "new_password": {
             "type": "string"
