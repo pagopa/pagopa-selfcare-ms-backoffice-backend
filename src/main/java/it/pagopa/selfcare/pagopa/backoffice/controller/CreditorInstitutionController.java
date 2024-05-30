@@ -259,7 +259,7 @@ public class CreditorInstitutionController {
     })
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get creditor institution's payment contacts and operative table", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public CreditorInstitutionContactsResource getCreditorInstitutionContacts(
             @Parameter(description = "Creditor institution code") @PathVariable("ci-tax-code") @NotBlank String ciTaxCode,
             @Parameter(description = "Institution's identifier") @RequestParam String institutionId
@@ -291,7 +291,7 @@ public class CreditorInstitutionController {
     })
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get the list of Creditor Institutions that can be associated to the station", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public List<CreditorInstitutionInfo> getAvailableCreditorInstitutionsForStation(
             @Parameter(description = "Station's code") @PathVariable("station-code") String stationCode,
             @Parameter(description = "Broker's unique id") @RequestParam String brokerId
