@@ -39,6 +39,7 @@ for line in $(echo "$secret" | jq -r '. | to_entries[] | select(.key) | "\(.key)
   response=$(echo "$response" | tr -d '\n')
   value=$(echo "$response" | jq -r '.value')
   value=$(echo "$value" | sed 's/\$/\$\$/g')
+  echo "${array[0]}=$value"
   echo "${array[0]}=$value" >> .env
 done
 
