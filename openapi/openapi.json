@@ -3839,10 +3839,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CreditorInstitutionInfo"
-                  }
+                  "$ref": "#/components/schemas/CreditorInstitutionInfoResource"
                 }
               }
             },
@@ -10635,6 +10632,17 @@
             "type": "string",
             "description": "The tax code of the creditor institution",
             "example": "02438750586"
+          }
+        }
+      },
+      "CreditorInstitutionInfoResource": {
+        "type": "object",
+        "properties": {
+          "creditor_institution_info_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreditorInstitutionInfo"
+            }
           }
         }
       },

@@ -20,6 +20,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionInfoResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
@@ -37,6 +38,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -359,14 +361,15 @@ class CreditorInstitutionServiceTest {
         when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(STATION_CODE))
                 .thenReturn(Collections.singletonList("1234"));
 
-        List<CreditorInstitutionInfo> result = assertDoesNotThrow(() ->
+        CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
                 service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID));
 
         assertNotNull(result);
-        assertEquals(1, result.size());
+        assertNotNull(result.getCreditorInstitutionInfos());
+        assertEquals(1, result.getCreditorInstitutionInfos().size());
 
-        assertEquals(expectedCI.getInstitutionName(), result.get(0).getBusinessName());
-        assertEquals(expectedCI.getTaxCode(), result.get(0).getCiTaxCode());
+        assertEquals(expectedCI.getInstitutionName(), result.getCreditorInstitutionInfos().get(0).getBusinessName());
+        assertEquals(expectedCI.getTaxCode(), result.getCreditorInstitutionInfos().get(0).getCiTaxCode());
     }
 
     @Test
@@ -383,11 +386,12 @@ class CreditorInstitutionServiceTest {
         when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(STATION_CODE))
                 .thenReturn(Collections.singletonList("00000"));
 
-        List<CreditorInstitutionInfo> result = assertDoesNotThrow(() ->
+        CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
                 service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID));
 
         assertNotNull(result);
-        assertEquals(2, result.size());
+        assertNotNull(result.getCreditorInstitutionInfos());
+        assertEquals(2, result.getCreditorInstitutionInfos().size());
     }
 
     @Test
@@ -402,14 +406,15 @@ class CreditorInstitutionServiceTest {
         when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(STATION_CODE))
                 .thenReturn(Collections.singletonList(CI_TAX_CODE_1));
 
-        List<CreditorInstitutionInfo> result = assertDoesNotThrow(() ->
+        CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
                 service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID));
 
         assertNotNull(result);
-        assertEquals(1, result.size());
+        assertNotNull(result.getCreditorInstitutionInfos());
+        assertEquals(1, result.getCreditorInstitutionInfos().size());
 
-        assertEquals(expectedCI.getInstitutionName(), result.get(0).getBusinessName());
-        assertEquals(expectedCI.getTaxCode(), result.get(0).getCiTaxCode());
+        assertEquals(expectedCI.getInstitutionName(), result.getCreditorInstitutionInfos().get(0).getBusinessName());
+        assertEquals(expectedCI.getTaxCode(), result.getCreditorInstitutionInfos().get(0).getCiTaxCode());
     }
 
     @Test
@@ -424,14 +429,15 @@ class CreditorInstitutionServiceTest {
         when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(STATION_CODE))
                 .thenReturn(Collections.singletonList(CI_TAX_CODE_1));
 
-        List<CreditorInstitutionInfo> result = assertDoesNotThrow(() ->
+        CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
                 service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID));
 
         assertNotNull(result);
-        assertEquals(1, result.size());
+        assertNotNull(result.getCreditorInstitutionInfos());
+        assertEquals(1, result.getCreditorInstitutionInfos().size());
 
-        assertEquals(expectedCI.getInstitutionName(), result.get(0).getBusinessName());
-        assertEquals(expectedCI.getTaxCode(), result.get(0).getCiTaxCode());
+        assertEquals(expectedCI.getInstitutionName(), result.getCreditorInstitutionInfos().get(0).getBusinessName());
+        assertEquals(expectedCI.getTaxCode(), result.getCreditorInstitutionInfos().get(0).getCiTaxCode());
     }
 
     @Test
@@ -444,14 +450,15 @@ class CreditorInstitutionServiceTest {
         when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(STATION_CODE))
                 .thenReturn(Collections.emptyList());
 
-        List<CreditorInstitutionInfo> result = assertDoesNotThrow(() ->
+        CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
                 service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID));
 
         assertNotNull(result);
-        assertEquals(1, result.size());
+        assertNotNull(result.getCreditorInstitutionInfos());
+        assertEquals(1, result.getCreditorInstitutionInfos().size());
 
-        assertEquals(institutionResponse.getDescription(), result.get(0).getBusinessName());
-        assertEquals(institutionResponse.getTaxCode(), result.get(0).getCiTaxCode());
+        assertEquals(institutionResponse.getDescription(), result.getCreditorInstitutionInfos().get(0).getBusinessName());
+        assertEquals(institutionResponse.getTaxCode(), result.getCreditorInstitutionInfos().get(0).getCiTaxCode());
     }
 
     @Test
@@ -468,11 +475,12 @@ class CreditorInstitutionServiceTest {
         when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(STATION_CODE))
                 .thenReturn(Collections.emptyList());
 
-        List<CreditorInstitutionInfo> result = assertDoesNotThrow(() ->
+        CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
                 service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID));
 
         assertNotNull(result);
-        assertEquals(2, result.size());
+        assertNotNull(result.getCreditorInstitutionInfos());
+        assertEquals(2, result.getCreditorInstitutionInfos().size());
     }
 
     private TavoloOpEntity buildTavoloOpEntity() {

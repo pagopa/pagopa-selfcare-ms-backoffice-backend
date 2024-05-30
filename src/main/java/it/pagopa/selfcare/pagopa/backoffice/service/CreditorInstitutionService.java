@@ -20,6 +20,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionInfoResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
@@ -209,7 +210,7 @@ public class CreditorInstitutionService {
      * @param brokerId    identifier of the broker that own the station
      * @return the list of creditor institution's
      */
-    public List<CreditorInstitutionInfo> getAvailableCreditorInstitutionsForStation(String stationCode, String brokerId) {
+    public CreditorInstitutionInfoResource getAvailableCreditorInstitutionsForStation(String stationCode, String brokerId) {
         List<DelegationExternal> delegationExternals = this.externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
 
         List<DelegationExternal> delegations = addItselfToDelegationsIfCI(brokerId, delegationExternals);
@@ -217,12 +218,15 @@ public class CreditorInstitutionService {
         List<String> alreadyAssociatedCI = this.apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(stationCode);
 
         // filter by roles
-        return delegations.parallelStream()
+        List<CreditorInstitutionInfo> infoList = delegations.parallelStream()
                 .filter(Objects::nonNull)
                 .filter(delegation -> RoleType.CI.equals(RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType())))
                 .filter(delegation -> !alreadyAssociatedCI.contains(delegation.getTaxCode()))
                 .map(elem -> this.modelMapper.map(elem, CreditorInstitutionInfo.class))
                 .toList();
+        return CreditorInstitutionInfoResource.builder()
+                .creditorInstitutionInfos(infoList)
+                .build();
     }
 
     private List<DelegationExternal> addItselfToDelegationsIfCI(String brokerId, List<DelegationExternal> delegationExternals) {
