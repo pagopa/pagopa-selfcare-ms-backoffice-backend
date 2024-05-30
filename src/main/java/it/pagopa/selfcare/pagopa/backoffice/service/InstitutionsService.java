@@ -15,7 +15,6 @@ public class InstitutionsService {
 
     private final InstitutionsClient institutionClient;
     
-
     public InstitutionsService(InstitutionsClient institutionClient) {
         this.institutionClient = institutionClient;
     }
@@ -41,6 +40,4 @@ public class InstitutionsService {
             throw new AppException(AppError.INSTITUTION_RETRIEVE_ERROR, e);
         }
     }
-
-
 }

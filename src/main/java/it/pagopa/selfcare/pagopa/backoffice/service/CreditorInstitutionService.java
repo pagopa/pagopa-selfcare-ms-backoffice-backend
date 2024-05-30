@@ -25,6 +25,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.UpdateCreditorInstitutionDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
@@ -40,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -200,22 +202,45 @@ public class CreditorInstitutionService {
 
     /**
      * Retrieve the list of creditor institutions that can be associated to the specified station of the specified broker.
-     * Filter out the creditor institutions that are already associated to the station.
+     * Add itself to the delegation list if the broker is of role {@link RoleType#CI} and filter out the creditor institutions
+     * that are already associated to the station.
      *
      * @param stationCode station's code
      * @param brokerId    identifier of the broker that own the station
      * @return the list of creditor institution's
      */
     public List<CreditorInstitutionInfo> getAvailableCreditorInstitutionsForStation(String stationCode, String brokerId) {
-        List<DelegationExternal> response = this.externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
+        List<DelegationExternal> delegationExternals = this.externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
+
+        List<DelegationExternal> delegations = addItselfToDelegationsIfCI(brokerId, delegationExternals);
+
         List<String> alreadyAssociatedCI = this.apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(stationCode);
 
         // filter by roles
-        return response.parallelStream()
+        return delegations.parallelStream()
                 .filter(Objects::nonNull)
                 .filter(delegation -> RoleType.CI.equals(RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType())))
                 .filter(delegation -> !alreadyAssociatedCI.contains(delegation.getTaxCode()))
                 .map(elem -> this.modelMapper.map(elem, CreditorInstitutionInfo.class))
                 .toList();
+    }
+
+    private List<DelegationExternal> addItselfToDelegationsIfCI(String brokerId, List<DelegationExternal> delegationExternals) {
+        List<DelegationExternal> delegations = new ArrayList<>(delegationExternals);
+        InstitutionResponse broker = this.externalApiClient.getInstitution(brokerId);
+        if (brokerCanBeAddedToDelegation(delegationExternals, broker)) {
+            delegations.add(DelegationExternal.builder()
+                    .taxCode(broker.getTaxCode())
+                    .institutionName(broker.getDescription())
+                    .institutionType(broker.getInstitutionType().toString())
+                    .build()
+            );
+        }
+        return delegations;
+    }
+
+    private boolean brokerCanBeAddedToDelegation(List<DelegationExternal> delegationExternals, InstitutionResponse broker) {
+        return RoleType.CI.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType().toString()))
+                && delegationExternals.stream().noneMatch(delegationExternal -> delegationExternal.getTaxCode().equals(broker.getTaxCode()));
     }
 }

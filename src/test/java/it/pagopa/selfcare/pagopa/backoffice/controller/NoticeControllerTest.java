@@ -21,14 +21,16 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class InstitutionsControllerTest {
+class NoticeControllerTest {
 
     @Autowired
     private MockMvc mvc;
@@ -36,7 +38,7 @@ class InstitutionsControllerTest {
     @MockBean
     private InstitutionsService institutionsService;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
@@ -55,10 +57,10 @@ class InstitutionsControllerTest {
                         .fullName("121212")
                         .organization("test")
                         .physicalChannel("1212")
-                .build();
+                        .build();
         String url = "/notice/institutions/data";
         mvc.perform(multipart(url)
-                        .file("file","".getBytes())
+                        .file("file", "".getBytes())
                         .part(new MockPart("institutions-data",
                                 objectMapper.writeValueAsString(uploadData).getBytes()))
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
@@ -122,7 +124,7 @@ class InstitutionsControllerTest {
             throw new AppException(AppError.INSTITUTION_NOT_FOUND);
         }).when(institutionsService).getInstitutionData(any());
         String url = "/notice/institutions/data/211212";
-        MvcResult mvcResult = mvc.perform(get(url))
+        mvc.perform(get(url))
                 .andExpect(status().isNotFound())
                 .andReturn();
         verify(institutionsService).getInstitutionData(any());
@@ -134,7 +136,7 @@ class InstitutionsControllerTest {
             throw new AppException(AppError.INSTITUTION_RETRIEVE_ERROR);
         }).when(institutionsService).getInstitutionData(any());
         String url = "/notice/institutions/data/211212";
-        MvcResult mvcResult = mvc.perform(get(url))
+        mvc.perform(get(url))
                 .andExpect(status().isInternalServerError())
                 .andReturn();
         verify(institutionsService).getInstitutionData(any());
