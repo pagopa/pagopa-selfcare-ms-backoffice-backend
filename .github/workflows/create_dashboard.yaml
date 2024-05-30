@@ -3,27 +3,17 @@ name: Create Dashboard
 # Controls when the workflow will run
 on:
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment for which create dashboards and alerts'
-        required: true
-        type: choice
-        options:
-          - uat
-          - prod
 
 permissions:
   id-token: write
   contents: read
+  deployments: write
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   dashboard:
     # The type of runner that the job will run on
     runs-on: ubuntu-22.04
-
-    environment:
-      name: ${{ inputs.environment }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout
@@ -34,13 +24,14 @@ jobs:
           persist-credentials: false
 
       # from https://github.com/pagopa/opex-dashboard-azure-action/
-      - uses: pagopa/opex-dashboard-azure-action@v1.2.1
+      - uses: pagopa/opex-dashboard-azure-action@v1.1.2
         with:
-          environment: ${{ inputs.environment }}
-          api-name: backoffice
-          config: .opex/backoffice/env/${{ inputs.environment }}/config.yaml
-          client-id: ${{ secrets.CD_CLIENT_ID }}
-          tenant-id: ${{ secrets.TENANT_ID }}
-          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
+          environment: prod
+          api-name:
+          config: .opex/env/prod/config.yaml
+          client-id: ${{ secrets.PROD_CLIENT_ID }}
+          tenant-id: ${{ secrets.PROD_TENANT_ID }}
+          subscription-id: ${{ secrets.PROD_SUBSCRIPTION_ID }}
           # from https://github.com/pagopa/opex-dashboard-azure-action/pkgs/container/opex-dashboard-azure-action
           docker-version: sha256:e4245954566cd3470e1b5527d33bb58ca132ce7493eac01be9e808fd25a11c8d
+

@@ -2,11 +2,6 @@ name: Release And Deploy
 
 # Controls when the workflow will run
 on:
-  merge_group:
-    branches: [ main ]
-  pull_request:
-    types: [ closed ]
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
@@ -24,6 +19,15 @@ on:
         description: deploy beta version on AKS
         default: false
 
+      version:
+        required: false
+        type: choice
+        description: Select the version
+        options:
+          - patch
+          - skip_or_promote
+          - new_release
+          - breaking_change
 
 permissions:
   packages: write
@@ -63,6 +67,18 @@ jobs:
       - if: ${{ (github.event.pull_request.merged && contains(github.event.pull_request.labels.*.name, 'major')) }}
         run: echo "SEMVER=major" >> $GITHUB_ENV
 
+      # force semver if dev, !=main or skip release
+      - if: ${{ inputs.version == 'new_release' }}
+        run: echo "SEMVER=minor" >> $GITHUB_ENV
+
+      - if: ${{ inputs.version == 'breaking_change' }}
+        run: echo "SEMVER=major" >> $GITHUB_ENV
+
+      - if: ${{ github.ref_name != 'main' }}
+        run: echo "SEMVER=buildNumber" >> $GITHUB_ENV
+
+      - if: ${{ inputs.version == 'skip_or_promote' }}
+        run: echo "SEMVER=skip" >> $GITHUB_ENV
       - id: get_semver
         name: Set Output
         run: echo "semver=${{env.SEMVER}}" >> $GITHUB_OUTPUT
@@ -93,9 +109,11 @@ jobs:
           semver: ${{ needs.setup.outputs.semver }}
           github_token: ${{ secrets.BOT_TOKEN_GITHUB }}
           beta: ${{ inputs.beta }}
-          prerelease: true
+          prerelease: ${{ needs.setup.outputs.environment != 'prod' }}
           skip_ci: false
 
+      - name: Checkout code
+        uses: actions/checkout@v4 # required to make the script available for next step
       - name: Generate Release Notes for Latest
         id: generate_notes
         if: ${{ needs.setup.outputs.environment == 'prod' }}

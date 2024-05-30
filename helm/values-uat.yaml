@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.13.0" #improve
+    tag: "2.14.0-11-next" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -122,6 +122,7 @@ microservice-chart:
     PAPGOPA_APIM_FORWARDER_API_KEY_PAGOPA: pagopa-u-apim-forwarder-key
     PAPGOPA_APIM_TAXONOMY_API_KEY_PAGOPA: pagopa-u-apim-taxonomy-key
     PAGOPA_APIM_API_CONFIG_API_KEY_PAGOPA: pagopa-u-apim-api-config-key
+    PAPGOPA_APIM_INSTITUTIONS_API_KEY_PAGOPA: pagopa-u-apim-notices-key
     PAGOPA_APIM_API_CONFIG_SELFCARE_INTEGRATION_API_KEY_PAGOPA: pagopa-u-apim-api-config-selfcare-integration-key
     PAPGOPA_APIM_AUTHORIZER_CONFIG_API_KEY_PAGOPA: pagopa-u-apim-authorizer-config-key
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-u-connection-string'

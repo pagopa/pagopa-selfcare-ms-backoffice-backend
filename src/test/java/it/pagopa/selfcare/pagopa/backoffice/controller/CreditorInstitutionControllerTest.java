@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionContactsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
@@ -69,8 +70,10 @@ class CreditorInstitutionControllerTest {
     void getCreditorInstitutionSegregationCodes() throws Exception {
         String url = "/creditor-institutions/12345678900/segregation-codes";
         AvailableCodes response = AvailableCodes.builder().availableCodeList(Collections.singletonList("2")).build();
-        when(ciService.getCreditorInstitutionSegregationCodes(anyString())).thenReturn(response);
-        mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
+        when(ciService.getCreditorInstitutionSegregationCodes(anyString(), anyString())).thenReturn(response);
+        mvc.perform(get(url)
+                        .param("targetCITaxCode", "targetCITaxCode")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
 
@@ -153,6 +156,19 @@ class CreditorInstitutionControllerTest {
 
         mvc.perform(get(url, "ciTaxCode")
                         .param("institutionId", "instiutionId")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    void getAvailableCreditorInstitutionsForStation() throws Exception {
+        String url = "/creditor-institutions/stations/{station-code}";
+        when(ciService.getAvailableCreditorInstitutionsForStation(anyString(), anyString()))
+                .thenReturn(Collections.singletonList(new CreditorInstitutionInfo()));
+
+        mvc.perform(get(url, "stationCode")
+                        .param("brokerId", "brokerId")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));

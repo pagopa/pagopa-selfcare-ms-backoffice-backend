@@ -12,7 +12,12 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -40,10 +45,13 @@ public interface ApiConfigSelfcareIntegrationClient {
             @RequestParam(required = false, defaultValue = "10") Integer limit,
             @RequestParam(required = false, defaultValue = "0") Integer page);
 
-    @GetMapping(value = "/creditorinstitutions/{creditorInstitutionCode}/segregationcodes", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/creditorinstitutions/{ci-tax-code}/segregationcodes", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Valid
-    AvailableCodes getCreditorInstitutionSegregationCodes(@PathVariable("creditorInstitutionCode") String creditorInstitutionCode);
+    AvailableCodes getCreditorInstitutionSegregationCodes(
+            @PathVariable("ci-tax-code") String creditorInstitutionCode,
+            @RequestParam String targetCITaxCode
+    );
 
 
     @PostMapping(value = "/ibans", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -75,4 +83,8 @@ public interface ApiConfigSelfcareIntegrationClient {
     @GetMapping(value = "/creditorinstitutions", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid
     List<CreditorInstitutionInfo> getCreditorInstitutionInfo(@RequestParam List<String> taxCodeList);
+
+    @GetMapping(value = "/creditorinstitutions/stations/{station-code}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
+    List<String> getStationCreditorInstitutions(@PathVariable(value = "station-code") String stationCode);
 }

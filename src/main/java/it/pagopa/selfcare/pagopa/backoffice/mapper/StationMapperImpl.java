@@ -11,6 +11,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStati
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
+import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setTargetPortPof(model.getTargetPortPof());
         stationDetailResource.setTargetPathPof(model.getTargetPathPof());
         stationDetailResource.setPrimitiveVersion(model.getPrimitiveVersion());
+        stationDetailResource.setIsConnectionSync(model.getIsConnectionSync());
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
         BrokerDetails brokerDetails = model.getIntermediarioPa();
@@ -144,7 +146,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setModifiedBy(modifiedBy);
         stationDetailResource.setCreatedAt(createdAt);
 
-        stationDetailResource.setIsConnectionSync(model.getService() != null && !model.getService().contains("gpd"));
+        stationDetailResource.setIsConnectionSync(model.getIsConnectionSync() != null ? model.getIsConnectionSync() : Utility.isConnectionSync(model));
         stationDetailResource.setNote(note);
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
@@ -257,6 +259,7 @@ public class StationMapperImpl implements StationMapper {
         wrapperStation.setVersion(model.getVersion());
         wrapperStation.setActivationDate(model.getActivationDate());
         wrapperStation.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
+        wrapperStation.setIsConnectionSync(model.getIsConnectionSync());
         //default per gli ogetti di apiconfig poiche non hanno questi campi
         wrapperStation.setWrapperStatus(WrapperStatus.APPROVED);
 
@@ -315,7 +318,7 @@ public class StationMapperImpl implements StationMapper {
         wrapperStation.setVersion(wrapperEntityOperations.getEntity().getVersion());
         wrapperStation.setActivationDate(wrapperEntityOperations.getEntity().getActivationDate());
         wrapperStation.setAssociatedCreditorInstitutions(wrapperEntityOperations.getEntity().getAssociatedCreditorInstitutions());
-        wrapperStation.setService(wrapperEntityOperations.getEntity().getService());
+        wrapperStation.setIsConnectionSync(Utility.isConnectionSync(wrapperEntityOperations.getEntity()));
 
         wrapperStation.setWrapperStatus(wrapperEntityOperations.getStatus());
         wrapperStation.setCreatedAt(wrapperEntityOperations.getCreatedAt());
@@ -358,7 +361,7 @@ public class StationMapperImpl implements StationMapper {
         wrapperStationResource.setWrapperStatus(wrapperStation.getWrapperStatus());
         wrapperStationResource.setCreatedAt(wrapperStation.getCreatedAt());
         wrapperStationResource.setModifiedAt(wrapperStation.getModifiedAt());
-        wrapperStationResource.setIsConnectionSync(wrapperStation.getService() != null && !wrapperStation.getService().contains("gpd"));
+        wrapperStationResource.setIsConnectionSync(wrapperStation.getIsConnectionSync());
 
         return wrapperStationResource;
     }

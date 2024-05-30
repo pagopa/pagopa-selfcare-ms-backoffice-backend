@@ -116,6 +116,14 @@ public class CommissionBundleController {
 
     @PostMapping(value = "/payment-service-providers/{psp-tax-code}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = BundleCreateResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @Operation(summary = "Create a commission bundle related to PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public BundleCreateResponse createBundle(
@@ -138,6 +146,14 @@ public class CommissionBundleController {
 
     @PutMapping(value = "/{id-bundle}/payment-service-providers/{psp-tax-code}")
     @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Created", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @Operation(summary = "Update a bundle by psp code and bundle id", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public void updatePSPBundle(
