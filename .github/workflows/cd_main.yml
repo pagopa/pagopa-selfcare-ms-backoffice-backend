@@ -1,8 +1,8 @@
-name: CD Release
+name: CD UAT/PROD
 
 on:
   pull_request:
-    branches: [ next ]
+    branches: [ main ]
     types: [ closed ]
 
 
@@ -57,13 +57,13 @@ jobs:
     steps:
       - name: Make Release
         id: release
-        uses: pagopa/github-actions-template/maven-release@v1.12.0
+        uses: pagopa/github-actions-template/maven-release@v1.13.3
         with:
           semver: ${{ needs.setup.outputs.semver }}
           github_token: ${{ secrets.BOT_TOKEN_GITHUB }}
           beta: ${{ inputs.beta }}
+          skip_ci: true
           prerelease: true
-          skip_ci: false
 
   image:
     needs: [ setup, pre_release ]
@@ -78,38 +78,38 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ needs.release.outputs.version }}
 
-  deploy_aks_uat:
-    name: Deploy on AKS UAT
+  deploy_uat:
+    name: Deploy in UAT
     needs: [ image ]
     uses: ./.github/workflows/deploy_with_github_runner.yml
     with:
-      environment: uat
+      environment: 'uat'
     secrets: inherit
 
 #  integration_test:
 #    name: Integration Test
-#    needs: [ setup, deploy_aks_uat ]
+#    needs: [ setup, deploy_uat ]
 #    uses: ./.github/workflows/ci_integration_test.yml
 #    with:
 #      environment: ${{ needs.setup.outputs.environment }}
+#      notify: false
 #    secrets: inherit
 
-
-  deploy_aks_prod:
-    name: Deploy on AKS PROD
+  deploy_prod:
     needs:
       - setup
+      - deploy_uat
 #      - integration_test
-      - deploy_aks_uat
+    name: Deploy in PROD
     uses: ./.github/workflows/deploy_with_github_runner.yml
     with:
-      environment: prod
+      environment: 'prod'
     secrets: inherit
 
   release:
     name: Create a New Release
     runs-on: ubuntu-latest
-    needs: [ setup, deploy_aks_prod ]
+    needs: [ setup, pre_release, deploy_prod ]
     if: ${{ needs.setup.outputs.semver != 'skip' }}
     steps:
       - name: Checkout code
@@ -117,14 +117,33 @@ jobs:
       - name: Make Latest Release
         id: generate_notes
         uses: actions/github-script@v5
+        env:
+          RELEASE_TAG: ${{ needs.pre_release.outputs.version }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const script = require('./.github/workflows/github_scripts/make_latest_release.js')
-            await script({github, context, core})
+            await script({github, context})
 
 
     
-    
+  notify:
+    needs: [ setup, deploy_prod, release ]
+    runs-on: ubuntu-latest
+    name: Notify
+    if: always()
+    steps:
+      - name: Report Status
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ needs.deploy_prod.result }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          notification_title: 'New Release on Production ${{ needs.release.outputs.version }} has {status_message}'
+          message_format: '{emoji} <{run_url}|{workflow}> {status_message} in <{repo_url}|{repo}>'
+          footer: 'Linked to <{workflow_url}| workflow file>'
+          icon_success: ':white_check_mark:'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
 
 

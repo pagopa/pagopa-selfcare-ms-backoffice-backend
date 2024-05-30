@@ -96,16 +96,16 @@ jobs:
       - name: setup
         id: setup
         run: |
-          echo "CLIENT_ID=${{DEV_CLIENT_ID}}" >> $GITHUB_ENV 
-          echo "TENANT_ID=${{DEV_TENANT_ID}}" >> $GITHUB_ENV 
-          echo "SUBSCRIPTION_ID=${{DEV_SUBSCRIPTION_ID}}" >> $GITHUB_ENV 
-          echo "SUBKEY=${{DEV_SUBKEY}}" >> $GITHUB_ENV 
+          echo "CLIENT_ID=${{secrets.DEV_CLIENT_ID}}" >> $GITHUB_ENV 
+          echo "TENANT_ID=${{secrets.DEV_TENANT_ID}}" >> $GITHUB_ENV 
+          echo "SUBSCRIPTION_ID=${{secrets.DEV_SUBSCRIPTION_ID}}" >> $GITHUB_ENV 
+          echo "SUBKEY=${{secrets.DEV_SUBKEY}}" >> $GITHUB_ENV 
           
           if [[ ${{ inputs.environment }} == "uat" ]]; then
-            echo "CLIENT_ID=${{UAT_CLIENT_ID}}" >> $GITHUB_ENV 
-            echo "TENANT_ID=${{UAT_TENANT_ID}}" >> $GITHUB_ENV 
-            echo "SUBSCRIPTION_ID=${{UAT_SUBSCRIPTION_ID}}" >> $GITHUB_ENV 
-            echo "SUBKEY=${{UAT_SUBKEY}}" >> $GITHUB_ENV 
+            echo "CLIENT_ID=${{secrets.UAT_CLIENT_ID}}" >> $GITHUB_ENV 
+            echo "TENANT_ID=${{secrets.UAT_TENANT_ID}}" >> $GITHUB_ENV 
+            echo "SUBSCRIPTION_ID=${{secrets.UAT_SUBSCRIPTION_ID}}" >> $GITHUB_ENV 
+            echo "SUBKEY=${{secrets.UAT_SUBKEY}}" >> $GITHUB_ENV 
           fi
 
       - name: Login
