@@ -8,6 +8,7 @@ on:
       - opened
       - synchronize
       - reopened
+      - closed
   push:
     branches:
       - main
@@ -21,8 +22,10 @@ env:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
   deployments: write
+  issues: write
+  pull-requests: write
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -43,12 +46,12 @@ jobs:
           cpd_exclusions: "**/model/**,**/entity/*"
           java_version: 17
 
-#  smoke_test:
-#    name: Smoke Test
-#    needs: build
-#    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
-#    uses: ./.github/workflows/ci_integration_test.yml
-#    with:
-#      environment: 'staging'
-#      notify: false
-#    secrets: inherit
+  smoke_test:
+    name: Smoke Test
+    needs: build
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+    uses: ./.github/workflows/ci_integration_test.yml
+    with:
+      environment: 'local'
+      notify: false
+    secrets: inherit

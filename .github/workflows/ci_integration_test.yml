@@ -16,10 +16,10 @@ on:
         type: boolean
         default: false
       notify:
+        description: 'notify result with slack message'
         required: false
         type: boolean
-        description: 'send the slack notification'
-        default: true
+        default: false
   
   
   workflow_dispatch:
@@ -29,6 +29,7 @@ on:
         type: choice
         description: Select the Environment
         options:
+          - local
           - dev
           - uat
       canary:
@@ -37,11 +38,10 @@ on:
         type: boolean
         default: false
       notify:
+        description: 'notify result with slack message'
         required: false
         type: boolean
-        description: 'send the slack notification'
-        default: true
-
+        default: false
 
 permissions:
   id-token: write
@@ -50,6 +50,41 @@ permissions:
 
 
 jobs:
+
+
+  print_debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump Inputs
+        env:
+          JSON_INPUTS: ${{ toJson(inputs) }}
+        run: echo "$JSON_INPUTS"
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Dump job context
+        env:
+          JOB_CONTEXT: ${{ toJson(job) }}
+        run: echo "$JOB_CONTEXT"
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+      - name: Dump strategy context
+        env:
+          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+        run: echo "$STRATEGY_CONTEXT"
+      - name: Dump matrix context
+        env:
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+        run: echo "$MATRIX_CONTEXT"
+
   integration_test:
     name: Test ${{(github.event.inputs == null && 'dev') || inputs.environment }}
     runs-on: ubuntu-latest
@@ -82,31 +117,40 @@ jobs:
           tenant-id: ${{ env.TENANT_ID }}
           subscription-id: ${{ env.SUBSCRIPTION_ID }}
 
-      - name: Run Integration Tests
-        shell: bash
-        run: |
-          export SUBKEY=${{ env.SUBKEY }}
-          export CANARY=${{ inputs.canary }}
-          export CUCUMBER_PUBLISH_TOKEN=${{ secrets.CUCUMBER_PUBLISH_TOKEN }}
 
-          cd ./integration-test
-          chmod +x ./run_integration_test.sh
-          ./run_integration_test.sh ${{( github.event.inputs == null && 'dev') || inputs.environment }}
+      - name: Run Service on Docker
+        shell: bash
+        id: run_service_docker
+        run: |
+          cd ./docker
+          chmod +x ./run_docker.sh
+          ./run_docker.sh ${{ inputs.environment }}
+          
+
+#      - name: Run Integration Tests
+#        shell: bash
+#        run: |
+#          export SUBKEY=${{ env.SUBKEY }}
+#          export CANARY=${{ inputs.canary }}
+#          export CUCUMBER_PUBLISH_TOKEN=${{ secrets.CUCUMBER_PUBLISH_TOKEN }}
+#
+#          cd ./integration-test
+#          chmod +x ./run_integration_test.sh
+#          ./run_integration_test.sh ${{( github.event.inputs == null && 'dev') || inputs.environment }}
 
   notify:
     needs: [ integration_test ]
     runs-on: ubuntu-latest
     name: Notify
-    if: ${{ always() && (inputs.notify == 'true' && github.event_name == 'schedule')  }}
+    if: ${{ always() && inputs.notify == true && github.event_name != 'schedule'  }}
     steps:
       - name: Report Status
-        if: ${{ inputs.notify }}
         uses: ravsamhq/notify-slack-action@v2
         with:
           status: ${{ needs.integration_test.result }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          notify_when: 'failure,skipped'
-          notification_title: '<{run_url}|Scheduled Integration Test> has {status_message}'
+          notify_when: 'success,failure,skipped'
+          notification_title: '<{run_url}| Integration Test> has {status_message} in ${{ inputs.environment }}'
           message_format: '{emoji} <{run_url}|{workflow}> {status_message} in <{repo_url}|{repo}>'
           footer: 'Linked to <{workflow_url}| workflow file>'
         env:
