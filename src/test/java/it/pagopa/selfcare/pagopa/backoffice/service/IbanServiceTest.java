@@ -4,13 +4,8 @@ import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
-import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
-import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionsEntity;
-import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
-import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerIbansRepository;
-import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerInstitutionsRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +17,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.IOException;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
