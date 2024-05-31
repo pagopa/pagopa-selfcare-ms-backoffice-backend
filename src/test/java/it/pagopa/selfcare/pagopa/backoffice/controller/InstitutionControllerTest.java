@@ -59,20 +59,23 @@ class InstitutionControllerTest {
         when(apiManagementService.getInstitutions(null))
                 .thenReturn(InstitutionDetailResource.builder()
                         .institutionDetails(Collections.singletonList(InstitutionDetail.builder()
-                                        .id("1")
-                                        .description("some description")
-                                        .originId("1")
-                                        .institutionType(InstitutionType.PA)
-                                        .build()))
+                                .id("1")
+                                .description("some description")
+                                .originId("1")
+                                .institutionType(InstitutionType.PA)
+                                .externalId("externalId")
+                                .taxCode("taxCode")
+                                .origin("origin")
+                                .build()))
                         .build());
-        when(apiManagementService.getBrokerDelegation(anyString(),anyString(),any()))
-                .thenReturn(DelegationResource.builder().delegations(Collections.singletonList(new Delegation())).build());
+        when(apiManagementService.getBrokerDelegation(anyString(), anyString(), any()))
+                .thenReturn(buildBrokerDelegationResource());
         when(apiManagementService.getInstitutionProducts(anyString()))
-                .thenReturn(ProductResource.builder().products(Collections.singletonList(new Product())).build());
+                .thenReturn(buildProductResource());
         when(apiManagementService.getInstitutionApiKeys(anyString()))
-                .thenReturn(InstitutionApiKeysResource.builder().institutionApiKeys(Collections.singletonList(new InstitutionApiKeys())).build());
+                .thenReturn(buildInstitutionApiKeysResource());
         when(apiManagementService.createSubscriptionKeys(any(), any()))
-                .thenReturn(InstitutionApiKeysResource.builder().institutionApiKeys(Collections.singletonList(new InstitutionApiKeys())).build());
+                .thenReturn(buildInstitutionApiKeysResource());
     }
 
     @Test
@@ -87,7 +90,7 @@ class InstitutionControllerTest {
         mvc.perform(get("/institutions/delegations")
                         .queryParam("institution-id", "test1")
                         .queryParam("brokerId", "test1")
-                        .queryParam("role","PSP")
+                        .queryParam("role", "PSP")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -135,5 +138,38 @@ class InstitutionControllerTest {
                         INSTITUTION_ID, SUBSCRIPTION_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
+    }
+
+    private InstitutionApiKeysResource buildInstitutionApiKeysResource() {
+        return InstitutionApiKeysResource.builder()
+                .institutionApiKeys(
+                        Collections.singletonList(
+                                InstitutionApiKeys.builder()
+                                        .displayName("displayName")
+                                        .secondaryKey("secondaryKey")
+                                        .primaryKey("primaryKey")
+                                        .id("id")
+                                        .build()
+                        )
+                ).build();
+    }
+
+    private ProductResource buildProductResource() {
+        return ProductResource.builder()
+                .products(
+                        Collections.singletonList(
+                                Product.builder()
+                                        .id("0001")
+                                        .description("Product_Description")
+                                        .title("title")
+                                        .build()
+                        )
+                ).build();
+    }
+
+    private DelegationResource buildBrokerDelegationResource() {
+        return DelegationResource.builder()
+                .delegations(Collections.singletonList(new Delegation()))
+                .build();
     }
 }
