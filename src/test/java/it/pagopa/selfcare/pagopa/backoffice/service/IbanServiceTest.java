@@ -52,7 +52,7 @@ class IbanServiceTest {
 
     @Test
     void getIban() throws IOException {
-        when(apiConfigClient.getCreditorInstitutionIbans(eq("1111"), any()))
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionIbans(eq("1111"), any()))
                 .thenReturn(TestUtil.fileToObject("response/apiconfig/ibans.json", Ibans.class));
         Ibans response = ibanService.getIban("1111", null);
         assertNotNull(response);
@@ -63,7 +63,7 @@ class IbanServiceTest {
     @Test
     void getCreditorInstitutionIbans() throws Exception {
         String url = "/creditor-institutions/11111/ibans";
-        when(apiConfigClient.getCreditorInstitutionIbans(eq("11111"), any()))
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionIbans(eq("11111"), any()))
                 .thenReturn(TestUtil.fileToObject("response/apiconfig/ibans.json", Ibans.class));
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

@@ -25,13 +25,14 @@ jobs:
     steps:
       - name: Make Release
         id: release
-        uses: pagopa/github-actions-template/maven-release@v1.13.3
+        uses: pagopa/github-actions-template/maven-release@create-tag-only
         with:
           semver: buildNumber
           github_token: ${{ secrets.BOT_TOKEN_GITHUB }}
           beta: false
           skip_ci: false
           prerelease: true
+          only_tag: true
 
   image:
     needs: [ pre_release ]
