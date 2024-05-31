@@ -98,7 +98,7 @@ module "apim_api_backoffice_api_v1_weu_core" {
 }
 
 
-resource "azurerm_api_management_api_version_set" "api_backoffice_api" {
+resource "azurerm_api_management_api_version_set" "api_backoffice_api_wue_core" {
   name                = "${var.env_short}-${local.repo_name}"
   resource_group_name = local.apim_weu_core.rg
   api_management_name = local.apim_weu_core.name
@@ -106,7 +106,7 @@ resource "azurerm_api_management_api_version_set" "api_backoffice_api" {
   versioning_scheme   = "Segment"
 }
 
-module "apim_api_backoffice_api_v1" {
+module "apim_api_backoffice_api_v1_weu_core" {
   source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v6.7.0"
 
   name                = "${var.env_short}-${local.repo_name}"
@@ -115,7 +115,7 @@ module "apim_api_backoffice_api_v1" {
   product_ids           = [local.apim_weu_core.product_id]
   subscription_required = false
 
-  version_set_id = azurerm_api_management_api_version_set.api_backoffice_api.id
+  version_set_id = azurerm_api_management_api_version_set.api_backoffice_api_wue_core.id
   api_version    = "v1"
 
   description  = local.description
