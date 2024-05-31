@@ -4,15 +4,26 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetailResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.ProductResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
 import it.pagopa.selfcare.pagopa.backoffice.service.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -38,57 +49,63 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieves all the onboarded institutions related to the logged user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public @Valid List<InstitutionDetail> getInstitutions(@Parameter(description = "filter by the tax code of the Creditor Institution") @RequestParam(required = false, value = "tax-code") String taxCode) {
-        return apiManagementService.getInstitutions(taxCode);
+    public @Valid InstitutionDetailResource getInstitutions(
+            @Parameter(description = "filter by the tax code of the Creditor Institution") @RequestParam(required = false, value = "tax-code") String taxCode
+    ) {
+        return this.apiManagementService.getInstitutions(taxCode);
     }
 
     @GetMapping("/delegations")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve all active delegations for given institution broker and logged user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public @Valid List<Delegation> getBrokerDelegation(@Parameter(description = "Institution's unique internal identifier") @RequestParam(required = false, value = "institution-id") String institutionId,
-                                                @Parameter(description = "Broker's unique id") @RequestParam(required = false, value = "brokerId") String brokerId,
-                                                @Parameter(description = "Broker's role to consider when filtering institution types") @RequestParam(required = false, value = "roles") List<RoleType> roles
+    public @Valid DelegationResource getBrokerDelegation(
+            @Parameter(description = "Institution's unique internal identifier") @RequestParam(required = false, value = "institution-id") String institutionId,
+            @Parameter(description = "Broker's unique id") @RequestParam(required = false, value = "brokerId") String brokerId,
+            @Parameter(description = "Broker's role to consider when filtering institution types") @RequestParam(required = false, value = "roles") List<RoleType> roles
     ) {
-        return apiManagementService.getBrokerDelegation(institutionId, brokerId, roles);
+        return this.apiManagementService.getBrokerDelegation(institutionId, brokerId, roles);
     }
 
     @GetMapping("/{institution-id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieves the details of an institution", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public Institution getInstitution(@Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId) {
-
-        return apiManagementService.getInstitution(institutionId);
+    public Institution getInstitution(
+            @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId
+    ) {
+        return this.apiManagementService.getInstitution(institutionId);
     }
 
     @GetMapping("/{institution-id}/products")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve all active products for given institution and logged user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public @Valid List<Product> getInstitutionProducts(@Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId) {
-
-        return apiManagementService.getInstitutionProducts(institutionId);
+    public @Valid ProductResource getInstitutionProducts(
+            @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId
+    ) {
+        return this.apiManagementService.getInstitutionProducts(institutionId);
     }
 
     @GetMapping("/{institution-id}/api-keys")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve an institution's key pair, including primary and secondary keys", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public @Valid List<InstitutionApiKeys> getInstitutionApiKeys(@Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId) {
-
-        return apiManagementService.getInstitutionApiKeys(institutionId);
+    public @Valid InstitutionApiKeysResource getInstitutionApiKeys(
+            @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId
+    ) {
+        return this.apiManagementService.getInstitutionApiKeys(institutionId);
     }
 
     @PostMapping("/{institution-id}/api-keys")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Creates a new subscription for a given Institution and returns its primary and secondary keys", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public @Valid List<InstitutionApiKeys> createInstitutionApiKeys(
+    public @Valid InstitutionApiKeysResource createInstitutionApiKeys(
             @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId,
             @Parameter(description = "Subscription's unique internal identifier") @RequestParam("subscription-code") Subscription subscriptionCode
     ) {
-        return apiManagementService.createSubscriptionKeys(institutionId, subscriptionCode);
+        return this.apiManagementService.createSubscriptionKeys(institutionId, subscriptionCode);
     }
 
     @PostMapping("/{institution-id}/api-keys/{subscription-id}/primary/regenerate")
@@ -99,7 +116,7 @@ public class InstitutionController {
             @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId,
             @Parameter(description = "Institution's subscription id") @PathVariable("subscription-id") @NotBlank String subscriptionId
     ) {
-        apiManagementService.regeneratePrimaryKey(institutionId, subscriptionId);
+        this.apiManagementService.regeneratePrimaryKey(institutionId, subscriptionId);
     }
 
     @PostMapping("/{institution-id}/api-keys/{subscription-id}/secondary/regenerate")
@@ -110,6 +127,6 @@ public class InstitutionController {
             @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId,
             @Parameter(description = "Institution's subscription id") @PathVariable("subscription-id") String subscriptionId
     ) {
-        apiManagementService.regenerateSecondaryKey(institutionId, subscriptionId);
+        this.apiManagementService.regenerateSecondaryKey(institutionId, subscriptionId);
     }
 }

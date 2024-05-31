@@ -5572,10 +5572,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/InstitutionDetail"
-                  }
+                  "$ref": "#/components/schemas/InstitutionDetailResource"
                 }
               }
             },
@@ -5658,10 +5655,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Delegation"
-                  }
+                  "$ref": "#/components/schemas/DelegationResource"
                 }
               }
             },
@@ -5773,10 +5767,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/InstitutionApiKeys"
-                  }
+                  "$ref": "#/components/schemas/InstitutionApiKeysResource"
                 }
               }
             },
@@ -5850,10 +5841,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/InstitutionApiKeys"
-                  }
+                  "$ref": "#/components/schemas/InstitutionApiKeysResource"
                 }
               }
             },
@@ -6015,10 +6003,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Product"
-                  }
+                  "$ref": "#/components/schemas/ProductResource"
                 }
               }
             },
@@ -10838,6 +10823,17 @@
           }
         }
       },
+      "DelegationResource": {
+        "type": "object",
+        "properties": {
+          "delegation_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Delegation"
+            }
+          }
+        }
+      },
       "DpoData": {
         "required": [
           "address",
@@ -11089,6 +11085,17 @@
           }
         }
       },
+      "InstitutionApiKeysResource": {
+        "type": "object",
+        "properties": {
+          "institution_api_key_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InstitutionApiKeys"
+            }
+          }
+        }
+      },
       "InstitutionDetail": {
         "required": [
           "address",
@@ -11182,6 +11189,17 @@
             "enum": [
               "admin, operator"
             ]
+          }
+        }
+      },
+      "InstitutionDetailResource": {
+        "type": "object",
+        "properties": {
+          "institution_detail_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InstitutionDetail"
+            }
           }
         }
       },
@@ -11661,6 +11679,17 @@
           "url_public": {
             "type": "string",
             "description": "URL that redirects to the public information webpage of the product"
+          }
+        }
+      },
+      "ProductResource": {
+        "type": "object",
+        "properties": {
+          "product_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            }
           }
         }
       },

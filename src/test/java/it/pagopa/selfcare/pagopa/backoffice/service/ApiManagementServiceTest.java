@@ -9,6 +9,7 @@ import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
 import org.junit.jupiter.api.Test;
@@ -54,9 +55,10 @@ class ApiManagementServiceTest {
                 .thenReturn(Collections.singletonList(InstitutionInfo.builder()
                                 .userProductRoles(List.of("admin"))
                         .build()));
-        List<InstitutionDetail> institutions = service.getInstitutions(null);
+        InstitutionDetailResource institutions = service.getInstitutions(null);
         assertNotNull(institutions);
-        assertFalse(institutions.isEmpty());
+        assertNotNull(institutions.getInstitutionDetails());
+        assertFalse(institutions.getInstitutionDetails().isEmpty());
         verify(externalApiClient).getInstitutions(any());
     }
 
@@ -72,9 +74,10 @@ class ApiManagementServiceTest {
         when(externalApiClient.getInstitutionsFiltered(any()))
                 .thenReturn(body);
         when(featureManager.isEnabled(anyString())).thenReturn(true);
-        List<InstitutionDetail> institutions = service.getInstitutions("123BCS");
+        InstitutionDetailResource institutions = service.getInstitutions("123BCS");
         assertNotNull(institutions);
-        assertFalse(institutions.isEmpty());
+        assertNotNull(institutions.getInstitutionDetails());
+        assertFalse(institutions.getInstitutionDetails().isEmpty());
         verify(externalApiClient, never()).getInstitutions(any());
     }
 
@@ -92,41 +95,49 @@ class ApiManagementServiceTest {
     void getInstitutionProducts() {
         when(externalApiClient.getInstitutionUserProducts(any(), any())).thenReturn(Collections.singletonList(
                 Product.builder().id("0001").description("Product_Description").build()));
-        List<Product> products = service.getInstitutionProducts(INSTITUTION_ID);
+        ProductResource products = service.getInstitutionProducts(INSTITUTION_ID);
         assertNotNull(products);
+        assertNotNull(products.getProducts());
     }
 
     @Test
     void getBrokerDelegationPSP() {
         when(externalApiClient.getBrokerDelegation(any(), any(), any(), any())).thenReturn(createDelegations());
-        List<Delegation> delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, Collections.singletonList(RoleType.PSP));
+        DelegationResource delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, Collections.singletonList(RoleType.PSP));
         assertNotNull(delegations);
-        assertEquals(1, delegations.size());
-        assertEquals("00001", delegations.get(0).getBrokerId());
+        assertNotNull(delegations.getDelegations());
+        assertEquals(1, delegations.getDelegations().size());
+        assertEquals("00001", delegations.getDelegations().get(0).getBrokerId());
     }
 
     @Test
     void getBrokerDelegationEC() {
         when(externalApiClient.getBrokerDelegation(any(), any(), any(), any())).thenReturn(createDelegations());
-        List<Delegation> delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, Collections.singletonList(RoleType.CI));
+        DelegationResource delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, Collections.singletonList(RoleType.CI));
         assertNotNull(delegations);
-        assertEquals(1, delegations.size());
-        assertEquals("00002", delegations.get(0).getBrokerId());
+        assertNotNull(delegations.getDelegations());
+        assertEquals(1, delegations.getDelegations().size());
+        assertEquals("00002", delegations.getDelegations().get(0).getBrokerId());
     }
 
     @Test
     void getBrokerDelegationCombinedRoles() {
         when(externalApiClient.getBrokerDelegation(any(), any(), any(), any())).thenReturn(createDelegations());
-        List<Delegation> delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, List.of(RoleType.CI, RoleType.PSP));
+        DelegationResource delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, List.of(RoleType.CI, RoleType.PSP));
         assertNotNull(delegations);
-        assertEquals(2, delegations.size());
+        assertNotNull(delegations.getDelegations());
+        assertEquals(2, delegations.getDelegations().size());
     }
 
     @Test
     void getInstitutionApiKeys() {
         when(apimClient.getInstitutionApiKeys(any())).thenReturn(Collections.singletonList(new InstitutionApiKeys()));
-        List<InstitutionApiKeys> institutionApiKeys = service.getInstitutionApiKeys(INSTITUTION_ID);
+
+        InstitutionApiKeysResource institutionApiKeys = service.getInstitutionApiKeys(INSTITUTION_ID);
+
         assertNotNull(institutionApiKeys);
+        assertNotNull(institutionApiKeys.getInstitutionApiKeys());
+
         verify(apimClient).getInstitutionApiKeys(any());
     }
 
@@ -136,8 +147,12 @@ class ApiManagementServiceTest {
                 .thenReturn(TestUtil.fileToObject(
                         "response/externalapi/institution_response.json", InstitutionResponse.class));
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(new InstitutionApiKeys()));
-        List<InstitutionApiKeys> institutionApiKeys = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.GPD);
+
+        InstitutionApiKeysResource institutionApiKeys = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.GPD);
+
         assertNotNull(institutionApiKeys);
+        assertNotNull(institutionApiKeys.getInstitutionApiKeys());
+
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(apimClient).getInstitution(INSTITUTION_ID);
         verify(apimClient, never()).createInstitution(anyString(), any());
@@ -154,9 +169,11 @@ class ApiManagementServiceTest {
                         "response/externalapi/institution_response.json", InstitutionResponse.class));
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(new InstitutionApiKeys()));
 
-        List<InstitutionApiKeys> institutionApiKeys = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.GPD);
+        InstitutionApiKeysResource institutionApiKeys = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.GPD);
 
         assertNotNull(institutionApiKeys);
+        assertNotNull(institutionApiKeys.getInstitutionApiKeys());
+
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(apimClient).getInstitution(INSTITUTION_ID);
         verify(apimClient).createInstitution(anyString(), any());
@@ -175,9 +192,11 @@ class ApiManagementServiceTest {
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
 
-        List<InstitutionApiKeys> result = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.BO_EXT_EC);
+        InstitutionApiKeysResource result = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.BO_EXT_EC);
 
         assertNotNull(result);
+        assertNotNull(result.getInstitutionApiKeys());
+
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(apimClient).getInstitution(INSTITUTION_ID);
         verify(apimClient, never()).createInstitution(anyString(), any());
@@ -196,9 +215,11 @@ class ApiManagementServiceTest {
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
 
-        List<InstitutionApiKeys> result = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.FDR_PSP);
+        InstitutionApiKeysResource result = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.FDR_PSP);
 
         assertNotNull(result);
+        assertNotNull(result.getInstitutionApiKeys());
+
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(apimClient).getInstitution(INSTITUTION_ID);
         verify(apimClient, never()).createInstitution(anyString(), any());
