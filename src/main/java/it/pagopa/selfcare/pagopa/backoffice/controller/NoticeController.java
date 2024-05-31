@@ -14,12 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.service.InstitutionsService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -52,7 +47,7 @@ public class NoticeController {
     @Operation(summary = "uploadInstitutionData",
             description = "Uploads or updates the provided institution data and logo on the related storage," +
                     " to be used in the payment notice generation process",
-            security = {@SecurityRequirement(name = "ApiKey")})
+            security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE,
             external = true, internal = false)
     @ApiResponses(value = {
@@ -92,7 +87,7 @@ public class NoticeController {
     @Operation(summary = "getInstitutionData",
             description = "Retrieves saved institution data and logo on the related storage," +
                     " to be used in the payment notice generation process",
-            security = {@SecurityRequirement(name = "ApiKey")})
+            security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE,
             external = true, internal = false)
     @ApiResponses(value = {

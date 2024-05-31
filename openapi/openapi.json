@@ -6224,7 +6224,7 @@
         },
         "security": [
           {
-            "ApiKey": []
+            "JWT": []
           }
         ],
         "summary": "uploadInstitutionData",
@@ -6357,7 +6357,7 @@
         },
         "security": [
           {
-            "ApiKey": []
+            "JWT": []
           }
         ],
         "summary": "getInstitutionData",
