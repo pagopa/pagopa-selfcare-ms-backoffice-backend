@@ -106,6 +106,7 @@ class NoticeControllerTest {
                         .fullName("121212")
                         .organization("test")
                         .physicalChannel("1212")
+                        .appChannel(false)
                         .build();
         doReturn(uploadData).when(institutionsService).getInstitutionData(any());
         String url = "/notice/institutions/data/211212";
