@@ -37,6 +37,10 @@ public class InstitutionUploadData {
     @NotNull
     private Boolean webChannel;
 
+    @Schema(description = "Boolean to refer if it has a web channel", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
+    private Boolean appChannel;
+
     @Schema(description = "CI physical channel data")
     private String physicalChannel;
 
