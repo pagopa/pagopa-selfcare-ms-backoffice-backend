@@ -79,7 +79,7 @@ public interface ApiConfigSelfcareIntegrationClient {
     @Valid
     List<CreditorInstitutionInfo> getCreditorInstitutionInfo(@RequestParam List<String> taxCodeList);
 
-    @GetMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/ibans/list")
+    @GetMapping(value = "/ibans/{creditorinstitutioncode}/list")
     @Valid
     Ibans getCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
                                       @RequestParam String label);
