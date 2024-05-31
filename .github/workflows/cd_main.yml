@@ -76,7 +76,7 @@ jobs:
         uses: pagopa/github-actions-template/ghcr-build-push@v1.5.4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ needs.release.outputs.version }}
+          tag: ${{ needs.pre_release.outputs.version }}
 
   deploy_uat:
     name: Deploy in UAT
