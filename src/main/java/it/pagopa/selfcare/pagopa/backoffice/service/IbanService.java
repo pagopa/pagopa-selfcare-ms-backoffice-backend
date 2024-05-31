@@ -36,7 +36,7 @@ public class IbanService {
 
 
     public Ibans getIban(String ciCode, String labelName) {
-        return apiConfigClient.getCreditorInstitutionIbans(ciCode, labelName);
+        return apiConfigSelfcareIntegrationClient.getCreditorInstitutionIbans(ciCode, labelName);
     }
 
     public Iban createIban(String ciCode, IbanCreate requestDto) {
@@ -48,7 +48,7 @@ public class IbanService {
     public Iban updateIban(String ciCode, String ibanValue, IbanCreate dto) {
         // updating labels, owned by other CI, related to the passed IBAN
         if(!isEmpty(dto.getLabels())) {
-            Ibans ibansEnhanced = apiConfigClient.getCreditorInstitutionIbans(ciCode, dto.getLabels().get(0).getName());
+            Ibans ibansEnhanced = apiConfigSelfcareIntegrationClient.getCreditorInstitutionIbans(ciCode, dto.getLabels().get(0).getName());
             if(ibansEnhanced != null && !ObjectUtils.isEmpty(ibansEnhanced.getIbanList())) {
                 ibansEnhanced.getIbanList().forEach(iban -> {
                     IbanCreateApiconfig ibanCreate = modelMapper.map(iban, IbanCreateApiconfig.class);
