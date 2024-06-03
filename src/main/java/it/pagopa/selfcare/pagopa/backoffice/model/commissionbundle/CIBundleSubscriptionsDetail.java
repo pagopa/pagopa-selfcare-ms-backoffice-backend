@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PublicBundleCISubscriptionsDetail {
+public class CIBundleSubscriptionsDetail {
 
     @JsonProperty("ci_bundle_fee_list")
     @Schema(description = "Creditor Institution's fees details")

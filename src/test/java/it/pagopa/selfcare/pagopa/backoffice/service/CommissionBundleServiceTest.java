@@ -357,16 +357,16 @@ class CommissionBundleServiceTest {
         CreditorInstitutionInfo ciInfo = buildCIInfo();
 
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-        when(gecClient.getPublicBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, LIMIT, PAGE))
+        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, LIMIT, PAGE))
                 .thenReturn(codeList);
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(Collections.singletonList(CI_TAX_CODE)))
                 .thenReturn(Collections.singletonList(ciInfo));
 
-        PublicBundleCISubscriptionsResource result = assertDoesNotThrow(() -> sut
+        CIBundleSubscriptionsResource result = assertDoesNotThrow(() -> sut
                 .getPublicBundleCISubscriptions(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
-                        PublicBundleSubscriptionStatus.ACCEPTED,
+                        BundleSubscriptionStatus.ACCEPTED,
                         null,
                         LIMIT,
                         PAGE)
@@ -398,16 +398,16 @@ class CommissionBundleServiceTest {
         CreditorInstitutionInfo ciInfo = buildCIInfo();
 
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-        when(gecClient.getPublicBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, LIMIT, PAGE))
+        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, LIMIT, PAGE))
                 .thenReturn(codeList);
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(Collections.singletonList(CI_TAX_CODE)))
                 .thenReturn(Collections.singletonList(ciInfo));
 
-        PublicBundleCISubscriptionsResource result = assertDoesNotThrow(() -> sut
+        CIBundleSubscriptionsResource result = assertDoesNotThrow(() -> sut
                 .getPublicBundleCISubscriptions(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
-                        PublicBundleSubscriptionStatus.ACCEPTED,
+                        BundleSubscriptionStatus.ACCEPTED,
                         null,
                         LIMIT,
                         PAGE)
@@ -439,16 +439,16 @@ class CommissionBundleServiceTest {
         CreditorInstitutionInfo ciInfo = buildCIInfo();
 
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-        when(gecClient.getPublicBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, LIMIT, PAGE))
+        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, LIMIT, PAGE))
                 .thenReturn(codeList);
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(Collections.singletonList(CI_TAX_CODE)))
                 .thenReturn(Collections.singletonList(ciInfo));
 
-        PublicBundleCISubscriptionsResource result = assertDoesNotThrow(() -> sut
+        CIBundleSubscriptionsResource result = assertDoesNotThrow(() -> sut
                 .getPublicBundleCISubscriptions(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
-                        PublicBundleSubscriptionStatus.ACCEPTED,
+                        BundleSubscriptionStatus.ACCEPTED,
                         null,
                         LIMIT,
                         PAGE)
@@ -486,11 +486,11 @@ class CommissionBundleServiceTest {
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(Collections.singletonList(CI_TAX_CODE)))
                 .thenReturn(Collections.singletonList(ciInfo));
 
-        PublicBundleCISubscriptionsResource result = assertDoesNotThrow(() -> sut
+        CIBundleSubscriptionsResource result = assertDoesNotThrow(() -> sut
                 .getPublicBundleCISubscriptions(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
-                        PublicBundleSubscriptionStatus.WAITING,
+                        BundleSubscriptionStatus.WAITING,
                         null,
                         LIMIT,
                         PAGE)
@@ -516,17 +516,17 @@ class CommissionBundleServiceTest {
                 .build();
 
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-        when(gecClient.getPublicBundleSubscriptionDetailByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE))
+        when(gecClient.getBundleSubscriptionDetailByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE))
                 .thenReturn(bundleDetails);
         when(taxonomyService.getTaxonomiesByCodes(Collections.singletonList(TRANSFER_CATEGORY)))
                 .thenReturn(buildTaxonomyList());
 
-        PublicBundleCISubscriptionsDetail result = assertDoesNotThrow(() -> sut
+        CIBundleSubscriptionsDetail result = assertDoesNotThrow(() -> sut
                 .getPublicBundleCISubscriptionsDetail(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
                         CI_TAX_CODE,
-                        PublicBundleSubscriptionStatus.ACCEPTED)
+                        BundleSubscriptionStatus.ACCEPTED)
         );
 
         assertNotNull(result);
@@ -554,12 +554,12 @@ class CommissionBundleServiceTest {
         when(taxonomyService.getTaxonomiesByCodes(Collections.singletonList(TRANSFER_CATEGORY)))
                 .thenReturn(Collections.singletonList(taxonomy));
 
-        PublicBundleCISubscriptionsDetail result = assertDoesNotThrow(() -> sut
+        CIBundleSubscriptionsDetail result = assertDoesNotThrow(() -> sut
                 .getPublicBundleCISubscriptionsDetail(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
                         CI_TAX_CODE,
-                        PublicBundleSubscriptionStatus.WAITING)
+                        BundleSubscriptionStatus.WAITING)
         );
 
         assertNotNull(result);
@@ -583,12 +583,12 @@ class CommissionBundleServiceTest {
         when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, PAGE))
                 .thenReturn(publicBundleRequests);
 
-        PublicBundleCISubscriptionsDetail result = assertDoesNotThrow(() -> sut
+        CIBundleSubscriptionsDetail result = assertDoesNotThrow(() -> sut
                 .getPublicBundleCISubscriptionsDetail(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
                         CI_TAX_CODE,
-                        PublicBundleSubscriptionStatus.WAITING)
+                        BundleSubscriptionStatus.WAITING)
         );
 
         assertNotNull(result);
