@@ -49,13 +49,16 @@ public class InstitutionUploadData {
     @NotEmpty
     private String cbill;
 
+    @Schema(description = "Poste name")
+    private String posteNane;
+
     @Schema(description = "Poste account number")
     private String posteAccountNumber;
 
     @Schema(description = "Poste auth code")
     private String posteAuth;
 
-    @Schema(hidden = true)
+    @Schema(description = "Existing logo url")
     private String logo;
 
 }
