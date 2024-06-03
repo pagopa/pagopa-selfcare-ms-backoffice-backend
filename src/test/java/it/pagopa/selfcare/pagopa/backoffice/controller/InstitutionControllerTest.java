@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
 import it.pagopa.selfcare.pagopa.backoffice.service.ApiManagementService;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,20 +57,25 @@ class InstitutionControllerTest {
                         .attributes(List.of())
                         .build());
         when(apiManagementService.getInstitutions(null))
-                .thenReturn(Collections.singletonList(InstitutionDetail.builder()
+                .thenReturn(InstitutionDetailResource.builder()
+                        .institutionDetails(Collections.singletonList(InstitutionDetail.builder()
                                 .id("1")
                                 .description("some description")
                                 .originId("1")
                                 .institutionType(InstitutionType.PA)
-                        .build()));
-        when(apiManagementService.getBrokerDelegation(anyString(),anyString(),any()))
-                .thenReturn(Collections.singletonList(new Delegation()));
+                                .externalId("externalId")
+                                .taxCode("taxCode")
+                                .origin("origin")
+                                .build()))
+                        .build());
+        when(apiManagementService.getBrokerDelegation(anyString(), anyString(), any()))
+                .thenReturn(buildBrokerDelegationResource());
         when(apiManagementService.getInstitutionProducts(anyString()))
-                .thenReturn(Collections.singletonList(new Product()));
+                .thenReturn(buildProductResource());
         when(apiManagementService.getInstitutionApiKeys(anyString()))
-                .thenReturn(Collections.singletonList(new InstitutionApiKeys()));
+                .thenReturn(buildInstitutionApiKeysResource());
         when(apiManagementService.createSubscriptionKeys(any(), any()))
-                .thenReturn(Collections.singletonList(new InstitutionApiKeys()));
+                .thenReturn(buildInstitutionApiKeysResource());
     }
 
     @Test
@@ -84,7 +90,7 @@ class InstitutionControllerTest {
         mvc.perform(get("/institutions/delegations")
                         .queryParam("institution-id", "test1")
                         .queryParam("brokerId", "test1")
-                        .queryParam("role","PSP")
+                        .queryParam("role", "PSP")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -132,5 +138,38 @@ class InstitutionControllerTest {
                         INSTITUTION_ID, SUBSCRIPTION_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
+    }
+
+    private InstitutionApiKeysResource buildInstitutionApiKeysResource() {
+        return InstitutionApiKeysResource.builder()
+                .institutionApiKeys(
+                        Collections.singletonList(
+                                InstitutionApiKeys.builder()
+                                        .displayName("displayName")
+                                        .secondaryKey("secondaryKey")
+                                        .primaryKey("primaryKey")
+                                        .id("id")
+                                        .build()
+                        )
+                ).build();
+    }
+
+    private ProductResource buildProductResource() {
+        return ProductResource.builder()
+                .products(
+                        Collections.singletonList(
+                                Product.builder()
+                                        .id("0001")
+                                        .description("Product_Description")
+                                        .title("title")
+                                        .build()
+                        )
+                ).build();
+    }
+
+    private DelegationResource buildBrokerDelegationResource() {
+        return DelegationResource.builder()
+                .delegations(Collections.singletonList(new Delegation()))
+                .build();
     }
 }

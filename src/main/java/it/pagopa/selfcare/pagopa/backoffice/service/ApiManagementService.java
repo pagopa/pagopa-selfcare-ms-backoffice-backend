@@ -9,9 +9,20 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationEntity;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationOwner;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetailResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionResponse;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.ProductResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +34,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -63,22 +78,26 @@ public class ApiManagementService {
         this.featureManager = featureManager;
     }
 
-    public List<InstitutionDetail> getInstitutions(String taxCode) {
-        if(taxCode != null && !taxCode.isEmpty()) {
-            if(!featureManager.isEnabled("isOperator")) {
+    public InstitutionDetailResource getInstitutions(String taxCode) {
+        List<InstitutionDetail> institutionDetails;
+        if (taxCode != null && !taxCode.isEmpty()) {
+            if (!featureManager.isEnabled("isOperator")) {
                 throw new AppException(AppError.UNAUTHORIZED);
             }
-            return externalApiClient.getInstitutionsFiltered(taxCode).getInstitutions().stream()
+            institutionDetails = externalApiClient.getInstitutionsFiltered(taxCode).getInstitutions().stream()
                     .map(elem -> modelMapper.map(elem, InstitutionDetail.class))
                     .toList();
         } else {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String userIdForAuth = Utility.extractUserIdFromAuth(authentication);
             Collection<InstitutionInfo> institutions = externalApiClient.getInstitutions(userIdForAuth);
-            return institutions.stream()
+            institutionDetails = institutions.stream()
                     .map(institution -> modelMapper.map(institution, InstitutionDetail.class))
                     .toList();
         }
+        return InstitutionDetailResource.builder()
+                .institutionDetails(institutionDetails)
+                .build();
     }
 
 
@@ -86,12 +105,15 @@ public class ApiManagementService {
         return modelMapper.map(externalApiClient.getInstitution(institutionId), Institution.class);
     }
 
-    public List<Product> getInstitutionProducts(String institutionId) {
+    public ProductResource getInstitutionProducts(String institutionId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return externalApiClient.getInstitutionUserProducts(institutionId, Utility.extractUserIdFromAuth(authentication));
+        List<Product> institutionUserProducts = externalApiClient.getInstitutionUserProducts(institutionId, Utility.extractUserIdFromAuth(authentication));
+        return ProductResource.builder()
+                .products(institutionUserProducts)
+                .build();
     }
 
-    public List<Delegation> getBrokerDelegation(String institutionId, String brokerId, List<RoleType> roles) {
+    public DelegationResource getBrokerDelegation(String institutionId, String brokerId, List<RoleType> roles) {
         var response = externalApiClient.getBrokerDelegation(institutionId, brokerId, "prod-pagopa", "FULL");
 
         var result = response.stream()
@@ -99,7 +121,7 @@ public class ApiManagementService {
                 .toList();
 
         // filter by roles
-        if(roles != null && !roles.isEmpty()) {
+        if (roles != null && !roles.isEmpty()) {
             result = result.parallelStream()
                     .filter(Objects::nonNull)
                     .filter(delegation -> {
@@ -109,11 +131,16 @@ public class ApiManagementService {
                     })
                     .toList();
         }
-        return result;
+        return DelegationResource.builder()
+                .delegations(result)
+                .build();
     }
 
-    public List<InstitutionApiKeys> getInstitutionApiKeys(String institutionId) {
-        return apimClient.getInstitutionApiKeys(institutionId);
+    public InstitutionApiKeysResource getInstitutionApiKeys(String institutionId) {
+        List<InstitutionApiKeys> institutionApiKeys = apimClient.getInstitutionApiKeys(institutionId);
+        return InstitutionApiKeysResource.builder()
+                .institutionApiKeys(institutionApiKeys)
+                .build();
     }
 
     /**
@@ -126,7 +153,7 @@ public class ApiManagementService {
      * @param subscriptionCode the code of the requested subscription
      * @return the list of all institution's subscription's api keys
      */
-    public List<InstitutionApiKeys> createSubscriptionKeys(String institutionId, Subscription subscriptionCode) {
+    public InstitutionApiKeysResource createSubscriptionKeys(String institutionId, Subscription subscriptionCode) {
         InstitutionResponse institution = getInstitutionResponse(institutionId);
 
         String subscriptionId = String.format("%s%s", subscriptionCode.getPrefixId(), institution.getTaxCode());
@@ -142,7 +169,7 @@ public class ApiManagementService {
 
         List<InstitutionApiKeys> apiSubscriptions = this.apimClient.getApiSubscriptions(institutionId);
 
-        if(subscriptionCode == Subscription.BO_EXT_EC || subscriptionCode == Subscription.BO_EXT_PSP) {
+        if (subscriptionCode == Subscription.BO_EXT_EC || subscriptionCode == Subscription.BO_EXT_PSP) {
             InstitutionApiKeys apiKeys = apiSubscriptions.stream()
                     .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
                     .findFirst()
@@ -156,7 +183,7 @@ public class ApiManagementService {
             Authorization authorizationSecondaryKey = buildBOAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, false);
             this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
         }
-        if(subscriptionCode == Subscription.FDR_ORG || subscriptionCode == Subscription.FDR_PSP) {
+        if (subscriptionCode == Subscription.FDR_ORG || subscriptionCode == Subscription.FDR_PSP) {
             InstitutionApiKeys apiKeys = apiSubscriptions.stream()
                     .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
                     .findFirst()
@@ -172,7 +199,9 @@ public class ApiManagementService {
             this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
         }
 
-        return apiSubscriptions;
+        return InstitutionApiKeysResource.builder()
+                .institutionApiKeys(apiSubscriptions)
+                .build();
     }
 
     /**
@@ -188,7 +217,7 @@ public class ApiManagementService {
         this.apimClient.regeneratePrimaryKey(subscriptionId);
 
         var prefix = subscriptionId.split("-")[0] + "-";
-        if(prefix.equals(Subscription.BO_EXT_EC.getPrefixId()) || prefix.equals(Subscription.BO_EXT_PSP.getPrefixId()) // BO
+        if (prefix.equals(Subscription.BO_EXT_EC.getPrefixId()) || prefix.equals(Subscription.BO_EXT_PSP.getPrefixId()) // BO
                 || prefix.equals(Subscription.FDR_ORG.getPrefixId()) || prefix.equals(Subscription.FDR_PSP.getPrefixId()) // Fdr
         ) {
             updateAuthorization(institutionId, subscriptionId, prefix, true);
@@ -208,7 +237,7 @@ public class ApiManagementService {
         this.apimClient.regenerateSecondaryKey(subscriptionId);
 
         var prefix = subscriptionId.split("-")[0] + "-";
-        if(prefix.equals(Subscription.BO_EXT_EC.getPrefixId()) || prefix.equals(Subscription.BO_EXT_PSP.getPrefixId()) // BO
+        if (prefix.equals(Subscription.BO_EXT_EC.getPrefixId()) || prefix.equals(Subscription.BO_EXT_PSP.getPrefixId()) // BO
                 || prefix.equals(Subscription.FDR_ORG.getPrefixId()) || prefix.equals(Subscription.FDR_PSP.getPrefixId()) // Fdr
         ) {
             updateAuthorization(institutionId, subscriptionId, prefix, false);
@@ -223,7 +252,7 @@ public class ApiManagementService {
 
         String authorizationId = createAuthorizationBOId(subscriptionPrefixId, institutionId, isPrimaryKey);
         Authorization authorization = this.authorizerConfigClient.getAuthorization(authorizationId);
-        if(authorization == null) {
+        if (authorization == null) {
             throw new AppException(AppError.AUTHORIZATION_NOT_FOUND, institutionId);
         }
 
@@ -234,7 +263,7 @@ public class ApiManagementService {
 
     private InstitutionResponse getInstitutionResponse(String institutionId) {
         InstitutionResponse institution = this.externalApiClient.getInstitution(institutionId);
-        if(institution == null) {
+        if (institution == null) {
             throw new AppException(AppError.APIM_USER_NOT_FOUND, institutionId);
         }
         return institution;

@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.14.0-13-next"
+    "version": "2.14.0-15-next"
   },
   "servers": [
     {
@@ -4187,10 +4187,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CreditorInstitutionInfo"
-                  }
+                  "$ref": "#/components/schemas/CreditorInstitutionInfoResource"
                 }
               }
             },
@@ -5923,10 +5920,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/InstitutionDetail"
-                  }
+                  "$ref": "#/components/schemas/InstitutionDetailResource"
                 }
               }
             },
@@ -6009,10 +6003,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Delegation"
-                  }
+                  "$ref": "#/components/schemas/DelegationResource"
                 }
               }
             },
@@ -6124,10 +6115,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/InstitutionApiKeys"
-                  }
+                  "$ref": "#/components/schemas/InstitutionApiKeysResource"
                 }
               }
             },
@@ -6201,10 +6189,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/InstitutionApiKeys"
-                  }
+                  "$ref": "#/components/schemas/InstitutionApiKeysResource"
                 }
               }
             },
@@ -6366,10 +6351,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Product"
-                  }
+                  "$ref": "#/components/schemas/ProductResource"
                 }
               }
             },
@@ -11024,6 +11006,17 @@
           }
         }
       },
+      "CreditorInstitutionInfoResource": {
+        "type": "object",
+        "properties": {
+          "creditor_institution_info_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreditorInstitutionInfo"
+            }
+          }
+        }
+      },
       "CreditorInstitutionResource": {
         "required": [
           "businessName",
@@ -11213,6 +11206,17 @@
           "type": {
             "type": "string",
             "description": "delegation type"
+          }
+        }
+      },
+      "DelegationResource": {
+        "type": "object",
+        "properties": {
+          "delegation_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Delegation"
+            }
           }
         }
       },
@@ -11467,6 +11471,17 @@
           }
         }
       },
+      "InstitutionApiKeysResource": {
+        "type": "object",
+        "properties": {
+          "institution_api_key_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InstitutionApiKeys"
+            }
+          }
+        }
+      },
       "InstitutionDetail": {
         "required": [
           "address",
@@ -11563,8 +11578,20 @@
           }
         }
       },
+      "InstitutionDetailResource": {
+        "type": "object",
+        "properties": {
+          "institution_detail_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InstitutionDetail"
+            }
+          }
+        }
+      },
       "InstitutionUploadData": {
         "required": [
+          "appChannel",
           "cbill",
           "fullName",
           "info",
@@ -11573,6 +11600,10 @@
         ],
         "type": "object",
         "properties": {
+          "appChannel": {
+            "type": "boolean",
+            "description": "Boolean to refer if it has a web channel"
+          },
           "cbill": {
             "type": "string",
             "description": "CI cbill"
@@ -12039,6 +12070,17 @@
           "url_public": {
             "type": "string",
             "description": "URL that redirects to the public information webpage of the product"
+          }
+        }
+      },
+      "ProductResource": {
+        "type": "object",
+        "properties": {
+          "product_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            }
           }
         }
       },
