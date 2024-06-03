@@ -10060,6 +10060,10 @@
             "type" : "string",
             "description" : "CI info"
           },
+          "logo" : {
+            "type" : "string",
+            "description" : "Existing logo url"
+          },
           "organization" : {
             "type" : "string",
             "description" : "CI organization unit managing the payment "
@@ -10075,6 +10079,10 @@
           "posteAuth" : {
             "type" : "string",
             "description" : "Poste auth code"
+          },
+          "posteName" : {
+            "type" : "string",
+            "description" : "Poste name"
           },
           "taxCode" : {
             "type" : "string",
