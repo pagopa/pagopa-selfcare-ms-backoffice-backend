@@ -2,10 +2,10 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleSubscriptionStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundlesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleSubscriptionStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
@@ -270,7 +270,7 @@ class CommissionBundleControllerTest {
 
     @Test
     void getPublicBundleCISubscriptionsDetail() throws Exception {
-        String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}/detail";
+        String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}";
         mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE)
                         .param("status", BundleSubscriptionStatus.ACCEPTED.name())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -309,5 +309,28 @@ class CommissionBundleControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
         verify(service).createCIBundleRequest(CI_TAX_CODE, bundleRequest, BUNDLE_NAME);
+    }
+
+
+    @Test
+    void getPrivateBundleCIRecipients() throws Exception {
+        String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/recipients";
+        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE)
+                        .param("status", BundleSubscriptionStatus.ACCEPTED.name())
+                        .param("limit", "10")
+                        .param("page", "0")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        verify(service).getPrivateBundleCIRecipients(BUNDLE_ID, PSP_TAX_CODE, BundleSubscriptionStatus.ACCEPTED, null, 10, 0);
+    }
+
+    @Test
+    void getPrivateBundleCIRecipientDetail() throws Exception {
+        String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/recipients/{ci-tax-code}";
+        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE)
+                        .param("status", BundleSubscriptionStatus.ACCEPTED.name())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        verify(service).getPrivateBundleCIRecipientDetail(BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE, BundleSubscriptionStatus.ACCEPTED);
     }
 }
