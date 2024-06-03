@@ -260,7 +260,7 @@ public class CommissionBundleController {
      * @param status     the status of the subscription
      * @return the detail of a creditor institution's subscription
      */
-    @GetMapping("/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}/detail")
+    @GetMapping("/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PublicBundleCISubscriptionsDetail.class))),
@@ -333,5 +333,69 @@ public class CommissionBundleController {
             @RequestBody @NotNull PublicBundleRequest publicBundleRequest
     ){
         commissionBundleService.createCIBundleRequest(ciTaxCode, publicBundleRequest, bundleName);
+    }
+
+    /**
+     * Retrieve a paginated list of creditor institution recipients of a private bundle of a PSP
+     *
+     * @param idBundle   the id of the private bundle
+     * @param pspTaxCode the payment service provider's tax code
+     * @param status     the status of the offer
+     * @param ciTaxCode  the creditor institution's tax code
+     * @param limit      the size of the page
+     * @param page       the page number
+     * @return a paginated list of creditor institution's info
+     */
+    @GetMapping("/{id-bundle}/payment-service-providers/{psp-tax-code}/recipients")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PublicBundleCISubscriptionsResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @Operation(summary = "Get a paginated list of creditor institution recipients of a private bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    public PublicBundleCISubscriptionsResource getPublicBundleCIRecipients(
+            @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
+            @Parameter(description = "Payment Service Provider's tax code") @PathVariable("psp-tax-code") String pspTaxCode,
+            @Parameter(description = "Subscription status") @RequestParam PublicBundleSubscriptionStatus status,
+            @Parameter(description = "Creditor Institution's tax code, used for filtering results") @RequestParam(required = false) String ciTaxCode,
+            @Parameter(description = "Number of elements in one page") @RequestParam(required = false, defaultValue = "50") Integer limit,
+            @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") Integer page
+    ) {
+        return commissionBundleService.getPrivateBundleCIRecipients(idBundle, pspTaxCode, status, ciTaxCode, limit, page);
+    }
+
+    /**
+     * Retrieve the detail of a creditor institution's recipient of a private bundle of a PSP
+     *
+     * @param idBundle   the id of the private bundle
+     * @param pspTaxCode the payment service provider's tax code
+     * @param ciTaxCode  the creditor institution's tax code
+     * @param status     the status of the subscription
+     * @return the detail of a creditor institution's recipient
+     */
+    @GetMapping("/{id-bundle}/payment-service-providers/{psp-tax-code}/recipients/{ci-tax-code}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PublicBundleCISubscriptionsDetail.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @Operation(summary = "Get the detail of a creditor institution recipient of a private bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    public PublicBundleCISubscriptionsDetail getPublicBundleCIRecipientDetail(
+            @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
+            @Parameter(description = "Payment Service Provider's tax code") @PathVariable("psp-tax-code") String pspTaxCode,
+            @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
+            @Parameter(description = "Subscription status") @RequestParam PublicBundleSubscriptionStatus status
+    ) {
+        return commissionBundleService.getPublicBundleCIRecipientDetail(idBundle, pspTaxCode, ciTaxCode, status);
     }
 }
