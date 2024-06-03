@@ -125,6 +125,17 @@ public interface GecClient {
             @RequestParam(required = false) Integer page
     );
 
+    @GetMapping(value = "/psps/{psp-code}/offers")
+    @ResponseBody
+    @Valid
+    BundleOffers getPrivateBundleOffersByPSP(
+            @PathVariable("psp-code") String pspCode,
+            @RequestParam(name = "ciFiscalCode", required = false) String ciTaxCode,
+            @RequestParam(required = false) String idBundle,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer page
+    );
+
     @GetMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/creditorInstitutions")
     @ResponseBody
     @Valid
