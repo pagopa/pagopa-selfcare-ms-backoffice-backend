@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Make Release
         id: release
-        uses: pagopa/github-actions-template/maven-release@create-tag-only
+        uses: pagopa/github-actions-template/maven-release@v1.13.3
         with:
           semver: buildNumber
           github_token: ${{ secrets.BOT_TOKEN_GITHUB }}
