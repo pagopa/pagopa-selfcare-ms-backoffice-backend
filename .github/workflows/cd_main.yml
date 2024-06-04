@@ -57,7 +57,7 @@ jobs:
     steps:
       - name: Make Release
         id: release
-        uses: pagopa/github-actions-template/maven-release@473d7a78d28e15cab46dcaf766087e60604d6a40 # v1.13.3
+        uses: pagopa/github-actions-template/maven-release@v1.14.1
         with:
           semver: ${{ needs.setup.outputs.semver }}
           github_token: ${{ secrets.BOT_TOKEN_GITHUB }}
