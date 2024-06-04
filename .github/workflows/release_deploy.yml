@@ -113,51 +113,6 @@ jobs:
           prerelease: ${{ needs.setup.outputs.environment != 'prod' }}
           only_tag: ${{ needs.setup.outputs.environment == 'dev' }}
 
-      - name: Checkout code
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4 # required to make the script available for next step
-      - name: Generate Release Notes for Latest
-        id: generate_notes
-        if: ${{ needs.setup.outputs.environment == 'prod' }}
-        uses: actions/github-script@211cb3fefb35a799baa5156f9321bb774fe56294 # v5
-        env:
-          TAG: ${{ steps.release.outputs.version }}
-          PRERELEASE: false
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const { TAG, PRERELEASE } = process.env
-
-            console.log(TAG, PRERELEASE);
-
-            var startingRelease = await github.rest.repos.getLatestRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            }); 
-            console.log(startingRelease);
-
-            var releaseNotes = await github.rest.repos.generateReleaseNotes({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: TAG,
-              previous_tag_name: startingRelease.data.tag_name
-            });
-            console.log(releaseNotes);   
-            
-            var targetRelease = await github.rest.repos.getReleaseByTag({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag: TAG,
-            });
-            console.log(targetRelease); 
-            
-            await github.rest.repos.updateRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: targetRelease.data.id,
-              body: releaseNotes.data.body,
-              prerelease: PRERELEASE
-            });
-
   image:
     needs: [ setup, release ]
     name: Build and Push Docker Image

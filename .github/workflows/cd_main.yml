@@ -119,7 +119,7 @@ jobs:
         id: generate_notes
         uses: actions/github-script@211cb3fefb35a799baa5156f9321bb774fe56294 # v5
         env:
-          RELEASE_TAG: ${{ needs.pre_release.outputs.version }}
+          TAG: ${{ needs.pre_release.outputs.version }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
