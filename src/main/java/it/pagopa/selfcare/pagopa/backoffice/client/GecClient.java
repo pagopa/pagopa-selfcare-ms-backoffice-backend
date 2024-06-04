@@ -130,7 +130,7 @@ public interface GecClient {
     @Valid
     BundleOffers getPrivateBundleOffersByPSP(
             @PathVariable("psp-code") String pspCode,
-            @RequestParam(name = "ciFiscalCode", required = false) String ciTaxCode,
+            @RequestParam(required = false) String ciTaxCode,
             @RequestParam(required = false) String idBundle,
             @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) Integer page
