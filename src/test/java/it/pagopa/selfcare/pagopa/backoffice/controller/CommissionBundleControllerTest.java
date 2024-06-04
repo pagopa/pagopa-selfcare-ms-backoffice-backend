@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -257,25 +258,55 @@ class CommissionBundleControllerTest {
     }
 
     @Test
-    void getPublicBundleCISubscriptions() throws Exception {
+    void getBundleCISubscriptionsWithAcceptedStatus() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions";
         mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE)
+                        .param("bundleType", BundleType.PUBLIC.name())
                         .param("status", BundleSubscriptionStatus.ACCEPTED.name())
                         .param("limit", "10")
                         .param("page", "0")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
-        verify(service).getPublicBundleCISubscriptions(BUNDLE_ID, PSP_TAX_CODE, BundleSubscriptionStatus.ACCEPTED, null, 10, 0);
+        verify(service).getAcceptedBundleCISubscriptions(BUNDLE_ID, PSP_TAX_CODE, null, 10, 0);
+        verify(service, never()).getWaitingBundleCISubscriptions(BUNDLE_ID, PSP_TAX_CODE, BundleType.PUBLIC, null, 10, 0);
     }
 
     @Test
-    void getPublicBundleCISubscriptionsDetail() throws Exception {
+    void getBundleCISubscriptionsWithWaitingStatus() throws Exception {
+        String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions";
+        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE)
+                        .param("bundleType", BundleType.PUBLIC.name())
+                        .param("status", BundleSubscriptionStatus.WAITING.name())
+                        .param("limit", "10")
+                        .param("page", "0")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        verify(service, never()).getAcceptedBundleCISubscriptions(BUNDLE_ID, PSP_TAX_CODE, null, 10, 0);
+        verify(service).getWaitingBundleCISubscriptions(BUNDLE_ID, PSP_TAX_CODE, BundleType.PUBLIC, null, 10, 0);
+    }
+
+    @Test
+    void getBundleCISubscriptionsDetailWithAcceptedStatus() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}";
         mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE)
+                        .param("bundleType", BundleType.PUBLIC.name())
                         .param("status", BundleSubscriptionStatus.ACCEPTED.name())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
-        verify(service).getPublicBundleCISubscriptionsDetail(BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE, BundleSubscriptionStatus.ACCEPTED);
+        verify(service).getAcceptedBundleCISubscriptionsDetail(BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE);
+        verify(service, never()).getWaitingBundleCISubscriptionsDetail(BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE, BundleType.PUBLIC);
+    }
+
+    @Test
+    void getBundleCISubscriptionsDetailWithWaitingStatus() throws Exception {
+        String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}";
+        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE)
+                        .param("bundleType", BundleType.PUBLIC.name())
+                        .param("status", BundleSubscriptionStatus.WAITING.name())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        verify(service, never()).getAcceptedBundleCISubscriptionsDetail(BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE);
+        verify(service).getWaitingBundleCISubscriptionsDetail(BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE, BundleType.PUBLIC);
     }
 
     @Test
@@ -309,28 +340,5 @@ class CommissionBundleControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
         verify(service).createCIBundleRequest(CI_TAX_CODE, bundleRequest, BUNDLE_NAME);
-    }
-
-
-    @Test
-    void getPrivateBundleCIRecipients() throws Exception {
-        String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/recipients";
-        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE)
-                        .param("status", BundleSubscriptionStatus.ACCEPTED.name())
-                        .param("limit", "10")
-                        .param("page", "0")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
-        verify(service).getPrivateBundleCIRecipients(BUNDLE_ID, PSP_TAX_CODE, BundleSubscriptionStatus.ACCEPTED, null, 10, 0);
-    }
-
-    @Test
-    void getPrivateBundleCIRecipientDetail() throws Exception {
-        String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/recipients/{ci-tax-code}";
-        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE)
-                        .param("status", BundleSubscriptionStatus.ACCEPTED.name())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
-        verify(service).getPrivateBundleCIRecipientDetail(BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE, BundleSubscriptionStatus.ACCEPTED);
     }
 }

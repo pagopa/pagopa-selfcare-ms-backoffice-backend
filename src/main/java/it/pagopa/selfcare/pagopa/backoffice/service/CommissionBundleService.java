@@ -200,78 +200,134 @@ public class CommissionBundleService {
     }
 
     /**
-     * Retrieve a paginated list of creditor institution's info that have requested a subscription ({@link BundleSubscriptionStatus#WAITING})
-     * or are subscribed ({@link BundleSubscriptionStatus#ACCEPTED}) to a public bundle of a PSP
+     * Retrieve a paginated list of creditor institution's info that are subscribed ({@link BundleSubscriptionStatus#ACCEPTED})
+     * to a public/private bundle of a PSP
      *
      * @param idBundle   the id of the public bundle
      * @param pspTaxCode the payment service provider's tax code
-     * @param status     the status of the subscription
      * @param ciTaxCode  the creditor institution's tax code
      * @param limit      the size of the page
      * @param page       the page number
      * @return a paginated list of creditor institution's info
      */
-    public CIBundleSubscriptionsResource getPublicBundleCISubscriptions(
+    public CIBundleSubscriptionsResource getAcceptedBundleCISubscriptions(
             String idBundle,
             String pspTaxCode,
-            BundleSubscriptionStatus status,
             String ciTaxCode,
             Integer limit,
             Integer page
     ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
-        PageInfo pageInfo;
-        List<CISubscriptionInfo> ciSubscriptionInfoList;
 
-        if (status.equals(BundleSubscriptionStatus.ACCEPTED)) {
-            BundleCreditorInstitutionResource acceptedSubscription = this.gecClient
-                    .getBundleSubscriptionByPSP(pspCode, idBundle, ciTaxCode, limit, page);
+        BundleCreditorInstitutionResource acceptedSubscription = this.gecClient
+                .getBundleSubscriptionByPSP(pspCode, idBundle, ciTaxCode, limit, page);
 
-            List<CreditorInstitutionInfo> ciInfoList = getCIInfo(acceptedSubscription);
-            ciSubscriptionInfoList = buildCISubscriptionInfoList(ciInfoList, acceptedSubscription);
-            pageInfo = acceptedSubscription.getPageInfo();
-        } else {
-            PublicBundleRequests subscriptionRequest = this.gecClient
-                    .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, limit, page);
-
-            List<CreditorInstitutionInfo> ciInfoList = getCIInfo(subscriptionRequest);
-            ciSubscriptionInfoList = buildCISubscriptionInfoList(ciInfoList);
-            pageInfo = subscriptionRequest.getPageInfo();
-        }
+        List<CreditorInstitutionInfo> ciInfoList = getCIInfo(acceptedSubscription);
+        List<CISubscriptionInfo> ciSubscriptionInfoList = buildCISubscriptionInfoList(ciInfoList, acceptedSubscription);
 
         return CIBundleSubscriptionsResource.builder()
                 .ciSubscriptionInfoList(ciSubscriptionInfoList)
+                .pageInfo(acceptedSubscription.getPageInfo())
+                .build();
+    }
+
+    /**
+     * Retrieve a paginated list of creditor institution's info that have requested a subscription ({@link BundleSubscriptionStatus#WAITING})
+     * to a public/private bundle of a PSP
+     *
+     * @param idBundle   the id of the public bundle
+     * @param pspTaxCode the payment service provider's tax code
+     * @param bundleType the status of the subscription
+     * @param ciTaxCode  the creditor institution's tax code
+     * @param limit      the size of the page
+     * @param page       the page number
+     * @return a paginated list of creditor institution's info
+     */
+    public CIBundleSubscriptionsResource getWaitingBundleCISubscriptions(
+            String idBundle,
+            String pspTaxCode,
+            BundleType bundleType,
+            String ciTaxCode,
+            Integer limit,
+            Integer page
+    ) {
+        if (bundleType == null || BundleType.GLOBAL.equals(bundleType)) {
+            throw new AppException(AppError.BUNDLE_SUBSCRIPTION_BAD_REQUEST);
+        }
+
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
+        PageInfo pageInfo;
+        List<CreditorInstitutionInfo> ciInfoList;
+
+        if (BundleType.PUBLIC.equals(bundleType)) {
+            PublicBundleRequests subscriptionRequest = this.gecClient
+                    .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, limit, page);
+
+            ciInfoList = getCIInfo(subscriptionRequest);
+            pageInfo = subscriptionRequest.getPageInfo();
+        } else {
+            BundleOffers offers = this.gecClient
+                    .getPrivateBundleOffersByPSP(pspCode, ciTaxCode, idBundle, limit, page);
+
+            ciInfoList = getCIInfo(offers);
+            pageInfo = offers.getPageInfo();
+        }
+
+        return CIBundleSubscriptionsResource.builder()
+                .ciSubscriptionInfoList(buildCISubscriptionInfoList(ciInfoList))
                 .pageInfo(pageInfo)
                 .build();
     }
 
     /**
-     * Retrieve the detail of a creditor institution's subscription to a public bundle, included the specified taxonomies
+     * Retrieve the detail of a creditor institution's subscribed to a public/private bundle, included the specified taxonomies
      *
      * @param idBundle   the id of the public bundle
      * @param pspTaxCode the payment service provider's tax code
      * @param ciTaxCode  the creditor institution's tax code
-     * @param status     the status of the subscription
      * @return the detail of a creditor institution's subscription
      */
-    public CIBundleSubscriptionsDetail getPublicBundleCISubscriptionsDetail(
+    public CIBundleSubscriptionsDetail getAcceptedBundleCISubscriptionsDetail(
+            String idBundle,
+            String pspTaxCode,
+            String ciTaxCode
+    ) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
+
+        CiBundleDetails ciBundleDetails = this.gecClient.getBundleSubscriptionDetailByPSP(pspCode, ciTaxCode, idBundle);
+        List<CIBundleFee> ciBundleFeeList = getCIBundleFeeList(ciBundleDetails.getAttributes());
+
+        return CIBundleSubscriptionsDetail.builder()
+                .ciBundleFeeList(ciBundleFeeList)
+                .idCIBundle(ciBundleDetails.getIdCIBundle())
+                .build();
+    }
+
+    /**
+     * Retrieve the detail of a creditor institution's subscription to a public/private bundle, included the specified taxonomies
+     *
+     * @param idBundle   the id of the public bundle
+     * @param pspTaxCode the payment service provider's tax code
+     * @param ciTaxCode  the creditor institution's tax code
+     * @param bundleType the type of the bundle
+     * @return the detail of a creditor institution's subscription
+     */
+    public CIBundleSubscriptionsDetail getWaitingBundleCISubscriptionsDetail(
             String idBundle,
             String pspTaxCode,
             String ciTaxCode,
-            BundleSubscriptionStatus status
+            BundleType bundleType
     ) {
+        if (bundleType == null || BundleType.GLOBAL.equals(bundleType)) {
+            throw new AppException(AppError.BUNDLE_SUBSCRIPTION_BAD_REQUEST);
+        }
+
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
         List<CIBundleFee> ciBundleFeeList = Collections.emptyList();
         String bundleRequestId = null;
-        String idCIBundle = null;
+        String bundleOfferId = null;
 
-        if (status.equals(BundleSubscriptionStatus.ACCEPTED)) {
-            CiBundleDetails ciBundleDetails = this.gecClient
-                    .getBundleSubscriptionDetailByPSP(pspCode, ciTaxCode, idBundle);
-
-            ciBundleFeeList = getCIBundleFeeList(ciBundleDetails.getAttributes());
-            idCIBundle = ciBundleDetails.getIdCIBundle();
-        } else {
+        if (BundleType.PUBLIC.equals(bundleType)) {
             PublicBundleRequests subscriptionRequest = this.gecClient
                     .getPublicBundleSubscriptionRequestByPSP(pspCode, ciTaxCode, idBundle, 1, 0);
 
@@ -281,12 +337,18 @@ public class CommissionBundleService {
                 ciBundleFeeList = getCIBundleFeeList(publicBundleRequest.getCiBundleAttributes());
                 bundleRequestId = publicBundleRequest.getId();
             }
+        } else {
+            BundleOffers offers = this.gecClient.getPrivateBundleOffersByPSP(pspCode, ciTaxCode, idBundle, 1, 0);
+
+            if (!offers.getOffers().isEmpty()) {
+                bundleOfferId = offers.getOffers().get(0).getId();
+            }
         }
 
         return CIBundleSubscriptionsDetail.builder()
                 .ciBundleFeeList(ciBundleFeeList)
                 .bundleRequestId(bundleRequestId)
-                .idCIBundle(idCIBundle)
+                .bundleOfferId(bundleOfferId)
                 .build();
     }
 
@@ -339,92 +401,6 @@ public class CommissionBundleService {
 
             awsSesClient.sendEmail(messageDetail);
         }
-    }
-
-    /**
-     * Retrieve a paginated list of creditor institution's info that have an offer ({@link BundleSubscriptionStatus#WAITING})
-     * or are subscribed ({@link BundleSubscriptionStatus#ACCEPTED}) to a public bundle of a PSP
-     *
-     * @param idBundle   the id of the public bundle
-     * @param pspTaxCode the payment service provider's tax code
-     * @param status     the status of the subscription
-     * @param ciTaxCode  the creditor institution's tax code
-     * @param limit      the size of the page
-     * @param page       the page number
-     * @return a paginated list of creditor institution's info
-     */
-    public CIBundleSubscriptionsResource getPrivateBundleCIRecipients(
-            String idBundle,
-            String pspTaxCode,
-            BundleSubscriptionStatus status,
-            String ciTaxCode,
-            Integer limit,
-            Integer page
-    ) {
-        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
-        PageInfo pageInfo;
-        List<CISubscriptionInfo> ciSubscriptionInfoList;
-
-        if (status.equals(BundleSubscriptionStatus.ACCEPTED)) {
-            BundleCreditorInstitutionResource acceptedSubscription = this.gecClient
-                    .getBundleSubscriptionByPSP(pspCode, idBundle, ciTaxCode, limit, page);
-
-            List<CreditorInstitutionInfo> ciInfoList = getCIInfo(acceptedSubscription);
-            ciSubscriptionInfoList = buildCISubscriptionInfoList(ciInfoList, acceptedSubscription);
-            pageInfo = acceptedSubscription.getPageInfo();
-        } else {
-            BundleOffers subscriptionRequest = this.gecClient
-                    .getPrivateBundleOffersByPSP(pspCode, ciTaxCode, idBundle, limit, page);
-
-            List<CreditorInstitutionInfo> ciInfoList = getCIInfo(subscriptionRequest);
-            ciSubscriptionInfoList = buildCISubscriptionInfoList(ciInfoList);
-            pageInfo = subscriptionRequest.getPageInfo();
-        }
-
-        return CIBundleSubscriptionsResource.builder()
-                .ciSubscriptionInfoList(ciSubscriptionInfoList)
-                .pageInfo(pageInfo)
-                .build();
-    }
-
-    /**
-     * Retrieve the detail of a creditor institution's subscription to a public bundle, included the specified taxonomies
-     *
-     * @param idBundle   the id of the public bundle
-     * @param pspTaxCode the payment service provider's tax code
-     * @param ciTaxCode  the creditor institution's tax code
-     * @param status     the status of the subscription
-     * @return the detail of a creditor institution's subscription
-     */
-    public CIBundleSubscriptionsDetail getPrivateBundleCIRecipientDetail(
-            String idBundle,
-            String pspTaxCode,
-            String ciTaxCode,
-            BundleSubscriptionStatus status
-    ) {
-        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
-        List<CIBundleFee> ciBundleFeeList = Collections.emptyList();
-        String bundleOfferId = null;
-        String idCIBundle = null;
-
-        if (status.equals(BundleSubscriptionStatus.ACCEPTED)) {
-            CiBundleDetails ciBundleDetails = this.gecClient.getBundleSubscriptionDetailByPSP(pspCode, ciTaxCode, idBundle);
-
-            ciBundleFeeList = getCIBundleFeeList(ciBundleDetails.getAttributes());
-            idCIBundle = ciBundleDetails.getIdCIBundle();
-        } else {
-            BundleOffers offers = this.gecClient.getPrivateBundleOffersByPSP(pspCode, ciTaxCode, idBundle, 1, 0);
-
-            if (!offers.getOffers().isEmpty()) {
-                bundleOfferId = offers.getOffers().get(0).getId();
-            }
-        }
-
-        return CIBundleSubscriptionsDetail.builder()
-                .ciBundleFeeList(ciBundleFeeList)
-                .bundleOfferId(bundleOfferId)
-                .idCIBundle(idCIBundle)
-                .build();
     }
 
     private Context buildEmailHtmlBodyContext(String bundleName) {
