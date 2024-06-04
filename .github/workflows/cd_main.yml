@@ -61,7 +61,7 @@ jobs:
         with:
           semver: ${{ needs.setup.outputs.semver }}
           github_token: ${{ secrets.BOT_TOKEN_GITHUB }}
-          beta: ${{ inputs.beta }}
+          beta: false
           skip_ci: true
           prerelease: true
           only_tag: false
