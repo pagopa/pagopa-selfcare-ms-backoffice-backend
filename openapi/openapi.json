@@ -2044,7 +2044,7 @@
             }
           },
           {
-            "description": "Commission bundle's type",
+            "description": "Commission bundle's type (Required only for subscription with status WAITING",
             "in": "query",
             "name": "bundleType",
             "required": false,
@@ -2203,7 +2203,7 @@
             "JWT": []
           }
         ],
-        "summary": "Get a paginated list of creditor institution's subscriptions to a public bundle of a PSP",
+        "summary": "Get a paginated list of creditor institution's subscriptions to a public/private bundle of a PSP",
         "tags": [
           "Commission bundles"
         ]
@@ -2252,7 +2252,7 @@
             }
           },
           {
-            "description": "Commission bundle's type",
+            "description": "Commission bundle's type (Required only for subscription with status WAITING",
             "in": "query",
             "name": "bundleType",
             "required": false,
