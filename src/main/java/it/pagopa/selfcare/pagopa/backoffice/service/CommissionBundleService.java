@@ -252,7 +252,7 @@ public class CommissionBundleService {
             Integer page
     ) {
         if (bundleType == null || BundleType.GLOBAL.equals(bundleType)) {
-            throw new AppException(AppError.BUNDLE_SUBSCRIPTION_BAD_REQUEST);
+            throw new AppException(bundleType == null ? AppError.BUNDLE_SUBSCRIPTION_TYPE_NULL_BAD_REQUEST : AppError.BUNDLE_SUBSCRIPTION_BAD_REQUEST);
         }
 
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
@@ -319,7 +319,7 @@ public class CommissionBundleService {
             BundleType bundleType
     ) {
         if (bundleType == null || BundleType.GLOBAL.equals(bundleType)) {
-            throw new AppException(AppError.BUNDLE_SUBSCRIPTION_BAD_REQUEST);
+            throw new AppException(bundleType == null ? AppError.BUNDLE_SUBSCRIPTION_TYPE_NULL_BAD_REQUEST : AppError.BUNDLE_SUBSCRIPTION_BAD_REQUEST);
         }
 
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
