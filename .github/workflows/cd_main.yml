@@ -64,6 +64,7 @@ jobs:
           beta: ${{ inputs.beta }}
           skip_ci: true
           prerelease: true
+          only_tag: false
 
   image:
     needs: [ setup, pre_release ]
