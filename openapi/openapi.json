@@ -2020,358 +2020,10 @@
         ]
       }
     },
-    "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/recipients": {
-      "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId": "getPrivateBundleCIRecipients",
-        "parameters": [
-          {
-            "description": "Commission bundle's id",
-            "in": "path",
-            "name": "id-bundle",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Payment Service Provider's tax code",
-            "in": "path",
-            "name": "psp-tax-code",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Subscription status",
-            "in": "query",
-            "name": "status",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "WAITING",
-                "ACCEPTED"
-              ]
-            }
-          },
-          {
-            "description": "Creditor Institution's tax code, used for filtering results",
-            "in": "query",
-            "name": "ciTaxCode",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Number of elements in one page",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 50
-            }
-          },
-          {
-            "description": "Page number",
-            "in": "query",
-            "name": "page",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CIBundleSubscriptionsResource"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Bad Request",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Not found",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too many requests",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Service unavailable",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Get a paginated list of creditor institution recipients of a private bundle of a PSP",
-        "tags": [
-          "Commission bundles"
-        ]
-      },
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ]
-    },
-    "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/recipients/{ci-tax-code}": {
-      "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId": "getPrivateBundleCIRecipientDetail",
-        "parameters": [
-          {
-            "description": "Commission bundle's id",
-            "in": "path",
-            "name": "id-bundle",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Payment Service Provider's tax code",
-            "in": "path",
-            "name": "psp-tax-code",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Creditor institution's tax code",
-            "in": "path",
-            "name": "ci-tax-code",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Subscription status",
-            "in": "query",
-            "name": "status",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "WAITING",
-                "ACCEPTED"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CIBundleSubscriptionsDetail"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Bad Request",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Not found",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too many requests",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Service unavailable",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Get the detail of a creditor institution recipient of a private bundle of a PSP",
-        "tags": [
-          "Commission bundles"
-        ]
-      },
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ]
-    },
     "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId": "getPublicBundleCISubscriptions",
+        "operationId": "getBundleCISubscriptions",
         "parameters": [
           {
             "description": "Commission bundle's id",
@@ -2389,6 +2041,20 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "description": "Commission bundle's type",
+            "in": "query",
+            "name": "bundleType",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "GLOBAL",
+                "PUBLIC",
+                "PRIVATE"
+              ]
             }
           },
           {
@@ -2556,7 +2222,7 @@
     "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId": "getPublicBundleCISubscriptionsDetail",
+        "operationId": "getBundleCISubscriptionsDetail",
         "parameters": [
           {
             "description": "Commission bundle's id",
@@ -2583,6 +2249,20 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "description": "Commission bundle's type",
+            "in": "query",
+            "name": "bundleType",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "GLOBAL",
+                "PUBLIC",
+                "PRIVATE"
+              ]
             }
           },
           {
@@ -2700,7 +2380,7 @@
             "JWT": []
           }
         ],
-        "summary": "Get the detail of a creditor institution's subscription to a public bundle of a PSP",
+        "summary": "Get the detail of a creditor institution's subscription to a public/private bundle of a PSP",
         "tags": [
           "Commission bundles"
         ]
@@ -11616,6 +11296,10 @@
             "type": "string",
             "description": "CI info"
           },
+          "logo": {
+            "type": "string",
+            "description": "Existing logo url"
+          },
           "organization": {
             "type": "string",
             "description": "CI organization unit managing the payment "
@@ -11631,6 +11315,10 @@
           "posteAuth": {
             "type": "string",
             "description": "Poste auth code"
+          },
+          "posteNane": {
+            "type": "string",
+            "description": "Poste name"
           },
           "taxCode": {
             "type": "string",
