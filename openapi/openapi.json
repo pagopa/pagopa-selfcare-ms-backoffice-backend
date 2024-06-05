@@ -2914,6 +2914,152 @@
         }
       ]
     },
+    "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/offers/{bundle-offer-id}": {
+      "delete": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "deletePrivateBundleOffer",
+        "parameters": [
+          {
+            "description": "Commission bundle's id",
+            "in": "path",
+            "name": "id-bundle",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Payment Service Provider's tax code",
+            "in": "path",
+            "name": "psp-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Id of the private bundle offer",
+            "in": "path",
+            "name": "bundle-offer-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {}
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Delete private bundle offer",
+        "tags": [
+          "Commission bundles"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
     "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
