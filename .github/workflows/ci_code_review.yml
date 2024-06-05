@@ -46,6 +46,26 @@ jobs:
           cpd_exclusions: "**/model/**,**/entity/*"
           java_version: 17
 
+  image:
+    needs: [ code-review ]
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and Push
+        uses: pagopa/github-actions-template/ghcr-build-push@v1.5.4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.event.number }}
+
+  deploy:
+    name: Deploy in DEV
+    needs: [ image ]
+    uses: ./.github/workflows/deploy_with_github_runner.yml
+    with:
+      environment: 'dev'
+      options: '--set=fullnameOverride=pagopaselfcaremsbackofficebackend-${{ github.event.number }} --set=image.tag=${{ github.event.number }} --set=ingress.path=/selfcare/pagopa/${{ github.event.number }}/(.*)'
+    secrets: inherit
+
   smoke_test:
     name: Smoke Test
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'

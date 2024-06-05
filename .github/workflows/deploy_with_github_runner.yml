@@ -7,6 +7,11 @@ on:
         required: true
         description: The name of the environment where to deploy
         type: string
+      options:
+        default: ''
+        required: false
+        type: string
+        description: 'helm upgrade options'
 
 env:
   APP_NAME: pagopaselfcaremsbackofficebackend
@@ -56,8 +61,7 @@ jobs:
           cluster_name: ${{ vars.CLUSTER_NAME }}
           resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
           app_name: ${{ env.APP_NAME }}
-          helm_upgrade_options: "--debug"
-          timeout: "10m0s"
+          helm_upgrade_options: "--debug ${{inputs.options}}"
 
   cleanup_runner:
     name: Cleanup Runner
