@@ -1,10 +1,10 @@
 {
-  "openapi": "3.0.1",
-  "info": {
-    "description": "Microservice to manage PagoPA Backoffice",
-    "termsOfService": "https://www.pagopa.gov.it/",
-    "title": "SelfCare Backoffice",
-    "version": "2.14.0-15-next"
+  "openapi" : "3.0.1",
+  "info" : {
+    "description" : "Microservice to manage PagoPA Backoffice",
+    "termsOfService" : "https://www.pagopa.gov.it/",
+    "title" : "SelfCare Backoffice",
+    "version" : "2.14.0-13-next"
   },
   "servers" : [ {
     "url" : "http://localhost:8080"
@@ -3384,36 +3384,33 @@
         "tags" : [ "Creditor institutions" ]
       }
     },
-    "/creditor-institutions/stations/{station-code}": {
-      "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId": "getAvailableCreditorInstitutionsForStation",
-        "parameters": [
-          {
-            "description": "Station's code",
-            "in": "path",
-            "name": "station-code",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Broker's unique id",
-            "in": "query",
-            "name": "brokerId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+    "/creditor-institutions/stations/{station-code}" : {
+      "get" : {
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
+        "operationId" : "getAvailableCreditorInstitutionsForStation",
+        "parameters" : [ {
+          "description" : "Station's code",
+          "in" : "path",
+          "name" : "station-code",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreditorInstitutionInfoResource"
+        }, {
+          "description" : "Broker's unique id",
+          "in" : "query",
+          "name" : "brokerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CreditorInstitutionInfoResource"
                 }
               }
             },
@@ -5006,110 +5003,25 @@
         }
       } ]
     },
-    "/institutions": {
-      "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "getInstitutions",
-        "parameters": [
-          {
-            "description": "filter by the tax code of the Creditor Institution",
-            "in": "query",
-            "name": "tax-code",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
+    "/institutions" : {
+      "get" : {
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId" : "getInstitutions",
+        "parameters" : [ {
+          "description" : "filter by the tax code of the Creditor Institution",
+          "in" : "query",
+          "name" : "tax-code",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InstitutionDetailResource"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Retrieves all the onboarded institutions related to the logged user",
-        "tags": [
-          "Institutions"
-        ]
-      },
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ]
-    },
-    "/institutions/delegations": {
-      "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "getBrokerDelegation",
-        "parameters": [
-          {
-            "description": "Institution's unique internal identifier",
-            "in": "query",
-            "name": "institution-id",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Broker's unique id",
-            "in": "query",
-            "name": "brokerId",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Broker's role to consider when filtering institution types",
-            "in": "query",
-            "name": "roles",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": [
-                  "CI",
-                  "PSP",
-                  "PT",
-                  "OTHER"
-                ]
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DelegationResource"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InstitutionDetailResource"
                 }
               }
             },
@@ -5255,124 +5167,99 @@
         }
       } ]
     },
-    "/institutions/{institution-id}/api-keys": {
-      "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "getInstitutionApiKeys",
-        "parameters": [
-          {
-            "description": "Institution's unique internal identifier",
-            "in": "path",
-            "name": "institution-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+    "/institutions/{institution-id}/api-keys" : {
+      "get" : {
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId" : "getInstitutionApiKeys",
+        "parameters" : [ {
+          "description" : "Institution's unique internal identifier",
+          "in" : "path",
+          "name" : "institution-id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InstitutionApiKeysResource"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InstitutionApiKeysResource"
                 }
               }
             },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
+            "description" : "OK",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
+                "schema" : {
+                  "type" : "string"
                 }
               }
             }
           }
         },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Retrieve an institution's key pair, including primary and secondary keys",
-        "tags": [
-          "Institutions"
-        ]
+        "security" : [ {
+          "JWT" : [ ]
+        } ],
+        "summary" : "Retrieve an institution's key pair, including primary and secondary keys",
+        "tags" : [ "Institutions" ]
       },
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
+      "parameters" : [ {
+        "description" : "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+        "in" : "header",
+        "name" : "X-Request-Id",
+        "schema" : {
+          "type" : "string"
         }
-      ],
-      "post": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "createInstitutionApiKeys",
-        "parameters": [
-          {
-            "description": "Institution's unique internal identifier",
-            "in": "path",
-            "name": "institution-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Subscription's unique internal identifier",
-            "in": "query",
-            "name": "subscription-code",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "NODOAUTH",
-                "GPD",
-                "GPD_REP",
-                "GPD_PAY",
-                "BIZ",
-                "FDR_ORG",
-                "FDR_PSP",
-                "BO_EXT_EC",
-                "BO_EXT_PSP"
-              ]
-            }
+      } ],
+      "post" : {
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId" : "createInstitutionApiKeys",
+        "parameters" : [ {
+          "description" : "Institution's unique internal identifier",
+          "in" : "path",
+          "name" : "institution-id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InstitutionApiKeysResource"
+        }, {
+          "description" : "Subscription's unique internal identifier",
+          "in" : "query",
+          "name" : "subscription-code",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "NODOAUTH", "GPD", "GPD_REP", "GPD_PAY", "BIZ", "FDR_ORG", "FDR_PSP", "BO_EXT_EC", "BO_EXT_PSP" ]
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InstitutionApiKeysResource"
                 }
               }
             },
-            "description": "Created",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
+            "description" : "Created",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
+                "schema" : {
+                  "type" : "string"
                 }
               }
             }
           }
         },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Creates a new subscription for a given Institution and returns its primary and secondary keys",
-        "tags": [
-          "Institutions"
-        ]
+        "security" : [ {
+          "JWT" : [ ]
+        } ],
+        "summary" : "Creates a new subscription for a given Institution and returns its primary and secondary keys",
+        "tags" : [ "Institutions" ]
       }
     },
     "/institutions/{institution-id}/api-keys/{subscription-id}/primary/regenerate" : {
@@ -5473,27 +5360,25 @@
         "tags" : [ "Institutions" ]
       }
     },
-    "/institutions/{institution-id}/products": {
-      "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "getInstitutionProducts",
-        "parameters": [
-          {
-            "description": "Institution's unique internal identifier",
-            "in": "path",
-            "name": "institution-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+    "/institutions/{institution-id}/products" : {
+      "get" : {
+        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId" : "getInstitutionProducts",
+        "parameters" : [ {
+          "description" : "Institution's unique internal identifier",
+          "in" : "path",
+          "name" : "institution-id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
           }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProductResource"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProductResource"
                 }
               }
             },
@@ -8848,313 +8733,13 @@
           }
         }
       },
-      "CreditorInstitutionAndBrokerDto": {
-        "required": [
-          "brokerDto",
-          "creditorInstitutionDto"
-        ],
-        "type": "object",
-        "properties": {
-          "brokerDto": {
-            "$ref": "#/components/schemas/BrokerDto"
-          },
-          "creditorInstitutionDto": {
-            "$ref": "#/components/schemas/CreditorInstitutionDto"
-          }
-        }
-      },
-      "CreditorInstitutionContactsResource": {
-        "type": "object",
-        "properties": {
-          "ci_payment_contacts": {
-            "type": "array",
-            "description": "Creditor institution's payment contacts",
-            "items": {
-              "$ref": "#/components/schemas/CIPaymentContact"
-            }
-          },
-          "operative_table": {
-            "$ref": "#/components/schemas/TavoloOpResource"
-          }
-        }
-      },
-      "CreditorInstitutionDetailsResource": {
-        "required": [
-          "address",
-          "businessName",
-          "creditorInstitutionCode",
-          "enabled",
-          "pspPayment",
-          "reportingFtp",
-          "reportingZip"
-        ],
-        "type": "object",
-        "properties": {
-          "address": {
-            "$ref": "#/components/schemas/CreditorInstitutionAddressResource"
-          },
-          "applicationCode": {
-            "type": "string",
-            "description": "ApplicationCode"
-          },
-          "auxDigit": {
-            "type": "string",
-            "description": "AuxDigit maximum:3 minimum:0"
-          },
-          "broadcast": {
-            "type": "boolean",
-            "description": "Broadcast"
-          },
-          "businessName": {
-            "type": "string",
-            "description": "Creditor Institution's business name"
-          },
-          "cbillCode": {
-            "type": "string",
-            "description": "Creditor Institution's CBill interbank code"
-          },
-          "creditorInstitutionCode": {
-            "maxLength": 30,
-            "minLength": 0,
-            "type": "string",
-            "description": "Creditor Institution's code(Fiscal Code)"
-          },
-          "enabled": {
-            "type": "boolean",
-            "description": "Creditor Institution activation state on ApiConfig"
-          },
-          "mod4": {
-            "type": "string",
-            "description": "Mod4"
-          },
-          "pspPayment": {
-            "type": "boolean",
-            "description": "Enables the zipping of the content that goes through fstp"
-          },
-          "reportingFtp": {
-            "type": "boolean",
-            "description": "Enables the zipping of the content that goes through fstp"
-          },
-          "reportingZip": {
-            "type": "boolean",
-            "description": "Enables the zipping of the content that goes through fstp"
-          },
-          "segregationCode": {
-            "type": "string",
-            "description": "SegregationCode"
-          }
-        }
-      },
-      "CreditorInstitutionDto": {
-        "required": [
-          "address",
-          "businessName",
-          "creditorInstitutionCode",
-          "enabled",
-          "pspPayment",
-          "reportingFtp",
-          "reportingZip"
-        ],
-        "type": "object",
-        "properties": {
-          "address": {
-            "$ref": "#/components/schemas/CreditorInstitutionAddressDto"
-          },
-          "businessName": {
-            "type": "string",
-            "description": "Creditor Institution's business name"
-          },
-          "cbillCode": {
-            "type": "string",
-            "description": "Creditor Institution's CBill interbank code",
-            "example": "ABCDE"
-          },
-          "creditorInstitutionCode": {
-            "maxLength": 30,
-            "minLength": 0,
-            "type": "string",
-            "description": "Creditor Institution's code(Fiscal Code)"
-          },
-          "enabled": {
-            "type": "boolean",
-            "description": "Creditor Institution activation state on ApiConfig"
-          },
-          "pspPayment": {
-            "type": "boolean",
-            "description": "Creditor Institution's is a psp Payment broker"
-          },
-          "reportingFtp": {
-            "type": "boolean",
-            "description": "Enables flow towards Creditor Institution in fstp mode"
-          },
-          "reportingZip": {
-            "type": "boolean",
-            "description": "Enables the zipping of the content that goes through fstp"
-          }
-        }
-      },
-      "CreditorInstitutionInfo": {
-        "required": [
-          "business_name",
-          "ci_tax_code"
-        ],
-        "type": "object",
-        "properties": {
-          "business_name": {
-            "type": "string",
-            "description": "The business name of the creditor institution",
-            "example": "Comune di Roma"
-          },
-          "ci_tax_code": {
-            "type": "string",
-            "description": "The tax code of the creditor institution",
-            "example": "02438750586"
-          }
-        }
-      },
-      "CreditorInstitutionInfoResource": {
-        "type": "object",
-        "properties": {
-          "creditor_institution_info_list": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CreditorInstitutionInfo"
-            }
-          }
-        }
-      },
-      "CreditorInstitutionResource": {
-        "required": [
-          "businessName",
-          "creditorInstitutionCode",
-          "enabled"
-        ],
-        "type": "object",
-        "properties": {
-          "applicationCode": {
-            "type": "string",
-            "description": "ApplicationCode"
-          },
-          "auxDigit": {
-            "type": "string",
-            "description": "AuxDigit maximum:3 minimum:0"
-          },
-          "broadcast": {
-            "type": "boolean",
-            "description": "Broadcast"
-          },
-          "businessName": {
-            "type": "string",
-            "description": "Creditor Institution's business name"
-          },
-          "cbillCode": {
-            "type": "string",
-            "description": "Creditor Institution's CBill interbank code"
-          },
-          "creditorInstitutionCode": {
-            "maxLength": 30,
-            "minLength": 0,
-            "type": "string",
-            "description": "Creditor Institution's code(Fiscal Code)"
-          },
-          "enabled": {
-            "type": "boolean",
-            "description": "Creditor Institution activation state on ApiConfig"
-          },
-          "mod4": {
-            "type": "string",
-            "description": "Mod4"
-          },
-          "segregationCode": {
-            "type": "string",
-            "description": "SegregationCode"
-          }
-        },
-        "description": "A list of Creditor Institution's"
-      },
-      "CreditorInstitutionStationDto": {
-        "required": [
-          "auxDigit",
-          "broadcast",
-          "segregationCode",
-          "stationCode"
-        ],
-        "type": "object",
-        "properties": {
-          "applicationCode": {
-            "type": "integer",
-            "description": "Station's application code",
-            "format": "int64"
-          },
-          "auxDigit": {
-            "type": "integer",
-            "description": "Station's auxiliary digit",
-            "format": "int64"
-          },
-          "broadcast": {
-            "type": "boolean",
-            "description": "Station's broadcast enabled"
-          },
-          "mod4": {
-            "type": "boolean",
-            "description": "Station's mod 4 enabled"
-          },
-          "segregationCode": {
-            "type": "string",
-            "description": "Station's segregation code number"
-          },
-          "stationCode": {
-            "type": "string",
-            "description": "Station's unique identifier"
-          }
-        }
-      },
-      "CreditorInstitutionStationEditResource": {
-        "required": [
-          "stationCode"
-        ],
-        "type": "object",
-        "properties": {
-          "applicationCode": {
-            "type": "integer",
-            "description": "Station's application code",
-            "format": "int64"
-          },
-          "auxDigit": {
-            "type": "integer",
-            "description": "Station's auxiliary digit",
-            "format": "int64"
-          },
-          "broadcast": {
-            "type": "boolean",
-            "description": "Station's broadcast enabled"
-          },
-          "mod4": {
-            "type": "boolean",
-            "description": "Station's mod 4 enabled"
-          },
-          "segregationCode": {
-            "type": "string",
-            "description": "Station's segregation code number"
-          },
-          "stationCode": {
-            "type": "string",
-            "description": "Station's unique identifier"
-          }
-        }
-      },
-      "CreditorInstitutionsResource": {
-        "required": [
-          "creditor_institutions",
-          "page_info"
-        ],
-        "type": "object",
-        "properties": {
-          "creditor_institutions": {
-            "type": "array",
-            "description": "A list of Creditor Institution's",
-            "items": {
-              "$ref": "#/components/schemas/CreditorInstitutionResource"
+      "CIBundlesResource" : {
+        "type" : "object",
+        "properties" : {
+          "bundles" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CIBundleResource"
             }
           },
           "pageInfo" : {
@@ -9189,38 +8774,19 @@
             "type" : "string",
             "description" : "User's surname"
           },
-          "tax_code": {
-            "type": "string",
-            "description": "tax code"
-          },
-          "type": {
-            "type": "string",
-            "description": "delegation type"
+          "user_tax_code" : {
+            "type" : "string",
+            "description" : "User's tax code"
           }
-        }
+        },
+        "description" : "Creditor institution's payment contacts"
       },
-      "DelegationResource": {
-        "type": "object",
-        "properties": {
-          "delegation_list": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Delegation"
-            }
-          }
-        }
-      },
-      "DpoData": {
-        "required": [
-          "address",
-          "email",
-          "pec"
-        ],
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "description": "DPO's address"
+      "CISubscriptionInfo" : {
+        "type" : "object",
+        "properties" : {
+          "business_name" : {
+            "type" : "string",
+            "description" : "Creditor Institution's business name"
           },
           "creditor_institution_code" : {
             "type" : "string",
@@ -9253,436 +8819,9 @@
             "type" : "string",
             "description" : "Broker description. Read only field"
           },
-          "iban": {
-            "type": "string",
-            "description": "The IBAN code"
-          },
-          "is_active": {
-            "type": "boolean",
-            "description": "True if the IBAN is active"
-          },
-          "labels": {
-            "type": "array",
-            "description": "The labels array associated with the IBAN",
-            "items": {
-              "$ref": "#/components/schemas/IbanLabel"
-            }
-          },
-          "publication_date": {
-            "type": "string",
-            "description": "The date on which the IBAN has been inserted in the system"
-          },
-          "validity_date": {
-            "type": "string",
-            "description": "The date the Creditor Institution wants the IBAN to be used for its payments"
-          }
-        }
-      },
-      "IbanCreate": {
-        "required": [
-          "due_date",
-          "iban",
-          "is_active",
-          "validity_date"
-        ],
-        "type": "object",
-        "properties": {
-          "description": {
-            "type": "string",
-            "description": "The description the Creditor Institution gives to the iban about its usage"
-          },
-          "due_date": {
-            "type": "string",
-            "description": "The date on which the iban will expire",
-            "format": "date"
-          },
-          "iban": {
-            "type": "string",
-            "description": "the iban code"
-          },
-          "is_active": {
-            "type": "boolean",
-            "description": "True if the iban is active"
-          },
-          "labels": {
-            "type": "array",
-            "description": "The labels array associated with the iban",
-            "items": {
-              "$ref": "#/components/schemas/IbanLabel"
-            }
-          },
-          "validity_date": {
-            "type": "string",
-            "description": "The date the Creditor Institution wants the iban to be used for its payments",
-            "format": "date"
-          }
-        }
-      },
-      "IbanLabel": {
-        "type": "object",
-        "properties": {
-          "description": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "description": "The labels array associated with the IBAN"
-      },
-      "Ibans": {
-        "required": [
-          "ibans_enhanced"
-        ],
-        "type": "object",
-        "properties": {
-          "ibans_enhanced": {
-            "type": "array",
-            "description": "Creditor Institution's IBAN objects",
-            "items": {
-              "$ref": "#/components/schemas/Iban"
-            }
-          }
-        }
-      },
-      "Institution": {
-        "required": [
-          "attributes",
-          "description",
-          "external_id",
-          "id",
-          "institution_type",
-          "origin",
-          "origin_id",
-          "tax_code",
-          "zip_code"
-        ],
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "description": "Institution's physical address"
-          },
-          "attributes": {
-            "type": "array",
-            "description": "Institution's attributes",
-            "items": {
-              "$ref": "#/components/schemas/Attribute"
-            }
-          },
-          "description": {
-            "type": "string",
-            "description": "Institution's name"
-          },
-          "digital_address": {
-            "type": "string",
-            "description": "Institution's digitalAddress"
-          },
-          "external_id": {
-            "type": "string",
-            "description": "Institution's unique external identifier"
-          },
-          "id": {
-            "type": "string",
-            "description": "Institution's unique internal identifier"
-          },
-          "institution_type": {
-            "type": "string",
-            "description": "Institution's type",
-            "enum": [
-              "AS",
-              "PA",
-              "GSP",
-              "PT",
-              "PG",
-              "SCP",
-              "PSP",
-              "SA"
-            ]
-          },
-          "origin": {
-            "type": "string",
-            "description": "Institution data origin"
-          },
-          "origin_id": {
-            "type": "string",
-            "description": "Institution's details origin Id"
-          },
-          "tax_code": {
-            "type": "string",
-            "description": "Institution's taxCode"
-          },
-          "zip_code": {
-            "type": "string",
-            "description": "Institution's zipCode"
-          }
-        }
-      },
-      "InstitutionApiKeys": {
-        "required": [
-          "displayName",
-          "id",
-          "primaryKey",
-          "secondaryKey"
-        ],
-        "type": "object",
-        "properties": {
-          "displayName": {
-            "type": "string",
-            "description": "Institution's name Api Key"
-          },
-          "id": {
-            "type": "string",
-            "description": "Institution's subscription id"
-          },
-          "primaryKey": {
-            "type": "string",
-            "description": "Institution's primary Api Key"
-          },
-          "secondaryKey": {
-            "type": "string",
-            "description": "Institution's secondary Api Key"
-          }
-        }
-      },
-      "InstitutionApiKeysResource": {
-        "type": "object",
-        "properties": {
-          "institution_api_key_list": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/InstitutionApiKeys"
-            }
-          }
-        }
-      },
-      "InstitutionDetail": {
-        "required": [
-          "address",
-          "external_id",
-          "id",
-          "name",
-          "origin",
-          "origin_id",
-          "status",
-          "tax_code",
-          "user_product_roles"
-        ],
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "description": "Institution's physical address"
-          },
-          "assistance_contacts": {
-            "$ref": "#/components/schemas/AssistanceContact"
-          },
-          "company_informations": {
-            "$ref": "#/components/schemas/CompanyInformation"
-          },
-          "dpo_data": {
-            "$ref": "#/components/schemas/DpoData"
-          },
-          "external_id": {
-            "type": "string",
-            "description": "Institution's unique external identifier"
-          },
-          "id": {
-            "type": "string",
-            "description": "Institution's unique internal identifier"
-          },
-          "institution_type": {
-            "type": "string",
-            "description": "Institution's type",
-            "enum": [
-              "AS",
-              "PA",
-              "GSP",
-              "PT",
-              "PG",
-              "SCP",
-              "PSP",
-              "SA"
-            ]
-          },
-          "mail_address": {
-            "type": "string",
-            "description": "Institution's digitalAddress"
-          },
-          "name": {
-            "type": "string",
-            "description": "Institution's name"
-          },
-          "origin": {
-            "type": "string",
-            "description": "Institution data origin"
-          },
-          "origin_id": {
-            "type": "string",
-            "description": "Institution's details origin Id"
-          },
-          "psp_data": {
-            "$ref": "#/components/schemas/PspData"
-          },
-          "recipient_code": {
-            "type": "string",
-            "description": "Billing recipient code"
-          },
-          "status": {
-            "type": "string",
-            "description": "Institution onboarding status"
-          },
-          "tax_code": {
-            "type": "string",
-            "description": "Institution's taxCode"
-          },
-          "user_product_roles": {
-            "type": "array",
-            "description": "Logged user's roles on product",
-            "items": {
-              "type": "string",
-              "description": "Logged user's roles on product",
-              "enum": [
-                "admin, operator"
-              ]
-            },
-            "enum": [
-              "admin, operator"
-            ]
-          }
-        }
-      },
-      "InstitutionDetailResource": {
-        "type": "object",
-        "properties": {
-          "institution_detail_list": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/InstitutionDetail"
-            }
-          }
-        }
-      },
-      "InstitutionUploadData": {
-        "required": [
-          "appChannel",
-          "cbill",
-          "fullName",
-          "info",
-          "taxCode",
-          "webChannel"
-        ],
-        "type": "object",
-        "properties": {
-          "appChannel": {
-            "type": "boolean",
-            "description": "Boolean to refer if it has a web channel"
-          },
-          "cbill": {
-            "type": "string",
-            "description": "CI cbill"
-          },
-          "fullName": {
-            "type": "string",
-            "description": "CI full name"
-          },
-          "info": {
-            "type": "string",
-            "description": "CI info"
-          },
-          "organization": {
-            "type": "string",
-            "description": "CI organization unit managing the payment "
-          },
-          "physicalChannel": {
-            "type": "string",
-            "description": "CI physical channel data"
-          },
-          "posteAccountNumber": {
-            "type": "string",
-            "description": "Poste account number"
-          },
-          "posteAuth": {
-            "type": "string",
-            "description": "Poste auth code"
-          },
-          "taxCode": {
-            "type": "string",
-            "description": "CI tax code"
-          },
-          "webChannel": {
-            "type": "boolean",
-            "description": "Boolean to refer if it has a web channel"
-          }
-        },
-        "description": "String containing the json data to upload "
-      },
-      "MaintenanceMessage": {
-        "required": [
-          "bannerMessage",
-          "pageMessage"
-        ],
-        "type": "object",
-        "properties": {
-          "bannerMessage": {
-            "type": "string",
-            "description": "Maintenance banner message"
-          },
-          "pageMessage": {
-            "type": "string",
-            "description": "Maintenance page message"
-          }
-        }
-      },
-      "OperatorStationReview": {
-        "type": "object",
-        "properties": {
-          "note": {
-            "type": "string",
-            "description": "Operator review note"
-          }
-        }
-      },
-      "PSPBundleResource": {
-        "required": [
-          "bundleTaxonomies"
-        ],
-        "type": "object",
-        "properties": {
-          "bundleTaxonomies": {
-            "type": "array",
-            "description": "List of taxonomies that relates to the bundle",
-            "items": {
-              "$ref": "#/components/schemas/PSPBundleTaxonomy"
-            }
-          },
-          "description": {
-            "type": "string"
-          },
-          "digitalStamp": {
-            "type": "boolean",
-            "description": "If the payment needs a tax stamp, mutually exclusive with digitalStampRestriction"
-          },
-          "digitalStampRestriction": {
-            "type": "boolean",
-            "description": "If the payment can be payed only with a tax stamp, mutually exclusive with digitalStamp"
-          },
-          "idBrokerPsp": {
-            "type": "string",
-            "description": "TaxCode of the linked broker PSP"
-          },
-          "idBundle": {
-            "type": "string",
-            "description": "Bundle's id"
-          },
-          "idChannel": {
-            "type": "string",
-            "description": "ID of the linked channel"
-          },
-          "insertedDate": {
-            "type": "string",
-            "description": "Date of creation",
-            "format": "date-time"
+          "broker_psp_code" : {
+            "type" : "string",
+            "description" : " psp code"
           },
           "card_chart" : {
             "type" : "boolean",
@@ -10160,110 +9299,11 @@
             "type" : "string",
             "description" : "Channel code"
           },
-          "title": {
-            "type": "string",
-            "description": "A short, summary of the problem type. Written in english and readable for engineers (usually not suited for non technical stakeholders and not localized); example: Service Unavailable"
-          }
-        }
-      },
-      "Product": {
-        "required": [
-          "description",
-          "id",
-          "title"
-        ],
-        "type": "object",
-        "properties": {
-          "description": {
-            "type": "string",
-            "description": "Product's description"
-          },
-          "id": {
-            "type": "string",
-            "description": "Product's unique identifier"
-          },
-          "title": {
-            "type": "string",
-            "description": "Product's title"
-          },
-          "url_bo": {
-            "type": "string",
-            "description": "URL that redirects to the back-office section, where is possible to manage the product"
-          },
-          "url_public": {
-            "type": "string",
-            "description": "URL that redirects to the public information webpage of the product"
-          }
-        }
-      },
-      "ProductResource": {
-        "type": "object",
-        "properties": {
-          "product_list": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Product"
-            }
-          }
-        }
-      },
-      "PspChannelPaymentTypes": {
-        "required": [
-          "payment_types"
-        ],
-        "type": "object",
-        "properties": {
-          "payment_types": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+          "enabled" : {
+            "type" : "boolean"
           }
         },
-        "description": " List of payment types"
-      },
-      "PspChannelPaymentTypesResource": {
-        "required": [
-          "payment_types"
-        ],
-        "type": "object",
-        "properties": {
-          "payment_types": {
-            "type": "array",
-            "description": " List of payment types",
-            "items": {
-              "type": "string",
-              "description": " List of payment types"
-            }
-          }
-        }
-      },
-      "PspChannelResource": {
-        "required": [
-          "channel_code",
-          "enabled",
-          "payment_types"
-        ],
-        "type": "object",
-        "properties": {
-          "channel_code": {
-            "type": "string",
-            "description": "Channel's unique identifier"
-          },
-          "enabled": {
-            "type": "boolean",
-            "description": "Channel enabled"
-          },
-          "payment_types": {
-            "type": "array",
-            "description": "List of payment types",
-            "items": {
-              "type": "string",
-              "description": "List of payment types"
-            }
-          }
-        },
-        "description": " Channel list"
+        "description" : "list of psp and ec channels"
       },
       "ChannelsResource" : {
         "required" : [ "channels", "page_info" ],
