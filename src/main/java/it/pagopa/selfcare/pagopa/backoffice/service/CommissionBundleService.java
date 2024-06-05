@@ -341,6 +341,18 @@ public class CommissionBundleService {
         }
     }
 
+    /**
+     * Delete a payment service provider's private bundle offer
+     *
+     * @param idBundle private bundle id
+     * @param pspTaxCode payment service provider's tax code
+     * @param bundleOfferId id of the bundle offer
+     */
+    public void deletePrivateBundleOffer(String idBundle, String pspTaxCode, String bundleOfferId) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
+        this.gecClient.deletePrivateBundleOffer(pspCode, idBundle, bundleOfferId);
+    }
+
     private Context buildEmailHtmlBodyContext(String bundleName) {
         // Thymeleaf Context
         Context context = new Context();
