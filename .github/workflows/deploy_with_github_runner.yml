@@ -25,6 +25,10 @@ on:
         required: false
         default: ''
         type: string
+      pr_number:
+        required: false
+        default: ''
+        type: string
 
 env:
   APP_NAME: pagopaselfcaremsbackofficebackend
@@ -102,6 +106,16 @@ jobs:
     name: Update OpenAPI
     environment: ${{ inputs.environment }}
     steps:
+      - name: Checkout
+        id: checkout
+        # from https://github.com/actions/checkout/commits/main
+        uses: actions/checkout@1f9a0c22da41e6ebfa534300ef656657ea2c6707
+
+      - shell: bash
+        if: ${{ inputs.pr_number != '' }}
+        run: |
+          mv ./infra/04_apim_api_staging.tf.disabled ./infra/04_apim_api_staging.tf 
+          echo "pr_number=\"${{ inputs.pr_number }}\"" >> ./infra/env/dev/terraform.tfvars
 
       - name: Setup Terraform
         # from https://github.com/hashicorp/setup-terraform/commits/main
