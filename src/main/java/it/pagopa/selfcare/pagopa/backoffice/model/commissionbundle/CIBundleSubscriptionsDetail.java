@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PublicBundleCISubscriptionsDetail {
+public class CIBundleSubscriptionsDetail {
 
     @JsonProperty("ci_bundle_fee_list")
     @Schema(description = "Creditor Institution's fees details")
@@ -25,6 +25,10 @@ public class PublicBundleCISubscriptionsDetail {
     @JsonProperty("bundle_request_id")
     @Schema(description = "Public bundle request id")
     private String bundleRequestId;
+
+    @JsonProperty("bundle_offer_id")
+    @Schema(description = "Public bundle offer id")
+    private String bundleOfferId;
 
     @JsonProperty("ci_bundle_id")
     @Schema(description = "Subscription's id of a creditor institution to a public bundle")

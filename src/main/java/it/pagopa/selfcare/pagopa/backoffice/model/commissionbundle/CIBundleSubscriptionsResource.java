@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PublicBundleCISubscriptionsResource {
+public class CIBundleSubscriptionsResource {
 
     @JsonProperty("creditor_institutions_subscriptions")
     private List<CISubscriptionInfo> ciSubscriptionInfoList;

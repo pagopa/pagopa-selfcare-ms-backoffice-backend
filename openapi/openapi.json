@@ -3,8 +3,8 @@
   "info": {
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "title": "SelfCare Backoffice 423",
-    "version": "423"
+    "title": "SelfCare Backoffice",
+    "version": "2.13.18-3-next"
   },
   "servers": [
     {
@@ -2169,7 +2169,7 @@
     "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId": "getPublicBundleCISubscriptions",
+        "operationId": "getBundleCISubscriptions",
         "parameters": [
           {
             "description": "Commission bundle's id",
@@ -2187,6 +2187,20 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "description": "Commission bundle's type (Required only for subscription with status WAITING",
+            "in": "query",
+            "name": "bundleType",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "GLOBAL",
+                "PUBLIC",
+                "PRIVATE"
+              ]
             }
           },
           {
@@ -2239,7 +2253,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PublicBundleCISubscriptionsResource"
+                  "$ref": "#/components/schemas/CIBundleSubscriptionsResource"
                 }
               }
             },
@@ -2335,7 +2349,7 @@
             "JWT": []
           }
         ],
-        "summary": "Get a paginated list of creditor institution's subscriptions to a public bundle of a PSP",
+        "summary": "Get a paginated list of creditor institution's subscriptions to a public/private bundle of a PSP",
         "tags": [
           "Commission bundles"
         ]
@@ -2351,10 +2365,10 @@
         }
       ]
     },
-    "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}/detail": {
+    "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId": "getPublicBundleCISubscriptionsDetail",
+        "operationId": "getBundleCISubscriptionsDetail",
         "parameters": [
           {
             "description": "Commission bundle's id",
@@ -2384,6 +2398,20 @@
             }
           },
           {
+            "description": "Commission bundle's type (Required only for subscription with status WAITING",
+            "in": "query",
+            "name": "bundleType",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "GLOBAL",
+                "PUBLIC",
+                "PRIVATE"
+              ]
+            }
+          },
+          {
             "description": "Subscription status",
             "in": "query",
             "name": "status",
@@ -2402,7 +2430,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PublicBundleCISubscriptionsDetail"
+                  "$ref": "#/components/schemas/CIBundleSubscriptionsDetail"
                 }
               }
             },
@@ -2498,7 +2526,7 @@
             "JWT": []
           }
         ],
-        "summary": "Get the detail of a creditor institution's subscription to a public bundle of a PSP",
+        "summary": "Get the detail of a creditor institution's subscription to a public/private bundle of a PSP",
         "tags": [
           "Commission bundles"
         ]
@@ -9886,6 +9914,44 @@
           }
         }
       },
+      "CIBundleSubscriptionsDetail": {
+        "type": "object",
+        "properties": {
+          "bundle_offer_id": {
+            "type": "string",
+            "description": "Public bundle offer id"
+          },
+          "bundle_request_id": {
+            "type": "string",
+            "description": "Public bundle request id"
+          },
+          "ci_bundle_fee_list": {
+            "type": "array",
+            "description": "Creditor Institution's fees details",
+            "items": {
+              "$ref": "#/components/schemas/CIBundleFee"
+            }
+          },
+          "ci_bundle_id": {
+            "type": "string",
+            "description": "Subscription's id of a creditor institution to a public bundle"
+          }
+        }
+      },
+      "CIBundleSubscriptionsResource": {
+        "type": "object",
+        "properties": {
+          "creditor_institutions_subscriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CISubscriptionInfo"
+            }
+          },
+          "page_info": {
+            "$ref": "#/components/schemas/PageInfo"
+          }
+        }
+      },
       "CIBundlesResource": {
         "type": "object",
         "properties": {
@@ -11957,40 +12023,6 @@
           }
         },
         "description": "Payment Service Provider (PSP) specific data"
-      },
-      "PublicBundleCISubscriptionsDetail": {
-        "type": "object",
-        "properties": {
-          "bundle_request_id": {
-            "type": "string",
-            "description": "Public bundle request id"
-          },
-          "ci_bundle_fee_list": {
-            "type": "array",
-            "description": "Creditor Institution's fees details",
-            "items": {
-              "$ref": "#/components/schemas/CIBundleFee"
-            }
-          },
-          "ci_bundle_id": {
-            "type": "string",
-            "description": "Subscription's id of a creditor institution to a public bundle"
-          }
-        }
-      },
-      "PublicBundleCISubscriptionsResource": {
-        "type": "object",
-        "properties": {
-          "creditor_institutions_subscriptions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CISubscriptionInfo"
-            }
-          },
-          "page_info": {
-            "$ref": "#/components/schemas/PageInfo"
-          }
-        }
       },
       "PublicBundleRequest": {
         "required": [
