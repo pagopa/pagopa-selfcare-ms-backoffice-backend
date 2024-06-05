@@ -75,6 +75,7 @@ jobs:
           resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
           app_name: ${{ env.APP_NAME }}${{inputs.suffix_name}}
           helm_upgrade_options: "--debug ${{inputs.helm_options}}"
+          timeout: '10m0s'
 
   cleanup_runner:
     name: Cleanup Runner
