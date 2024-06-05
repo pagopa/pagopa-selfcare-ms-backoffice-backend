@@ -14,6 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.OperatorStationReview;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationCodeResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
@@ -96,7 +97,7 @@ public class StationController {
 
     @GetMapping(value = "/{station-code}/creditor-institutions")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get Creditor Institutions By Station Code", security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Get a paginated list of Creditor Institutions associated to a station", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(
             @Parameter(description = "Station Code") @PathVariable("station-code") String stationCode,
@@ -194,12 +195,32 @@ public class StationController {
         return stationService.updateWrapperStationDetails(stationDetailsDto);
     }
 
-    @PutMapping(value = "/wrapper/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
+    /**
+     * Updates a station wrapper with the operator review's note
+     *
+     * @param stationCode station's code
+     * @param ciTaxCode   creditor institution's tax code that own the station
+     * @param note        operator review note
+     * @return the updated station wrapper
+     */
+    @PutMapping(value = "/wrapper/{station-code}/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Update a WrapperStation on Cosmodb", security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Update a WrapperStation with Operator review", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = StationDetailResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @OpenApiTableMetadata
-    public WrapperEntities updateWrapperStationDetailsByOpt(@RequestBody @Valid StationDetailsDto stationDetailsDto) {
-        return stationService.updateWrapperStationDetailsByOpt(stationDetailsDto);
+    public StationDetailResource updateWrapperStationWithOperatorReview(
+            @Parameter(description = "Station code") @PathVariable(value = "station-code") String stationCode,
+            @Parameter(description = "Creditor institution's tax code that own the station") @RequestParam String ciTaxCode,
+            @RequestBody @Valid OperatorStationReview note
+    ) {
+        return this.stationService.updateWrapperStationWithOperatorReview(stationCode, ciTaxCode, note.getNote());
 
     }
 

@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.OperatorStationReview;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationCodeResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
@@ -49,6 +50,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(username = "user1", password = "pwd", roles = "USER")
 class StationControllerTest {
 
+    private static final String STATION_CODE = "stationCode";
+
     @MockBean
     private StationService stationService;
 
@@ -87,7 +90,7 @@ class StationControllerTest {
     @Test
     void getStation() throws Exception {
         when(stationService.getStation(anyString())).thenReturn(buildStationDetailResource());
-        mvc.perform(get("/stations/{station-code}", "stationCode")
+        mvc.perform(get("/stations/{station-code}", STATION_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
     }
@@ -96,7 +99,7 @@ class StationControllerTest {
     void getCreditorInstitutionsByStationCode() throws Exception {
         when(stationService.getCreditorInstitutionsByStationCode(anyString(), anyInt(), anyInt(), anyString()))
                 .thenReturn(new CreditorInstitutionsResource());
-        mvc.perform(get("/stations/{station-code}/creditor-institutions", "stationCode")
+        mvc.perform(get("/stations/{station-code}/creditor-institutions", STATION_CODE)
                         .param("page", "0")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
@@ -106,7 +109,7 @@ class StationControllerTest {
     void updateStation() throws Exception {
 
         when(stationService.updateStation(any(), anyString())).thenReturn(buildStationDetailResource());
-        mvc.perform(put("/stations/{station-code}", "stationCode")
+        mvc.perform(put("/stations/{station-code}", STATION_CODE)
                         .content(objectMapper.writeValueAsBytes(buildStationDetailsDto()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
@@ -115,7 +118,7 @@ class StationControllerTest {
     @Test
     void getWrapperEntitiesStation() throws Exception {
         when(stationService.getWrapperEntitiesStation(anyString())).thenReturn(new WrapperEntities());
-        mvc.perform(get("/stations/wrapper/{station-code}", "stationCode")
+        mvc.perform(get("/stations/wrapper/{station-code}", STATION_CODE)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
     }
@@ -142,7 +145,7 @@ class StationControllerTest {
 
     @Test
     void getStationCode() throws Exception {
-        when(stationService.getStationCode(anyString(), eq(false))).thenReturn(new StationCodeResource("stationCode"));
+        when(stationService.getStationCode(anyString(), eq(false))).thenReturn(new StationCodeResource(STATION_CODE));
         mvc.perform(get("/stations/station-code")
                         .param("ec-code", "ec-code")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -151,7 +154,7 @@ class StationControllerTest {
 
     @Test
     void getStationCodeV2() throws Exception {
-        when(stationService.getStationCode(anyString(), eq(true))).thenReturn(new StationCodeResource("stationCode"));
+        when(stationService.getStationCode(anyString(), eq(true))).thenReturn(new StationCodeResource(STATION_CODE));
         mvc.perform(get("/stations/station-code/v2")
                         .param("ec-code", "ec-code")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -163,17 +166,19 @@ class StationControllerTest {
         StationDetailsDto dto = buildStationDetailsDto();
 
         when(stationService.updateWrapperStationDetails(any())).thenReturn(new WrapperEntities());
-        mvc.perform(put("/stations/wrapper/{station-code}", "stationCode")
+        mvc.perform(put("/stations/wrapper/{station-code}", STATION_CODE)
                         .content(objectMapper.writeValueAsBytes(dto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
     }
 
     @Test
-    void updateWrapperStationDetailsByOpt() throws Exception {
-        when(stationService.updateWrapperStationDetailsByOpt(any())).thenReturn(new WrapperEntities());
-        mvc.perform(put("/stations/wrapper/operator")
-                        .content(objectMapper.writeValueAsBytes(buildStationDetailsDto()))
+    void updateWrapperStationWithOperatorReview() throws Exception {
+        when(stationService.updateWrapperStationWithOperatorReview(anyString(), anyString(), anyString()))
+                .thenReturn(buildStationDetailResource());
+        mvc.perform(put("/stations/wrapper/{station-code}/operator", STATION_CODE)
+                        .param("ciTaxCode", "ciTaxCode")
+                        .content(objectMapper.writeValueAsBytes(OperatorStationReview.builder().note("note").build()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
     }
@@ -236,7 +241,7 @@ class StationControllerTest {
 
     private @NotNull StationDetailsDto buildStationDetailsDto() {
         StationDetailsDto dto = new StationDetailsDto();
-        dto.setStationCode("stationCode");
+        dto.setStationCode(STATION_CODE);
         dto.setVersion(1L);
         dto.setBrokerCode("brokerCode");
         dto.setPrimitiveVersion(1);
@@ -246,14 +251,14 @@ class StationControllerTest {
     private @NotNull StationDetailResource buildStationDetailResource() {
         StationDetailResource resource = new StationDetailResource();
         resource.setVersion(1L);
-        resource.setStationCode("stationCode");
+        resource.setStationCode(STATION_CODE);
         resource.setAssociatedCreditorInstitutions(1);
         return resource;
     }
 
     private @NotNull WrapperStationsResource buildWrapperStationsResource() {
         WrapperStationResource resource = new WrapperStationResource();
-        resource.setStationCode("stationCode");
+        resource.setStationCode(STATION_CODE);
         resource.setVersion(1L);
         resource.setAssociatedCreditorInstitutions(1);
         resource.setWrapperStatus(WrapperStatus.APPROVED);
@@ -265,7 +270,7 @@ class StationControllerTest {
     private @NotNull WrapperStationDetailsDto buildWrapperStationDetailsDto() {
         WrapperStationDetailsDto dto = new WrapperStationDetailsDto();
         dto.setPrimitiveVersion(1);
-        dto.setStationCode("stationCode");
+        dto.setStationCode(STATION_CODE);
         return dto;
     }
 }
