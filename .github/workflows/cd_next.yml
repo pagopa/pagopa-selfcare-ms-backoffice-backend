@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Make Release
         id: release
-        uses: pagopa/github-actions-template/maven-release@create-tag-only
+        uses: pagopa/github-actions-template/maven-release@v1.14.2
         with:
           semver: buildNumber
           github_token: ${{ secrets.BOT_TOKEN_GITHUB }}
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and Push
-        uses: pagopa/github-actions-template/ghcr-build-push@v1.5.4
+        uses: pagopa/github-actions-template/ghcr-build-push@d91a1fd0b913c9830589be5d86cdb71c90813fae # v1.5.4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ needs.pre_release.outputs.version }}
