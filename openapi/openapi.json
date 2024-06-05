@@ -11462,7 +11462,7 @@
             "type": "string",
             "description": "Poste auth code"
           },
-          "posteNane": {
+          "posteName": {
             "type": "string",
             "description": "Poste name"
           },
