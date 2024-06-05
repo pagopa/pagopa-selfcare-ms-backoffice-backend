@@ -22,6 +22,7 @@ env:
 
 permissions:
   id-token: write
+  packages: write
   contents: write
   deployments: write
   issues: write
