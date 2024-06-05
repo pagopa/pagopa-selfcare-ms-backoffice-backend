@@ -195,4 +195,12 @@ public interface GecClient {
             @PathVariable("ci-tax-code") String ciTaxCode,
             @RequestBody @NotNull PublicBundleRequest bundleRequest
     );
+
+    @DeleteMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/offers/{id-bundle-offer}")
+    @ResponseBody
+    void deletePrivateBundleOffer(
+            @PathVariable("psp-code") String pspCode,
+            @PathVariable("id-bundle") String idBundle,
+            @PathVariable("id-bundle-offer") String idBundleOffer
+    );
 }

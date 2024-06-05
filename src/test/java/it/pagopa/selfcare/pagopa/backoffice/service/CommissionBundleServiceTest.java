@@ -826,6 +826,16 @@ class CommissionBundleServiceTest {
                 sut.createCIBundleRequest(CI_TAX_CODE, bundleRequest, BUNDLE_NAME));
     }
 
+    @Test
+    void deletePrivateBundleOfferSuccess(){
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+
+        assertDoesNotThrow(() ->
+                sut.deletePrivateBundleOffer(ID_BUNDLE, PSP_TAX_CODE, ID_BUNDLE_OFFER));
+
+        verify(gecClient).deletePrivateBundleOffer(PSP_CODE, ID_BUNDLE, ID_BUNDLE_OFFER);
+    }
+
     private PublicBundleRequests buildPspRequests() {
         return PublicBundleRequests.builder()
                 .requestsList(
