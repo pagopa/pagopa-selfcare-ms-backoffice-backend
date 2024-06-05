@@ -175,7 +175,7 @@ public class AllPages {
                 .endpointRT(ci.getEndpointRT())
                 .endpointRedirect(ci.getEndpointRedirect())
                 .endpointMU(ci.getEndpointMU())
-                .versionePrimitive(ci.getVersionePrimitive())
+                .primitiveVersion(ci.getVersionePrimitive())
                 .ciStatus(ci.getCiStatus())
                 .activationDate(activationDate)
                 .version(String.valueOf(ci.getStationVersion()))
