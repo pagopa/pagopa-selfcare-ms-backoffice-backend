@@ -350,7 +350,7 @@ public class CommissionBundleService {
      */
     public void deletePrivateBundleOffer(String idBundle, String pspTaxCode, String bundleOfferId) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
-        this.gecClient.deletePrivateBundleOffer(idBundle, pspCode, bundleOfferId);
+        this.gecClient.deletePrivateBundleOffer(pspCode, idBundle, bundleOfferId);
     }
 
     private Context buildEmailHtmlBodyContext(String bundleName) {
