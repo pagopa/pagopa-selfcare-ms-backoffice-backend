@@ -21,6 +21,10 @@ on:
         required: false
         default: ${{ github.ref_name }}
         type: string
+      suffix_name:
+        required: false
+        default: ''
+        type: string
 
 env:
   APP_NAME: pagopaselfcaremsbackofficebackend
@@ -69,7 +73,7 @@ jobs:
           namespace: ${{ vars.NAMESPACE }}
           cluster_name: ${{ vars.CLUSTER_NAME }}
           resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
-          app_name: ${{ env.APP_NAME }}
+          app_name: ${{ env.APP_NAME }}${{inputs.suffix_name}}
           helm_upgrade_options: "--debug ${{inputs.helm_options}}"
 
   cleanup_runner:
