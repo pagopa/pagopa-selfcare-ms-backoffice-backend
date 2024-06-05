@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.GecFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCIOffers;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleOffers;
@@ -42,6 +43,7 @@ public interface GecClient {
     CiBundles getBundlesByCI(
             @PathVariable("ci-tax-code") String ciTaxCode,
             @RequestParam(required = false) String type,
+            @RequestParam(required = false) String bundleName,
             @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) Integer page
     );
@@ -226,5 +228,15 @@ public interface GecClient {
             @PathVariable("psp-code") String pspCode,
             @PathVariable("id-bundle") String idBundle,
             @PathVariable("id-bundle-offer") String idBundleOffer
+    );
+
+    @GetMapping(value = "/cis/{ci-tax-code}/offers")
+    @ResponseBody
+    BundleCIOffers getOffersByCI(
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @RequestParam(required = false) String idPsp,
+            @RequestParam(required = false) String bundleName,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer page
     );
 }

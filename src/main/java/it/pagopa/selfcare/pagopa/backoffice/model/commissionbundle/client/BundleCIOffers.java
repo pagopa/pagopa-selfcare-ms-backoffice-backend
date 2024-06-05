@@ -1,30 +1,28 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class CiBundles {
+@Builder
+public class BundleCIOffers {
 
-    @JsonProperty("bundles")
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     @Valid
-    private List<CiBundleDetails> bundleDetailsList;
+    private List<CiBundleOffer> offers;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
