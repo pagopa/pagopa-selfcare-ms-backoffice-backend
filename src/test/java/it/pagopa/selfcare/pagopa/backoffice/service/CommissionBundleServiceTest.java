@@ -40,6 +40,7 @@ class CommissionBundleServiceTest {
     private static final String ID_BUNDLE = "idBundle";
     private static final String CI_BUNDLE_ID = "ciBundleId";
     private static final String ID_BUNDLE_REQUEST = "idBundleRequest";
+    private static final String ID_BUNDLE_OFFER = "idBundleOffer";
     private static final String TRANSFER_CATEGORY = "9/0105107TS/";
     private static final String SERVICE_TYPE = "Diritti Pratiche SUAP e SUE";
     public static final String BUNDLE_NAME = "bundleName";
@@ -620,6 +621,16 @@ class CommissionBundleServiceTest {
 
         assertDoesNotThrow(() ->
                 sut.createCIBundleRequest(CI_TAX_CODE, bundleRequest, BUNDLE_NAME));
+    }
+
+    @Test
+    void deletePrivateBundleOfferSuccess(){
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+
+        assertDoesNotThrow(() ->
+                sut.deletePrivateBundleOffer(ID_BUNDLE, PSP_TAX_CODE, ID_BUNDLE_OFFER));
+
+        verify(gecClient).deletePrivateBundleOffer(PSP_CODE, ID_BUNDLE, ID_BUNDLE_OFFER);
     }
 
     private PublicBundleRequests buildPspRequests() {
