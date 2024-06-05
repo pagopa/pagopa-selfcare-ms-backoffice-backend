@@ -47,6 +47,7 @@ module "apim_api_backoffice_api_v1" {
 
   xml_content = templatefile("./policy/_base_policy.xml", {
     hostname = var.hostname
+    version  = "v1"
     origin   = var.env_short == "d" ? "<origin>*</origin>" : "<origin>https://${local.selfcare_fe_hostname}</origin>"
   })
 }
@@ -91,6 +92,7 @@ module "apim_api_backoffice_api_v1_weu_core" {
 
   xml_content = templatefile("./policy/_base_policy.xml", {
     hostname = var.hostname
+    version  = "v1"
     origin   = var.env_short == "d" ? "<origin>*</origin>" : "<origin>https://${local.selfcare_fe_hostname}</origin>"
   })
 }

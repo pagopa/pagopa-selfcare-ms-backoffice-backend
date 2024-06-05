@@ -7,11 +7,20 @@ on:
         required: true
         description: The name of the environment where to deploy
         type: string
-      options:
+      helm_options:
         default: ''
         required: false
         type: string
         description: 'helm upgrade options'
+      terraform_options:
+        default: ''
+        required: false
+        type: string
+        description: 'terraform upgrade options'
+      branch:
+        required: false
+        default: ${{ github.ref_name }}
+        type: string
 
 env:
   APP_NAME: pagopaselfcaremsbackofficebackend
@@ -121,4 +130,4 @@ jobs:
           export ARM_USE_OIDC=true
           export ARM_ACCESS_KEY=$(az storage account keys list --resource-group io-infra-rg --account-name pagopainfraterraform${{inputs.environment}} --query '[0].value' -o tsv)
           bash ./terraform.sh init ${{ inputs.environment }}
-          bash ./terraform.sh apply ${{ inputs.environment }} -auto-approve
+          bash ./terraform.sh apply ${{ inputs.environment }} ${{inputs.terraform_options}} -auto-approve

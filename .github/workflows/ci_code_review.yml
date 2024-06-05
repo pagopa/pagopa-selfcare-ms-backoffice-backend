@@ -30,6 +30,39 @@ permissions:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  print_debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump Inputs
+        env:
+          JSON_INPUTS: ${{ toJson(inputs) }}
+        run: echo "$JSON_INPUTS"
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Dump job context
+        env:
+          JOB_CONTEXT: ${{ toJson(job) }}
+        run: echo "$JOB_CONTEXT"
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+      - name: Dump strategy context
+        env:
+          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+        run: echo "$STRATEGY_CONTEXT"
+      - name: Dump matrix context
+        env:
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+        run: echo "$MATRIX_CONTEXT"
+
   code-review:
     name: Code Review
     # The type of runner that the job will run on
@@ -79,13 +112,21 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      - shell: bash
+        run: |
+          mv ./infra/04_apim_api_staging.tf.disabled ./infra/04_apim_api_staging.tf 
+          echo "pr_number=\"${{ github.event.number }}\"" >> ./infra/env/dev/terraform.tfvars
+      
+
   deploy:
     name: Deploy in DEV
     needs: [ image ]
     uses: ./.github/workflows/deploy_with_github_runner.yml
     with:
       environment: 'dev'
-      options: '--set=fullnameOverride=pagopaselfcaremsbackofficebackend-${{ github.event.number }} --set=image.tag=${{ github.event.number }} --set=ingress.path=/selfcare/pagopa/${{ github.event.number }}/(.*)'
+      branch: ${{ github.head_ref }}
+      helm_options: '--set=fullnameOverride=pagopaselfcaremsbackofficebackend-${{ github.event.number }} --set=image.tag=${{ github.event.number }} --set=ingress.path=/selfcare/pagopa/${{ github.event.number }}/(.*)'
+      terraform_options: '-target=module.apim_api_backoffice_api_staging'
     secrets: inherit
 
   smoke_test:
