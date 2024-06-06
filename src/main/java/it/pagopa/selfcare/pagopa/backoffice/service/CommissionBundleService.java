@@ -248,6 +248,7 @@ public class CommissionBundleService {
 
                             bundleResource.setCiBundleStatus(CIBundleStatus.AVAILABLE);
                             bundleResource.setCiOfferId(offer.getId());
+                            bundleResource.setCiBundleFeeList(getBundleTaxonomies(bundle.getTransferCategoryList(), CIBundleFee.class));
                             return bundleResource;
                         })
                         .toList();
@@ -628,7 +629,6 @@ public class CommissionBundleService {
         bundleResource.setCiBundleId(ciBundleResource.getCiBundleId());
         bundleResource.setCiRequestId(ciBundleResource.getCiRequestId());
         bundleResource.setCiBundleFeeList(ciBundleResource.getCiBundleFeeList());
-        bundleResource.setCiBundleFeeList(ciBundleResource.getCiBundleFeeList()); //TODO DUPLICATED LINE bug?
         return bundleResource;
     }
 
