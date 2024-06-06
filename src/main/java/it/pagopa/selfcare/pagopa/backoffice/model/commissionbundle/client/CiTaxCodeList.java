@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Getter
@@ -17,5 +18,6 @@ import java.util.List;
 public class CiTaxCodeList {
 
     @JsonProperty("ciFiscalCodeList")
+    @NotEmpty
     private List<String> ciTaxCodes;
 }

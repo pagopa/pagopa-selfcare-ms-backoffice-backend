@@ -36,6 +36,8 @@ public class CommissionBundleService {
     private static final String BUNDLE_ACCEPT_SUBSCRIPTION_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto %s è stata accettata.%n%n%n Puoi vedere e gestire il pacchetto da qui ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
     private static final String BUNDLE_REJECT_SUBSCRIPTION_SUBJECT = "Richiesta di adesione rifiutata";
     private static final String BUNDLE_REJECT_SUBSCRIPTION_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto %s è stata rifiutata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
+    private static final String BUNDLE_CREATE_SUBSCRIPTION_OFFER_SUBJECT = "Nuova offerta di attivazione pacchetto commissionale";
+    private static final String BUNDLE_CREATE_SUBSCRIPTION_OFFER_BODY = "Ciao, %n%n%n c'è una nuova offerta di attivazione per il pacchetto commissionale %s.%n%n%n Puoi gestire i tuoi pacchetti qui https://selfcare.platform.pagopa.it/ui/comm-bundles ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
 
     private static final String VALID_FROM_DATE_FORMAT = "yyyy-MM-dd";
 
@@ -139,7 +141,7 @@ public class CommissionBundleService {
                 .destinationUserType(SelfcareProductUser.ADMIN)
                 .build();
 
-        awsSesClient.sendEmail(messageDetail);
+        this.awsSesClient.sendEmail(messageDetail);
     }
 
     /**
@@ -196,7 +198,7 @@ public class CommissionBundleService {
                 .destinationUserType(SelfcareProductUser.ADMIN)
                 .build();
 
-        awsSesClient.sendEmail(messageDetail);
+        this.awsSesClient.sendEmail(messageDetail);
     }
 
     /**
@@ -372,7 +374,7 @@ public class CommissionBundleService {
                     .destinationUserType(SelfcareProductUser.ADMIN)
                     .build();
 
-            awsSesClient.sendEmail(messageDetail);
+            this.awsSesClient.sendEmail(messageDetail);
         }
     }
 
@@ -399,7 +401,7 @@ public class CommissionBundleService {
                     .destinationUserType(SelfcareProductUser.ADMIN)
                     .build();
 
-            awsSesClient.sendEmail(messageDetail);
+            this.awsSesClient.sendEmail(messageDetail);
         }
     }
 
@@ -416,7 +418,7 @@ public class CommissionBundleService {
     }
 
     /**
-     *  Create the subscription offer for the specified private bundle and
+     *  Create the subscription offer for the specified private bundle and notify all the interested creditor institution's
      *
      * @param idBundle the private bundle id
      * @param pspTaxCode Payment Service Provider's tax code
@@ -427,17 +429,18 @@ public class CommissionBundleService {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
         this.gecClient.createPrivateBundleOffer(pspCode, idBundle, ciTaxCodeList);
 
-        // TODO fix email subject and body
-        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
-                .institutionTaxCode(pspTaxCode)
-                .subject(BUNDLE_CREATE_SUBSCRIPTION_REQUEST_SUBJECT)
-                .textBody(String.format(BUNDLE_CREATE_SUBSCRIPTION_REQUEST_BODY, bundleName))
-                .htmlBodyFileName("createBundleSubscriptionRequestEmail.html")
-                .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
-                .destinationUserType(SelfcareProductUser.ADMIN)
-                .build();
-
-        awsSesClient.sendEmail(messageDetail);
+        ciTaxCodeList.getCiTaxCodes().parallelStream()
+                .forEach(ciTaxCode -> {
+                    EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                            .institutionTaxCode(ciTaxCode)
+                            .subject(BUNDLE_CREATE_SUBSCRIPTION_OFFER_SUBJECT)
+                            .textBody(String.format(BUNDLE_CREATE_SUBSCRIPTION_OFFER_BODY, bundleName))
+                            .htmlBodyFileName("createBundleSubscriptionOfferEmail.html")
+                            .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                            .destinationUserType(SelfcareProductUser.ADMIN)
+                            .build();
+                    this.awsSesClient.sendEmail(messageDetail);
+                });
     }
 
     private Context buildEmailHtmlBodyContext(String bundleName) {

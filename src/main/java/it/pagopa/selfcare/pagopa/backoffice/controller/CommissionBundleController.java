@@ -397,7 +397,6 @@ public class CommissionBundleController {
         this.commissionBundleService.deletePrivateBundleOffer(idBundle, pspTaxCode, bundleOfferId);
     }
 
-
     /**
      *  Create the subscription offer for the specified private bundle
      *
