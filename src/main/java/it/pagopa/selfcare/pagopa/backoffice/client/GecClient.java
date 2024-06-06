@@ -203,4 +203,12 @@ public interface GecClient {
             @PathVariable("id-bundle") String idBundle,
             @PathVariable("id-bundle-offer") String idBundleOffer
     );
+
+    @PostMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/offers")
+    @ResponseBody
+    List<BundleOffered> createPrivateBundleOffer(
+            @PathVariable("psp-code") String pspCode,
+            @PathVariable("id-bundle") String idBundle,
+            @RequestBody CiTaxCodeList ciTaxCodeList
+    );
 }

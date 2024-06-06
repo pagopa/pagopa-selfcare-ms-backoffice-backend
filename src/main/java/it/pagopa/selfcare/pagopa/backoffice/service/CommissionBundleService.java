@@ -415,6 +415,31 @@ public class CommissionBundleService {
         this.gecClient.deletePrivateBundleOffer(pspCode, idBundle, bundleOfferId);
     }
 
+    /**
+     *  Create the subscription offer for the specified private bundle and
+     *
+     * @param idBundle the private bundle id
+     * @param pspTaxCode Payment Service Provider's tax code
+     * @param bundleName the private bundle name
+     * @param ciTaxCodeList the list tax code of creditor institutions tha will receive the offer
+     */
+    public void createCIBundleOffers(String idBundle, String pspTaxCode, String bundleName, CiTaxCodeList ciTaxCodeList) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
+        this.gecClient.createPrivateBundleOffer(pspCode, idBundle, ciTaxCodeList);
+
+        // TODO fix email subject and body
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(pspTaxCode)
+                .subject(BUNDLE_CREATE_SUBSCRIPTION_REQUEST_SUBJECT)
+                .textBody(String.format(BUNDLE_CREATE_SUBSCRIPTION_REQUEST_BODY, bundleName))
+                .htmlBodyFileName("createBundleSubscriptionRequestEmail.html")
+                .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                .destinationUserType(SelfcareProductUser.ADMIN)
+                .build();
+
+        awsSesClient.sendEmail(messageDetail);
+    }
+
     private Context buildEmailHtmlBodyContext(String bundleName) {
         // Thymeleaf Context
         Context context = new Context();
