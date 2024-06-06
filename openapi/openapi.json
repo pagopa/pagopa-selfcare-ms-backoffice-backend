@@ -978,7 +978,7 @@
             }
           },
           {
-            "description": "Bundle subscription status",
+            "description": "Bundle subscription status, required in case of private bundle otherwise is not considered",
             "in": "query",
             "name": "status",
             "required": false,
@@ -1000,7 +1000,7 @@
             }
           },
           {
-            "description": "Commission bundle's name",
+            "description": "Commission bundle's name, used to filter out results",
             "in": "query",
             "name": "name",
             "required": false,

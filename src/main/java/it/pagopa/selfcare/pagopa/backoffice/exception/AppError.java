@@ -35,7 +35,8 @@ public enum AppError {
 
     WRAPPER_STATION_INVALID_STATUS(HttpStatus.BAD_REQUEST, "Invalid wrapper Station status", "The requested operation cannot be done. Wrapper station with code %s is not in the expected status"),
     PSP_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "Psp Code Not Found", "No psp code found for taxCode %s"),
-    INVALID_GET_CI_BUNDLES_REQUEST(HttpStatus.BAD_REQUEST, "Invalid get CI bundles request", "Creditor institution's tax code is required to retrieve creditor institution's %s bundles"),
+    INVALID_GET_PUBLIC_CI_BUNDLES_REQUEST(HttpStatus.BAD_REQUEST, "Invalid get CI bundles request", "Creditor institution's tax code is required to retrieve creditor institution's public bundles"),
+    INVALID_GET_PRIVATE_CI_BUNDLES_REQUEST(HttpStatus.BAD_REQUEST, "Invalid get CI bundles request", "Creditor institution's tax code (%s) and subscription status (%s) are required to retrieve creditor institution's private bundles"),
     BUNDLE_SUBSCRIPTION_BAD_REQUEST(HttpStatus.BAD_REQUEST, "Invalid bundle type requested", "Global bundle do not have bundle subscription"),
     BUNDLE_SUBSCRIPTION_TYPE_NULL_BAD_REQUEST(HttpStatus.BAD_REQUEST, "Invalid bundle type requested", "Bundle type is required to retrieve bundle subscription"),
 

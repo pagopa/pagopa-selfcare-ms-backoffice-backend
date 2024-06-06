@@ -180,7 +180,7 @@ public class CommissionBundleService {
      * from the repository instance
      *
      * @param bundleType         the requested type of bundles
-     * @param subscriptionStatus the status of the public/private bundle subscription
+     * @param subscriptionStatus the status of the public/private bundle subscription, required in case of {@link BundleType#PRIVATE} otherwise is optional
      * @param ciTaxCode          creditor institution's tax code, required in case of {@link BundleType#PUBLIC} otherwise is optional and used to filter the results
      * @param limit              page limit parameter
      * @param page               page number parameter
@@ -204,7 +204,7 @@ public class CommissionBundleService {
             bundlesResource = getCIBundlesResource(bundles);
         } else if (bundleType.equals(BundleType.PUBLIC)) {
             if (ciTaxCode == null) {
-                throw new AppException(AppError.INVALID_GET_CI_BUNDLES_REQUEST, bundleType);
+                throw new AppException(AppError.INVALID_GET_PUBLIC_CI_BUNDLES_REQUEST);
             }
             String validFrom = LocalDate.now().format(DateTimeFormatter.ofPattern(VALID_FROM_DATE_FORMAT));
             Bundles bundles = this.gecClient.getBundles(bundleTypes, bundleName, validFrom, limit, page);
@@ -213,8 +213,8 @@ public class CommissionBundleService {
                     .map(bundle -> buildCIBundle(ciTaxCode, bundle))
                     .toList();
         } else if (bundleType.equals(BundleType.PRIVATE)) {
-            if (ciTaxCode == null) {
-                throw new AppException(AppError.INVALID_GET_CI_BUNDLES_REQUEST, bundleType);
+            if (ciTaxCode == null || subscriptionStatus == null) {
+                throw new AppException(AppError.INVALID_GET_PRIVATE_CI_BUNDLES_REQUEST, ciTaxCode, subscriptionStatus);
             }
             if (BundleSubscriptionStatus.ACCEPTED.equals(subscriptionStatus)) {
                 CiBundles bundlesByCI = this.gecClient.getBundlesByCI(ciTaxCode, BundleType.PRIVATE.name(), bundleName, limit, page);
