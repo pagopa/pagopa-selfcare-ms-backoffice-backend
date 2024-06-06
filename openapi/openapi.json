@@ -981,7 +981,7 @@
             "description": "Bundle subscription status",
             "in": "query",
             "name": "status",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string",
               "enum": [
