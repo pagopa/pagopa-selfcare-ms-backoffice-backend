@@ -219,39 +219,12 @@ public class CommissionBundleService {
             if (BundleSubscriptionStatus.ACCEPTED.equals(subscriptionStatus)) {
                 CiBundles bundlesByCI = this.gecClient.getBundlesByCI(ciTaxCode, BundleType.PRIVATE.name(), bundleName, limit, page);
                 pageInfo = bundlesByCI.getPageInfo();
-                bundlesResource = bundlesByCI.getBundleDetailsList().parallelStream()
-                        .map(ciBundle -> {
-                            Bundle bundle = this.gecClient.getBundleDetail(ciBundle.getIdBundle());
-                            CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
-                            CIBundleStatus bundleStatus;
+                bundlesResource = getAcceptedCIPrivateBundleResources(bundlesByCI);
 
-                            if (ciBundle.getValidityDateTo() == null || ciBundle.getValidityDateTo().isAfter(LocalDate.now())) {
-                                bundleStatus = CIBundleStatus.ENABLED;
-                            } else {
-                                bundleStatus = CIBundleStatus.ON_REMOVAL;
-                            }
-
-                            bundleResource.setCiBundleStatus(bundleStatus);
-                            bundleResource.setCiBundleId(ciBundle.getIdCIBundle());
-                            bundleResource.setCiBundleFeeList(getCIBundleFeeList(ciBundle.getAttributes()));
-                            return bundleResource;
-                        })
-                        .toList();
-
-            } else {
+            } else if (BundleSubscriptionStatus.WAITING.equals(subscriptionStatus)){
                 BundleCIOffers bundleOffers = this.gecClient.getOffersByCI(ciTaxCode, null, bundleName, limit, page);
                 pageInfo = bundleOffers.getPageInfo();
-                bundlesResource = bundleOffers.getOffers().parallelStream()
-                        .map(offer -> {
-                            Bundle bundle = this.gecClient.getBundleDetail(offer.getIdBundle());
-                            CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
-
-                            bundleResource.setCiBundleStatus(CIBundleStatus.AVAILABLE);
-                            bundleResource.setCiOfferId(offer.getId());
-                            bundleResource.setCiBundleFeeList(getBundleTaxonomies(bundle.getTransferCategoryList(), CIBundleFee.class));
-                            return bundleResource;
-                        })
-                        .toList();
+                bundlesResource = getWaitingCIPrivateBundleResources(bundleOffers);
             }
         }
         return CIBundlesResource.builder().bundles(bundlesResource).pageInfo(pageInfo).build();
@@ -635,7 +608,7 @@ public class CommissionBundleService {
     private CIBundleResource enrichFromSubscribedCIBundle(String ciTaxCode, String bundleId) {
         CiBundleDetails ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundleId);
         CIBundleStatus bundleStatus;
-        if (ciBundle.getValidityDateTo() == null || ciBundle.getValidityDateTo().isAfter(LocalDate.now())) {
+        if (isCIBundleEnabled(ciBundle)) {
             bundleStatus = CIBundleStatus.ENABLED;
         } else {
             bundleStatus = CIBundleStatus.ON_REMOVAL;
@@ -671,7 +644,46 @@ public class CommissionBundleService {
                 .build();
     }
 
+    private List<CIBundleResource> getWaitingCIPrivateBundleResources(BundleCIOffers bundleOffers) {
+        return bundleOffers.getOffers().parallelStream()
+                .map(offer -> {
+                    Bundle bundle = this.gecClient.getBundleDetail(offer.getIdBundle());
+                    CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
+
+                    bundleResource.setCiBundleStatus(CIBundleStatus.AVAILABLE);
+                    bundleResource.setCiOfferId(offer.getId());
+                    bundleResource.setCiBundleFeeList(getBundleTaxonomies(bundle.getTransferCategoryList(), CIBundleFee.class));
+                    return bundleResource;
+                })
+                .toList();
+    }
+
+    private List<CIBundleResource> getAcceptedCIPrivateBundleResources(CiBundles bundlesByCI) {
+        return bundlesByCI.getBundleDetailsList().parallelStream()
+                .map(ciBundle -> {
+                    Bundle bundle = this.gecClient.getBundleDetail(ciBundle.getIdBundle());
+                    CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
+                    CIBundleStatus bundleStatus;
+
+                    if (isCIBundleEnabled(ciBundle)) {
+                        bundleStatus = CIBundleStatus.ENABLED;
+                    } else {
+                        bundleStatus = CIBundleStatus.ON_REMOVAL;
+                    }
+
+                    bundleResource.setCiBundleStatus(bundleStatus);
+                    bundleResource.setCiBundleId(ciBundle.getIdCIBundle());
+                    bundleResource.setCiBundleFeeList(getCIBundleFeeList(ciBundle.getAttributes()));
+                    return bundleResource;
+                })
+                .toList();
+    }
+
     private boolean isBundleRequested(PublicBundleRequests bundleRequests) {
         return bundleRequests != null && bundleRequests.getPageInfo().getTotalItems() != null && bundleRequests.getPageInfo().getTotalItems() > 0;
+    }
+
+    private boolean isCIBundleEnabled(CiBundleDetails ciBundle) {
+        return ciBundle.getValidityDateTo() == null || ciBundle.getValidityDateTo().isAfter(LocalDate.now());
     }
 }
