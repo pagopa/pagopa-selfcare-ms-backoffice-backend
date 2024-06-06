@@ -175,11 +175,13 @@ public interface ApiConfigClient {
 
     @GetMapping(value = "/creditorinstitutions", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid
-    CreditorInstitutions getCreditorInstitutions(@RequestParam(required = false, defaultValue = "50") Integer limit,
-                                                 @RequestParam(required = true) Integer page,
-                                                 @RequestParam(required = false, name = "code") String ecCode,
-                                                 @RequestParam(required = false, name = "name") String name,
-                                                 @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sorting);
+    CreditorInstitutions getCreditorInstitutions(
+            @RequestParam(required = false, name = "code") String ecCode,
+            @RequestParam(required = false, name = "name") String name,
+            @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sorting,
+            @RequestParam(required = false, defaultValue = "50") Integer limit,
+            @RequestParam Integer page
+    );
 
     @PutMapping(value = "/creditorinstitutions/{creditorinstitutioncode}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid

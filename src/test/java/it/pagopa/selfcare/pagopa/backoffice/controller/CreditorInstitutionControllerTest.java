@@ -49,8 +49,8 @@ class CreditorInstitutionControllerTest {
 
     @Test
     void getCreditorInstitutions() throws Exception {
-        String url = "/creditor-institutions?limit=50&page=0&ci-code=12345&name=comune&sorting=ASC";
-        when(ciService.getCreditorInstitutions(anyInt(), anyInt(), anyString(), anyString(), anyString()))
+        String url = "/creditor-institutions?limit=50&page=0&ciTaxCode=12345&ciName=comune&sorting=ASC";
+        when(ciService.getCreditorInstitutions(anyString(), anyString(), any(), anyInt(), anyInt()))
                 .thenReturn(TestUtil.fileToObject("response/service/get_creditor_institutions_ok.json", CreditorInstitutionsResource.class));
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

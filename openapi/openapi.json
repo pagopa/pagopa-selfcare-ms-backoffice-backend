@@ -3703,39 +3703,18 @@
         "operationId": "getCreditorInstitutions",
         "parameters": [
           {
-            "description": "Number of elements on one page. Default = 50",
+            "description": "Creditor institution's tax code, used to filter out results",
             "in": "query",
-            "name": "limit",
+            "name": "ciTaxCode",
             "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 50
-            }
-          },
-          {
-            "description": "Page number. Page value starts from 0",
-            "in": "query",
-            "name": "page",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "description": "Creditor institution's tax code",
-            "in": "query",
-            "name": "ci-tax-code",
-            "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
-            "description": "Creditor institution's name",
+            "description": "Creditor institution's name, used to filter out results",
             "in": "query",
-            "name": "name",
+            "name": "ciName",
             "required": false,
             "schema": {
               "type": "string"
@@ -3747,7 +3726,34 @@
             "name": "sorting",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "description": "Number of elements on one page",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          },
+          {
+            "description": "Page number",
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
             }
           }
         ],

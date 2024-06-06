@@ -38,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -77,9 +78,10 @@ public class CreditorInstitutionService {
         this.modelMapper = modelMapper;
     }
 
-    public CreditorInstitutionsResource getCreditorInstitutions(Integer limit, Integer page, String ciCode, String name, String sorting) {
-        CreditorInstitutions dto = apiConfigClient.getCreditorInstitutions(limit, page, ciCode, name, sorting);
-        return mapper.toResource(dto);
+    public CreditorInstitutionsResource getCreditorInstitutions(String ciCode, String name, Sort.Direction sorting, Integer limit, Integer page) {
+        String sort = sorting != null ? sorting.name() : null;
+        CreditorInstitutions dto = this.apiConfigClient.getCreditorInstitutions(ciCode, name, sort, limit, page);
+        return this.mapper.toResource(dto);
     }
 
     public CreditorInstitutionDetailsResource getCreditorInstitutionDetails(String ciCode) {
