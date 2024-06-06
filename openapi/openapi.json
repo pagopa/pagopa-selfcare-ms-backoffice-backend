@@ -5622,13 +5622,13 @@
                   "file" : {
                     "type" : "string",
                     "format" : "binary",
-                    "description" : "logo file to upload"
+                    "description" : "logo file to upload (not to send on update unless it is changed)"
                   },
                   "institutions-data" : {
                     "$ref" : "#/components/schemas/InstitutionUploadData"
                   }
                 },
-                "required" : [ "file", "institutions-data" ]
+                "required" : [ "institutions-data" ]
               }
             }
           },
