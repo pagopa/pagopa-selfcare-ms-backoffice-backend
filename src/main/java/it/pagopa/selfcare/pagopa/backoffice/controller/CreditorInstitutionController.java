@@ -75,7 +75,7 @@ public class CreditorInstitutionController {
             @Parameter(description = "Number of elements on one page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
             @Parameter(description = "Page number") @RequestParam @PositiveOrZero @Min(0) Integer page
     ) {
-        return ciService.getCreditorInstitutions(ciTaxCode, ciName, sorting, limit, page);
+        return this.ciService.getCreditorInstitutions(ciTaxCode, ciName, sorting, limit, page);
     }
 
     @GetMapping(value = "/{ci-tax-code}", produces = MediaType.APPLICATION_JSON_VALUE)

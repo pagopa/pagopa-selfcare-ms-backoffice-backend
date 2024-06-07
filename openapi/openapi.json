@@ -11228,17 +11228,17 @@
       },
       "CreditorInstitutionInfo": {
         "required": [
-          "business_name",
-          "ci_tax_code"
+          "businessName",
+          "creditorInstitutionCode"
         ],
         "type": "object",
         "properties": {
-          "business_name": {
+          "businessName": {
             "type": "string",
             "description": "The business name of the creditor institution",
             "example": "Comune di Roma"
           },
-          "ci_tax_code": {
+          "creditorInstitutionCode": {
             "type": "string",
             "description": "The tax code of the creditor institution",
             "example": "02438750586"
