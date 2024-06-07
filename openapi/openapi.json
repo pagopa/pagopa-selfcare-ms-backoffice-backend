@@ -4114,6 +4114,29 @@
             }
           },
           {
+            "description": "Flag that describe if the creditor institution is enabled, used to filter out results",
+            "in": "query",
+            "name": "enabled",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "Order by creditor institution's tax code or business name",
+            "in": "query",
+            "name": "orderBy",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "NAME",
+              "enum": [
+                "CODE",
+                "NAME"
+              ]
+            }
+          },
+          {
             "description": "Sorting method for paginated result",
             "in": "query",
             "name": "sorting",

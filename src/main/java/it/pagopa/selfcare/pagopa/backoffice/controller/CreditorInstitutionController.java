@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.ApiConfigCreditorInstitutionsOrderBy;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.AvailableCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionAndBrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionContactsResource;
@@ -71,11 +72,13 @@ public class CreditorInstitutionController {
     public CreditorInstitutionsResource getCreditorInstitutions(
             @Parameter(description = "Creditor institution's tax code, used to filter out results") @RequestParam(required = false) String ciTaxCode,
             @Parameter(description = "Creditor institution's name, used to filter out results") @RequestParam(required = false) String ciName,
+            @Parameter(description = "Flag that describe if the creditor institution is enabled, used to filter out results") @RequestParam(required = false) Boolean enabled,
+            @Parameter(description = "Order by creditor institution's tax code or business name") @RequestParam(required = false, defaultValue = "NAME") ApiConfigCreditorInstitutionsOrderBy orderBy,
             @Parameter(description = "Sorting method for paginated result") @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sorting,
             @Parameter(description = "Number of elements on one page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
             @Parameter(description = "Page number") @RequestParam @PositiveOrZero @Min(0) Integer page
     ) {
-        return this.ciService.getCreditorInstitutions(ciTaxCode, ciName, sorting, limit, page);
+        return this.ciService.getCreditorInstitutions(ciTaxCode, ciName, enabled, orderBy, sorting, limit, page);
     }
 
     @GetMapping(value = "/{ci-tax-code}", produces = MediaType.APPLICATION_JSON_VALUE)
