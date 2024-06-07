@@ -125,10 +125,21 @@ public interface GecClient {
             @RequestParam(required = false) Integer page
     );
 
+    @GetMapping(value = "/psps/{psp-code}/offers")
+    @ResponseBody
+    @Valid
+    BundleOffers getPrivateBundleOffersByPSP(
+            @PathVariable("psp-code") String pspCode,
+            @RequestParam(required = false) String ciTaxCode,
+            @RequestParam(required = false) String idBundle,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer page
+    );
+
     @GetMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/creditorInstitutions")
     @ResponseBody
     @Valid
-    BundleCreditorInstitutionResource getPublicBundleSubscriptionByPSP(
+    BundleCreditorInstitutionResource getBundleSubscriptionByPSP(
             @PathVariable("psp-code") String pspCode,
             @PathVariable("id-bundle") String idBundle,
             @RequestParam(name = "ciFiscalCode", required = false) String ciTaxCode,
@@ -139,7 +150,7 @@ public interface GecClient {
     @GetMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/creditorInstitutions/{ci-tax-code}")
     @ResponseBody
     @Valid
-    CiBundleDetails getPublicBundleSubscriptionDetailByPSP(
+    CiBundleDetails getBundleSubscriptionDetailByPSP(
             @PathVariable("psp-code") String pspCode,
             @PathVariable("ci-tax-code") String ciTaxCode,
             @PathVariable("id-bundle") String idBundle
@@ -183,5 +194,13 @@ public interface GecClient {
     BundleRequestId createCIBundleRequest(
             @PathVariable("ci-tax-code") String ciTaxCode,
             @RequestBody @NotNull PublicBundleRequest bundleRequest
+    );
+
+    @DeleteMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/offers/{id-bundle-offer}")
+    @ResponseBody
+    void deletePrivateBundleOffer(
+            @PathVariable("psp-code") String pspCode,
+            @PathVariable("id-bundle") String idBundle,
+            @PathVariable("id-bundle-offer") String idBundleOffer
     );
 }

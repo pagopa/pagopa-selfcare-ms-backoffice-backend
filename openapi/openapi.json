@@ -1,10 +1,10 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "description": "Microservice to manage PagoPA Backoffice",
+    "description": "@project.description@",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "title": "SelfCare Backoffice",
-    "version": "2.13.18"
+    "title": "@project.name@",
+    "version": "2.13.18-6-next"
   },
   "servers": [
     {
@@ -1331,6 +1331,82 @@
                 }
               }
             }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1846,7 +1922,83 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
@@ -1868,10 +2020,10 @@
         ]
       }
     },
-    "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions": {
-      "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId": "getPublicBundleCISubscriptions",
+    "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/offers/{bundle-offer-id}": {
+      "delete": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "deletePrivateBundleOffer",
         "parameters": [
           {
             "description": "Commission bundle's id",
@@ -1889,6 +2041,166 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "description": "Id of the private bundle offer",
+            "in": "path",
+            "name": "bundle-offer-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {}
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Delete private bundle offer",
+        "tags": [
+          "Commission bundles"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
+        "operationId": "getBundleCISubscriptions",
+        "parameters": [
+          {
+            "description": "Commission bundle's id",
+            "in": "path",
+            "name": "id-bundle",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Payment Service Provider's tax code",
+            "in": "path",
+            "name": "psp-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Commission bundle's type (Required only for subscription with status WAITING",
+            "in": "query",
+            "name": "bundleType",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "GLOBAL",
+                "PUBLIC",
+                "PRIVATE"
+              ]
             }
           },
           {
@@ -1941,7 +2253,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PublicBundleCISubscriptionsResource"
+                  "$ref": "#/components/schemas/CIBundleSubscriptionsResource"
                 }
               }
             },
@@ -2037,7 +2349,7 @@
             "JWT": []
           }
         ],
-        "summary": "Get a paginated list of creditor institution's subscriptions to a public bundle of a PSP",
+        "summary": "Get a paginated list of creditor institution's subscriptions to a public/private bundle of a PSP",
         "tags": [
           "Commission bundles"
         ]
@@ -2053,10 +2365,10 @@
         }
       ]
     },
-    "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}/detail": {
+    "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId": "getPublicBundleCISubscriptionsDetail",
+        "operationId": "getBundleCISubscriptionsDetail",
         "parameters": [
           {
             "description": "Commission bundle's id",
@@ -2086,6 +2398,20 @@
             }
           },
           {
+            "description": "Commission bundle's type (Required only for subscription with status WAITING",
+            "in": "query",
+            "name": "bundleType",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "GLOBAL",
+                "PUBLIC",
+                "PRIVATE"
+              ]
+            }
+          },
+          {
             "description": "Subscription status",
             "in": "query",
             "name": "status",
@@ -2104,7 +2430,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PublicBundleCISubscriptionsDetail"
+                  "$ref": "#/components/schemas/CIBundleSubscriptionsDetail"
                 }
               }
             },
@@ -2200,7 +2526,7 @@
             "JWT": []
           }
         ],
-        "summary": "Get the detail of a creditor institution's subscription to a public bundle of a PSP",
+        "summary": "Get the detail of a creditor institution's subscription to a public/private bundle of a PSP",
         "tags": [
           "Commission bundles"
         ]
@@ -3658,6 +3984,158 @@
         ]
       }
     },
+    "/creditor-institutions/stations/{station-code}": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
+        "operationId": "getAvailableCreditorInstitutionsForStation",
+        "parameters": [
+          {
+            "description": "Station's code",
+            "in": "path",
+            "name": "station-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker's unique id",
+            "in": "query",
+            "name": "brokerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditorInstitutionInfoResource"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Get the list of Creditor Institutions that can be associated to the station",
+        "tags": [
+          "Creditor institutions"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
     "/creditor-institutions/{ci-code}/ibans": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
@@ -4202,7 +4680,7 @@
     },
     "/creditor-institutions/{ci-tax-code}/contacts": {
       "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId": "getCreditorInstitutionContacts",
         "parameters": [
           {
@@ -4624,9 +5102,18 @@
         "operationId": "getCreditorInstitutionSegregationCodes",
         "parameters": [
           {
-            "description": "Creditor institution's tax code",
+            "description": "Creditor institution's tax code that own the station",
             "in": "path",
             "name": "ci-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Tax code of the creditor institution that will be associated to the station",
+            "in": "query",
+            "name": "targetCITaxCode",
             "required": true,
             "schema": {
               "type": "string"
@@ -5259,10 +5746,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/InstitutionDetail"
-                  }
+                  "$ref": "#/components/schemas/InstitutionDetailResource"
                 }
               }
             },
@@ -5345,10 +5829,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Delegation"
-                  }
+                  "$ref": "#/components/schemas/DelegationResource"
                 }
               }
             },
@@ -5460,10 +5941,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/InstitutionApiKeys"
-                  }
+                  "$ref": "#/components/schemas/InstitutionApiKeysResource"
                 }
               }
             },
@@ -5537,10 +6015,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/InstitutionApiKeys"
-                  }
+                  "$ref": "#/components/schemas/InstitutionApiKeysResource"
                 }
               }
             },
@@ -5702,10 +6177,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Product"
-                  }
+                  "$ref": "#/components/schemas/ProductResource"
                 }
               }
             },
@@ -5773,6 +6245,279 @@
         "summary": "Return the maintenance message",
         "tags": [
           "Home"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/notice/institutions/data": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nN | Y | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\nUploads or updates the provided institution data and logo on the related storage, to be used in the payment notice generation process",
+        "operationId": "updateInstitutions",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "logo file to upload (not to send on update unless it is changed)"
+                  },
+                  "institutions-data": {
+                    "$ref": "#/components/schemas/InstitutionUploadData"
+                  }
+                },
+                "required": [
+                  "institutions-data"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "uploadInstitutionData",
+        "tags": [
+          "Notice APIs"
+        ]
+      }
+    },
+    "/notice/institutions/data/{taxCode}": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nN | Y | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\nRetrieves saved institution data and logo on the related storage, to be used in the payment notice generation process",
+        "operationId": "getInstitutionData",
+        "parameters": [
+          {
+            "description": "tax code of the CI to use for retrieval",
+            "in": "path",
+            "name": "taxCode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstitutionUploadData"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not Found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "getInstitutionData",
+        "tags": [
+          "Notice APIs"
         ]
       },
       "parameters": [
@@ -7865,61 +8610,6 @@
         ]
       }
     },
-    "/stations/wrapper/operator": {
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
-      "put": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "updateWrapperStationDetailsByOpt",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StationDetailsDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/WrapperEntities"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Update a WrapperStation on Cosmodb",
-        "tags": [
-          "Stations"
-        ]
-      }
-    },
     "/stations/wrapper/{station-code}": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
@@ -8025,6 +8715,157 @@
           }
         ],
         "summary": "Update WrapperStationDetails",
+        "tags": [
+          "Stations"
+        ]
+      }
+    },
+    "/stations/wrapper/{station-code}/operator": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "put": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "updateWrapperStationWithOperatorReview",
+        "parameters": [
+          {
+            "description": "Station code",
+            "in": "path",
+            "name": "station-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Creditor institution's tax code that own the station",
+            "in": "query",
+            "name": "ciTaxCode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperatorStationReview"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StationDetailResource"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Update a WrapperStation with Operator review",
         "tags": [
           "Stations"
         ]
@@ -8210,7 +9051,7 @@
             "JWT": []
           }
         ],
-        "summary": "Get Creditor Institutions By Station Code",
+        "summary": "Get a paginated list of Creditor Institutions associated to a station",
         "tags": [
           "Stations"
         ]
@@ -9069,6 +9910,44 @@
             "type": "string",
             "description": "Date after which the bundle is expired",
             "format": "date"
+          }
+        }
+      },
+      "CIBundleSubscriptionsDetail": {
+        "type": "object",
+        "properties": {
+          "bundle_offer_id": {
+            "type": "string",
+            "description": "Public bundle offer id"
+          },
+          "bundle_request_id": {
+            "type": "string",
+            "description": "Public bundle request id"
+          },
+          "ci_bundle_fee_list": {
+            "type": "array",
+            "description": "Creditor Institution's fees details",
+            "items": {
+              "$ref": "#/components/schemas/CIBundleFee"
+            }
+          },
+          "ci_bundle_id": {
+            "type": "string",
+            "description": "Subscription's id of a creditor institution to a public bundle"
+          }
+        }
+      },
+      "CIBundleSubscriptionsResource": {
+        "type": "object",
+        "properties": {
+          "creditor_institutions_subscriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CISubscriptionInfo"
+            }
+          },
+          "page_info": {
+            "$ref": "#/components/schemas/PageInfo"
           }
         }
       },
@@ -9933,6 +10812,36 @@
           }
         }
       },
+      "CreditorInstitutionInfo": {
+        "required": [
+          "business_name",
+          "ci_tax_code"
+        ],
+        "type": "object",
+        "properties": {
+          "business_name": {
+            "type": "string",
+            "description": "The business name of the creditor institution",
+            "example": "Comune di Roma"
+          },
+          "ci_tax_code": {
+            "type": "string",
+            "description": "The tax code of the creditor institution",
+            "example": "02438750586"
+          }
+        }
+      },
+      "CreditorInstitutionInfoResource": {
+        "type": "object",
+        "properties": {
+          "creditor_institution_info_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreditorInstitutionInfo"
+            }
+          }
+        }
+      },
       "CreditorInstitutionResource": {
         "required": [
           "businessName",
@@ -10122,6 +11031,17 @@
           "type": {
             "type": "string",
             "description": "delegation type"
+          }
+        }
+      },
+      "DelegationResource": {
+        "type": "object",
+        "properties": {
+          "delegation_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Delegation"
+            }
           }
         }
       },
@@ -10376,6 +11296,17 @@
           }
         }
       },
+      "InstitutionApiKeysResource": {
+        "type": "object",
+        "properties": {
+          "institution_api_key_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InstitutionApiKeys"
+            }
+          }
+        }
+      },
       "InstitutionDetail": {
         "required": [
           "address",
@@ -10472,6 +11403,78 @@
           }
         }
       },
+      "InstitutionDetailResource": {
+        "type": "object",
+        "properties": {
+          "institution_detail_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InstitutionDetail"
+            }
+          }
+        }
+      },
+      "InstitutionUploadData": {
+        "required": [
+          "appChannel",
+          "cbill",
+          "fullName",
+          "info",
+          "taxCode",
+          "webChannel"
+        ],
+        "type": "object",
+        "properties": {
+          "appChannel": {
+            "type": "boolean",
+            "description": "Boolean to refer if it has a web channel"
+          },
+          "cbill": {
+            "type": "string",
+            "description": "CI cbill"
+          },
+          "fullName": {
+            "type": "string",
+            "description": "CI full name"
+          },
+          "info": {
+            "type": "string",
+            "description": "CI info"
+          },
+          "logo": {
+            "type": "string",
+            "description": "Existing logo url"
+          },
+          "organization": {
+            "type": "string",
+            "description": "CI organization unit managing the payment "
+          },
+          "physicalChannel": {
+            "type": "string",
+            "description": "CI physical channel data"
+          },
+          "posteAccountNumber": {
+            "type": "string",
+            "description": "Poste account number"
+          },
+          "posteAuth": {
+            "type": "string",
+            "description": "Poste auth code"
+          },
+          "posteName": {
+            "type": "string",
+            "description": "Poste name"
+          },
+          "taxCode": {
+            "type": "string",
+            "description": "CI tax code"
+          },
+          "webChannel": {
+            "type": "boolean",
+            "description": "Boolean to refer if it has a web channel"
+          }
+        }
+      },
       "MaintenanceMessage": {
         "required": [
           "bannerMessage",
@@ -10486,6 +11489,15 @@
           "pageMessage": {
             "type": "string",
             "description": "Maintenance page message"
+          }
+        }
+      },
+      "OperatorStationReview": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "description": "Operator review note"
           }
         }
       },
@@ -10893,6 +11905,17 @@
           }
         }
       },
+      "ProductResource": {
+        "type": "object",
+        "properties": {
+          "product_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            }
+          }
+        }
+      },
       "PspChannelPaymentTypes": {
         "required": [
           "payment_types"
@@ -10998,40 +12021,6 @@
           }
         },
         "description": "Payment Service Provider (PSP) specific data"
-      },
-      "PublicBundleCISubscriptionsDetail": {
-        "type": "object",
-        "properties": {
-          "bundle_request_id": {
-            "type": "string",
-            "description": "Public bundle request id"
-          },
-          "ci_bundle_fee_list": {
-            "type": "array",
-            "description": "Creditor Institution's fees details",
-            "items": {
-              "$ref": "#/components/schemas/CIBundleFee"
-            }
-          },
-          "ci_bundle_id": {
-            "type": "string",
-            "description": "Subscription's id of a creditor institution to a public bundle"
-          }
-        }
-      },
-      "PublicBundleCISubscriptionsResource": {
-        "type": "object",
-        "properties": {
-          "creditor_institutions_subscriptions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CISubscriptionInfo"
-            }
-          },
-          "page_info": {
-            "$ref": "#/components/schemas/PageInfo"
-          }
-        }
       },
       "PublicBundleRequest": {
         "required": [

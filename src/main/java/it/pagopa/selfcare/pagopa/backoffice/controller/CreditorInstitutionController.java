@@ -14,6 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionContactsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionInfoResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
@@ -109,9 +110,10 @@ public class CreditorInstitutionController {
     @Operation(summary = "Get the available creditor institution's segregation code", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public AvailableCodes getCreditorInstitutionSegregationCodes(
-            @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode
+            @Parameter(description = "Creditor institution's tax code that own the station") @PathVariable("ci-tax-code") String ciTaxCode,
+            @Parameter(description = "Tax code of the creditor institution that will be associated to the station") @RequestParam @NotBlank String targetCITaxCode
     ) {
-            return this.ciService.getCreditorInstitutionSegregationCodes(ciTaxCode);
+        return this.ciService.getCreditorInstitutionSegregationCodes(ciTaxCode, targetCITaxCode);
     }
 
     @PostMapping(value = "/{ci-tax-code}/station", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -239,7 +241,7 @@ public class CreditorInstitutionController {
      * Retrieve the operative table and the payment contacts list of the creditor institution with the provided
      * tax code and institution's id
      *
-     * @param ciTaxCode creditor institution's tax code
+     * @param ciTaxCode     creditor institution's tax code
      * @param institutionId creditor institution's identifier
      * @return the creditor institution's contacts
      */
@@ -255,11 +257,43 @@ public class CreditorInstitutionController {
     })
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get creditor institution's payment contacts and operative table", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public CreditorInstitutionContactsResource getCreditorInstitutionContacts(
             @Parameter(description = "Creditor institution code") @PathVariable("ci-tax-code") @NotBlank String ciTaxCode,
             @Parameter(description = "Institution's identifier") @RequestParam String institutionId
     ) {
         return ciService.getCreditorInstitutionContacts(ciTaxCode, institutionId);
+    }
+
+
+    /**
+     * Retrieve the list of creditor institutions that can be associated to the specified station of the specified broker
+     *
+     * @param stationCode station's code
+     * @param brokerId    identifier of the broker that own the station
+     * @return the list of creditor institution's
+     */
+    @GetMapping(value = "/stations/{station-code}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = CreditorInstitutionInfoResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get the list of Creditor Institutions that can be associated to the station", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    public CreditorInstitutionInfoResource getAvailableCreditorInstitutionsForStation(
+            @Parameter(description = "Station's code") @PathVariable("station-code") String stationCode,
+            @Parameter(description = "Broker's unique id") @RequestParam String brokerId
+    ) {
+        return this.ciService.getAvailableCreditorInstitutionsForStation(stationCode, brokerId);
     }
 }

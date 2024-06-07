@@ -58,9 +58,11 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
 public class StationService {
 
     private static final String CREATE_STATION_SUBJECT = "Nuova stazione attivo";
-    private static final String CREATE_STATION_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato la stazione %s che hai creato. Da questo momento puoi utilizzarla per attivare i tuoi servizi.%n%n%nA presto,%n%n Back-office pagoPA";
+    private static final String CREATE_STATION_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato la stazione %s che hai creato. Da questo momento puoi utilizzarla per attivare i tuoi servizi.%n%n%nA presto,%n%n Pagamenti pagoPA";
     private static final String UPDATE_STATION_SUBJECT = "Modifica stazione attiva";
-    private static final String UPDATE_STATION_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato la stazione %s che hai modificato. Da questo momento la modifica effettuata risulta attiva.%n%n%nA presto,%n%n Back-office pagoPA";
+    private static final String UPDATE_STATION_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato la stazione %s che hai modificato. Da questo momento la modifica effettuata risulta attiva.%n%n%nA presto,%n%n Pagamenti pagoPA";
+    private static final String STATION_REVIEW_SUBJECT = "Modifiche richieste";
+    private static final String STATION_REVIEW_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha richiesto delle modifiche alla stazione %s che hai creato.%n Puoi vedere le modifiche qui sotto oppure nel dettaglio della stazione (https://selfcare.platform.pagopa.it/ui/stations/%s).%n Modifiche richieste %n '%s' %n%n%nA presto,%n%n Pagamenti pagoPA";
 
     private final CreditorInstitutionMapper creditorInstitutionMapper = Mappers.getMapper(CreditorInstitutionMapper.class);
 
@@ -119,12 +121,10 @@ public class StationService {
                 insert(stationMapper.
                         fromWrapperStationDetailsDto(wrapperStationDetailsDto), wrapperStationDetailsDto.getNote(), wrapperStationDetailsDto.getStatus().name());
 
-
         jiraServiceManagerClient.createTicket(String.format(CREATE_STATION_SUMMARY, wrapperStationDetailsDto.getStationCode()),
                 String.format(CREATE_STATION_DESCRIPTION, wrapperStationDetailsDto.getStationCode(), wrapperStationDetailsDto.getValidationUrl()));
 
         return createdWrapperEntities;
-
     }
 
     /**
@@ -196,24 +196,66 @@ public class StationService {
         }
     }
 
+    /**
+     * Update the detail of a station in the validation process. Update the details and create a JIRA ticket to notify
+     * the operator for the new update.
+     *
+     * @param stationDetailsDto the new station details
+     * @return the updated station
+     */
     public WrapperEntities updateWrapperStationDetails(@Valid StationDetailsDto stationDetailsDto) {
         final String UPDATE_STATION_SUMMARY = "Station creation validation: %s";
         final String UPDATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validated: %s";
 
-        apiConfigClient.getStation(stationDetailsDto.getStationCode());
+        WrapperEntities createdWrapperEntities = this.wrapperService.upsert(
+                this.stationMapper.fromDto(stationDetailsDto),
+                stationDetailsDto.getNote(),
+                stationDetailsDto.getStatus().name(),
+                null
+        );
 
-        WrapperEntities createdWrapperEntities = wrapperService.upsert(stationMapper.fromDto(stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
-
-        jiraServiceManagerClient.createTicket(String.format(UPDATE_STATION_SUMMARY, stationDetailsDto.getStationCode()),
-                String.format(UPDATE_STATION_DESCRIPTION, stationDetailsDto.getStationCode(), stationDetailsDto.getBrokerCode(), stationDetailsDto.getValidationUrl()));
-
+        this.jiraServiceManagerClient.createTicket(
+                String.format(UPDATE_STATION_SUMMARY, stationDetailsDto.getStationCode()),
+                String.format(
+                        UPDATE_STATION_DESCRIPTION,
+                        stationDetailsDto.getStationCode(),
+                        stationDetailsDto.getBrokerCode(),
+                        stationDetailsDto.getValidationUrl()
+                )
+        );
         return createdWrapperEntities;
     }
 
-    public WrapperEntities updateWrapperStationDetailsByOpt(@Valid StationDetailsDto stationDetailsDto) {
-        return wrapperService.
-                updateByOpt(stationMapper.
-                        fromDto(stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name());
+    /**
+     * Update the wrapper station with the operator review's note and notify the station owner via email.
+     *
+     * @param stationCode station's code
+     * @param ciTaxCode   creditor institution's tax code that own the station
+     * @param note        operator review note
+     * @return the updated station wrapper
+     */
+    public StationDetailResource updateWrapperStationWithOperatorReview(String stationCode, String ciTaxCode, String note) {
+        WrapperEntities<StationDetails> updatedWrapper = this.wrapperService.updateStationWithOperatorReview(stationCode, note);
+
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(ciTaxCode)
+                .subject(STATION_REVIEW_SUBJECT)
+                .textBody(String.format(STATION_REVIEW_EMAIL_BODY, stationCode, stationCode, note))
+                .htmlBodyFileName("stationReviewRequestedEmail.html")
+                .htmlBodyContext(buildStationHtmlEmailBodyContext(stationCode, note))
+                .destinationUserType(SelfcareProductUser.OPERATOR)
+                .build();
+        this.awsSesClient.sendEmail(messageDetail);
+
+        WrapperEntityOperations<StationDetails> entityOperations = getWrapperEntityOperationsSortedList(updatedWrapper).get(0);
+        return this.stationMapper.toResource(
+                entityOperations.getEntity(),
+                updatedWrapper.getStatus(),
+                updatedWrapper.getCreatedBy(),
+                updatedWrapper.getModifiedBy(),
+                updatedWrapper.getCreatedAt(),
+                entityOperations.getNote()
+        );
     }
 
     public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(String stationcode, Integer limit, Integer page, String ciNameOrFiscalCode) {
@@ -276,12 +318,19 @@ public class StationService {
     }
 
     private Context buildStationHtmlEmailBodyContext(String stationCode) {
+        return buildStationHtmlEmailBodyContext(stationCode, null);
+    }
+
+    private Context buildStationHtmlEmailBodyContext(String stationCode, String note) {
         // Thymeleaf Context
         Context context = new Context();
 
         // Properties to show up in Template after stored in Context
         Map<String, Object> properties = new HashMap<>();
         properties.put("stationCode", stationCode);
+        if (note != null) {
+            properties.put("reviewNote", note);
+        }
 
         context.setVariables(properties);
         return context;

@@ -25,7 +25,7 @@ public enum RoleType {
         return Arrays.stream(RoleType.values())
                 .filter(elem -> role != null && elem.selfcareRole.contains(role))
                 .findFirst()
-                .orElseThrow(() -> new AppException(AppError.SELFCARE_ROLE_NOT_FOUND, deNull(institutionCode), deNull(role)));
+                .orElseThrow(() -> new AppException(AppError.SELFCARE_ROLE_NOT_FOUND, deNull(role), deNull(institutionCode)));
     }
 
 }
