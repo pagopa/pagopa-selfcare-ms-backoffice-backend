@@ -13,6 +13,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.service.CommissionBundleService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
@@ -480,5 +481,33 @@ public class CommissionBundleController {
             @Parameter(description = "Id of the private bundle offer") @PathVariable("bundle-offer-id") String bundleOfferId
     ) {
         this.commissionBundleService.deletePrivateBundleOffer(idBundle, pspTaxCode, bundleOfferId);
+    }
+
+    /**
+     *  Create the subscription offer for the specified private bundle
+     *
+     * @param idBundle the private bundle id
+     * @param pspTaxCode Payment Service Provider's tax code
+     * @param bundleName the private bundle name
+     * @param ciTaxCodeList the list tax code of creditor institutions tha will receive the offer
+     */
+    @PostMapping(value = "/{id-bundle}/payment-service-providers/{psp-tax-code}/offers")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema())),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })    @Operation(summary = "Create a creditor institution's subscription offer to a private bundle", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
+    public void createCIBundleOffers(
+            @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
+            @Parameter(description = "Payment Service Provider's tax code") @PathVariable("psp-tax-code") String pspTaxCode,
+            @Parameter(description = "Bundle's name") @RequestParam String bundleName,
+            @RequestBody @NotNull CiTaxCodeList ciTaxCodeList
+    ) {
+        this.commissionBundleService.createCIBundleOffers(idBundle, pspTaxCode, bundleName, ciTaxCodeList);
     }
 }
