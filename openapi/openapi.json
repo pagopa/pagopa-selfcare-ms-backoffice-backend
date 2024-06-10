@@ -978,7 +978,20 @@
             }
           },
           {
-            "description": "Creditor institution's tax code, required in case of public bundle, otherwise is optional and used to filter the results",
+            "description": "Bundle subscription status, required in case of private bundle otherwise is not considered",
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "WAITING",
+                "ACCEPTED"
+              ]
+            }
+          },
+          {
+            "description": "Creditor institution's tax code, required in case of public/private bundle, otherwise is optional and used to filter the results",
             "in": "query",
             "name": "ciTaxCode",
             "required": false,
@@ -987,7 +1000,7 @@
             }
           },
           {
-            "description": "Commission bundle's name",
+            "description": "Commission bundle's name, used to filter out results",
             "in": "query",
             "name": "name",
             "required": false,
@@ -9828,6 +9841,10 @@
               "REQUESTED",
               "AVAILABLE"
             ]
+          },
+          "ciOfferId": {
+            "type": "string",
+            "description": "Creditor institution bundle's subscription offer's id"
           },
           "ciRequestId": {
             "type": "string",

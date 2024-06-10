@@ -6,8 +6,36 @@ import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleSubscriptionStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleTaxonomy;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleFee;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CISubscriptionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleTaxonomy;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCIOffers;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleOffers;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleAttribute;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleOffer;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
@@ -22,7 +50,11 @@ import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -147,30 +179,53 @@ public class CommissionBundleService {
      * The result contains an expanded version of the bundle, using the taxonomy detail extracted
      * from the repository instance
      *
-     * @param bundleType the requested type of bundles
-     * @param ciTaxCode  creditor institution's tax code, required in case of {@link BundleType#PUBLIC} otherwise is optional and used to filter the results
-     * @param limit      page limit parameter
-     * @param page       page number parameter
+     * @param bundleType         the requested type of bundles
+     * @param subscriptionStatus the status of the public/private bundle subscription, required in case of {@link BundleType#PRIVATE} otherwise is optional
+     * @param ciTaxCode          creditor institution's tax code, required in case of {@link BundleType#PUBLIC} otherwise is optional and used to filter the results
+     * @param limit              page limit parameter
+     * @param page               page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
-    public CIBundlesResource getCIBundles(BundleType bundleType, String ciTaxCode, String name, Integer limit, Integer page) {
+    public CIBundlesResource getCIBundles(
+            BundleType bundleType,
+            BundleSubscriptionStatus subscriptionStatus,
+            String ciTaxCode,
+            String bundleName,
+            Integer limit,
+            Integer page
+    ) {
         List<CIBundleResource> bundlesResource = new ArrayList<>();
         PageInfo pageInfo = new PageInfo();
 
         List<BundleType> bundleTypes = Collections.singletonList(bundleType);
-        if (bundleType.equals(BundleType.GLOBAL) || bundleType.equals(BundleType.PRIVATE)) {
-            Bundles bundles = this.gecClient.getBundles(bundleTypes, name, null, limit, page);
+        if (bundleType.equals(BundleType.GLOBAL)) {
+            Bundles bundles = this.gecClient.getBundles(bundleTypes, bundleName, null, limit, page);
             pageInfo = bundles.getPageInfo();
             bundlesResource = getCIBundlesResource(bundles);
         } else if (bundleType.equals(BundleType.PUBLIC)) {
             if (ciTaxCode == null) {
-                throw new AppException(AppError.BAD_REQUEST,
-                        "Creditor institution's tax code is required to retrieve creditor institution's public bundles");
+                throw new AppException(AppError.INVALID_GET_PUBLIC_CI_BUNDLES_REQUEST);
             }
             String validFrom = LocalDate.now().format(DateTimeFormatter.ofPattern(VALID_FROM_DATE_FORMAT));
-            Bundles bundles = gecClient.getBundles(bundleTypes, name, validFrom, limit, page);
+            Bundles bundles = this.gecClient.getBundles(bundleTypes, bundleName, validFrom, limit, page);
             pageInfo = bundles.getPageInfo();
-            bundlesResource = getPublicBundleResources(ciTaxCode, bundles);
+            bundlesResource = bundles.getBundleList().parallelStream()
+                    .map(bundle -> buildCIBundle(ciTaxCode, bundle))
+                    .toList();
+        } else if (bundleType.equals(BundleType.PRIVATE)) {
+            if (ciTaxCode == null || subscriptionStatus == null) {
+                throw new AppException(AppError.INVALID_GET_PRIVATE_CI_BUNDLES_REQUEST, ciTaxCode, subscriptionStatus);
+            }
+            if (BundleSubscriptionStatus.ACCEPTED.equals(subscriptionStatus)) {
+                CiBundles bundlesByCI = this.gecClient.getBundlesByCI(ciTaxCode, BundleType.PRIVATE.name(), bundleName, limit, page);
+                pageInfo = bundlesByCI.getPageInfo();
+                bundlesResource = getAcceptedCIPrivateBundleResources(bundlesByCI);
+
+            } else if (BundleSubscriptionStatus.WAITING.equals(subscriptionStatus)){
+                BundleCIOffers bundleOffers = this.gecClient.getOffersByCI(ciTaxCode, null, bundleName, limit, page);
+                pageInfo = bundleOffers.getPageInfo();
+                bundlesResource = getWaitingCIPrivateBundleResources(bundleOffers);
+            }
         }
         return CIBundlesResource.builder().bundles(bundlesResource).pageInfo(pageInfo).build();
     }
@@ -406,8 +461,8 @@ public class CommissionBundleService {
     /**
      * Delete a payment service provider's private bundle offer
      *
-     * @param idBundle private bundle id
-     * @param pspTaxCode payment service provider's tax code
+     * @param idBundle      private bundle id
+     * @param pspTaxCode    payment service provider's tax code
      * @param bundleOfferId id of the bundle offer
      */
     public void deletePrivateBundleOffer(String idBundle, String pspTaxCode, String bundleOfferId) {
@@ -533,13 +588,7 @@ public class CommissionBundleService {
         }).toList();
     }
 
-    private List<CIBundleResource> getPublicBundleResources(String ciTaxCode, Bundles bundles) {
-        return bundles.getBundleList().parallelStream()
-                .map(bundle -> buildCIPublicBundle(ciTaxCode, bundle))
-                .toList();
-    }
-
-    private CIBundleResource buildCIPublicBundle(String ciTaxCode, Bundle bundle) {
+    private CIBundleResource buildCIBundle(String ciTaxCode, Bundle bundle) {
         CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
         CIBundleResource ciBundleResource;
 
@@ -553,14 +602,13 @@ public class CommissionBundleService {
         bundleResource.setCiBundleId(ciBundleResource.getCiBundleId());
         bundleResource.setCiRequestId(ciBundleResource.getCiRequestId());
         bundleResource.setCiBundleFeeList(ciBundleResource.getCiBundleFeeList());
-        bundleResource.setCiBundleFeeList(ciBundleResource.getCiBundleFeeList());
         return bundleResource;
     }
 
     private CIBundleResource enrichFromSubscribedCIBundle(String ciTaxCode, String bundleId) {
         CiBundleDetails ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundleId);
         CIBundleStatus bundleStatus;
-        if (ciBundle.getValidityDateTo() == null || ciBundle.getValidityDateTo().isAfter(LocalDate.now())) {
+        if (isCIBundleEnabled(ciBundle)) {
             bundleStatus = CIBundleStatus.ENABLED;
         } else {
             bundleStatus = CIBundleStatus.ON_REMOVAL;
@@ -596,7 +644,46 @@ public class CommissionBundleService {
                 .build();
     }
 
+    private List<CIBundleResource> getWaitingCIPrivateBundleResources(BundleCIOffers bundleOffers) {
+        return bundleOffers.getOffers().parallelStream()
+                .map(offer -> {
+                    Bundle bundle = this.gecClient.getBundleDetail(offer.getIdBundle());
+                    CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
+
+                    bundleResource.setCiBundleStatus(CIBundleStatus.AVAILABLE);
+                    bundleResource.setCiOfferId(offer.getId());
+                    bundleResource.setCiBundleFeeList(getBundleTaxonomies(bundle.getTransferCategoryList(), CIBundleFee.class));
+                    return bundleResource;
+                })
+                .toList();
+    }
+
+    private List<CIBundleResource> getAcceptedCIPrivateBundleResources(CiBundles bundlesByCI) {
+        return bundlesByCI.getBundleDetailsList().parallelStream()
+                .map(ciBundle -> {
+                    Bundle bundle = this.gecClient.getBundleDetail(ciBundle.getIdBundle());
+                    CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
+                    CIBundleStatus bundleStatus;
+
+                    if (isCIBundleEnabled(ciBundle)) {
+                        bundleStatus = CIBundleStatus.ENABLED;
+                    } else {
+                        bundleStatus = CIBundleStatus.ON_REMOVAL;
+                    }
+
+                    bundleResource.setCiBundleStatus(bundleStatus);
+                    bundleResource.setCiBundleId(ciBundle.getIdCIBundle());
+                    bundleResource.setCiBundleFeeList(getCIBundleFeeList(ciBundle.getAttributes()));
+                    return bundleResource;
+                })
+                .toList();
+    }
+
     private boolean isBundleRequested(PublicBundleRequests bundleRequests) {
         return bundleRequests != null && bundleRequests.getPageInfo().getTotalItems() != null && bundleRequests.getPageInfo().getTotalItems() > 0;
+    }
+
+    private boolean isCIBundleEnabled(CiBundleDetails ciBundle) {
+        return ciBundle.getValidityDateTo() == null || ciBundle.getValidityDateTo().isAfter(LocalDate.now());
     }
 }
