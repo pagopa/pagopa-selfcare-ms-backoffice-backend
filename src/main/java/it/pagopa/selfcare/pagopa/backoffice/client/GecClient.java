@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCIOffers;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleOffered;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleOffers;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
@@ -14,6 +15,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
@@ -238,5 +240,13 @@ public interface GecClient {
             @RequestParam(required = false) String bundleName,
             @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) Integer page
+    );
+
+    @PostMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/offers")
+    @ResponseBody
+    List<BundleOffered> createPrivateBundleOffer(
+            @PathVariable("psp-code") String pspCode,
+            @PathVariable("id-bundle") String idBundle,
+            @RequestBody CiTaxCodeList ciTaxCodeList
     );
 }

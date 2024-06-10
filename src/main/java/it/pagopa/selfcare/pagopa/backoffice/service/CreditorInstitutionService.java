@@ -10,6 +10,7 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.ApiConfigCreditorInstitutionsOrderBy;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.AvailableCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
@@ -38,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -69,7 +71,8 @@ public class CreditorInstitutionService {
             ApiConfigClient apiConfigClient,
             ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
             TavoloOpRepository operativeTableRepository,
-            ExternalApiClient externalApiClient, ModelMapper modelMapper) {
+            ExternalApiClient externalApiClient, ModelMapper modelMapper
+    ) {
         this.apiConfigClient = apiConfigClient;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
         this.operativeTableRepository = operativeTableRepository;
@@ -77,9 +80,30 @@ public class CreditorInstitutionService {
         this.modelMapper = modelMapper;
     }
 
-    public CreditorInstitutionsResource getCreditorInstitutions(Integer limit, Integer page, String ciCode, String name, String sorting) {
-        CreditorInstitutions dto = apiConfigClient.getCreditorInstitutions(limit, page, ciCode, name, sorting);
-        return mapper.toResource(dto);
+    /**
+     * Retrieve a paginated list of creditor institutions from ApiConfig with the provided filters
+     *
+     * @param ciCode  creditor institution's tax code used to filter out results
+     * @param name    creditor institution's name used to filter out results
+     * @param enabled creditor institution's enabled flag used to filter out results
+     * @param orderBy field of the creditor institution used to order results
+     * @param sorting direction of the sort
+     * @param limit   the size of the page
+     * @param page    the number of the page
+     * @return the paginated list of creditor institutions
+     */
+    public CreditorInstitutionsResource getCreditorInstitutions(
+            String ciCode,
+            String name,
+            Boolean enabled,
+            ApiConfigCreditorInstitutionsOrderBy orderBy,
+            Sort.Direction sorting,
+            Integer limit,
+            Integer page
+    ) {
+        CreditorInstitutions dto =
+                this.apiConfigClient.getCreditorInstitutions(ciCode, name, enabled, orderBy, sorting.name(), limit, page);
+        return this.mapper.toResource(dto);
     }
 
     public CreditorInstitutionDetailsResource getCreditorInstitutionDetails(String ciCode) {
@@ -98,7 +122,10 @@ public class CreditorInstitutionService {
         return this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(ciTaxCode, targetCITaxCode);
     }
 
-    public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(String ecCode, @NotNull CreditorInstitutionStationDto dto) {
+    public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(
+            String ecCode,
+            @NotNull CreditorInstitutionStationDto dto
+    ) {
         try {
             apiConfigClient.getCreditorInstitutionDetails(ecCode);
         } catch (FeignException e) {
@@ -127,7 +154,10 @@ public class CreditorInstitutionService {
         return mapper.toResource(creditorInstitutionDetails);
     }
 
-    public CreditorInstitutionDetailsResource updateCreditorInstitutionDetails(String ciCode, UpdateCreditorInstitutionDto dto) {
+    public CreditorInstitutionDetailsResource updateCreditorInstitutionDetails(
+            String ciCode,
+            UpdateCreditorInstitutionDto dto
+    ) {
         CreditorInstitutionDetails creditorInstitutionDetails = mapper.fromDto(dto);
         creditorInstitutionDetails = apiConfigClient.updateCreditorInstitutionDetails(ciCode, creditorInstitutionDetails);
         return mapper.toResource(creditorInstitutionDetails);
@@ -210,7 +240,10 @@ public class CreditorInstitutionService {
      * @param brokerId    identifier of the broker that own the station
      * @return the list of creditor institution's
      */
-    public CreditorInstitutionInfoResource getAvailableCreditorInstitutionsForStation(String stationCode, String brokerId) {
+    public CreditorInstitutionInfoResource getAvailableCreditorInstitutionsForStation(
+            String stationCode,
+            String brokerId
+    ) {
         List<DelegationExternal> delegationExternals = this.externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
 
         List<DelegationExternal> delegations = addItselfToDelegationsIfCI(brokerId, delegationExternals);
@@ -229,7 +262,10 @@ public class CreditorInstitutionService {
                 .build();
     }
 
-    private List<DelegationExternal> addItselfToDelegationsIfCI(String brokerId, List<DelegationExternal> delegationExternals) {
+    private List<DelegationExternal> addItselfToDelegationsIfCI(
+            String brokerId,
+            List<DelegationExternal> delegationExternals
+    ) {
         List<DelegationExternal> delegations = new ArrayList<>(delegationExternals);
         InstitutionResponse broker = this.externalApiClient.getInstitution(brokerId);
         if (brokerCanBeAddedToDelegation(delegationExternals, broker)) {
@@ -243,7 +279,10 @@ public class CreditorInstitutionService {
         return delegations;
     }
 
-    private boolean brokerCanBeAddedToDelegation(List<DelegationExternal> delegationExternals, InstitutionResponse broker) {
+    private boolean brokerCanBeAddedToDelegation(
+            List<DelegationExternal> delegationExternals,
+            InstitutionResponse broker
+    ) {
         return RoleType.CI.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType().toString()))
                 && delegationExternals.stream().noneMatch(delegationExternal -> delegationExternal.getTaxCode().equals(broker.getTaxCode()));
     }
