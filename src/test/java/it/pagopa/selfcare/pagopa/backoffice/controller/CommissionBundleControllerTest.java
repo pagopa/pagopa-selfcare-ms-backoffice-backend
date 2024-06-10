@@ -217,13 +217,12 @@ class CommissionBundleControllerTest {
         String url = "/bundles/creditor-institutions";
         int limit = 25;
         int page = 2;
-        when(service.getCIBundles(BundleType.PRIVATE,
-                CI_TAX_CODE, "name", limit, page)).thenReturn(
-                new CIBundlesResource()
-        );
+        when(service.getCIBundles(BundleType.PRIVATE, BundleSubscriptionStatus.WAITING, CI_TAX_CODE, "name", limit, page))
+                .thenReturn(new CIBundlesResource());
         mvc.perform(get(url)
                         .param("name", "name")
                         .param("bundleType", BundleType.PRIVATE.name())
+                        .param("status", BundleSubscriptionStatus.WAITING.name())
                         .param("ciTaxCode", CI_TAX_CODE)
                         .param("limit", String.valueOf(limit))
                         .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))
@@ -236,11 +235,11 @@ class CommissionBundleControllerTest {
         String url = "/bundles/creditor-institutions";
         int limit = 25;
         int page = 2;
-        when(service.getCIBundles(BundleType.PRIVATE, null, null, limit, page)).thenReturn(
+        when(service.getCIBundles(BundleType.PUBLIC, null, null, null, limit, page)).thenReturn(
                 new CIBundlesResource()
         );
         mvc.perform(get(url)
-                        .param("bundleType", BundleType.PRIVATE.name())
+                        .param("bundleType", BundleType.PUBLIC.name())
                         .param("limit", String.valueOf(limit))
                         .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
