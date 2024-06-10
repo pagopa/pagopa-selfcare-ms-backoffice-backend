@@ -10,6 +10,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.service.CommissionBundleService;
@@ -26,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -345,9 +348,23 @@ class CommissionBundleControllerTest {
     @Test
     void deletePrivateBundleOfferOK() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/offers/{bundle-offer-id}";
-        mvc.perform(delete(url, BUNDLE_ID, PSP_TAX_CODE,ID_BUNDLE_OFFER ))
+        mvc.perform(delete(url, BUNDLE_ID, PSP_TAX_CODE, ID_BUNDLE_OFFER))
                 .andExpect(status().isOk());
 
         verify(service).deletePrivateBundleOffer(BUNDLE_ID, PSP_TAX_CODE, ID_BUNDLE_OFFER);
+    }
+
+    @Test
+    void createCIBundleOffersOK() throws Exception {
+        CiTaxCodeList body = CiTaxCodeList.builder().ciTaxCodes(Collections.singletonList(CI_TAX_CODE)).build();
+
+        String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/offers";
+        mvc.perform(post(url, BUNDLE_ID, PSP_TAX_CODE)
+                        .param("bundleName", BUNDLE_NAME)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapper.writeValueAsString(body)))
+                .andExpect(status().isOk());
+
+        verify(service).createCIBundleOffers(anyString(), anyString(), anyString(), any());
     }
 }
