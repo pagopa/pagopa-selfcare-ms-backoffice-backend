@@ -10,6 +10,7 @@ import it.pagopa.selfcare.pagopa.backoffice.entity.TavoloOpEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.ApiConfigCreditorInstitutionsOrderBy;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.AvailableCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
@@ -37,6 +38,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Sort;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,8 +54,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -68,6 +72,7 @@ class CreditorInstitutionServiceTest {
     private static final String STATION_CODE = "stationCode";
     private static final String CI_TAX_CODE_1 = "12345677";
     private static final String CI_TAX_CODE_2 = "12345666";
+
     @MockBean
     private ApiConfigClient apiConfigClient;
 
@@ -85,10 +90,49 @@ class CreditorInstitutionServiceTest {
 
     @Test
     void getCreditorInstitutions_ok() throws IOException {
-        when(apiConfigClient.getCreditorInstitutions(anyInt(), anyInt(), anyString(), anyString(), anyString()))
+        when(apiConfigClient.getCreditorInstitutions(anyString(), anyString(), anyBoolean(), any(), any(), anyInt(), anyInt()))
                 .thenReturn(TestUtil.fileToObject("response/apiconfig/get_creditor_institutions_ok.json", CreditorInstitutions.class));
 
-        CreditorInstitutionsResource result = service.getCreditorInstitutions(50, 0, "12345", "comune", "asc");
+        CreditorInstitutionsResource result =
+                assertDoesNotThrow(() ->
+                        service.getCreditorInstitutions(
+                                "12345",
+                                "comune",
+                                true,
+                                ApiConfigCreditorInstitutionsOrderBy.NAME,
+                                Sort.Direction.ASC,
+                                50,
+                                0
+                        ));
+
+        assertNotNull(result);
+        assertNotNull(result.getCreditorInstitutionList());
+        assertFalse(result.getCreditorInstitutionList().isEmpty());
+    }
+
+    @Test
+    void getCreditorInstitutions_ok_without_filters() throws IOException {
+        when(apiConfigClient.getCreditorInstitutions(
+                eq(null),
+                eq(null),
+                eq(null),
+                eq(ApiConfigCreditorInstitutionsOrderBy.NAME),
+                eq(Sort.Direction.ASC.name()),
+                anyInt(),
+                anyInt()
+        )).thenReturn(TestUtil.fileToObject("response/apiconfig/get_creditor_institutions_ok.json", CreditorInstitutions.class));
+
+        CreditorInstitutionsResource result =
+                assertDoesNotThrow(() ->
+                        service.getCreditorInstitutions(
+                                null,
+                                null,
+                                null,
+                                ApiConfigCreditorInstitutionsOrderBy.NAME,
+                                Sort.Direction.ASC,
+                                50,
+                                0
+                        ));
 
         assertNotNull(result);
         assertNotNull(result.getCreditorInstitutionList());
@@ -98,10 +142,21 @@ class CreditorInstitutionServiceTest {
     @Test
     void getCreditorInstitutions_ko() {
         FeignException feignException = mock(FeignException.InternalServerError.class);
-        when(apiConfigClient.getCreditorInstitutions(anyInt(), anyInt(), anyString(), anyString(), anyString()))
+        when(apiConfigClient.getCreditorInstitutions(anyString(), anyString(), anyBoolean(), any(), any(), anyInt(), anyInt()))
                 .thenThrow(feignException);
 
-        assertThrows(FeignException.class, () -> service.getCreditorInstitutions(50, 0, "12345", "comune", "asc"));
+        FeignException e = assertThrows(FeignException.class,
+                () -> service.getCreditorInstitutions(
+                        "12345",
+                        "comune",
+                        true,
+                        ApiConfigCreditorInstitutionsOrderBy.NAME,
+                        Sort.Direction.ASC,
+                        50,
+                        0
+                ));
+
+        assertNotNull(e);
     }
 
     @Test

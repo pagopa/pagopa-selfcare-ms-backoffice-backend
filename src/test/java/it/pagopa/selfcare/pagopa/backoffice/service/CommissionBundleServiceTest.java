@@ -25,6 +25,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBund
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleOffer;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleOffer;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
@@ -56,6 +57,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -937,6 +939,20 @@ class CommissionBundleServiceTest {
                 sut.deletePrivateBundleOffer(ID_BUNDLE, PSP_TAX_CODE, ID_BUNDLE_OFFER));
 
         verify(gecClient).deletePrivateBundleOffer(PSP_CODE, ID_BUNDLE, ID_BUNDLE_OFFER);
+    }
+
+    @Test
+    void createCIBundleOffersSuccess(){
+        List<String> ciTaxCodes = List.of(CI_TAX_CODE, "taxCode2", "taxCode3");
+        CiTaxCodeList ciTaxCodeList = CiTaxCodeList.builder().ciTaxCodes(ciTaxCodes).build();
+
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+
+        assertDoesNotThrow(() ->
+                sut.createCIBundleOffers(ID_BUNDLE, PSP_TAX_CODE, BUNDLE_NAME, ciTaxCodeList));
+
+        verify(gecClient).createPrivateBundleOffer(PSP_CODE, ID_BUNDLE, ciTaxCodeList);
+        verify(awsSesClient, times(ciTaxCodes.size())).sendEmail(any());
     }
 
     private PublicBundleRequests buildPspRequests() {
