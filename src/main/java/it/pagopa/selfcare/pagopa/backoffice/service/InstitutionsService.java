@@ -1,6 +1,7 @@
 
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.InstitutionsClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
@@ -14,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class InstitutionsService {
 
     private final InstitutionsClient institutionClient;
-    
+
     public InstitutionsService(InstitutionsClient institutionClient) {
         this.institutionClient = institutionClient;
     }
@@ -35,6 +36,11 @@ public class InstitutionsService {
             return institutionClient.getInstitutionData(institutionsData);
         } catch (AppException e) {
             throw e;
+        } catch (FeignException e) {
+            if (e.status() == 404) {
+                throw new AppException(AppError.INSTITUTION_NOT_FOUND, e);
+            }
+            throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new AppException(AppError.INSTITUTION_RETRIEVE_ERROR, e);

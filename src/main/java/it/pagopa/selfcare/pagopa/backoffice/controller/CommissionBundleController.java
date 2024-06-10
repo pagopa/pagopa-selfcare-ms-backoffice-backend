@@ -70,12 +70,13 @@ public class CommissionBundleController {
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public CIBundlesResource getCisBundles(
             @Parameter(description = "Commission bundle's type") @RequestParam BundleType bundleType,
-            @Parameter(description = "Creditor institution's tax code, required in case of public bundle, otherwise is optional and used to filter the results") @RequestParam(required = false) String ciTaxCode,
-            @Parameter(description = "Commission bundle's name") @RequestParam(required = false) String name,
+            @Parameter(description = "Bundle subscription status, required in case of private bundle otherwise is not considered") @RequestParam(required = false) BundleSubscriptionStatus status,
+            @Parameter(description = "Creditor institution's tax code, required in case of public/private bundle, otherwise is optional and used to filter the results") @RequestParam(required = false) String ciTaxCode,
+            @Parameter(description = "Commission bundle's name, used to filter out results") @RequestParam(required = false) String name,
             @Parameter(description = "Number of elements in one page") @RequestParam(required = false, defaultValue = "50") Integer limit,
             @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") @Min(0) Integer page
     ) {
-        return this.commissionBundleService.getCIBundles(bundleType, ciTaxCode, name, limit, page);
+        return this.commissionBundleService.getCIBundles(bundleType, status, ciTaxCode, name, limit, page);
     }
 
     @GetMapping("/payment-types")

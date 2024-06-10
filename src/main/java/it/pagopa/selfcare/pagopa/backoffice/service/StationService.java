@@ -196,17 +196,33 @@ public class StationService {
         }
     }
 
+    /**
+     * Update the detail of a station in the validation process. Update the details and create a JIRA ticket to notify
+     * the operator for the new update.
+     *
+     * @param stationDetailsDto the new station details
+     * @return the updated station
+     */
     public WrapperEntities updateWrapperStationDetails(@Valid StationDetailsDto stationDetailsDto) {
         final String UPDATE_STATION_SUMMARY = "Station creation validation: %s";
         final String UPDATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validated: %s";
 
-        apiConfigClient.getStation(stationDetailsDto.getStationCode());
+        WrapperEntities createdWrapperEntities = this.wrapperService.upsert(
+                this.stationMapper.fromDto(stationDetailsDto),
+                stationDetailsDto.getNote(),
+                stationDetailsDto.getStatus().name(),
+                null
+        );
 
-        WrapperEntities createdWrapperEntities = wrapperService.upsert(stationMapper.fromDto(stationDetailsDto), stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
-
-        jiraServiceManagerClient.createTicket(String.format(UPDATE_STATION_SUMMARY, stationDetailsDto.getStationCode()),
-                String.format(UPDATE_STATION_DESCRIPTION, stationDetailsDto.getStationCode(), stationDetailsDto.getBrokerCode(), stationDetailsDto.getValidationUrl()));
-
+        this.jiraServiceManagerClient.createTicket(
+                String.format(UPDATE_STATION_SUMMARY, stationDetailsDto.getStationCode()),
+                String.format(
+                        UPDATE_STATION_DESCRIPTION,
+                        stationDetailsDto.getStationCode(),
+                        stationDetailsDto.getBrokerCode(),
+                        stationDetailsDto.getValidationUrl()
+                )
+        );
         return createdWrapperEntities;
     }
 
