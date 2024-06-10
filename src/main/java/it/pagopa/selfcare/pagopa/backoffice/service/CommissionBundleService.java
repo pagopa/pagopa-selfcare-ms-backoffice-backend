@@ -21,6 +21,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleTaxo
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCIOffers;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleOffers;
@@ -30,6 +31,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleOffer;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
