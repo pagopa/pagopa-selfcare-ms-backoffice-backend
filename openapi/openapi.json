@@ -3366,6 +3366,24 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "description": "Creditor institution's tax code for email notification",
+            "in": "query",
+            "name": "ciTaxCode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Bundle's name for email notification",
+            "in": "query",
+            "name": "bundleName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
