@@ -337,7 +337,7 @@ class CommissionBundleControllerTest {
     void createCIBundleRequestOK() throws Exception {
         PublicBundleRequest bundleRequest = new PublicBundleRequest();
 
-        String url = "/bundles/creditor-institutions/{ci-tax-code}";
+        String url = "/bundles/creditor-institutions/{ci-tax-code}/requests";
         mvc.perform(post(url, CI_TAX_CODE)
                         .param(BUNDLE_NAME, BUNDLE_NAME)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -372,9 +372,9 @@ class CommissionBundleControllerTest {
 
     @Test
     void acceptPrivateBundleOfferTest() throws Exception {
-        String url = "/bundles/offers/{id-bundle-offer}/creditor-institutions/{ci-tax-code}/accept";
+        String url = "/bundles/creditor-institutions/{ci-tax-code}/offers/{id-bundle-offer}/accept";
 
-        mvc.perform(post(url, ID_BUNDLE_OFFER, CI_TAX_CODE)
+        mvc.perform(post(url, CI_TAX_CODE, ID_BUNDLE_OFFER)
                         .param("bundleName", BUNDLE_NAME)
                         .param("pspTaxCode", PSP_TAX_CODE)
                         .content(mapper.writeValueAsString(new CIBundleAttributeResource()))
@@ -385,9 +385,9 @@ class CommissionBundleControllerTest {
 
     @Test
     void rejectPrivateBundleOfferTest() throws Exception {
-        String url = "/bundles/offers/{id-bundle-offer}/creditor-institutions/{ci-tax-code}/reject";
+        String url = "/bundles/creditor-institutions/{ci-tax-code}/offers/{id-bundle-offer}/reject";
 
-        mvc.perform(post(url, ID_BUNDLE_OFFER, CI_TAX_CODE)
+        mvc.perform(post(url, CI_TAX_CODE, ID_BUNDLE_OFFER)
                         .param("bundleName", BUNDLE_NAME)
                         .param("pspTaxCode", PSP_TAX_CODE))
                 .andExpect(status().isOk());

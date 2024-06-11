@@ -353,7 +353,7 @@ public class CommissionBundleController {
      * @param ciTaxCode           Creditor Institution's tax code
      * @param publicBundleRequest Bundle request object with bundle and psp information
      */
-    @PostMapping(value = "/creditor-institutions/{ci-tax-code}")
+    @PostMapping(value = "/creditor-institutions/{ci-tax-code}/requests")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema())),
