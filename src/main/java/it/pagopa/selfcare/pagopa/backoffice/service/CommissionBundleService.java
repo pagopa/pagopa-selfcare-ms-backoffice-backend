@@ -532,7 +532,7 @@ public class CommissionBundleService {
      * @param ciBundleAttributes bundle attributes specified by the creditor institution
      * @return the id of the accepted private bundle
      */
-    public CIBundleId ciAcceptPrivateBundleOffer(
+    public CIBundleId acceptPrivateBundleOffer(
             String ciTaxCode,
             String idBundleOffer,
             String pspTaxCode,
