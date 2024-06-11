@@ -3,13 +3,22 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.GecFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCIOffers;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleOffered;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleOffers;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequestId;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
@@ -38,8 +47,10 @@ public interface GecClient {
     @GetMapping(value = "/cis/{ci-tax-code}/bundles", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Valid
-    Bundles getBundlesByCI(
+    CiBundles getBundlesByCI(
             @PathVariable("ci-tax-code") String ciTaxCode,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String bundleName,
             @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) Integer page
     );
@@ -121,6 +132,11 @@ public interface GecClient {
             @RequestParam(required = false) Integer page
     );
 
+    @GetMapping(value = "/bundles/{id-bundle}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    @Valid
+    Bundle getBundleDetail(@PathVariable("id-bundle") String idBundle);
+
     @PostMapping(value = "/psps/{psp-code}/requests/{id-bundle-request}/reject")
     @Retryable(
             exclude = FeignException.FeignClientException.class,
@@ -142,10 +158,21 @@ public interface GecClient {
             @RequestParam(required = false) Integer page
     );
 
+    @GetMapping(value = "/psps/{psp-code}/offers")
+    @ResponseBody
+    @Valid
+    BundleOffers getPrivateBundleOffersByPSP(
+            @PathVariable("psp-code") String pspCode,
+            @RequestParam(required = false) String ciTaxCode,
+            @RequestParam(required = false) String idBundle,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer page
+    );
+
     @GetMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/creditorInstitutions")
     @ResponseBody
     @Valid
-    BundleCreditorInstitutionResource getPublicBundleSubscriptionByPSP(
+    BundleCreditorInstitutionResource getBundleSubscriptionByPSP(
             @PathVariable("psp-code") String pspCode,
             @PathVariable("id-bundle") String idBundle,
             @RequestParam(name = "ciFiscalCode", required = false) String ciTaxCode,
@@ -156,7 +183,7 @@ public interface GecClient {
     @GetMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/creditorInstitutions/{ci-tax-code}")
     @ResponseBody
     @Valid
-    CiBundleDetails getPublicBundleSubscriptionDetailByPSP(
+    CiBundleDetails getBundleSubscriptionDetailByPSP(
             @PathVariable("psp-code") String pspCode,
             @PathVariable("ci-tax-code") String ciTaxCode,
             @PathVariable("id-bundle") String idBundle
@@ -200,6 +227,32 @@ public interface GecClient {
     BundleRequestId createCIBundleRequest(
             @PathVariable("ci-tax-code") String ciTaxCode,
             @RequestBody @NotNull PublicBundleRequest bundleRequest
+    );
+
+    @DeleteMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/offers/{id-bundle-offer}")
+    @ResponseBody
+    void deletePrivateBundleOffer(
+            @PathVariable("psp-code") String pspCode,
+            @PathVariable("id-bundle") String idBundle,
+            @PathVariable("id-bundle-offer") String idBundleOffer
+    );
+
+    @GetMapping(value = "/cis/{ci-tax-code}/offers")
+    @ResponseBody
+    BundleCIOffers getOffersByCI(
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @RequestParam(required = false) String idPsp,
+            @RequestParam(required = false) String bundleName,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer page
+    );
+
+    @PostMapping(value = "/psps/{psp-code}/bundles/{id-bundle}/offers")
+    @ResponseBody
+    List<BundleOffered> createPrivateBundleOffer(
+            @PathVariable("psp-code") String pspCode,
+            @PathVariable("id-bundle") String idBundle,
+            @RequestBody CiTaxCodeList ciTaxCodeList
     );
 
     @PostMapping(value = "/cis/{ci-tax-code}/offers/{id-bundle-offer}/accept", produces = MediaType.APPLICATION_JSON_VALUE)

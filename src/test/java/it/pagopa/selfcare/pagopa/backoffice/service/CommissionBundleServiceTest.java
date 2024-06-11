@@ -6,14 +6,16 @@ import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleSubscriptionStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsDetail;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCIOffers;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleOffers;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequestId;
@@ -21,6 +23,10 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleAttribute;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleOffer;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleOffer;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
@@ -51,11 +57,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {CommissionBundleService.class, MappingsConfiguration.class})
+@SpringBootTest(classes = {MappingsConfiguration.class, CommissionBundleService.class})
 class CommissionBundleServiceTest {
 
     private static final String PSP_CODE = "pspCode";
@@ -67,10 +74,10 @@ class CommissionBundleServiceTest {
     private static final String ID_BUNDLE = "idBundle";
     private static final String CI_BUNDLE_ID = "ciBundleId";
     private static final String ID_BUNDLE_REQUEST = "idBundleRequest";
+    private static final String ID_BUNDLE_OFFER = "idBundleOffer";
     private static final String TRANSFER_CATEGORY = "9/0105107TS/";
     private static final String SERVICE_TYPE = "Diritti Pratiche SUAP e SUE";
     public static final String BUNDLE_NAME = "bundleName";
-    private static final String BUNDLE_OFFER_ID = "bundleOfferId";
 
     @MockBean
     private GecClient gecClient;
@@ -112,7 +119,7 @@ class CommissionBundleServiceTest {
 
     @Test
     void getBundlesByPSP() {
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
         when(gecClient.getBundlesByPSP(any(), any(), any(), any(), any())).thenReturn(
                 Bundles.builder().bundleList(Collections.singletonList(
                         Bundle.builder().transferCategoryList(Collections.singletonList("test")).build())).build()
@@ -128,7 +135,7 @@ class CommissionBundleServiceTest {
 
     @Test
     void createPSPBundle() {
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
 
         BundleRequest bundleRequest = new BundleRequest();
         assertDoesNotThrow(
@@ -139,7 +146,7 @@ class CommissionBundleServiceTest {
 
     @Test
     void getBundleDetailByPSP() {
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
         when(gecClient.getBundleDetailByPSP(any(), any())).thenReturn(
                 Bundle.builder().transferCategoryList(Collections.singletonList("test")).build());
         when(taxonomyService.getTaxonomiesByCodes(any())).thenReturn(
@@ -155,7 +162,7 @@ class CommissionBundleServiceTest {
 
     @Test
     void updatePSPBundle() {
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
 
         BundleRequest bundleRequest = new BundleRequest();
         assertDoesNotThrow(
@@ -166,7 +173,7 @@ class CommissionBundleServiceTest {
 
     @Test
     void deletePSPBundle() {
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
 
         assertDoesNotThrow(
                 () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE)
@@ -176,7 +183,7 @@ class CommissionBundleServiceTest {
 
     @Test
     void acceptPublicBundleSubscriptionsByPSPSuccess() {
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
 
         assertDoesNotThrow(() ->
                 sut.acceptPublicBundleSubscriptionsByPSP(PSP_TAX_CODE, ID_BUNDLE_REQUEST, CI_TAX_CODE, BUNDLE_NAME));
@@ -185,29 +192,7 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void getCIBundlesPrivateSuccess() {
-        List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
-        Bundles bundles = buildBundles(transferCategoryList, BundleType.PRIVATE);
-
-        when(gecClient.getBundles(any(), eq(null), eq(null), anyInt(), anyInt())).thenReturn(bundles);
-        when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
-
-        CIBundlesResource bundlesResource = assertDoesNotThrow(
-                () -> sut.getCIBundles(BundleType.PRIVATE, CI_TAX_CODE, null, 10, 0));
-
-        assertNotNull(bundlesResource);
-        assertNotNull(bundlesResource.getPageInfo());
-        assertNotNull(bundlesResource.getBundles());
-        assertEquals(1, bundlesResource.getBundles().size());
-        assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
-
-        verify(gecClient).getBundles(any(), eq(null), eq(null), anyInt(), anyInt());
-        verifyNoMoreInteractions(gecClient);
-        verify(taxonomyService).getTaxonomiesByCodes(transferCategoryList);
-    }
-
-    @Test
-    void getCIBundlesShouldReturnExpandedResultFromGlobalAPI() {
+    void getCIBundlesGlobalSuccess() {
         List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
         Bundles bundles = buildBundles(transferCategoryList, BundleType.GLOBAL);
 
@@ -215,7 +200,7 @@ class CommissionBundleServiceTest {
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
 
         CIBundlesResource bundlesResource = assertDoesNotThrow(
-                () -> sut.getCIBundles(BundleType.GLOBAL, null, BUNDLE_NAME, 10, 0));
+                () -> sut.getCIBundles(BundleType.GLOBAL, null, null, BUNDLE_NAME, 10, 0));
 
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
@@ -230,10 +215,10 @@ class CommissionBundleServiceTest {
     @Test
     void getCIBundlesPublicErrorNoCITaxCodeSpecified() {
         AppException e = assertThrows(AppException.class,
-                () -> sut.getCIBundles(BundleType.PUBLIC, null, null, 10, 0));
+                () -> sut.getCIBundles(BundleType.PUBLIC, null, null, null, 10, 0));
 
         assertNotNull(e);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, e.getHttpStatus());
 
         verify(gecClient, never()).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
         verify(gecClient, never()).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
@@ -254,7 +239,7 @@ class CommissionBundleServiceTest {
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
 
         CIBundlesResource bundlesResource = assertDoesNotThrow(
-                () -> sut.getCIBundles(BundleType.PUBLIC, CI_TAX_CODE, null, 10, 0));
+                () -> sut.getCIBundles(BundleType.PUBLIC, null, CI_TAX_CODE, null, 10, 0));
 
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
@@ -289,7 +274,7 @@ class CommissionBundleServiceTest {
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
 
         CIBundlesResource bundlesResource = assertDoesNotThrow(
-                () -> sut.getCIBundles(BundleType.PUBLIC, CI_TAX_CODE, null, 10, 0));
+                () -> sut.getCIBundles(BundleType.PUBLIC, null, CI_TAX_CODE, null, 10, 0));
 
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
@@ -318,7 +303,7 @@ class CommissionBundleServiceTest {
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
 
         CIBundlesResource bundlesResource = assertDoesNotThrow(
-                () -> sut.getCIBundles(BundleType.PUBLIC, CI_TAX_CODE, null, 10, 0));
+                () -> sut.getCIBundles(BundleType.PUBLIC, null, CI_TAX_CODE, null, 10, 0));
 
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
@@ -347,7 +332,7 @@ class CommissionBundleServiceTest {
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
 
         CIBundlesResource bundlesResource = assertDoesNotThrow(
-                () -> sut.getCIBundles(BundleType.PUBLIC, CI_TAX_CODE, null, 10, 0));
+                () -> sut.getCIBundles(BundleType.PUBLIC, null, CI_TAX_CODE, null, 10, 0));
 
         assertNotNull(bundlesResource);
         assertNotNull(bundlesResource.getPageInfo());
@@ -364,15 +349,136 @@ class CommissionBundleServiceTest {
     }
 
     @Test
+    void getCIBundlesPrivateAcceptedSuccessInEnabledStatus() {
+        List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
+        Bundle bundle = buildBundle(transferCategoryList, BundleType.PUBLIC);
+        CiBundles ciBundles = CiBundles.builder()
+                .bundleDetailsList(Collections.singletonList(
+                        CiBundleDetails.builder()
+                                .idBundle(ID_BUNDLE)
+                                .validityDateTo(LocalDate.now().plusDays(1))
+                                .attributes(Collections.singletonList(buildCIBundleAttribute()))
+                                .build()
+                ))
+                .pageInfo(buildPageInfo())
+                .build();
+
+        when(gecClient.getBundlesByCI(CI_TAX_CODE, BundleType.PRIVATE.name(), null, 10, 0))
+                .thenReturn(ciBundles);
+        when(gecClient.getBundleDetail(ID_BUNDLE)).thenReturn(bundle);
+        when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
+
+        CIBundlesResource bundlesResource = assertDoesNotThrow(
+                () -> sut.getCIBundles(BundleType.PRIVATE, BundleSubscriptionStatus.ACCEPTED, CI_TAX_CODE, null, 10, 0));
+
+        assertNotNull(bundlesResource);
+        assertNotNull(bundlesResource.getPageInfo());
+        assertNotNull(bundlesResource.getBundles());
+        assertEquals(1, bundlesResource.getBundles().size());
+        assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
+        assertEquals(CIBundleStatus.ENABLED, bundlesResource.getBundles().get(0).getCiBundleStatus());
+
+        verify(gecClient, never()).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
+        verify(gecClient, never()).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
+        verify(gecClient, never()).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
+        verify(taxonomyService).getTaxonomiesByCodes(transferCategoryList);
+    }
+
+    @Test
+    void getCIBundlesPrivateAcceptedSuccessOnRemovalStatus() {
+        List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
+        Bundle bundle = buildBundle(transferCategoryList, BundleType.PRIVATE);
+        CiBundles ciBundles = CiBundles.builder()
+                .bundleDetailsList(Collections.singletonList(
+                        CiBundleDetails.builder()
+                                .idBundle(ID_BUNDLE)
+                                .validityDateTo(LocalDate.now())
+                                .attributes(Collections.singletonList(buildCIBundleAttribute()))
+                                .build()
+                ))
+                .pageInfo(buildPageInfo())
+                .build();
+
+        when(gecClient.getBundlesByCI(CI_TAX_CODE, BundleType.PRIVATE.name(), null, 10, 0))
+                .thenReturn(ciBundles);
+        when(gecClient.getBundleDetail(ID_BUNDLE)).thenReturn(bundle);
+        when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
+
+        CIBundlesResource bundlesResource = assertDoesNotThrow(
+                () -> sut.getCIBundles(BundleType.PRIVATE, BundleSubscriptionStatus.ACCEPTED, CI_TAX_CODE, null, 10, 0));
+
+        assertNotNull(bundlesResource);
+        assertNotNull(bundlesResource.getPageInfo());
+        assertNotNull(bundlesResource.getBundles());
+        assertEquals(1, bundlesResource.getBundles().size());
+        assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
+        assertEquals(CIBundleStatus.ON_REMOVAL, bundlesResource.getBundles().get(0).getCiBundleStatus());
+
+        verify(gecClient, never()).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
+        verify(gecClient, never()).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
+        verify(gecClient, never()).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
+        verify(taxonomyService).getTaxonomiesByCodes(transferCategoryList);
+    }
+
+    @Test
+    void getCIBundlesPrivateWErrorNoCITaxCodeSpecified() {
+        AppException e = assertThrows(AppException.class,
+                () -> sut.getCIBundles(BundleType.PRIVATE, BundleSubscriptionStatus.WAITING, null, null, 10, 0));
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.BAD_REQUEST, e.getHttpStatus());
+
+        verify(gecClient, never()).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
+        verify(gecClient, never()).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
+        verify(gecClient, never()).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
+        verify(taxonomyService, never()).getTaxonomiesByCodes(any());
+    }
+
+    @Test
+    void getCIBundlesPrivateWaitingSuccess() {
+        List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
+        Bundle bundle = buildBundle(transferCategoryList, BundleType.PRIVATE);
+        BundleCIOffers offers = BundleCIOffers.builder()
+                .offers(Collections.singletonList(
+                        CiBundleOffer.builder()
+                                .id(ID_BUNDLE_OFFER)
+                                .idBundle(ID_BUNDLE)
+                                .build()
+                ))
+                .pageInfo(buildPageInfo())
+                .build();
+
+        when(gecClient.getOffersByCI(CI_TAX_CODE, null, null, 10, 0))
+                .thenReturn(offers);
+        when(gecClient.getBundleDetail(ID_BUNDLE)).thenReturn(bundle);
+        when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
+
+        CIBundlesResource bundlesResource = assertDoesNotThrow(
+                () -> sut.getCIBundles(BundleType.PRIVATE, BundleSubscriptionStatus.WAITING, CI_TAX_CODE, null, 10, 0));
+
+        assertNotNull(bundlesResource);
+        assertNotNull(bundlesResource.getPageInfo());
+        assertNotNull(bundlesResource.getBundles());
+        assertEquals(1, bundlesResource.getBundles().size());
+        assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
+        assertEquals(CIBundleStatus.AVAILABLE, bundlesResource.getBundles().get(0).getCiBundleStatus());
+
+        verify(gecClient, never()).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
+        verify(gecClient, never()).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
+        verify(gecClient, never()).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
+        verify(taxonomyService).getTaxonomiesByCodes(transferCategoryList);
+    }
+
+    @Test
     void rejectPublicBundleSubscriptionByPSPSuccess() {
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
         assertDoesNotThrow(() ->
                 sut.rejectPublicBundleSubscriptionByPSP(PSP_TAX_CODE, ID_BUNDLE_REQUEST, CI_TAX_CODE, BUNDLE_NAME));
         verify(gecClient).rejectPublicBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE_REQUEST);
     }
 
     @Test
-    void getPublicBundleCISubscriptionsAccepted() {
+    void getAcceptedBundleCISubscriptionsSuccess() {
         BundleCreditorInstitutionResource codeList = BundleCreditorInstitutionResource.builder()
                 .ciBundleDetails(Collections.singletonList(
                         CiBundleDetails.builder()
@@ -384,17 +490,16 @@ class CommissionBundleServiceTest {
                 .build();
         CreditorInstitutionInfo ciInfo = buildCIInfo();
 
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
-        when(gecClient.getPublicBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, LIMIT, PAGE))
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, LIMIT, PAGE))
                 .thenReturn(codeList);
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(Collections.singletonList(CI_TAX_CODE)))
                 .thenReturn(Collections.singletonList(ciInfo));
 
-        PublicBundleCISubscriptionsResource result = assertDoesNotThrow(() -> sut
-                .getPublicBundleCISubscriptions(
+        CIBundleSubscriptionsResource result = assertDoesNotThrow(() -> sut
+                .getAcceptedBundleCISubscriptions(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
-                        PublicBundleSubscriptionStatus.ACCEPTED,
                         null,
                         LIMIT,
                         PAGE)
@@ -413,7 +518,7 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void getPublicBundleCISubscriptionsAcceptedOnRemovalToday() {
+    void getAcceptedBundleCISubscriptionsOnRemovalToday() {
         BundleCreditorInstitutionResource codeList = BundleCreditorInstitutionResource.builder()
                 .ciBundleDetails(Collections.singletonList(
                         CiBundleDetails.builder()
@@ -425,17 +530,16 @@ class CommissionBundleServiceTest {
                 .build();
         CreditorInstitutionInfo ciInfo = buildCIInfo();
 
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
-        when(gecClient.getPublicBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, LIMIT, PAGE))
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, LIMIT, PAGE))
                 .thenReturn(codeList);
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(Collections.singletonList(CI_TAX_CODE)))
                 .thenReturn(Collections.singletonList(ciInfo));
 
-        PublicBundleCISubscriptionsResource result = assertDoesNotThrow(() -> sut
-                .getPublicBundleCISubscriptions(
+        CIBundleSubscriptionsResource result = assertDoesNotThrow(() -> sut
+                .getAcceptedBundleCISubscriptions(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
-                        PublicBundleSubscriptionStatus.ACCEPTED,
                         null,
                         LIMIT,
                         PAGE)
@@ -454,7 +558,7 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void getPublicBundleCISubscriptionsAcceptedOnRemovalYesterday() {
+    void getAcceptedBundleCISubscriptionsOnRemovalYesterday() {
         BundleCreditorInstitutionResource codeList = BundleCreditorInstitutionResource.builder()
                 .ciBundleDetails(Collections.singletonList(
                         CiBundleDetails.builder()
@@ -466,17 +570,16 @@ class CommissionBundleServiceTest {
                 .build();
         CreditorInstitutionInfo ciInfo = buildCIInfo();
 
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
-        when(gecClient.getPublicBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, LIMIT, PAGE))
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, LIMIT, PAGE))
                 .thenReturn(codeList);
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(Collections.singletonList(CI_TAX_CODE)))
                 .thenReturn(Collections.singletonList(ciInfo));
 
-        PublicBundleCISubscriptionsResource result = assertDoesNotThrow(() -> sut
-                .getPublicBundleCISubscriptions(
+        CIBundleSubscriptionsResource result = assertDoesNotThrow(() -> sut
+                .getAcceptedBundleCISubscriptions(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
-                        PublicBundleSubscriptionStatus.ACCEPTED,
                         null,
                         LIMIT,
                         PAGE)
@@ -495,7 +598,7 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void getPublicBundleCISubscriptionsWaiting() {
+    void getWaitingBundleCISubscriptionsSuccessWithPublicBundle() {
         PublicBundleRequests publicBundleRequests = PublicBundleRequests.builder()
                 .requestsList(
                         Collections.singletonList(
@@ -508,17 +611,17 @@ class CommissionBundleServiceTest {
                 .build();
         CreditorInstitutionInfo ciInfo = buildCIInfo();
 
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
         when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, LIMIT, PAGE))
                 .thenReturn(publicBundleRequests);
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(Collections.singletonList(CI_TAX_CODE)))
                 .thenReturn(Collections.singletonList(ciInfo));
 
-        PublicBundleCISubscriptionsResource result = assertDoesNotThrow(() -> sut
-                .getPublicBundleCISubscriptions(
+        CIBundleSubscriptionsResource result = assertDoesNotThrow(() -> sut
+                .getWaitingBundleCISubscriptions(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
-                        PublicBundleSubscriptionStatus.WAITING,
+                        BundleType.PUBLIC,
                         null,
                         LIMIT,
                         PAGE)
@@ -537,24 +640,104 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void getPublicBundleCISubscriptionsDetailAccepted() {
+    void getWaitingBundleCISubscriptionsSuccessWithPrivateBundle() {
+        BundleOffers bundleOffers = BundleOffers.builder()
+                .offers(Collections.singletonList(
+                        PspBundleOffer.builder()
+                                .ciFiscalCode(CI_TAX_CODE)
+                                .build()
+                ))
+                .pageInfo(buildPageInfo())
+                .build();
+        CreditorInstitutionInfo ciInfo = buildCIInfo();
+
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+        when(gecClient.getPrivateBundleOffersByPSP(PSP_CODE, null, ID_BUNDLE, LIMIT, PAGE))
+                .thenReturn(bundleOffers);
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(Collections.singletonList(CI_TAX_CODE)))
+                .thenReturn(Collections.singletonList(ciInfo));
+
+        CIBundleSubscriptionsResource result = assertDoesNotThrow(() -> sut
+                .getWaitingBundleCISubscriptions(
+                        ID_BUNDLE,
+                        PSP_TAX_CODE,
+                        BundleType.PRIVATE,
+                        null,
+                        LIMIT,
+                        PAGE)
+        );
+
+        assertNotNull(result);
+        assertEquals(1, result.getCiSubscriptionInfoList().size());
+        assertNotNull(result.getPageInfo());
+        assertEquals(LIMIT, result.getPageInfo().getLimit());
+        assertEquals(PAGE, result.getPageInfo().getPage());
+        assertEquals(1, result.getPageInfo().getTotalPages());
+
+        assertEquals(CI_TAX_CODE, result.getCiSubscriptionInfoList().get(0).getCiTaxCode());
+        assertNull(result.getCiSubscriptionInfoList().get(0).getOnRemoval());
+        assertEquals(ciInfo.getBusinessName(), result.getCiSubscriptionInfoList().get(0).getBusinessName());
+    }
+
+    @Test
+    void getWaitingBundleCISubscriptionsFailWithGlobalBundle() {
+        AppException e = assertThrows(AppException.class, () -> sut
+                .getWaitingBundleCISubscriptions(
+                        ID_BUNDLE,
+                        PSP_TAX_CODE,
+                        BundleType.GLOBAL,
+                        null,
+                        LIMIT,
+                        PAGE)
+        );
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.BAD_REQUEST, e.getHttpStatus());
+
+        verify(legacyPspCodeUtilMock, never()).retrievePspCode(PSP_TAX_CODE, true);
+        verify(gecClient, never()).getPrivateBundleOffersByPSP(PSP_CODE, null, ID_BUNDLE, LIMIT, PAGE);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionInfo(Collections.singletonList(CI_TAX_CODE));
+    }
+
+    @Test
+    void getWaitingBundleCISubscriptionsFailWithNullBundleType() {
+        AppException e = assertThrows(AppException.class, () -> sut
+                .getWaitingBundleCISubscriptions(
+                        ID_BUNDLE,
+                        PSP_TAX_CODE,
+                        null,
+                        null,
+                        LIMIT,
+                        PAGE)
+        );
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.BAD_REQUEST, e.getHttpStatus());
+
+        verify(legacyPspCodeUtilMock, never()).retrievePspCode(PSP_TAX_CODE, true);
+        verify(gecClient, never()).getPrivateBundleOffersByPSP(PSP_CODE, null, ID_BUNDLE, LIMIT, PAGE);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionInfo(Collections.singletonList(CI_TAX_CODE));
+    }
+
+    @Test
+    void getAcceptedBundleCISubscriptionsDetailSuccess() {
         CiBundleDetails bundleDetails = CiBundleDetails.builder()
                 .idCIBundle(CI_BUNDLE_ID)
                 .attributes(Collections.singletonList(buildCIBundleAttribute()))
                 .build();
 
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
-        when(gecClient.getPublicBundleSubscriptionDetailByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE))
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+        when(gecClient.getBundleSubscriptionDetailByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE))
                 .thenReturn(bundleDetails);
         when(taxonomyService.getTaxonomiesByCodes(Collections.singletonList(TRANSFER_CATEGORY)))
                 .thenReturn(buildTaxonomyList());
 
-        PublicBundleCISubscriptionsDetail result = assertDoesNotThrow(() -> sut
-                .getPublicBundleCISubscriptionsDetail(
+        CIBundleSubscriptionsDetail result = assertDoesNotThrow(() -> sut
+                .getAcceptedBundleCISubscriptionsDetail(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
-                        CI_TAX_CODE,
-                        PublicBundleSubscriptionStatus.ACCEPTED)
+                        CI_TAX_CODE
+                )
         );
 
         assertNotNull(result);
@@ -569,25 +752,26 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void getPublicBundleCISubscriptionsDetailWaiting() {
+    void getWaitingBundleCISubscriptionsDetailSuccessWithPublicBundle() {
         PublicBundleRequests publicBundleRequests = buildPspRequests();
         Taxonomy taxonomy = Taxonomy.builder()
                 .serviceType(SERVICE_TYPE)
                 .specificBuiltInData(TRANSFER_CATEGORY)
                 .build();
 
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
         when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, PAGE))
                 .thenReturn(publicBundleRequests);
         when(taxonomyService.getTaxonomiesByCodes(Collections.singletonList(TRANSFER_CATEGORY)))
                 .thenReturn(Collections.singletonList(taxonomy));
 
-        PublicBundleCISubscriptionsDetail result = assertDoesNotThrow(() -> sut
-                .getPublicBundleCISubscriptionsDetail(
+        CIBundleSubscriptionsDetail result = assertDoesNotThrow(() -> sut
+                .getWaitingBundleCISubscriptionsDetail(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
                         CI_TAX_CODE,
-                        PublicBundleSubscriptionStatus.WAITING)
+                        BundleType.PUBLIC
+                )
         );
 
         assertNotNull(result);
@@ -602,21 +786,22 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void getPublicBundleCISubscriptionsDetailWaitingNoResult() {
+    void getWaitingBundleCISubscriptionsDetailSuccessWithPublicBundleNoResult() {
         PublicBundleRequests publicBundleRequests = PublicBundleRequests.builder()
                 .requestsList(Collections.emptyList())
                 .build();
 
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, false)).thenReturn(PSP_CODE);
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
         when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, PAGE))
                 .thenReturn(publicBundleRequests);
 
-        PublicBundleCISubscriptionsDetail result = assertDoesNotThrow(() -> sut
-                .getPublicBundleCISubscriptionsDetail(
+        CIBundleSubscriptionsDetail result = assertDoesNotThrow(() -> sut
+                .getWaitingBundleCISubscriptionsDetail(
                         ID_BUNDLE,
                         PSP_TAX_CODE,
                         CI_TAX_CODE,
-                        PublicBundleSubscriptionStatus.WAITING)
+                        BundleType.PUBLIC
+                )
         );
 
         assertNotNull(result);
@@ -625,6 +810,102 @@ class CommissionBundleServiceTest {
         assertNull(result.getBundleRequestId());
 
         verify(taxonomyService, never()).getTaxonomiesByCodes(anyList());
+    }
+
+    @Test
+    void getWaitingBundleCISubscriptionsDetailSuccessWithPrivateBundle() {
+        BundleOffers bundleOffers = BundleOffers.builder()
+                .offers(Collections.singletonList(
+                        PspBundleOffer.builder()
+                                .ciFiscalCode(CI_TAX_CODE)
+                                .id(ID_BUNDLE_OFFER)
+                                .build()
+                ))
+                .pageInfo(buildPageInfo())
+                .build();
+
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+        when(gecClient.getPrivateBundleOffersByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, PAGE))
+                .thenReturn(bundleOffers);
+
+        CIBundleSubscriptionsDetail result = assertDoesNotThrow(() -> sut
+                .getWaitingBundleCISubscriptionsDetail(
+                        ID_BUNDLE,
+                        PSP_TAX_CODE,
+                        CI_TAX_CODE,
+                        BundleType.PRIVATE
+                )
+        );
+
+        assertNotNull(result);
+        assertTrue(result.getCiBundleFeeList().isEmpty());
+        assertNull(result.getBundleRequestId());
+        assertEquals(ID_BUNDLE_OFFER, result.getBundleOfferId());
+        assertNull(result.getIdCIBundle());
+    }
+
+    @Test
+    void getWaitingBundleCISubscriptionsDetailSuccessWithPrivateBundleNoResult() {
+        BundleOffers bundleOffers = BundleOffers.builder()
+                .offers(Collections.emptyList())
+                .build();
+
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+        when(gecClient.getPrivateBundleOffersByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, PAGE))
+                .thenReturn(bundleOffers);
+
+        CIBundleSubscriptionsDetail result = assertDoesNotThrow(() -> sut
+                .getWaitingBundleCISubscriptionsDetail(
+                        ID_BUNDLE,
+                        PSP_TAX_CODE,
+                        CI_TAX_CODE,
+                        BundleType.PRIVATE
+                )
+        );
+
+        assertNotNull(result);
+        assertTrue(result.getCiBundleFeeList().isEmpty());
+        assertNull(result.getIdCIBundle());
+        assertNull(result.getBundleRequestId());
+        assertNull(result.getBundleOfferId());
+    }
+
+    @Test
+    void getWaitingBundleCISubscriptionsDetailFailWithGlobalBundle() {
+        AppException e = assertThrows(AppException.class, () -> sut
+                .getWaitingBundleCISubscriptionsDetail(
+                        ID_BUNDLE,
+                        PSP_TAX_CODE,
+                        null,
+                        BundleType.GLOBAL)
+        );
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.BAD_REQUEST, e.getHttpStatus());
+
+        verify(legacyPspCodeUtilMock, never()).retrievePspCode(PSP_TAX_CODE, true);
+        verify(gecClient, never()).getPublicBundleSubscriptionRequestByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, PAGE);
+        verify(gecClient, never()).getPrivateBundleOffersByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, PAGE);
+        verify(taxonomyService, never()).getTaxonomiesByCodes(Collections.singletonList(TRANSFER_CATEGORY));
+    }
+
+    @Test
+    void getWaitingBundleCISubscriptionsDetailFailWithNullBundleType() {
+        AppException e = assertThrows(AppException.class, () -> sut
+                .getWaitingBundleCISubscriptionsDetail(
+                        ID_BUNDLE,
+                        PSP_TAX_CODE,
+                        null,
+                        null)
+        );
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.BAD_REQUEST, e.getHttpStatus());
+
+        verify(legacyPspCodeUtilMock, never()).retrievePspCode(PSP_TAX_CODE, true);
+        verify(gecClient, never()).getPublicBundleSubscriptionRequestByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, PAGE);
+        verify(gecClient, never()).getPrivateBundleOffersByPSP(PSP_CODE, CI_TAX_CODE, ID_BUNDLE, 1, PAGE);
+        verify(taxonomyService, never()).getTaxonomiesByCodes(Collections.singletonList(TRANSFER_CATEGORY));
     }
 
     @Test
@@ -651,11 +932,35 @@ class CommissionBundleServiceTest {
     }
 
     @Test
+    void deletePrivateBundleOfferSuccess(){
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+
+        assertDoesNotThrow(() ->
+                sut.deletePrivateBundleOffer(ID_BUNDLE, PSP_TAX_CODE, ID_BUNDLE_OFFER));
+
+        verify(gecClient).deletePrivateBundleOffer(PSP_CODE, ID_BUNDLE, ID_BUNDLE_OFFER);
+    }
+
+    @Test
+    void createCIBundleOffersSuccess(){
+        List<String> ciTaxCodes = List.of(CI_TAX_CODE, "taxCode2", "taxCode3");
+        CiTaxCodeList ciTaxCodeList = CiTaxCodeList.builder().ciTaxCodes(ciTaxCodes).build();
+
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+
+        assertDoesNotThrow(() ->
+                sut.createCIBundleOffers(ID_BUNDLE, PSP_TAX_CODE, BUNDLE_NAME, ciTaxCodeList));
+
+        verify(gecClient).createPrivateBundleOffer(PSP_CODE, ID_BUNDLE, ciTaxCodeList);
+        verify(awsSesClient, times(ciTaxCodes.size())).sendEmail(any());
+    }
+
+    @Test
     void ciAcceptPrivateBundleOfferTest() {
         assertDoesNotThrow(
-                () -> sut.ciAcceptPrivateBundleOffer(CI_TAX_CODE, BUNDLE_OFFER_ID)
+                () -> sut.ciAcceptPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER)
         );
-        verify(gecClient).ciAcceptPrivateBundleOffer(CI_TAX_CODE, BUNDLE_OFFER_ID);
+        verify(gecClient).ciAcceptPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER);
     }
 
     private PublicBundleRequests buildPspRequests() {
@@ -673,11 +978,10 @@ class CommissionBundleServiceTest {
     }
 
     private CreditorInstitutionInfo buildCIInfo() {
-        CreditorInstitutionInfo ciInfo = CreditorInstitutionInfo.builder()
+        return CreditorInstitutionInfo.builder()
                 .businessName("businessName")
                 .ciTaxCode(CI_TAX_CODE)
                 .build();
-        return ciInfo;
     }
 
     private PageInfo buildPageInfo() {
@@ -690,16 +994,17 @@ class CommissionBundleServiceTest {
 
     private Bundles buildBundles(List<String> transferCategoryList, BundleType bundleType) {
         return Bundles.builder()
-                .bundleList(
-                        Collections.singletonList(
-                                Bundle.builder()
-                                        .id(ID_BUNDLE)
-                                        .name("ecName")
-                                        .type(bundleType)
-                                        .transferCategoryList(transferCategoryList)
-                                        .build())
-                )
+                .bundleList(Collections.singletonList(buildBundle(transferCategoryList, bundleType)))
                 .pageInfo(PageInfo.builder().build())
+                .build();
+    }
+
+    private Bundle buildBundle(List<String> transferCategoryList, BundleType bundleType) {
+        return Bundle.builder()
+                .id(ID_BUNDLE)
+                .name("ecName")
+                .type(bundleType)
+                .transferCategoryList(transferCategoryList)
                 .build();
     }
 

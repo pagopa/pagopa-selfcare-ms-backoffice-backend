@@ -2,7 +2,6 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,12 +9,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.ApiConfigCreditorInstitutionsOrderBy;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.AvailableCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionAndBrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionContactsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionInfoResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
@@ -23,8 +23,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.UpdateCred
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerAndEcDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.service.CreditorInstitutionService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,11 +39,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
-@Slf4j
 @RestController
 @RequestMapping(value = "/creditor-institutions", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Creditor institutions")
@@ -69,14 +70,15 @@ public class CreditorInstitutionController {
     @Operation(summary = "Get paginated list of creditor institutions", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public CreditorInstitutionsResource getCreditorInstitutions(
-            @Parameter(description = "Number of elements on one page. Default = 50") @RequestParam(required = false, defaultValue = "50") Integer limit,
-            @Parameter(description = "Page number. Page value starts from 0") @RequestParam Integer page,
-            @Parameter(description = "Creditor institution's tax code") @RequestParam(required = false, value = "ci-tax-code") @NotBlank String ciTaxCode,
-            @Parameter(description = "Creditor institution's name") @RequestParam(required = false, value = "name") String name,
-            @Parameter(description = "Sorting method for paginated result") @RequestParam(required = false, value = "sorting") String sorting
+            @Parameter(description = "Creditor institution's tax code, used to filter out results") @RequestParam(required = false) String ciTaxCode,
+            @Parameter(description = "Creditor institution's name, used to filter out results") @RequestParam(required = false) String ciName,
+            @Parameter(description = "Flag that describe if the creditor institution is enabled, used to filter out results") @RequestParam(required = false) Boolean enabled,
+            @Parameter(description = "Order by creditor institution's tax code or business name") @RequestParam(required = false, defaultValue = "NAME") ApiConfigCreditorInstitutionsOrderBy orderBy,
+            @Parameter(description = "Sorting method for paginated result") @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sorting,
+            @Parameter(description = "Number of elements on one page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
+            @Parameter(description = "Page number") @RequestParam @PositiveOrZero @Min(0) Integer page
     ) {
-
-        return ciService.getCreditorInstitutions(limit, page, ciTaxCode, name, sorting);
+        return this.ciService.getCreditorInstitutions(ciTaxCode, ciName, enabled, orderBy, sorting, limit, page);
     }
 
     @GetMapping(value = "/{ci-tax-code}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -279,7 +281,7 @@ public class CreditorInstitutionController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            array = @ArraySchema(schema = @Schema(implementation = CreditorInstitutionInfo.class)))),
+                            schema = @Schema(implementation = CreditorInstitutionInfoResource.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
@@ -292,7 +294,7 @@ public class CreditorInstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get the list of Creditor Institutions that can be associated to the station", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public List<CreditorInstitutionInfo> getAvailableCreditorInstitutionsForStation(
+    public CreditorInstitutionInfoResource getAvailableCreditorInstitutionsForStation(
             @Parameter(description = "Station's code") @PathVariable("station-code") String stationCode,
             @Parameter(description = "Broker's unique id") @RequestParam String brokerId
     ) {

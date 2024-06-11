@@ -37,6 +37,10 @@ public class InstitutionUploadData {
     @NotNull
     private Boolean webChannel;
 
+    @Schema(description = "Boolean to refer if it has a web channel", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
+    private Boolean appChannel;
+
     @Schema(description = "CI physical channel data")
     private String physicalChannel;
 
@@ -45,13 +49,16 @@ public class InstitutionUploadData {
     @NotEmpty
     private String cbill;
 
+    @Schema(description = "Poste name")
+    private String posteName;
+
     @Schema(description = "Poste account number")
     private String posteAccountNumber;
 
     @Schema(description = "Poste auth code")
     private String posteAuth;
 
-    @Schema(hidden = true)
+    @Schema(description = "Existing logo url")
     private String logo;
 
 }

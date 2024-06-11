@@ -104,58 +104,14 @@ jobs:
     steps:
       - name: Make Release
         id: release
-        uses: pagopa/github-actions-template/maven-release@v1.13.3
+        uses: pagopa/github-actions-template/maven-release@4a4c25ce28feeec9e619b3132b5327f52023d441 # v1.14.2
         with:
           semver: ${{ needs.setup.outputs.semver }}
           github_token: ${{ secrets.BOT_TOKEN_GITHUB }}
           beta: ${{ inputs.beta }}
           skip_ci: true
-          prerelease: ${{ needs.setup.outputs.environment == 'prod' }}
-
-      - name: Checkout code
-        uses: actions/checkout@v4 # required to make the script available for next step
-      - name: Generate Release Notes for Latest
-        id: generate_notes
-        if: ${{ needs.setup.outputs.environment == 'prod' }}
-        uses: actions/github-script@v5
-        env:
-          TAG: ${{ steps.release.outputs.version }}
-          PRERELEASE: false
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const { TAG, PRERELEASE } = process.env
-
-            console.log(TAG, PRERELEASE);
-
-            var startingRelease = await github.rest.repos.getLatestRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            }); 
-            console.log(startingRelease);
-
-            var releaseNotes = await github.rest.repos.generateReleaseNotes({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: TAG,
-              previous_tag_name: startingRelease.data.tag_name
-            });
-            console.log(releaseNotes);   
-            
-            var targetRelease = await github.rest.repos.getReleaseByTag({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag: TAG,
-            });
-            console.log(targetRelease); 
-            
-            await github.rest.repos.updateRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: targetRelease.data.id,
-              body: releaseNotes.data.body,
-              prerelease: PRERELEASE
-            });
+          prerelease: ${{ needs.setup.outputs.environment != 'prod' }}
+          only_tag: ${{ needs.setup.outputs.environment == 'dev' }}
 
   image:
     needs: [ setup, release ]
@@ -165,7 +121,7 @@ jobs:
     steps:
       - name: Build and Push
         id: semver
-        uses: pagopa/github-actions-template/ghcr-build-push@v1.5.4
+        uses: pagopa/github-actions-template/ghcr-build-push@d91a1fd0b913c9830589be5d86cdb71c90813fae # v1.5.4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ needs.release.outputs.version }}
@@ -187,7 +143,7 @@ jobs:
     steps:
       - name: Report Status
         if: ${{ needs.setup.outputs.environment == 'prod' }}
-        uses: ravsamhq/notify-slack-action@v2
+        uses: ravsamhq/notify-slack-action@be814b201e233b2dc673608aa46e5447c8ab13f2 # v2
         with:
           status: ${{ needs.deploy_aks.result }}
           token: ${{ secrets.GITHUB_TOKEN }}

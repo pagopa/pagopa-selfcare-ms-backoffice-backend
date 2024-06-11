@@ -7,14 +7,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.configuration.PaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.configuration.WfespPluginConfs;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.BrokerPspDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.BrokersPsp;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelPspList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviderDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviders;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.ApiConfigCreditorInstitutionsOrderBy;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
@@ -23,19 +17,12 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -189,11 +176,15 @@ public interface ApiConfigClient {
 
     @GetMapping(value = "/creditorinstitutions", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid
-    CreditorInstitutions getCreditorInstitutions(@RequestParam(required = false, defaultValue = "50") Integer limit,
-                                                 @RequestParam(required = true) Integer page,
-                                                 @RequestParam(required = false, name = "code") String ecCode,
-                                                 @RequestParam(required = false, name = "name") String name,
-                                                 @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sorting);
+    CreditorInstitutions getCreditorInstitutions(
+            @RequestParam(required = false, name = "code") String ciTaxCode,
+            @RequestParam(required = false, name = "name") String businessName,
+            @RequestParam(required = false, name = "enabled") Boolean enabled,
+            @RequestParam(required = false, name = "orderby") ApiConfigCreditorInstitutionsOrderBy orderBy,
+            @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sorting,
+            @RequestParam(required = false, defaultValue = "50") Integer limit,
+            @RequestParam Integer page
+    );
 
     @PutMapping(value = "/creditorinstitutions/{creditorinstitutioncode}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid
@@ -229,10 +220,6 @@ public interface ApiConfigClient {
     void deleteCreditorInstitutionStationRelationship(@PathVariable("creditorinstitutioncode") String ecCode,
                                                       @PathVariable(required = false, name = "stationcode") String stationcode);
 
-    @GetMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/ibans/list")
-    @Valid
-    Ibans getCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
-                                      @RequestParam String label);
 
     @PostMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/ibans", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid

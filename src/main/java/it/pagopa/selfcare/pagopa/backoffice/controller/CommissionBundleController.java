@@ -10,16 +10,17 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleSubscriptionStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundlesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsDetail;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleCISubscriptionsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PublicBundleSubscriptionStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.service.CommissionBundleService;
@@ -70,12 +71,13 @@ public class CommissionBundleController {
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public CIBundlesResource getCisBundles(
             @Parameter(description = "Commission bundle's type") @RequestParam BundleType bundleType,
-            @Parameter(description = "Creditor institution's tax code, required in case of public bundle, otherwise is optional and used to filter the results") @RequestParam(required = false) String ciTaxCode,
-            @Parameter(description = "Commission bundle's name") @RequestParam(required = false) String name,
+            @Parameter(description = "Bundle subscription status, required in case of private bundle otherwise is not considered") @RequestParam(required = false) BundleSubscriptionStatus status,
+            @Parameter(description = "Creditor institution's tax code, required in case of public/private bundle, otherwise is optional and used to filter the results") @RequestParam(required = false) String ciTaxCode,
+            @Parameter(description = "Commission bundle's name, used to filter out results") @RequestParam(required = false) String name,
             @Parameter(description = "Number of elements in one page") @RequestParam(required = false, defaultValue = "50") Integer limit,
             @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") @Min(0) Integer page
     ) {
-        return this.commissionBundleService.getCIBundles(bundleType, ciTaxCode, name, limit, page);
+        return this.commissionBundleService.getCIBundles(bundleType, status, ciTaxCode, name, limit, page);
     }
 
     @GetMapping("/payment-types")
@@ -219,10 +221,11 @@ public class CommissionBundleController {
     }
 
     /**
-     * Retrieve a paginated list of creditor institution's subscriptions to a public bundle of a PSP
+     * Retrieve a paginated list of creditor institution's subscriptions to a public/private bundle of a PSP
      *
-     * @param idBundle   the id of the public bundle
+     * @param idBundle   the id of the public/private bundle
      * @param pspTaxCode the payment service provider's tax code
+     * @param bundleType the type of the bundle (Required only for subscription with status {@link BundleSubscriptionStatus#WAITING}
      * @param status     the status of the subscription
      * @param ciTaxCode  the creditor institution's tax code
      * @param limit      the size of the page
@@ -232,54 +235,63 @@ public class CommissionBundleController {
     @GetMapping("/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PublicBundleCISubscriptionsResource.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = CIBundleSubscriptionsResource.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
             @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
-    @Operation(summary = "Get a paginated list of creditor institution's subscriptions to a public bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Get a paginated list of creditor institution's subscriptions to a public/private bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public PublicBundleCISubscriptionsResource getPublicBundleCISubscriptions(
+    public CIBundleSubscriptionsResource getBundleCISubscriptions(
             @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
             @Parameter(description = "Payment Service Provider's tax code") @PathVariable("psp-tax-code") String pspTaxCode,
-            @Parameter(description = "Subscription status") @RequestParam PublicBundleSubscriptionStatus status,
+            @Parameter(description = "Commission bundle's type (Required only for subscription with status WAITING") @RequestParam(required = false) BundleType bundleType,
+            @Parameter(description = "Subscription status") @RequestParam BundleSubscriptionStatus status,
             @Parameter(description = "Creditor Institution's tax code, used for filtering results") @RequestParam(required = false) String ciTaxCode,
             @Parameter(description = "Number of elements in one page") @RequestParam(required = false, defaultValue = "50") Integer limit,
             @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") Integer page
     ) {
-        return this.commissionBundleService.getPublicBundleCISubscriptions(idBundle, pspTaxCode, status, ciTaxCode, limit, page);
+        if (BundleSubscriptionStatus.ACCEPTED.equals(status)) {
+            return this.commissionBundleService.getAcceptedBundleCISubscriptions(idBundle, pspTaxCode, ciTaxCode, limit, page);
+        }
+        return this.commissionBundleService.getWaitingBundleCISubscriptions(idBundle, pspTaxCode, bundleType, ciTaxCode, limit, page);
     }
 
     /**
-     * Retrieve the detail of a creditor institution's subscription to a public bundle of a PSP
+     * Retrieve the detail of a creditor institution's subscription to a public/private bundle of a PSP
      *
-     * @param idBundle   the id of the public bundle
+     * @param idBundle   the id of the public/private bundle
      * @param pspTaxCode the payment service provider's tax code
      * @param ciTaxCode  the creditor institution's tax code
+     * @param bundleType the type of the bundle (Required only for subscription with status {@link BundleSubscriptionStatus#WAITING}
      * @param status     the status of the subscription
      * @return the detail of a creditor institution's subscription
      */
-    @GetMapping("/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}/detail")
+    @GetMapping("/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PublicBundleCISubscriptionsDetail.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = CIBundleSubscriptionsDetail.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
             @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
-    @Operation(summary = "Get the detail of a creditor institution's subscription to a public bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
+    @Operation(summary = "Get the detail of a creditor institution's subscription to a public/private bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public PublicBundleCISubscriptionsDetail getPublicBundleCISubscriptionsDetail(
+    public CIBundleSubscriptionsDetail getBundleCISubscriptionsDetail(
             @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
             @Parameter(description = "Payment Service Provider's tax code") @PathVariable("psp-tax-code") String pspTaxCode,
             @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
-            @Parameter(description = "Subscription status") @RequestParam PublicBundleSubscriptionStatus status
+            @Parameter(description = "Commission bundle's type (Required only for subscription with status WAITING") @RequestParam(required = false) BundleType bundleType,
+            @Parameter(description = "Subscription status") @RequestParam BundleSubscriptionStatus status
     ) {
-        return this.commissionBundleService.getPublicBundleCISubscriptionsDetail(idBundle, pspTaxCode, ciTaxCode, status);
+        if (BundleSubscriptionStatus.ACCEPTED.equals(status)) {
+            return this.commissionBundleService.getAcceptedBundleCISubscriptionsDetail(idBundle, pspTaxCode, ciTaxCode);
+        }
+        return this.commissionBundleService.getWaitingBundleCISubscriptionsDetail(idBundle, pspTaxCode, ciTaxCode, bundleType);
     }
 
     /**
@@ -291,6 +303,14 @@ public class CommissionBundleController {
      */
     @DeleteMapping(value = "/{ci-bundle-id}/creditor-institutions/{ci-tax-code}")
     @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema())),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @Operation(summary = "Delete a creditor institution's subscription to a public/private bundle", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public void deleteCIBundleSubscription(
@@ -305,10 +325,18 @@ public class CommissionBundleController {
      * Remove the creditor institution's subscription request to the specified public bundle
      *
      * @param idBundleRequest Subscription request's id of a creditor institution to a bundle
-     * @param ciTaxCode Creditor Institution's tax code
+     * @param ciTaxCode       Creditor Institution's tax code
      */
     @DeleteMapping(value = "/creditor-institutions/{ci-tax-code}/requests/{bundle-request-id}")
     @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema())),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @Operation(summary = "Delete a creditor institution's subscription request to a public bundle", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public void deleteCIBundleRequest(
@@ -321,19 +349,82 @@ public class CommissionBundleController {
     /**
      * Create the request to subscribe to the specified bundle from the Creditor Institution and notify the Payment Service Provider by email
      *
-     * @param ciTaxCode Creditor Institution's tax code
+     * @param ciTaxCode           Creditor Institution's tax code
      * @param publicBundleRequest Bundle request object with bundle and psp information
      */
     @PostMapping(value = "/creditor-institutions/{ci-tax-code}")
     @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema())),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @Operation(summary = "Create a creditor institution's subscription request to a public bundle", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public void createCIBundleRequest(
             @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
             @Parameter(description = "Bundle's name, if present sends an email to notify the Payment Service Provider") @RequestParam(required = false) String bundleName,
             @RequestBody @NotNull PublicBundleRequest publicBundleRequest
-    ){
+    ) {
         this.commissionBundleService.createCIBundleRequest(ciTaxCode, publicBundleRequest, bundleName);
+    }
+
+    /**
+     * Delete private bundle offer
+     *
+     * @param idBundle private bundle id
+     * @param pspTaxCode payment service provider's tax code
+     * @param bundleOfferId id of the bundle offer
+     */
+    @DeleteMapping(value = "/{id-bundle}/payment-service-providers/{psp-tax-code}/offers/{bundle-offer-id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema())),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @Operation(summary = "Delete private bundle offer", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public void deletePrivateBundleOffer(
+            @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
+            @Parameter(description = "Payment Service Provider's tax code") @PathVariable("psp-tax-code") String pspTaxCode,
+            @Parameter(description = "Id of the private bundle offer") @PathVariable("bundle-offer-id") String bundleOfferId
+    ) {
+        this.commissionBundleService.deletePrivateBundleOffer(idBundle, pspTaxCode, bundleOfferId);
+    }
+
+    /**
+     *  Create the subscription offer for the specified private bundle
+     *
+     * @param idBundle the private bundle id
+     * @param pspTaxCode Payment Service Provider's tax code
+     * @param bundleName the private bundle name
+     * @param ciTaxCodeList the list tax code of creditor institutions tha will receive the offer
+     */
+    @PostMapping(value = "/{id-bundle}/payment-service-providers/{psp-tax-code}/offers")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema())),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })    @Operation(summary = "Create a creditor institution's subscription offer to a private bundle", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
+    public void createCIBundleOffers(
+            @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
+            @Parameter(description = "Payment Service Provider's tax code") @PathVariable("psp-tax-code") String pspTaxCode,
+            @Parameter(description = "Bundle's name") @RequestParam String bundleName,
+            @RequestBody @NotNull CiTaxCodeList ciTaxCodeList
+    ) {
+        this.commissionBundleService.createCIBundleOffers(idBundle, pspTaxCode, bundleName, ciTaxCodeList);
     }
 
     @PostMapping(value = "/offers/{id-bundle-offer}/creditor-institutions/{ci-code}")

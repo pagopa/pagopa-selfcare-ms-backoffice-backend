@@ -14,12 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.service.InstitutionsService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -52,7 +47,7 @@ public class NoticeController {
     @Operation(summary = "uploadInstitutionData",
             description = "Uploads or updates the provided institution data and logo on the related storage," +
                     " to be used in the payment notice generation process",
-            security = {@SecurityRequirement(name = "ApiKey")})
+            security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE,
             external = true, internal = false)
     @ApiResponses(value = {
@@ -77,8 +72,8 @@ public class NoticeController {
             @Parameter(description = "String containing the json data to upload ", required = true,
                     schema = @Schema(implementation = InstitutionUploadData.class))
             @Valid @NotNull @RequestPart("institutions-data") String institutionsDataContent,
-            @Parameter(description = "logo file to upload", required = true)
-            @Valid @NotNull @RequestPart(value = "file") MultipartFile logo
+            @Parameter(description = "logo file to upload (not to send on update unless it is changed)")
+            @RequestPart(value = "file", required = false) MultipartFile logo
     ) {
         institutionsService.uploadInstitutionsData(institutionsDataContent, logo);
     }
@@ -92,13 +87,13 @@ public class NoticeController {
     @Operation(summary = "getInstitutionData",
             description = "Retrieves saved institution data and logo on the related storage," +
                     " to be used in the payment notice generation process",
-            security = {@SecurityRequirement(name = "ApiKey")})
+            security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE,
             external = true, internal = false)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ProblemJson.class))),
+                            schema = @Schema(implementation = InstitutionUploadData.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ProblemJson.class))),
