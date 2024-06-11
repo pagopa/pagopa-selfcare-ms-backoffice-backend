@@ -2,22 +2,23 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Created bundle's subscription offer mail</title>
+    <title>Accepted bundle's subscription request mail</title>
 </head>
 
 <body>
-<img width="100" height="30" src="https://raw.githubusercontent.com/pagopa/pagopa-selfcare-ms-backoffice-backend/main/src/main/resources/templates/logo-pagopa.png">
-<h1>Nuova offerta di attivazione pacchetto commissionale</h1>
+<img width="100" height="30"
+     src="https://raw.githubusercontent.com/pagopa/pagopa-selfcare-ms-backoffice-backend/main/src/main/resources/templates/logo-pagopa.png">
+<h1>La tua richiesta di adesione al pacchetto è stata confermata</h1>
 <p>
     Ciao,
 </p>
 <br/>
 <p>
-    c'è una nuova offerta di attivazione per il pacchetto commissionale <span th:text="${bundleName}" th:remove="tag"></span>.
+    la tua richiesta di adesione al pacchetto <span th:text="${bundleName}" th:remove="tag"></span> è stata accettata.
 </p>
 <br/>
 <p>
-    Puoi vedere e gestire il pacchetto da qui <a
+    Puoi vedere e gestire il tuo pacchetto da qui <a
         href="https://selfcare.platform.pagopa.it/ui/comm-bundles">https://selfcare.platform.pagopa.it/ui/comm-bundles</a>.
 </p>
 <br/>
