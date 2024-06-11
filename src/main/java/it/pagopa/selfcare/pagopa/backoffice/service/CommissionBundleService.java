@@ -73,8 +73,10 @@ public class CommissionBundleService {
     private static final String BUNDLE_REJECT_SUBSCRIPTION_REQUEST_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto %s è stata rifiutata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
     private static final String BUNDLE_CREATE_SUBSCRIPTION_OFFER_SUBJECT = "Nuova offerta di attivazione pacchetto commissionale";
     private static final String BUNDLE_CREATE_SUBSCRIPTION_OFFER_BODY = "Ciao, %n%n%n c'è una nuova offerta di attivazione per il pacchetto commissionale %s.%n%n%n Puoi vedere e gestire il pacchetto da qui https://selfcare.platform.pagopa.it/ui/comm-bundles ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
-    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_OFFER_SUBJECT = "Richiesta di adesione confermata";
+    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_OFFER_SUBJECT = "Offerta di adesione confermata";
     private static final String BUNDLE_ACCEPT_SUBSCRIPTION_OFFER_BODY = "Ciao %n%n%n la tua offerta di adesione al pacchetto %s è stata accettata.%n%n%n Puoi gestire i tuoi pacchetti qui ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
+    private static final String BUNDLE_REJECT_SUBSCRIPTION_OFFER_SUBJECT = "Offerta di adesione rifiutata";
+    private static final String BUNDLE_REJECT_SUBSCRIPTION_OFFER_BODY = "Ciao %n%n%n la tua offerta di adesione al pacchetto %s è stata rifiutata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
 
     private static final String VALID_FROM_DATE_FORMAT = "yyyy-MM-dd";
 
@@ -263,7 +265,7 @@ public class CommissionBundleService {
                 .institutionTaxCode(ciTaxCode)
                 .subject(BUNDLE_REJECT_SUBSCRIPTION_REQUEST_SUBJECT)
                 .textBody(String.format(BUNDLE_REJECT_SUBSCRIPTION_REQUEST_BODY, bundleName))
-                .htmlBodyFileName("rejectPublicBundleSubscriptionEmail.html")
+                .htmlBodyFileName("rejectBundleSubscriptionRequestEmail.html")
                 .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
                 .destinationUserType(SelfcareProductUser.ADMIN)
                 .build();
@@ -520,7 +522,8 @@ public class CommissionBundleService {
 
     /**
      * Accept the private bundle offer with the provided id.
-     * The provided tax code identifies the creditor institution that accept the offer
+     * The provided tax code identifies the creditor institution that accept the offer.
+     * Notify the PSP with the provided tax code.
      *
      * @param ciTaxCode          the tax code of the creditor institution
      * @param idBundleOffer      th id of the bundle offer
@@ -536,7 +539,7 @@ public class CommissionBundleService {
             String bundleName,
             CIBundleAttributeResource ciBundleAttributes
     ) {
-        CIBundleId ciBundleId = this.gecClient.ciAcceptPrivateBundleOffer(ciTaxCode, idBundleOffer, ciBundleAttributes);
+        CIBundleId ciBundleId = this.gecClient.acceptPrivateBundleOffer(ciTaxCode, idBundleOffer, ciBundleAttributes);
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(pspTaxCode)
@@ -549,6 +552,31 @@ public class CommissionBundleService {
 
         this.awsSesClient.sendEmail(messageDetail);
         return ciBundleId;
+    }
+
+    /**
+     * Reject the private bundle offer with the provided id.
+     * The provided tax code identifies the creditor institution that reject the offer.
+     * Notify the PSP with the provided tax code.
+     *
+     * @param ciTaxCode          the tax code of the creditor institution
+     * @param idBundleOffer      th id of the bundle offer
+     * @param pspTaxCode         tax code of the PSP to be notified
+     * @param bundleName         name of the offered bundle
+     */
+    public void rejectPrivateBundleOffer(String ciTaxCode, String idBundleOffer, String pspTaxCode, String bundleName) {
+        this.gecClient.rejectPrivateBundleOffer(ciTaxCode, idBundleOffer);
+
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(pspTaxCode)
+                .subject(BUNDLE_REJECT_SUBSCRIPTION_OFFER_SUBJECT)
+                .textBody(String.format(BUNDLE_REJECT_SUBSCRIPTION_OFFER_BODY, bundleName))
+                .htmlBodyFileName("rejectBundleSubscriptionOfferEmail.html")
+                .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                .destinationUserType(SelfcareProductUser.ADMIN)
+                .build();
+
+        this.awsSesClient.sendEmail(messageDetail);
     }
 
     private Context buildEmailHtmlBodyContext(String bundleName) {

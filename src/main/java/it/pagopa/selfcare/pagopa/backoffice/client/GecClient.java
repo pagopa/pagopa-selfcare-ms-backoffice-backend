@@ -254,9 +254,15 @@ public interface GecClient {
 
     @PostMapping(value = "/cis/{ci-tax-code}/offers/{id-bundle-offer}/accept", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    CIBundleId ciAcceptPrivateBundleOffer(
+    CIBundleId acceptPrivateBundleOffer(
             @PathVariable("ci-tax-code") String ciTaxCode,
             @PathVariable("id-bundle-offer") String idBundleOffer,
             @RequestBody CIBundleAttributeResource ciBundleAttributes
+    );
+
+    @PostMapping(value = "/cis/{ci-tax-code}/offers/{id-bundle-offer}/reject")
+    void rejectPrivateBundleOffer(
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @PathVariable("id-bundle-offer") String idBundleOffer
     );
 }

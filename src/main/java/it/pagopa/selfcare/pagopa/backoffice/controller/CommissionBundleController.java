@@ -429,7 +429,7 @@ public class CommissionBundleController {
         this.commissionBundleService.createCIBundleOffers(idBundle, pspTaxCode, bundleName, ciTaxCodeList);
     }
 
-    @PostMapping(value = "/offers/{id-bundle-offer}/creditor-institutions/{ci-code}")
+    @PostMapping(value = "/offers/{id-bundle-offer}/creditor-institutions/{ci-code}/accept")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = CIBundleId.class))),
@@ -449,5 +449,26 @@ public class CommissionBundleController {
             @RequestBody @NotNull CIBundleAttributeResource ciBundleAttributes
     ) {
         return this.commissionBundleService.ciAcceptPrivateBundleOffer(ciTaxCode, idBundleOffer, pspTaxCode, bundleName, ciBundleAttributes);
+    }
+
+    @PostMapping(value = "/offers/{id-bundle-offer}/creditor-institutions/{ci-code}/reject")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema())),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @Operation(summary = "Reject a private bundle offer by bundle offer id and ci tax code", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public void rejectPrivateBundleOffer(
+            @Parameter(description = "Commission bundle offer's id") @PathVariable("id-bundle-offer") String idBundleOffer,
+            @Parameter(description = "Tax code of the creditor institution") @PathVariable("ci-code") String ciTaxCode,
+            @Parameter(description = "Payment Service Provider's tax code for email notification") @PathVariable("psp-tax-code") String pspTaxCode,
+            @Parameter(description = "Bundle's name for email notification") @RequestParam String bundleName
+    ) {
+        this.commissionBundleService.rejectPrivateBundleOffer(ciTaxCode, idBundleOffer, pspTaxCode, bundleName);
     }
 }
