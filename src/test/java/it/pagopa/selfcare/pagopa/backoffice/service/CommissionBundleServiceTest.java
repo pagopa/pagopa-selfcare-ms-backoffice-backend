@@ -936,9 +936,11 @@ class CommissionBundleServiceTest {
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
 
         assertDoesNotThrow(() ->
-                sut.deletePrivateBundleOffer(ID_BUNDLE, PSP_TAX_CODE, ID_BUNDLE_OFFER));
+                sut.deletePrivateBundleOffer(ID_BUNDLE, PSP_TAX_CODE, ID_BUNDLE_OFFER, CI_TAX_CODE, BUNDLE_NAME));
 
         verify(gecClient).deletePrivateBundleOffer(PSP_CODE, ID_BUNDLE, ID_BUNDLE_OFFER);
+        verify(awsSesClient).sendEmail(any());
+
     }
 
     @Test

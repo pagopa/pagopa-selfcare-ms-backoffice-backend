@@ -71,6 +71,8 @@ public class CommissionBundleService {
     private static final String BUNDLE_REJECT_SUBSCRIPTION_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto %s è stata rifiutata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
     private static final String BUNDLE_CREATE_SUBSCRIPTION_OFFER_SUBJECT = "Nuova offerta di attivazione pacchetto commissionale";
     private static final String BUNDLE_CREATE_SUBSCRIPTION_OFFER_BODY = "Ciao, %n%n%n c'è una nuova offerta di attivazione per il pacchetto commissionale %s.%n%n%n Puoi gestire i tuoi pacchetti qui https://selfcare.platform.pagopa.it/ui/comm-bundles ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
+    private static final String BUNDLE_DELETE_SUBSCRIPTION_OFFER_SUBJECT = "Offerta di adesione eliminata";
+    private static final String BUNDLE_DELETE_SUBSCRIPTION_OFFER_BODY = "Ciao %n%n%n l'offerta di adesione al pacchetto %s è stata eliminata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
 
     private static final String VALID_FROM_DATE_FORMAT = "yyyy-MM-dd";
 
@@ -467,10 +469,23 @@ public class CommissionBundleService {
      * @param idBundle      private bundle id
      * @param pspTaxCode    payment service provider's tax code
      * @param bundleOfferId id of the bundle offer
+     * @param ciTaxCode tax code of the creditor institution to be notified
+     * @param bundleName name of the deleted bundle offer
      */
-    public void deletePrivateBundleOffer(String idBundle, String pspTaxCode, String bundleOfferId) {
+    public void deletePrivateBundleOffer(String idBundle, String pspTaxCode, String bundleOfferId, String ciTaxCode, String bundleName) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
         this.gecClient.deletePrivateBundleOffer(pspCode, idBundle, bundleOfferId);
+
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(ciTaxCode)
+                .subject(BUNDLE_DELETE_SUBSCRIPTION_OFFER_SUBJECT)
+                .textBody(String.format(BUNDLE_DELETE_SUBSCRIPTION_OFFER_BODY, bundleName))
+                .htmlBodyFileName("deleteBundleSubscriptionOfferEmail.html")
+                .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                .destinationUserType(SelfcareProductUser.ADMIN)
+                .build();
+
+        this.awsSesClient.sendEmail(messageDetail);
     }
 
     /**
