@@ -143,7 +143,7 @@ module "apim_api_backoffice_api_v1_weu_core" {
 
 
 resource "azurerm_api_management_api_version_set" "api_backoffice_api_wue_core" {
-  count = var.env_short != "p" ? 1 : 0
+  count = var.env_short == "d" ? 1 : 0
 
   name                = "${var.env_short}-${local.repo_name}"
   resource_group_name = local.apim_weu_core.rg
@@ -153,7 +153,7 @@ resource "azurerm_api_management_api_version_set" "api_backoffice_api_wue_core" 
 }
 
 module "apim_api_backoffice_api_v1_weu_core" {
-  count = var.env_short != "p" ? 1 : 0
+  count = var.env_short == "d" ? 1 : 0
 
   source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v6.7.0"
 
