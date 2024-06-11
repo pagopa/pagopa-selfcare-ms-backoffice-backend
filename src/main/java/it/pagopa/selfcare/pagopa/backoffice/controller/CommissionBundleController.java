@@ -429,7 +429,7 @@ public class CommissionBundleController {
         this.commissionBundleService.createCIBundleOffers(idBundle, pspTaxCode, bundleName, ciTaxCodeList);
     }
 
-    @PostMapping(value = "/offers/{id-bundle-offer}/creditor-institutions/{ci-tax-code}/accept")
+    @PostMapping(value = "/creditor-institutions/{ci-tax-code}/offers/{id-bundle-offer}/accept")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = CIBundleId.class))),
@@ -442,8 +442,8 @@ public class CommissionBundleController {
     @Operation(summary = "Accept a private bundle offer by bundle offer id and ci tax code", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public CIBundleId acceptPrivateBundleOffer(
-            @Parameter(description = "Commission bundle offer's id") @PathVariable("id-bundle-offer") String idBundleOffer,
             @Parameter(description = "Tax code of the creditor institution") @PathVariable("ci-tax-code") String ciTaxCode,
+            @Parameter(description = "Commission bundle offer's id") @PathVariable("id-bundle-offer") String idBundleOffer,
             @Parameter(description = "Payment Service Provider's tax code for email notification") @RequestParam String pspTaxCode,
             @Parameter(description = "Bundle's name for email notification") @RequestParam String bundleName,
             @RequestBody @NotNull CIBundleAttributeResource ciBundleAttributes
@@ -451,7 +451,7 @@ public class CommissionBundleController {
         return this.commissionBundleService.acceptPrivateBundleOffer(ciTaxCode, idBundleOffer, pspTaxCode, bundleName, ciBundleAttributes);
     }
 
-    @PostMapping(value = "/offers/{id-bundle-offer}/creditor-institutions/{ci-tax-code}/reject")
+    @PostMapping(value = "/creditor-institutions/{ci-tax-code}/offers/{id-bundle-offer}/reject")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema())),
@@ -464,8 +464,8 @@ public class CommissionBundleController {
     @Operation(summary = "Reject a private bundle offer by bundle offer id and ci tax code", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public void rejectPrivateBundleOffer(
-            @Parameter(description = "Commission bundle offer's id") @PathVariable("id-bundle-offer") String idBundleOffer,
             @Parameter(description = "Tax code of the creditor institution") @PathVariable("ci-tax-code") String ciTaxCode,
+            @Parameter(description = "Commission bundle offer's id") @PathVariable("id-bundle-offer") String idBundleOffer,
             @Parameter(description = "Payment Service Provider's tax code for email notification") @RequestParam String pspTaxCode,
             @Parameter(description = "Bundle's name for email notification") @RequestParam String bundleName
     ) {

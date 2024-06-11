@@ -1220,144 +1220,7 @@
         ]
       }
     },
-    "/bundles/creditor-institutions/{ci-tax-code}/requests/{bundle-request-id}": {
-      "delete": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
-        "operationId": "deleteCIBundleRequest",
-        "parameters": [
-          {
-            "description": "Subscription request's id of a creditor institution to a bundle",
-            "in": "path",
-            "name": "bundle-request-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Creditor Institution's tax code",
-            "in": "path",
-            "name": "ci-tax-code",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {}
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Bad Request",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Not found",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too many requests",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Service unavailable",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Delete a creditor institution's subscription request to a public bundle",
-        "tags": [
-          "Commission bundles"
-        ]
-      },
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ]
-    },
-    "/bundles/offers/{id-bundle-offer}/creditor-institutions/{ci-tax-code}/accept": {
+    "/bundles/creditor-institutions/{ci-tax-code}/offers/{id-bundle-offer}/accept": {
       "parameters": [
         {
           "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
@@ -1373,18 +1236,18 @@
         "operationId": "acceptPrivateBundleOffer",
         "parameters": [
           {
-            "description": "Commission bundle offer's id",
+            "description": "Tax code of the creditor institution",
             "in": "path",
-            "name": "id-bundle-offer",
+            "name": "ci-tax-code",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
-            "description": "Tax code of the creditor institution",
+            "description": "Commission bundle offer's id",
             "in": "path",
-            "name": "ci-tax-code",
+            "name": "id-bundle-offer",
             "required": true,
             "schema": {
               "type": "string"
@@ -1526,7 +1389,7 @@
         ]
       }
     },
-    "/bundles/offers/{id-bundle-offer}/creditor-institutions/{ci-tax-code}/reject": {
+    "/bundles/creditor-institutions/{ci-tax-code}/offers/{id-bundle-offer}/reject": {
       "parameters": [
         {
           "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
@@ -1542,18 +1405,18 @@
         "operationId": "rejectPrivateBundleOffer",
         "parameters": [
           {
-            "description": "Commission bundle offer's id",
+            "description": "Tax code of the creditor institution",
             "in": "path",
-            "name": "id-bundle-offer",
+            "name": "ci-tax-code",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
-            "description": "Tax code of the creditor institution",
+            "description": "Commission bundle offer's id",
             "in": "path",
-            "name": "ci-tax-code",
+            "name": "id-bundle-offer",
             "required": true,
             "schema": {
               "type": "string"
@@ -1680,6 +1543,143 @@
           "Commission bundles"
         ]
       }
+    },
+    "/bundles/creditor-institutions/{ci-tax-code}/requests/{bundle-request-id}": {
+      "delete": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
+        "operationId": "deleteCIBundleRequest",
+        "parameters": [
+          {
+            "description": "Subscription request's id of a creditor institution to a bundle",
+            "in": "path",
+            "name": "bundle-request-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Creditor Institution's tax code",
+            "in": "path",
+            "name": "ci-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {}
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Delete a creditor institution's subscription request to a public bundle",
+        "tags": [
+          "Commission bundles"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
     },
     "/bundles/payment-service-providers/{psp-tax-code}": {
       "get": {
