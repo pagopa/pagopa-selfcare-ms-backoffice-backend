@@ -2,7 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.GecFeignConfig;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleAttributeResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleAttributeModel;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCIOffers;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
@@ -257,7 +257,7 @@ public interface GecClient {
     CIBundleId acceptPrivateBundleOffer(
             @PathVariable("ci-tax-code") String ciTaxCode,
             @PathVariable("id-bundle-offer") String idBundleOffer,
-            @RequestBody CIBundleAttributeResource ciBundleAttributes
+            @RequestBody List<CIBundleAttributeModel> ciBundleAttributes
     );
 
     @PostMapping(value = "/cis/{ci-tax-code}/offers/{id-bundle-offer}/reject")

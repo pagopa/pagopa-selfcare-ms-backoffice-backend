@@ -539,7 +539,7 @@ public class CommissionBundleService {
             String bundleName,
             CIBundleAttributeResource ciBundleAttributes
     ) {
-        CIBundleId ciBundleId = this.gecClient.acceptPrivateBundleOffer(ciTaxCode, idBundleOffer, ciBundleAttributes);
+        CIBundleId ciBundleId = this.gecClient.acceptPrivateBundleOffer(ciTaxCode, idBundleOffer, ciBundleAttributes.getAttributes());
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(pspTaxCode)

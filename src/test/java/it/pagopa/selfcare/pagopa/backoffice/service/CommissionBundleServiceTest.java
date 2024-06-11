@@ -960,7 +960,7 @@ class CommissionBundleServiceTest {
     @Test
     void acceptPrivateBundleOfferSuccess() {
         CIBundleAttributeResource attributeResource = new CIBundleAttributeResource();
-        when(gecClient.acceptPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER, attributeResource))
+        when(gecClient.acceptPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER, attributeResource.getAttributes()))
                 .thenReturn(new CIBundleId());
 
         CIBundleId result = assertDoesNotThrow(
