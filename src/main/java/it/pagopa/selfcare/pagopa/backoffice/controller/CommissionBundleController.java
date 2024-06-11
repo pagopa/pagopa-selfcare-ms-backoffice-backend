@@ -368,9 +368,11 @@ public class CommissionBundleController {
     public void deletePrivateBundleOffer(
             @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
             @Parameter(description = "Payment Service Provider's tax code") @PathVariable("psp-tax-code") String pspTaxCode,
-            @Parameter(description = "Id of the private bundle offer") @PathVariable("bundle-offer-id") String bundleOfferId
+            @Parameter(description = "Id of the private bundle offer") @PathVariable("bundle-offer-id") String bundleOfferId,
+            @Parameter(description = "Creditor institution's tax code for email notification") @RequestParam String ciTaxCode,
+            @Parameter(description = "Bundle's name for email notification") @RequestParam String bundleName
     ) {
-        this.commissionBundleService.deletePrivateBundleOffer(idBundle, pspTaxCode, bundleOfferId);
+        this.commissionBundleService.deletePrivateBundleOffer(idBundle, pspTaxCode, bundleOfferId, ciTaxCode, bundleName);
     }
 
     /**

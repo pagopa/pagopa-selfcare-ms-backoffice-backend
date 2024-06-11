@@ -348,10 +348,12 @@ class CommissionBundleControllerTest {
     @Test
     void deletePrivateBundleOfferOK() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/offers/{bundle-offer-id}";
-        mvc.perform(delete(url, BUNDLE_ID, PSP_TAX_CODE, ID_BUNDLE_OFFER))
+        mvc.perform(delete(url, BUNDLE_ID, PSP_TAX_CODE, ID_BUNDLE_OFFER)
+                        .param("ciTaxCode", CI_TAX_CODE)
+                        .param("bundleName", BUNDLE_NAME))
                 .andExpect(status().isOk());
 
-        verify(service).deletePrivateBundleOffer(BUNDLE_ID, PSP_TAX_CODE, ID_BUNDLE_OFFER);
+        verify(service).deletePrivateBundleOffer(BUNDLE_ID, PSP_TAX_CODE, ID_BUNDLE_OFFER, CI_TAX_CODE, BUNDLE_NAME);
     }
 
     @Test
