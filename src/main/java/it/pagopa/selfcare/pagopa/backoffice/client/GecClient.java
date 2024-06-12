@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.GecFeignConfig;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleAttributeModel;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCIOffers;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
@@ -13,6 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequestId;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
@@ -248,5 +250,19 @@ public interface GecClient {
             @PathVariable("psp-code") String pspCode,
             @PathVariable("id-bundle") String idBundle,
             @RequestBody CiTaxCodeList ciTaxCodeList
+    );
+
+    @PostMapping(value = "/cis/{ci-tax-code}/offers/{id-bundle-offer}/accept", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    CIBundleId acceptPrivateBundleOffer(
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @PathVariable("id-bundle-offer") String idBundleOffer,
+            @RequestBody List<CIBundleAttributeModel> ciBundleAttributes
+    );
+
+    @PostMapping(value = "/cis/{ci-tax-code}/offers/{id-bundle-offer}/reject")
+    void rejectPrivateBundleOffer(
+            @PathVariable("ci-tax-code") String ciTaxCode,
+            @PathVariable("id-bundle-offer") String idBundleOffer
     );
 }

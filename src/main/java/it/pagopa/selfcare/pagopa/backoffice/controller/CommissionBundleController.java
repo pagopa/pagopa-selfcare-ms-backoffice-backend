@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleSubscriptionStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleAttributeResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
@@ -21,6 +22,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.service.CommissionBundleService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
@@ -351,7 +353,7 @@ public class CommissionBundleController {
      * @param ciTaxCode           Creditor Institution's tax code
      * @param publicBundleRequest Bundle request object with bundle and psp information
      */
-    @PostMapping(value = "/creditor-institutions/{ci-tax-code}")
+    @PostMapping(value = "/creditor-institutions/{ci-tax-code}/requests")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema())),
@@ -374,8 +376,8 @@ public class CommissionBundleController {
     /**
      * Delete private bundle offer
      *
-     * @param idBundle private bundle id
-     * @param pspTaxCode payment service provider's tax code
+     * @param idBundle      private bundle id
+     * @param pspTaxCode    payment service provider's tax code
      * @param bundleOfferId id of the bundle offer
      */
     @DeleteMapping(value = "/{id-bundle}/payment-service-providers/{psp-tax-code}/offers/{bundle-offer-id}")
@@ -401,11 +403,11 @@ public class CommissionBundleController {
     }
 
     /**
-     *  Create the subscription offer for the specified private bundle
+     * Create the subscription offer for the specified private bundle
      *
-     * @param idBundle the private bundle id
-     * @param pspTaxCode Payment Service Provider's tax code
-     * @param bundleName the private bundle name
+     * @param idBundle      the private bundle id
+     * @param pspTaxCode    Payment Service Provider's tax code
+     * @param bundleName    the private bundle name
      * @param ciTaxCodeList the list tax code of creditor institutions tha will receive the offer
      */
     @PostMapping(value = "/{id-bundle}/payment-service-providers/{psp-tax-code}/offers")
@@ -417,7 +419,8 @@ public class CommissionBundleController {
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
             @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
-    })    @Operation(summary = "Create a creditor institution's subscription offer to a private bundle", security = {@SecurityRequirement(name = "JWT")})
+    })
+    @Operation(summary = "Create a creditor institution's subscription offer to a private bundle", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public void createCIBundleOffers(
             @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
@@ -426,5 +429,48 @@ public class CommissionBundleController {
             @RequestBody @NotNull CiTaxCodeList ciTaxCodeList
     ) {
         this.commissionBundleService.createCIBundleOffers(idBundle, pspTaxCode, bundleName, ciTaxCodeList);
+    }
+
+    @PostMapping(value = "/creditor-institutions/{ci-tax-code}/offers/{id-bundle-offer}/accept")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = CIBundleId.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @Operation(summary = "Accept a private bundle offer by bundle offer id and ci tax code", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public CIBundleId acceptPrivateBundleOffer(
+            @Parameter(description = "Tax code of the creditor institution") @PathVariable("ci-tax-code") String ciTaxCode,
+            @Parameter(description = "Commission bundle offer's id") @PathVariable("id-bundle-offer") String idBundleOffer,
+            @Parameter(description = "Payment Service Provider's tax code for email notification") @RequestParam String pspTaxCode,
+            @Parameter(description = "Bundle's name for email notification") @RequestParam String bundleName,
+            @RequestBody @NotNull CIBundleAttributeResource ciBundleAttributes
+    ) {
+        return this.commissionBundleService.acceptPrivateBundleOffer(ciTaxCode, idBundleOffer, pspTaxCode, bundleName, ciBundleAttributes);
+    }
+
+    @PostMapping(value = "/creditor-institutions/{ci-tax-code}/offers/{id-bundle-offer}/reject")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema())),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @Operation(summary = "Reject a private bundle offer by bundle offer id and ci tax code", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public void rejectPrivateBundleOffer(
+            @Parameter(description = "Tax code of the creditor institution") @PathVariable("ci-tax-code") String ciTaxCode,
+            @Parameter(description = "Commission bundle offer's id") @PathVariable("id-bundle-offer") String idBundleOffer,
+            @Parameter(description = "Payment Service Provider's tax code for email notification") @RequestParam String pspTaxCode,
+            @Parameter(description = "Bundle's name for email notification") @RequestParam String bundleName
+    ) {
+        this.commissionBundleService.rejectPrivateBundleOffer(ciTaxCode, idBundleOffer, pspTaxCode, bundleName);
     }
 }
