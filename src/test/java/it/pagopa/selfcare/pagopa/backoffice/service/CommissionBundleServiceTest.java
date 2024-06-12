@@ -266,7 +266,7 @@ class CommissionBundleServiceTest {
         List<String> transferCategoryList = Collections.singletonList(TRANSFER_CATEGORY);
         Bundles bundles = buildBundles(transferCategoryList, BundleType.GLOBAL);
 
-        when(gecClient.getBundles(any(), anyString(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
+        when(gecClient.getBundles(any(), anyString(), eq(null), eq(null), anyInt(), anyInt())).thenReturn(bundles);
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
 
         CIBundlesResource bundlesResource = assertDoesNotThrow(
@@ -277,7 +277,7 @@ class CommissionBundleServiceTest {
         assertNotNull(bundlesResource.getBundles());
         assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
 
-        verify(gecClient).getBundles(Collections.singletonList(BundleType.GLOBAL), BUNDLE_NAME, null, 10, 0);
+        verify(gecClient).getBundles(Collections.singletonList(BundleType.GLOBAL), BUNDLE_NAME, null, null, 10, 0);
         verifyNoMoreInteractions(gecClient);
         verify(taxonomyService).getTaxonomiesByCodes(any());
     }
@@ -290,7 +290,7 @@ class CommissionBundleServiceTest {
         assertNotNull(e);
         assertEquals(HttpStatus.BAD_REQUEST, e.getHttpStatus());
 
-        verify(gecClient, never()).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
+        verify(gecClient, never()).getBundles(any(), anyString(), eq(null), eq(null), anyInt(), anyInt());
         verify(gecClient, never()).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
         verify(gecClient, never()).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
         verify(taxonomyService, never()).getTaxonomiesByCodes(any());
@@ -303,7 +303,7 @@ class CommissionBundleServiceTest {
         PublicBundleRequests requests = new PublicBundleRequests();
         requests.setPageInfo(PageInfo.builder().totalItems(0L).build());
 
-        when(gecClient.getBundles(any(), eq(null), anyString(), anyInt(), anyInt())).thenReturn(bundles);
+        when(gecClient.getBundles(any(), eq(null), anyString(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
         when(gecClient.getCIBundle(CI_TAX_CODE, ID_BUNDLE)).thenThrow(FeignException.NotFound.class);
         when(gecClient.getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0)).thenReturn(requests);
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
@@ -318,7 +318,7 @@ class CommissionBundleServiceTest {
         assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
         assertEquals(CIBundleStatus.AVAILABLE, bundlesResource.getBundles().get(0).getCiBundleStatus());
 
-        verify(gecClient).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
+        verify(gecClient).getBundles(any(), eq(null), anyString(), eq(null), anyInt(), anyInt());
         verify(gecClient).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
         verify(gecClient).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
         verifyNoMoreInteractions(gecClient);
@@ -338,7 +338,7 @@ class CommissionBundleServiceTest {
         );
         requests.setPageInfo(PageInfo.builder().totalItems(1L).build());
 
-        when(gecClient.getBundles(any(), eq(null), anyString(), anyInt(), anyInt())).thenReturn(bundles);
+        when(gecClient.getBundles(any(), eq(null),anyString(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
         when(gecClient.getCIBundle(CI_TAX_CODE, ID_BUNDLE)).thenThrow(FeignException.NotFound.class);
         when(gecClient.getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0)).thenReturn(requests);
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
@@ -353,7 +353,7 @@ class CommissionBundleServiceTest {
         assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
         assertEquals(CIBundleStatus.REQUESTED, bundlesResource.getBundles().get(0).getCiBundleStatus());
 
-        verify(gecClient).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
+        verify(gecClient).getBundles(any(), eq(null), anyString(), eq(null), anyInt(), anyInt());
         verify(gecClient).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
         verify(gecClient).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
         verifyNoMoreInteractions(gecClient);
@@ -368,7 +368,7 @@ class CommissionBundleServiceTest {
         ciBundle.setValidityDateTo(LocalDate.now());
         ciBundle.setAttributes(Collections.singletonList(buildCIBundleAttribute()));
 
-        when(gecClient.getBundles(any(), eq(null), anyString(), anyInt(), anyInt())).thenReturn(bundles);
+        when(gecClient.getBundles(any(), eq(null), anyString(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
         when(gecClient.getCIBundle(CI_TAX_CODE, ID_BUNDLE)).thenReturn(ciBundle);
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
 
@@ -382,7 +382,7 @@ class CommissionBundleServiceTest {
         assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
         assertEquals(CIBundleStatus.ON_REMOVAL, bundlesResource.getBundles().get(0).getCiBundleStatus());
 
-        verify(gecClient).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
+        verify(gecClient).getBundles(any(), eq(null), anyString(), eq(null), anyInt(), anyInt());
         verify(gecClient).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
         verify(gecClient, never()).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
         verifyNoMoreInteractions(gecClient);
@@ -397,7 +397,7 @@ class CommissionBundleServiceTest {
         ciBundle.setValidityDateTo(LocalDate.now().plusDays(1));
         ciBundle.setAttributes(Collections.singletonList(buildCIBundleAttribute()));
 
-        when(gecClient.getBundles(any(), eq(null), anyString(), anyInt(), anyInt())).thenReturn(bundles);
+        when(gecClient.getBundles(any(), eq(null), anyString(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
         when(gecClient.getCIBundle(CI_TAX_CODE, ID_BUNDLE)).thenReturn(ciBundle);
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());
 
@@ -411,7 +411,7 @@ class CommissionBundleServiceTest {
         assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
         assertEquals(CIBundleStatus.ENABLED, bundlesResource.getBundles().get(0).getCiBundleStatus());
 
-        verify(gecClient).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
+        verify(gecClient).getBundles(any(), eq(null), anyString(), eq(null), anyInt(), anyInt());
         verify(gecClient).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
         verify(gecClient, never()).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
         verifyNoMoreInteractions(gecClient);
@@ -448,7 +448,7 @@ class CommissionBundleServiceTest {
         assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
         assertEquals(CIBundleStatus.ENABLED, bundlesResource.getBundles().get(0).getCiBundleStatus());
 
-        verify(gecClient, never()).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
+        verify(gecClient, never()).getBundles(any(), anyString(), eq(null), eq(null), anyInt(), anyInt());
         verify(gecClient, never()).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
         verify(gecClient, never()).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
         verify(taxonomyService).getTaxonomiesByCodes(transferCategoryList);
@@ -484,7 +484,7 @@ class CommissionBundleServiceTest {
         assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
         assertEquals(CIBundleStatus.ON_REMOVAL, bundlesResource.getBundles().get(0).getCiBundleStatus());
 
-        verify(gecClient, never()).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
+        verify(gecClient, never()).getBundles(any(), anyString(), eq(null), eq(null), anyInt(), anyInt());
         verify(gecClient, never()).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
         verify(gecClient, never()).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
         verify(taxonomyService).getTaxonomiesByCodes(transferCategoryList);
@@ -498,7 +498,7 @@ class CommissionBundleServiceTest {
         assertNotNull(e);
         assertEquals(HttpStatus.BAD_REQUEST, e.getHttpStatus());
 
-        verify(gecClient, never()).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
+        verify(gecClient, never()).getBundles(any(), anyString(), eq(null), eq(null), anyInt(), anyInt());
         verify(gecClient, never()).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
         verify(gecClient, never()).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
         verify(taxonomyService, never()).getTaxonomiesByCodes(any());
@@ -533,7 +533,7 @@ class CommissionBundleServiceTest {
         assertEquals(1, bundlesResource.getBundles().get(0).getCiBundleFeeList().size());
         assertEquals(CIBundleStatus.AVAILABLE, bundlesResource.getBundles().get(0).getCiBundleStatus());
 
-        verify(gecClient, never()).getBundles(any(), eq(null), anyString(), anyInt(), anyInt());
+        verify(gecClient, never()).getBundles(any(), anyString(), eq(null), eq(null), anyInt(), anyInt());
         verify(gecClient, never()).getCIBundle(CI_TAX_CODE, ID_BUNDLE);
         verify(gecClient, never()).getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0);
         verify(taxonomyService).getTaxonomiesByCodes(transferCategoryList);
