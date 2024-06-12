@@ -151,7 +151,7 @@ microservice-chart:
                 values:
                   - user
   canaryDelivery:
-    create: false
+    create: true
     ingress:
       create: true
       canary:
@@ -165,7 +165,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 2.10.1
+        tag: 2.14.1-1-hotfix-timout-feign
         pullPolicy: Always
       envConfig: {}
       envSecret: {}
