@@ -7,6 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleSubscriptionStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleAttributeResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsResource;
@@ -22,6 +23,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleAttribute;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleOffer;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundles;
@@ -932,7 +934,7 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void deletePrivateBundleOfferSuccess(){
+    void deletePrivateBundleOfferSuccess() {
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
 
         assertDoesNotThrow(() ->
@@ -944,7 +946,7 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void createCIBundleOffersSuccess(){
+    void createCIBundleOffersSuccess() {
         List<String> ciTaxCodes = List.of(CI_TAX_CODE, "taxCode2", "taxCode3");
         CiTaxCodeList ciTaxCodeList = CiTaxCodeList.builder().ciTaxCodes(ciTaxCodes).build();
 
@@ -955,6 +957,28 @@ class CommissionBundleServiceTest {
 
         verify(gecClient).createPrivateBundleOffer(PSP_CODE, ID_BUNDLE, ciTaxCodeList);
         verify(awsSesClient, times(ciTaxCodes.size())).sendEmail(any());
+    }
+
+    @Test
+    void acceptPrivateBundleOfferSuccess() {
+        CIBundleAttributeResource attributeResource = new CIBundleAttributeResource();
+        when(gecClient.acceptPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER, attributeResource.getAttributes()))
+                .thenReturn(new CIBundleId());
+
+        CIBundleId result = assertDoesNotThrow(
+                () -> sut.acceptPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER, PSP_TAX_CODE, BUNDLE_NAME, attributeResource));
+
+        assertNotNull(result);
+
+        verify(awsSesClient).sendEmail(any());
+    }
+
+    @Test
+    void rejectPrivateBundleOfferSuccess() {
+        assertDoesNotThrow(() -> sut.rejectPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER, PSP_TAX_CODE, BUNDLE_NAME));
+
+        verify(gecClient).rejectPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER);
+        verify(awsSesClient).sendEmail(any());
     }
 
     private PublicBundleRequests buildPspRequests() {

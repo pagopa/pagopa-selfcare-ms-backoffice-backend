@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleSubscriptionStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleAttributeResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundlesResource;
@@ -29,6 +30,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -335,7 +337,7 @@ class CommissionBundleControllerTest {
     void createCIBundleRequestOK() throws Exception {
         PublicBundleRequest bundleRequest = new PublicBundleRequest();
 
-        String url = "/bundles/creditor-institutions/{ci-tax-code}";
+        String url = "/bundles/creditor-institutions/{ci-tax-code}/requests";
         mvc.perform(post(url, CI_TAX_CODE)
                         .param(BUNDLE_NAME, BUNDLE_NAME)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -368,5 +370,29 @@ class CommissionBundleControllerTest {
                 .andExpect(status().isOk());
 
         verify(service).createCIBundleOffers(anyString(), anyString(), anyString(), any());
+    }
+
+    @Test
+    void acceptPrivateBundleOfferTest() throws Exception {
+        String url = "/bundles/creditor-institutions/{ci-tax-code}/offers/{id-bundle-offer}/accept";
+
+        mvc.perform(post(url, CI_TAX_CODE, ID_BUNDLE_OFFER)
+                        .param("bundleName", BUNDLE_NAME)
+                        .param("pspTaxCode", PSP_TAX_CODE)
+                        .content(mapper.writeValueAsString(new CIBundleAttributeResource()))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        verify(service).acceptPrivateBundleOffer(eq(CI_TAX_CODE), eq(ID_BUNDLE_OFFER), eq(PSP_TAX_CODE), eq(BUNDLE_NAME), any());
+    }
+
+    @Test
+    void rejectPrivateBundleOfferTest() throws Exception {
+        String url = "/bundles/creditor-institutions/{ci-tax-code}/offers/{id-bundle-offer}/reject";
+
+        mvc.perform(post(url, CI_TAX_CODE, ID_BUNDLE_OFFER)
+                        .param("bundleName", BUNDLE_NAME)
+                        .param("pspTaxCode", PSP_TAX_CODE))
+                .andExpect(status().isOk());
+        verify(service).rejectPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER, PSP_TAX_CODE, BUNDLE_NAME);
     }
 }
