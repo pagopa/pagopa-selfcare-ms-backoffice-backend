@@ -173,9 +173,11 @@ public class CommissionBundleController {
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public void deletePSPBundle(
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
-            @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle
+            @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
+            @Parameter(description = "Bundle's name for email notification") @RequestParam String bundleName,
+            @Parameter(description = "Commission bundle's type for email notification") @RequestParam BundleType bundleType
     ) {
-        this.commissionBundleService.deletePSPBundle(pspTaxCode, idBundle);
+        this.commissionBundleService.deletePSPBundle(pspTaxCode, idBundle, bundleName, bundleType);
     }
 
     /**

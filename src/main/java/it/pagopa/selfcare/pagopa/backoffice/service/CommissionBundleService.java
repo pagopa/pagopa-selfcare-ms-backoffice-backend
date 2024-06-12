@@ -63,6 +63,8 @@ import java.util.Map;
 @Service
 public class CommissionBundleService {
 
+    private static final String BUNDLE_DELETE_SUBJECT = "Notifica eliminazione pacchetto";
+    private static final String BUNDLE_DELETE_BODY = "Ciao, %n%n%n il pacchetto %s è stato eliminato, sarà disattivato e non più visibile a partire da domani.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
     private static final String BUNDLE_DELETE_SUBSCRIPTION_SUBJECT = "Conferma rimozione da pacchetto";
     private static final String BUNDLE_DELETE_SUBSCRIPTION_BODY = "Ciao, %n%n%n sei stato rimosso dal pacchetto %s.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
     private static final String BUNDLE_CREATE_SUBSCRIPTION_REQUEST_SUBJECT = "Nuova richiesta di attivazione pacchetto commissionale";
@@ -155,8 +157,34 @@ public class CommissionBundleService {
         this.gecClient.updatePSPBundle(pspCode, idBundle, bundle);
     }
 
-    public void deletePSPBundle(String pspTaxCode, String idBundle) {
+    /**
+     * Delete a bundle of a PSP and notify via mail all creditor institutions that are subscribed to the bundle or have
+     * active request/offer
+     *
+     * @param pspTaxCode tax code of the PSP that own the bundle
+     * @param idBundle bundle identifier
+     * @param bundleName bundle name
+     * @param bundleType bundle type
+     */
+    public void deletePSPBundle(String pspTaxCode, String idBundle, String bundleName, BundleType bundleType) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
+        List<String> ciTaxCodes = getAllCITaxCodesAssociatedToABundle(idBundle, bundleType, pspCode);
+
+        Context bodyContext = buildEmailHtmlBodyContext(bundleName);
+        ciTaxCodes.parallelStream().forEach(
+                ciTaxCode -> {
+                    EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                            .institutionTaxCode(ciTaxCode)
+                            .subject(BUNDLE_DELETE_SUBJECT)
+                            .textBody(String.format(BUNDLE_DELETE_BODY, bundleName))
+                            .htmlBodyFileName("deleteBundleEmail.html")
+                            .htmlBodyContext(bodyContext)
+                            .destinationUserType(SelfcareProductUser.ADMIN)
+                            .build();
+                    this.awsSesClient.sendEmail(messageDetail);
+                }
+        );
+
         this.gecClient.deletePSPBundle(pspCode, idBundle);
     }
 
@@ -485,10 +513,16 @@ public class CommissionBundleService {
      * @param idBundle      private bundle id
      * @param pspTaxCode    payment service provider's tax code
      * @param bundleOfferId id of the bundle offer
-     * @param ciTaxCode tax code of the creditor institution to be notified
-     * @param bundleName name of the deleted bundle offer
+     * @param ciTaxCode     tax code of the creditor institution to be notified
+     * @param bundleName    name of the deleted bundle offer
      */
-    public void deletePrivateBundleOffer(String idBundle, String pspTaxCode, String bundleOfferId, String ciTaxCode, String bundleName) {
+    public void deletePrivateBundleOffer(
+            String idBundle,
+            String pspTaxCode,
+            String bundleOfferId,
+            String ciTaxCode,
+            String bundleName
+    ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
         this.gecClient.deletePrivateBundleOffer(pspCode, idBundle, bundleOfferId);
 
@@ -521,6 +555,7 @@ public class CommissionBundleService {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
         this.gecClient.createPrivateBundleOffer(pspCode, idBundle, ciTaxCodeList);
 
+        Context bodyContext = buildEmailHtmlBodyContext(bundleName);
         ciTaxCodeList.getCiTaxCodes().parallelStream()
                 .forEach(ciTaxCode -> {
                     EmailMessageDetail messageDetail = EmailMessageDetail.builder()
@@ -528,7 +563,7 @@ public class CommissionBundleService {
                             .subject(BUNDLE_CREATE_SUBSCRIPTION_OFFER_SUBJECT)
                             .textBody(String.format(BUNDLE_CREATE_SUBSCRIPTION_OFFER_BODY, bundleName))
                             .htmlBodyFileName("createBundleSubscriptionOfferEmail.html")
-                            .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                            .htmlBodyContext(bodyContext)
                             .destinationUserType(SelfcareProductUser.ADMIN)
                             .build();
                     this.awsSesClient.sendEmail(messageDetail);
@@ -574,10 +609,10 @@ public class CommissionBundleService {
      * The provided tax code identifies the creditor institution that reject the offer.
      * Notify the PSP with the provided tax code.
      *
-     * @param ciTaxCode          the tax code of the creditor institution
-     * @param idBundleOffer      th id of the bundle offer
-     * @param pspTaxCode         tax code of the PSP to be notified
-     * @param bundleName         name of the offered bundle
+     * @param ciTaxCode     the tax code of the creditor institution
+     * @param idBundleOffer th id of the bundle offer
+     * @param pspTaxCode    tax code of the PSP to be notified
+     * @param bundleName    name of the offered bundle
      */
     public void rejectPrivateBundleOffer(String ciTaxCode, String idBundleOffer, String pspTaxCode, String bundleName) {
         this.gecClient.rejectPrivateBundleOffer(ciTaxCode, idBundleOffer);
@@ -816,5 +851,35 @@ public class CommissionBundleService {
 
     private boolean isCIBundleEnabled(CiBundleDetails ciBundle) {
         return ciBundle.getValidityDateTo() == null || ciBundle.getValidityDateTo().isAfter(LocalDate.now());
+    }
+
+    private List<String> getAllCITaxCodesAssociatedToABundle(String idBundle, BundleType bundleType, String pspCode) {
+        BundleCreditorInstitutionResource bundleSubscriptions = this.gecClient
+                .getBundleSubscriptionByPSP(pspCode, idBundle, null, 1000, 0);
+        List<String> ciTaxCodes = new ArrayList<>(
+                bundleSubscriptions.getCiBundleDetails().parallelStream()
+                        .map(CiBundleDetails::getCiTaxCode)
+                        .toList()
+        );
+
+        if (BundleType.PUBLIC.equals(bundleType)) {
+            PublicBundleRequests requests = this.gecClient
+                    .getPublicBundleSubscriptionRequestByPSP(pspCode, null, idBundle, 1000, 0);
+            ciTaxCodes.addAll(
+                    requests.getRequestsList().parallelStream()
+                            .map(PublicBundleRequest::getCiFiscalCode)
+                            .toList()
+            );
+        }
+        if (BundleType.PRIVATE.equals(bundleType)) {
+            BundleOffers offers = this.gecClient
+                    .getPrivateBundleOffersByPSP(pspCode, null, idBundle, 1000, 0);
+            ciTaxCodes.addAll(
+                    offers.getOffers().parallelStream()
+                            .map(PspBundleOffer::getCiFiscalCode)
+                            .toList()
+            );
+        }
+        return ciTaxCodes;
     }
 }

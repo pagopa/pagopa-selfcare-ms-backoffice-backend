@@ -70,6 +70,7 @@ class CommissionBundleServiceTest {
     private static final String PSP_CODE = "pspCode";
     private static final String PSP_TAX_CODE = "pspTaxCode";
     private static final String CI_TAX_CODE = "ciTaxCode";
+    private static final String CI_TAX_CODE_2 = "ciTaxCode2";
     private static final String PSP_NAME = "pspName";
     private static final int LIMIT = 50;
     private static final int PAGE = 0;
@@ -174,12 +175,79 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void deletePSPBundle() {
+    void deletePSPBundleSuccessGlobal() {
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+        List<CiBundleDetails> ciBundleDetails = List.of(
+                CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE).build(),
+                CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE_2).build()
+        );
+        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, 1000, 0))
+                .thenReturn(BundleCreditorInstitutionResource.builder()
+                        .ciBundleDetails(ciBundleDetails)
+                        .build()
+                );
 
         assertDoesNotThrow(
-                () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE)
+                () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE, BUNDLE_NAME, BundleType.GLOBAL)
         );
+
+        verify(gecClient, never()).getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
+        verify(gecClient, never()).getPrivateBundleOffersByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
+        verify(awsSesClient, times(ciBundleDetails.size())).sendEmail(any());
+        verify(gecClient).deletePSPBundle(PSP_CODE, ID_BUNDLE);
+    }
+
+    @Test
+    void deletePSPBundleSuccessPublic() {
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+        List<CiBundleDetails> ciBundleDetails = List.of(
+                CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE).build(),
+                CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE_2).build()
+        );
+        PublicBundleRequests requests = buildPspRequests();
+
+        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, 1000, 0))
+                .thenReturn(BundleCreditorInstitutionResource.builder()
+                        .ciBundleDetails(ciBundleDetails)
+                        .build()
+                );
+        when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0))
+                .thenReturn(requests);
+
+        assertDoesNotThrow(
+                () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE, BUNDLE_NAME, BundleType.PUBLIC)
+        );
+
+        verify(gecClient, never()).getPrivateBundleOffersByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
+        verify(awsSesClient, times(ciBundleDetails.size() + requests.getRequestsList().size())).sendEmail(any());
+        verify(gecClient).deletePSPBundle(PSP_CODE, ID_BUNDLE);
+    }
+
+    @Test
+    void deletePSPBundleSuccessPrivate() {
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+        List<CiBundleDetails> ciBundleDetails = List.of(
+                CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE).build(),
+                CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE_2).build()
+        );
+        BundleOffers offers = BundleOffers.builder()
+                .offers(Collections.singletonList(PspBundleOffer.builder().ciFiscalCode(CI_TAX_CODE).build()))
+                .build();
+
+        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, 1000, 0))
+                .thenReturn(BundleCreditorInstitutionResource.builder()
+                        .ciBundleDetails(ciBundleDetails)
+                        .build()
+                );
+        when(gecClient.getPrivateBundleOffersByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0))
+                .thenReturn(offers);
+
+        assertDoesNotThrow(
+                () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE, BUNDLE_NAME, BundleType.PRIVATE)
+        );
+
+        verify(gecClient, never()).getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
+        verify(awsSesClient, times(ciBundleDetails.size() + offers.getOffers().size())).sendEmail(any());
         verify(gecClient).deletePSPBundle(PSP_CODE, ID_BUNDLE);
     }
 
