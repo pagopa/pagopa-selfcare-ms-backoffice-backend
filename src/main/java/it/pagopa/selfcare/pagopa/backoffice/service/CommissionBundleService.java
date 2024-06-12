@@ -243,7 +243,7 @@ public class CommissionBundleService {
 
         List<BundleType> bundleTypes = Collections.singletonList(bundleType);
         if (bundleType.equals(BundleType.GLOBAL)) {
-            Bundles bundles = this.gecClient.getBundles(bundleTypes, bundleName, null, limit, page);
+            Bundles bundles = this.gecClient.getBundles(bundleTypes, bundleName, null, null, limit, page);
             pageInfo = bundles.getPageInfo();
             bundlesResource = getCIBundlesResource(bundles);
         } else if (bundleType.equals(BundleType.PUBLIC)) {
@@ -251,7 +251,7 @@ public class CommissionBundleService {
                 throw new AppException(AppError.INVALID_GET_PUBLIC_CI_BUNDLES_REQUEST);
             }
             String validFrom = LocalDate.now().format(DateTimeFormatter.ofPattern(VALID_FROM_DATE_FORMAT));
-            Bundles bundles = this.gecClient.getBundles(bundleTypes, bundleName, validFrom, limit, page);
+            Bundles bundles = this.gecClient.getBundles(bundleTypes, bundleName, validFrom, null, limit, page);
             pageInfo = bundles.getPageInfo();
             bundlesResource = bundles.getBundleList().parallelStream()
                     .map(bundle -> buildCIBundle(ciTaxCode, bundle))
