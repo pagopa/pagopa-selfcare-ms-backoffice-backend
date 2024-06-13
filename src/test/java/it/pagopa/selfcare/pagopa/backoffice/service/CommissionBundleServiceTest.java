@@ -188,7 +188,7 @@ class CommissionBundleServiceTest {
                 );
 
         assertDoesNotThrow(
-                () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE, BUNDLE_NAME, BundleType.GLOBAL)
+                () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE, BUNDLE_NAME, PSP_NAME, BundleType.GLOBAL)
         );
 
         verify(gecClient, never()).getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
@@ -215,7 +215,7 @@ class CommissionBundleServiceTest {
                 .thenReturn(requests);
 
         assertDoesNotThrow(
-                () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE, BUNDLE_NAME, BundleType.PUBLIC)
+                () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE, BUNDLE_NAME, PSP_NAME, BundleType.PUBLIC)
         );
 
         verify(gecClient, never()).getPrivateBundleOffersByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
@@ -243,7 +243,7 @@ class CommissionBundleServiceTest {
                 .thenReturn(offers);
 
         assertDoesNotThrow(
-                () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE, BUNDLE_NAME, BundleType.PRIVATE)
+                () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE, BUNDLE_NAME, PSP_NAME, BundleType.PRIVATE)
         );
 
         verify(gecClient, never()).getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);

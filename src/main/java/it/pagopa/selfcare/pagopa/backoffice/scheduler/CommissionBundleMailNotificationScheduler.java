@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.scheduler;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleOffers;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
@@ -13,11 +14,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Public
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.MDC;
@@ -33,11 +29,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCError;
 import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCForEndExecution;
 import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCForStartExecution;
+import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.BUNDLE_EXPIRE_BODY;
+import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.BUNDLE_EXPIRE_SUBJECT;
 
 /**
  * Contains the scheduled function to be used for bundles expiring email notification. It retrieves all expiring bundles
@@ -46,10 +43,6 @@ import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtil
 @Component
 @Slf4j
 public class CommissionBundleMailNotificationScheduler {
-
-    private static final String BUNDLE_EXPIRE_SUBJECT = "Notifica scadenza pacchetto";
-    private static final String BUNDLE_EXPIRE_PSP_BODY = "Ciao, %n%n%n il pacchetto %s scadrà il %s.%n%n%n Puoi gestire i tuoi pacchetti qui https://selfcare.platform.pagopa.it/ui/comm-bundles ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
-    private static final String BUNDLE_EXPIRE_CI_BODY = "Ciao, %n%n%n il pacchetto %s scadrà il %s.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
 
     private static final String VALID_FROM_DATE_FORMAT = "yyyy-MM-dd";
 
@@ -88,7 +81,7 @@ public class CommissionBundleMailNotificationScheduler {
             updateMDCForEndExecution();
             log.info("[Mail-Notification] process completed");
         } catch (Exception e) {
-            updateMDCError(e, "Extract Taxonomies");
+            updateMDCError(e, "Notify expired bundles");
             log.error("[Mail-Notification] an error occurred during the mail notification process", e);
             throw e;
         } finally {
@@ -103,48 +96,48 @@ public class CommissionBundleMailNotificationScheduler {
                 expireAt
         );
 
-        log.info("[Mail-Notification] CI mail notification starting");
         // notify CI
+        log.info("[Mail-Notification] CI mail notification starting");
         expiringBundles.getBundleList().parallelStream()
-                .forEach(bundle -> getAllCITaxCodesAssociatedToABundle(bundle.getId(), bundle.getType(), bundle.getIdPsp()).parallelStream()
-                        .forEach(ciTaxCode -> {
-                            EmailMessageDetail messageDetail = EmailMessageDetail.builder()
-                                    .institutionTaxCode(ciTaxCode)
-                                    .subject(BUNDLE_EXPIRE_SUBJECT)
-                                    .textBody(String.format(BUNDLE_EXPIRE_CI_BODY, bundle.getName(), expireAt))
-                                    .htmlBodyFileName("createBundleSubscriptionOfferEmail.html")
-                                    .htmlBodyContext(buildEmailHtmlBodyContext(bundle.getName()))
-                                    .destinationUserType(SelfcareProductUser.ADMIN)
-                                    .build();
-                            this.awsSesClient.sendEmail(messageDetail);
-                        }));
-
-        log.info("[Mail-Notification] CI mail notification completed, PSP notification starting");
-        Map<String, List<String>> mailMap = expiringBundles.getBundleList().parallelStream()
-                .map(bundle -> BundleInfo.builder()
-                        .pspTaxCode(this.apiConfigClient.getPSPDetails(bundle.getIdPsp()).getTaxCode())
-                        .bundleName(bundle.getName())
-                        .build())
-                .collect(Collectors.groupingBy(BundleInfo::getPspTaxCode,
-                        Collectors.mapping(BundleInfo::getBundleName, Collectors.toList())));
+                .forEach(bundle ->
+                        getAllCITaxCodesAssociatedToABundle(bundle.getId(), bundle.getType(), bundle.getIdPsp()).parallelStream()
+                                .forEach(ciTaxCode -> sendMail(expireAt, bundle, ciTaxCode))
+                );
 
         // notify PSP
-        mailMap.keySet().parallelStream().forEach(
-                pspTaxCode -> {
-                    List<String> bundleNames = mailMap.get(pspTaxCode);
-                    EmailMessageDetail messageDetail = EmailMessageDetail.builder()
-                            .institutionTaxCode(pspTaxCode)
-                            .subject(BUNDLE_EXPIRE_SUBJECT)
-                            .textBody(String.format(BUNDLE_EXPIRE_PSP_BODY, bundleNames, expireAt))
-                            .htmlBodyFileName("deleteBundleEmail.html")
-                            .htmlBodyContext(buildEmailHtmlBodyContext(bundleNames))
-                            .destinationUserType(SelfcareProductUser.ADMIN)
-                            .build();
-                    this.awsSesClient.sendEmail(messageDetail);
+        log.info("[Mail-Notification] CI mail notification completed, PSP notification starting");
+        expiringBundles.getBundleList().parallelStream().forEach(
+                bundle -> {
+                    String pspTaxCode = getPspTaxCode(bundle);
+                    if (pspTaxCode != null) {
+                        sendMail(expireAt, bundle, pspTaxCode);
+                    }
                 }
         );
         log.info("[Mail-Notification] PSP mail notification completed, Email notification completed for expiring bundle in {} days",
                 expireAt);
+    }
+
+    private void sendMail(String expireAt, Bundle bundle, String taxCode) {
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(taxCode)
+                .subject(BUNDLE_EXPIRE_SUBJECT)
+                .textBody(String.format(BUNDLE_EXPIRE_BODY, bundle.getName(), expireAt))
+                .htmlBodyFileName("deleteBundleEmail.html")
+                .htmlBodyContext(buildEmailHtmlBodyContext(bundle.getName(), expireAt))
+                .destinationUserType(SelfcareProductUser.ADMIN)
+                .build();
+        this.awsSesClient.sendEmail(messageDetail);
+    }
+
+    private String getPspTaxCode(Bundle bundle) {
+        try {
+            return this.apiConfigClient.getPSPDetails(bundle.getIdPsp()).getTaxCode();
+        } catch (Exception e) {
+            log.warn("[Mail-Notification] a error occurred while retrieving tax code for PSP with code {}, PSP expire notification for bundle with id {} skipped",
+                    bundle.getIdPsp(), bundle.getId(), e);
+            return null;
+        }
     }
 
     private Bundles getAllBundlesWithExpireDate(String expireAt) {
@@ -157,25 +150,14 @@ public class CommissionBundleMailNotificationScheduler {
                 0);
     }
 
-    private Context buildEmailHtmlBodyContext(String bundleName) {
+    private Context buildEmailHtmlBodyContext(String bundleName, String expireAt) {
         // Thymeleaf Context
         Context context = new Context();
 
         // Properties to show up in Template after stored in Context
         Map<String, Object> properties = new HashMap<>();
         properties.put("bundleName", bundleName);
-
-        context.setVariables(properties);
-        return context;
-    }
-
-    private Context buildEmailHtmlBodyContext(List<String> bundleNames) {
-        // Thymeleaf Context
-        Context context = new Context();
-
-        // Properties to show up in Template after stored in Context
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("bundleNames", bundleNames);
+        properties.put("expireAt", expireAt);
 
         context.setVariables(properties);
         return context;
@@ -210,15 +192,4 @@ public class CommissionBundleMailNotificationScheduler {
         }
         return ciTaxCodes;
     }
-
-    @Getter
-    @Setter
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class BundleInfo {
-        private String pspTaxCode;
-        private String bundleName;
-    }
-
 }

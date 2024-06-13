@@ -59,28 +59,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.*;
+
 @Slf4j
 @Service
 public class CommissionBundleService {
-
-    private static final String BUNDLE_DELETE_SUBJECT = "Notifica eliminazione pacchetto";
-    private static final String BUNDLE_DELETE_BODY = "Ciao, %n%n%n il pacchetto %s è stato eliminato, sarà disattivato e non più visibile a partire da domani.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
-    private static final String BUNDLE_DELETE_SUBSCRIPTION_SUBJECT = "Conferma rimozione da pacchetto";
-    private static final String BUNDLE_DELETE_SUBSCRIPTION_BODY = "Ciao, %n%n%n sei stato rimosso dal pacchetto %s.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
-    private static final String BUNDLE_CREATE_SUBSCRIPTION_REQUEST_SUBJECT = "Nuova richiesta di attivazione pacchetto commissionale";
-    private static final String BUNDLE_CREATE_SUBSCRIPTION_REQUEST_BODY = "Ciao, %n%n%n ci sono nuove richieste di attivazione per il pacchetto commissionale %s.%n%n%n Puoi gestire i tuoi pacchetti qui https://selfcare.platform.pagopa.it/ui/comm-bundles ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
-    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_REQUEST_SUBJECT = "Richiesta di adesione confermata";
-    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_REQUEST_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto %s è stata accettata.%n%n%n Puoi vedere e gestire il pacchetto da qui ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
-    private static final String BUNDLE_REJECT_SUBSCRIPTION_REQUEST_SUBJECT = "Richiesta di adesione rifiutata";
-    private static final String BUNDLE_REJECT_SUBSCRIPTION_REQUEST_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto %s è stata rifiutata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
-    private static final String BUNDLE_CREATE_SUBSCRIPTION_OFFER_SUBJECT = "Nuova offerta di attivazione pacchetto commissionale";
-    private static final String BUNDLE_CREATE_SUBSCRIPTION_OFFER_BODY = "Ciao, %n%n%n c'è una nuova offerta di attivazione per il pacchetto commissionale %s.%n%n%n Puoi gestire i tuoi pacchetti qui https://selfcare.platform.pagopa.it/ui/comm-bundles ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
-    private static final String BUNDLE_DELETE_SUBSCRIPTION_OFFER_SUBJECT = "Offerta di adesione eliminata";
-    private static final String BUNDLE_DELETE_SUBSCRIPTION_OFFER_BODY = "Ciao %n%n%n l'offerta di adesione al pacchetto %s è stata eliminata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
-    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_OFFER_SUBJECT = "Offerta di adesione confermata";
-    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_OFFER_BODY = "Ciao %n%n%n la tua offerta di adesione al pacchetto %s è stata accettata.%n%n%n Puoi gestire i tuoi pacchetti qui ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
-    private static final String BUNDLE_REJECT_SUBSCRIPTION_OFFER_SUBJECT = "Offerta di adesione rifiutata";
-    private static final String BUNDLE_REJECT_SUBSCRIPTION_OFFER_BODY = "Ciao %n%n%n la tua offerta di adesione al pacchetto %s è stata rifiutata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
 
     private static final String VALID_FROM_DATE_FORMAT = "yyyy-MM-dd";
 
@@ -166,17 +149,17 @@ public class CommissionBundleService {
      * @param bundleName bundle name
      * @param bundleType bundle type
      */
-    public void deletePSPBundle(String pspTaxCode, String idBundle, String bundleName, BundleType bundleType) {
+    public void deletePSPBundle(String pspTaxCode, String idBundle, String bundleName, String pspName, BundleType bundleType) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
         List<String> ciTaxCodes = getAllCITaxCodesAssociatedToABundle(idBundle, bundleType, pspCode);
 
-        Context bodyContext = buildEmailHtmlBodyContext(bundleName);
+        Context bodyContext = buildEmailHtmlBodyContext(bundleName, pspName);
         ciTaxCodes.parallelStream().forEach(
                 ciTaxCode -> {
                     EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                             .institutionTaxCode(ciTaxCode)
                             .subject(BUNDLE_DELETE_SUBJECT)
-                            .textBody(String.format(BUNDLE_DELETE_BODY, bundleName))
+                            .textBody(String.format(BUNDLE_DELETE_BODY, pspName, bundleName))
                             .htmlBodyFileName("deleteBundleEmail.html")
                             .htmlBodyContext(bodyContext)
                             .destinationUserType(SelfcareProductUser.ADMIN)
@@ -208,8 +191,8 @@ public class CommissionBundleService {
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
-                .subject(BUNDLE_ACCEPT_SUBSCRIPTION_REQUEST_SUBJECT)
-                .textBody(String.format(BUNDLE_ACCEPT_SUBSCRIPTION_REQUEST_BODY, bundleName))
+                .subject(BUNDLE_ACCEPT_REQUEST_SUBJECT)
+                .textBody(String.format(BUNDLE_ACCEPT_REQUEST_BODY, bundleName))
                 .htmlBodyFileName("acceptBundleSubscriptionRequestEmail.html")
                 .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
                 .destinationUserType(SelfcareProductUser.ADMIN)
@@ -293,8 +276,8 @@ public class CommissionBundleService {
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
-                .subject(BUNDLE_REJECT_SUBSCRIPTION_REQUEST_SUBJECT)
-                .textBody(String.format(BUNDLE_REJECT_SUBSCRIPTION_REQUEST_BODY, bundleName))
+                .subject(BUNDLE_REJECT_REQUEST_SUBJECT)
+                .textBody(String.format(BUNDLE_REJECT_REQUEST_BODY, bundleName))
                 .htmlBodyFileName("rejectBundleSubscriptionRequestEmail.html")
                 .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
                 .destinationUserType(SelfcareProductUser.ADMIN)
@@ -496,8 +479,8 @@ public class CommissionBundleService {
         if (bundleName != null && !bundleName.isBlank()) {
             EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                     .institutionTaxCode(bundleRequest.getIdPsp())
-                    .subject(BUNDLE_CREATE_SUBSCRIPTION_REQUEST_SUBJECT)
-                    .textBody(String.format(BUNDLE_CREATE_SUBSCRIPTION_REQUEST_BODY, bundleName))
+                    .subject(BUNDLE_CREATE_REQUEST_SUBJECT)
+                    .textBody(String.format(BUNDLE_CREATE_REQUEST_BODY, bundleName))
                     .htmlBodyFileName("createBundleSubscriptionRequestEmail.html")
                     .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
                     .destinationUserType(SelfcareProductUser.ADMIN)
@@ -528,8 +511,8 @@ public class CommissionBundleService {
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
-                .subject(BUNDLE_DELETE_SUBSCRIPTION_OFFER_SUBJECT)
-                .textBody(String.format(BUNDLE_DELETE_SUBSCRIPTION_OFFER_BODY, bundleName))
+                .subject(BUNDLE_DELETE_OFFER_SUBJECT)
+                .textBody(String.format(BUNDLE_DELETE_OFFER_BODY, bundleName))
                 .htmlBodyFileName("deleteBundleSubscriptionOfferEmail.html")
                 .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
                 .destinationUserType(SelfcareProductUser.ADMIN)
@@ -560,8 +543,8 @@ public class CommissionBundleService {
                 .forEach(ciTaxCode -> {
                     EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                             .institutionTaxCode(ciTaxCode)
-                            .subject(BUNDLE_CREATE_SUBSCRIPTION_OFFER_SUBJECT)
-                            .textBody(String.format(BUNDLE_CREATE_SUBSCRIPTION_OFFER_BODY, bundleName))
+                            .subject(BUNDLE_CREATE_OFFER_SUBJECT)
+                            .textBody(String.format(BUNDLE_CREATE_OFFER_BODY, bundleName))
                             .htmlBodyFileName("createBundleSubscriptionOfferEmail.html")
                             .htmlBodyContext(bodyContext)
                             .destinationUserType(SelfcareProductUser.ADMIN)
@@ -593,8 +576,8 @@ public class CommissionBundleService {
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(pspTaxCode)
-                .subject(BUNDLE_ACCEPT_SUBSCRIPTION_OFFER_SUBJECT)
-                .textBody(String.format(BUNDLE_ACCEPT_SUBSCRIPTION_OFFER_BODY, bundleName))
+                .subject(BUNDLE_ACCEPT_OFFER_SUBJECT)
+                .textBody(String.format(BUNDLE_ACCEPT_OFFER_BODY, bundleName))
                 .htmlBodyFileName("acceptBundleSubscriptionOfferEmail.html")
                 .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
                 .destinationUserType(SelfcareProductUser.ADMIN)
@@ -619,8 +602,8 @@ public class CommissionBundleService {
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(pspTaxCode)
-                .subject(BUNDLE_REJECT_SUBSCRIPTION_OFFER_SUBJECT)
-                .textBody(String.format(BUNDLE_REJECT_SUBSCRIPTION_OFFER_BODY, bundleName))
+                .subject(BUNDLE_REJECT_OFFER_SUBJECT)
+                .textBody(String.format(BUNDLE_REJECT_OFFER_BODY, bundleName))
                 .htmlBodyFileName("rejectBundleSubscriptionOfferEmail.html")
                 .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
                 .destinationUserType(SelfcareProductUser.ADMIN)
@@ -629,7 +612,7 @@ public class CommissionBundleService {
         this.awsSesClient.sendEmail(messageDetail);
     }
 
-    private Context buildEmailHtmlBodyContext(String bundleName) {
+    private Context buildEmailHtmlBodyContext(String bundleName, String pspName) {
         // Thymeleaf Context
         Context context = new Context();
 
@@ -637,8 +620,16 @@ public class CommissionBundleService {
         Map<String, Object> properties = new HashMap<>();
         properties.put("bundleName", bundleName);
 
+        if (pspName != null) {
+            properties.put("pspName", pspName);
+        }
+
         context.setVariables(properties);
         return context;
+
+    }
+    private Context buildEmailHtmlBodyContext(String bundleName) {
+        return buildEmailHtmlBodyContext(bundleName, null);
     }
 
     private List<CISubscriptionInfo> buildCISubscriptionInfoList(
