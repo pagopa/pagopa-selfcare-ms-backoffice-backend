@@ -14,6 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Public
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
+import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.BundleAllPages;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.MDC;
@@ -26,10 +27,17 @@ import org.thymeleaf.context.Context;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static com.fasterxml.jackson.databind.type.LogicalType.Collection;
 import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCError;
 import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCForEndExecution;
 import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCForStartExecution;
@@ -46,17 +54,18 @@ public class CommissionBundleMailNotificationScheduler {
 
     private static final String VALID_FROM_DATE_FORMAT = "yyyy-MM-dd";
 
-    private final GecClient gecClient;
+    private final BundleAllPages bundleAllPages;
 
     private final ApiConfigClient apiConfigClient;
 
     private final AwsSesClient awsSesClient;
 
     public CommissionBundleMailNotificationScheduler(
-            GecClient gecClient, ApiConfigClient apiConfigClient,
+            BundleAllPages bundleAllPages,
+            ApiConfigClient apiConfigClient,
             AwsSesClient awsSesClient
     ) {
-        this.gecClient = gecClient;
+        this.bundleAllPages = bundleAllPages;
         this.apiConfigClient = apiConfigClient;
         this.awsSesClient = awsSesClient;
     }
@@ -90,15 +99,15 @@ public class CommissionBundleMailNotificationScheduler {
     }
 
     private void notify(String expireAt) {
-        Bundles expiringBundles = getAllBundlesWithExpireDate(expireAt);
+        Set<Bundle> expiringBundles = this.bundleAllPages.getAllBundlesWithExpireDate(expireAt);
         log.info("[Mail-Notification] {} expiring bundle in {} days retrieved",
-                expiringBundles.getPageInfo().getTotalItems(),
+                expiringBundles.size(),
                 expireAt
         );
 
         // notify CI
         log.info("[Mail-Notification] CI mail notification starting");
-        expiringBundles.getBundleList().parallelStream()
+        expiringBundles.parallelStream()
                 .forEach(bundle ->
                         getAllCITaxCodesAssociatedToABundle(bundle.getId(), bundle.getType(), bundle.getIdPsp()).parallelStream()
                                 .forEach(ciTaxCode -> sendMail(expireAt, bundle, ciTaxCode))
@@ -106,7 +115,7 @@ public class CommissionBundleMailNotificationScheduler {
 
         // notify PSP
         log.info("[Mail-Notification] CI mail notification completed, PSP notification starting");
-        expiringBundles.getBundleList().parallelStream().forEach(
+        expiringBundles.parallelStream().forEach(
                 bundle -> {
                     String pspTaxCode = getPspTaxCode(bundle);
                     if (pspTaxCode != null) {
@@ -140,16 +149,6 @@ public class CommissionBundleMailNotificationScheduler {
         }
     }
 
-    private Bundles getAllBundlesWithExpireDate(String expireAt) {
-        return this.gecClient.getBundles(
-                List.of(BundleType.GLOBAL, BundleType.PUBLIC, BundleType.PRIVATE),
-                null,
-                null,
-                expireAt,
-                1000,
-                0);
-    }
-
     private Context buildEmailHtmlBodyContext(String bundleName, String expireAt) {
         // Thymeleaf Context
         Context context = new Context();
@@ -163,33 +162,17 @@ public class CommissionBundleMailNotificationScheduler {
         return context;
     }
 
-    private List<String> getAllCITaxCodesAssociatedToABundle(String idBundle, BundleType bundleType, String pspCode) {
-        BundleCreditorInstitutionResource bundleSubscriptions = this.gecClient
-                .getBundleSubscriptionByPSP(pspCode, idBundle, null, 1000, 0);
-        List<String> ciTaxCodes = new ArrayList<>(
-                bundleSubscriptions.getCiBundleDetails().parallelStream()
-                        .map(CiBundleDetails::getCiTaxCode)
-                        .toList()
-        );
+    private Set<String> getAllCITaxCodesAssociatedToABundle(String idBundle, BundleType bundleType, String pspCode) {
+        Set<String> bundleSubscriptions = this.bundleAllPages.getBundleSubscriptionByPSP(pspCode, idBundle);
 
         if (BundleType.PUBLIC.equals(bundleType)) {
-            PublicBundleRequests requests = this.gecClient
-                    .getPublicBundleSubscriptionRequestByPSP(pspCode, null, idBundle, 1000, 0);
-            ciTaxCodes.addAll(
-                    requests.getRequestsList().parallelStream()
-                            .map(PublicBundleRequest::getCiFiscalCode)
-                            .toList()
-            );
+            Set<String> requests = this.bundleAllPages.getPublicBundleSubscriptionRequestByPSP(pspCode, idBundle);
+            bundleSubscriptions.addAll(requests);
         }
         if (BundleType.PRIVATE.equals(bundleType)) {
-            BundleOffers offers = this.gecClient
-                    .getPrivateBundleOffersByPSP(pspCode, null, idBundle, 1000, 0);
-            ciTaxCodes.addAll(
-                    offers.getOffers().parallelStream()
-                            .map(PspBundleOffer::getCiFiscalCode)
-                            .toList()
-            );
+            Set<String> offers = this.bundleAllPages.getPrivateBundleOffersByPSP(pspCode, idBundle);
+            bundleSubscriptions.addAll(offers);
         }
-        return ciTaxCodes;
+        return bundleSubscriptions;
     }
 }
