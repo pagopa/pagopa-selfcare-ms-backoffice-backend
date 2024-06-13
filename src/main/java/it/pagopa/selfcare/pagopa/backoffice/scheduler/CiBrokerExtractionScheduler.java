@@ -15,11 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Calendar;
 import java.util.Set;
-import java.util.UUID;
 
-import static it.pagopa.selfcare.pagopa.backoffice.config.LoggingAspect.*;
 import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.*;
 
 @Component
@@ -71,7 +68,7 @@ public class CiBrokerExtractionScheduler {
         brokerInstitutionsRepository.findByBrokerCode(brokerCode)
                 .ifPresent(brokerInstitutionsRepository::delete);
         // retrieve new data
-        log.debug("[Export-CI] retrieve new data for the broker " + brokerCode);
+        log.debug("[Export-CI] retrieve new data for the broker {}", brokerCode);
         var institutions = allPages.getCreditorInstitutionsAssociatedToBroker(brokerCode).stream().toList();
         // build new entity
         var entity = BrokerInstitutionsEntity.builder()

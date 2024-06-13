@@ -62,8 +62,9 @@ public class ExportService {
                 .orElseThrow(() -> new AppException(AppError.BROKER_NOT_FOUND, brokerCode));
 
         List<String> headers = Arrays.asList("companyName", "taxCode", "intermediated", "brokerCompanyName",
-                "brokerTaxCode", "model", "auxDigit", "segregationCode", "applicationCode", "cbillCode", "stationId", "stationState",
-                "activationDate", "version", "broadcast", "PSPpayment");
+                "brokerTaxCode", "model", "auxDigit", "segregationCode", "applicationCode", "cbillCode", "stationId",
+                "stationState", "activationDate", "version", "broadcast", "PSPpayment", "endpointRT", "endpointRedirect",
+                "endpointMU", "primitiveVersion", "ciStatus");
         return Utility.createCsv(headers, mapInstitutionToCsv(ibans.getInstitutions()));
     }
 
@@ -128,8 +129,12 @@ public class ExportService {
                         deNull(elem.getActivationDate()),
                         deNull(elem.getVersion()),
                         Boolean.TRUE.equals(deNull(elem.getBroadcast())) ? "true" : "false",
-                        Boolean.TRUE.equals(deNull(elem.getPspPayment())) ? "true" : "false"
-                ))
+                        Boolean.TRUE.equals(deNull(elem.getPspPayment())) ? "true" : "false",
+                        deNull(elem.getEndpointRT()),
+                        deNull(elem.getEndpointRedirect()),
+                        deNull(elem.getEndpointMU()),
+                        deNull(elem.getPrimitiveVersion()),
+                        Boolean.TRUE.equals(deNull(elem.getCiStatus())) ? "true" : "false"))
                 .toList();
     }
 }
