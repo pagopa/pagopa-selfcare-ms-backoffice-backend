@@ -235,7 +235,7 @@ public class CommissionBundleController {
             @Parameter(description = "Number of elements in one page") @RequestParam(required = false, defaultValue = "50") Integer limit,
             @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") Integer page
     ) {
-        if (BundleSubscriptionStatus.ACCEPTED.equals(status)) {
+        if(BundleSubscriptionStatus.ACCEPTED.equals(status)) {
             return this.commissionBundleService.getAcceptedBundleCISubscriptions(idBundle, pspTaxCode, ciTaxCode, limit, page);
         }
         return this.commissionBundleService.getWaitingBundleCISubscriptions(idBundle, pspTaxCode, bundleType, ciTaxCode, limit, page);
@@ -270,7 +270,7 @@ public class CommissionBundleController {
             @Parameter(description = "Commission bundle's type (Required only for subscription with status WAITING") @RequestParam(required = false) BundleType bundleType,
             @Parameter(description = "Subscription status") @RequestParam BundleSubscriptionStatus status
     ) {
-        if (BundleSubscriptionStatus.ACCEPTED.equals(status)) {
+        if(BundleSubscriptionStatus.ACCEPTED.equals(status)) {
             return this.commissionBundleService.getAcceptedBundleCISubscriptionsDetail(idBundle, pspTaxCode, ciTaxCode);
         }
         return this.commissionBundleService.getWaitingBundleCISubscriptionsDetail(idBundle, pspTaxCode, ciTaxCode, bundleType);
