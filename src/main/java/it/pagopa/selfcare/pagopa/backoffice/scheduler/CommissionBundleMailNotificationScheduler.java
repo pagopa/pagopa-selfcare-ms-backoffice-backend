@@ -2,16 +2,8 @@ package it.pagopa.selfcare.pagopa.backoffice.scheduler;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
-import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleOffers;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleOffer;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.BundleAllPages;
@@ -26,18 +18,10 @@ import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static com.fasterxml.jackson.databind.type.LogicalType.Collection;
 import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCError;
 import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCForEndExecution;
 import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCForStartExecution;

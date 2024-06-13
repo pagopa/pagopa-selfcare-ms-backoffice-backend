@@ -36,7 +36,7 @@ public class BundleAllPages {
 
     public BundleAllPages(
             GecClient gecClient,
-            @Value("${getAllBundles.pageLimit}") Integer getAllBundlesPageLimit
+            @Value("${extraction.bundles.getAllBundles.pageLimit}") Integer getAllBundlesPageLimit
     ) {
         this.gecClient = gecClient;
         this.getAllBundlesPageLimit = getAllBundlesPageLimit;
