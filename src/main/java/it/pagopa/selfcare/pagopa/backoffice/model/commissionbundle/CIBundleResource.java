@@ -28,6 +28,8 @@ public class CIBundleResource extends BundleResource {
     private String ciBundleId;
     @Schema(description = "Creditor institution bundle's subscription request's id")
     private String ciRequestId;
+    @Schema(description = "Creditor institution bundle's subscription offer's id")
+    private String ciOfferId;
     @Schema(description = "Creditor institution bundle's attributes that describe for each taxonomy the fee paid by the CI", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("bundleTaxonomies")
     private List<CIBundleFee> ciBundleFeeList;

@@ -6,8 +6,39 @@ import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleSubscriptionStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleTaxonomy;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleAttributeResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleFee;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CISubscriptionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleTaxonomy;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCIOffers;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleOffers;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleAttribute;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundles;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleOffer;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
@@ -22,7 +53,11 @@ import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -32,10 +67,18 @@ public class CommissionBundleService {
     private static final String BUNDLE_DELETE_SUBSCRIPTION_BODY = "Ciao, %n%n%n sei stato rimosso dal pacchetto %s.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
     private static final String BUNDLE_CREATE_SUBSCRIPTION_REQUEST_SUBJECT = "Nuova richiesta di attivazione pacchetto commissionale";
     private static final String BUNDLE_CREATE_SUBSCRIPTION_REQUEST_BODY = "Ciao, %n%n%n ci sono nuove richieste di attivazione per il pacchetto commissionale %s.%n%n%n Puoi gestire i tuoi pacchetti qui https://selfcare.platform.pagopa.it/ui/comm-bundles ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
-    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_SUBJECT = "Richiesta di adesione confermata";
-    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto %s è stata accettata.%n%n%n Puoi vedere e gestire il pacchetto da qui ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
-    private static final String BUNDLE_REJECT_SUBSCRIPTION_SUBJECT = "Richiesta di adesione rifiutata";
-    private static final String BUNDLE_REJECT_SUBSCRIPTION_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto %s è stata rifiutata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
+    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_REQUEST_SUBJECT = "Richiesta di adesione confermata";
+    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_REQUEST_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto %s è stata accettata.%n%n%n Puoi vedere e gestire il pacchetto da qui ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
+    private static final String BUNDLE_REJECT_SUBSCRIPTION_REQUEST_SUBJECT = "Richiesta di adesione rifiutata";
+    private static final String BUNDLE_REJECT_SUBSCRIPTION_REQUEST_BODY = "Ciao %n%n%n la tua richiesta di adesione al pacchetto %s è stata rifiutata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
+    private static final String BUNDLE_CREATE_SUBSCRIPTION_OFFER_SUBJECT = "Nuova offerta di attivazione pacchetto commissionale";
+    private static final String BUNDLE_CREATE_SUBSCRIPTION_OFFER_BODY = "Ciao, %n%n%n c'è una nuova offerta di attivazione per il pacchetto commissionale %s.%n%n%n Puoi gestire i tuoi pacchetti qui https://selfcare.platform.pagopa.it/ui/comm-bundles ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
+    private static final String BUNDLE_DELETE_SUBSCRIPTION_OFFER_SUBJECT = "Offerta di adesione eliminata";
+    private static final String BUNDLE_DELETE_SUBSCRIPTION_OFFER_BODY = "Ciao %n%n%n l'offerta di adesione al pacchetto %s è stata eliminata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
+    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_OFFER_SUBJECT = "Offerta di adesione confermata";
+    private static final String BUNDLE_ACCEPT_SUBSCRIPTION_OFFER_BODY = "Ciao %n%n%n la tua offerta di adesione al pacchetto %s è stata accettata.%n%n%n Puoi gestire i tuoi pacchetti qui ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
+    private static final String BUNDLE_REJECT_SUBSCRIPTION_OFFER_SUBJECT = "Offerta di adesione rifiutata";
+    private static final String BUNDLE_REJECT_SUBSCRIPTION_OFFER_BODY = "Ciao %n%n%n la tua offerta di adesione al pacchetto %s è stata rifiutata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
 
     private static final String VALID_FROM_DATE_FORMAT = "yyyy-MM-dd";
 
@@ -126,20 +169,25 @@ public class CommissionBundleService {
      * @param ciTaxCode  creditor institution's tax code
      * @param bundleName bundle's name
      */
-    public void acceptPublicBundleSubscriptionsByPSP(String pspTaxCode, String requestId, String ciTaxCode, String bundleName) {
+    public void acceptPublicBundleSubscriptionsByPSP(
+            String pspTaxCode,
+            String requestId,
+            String ciTaxCode,
+            String bundleName
+    ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
         this.gecClient.acceptPublicBundleSubscriptionsByPSP(pspCode, requestId);
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
-                .subject(BUNDLE_ACCEPT_SUBSCRIPTION_SUBJECT)
-                .textBody(String.format(BUNDLE_ACCEPT_SUBSCRIPTION_BODY, bundleName))
-                .htmlBodyFileName("acceptPublicBundleSubscriptionEmail.html")
+                .subject(BUNDLE_ACCEPT_SUBSCRIPTION_REQUEST_SUBJECT)
+                .textBody(String.format(BUNDLE_ACCEPT_SUBSCRIPTION_REQUEST_BODY, bundleName))
+                .htmlBodyFileName("acceptBundleSubscriptionRequestEmail.html")
                 .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
                 .destinationUserType(SelfcareProductUser.ADMIN)
                 .build();
 
-        awsSesClient.sendEmail(messageDetail);
+        this.awsSesClient.sendEmail(messageDetail);
     }
 
     /**
@@ -147,30 +195,53 @@ public class CommissionBundleService {
      * The result contains an expanded version of the bundle, using the taxonomy detail extracted
      * from the repository instance
      *
-     * @param bundleType the requested type of bundles
-     * @param ciTaxCode  creditor institution's tax code, required in case of {@link BundleType#PUBLIC} otherwise is optional and used to filter the results
-     * @param limit      page limit parameter
-     * @param page       page number parameter
+     * @param bundleType         the requested type of bundles
+     * @param subscriptionStatus the status of the public/private bundle subscription, required in case of {@link BundleType#PRIVATE} otherwise is optional
+     * @param ciTaxCode          creditor institution's tax code, required in case of {@link BundleType#PUBLIC} otherwise is optional and used to filter the results
+     * @param limit              page limit parameter
+     * @param page               page number parameter
      * @return paged list of bundle resources, expanded with taxonomy data
      */
-    public CIBundlesResource getCIBundles(BundleType bundleType, String ciTaxCode, String name, Integer limit, Integer page) {
+    public CIBundlesResource getCIBundles(
+            BundleType bundleType,
+            BundleSubscriptionStatus subscriptionStatus,
+            String ciTaxCode,
+            String bundleName,
+            Integer limit,
+            Integer page
+    ) {
         List<CIBundleResource> bundlesResource = new ArrayList<>();
         PageInfo pageInfo = new PageInfo();
 
         List<BundleType> bundleTypes = Collections.singletonList(bundleType);
-        if (bundleType.equals(BundleType.GLOBAL) || bundleType.equals(BundleType.PRIVATE)) {
-            Bundles bundles = this.gecClient.getBundles(bundleTypes, name, null, limit, page);
+        if (bundleType.equals(BundleType.GLOBAL)) {
+            Bundles bundles = this.gecClient.getBundles(bundleTypes, bundleName, null, limit, page);
             pageInfo = bundles.getPageInfo();
             bundlesResource = getCIBundlesResource(bundles);
         } else if (bundleType.equals(BundleType.PUBLIC)) {
             if (ciTaxCode == null) {
-                throw new AppException(AppError.BAD_REQUEST,
-                        "Creditor institution's tax code is required to retrieve creditor institution's public bundles");
+                throw new AppException(AppError.INVALID_GET_PUBLIC_CI_BUNDLES_REQUEST);
             }
             String validFrom = LocalDate.now().format(DateTimeFormatter.ofPattern(VALID_FROM_DATE_FORMAT));
-            Bundles bundles = gecClient.getBundles(bundleTypes, name, validFrom, limit, page);
+            Bundles bundles = this.gecClient.getBundles(bundleTypes, bundleName, validFrom, limit, page);
             pageInfo = bundles.getPageInfo();
-            bundlesResource = getPublicBundleResources(ciTaxCode, bundles);
+            bundlesResource = bundles.getBundleList().parallelStream()
+                    .map(bundle -> buildCIBundle(ciTaxCode, bundle))
+                    .toList();
+        } else if (bundleType.equals(BundleType.PRIVATE)) {
+            if (ciTaxCode == null || subscriptionStatus == null) {
+                throw new AppException(AppError.INVALID_GET_PRIVATE_CI_BUNDLES_REQUEST, ciTaxCode, subscriptionStatus);
+            }
+            if (BundleSubscriptionStatus.ACCEPTED.equals(subscriptionStatus)) {
+                CiBundles bundlesByCI = this.gecClient.getBundlesByCI(ciTaxCode, BundleType.PRIVATE.name(), bundleName, limit, page);
+                pageInfo = bundlesByCI.getPageInfo();
+                bundlesResource = getAcceptedCIPrivateBundleResources(bundlesByCI);
+
+            } else if (BundleSubscriptionStatus.WAITING.equals(subscriptionStatus)) {
+                BundleCIOffers bundleOffers = this.gecClient.getOffersByCI(ciTaxCode, null, bundleName, limit, page);
+                pageInfo = bundleOffers.getPageInfo();
+                bundlesResource = getWaitingCIPrivateBundleResources(bundleOffers);
+            }
         }
         return CIBundlesResource.builder().bundles(bundlesResource).pageInfo(pageInfo).build();
     }
@@ -183,20 +254,25 @@ public class CommissionBundleService {
      * @param ciTaxCode       creditor institution's tax code
      * @param bundleName      bundle's name
      */
-    public void rejectPublicBundleSubscriptionByPSP(String pspTaxCode, String bundleRequestId, String ciTaxCode, String bundleName) {
+    public void rejectPublicBundleSubscriptionByPSP(
+            String pspTaxCode,
+            String bundleRequestId,
+            String ciTaxCode,
+            String bundleName
+    ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
         this.gecClient.rejectPublicBundleSubscriptionByPSP(pspCode, bundleRequestId);
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
-                .subject(BUNDLE_REJECT_SUBSCRIPTION_SUBJECT)
-                .textBody(String.format(BUNDLE_REJECT_SUBSCRIPTION_BODY, bundleName))
-                .htmlBodyFileName("rejectPublicBundleSubscriptionEmail.html")
+                .subject(BUNDLE_REJECT_SUBSCRIPTION_REQUEST_SUBJECT)
+                .textBody(String.format(BUNDLE_REJECT_SUBSCRIPTION_REQUEST_BODY, bundleName))
+                .htmlBodyFileName("rejectBundleSubscriptionRequestEmail.html")
                 .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
                 .destinationUserType(SelfcareProductUser.ADMIN)
                 .build();
 
-        awsSesClient.sendEmail(messageDetail);
+        this.awsSesClient.sendEmail(messageDetail);
     }
 
     /**
@@ -372,7 +448,7 @@ public class CommissionBundleService {
                     .destinationUserType(SelfcareProductUser.ADMIN)
                     .build();
 
-            awsSesClient.sendEmail(messageDetail);
+            this.awsSesClient.sendEmail(messageDetail);
         }
     }
 
@@ -399,20 +475,123 @@ public class CommissionBundleService {
                     .destinationUserType(SelfcareProductUser.ADMIN)
                     .build();
 
-            awsSesClient.sendEmail(messageDetail);
+            this.awsSesClient.sendEmail(messageDetail);
         }
     }
 
     /**
      * Delete a payment service provider's private bundle offer
      *
-     * @param idBundle private bundle id
-     * @param pspTaxCode payment service provider's tax code
+     * @param idBundle      private bundle id
+     * @param pspTaxCode    payment service provider's tax code
      * @param bundleOfferId id of the bundle offer
+     * @param ciTaxCode tax code of the creditor institution to be notified
+     * @param bundleName name of the deleted bundle offer
      */
-    public void deletePrivateBundleOffer(String idBundle, String pspTaxCode, String bundleOfferId) {
+    public void deletePrivateBundleOffer(String idBundle, String pspTaxCode, String bundleOfferId, String ciTaxCode, String bundleName) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
         this.gecClient.deletePrivateBundleOffer(pspCode, idBundle, bundleOfferId);
+
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(ciTaxCode)
+                .subject(BUNDLE_DELETE_SUBSCRIPTION_OFFER_SUBJECT)
+                .textBody(String.format(BUNDLE_DELETE_SUBSCRIPTION_OFFER_BODY, bundleName))
+                .htmlBodyFileName("deleteBundleSubscriptionOfferEmail.html")
+                .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                .destinationUserType(SelfcareProductUser.ADMIN)
+                .build();
+
+        this.awsSesClient.sendEmail(messageDetail);
+    }
+
+    /**
+     * Create the subscription offer for the specified private bundle and notify all the interested creditor institution's
+     *
+     * @param idBundle      the private bundle id
+     * @param pspTaxCode    Payment Service Provider's tax code
+     * @param bundleName    the private bundle name
+     * @param ciTaxCodeList the list tax code of creditor institutions tha will receive the offer
+     */
+    public void createCIBundleOffers(
+            String idBundle,
+            String pspTaxCode,
+            String bundleName,
+            CiTaxCodeList ciTaxCodeList
+    ) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
+        this.gecClient.createPrivateBundleOffer(pspCode, idBundle, ciTaxCodeList);
+
+        ciTaxCodeList.getCiTaxCodes().parallelStream()
+                .forEach(ciTaxCode -> {
+                    EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                            .institutionTaxCode(ciTaxCode)
+                            .subject(BUNDLE_CREATE_SUBSCRIPTION_OFFER_SUBJECT)
+                            .textBody(String.format(BUNDLE_CREATE_SUBSCRIPTION_OFFER_BODY, bundleName))
+                            .htmlBodyFileName("createBundleSubscriptionOfferEmail.html")
+                            .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                            .destinationUserType(SelfcareProductUser.ADMIN)
+                            .build();
+                    this.awsSesClient.sendEmail(messageDetail);
+                });
+    }
+
+    /**
+     * Accept the private bundle offer with the provided id.
+     * The provided tax code identifies the creditor institution that accept the offer.
+     * Notify the PSP with the provided tax code.
+     *
+     * @param ciTaxCode          the tax code of the creditor institution
+     * @param idBundleOffer      th id of the bundle offer
+     * @param pspTaxCode         tax code of the PSP to be notified
+     * @param bundleName         name of the offered bundle
+     * @param ciBundleAttributes bundle attributes specified by the creditor institution
+     * @return the id of the accepted private bundle
+     */
+    public CIBundleId acceptPrivateBundleOffer(
+            String ciTaxCode,
+            String idBundleOffer,
+            String pspTaxCode,
+            String bundleName,
+            CIBundleAttributeResource ciBundleAttributes
+    ) {
+        CIBundleId ciBundleId = this.gecClient.acceptPrivateBundleOffer(ciTaxCode, idBundleOffer, ciBundleAttributes.getAttributes());
+
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(pspTaxCode)
+                .subject(BUNDLE_ACCEPT_SUBSCRIPTION_OFFER_SUBJECT)
+                .textBody(String.format(BUNDLE_ACCEPT_SUBSCRIPTION_OFFER_BODY, bundleName))
+                .htmlBodyFileName("acceptBundleSubscriptionOfferEmail.html")
+                .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                .destinationUserType(SelfcareProductUser.ADMIN)
+                .build();
+
+        this.awsSesClient.sendEmail(messageDetail);
+        return ciBundleId;
+    }
+
+    /**
+     * Reject the private bundle offer with the provided id.
+     * The provided tax code identifies the creditor institution that reject the offer.
+     * Notify the PSP with the provided tax code.
+     *
+     * @param ciTaxCode          the tax code of the creditor institution
+     * @param idBundleOffer      th id of the bundle offer
+     * @param pspTaxCode         tax code of the PSP to be notified
+     * @param bundleName         name of the offered bundle
+     */
+    public void rejectPrivateBundleOffer(String ciTaxCode, String idBundleOffer, String pspTaxCode, String bundleName) {
+        this.gecClient.rejectPrivateBundleOffer(ciTaxCode, idBundleOffer);
+
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(pspTaxCode)
+                .subject(BUNDLE_REJECT_SUBSCRIPTION_OFFER_SUBJECT)
+                .textBody(String.format(BUNDLE_REJECT_SUBSCRIPTION_OFFER_BODY, bundleName))
+                .htmlBodyFileName("rejectBundleSubscriptionOfferEmail.html")
+                .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
+                .destinationUserType(SelfcareProductUser.ADMIN)
+                .build();
+
+        this.awsSesClient.sendEmail(messageDetail);
     }
 
     private Context buildEmailHtmlBodyContext(String bundleName) {
@@ -442,7 +621,11 @@ public class CommissionBundleService {
                 .toList();
     }
 
-    private boolean isOnRemoval(BundleCreditorInstitutionResource acceptedSubscription, CreditorInstitutionInfo ciInfo, LocalDate today) {
+    private boolean isOnRemoval(
+            BundleCreditorInstitutionResource acceptedSubscription,
+            CreditorInstitutionInfo ciInfo,
+            LocalDate today
+    ) {
         LocalDate validityDateTo = acceptedSubscription.getCiBundleDetails().stream()
                 .filter(s -> s.getCiTaxCode().equals(ciInfo.getCiTaxCode()))
                 .findFirst()
@@ -517,7 +700,10 @@ public class CommissionBundleService {
         }).toList();
     }
 
-    private <T extends BundleTaxonomy> List<T> getBundleTaxonomies(List<String> transferCategoryList, Class<T> bundleTaxonomyClazz) {
+    private <T extends BundleTaxonomy> List<T> getBundleTaxonomies(
+            List<String> transferCategoryList,
+            Class<T> bundleTaxonomyClazz
+    ) {
         List<Taxonomy> taxonomies = this.taxonomyService.getTaxonomiesByCodes(transferCategoryList);
         return taxonomies.parallelStream()
                 .map(taxonomy -> this.modelMapper.map(taxonomy, bundleTaxonomyClazz))
@@ -533,13 +719,7 @@ public class CommissionBundleService {
         }).toList();
     }
 
-    private List<CIBundleResource> getPublicBundleResources(String ciTaxCode, Bundles bundles) {
-        return bundles.getBundleList().parallelStream()
-                .map(bundle -> buildCIPublicBundle(ciTaxCode, bundle))
-                .toList();
-    }
-
-    private CIBundleResource buildCIPublicBundle(String ciTaxCode, Bundle bundle) {
+    private CIBundleResource buildCIBundle(String ciTaxCode, Bundle bundle) {
         CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
         CIBundleResource ciBundleResource;
 
@@ -553,14 +733,13 @@ public class CommissionBundleService {
         bundleResource.setCiBundleId(ciBundleResource.getCiBundleId());
         bundleResource.setCiRequestId(ciBundleResource.getCiRequestId());
         bundleResource.setCiBundleFeeList(ciBundleResource.getCiBundleFeeList());
-        bundleResource.setCiBundleFeeList(ciBundleResource.getCiBundleFeeList());
         return bundleResource;
     }
 
     private CIBundleResource enrichFromSubscribedCIBundle(String ciTaxCode, String bundleId) {
         CiBundleDetails ciBundle = this.gecClient.getCIBundle(ciTaxCode, bundleId);
         CIBundleStatus bundleStatus;
-        if (ciBundle.getValidityDateTo() == null || ciBundle.getValidityDateTo().isAfter(LocalDate.now())) {
+        if (isCIBundleEnabled(ciBundle)) {
             bundleStatus = CIBundleStatus.ENABLED;
         } else {
             bundleStatus = CIBundleStatus.ON_REMOVAL;
@@ -596,7 +775,46 @@ public class CommissionBundleService {
                 .build();
     }
 
+    private List<CIBundleResource> getWaitingCIPrivateBundleResources(BundleCIOffers bundleOffers) {
+        return bundleOffers.getOffers().parallelStream()
+                .map(offer -> {
+                    Bundle bundle = this.gecClient.getBundleDetail(offer.getIdBundle());
+                    CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
+
+                    bundleResource.setCiBundleStatus(CIBundleStatus.AVAILABLE);
+                    bundleResource.setCiOfferId(offer.getId());
+                    bundleResource.setCiBundleFeeList(getBundleTaxonomies(bundle.getTransferCategoryList(), CIBundleFee.class));
+                    return bundleResource;
+                })
+                .toList();
+    }
+
+    private List<CIBundleResource> getAcceptedCIPrivateBundleResources(CiBundles bundlesByCI) {
+        return bundlesByCI.getBundleDetailsList().parallelStream()
+                .map(ciBundle -> {
+                    Bundle bundle = this.gecClient.getBundleDetail(ciBundle.getIdBundle());
+                    CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
+                    CIBundleStatus bundleStatus;
+
+                    if (isCIBundleEnabled(ciBundle)) {
+                        bundleStatus = CIBundleStatus.ENABLED;
+                    } else {
+                        bundleStatus = CIBundleStatus.ON_REMOVAL;
+                    }
+
+                    bundleResource.setCiBundleStatus(bundleStatus);
+                    bundleResource.setCiBundleId(ciBundle.getIdCIBundle());
+                    bundleResource.setCiBundleFeeList(getCIBundleFeeList(ciBundle.getAttributes()));
+                    return bundleResource;
+                })
+                .toList();
+    }
+
     private boolean isBundleRequested(PublicBundleRequests bundleRequests) {
         return bundleRequests != null && bundleRequests.getPageInfo().getTotalItems() != null && bundleRequests.getPageInfo().getTotalItems() > 0;
+    }
+
+    private boolean isCIBundleEnabled(CiBundleDetails ciBundle) {
+        return ciBundle.getValidityDateTo() == null || ciBundle.getValidityDateTo().isAfter(LocalDate.now());
     }
 }

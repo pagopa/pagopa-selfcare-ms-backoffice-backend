@@ -7,6 +7,28 @@ on:
         required: true
         description: The name of the environment where to deploy
         type: string
+      helm_options:
+        default: ''
+        required: false
+        type: string
+        description: 'helm upgrade options'
+      terraform_options:
+        default: ''
+        required: false
+        type: string
+        description: 'terraform upgrade options'
+      branch:
+        required: false
+        default: ${{ github.ref_name }}
+        type: string
+      suffix_name:
+        required: false
+        default: ''
+        type: string
+      pr_number:
+        required: false
+        default: ''
+        type: string
 
 env:
   APP_NAME: pagopaselfcaremsbackofficebackend
@@ -47,7 +69,7 @@ jobs:
       - name: Deploy
         uses: pagopa/github-actions-template/aks-deploy@main
         with:
-          branch: ${{ github.ref_name }}
+          branch: ${{ inputs.branch }}
           client_id: ${{ secrets.CD_CLIENT_ID }}
           subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
           tenant_id: ${{ secrets.TENANT_ID }}
@@ -55,9 +77,9 @@ jobs:
           namespace: ${{ vars.NAMESPACE }}
           cluster_name: ${{ vars.CLUSTER_NAME }}
           resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
-          app_name: ${{ env.APP_NAME }}
-          helm_upgrade_options: "--debug"
-          timeout: "10m0s"
+          app_name: ${{ env.APP_NAME }}${{inputs.suffix_name}}
+          helm_upgrade_options: "--debug ${{inputs.helm_options}}"
+          timeout: '10m0s'
 
   cleanup_runner:
     name: Cleanup Runner
@@ -88,8 +110,12 @@ jobs:
         id: checkout
         # from https://github.com/actions/checkout/commits/main
         uses: actions/checkout@1f9a0c22da41e6ebfa534300ef656657ea2c6707
-        with:
-          persist-credentials: false
+
+      - shell: bash
+        if: ${{ inputs.pr_number != '' }}
+        run: |
+          mv ./infra/04_apim_api_staging.tf.disabled ./infra/04_apim_api_staging.tf 
+          echo "pr_number=\"${{ inputs.pr_number }}\"" >> ./infra/env/dev/terraform.tfvars
 
       - name: Setup Terraform
         # from https://github.com/hashicorp/setup-terraform/commits/main
@@ -117,4 +143,4 @@ jobs:
           export ARM_USE_OIDC=true
           export ARM_ACCESS_KEY=$(az storage account keys list --resource-group io-infra-rg --account-name pagopainfraterraform${{inputs.environment}} --query '[0].value' -o tsv)
           bash ./terraform.sh init ${{ inputs.environment }}
-          bash ./terraform.sh apply ${{ inputs.environment }} -auto-approve
+          bash ./terraform.sh apply ${{ inputs.environment }} ${{inputs.terraform_options}} -auto-approve

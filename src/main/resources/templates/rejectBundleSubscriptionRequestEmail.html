@@ -2,24 +2,25 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Delete bundle's subscription mail</title>
+    <title>Rejected bundle's subscription request mail</title>
 </head>
 
 <body>
 <img width="100" height="30"
      src="https://raw.githubusercontent.com/pagopa/pagopa-selfcare-ms-backoffice-backend/main/src/main/resources/templates/logo-pagopa.png">
-<h1>La tua richiesta di adesione al pacchetto è stata confermata</h1>
+<h1>Richiesta di adesione rifiutata</h1>
 <p>
     Ciao,
 </p>
 <br/>
 <p>
-    la tua richiesta di adesione al pacchetto <span th:text="${bundleName}" th:remove="tag"></span> è stata accettata.
+    la tua richiesta di adesione al pacchetto <span th:text="${bundleName}" th:remove="tag"></span> è stata
+    rifiutata.
 </p>
 <br/>
 <p>
-    Puoi vedere e gestire il tuo pacchetto da qui <a
-        href="https://selfcare.platform.pagopa.it/ui/comm-bundles">https://selfcare.platform.pagopa.it/ui/comm-bundles</a>.
+    Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di <a
+        href="https://selfcare.pagopa.it/assistenza">assistenza</a>.
 </p>
 <br/>
 <p>

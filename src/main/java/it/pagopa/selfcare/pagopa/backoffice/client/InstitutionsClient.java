@@ -17,7 +17,7 @@ public interface InstitutionsClient {
             @RequestPart("institutions-data") String institutionsDataContent,
             @RequestPart(value = "file") MultipartFile logo);
 
-    @GetMapping(value = "/data/{taxCode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/institutions/data/{taxCode}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     InstitutionUploadData getInstitutionData(
             @PathVariable(name = "taxCode") String taxCode);
