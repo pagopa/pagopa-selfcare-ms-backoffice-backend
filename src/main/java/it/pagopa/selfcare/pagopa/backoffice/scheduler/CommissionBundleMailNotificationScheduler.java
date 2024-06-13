@@ -45,7 +45,7 @@ import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtil
  */
 @Component
 @Slf4j
-public class CommissionBundleMailNotification {
+public class CommissionBundleMailNotificationScheduler {
 
     private static final String BUNDLE_EXPIRE_SUBJECT = "Notifica scadenza pacchetto";
     private static final String BUNDLE_EXPIRE_PSP_BODY = "Ciao, %n%n%n il pacchetto %s scadrà il %s.%n%n%n Puoi gestire i tuoi pacchetti qui https://selfcare.platform.pagopa.it/ui/comm-bundles ( https://selfcare.platform.pagopa.it/ui/comm-bundles ).%n%n%nA presto,%n%nPagamenti pagoPa";
@@ -59,7 +59,7 @@ public class CommissionBundleMailNotification {
 
     private final AwsSesClient awsSesClient;
 
-    public CommissionBundleMailNotification(
+    public CommissionBundleMailNotificationScheduler(
             GecClient gecClient, ApiConfigClient apiConfigClient,
             AwsSesClient awsSesClient
     ) {
@@ -122,7 +122,7 @@ public class CommissionBundleMailNotification {
         log.info("[Mail-Notification] CI mail notification completed, PSP notification starting");
         Map<String, List<String>> mailMap = expiringBundles.getBundleList().parallelStream()
                 .map(bundle -> BundleInfo.builder()
-                        .pspTaxCode("") // TODO how to retrieve pspTaxCode?
+                        .pspTaxCode(this.apiConfigClient.getPSPDetails(bundle.getIdPsp()).getTaxCode())
                         .bundleName(bundle.getName())
                         .build())
                 .collect(Collectors.groupingBy(BundleInfo::getPspTaxCode,
