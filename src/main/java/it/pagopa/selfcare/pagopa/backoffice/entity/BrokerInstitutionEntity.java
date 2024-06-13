@@ -30,4 +30,10 @@ public class BrokerInstitutionEntity {
     private String version;
     private Boolean broadcast;
     private Boolean pspPayment;
+    private String endpointRT;
+    private String endpointRedirect;
+    private String endpointMU;
+    private Integer primitiveVersion;
+    private Boolean ciStatus;
+
 }
