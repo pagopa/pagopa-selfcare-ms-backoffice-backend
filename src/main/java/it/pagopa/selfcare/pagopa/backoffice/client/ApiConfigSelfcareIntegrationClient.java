@@ -82,7 +82,10 @@ public interface ApiConfigSelfcareIntegrationClient {
 
     @GetMapping(value = "/creditorinstitutions/stations/{station-code}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid
-    List<String> getStationCreditorInstitutions(@PathVariable(value = "station-code") String stationCode);
+    List<CreditorInstitutionInfo> getStationCreditorInstitutions(
+            @PathVariable(value = "station-code") String stationCode,
+            @RequestParam List<String> taxCodeList
+    );
 
     @GetMapping(value = "/ibans/{creditorinstitutioncode}/list")
     @Valid
