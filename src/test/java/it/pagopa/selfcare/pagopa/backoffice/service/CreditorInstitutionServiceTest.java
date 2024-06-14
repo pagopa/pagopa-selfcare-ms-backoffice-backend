@@ -20,6 +20,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionContactsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionInfoResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationEditResource;
@@ -53,14 +54,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -401,21 +405,34 @@ class CreditorInstitutionServiceTest {
     }
 
     @Test
-    void getAvailableCreditorInstitutionsForStationSuccessWithoutAddItselfToDelegationsAndPSPDelegationFiltered() {
+    void getAvailableCreditorInstitutionsForStationSuccessWithoutAddingItselfToDelegationsAndPSPDelegationFiltered() {
         DelegationExternal expectedCI = buildDelegation("PA", CI_TAX_CODE_2);
         List<DelegationExternal> delegations = new ArrayList<>();
         delegations.add(buildDelegation("PSP", "12345678"));
         delegations.add(expectedCI);
         InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.PSP, "1234");
 
-        when(externalApiClient.getBrokerDelegation(null, BROKER_ID, "prod-pagopa", "FULL"))
-                .thenReturn(delegations);
+        when(externalApiClient.getBrokerDelegationPaginated(
+                null,
+                BROKER_ID,
+                "prod-pagopa",
+                "FULL",
+                null,
+                null,
+                null,
+                null)
+        ).thenReturn(delegations);
         when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
-        when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(STATION_CODE))
-                .thenReturn(Collections.singletonList("1234"));
+        when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(eq(STATION_CODE), anyList()))
+                .thenReturn(Collections.singletonList(
+                        CreditorInstitutionInfo.builder()
+                                .ciTaxCode(expectedCI.getTaxCode())
+                                .businessName(expectedCI.getInstitutionName())
+                                .build())
+                );
 
         CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
-                service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID));
+                service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID, null));
 
         assertNotNull(result);
         assertNotNull(result.getCreditorInstitutionInfos());
@@ -426,21 +443,38 @@ class CreditorInstitutionServiceTest {
     }
 
     @Test
-    void getAvailableCreditorInstitutionsForStationSuccessWithAddItselfToDelegationsAndPSPDelegationFiltered() {
+    void getAvailableCreditorInstitutionsForStationSuccessWithAddingItselfToDelegationsAndPSPDelegationFiltered() {
         DelegationExternal expectedCI = buildDelegation("PA", CI_TAX_CODE_2);
         List<DelegationExternal> delegations = new ArrayList<>();
         delegations.add(buildDelegation("PSP", "12345678"));
         delegations.add(expectedCI);
         InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.PA, "1234");
 
-        when(externalApiClient.getBrokerDelegation(null, BROKER_ID, "prod-pagopa", "FULL"))
-                .thenReturn(delegations);
+        when(externalApiClient.getBrokerDelegationPaginated(
+                null,
+                BROKER_ID,
+                "prod-pagopa",
+                "FULL",
+                null,
+                null,
+                null,
+                null)
+        ).thenReturn(delegations);
         when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
-        when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(STATION_CODE))
-                .thenReturn(Collections.singletonList("00000"));
+        when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(eq(STATION_CODE), anyList()))
+                .thenReturn(List.of(
+                        CreditorInstitutionInfo.builder()
+                                .ciTaxCode(expectedCI.getTaxCode())
+                                .businessName(expectedCI.getInstitutionName())
+                                .build(),
+                        CreditorInstitutionInfo.builder()
+                                .ciTaxCode(institutionResponse.getTaxCode())
+                                .businessName(institutionResponse.getDescription())
+                                .build())
+                );
 
         CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
-                service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID));
+                service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID, null));
 
         assertNotNull(result);
         assertNotNull(result.getCreditorInstitutionInfos());
@@ -448,63 +482,30 @@ class CreditorInstitutionServiceTest {
     }
 
     @Test
-    void getAvailableCreditorInstitutionsForStationSuccessWithoutAddItselfToDelegationsAndCIAlreadyAssociatedFiltered() {
-        DelegationExternal expectedCI = buildDelegation("PA", CI_TAX_CODE_2);
-        List<DelegationExternal> delegations = List.of(buildDelegation("SCP", CI_TAX_CODE_1), expectedCI);
-        InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.PSP, "1234");
-
-        when(externalApiClient.getBrokerDelegation(null, BROKER_ID, "prod-pagopa", "FULL"))
-                .thenReturn(delegations);
-        when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
-        when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(STATION_CODE))
-                .thenReturn(Collections.singletonList(CI_TAX_CODE_1));
-
-        CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
-                service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID));
-
-        assertNotNull(result);
-        assertNotNull(result.getCreditorInstitutionInfos());
-        assertEquals(1, result.getCreditorInstitutionInfos().size());
-
-        assertEquals(expectedCI.getInstitutionName(), result.getCreditorInstitutionInfos().get(0).getBusinessName());
-        assertEquals(expectedCI.getTaxCode(), result.getCreditorInstitutionInfos().get(0).getCiTaxCode());
-    }
-
-    @Test
-    void getAvailableCreditorInstitutionsForStationSuccessWithAddItselfToDelegationsAndCIAlreadyAssociatedFiltered() {
-        DelegationExternal expectedCI = buildDelegation("PA", CI_TAX_CODE_2);
-        List<DelegationExternal> delegations = List.of(buildDelegation("SCP", CI_TAX_CODE_1), expectedCI);
-        InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.PSP, CI_TAX_CODE_1);
-
-        when(externalApiClient.getBrokerDelegation(null, BROKER_ID, "prod-pagopa", "FULL"))
-                .thenReturn(delegations);
-        when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
-        when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(STATION_CODE))
-                .thenReturn(Collections.singletonList(CI_TAX_CODE_1));
-
-        CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
-                service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID));
-
-        assertNotNull(result);
-        assertNotNull(result.getCreditorInstitutionInfos());
-        assertEquals(1, result.getCreditorInstitutionInfos().size());
-
-        assertEquals(expectedCI.getInstitutionName(), result.getCreditorInstitutionInfos().get(0).getBusinessName());
-        assertEquals(expectedCI.getTaxCode(), result.getCreditorInstitutionInfos().get(0).getCiTaxCode());
-    }
-
-    @Test
-    void getAvailableCreditorInstitutionsForStationSuccessWithAddItselfToDelegations() {
+    void getAvailableCreditorInstitutionsForStationSuccessOnlyWithAddItselfToDelegations() {
         InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.PA, "1234");
 
-        when(externalApiClient.getBrokerDelegation(null, BROKER_ID, "prod-pagopa", "FULL"))
-                .thenReturn(Collections.emptyList());
+        when(externalApiClient.getBrokerDelegationPaginated(
+                null,
+                BROKER_ID,
+                "prod-pagopa",
+                "FULL",
+                null,
+                null,
+                null,
+                null)
+        ).thenReturn(new ArrayList<>());
         when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
-        when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(STATION_CODE))
-                .thenReturn(Collections.emptyList());
+        when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(eq(STATION_CODE), anyList()))
+                .thenReturn(Collections.singletonList(
+                        CreditorInstitutionInfo.builder()
+                                .ciTaxCode(institutionResponse.getTaxCode())
+                                .businessName(institutionResponse.getDescription())
+                                .build())
+                );
 
         CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
-                service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID));
+                service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID, null));
 
         assertNotNull(result);
         assertNotNull(result.getCreditorInstitutionInfos());
@@ -522,18 +523,121 @@ class CreditorInstitutionServiceTest {
         );
         InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.SCP, CI_TAX_CODE_1);
 
-        when(externalApiClient.getBrokerDelegation(null, BROKER_ID, "prod-pagopa", "FULL"))
-                .thenReturn(delegations);
+        when(externalApiClient.getBrokerDelegationPaginated(
+                null,
+                BROKER_ID,
+                "prod-pagopa",
+                "FULL",
+                null,
+                null,
+                null,
+                null)
+        ).thenReturn(delegations);
         when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
-        when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(STATION_CODE))
-                .thenReturn(Collections.emptyList());
+        when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(eq(STATION_CODE), anyList()))
+                .thenReturn(List.of(
+                        CreditorInstitutionInfo.builder()
+                                .ciTaxCode(delegations.get(0).getTaxCode())
+                                .businessName(delegations.get(0).getInstitutionName())
+                                .build(),
+                        CreditorInstitutionInfo.builder()
+                                .ciTaxCode(delegations.get(1).getTaxCode())
+                                .businessName(delegations.get(1).getInstitutionName())
+                                .build())
+                );
 
         CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
-                service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID));
+                service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID, null));
 
         assertNotNull(result);
         assertNotNull(result.getCreditorInstitutionInfos());
         assertEquals(2, result.getCreditorInstitutionInfos().size());
+    }
+
+    @Test
+    void getAvailableCreditorInstitutionsForStationSuccessWithFilterNoResults() {
+        InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.SCP, CI_TAX_CODE_1);
+
+        when(externalApiClient.getBrokerDelegationPaginated(
+                null,
+                BROKER_ID,
+                "prod-pagopa",
+                "FULL",
+                "EC",
+                null,
+                null,
+                null)
+        ).thenReturn(new ArrayList<>());
+        when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
+
+        CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
+                service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID, "EC"));
+
+        assertNotNull(result);
+        assertNotNull(result.getCreditorInstitutionInfos());
+        assertTrue(result.getCreditorInstitutionInfos().isEmpty());
+
+        verify(apiConfigSelfcareIntegrationClient, never()).getStationCreditorInstitutions(eq(STATION_CODE), anyList());
+    }
+
+    @Test
+    void getAvailableCreditorInstitutionsForStationSuccessWithNoCIAvailable() {
+        List<DelegationExternal> delegations = List.of(
+                buildDelegation("SCP", CI_TAX_CODE_1),
+                buildDelegation("PA", CI_TAX_CODE_2)
+        );
+        InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.SCP, CI_TAX_CODE_1);
+
+        when(externalApiClient.getBrokerDelegationPaginated(
+                null,
+                BROKER_ID,
+                "prod-pagopa",
+                "FULL",
+                null,
+                null,
+                null,
+                null)
+        ).thenReturn(delegations);
+        when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
+        when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(eq(STATION_CODE), anyList()))
+                .thenReturn(Collections.emptyList());
+
+        CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
+                service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID, null));
+
+        assertNotNull(result);
+        assertNotNull(result.getCreditorInstitutionInfos());
+        assertTrue(result.getCreditorInstitutionInfos().isEmpty());
+    }
+
+    @Test
+    void getAvailableCreditorInstitutionsForStationSuccessAllPSPDelegations() {
+        List<DelegationExternal> delegations = List.of(
+                buildDelegation("PSP", CI_TAX_CODE_1),
+                buildDelegation("PSP", CI_TAX_CODE_2)
+        );
+        InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.PSP, CI_TAX_CODE_1);
+
+        when(externalApiClient.getBrokerDelegationPaginated(
+                null,
+                BROKER_ID,
+                "prod-pagopa",
+                "FULL",
+                null,
+                null,
+                null,
+                null)
+        ).thenReturn(delegations);
+        when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
+
+        CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
+                service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID, null));
+
+        assertNotNull(result);
+        assertNotNull(result.getCreditorInstitutionInfos());
+        assertTrue(result.getCreditorInstitutionInfos().isEmpty());
+
+        verify(apiConfigSelfcareIntegrationClient, never()).getStationCreditorInstitutions(eq(STATION_CODE), anyList());
     }
 
     private TavoloOpEntity buildTavoloOpEntity() {
