@@ -2,10 +2,15 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
+import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResource;
@@ -15,6 +20,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetails
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationsResource;
 import it.pagopa.selfcare.pagopa.backoffice.service.ChannelService;
 import it.pagopa.selfcare.pagopa.backoffice.service.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
@@ -37,6 +44,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @Slf4j
 @RestController
@@ -57,13 +66,22 @@ public class ChannelController {
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get paginated list of channels", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WrapperChannelsResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public ChannelsResource getChannels(@Parameter(description = "Number of elements on one page. Default = 50") @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                        @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = true) Integer page,
-                                        @Parameter(description = "Filter channel by code") @RequestParam(required = false) String code,
-                                        @Parameter(description = "Sort Direction ordering") @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort) {
-
-        return channelService.getChannels(limit, page, code, sort);
+    public WrapperChannelsResource getChannels(
+            @Parameter(description = "Channel's status") @RequestParam ConfigurationStatus status,
+            @Parameter(description = "Channel's 'code, to filter out result") @RequestParam(required = false) String channelCode,
+            @Parameter(description = "Broker code, to filter out result") @RequestParam(required = false, value = "brokerCode") String brokerCode,
+            @Parameter(description = "Number of elements on one page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
+            @Parameter(description = "Page number") @RequestParam(defaultValue = "0") @PositiveOrZero Integer page
+    ) {
+        return this.channelService.getChannels(status, channelCode, brokerCode, limit, page);
     }
 
     @GetMapping(value = "/{channel-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -79,10 +97,12 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get paginated list of PSPs associated with the channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public ChannelPspListResource getChannelPaymentServiceProviders(@Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode,
-                                                                    @Parameter(description = "") @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                                                    @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = true) Integer page,
-                                                                    @Parameter(description = "Filter by PSP name") @RequestParam(name = "psp-name") String pspName) {
+    public ChannelPspListResource getChannelPaymentServiceProviders(
+            @Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode,
+            @Parameter(description = "") @RequestParam(required = false, defaultValue = "50") Integer limit,
+            @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = true) Integer page,
+            @Parameter(description = "Filter by PSP name") @RequestParam(name = "psp-name") String pspName
+    ) {
 
         return channelService.getPSPsByChannel(limit, page, channelCode, pspName);
     }
@@ -109,8 +129,10 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a channel, validating the update request previously inserted by user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    public ChannelDetailsResource updateChannel(@Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
-                                                @RequestBody @NotNull ChannelDetailsDto channelDetailsDto) {
+    public ChannelDetailsResource updateChannel(
+            @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
+            @RequestBody @NotNull ChannelDetailsDto channelDetailsDto
+    ) {
 
         return channelService.validateChannelUpdate(channelCode, channelDetailsDto);
     }
@@ -137,8 +159,10 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a payment types of a channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public PspChannelPaymentTypesResource createChannelPaymentType(@Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
-                                                                   @Parameter(description = " List of payment types") @RequestBody PspChannelPaymentTypes pspChannelPaymentTypes) {
+    public PspChannelPaymentTypesResource createChannelPaymentType(
+            @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
+            @Parameter(description = " List of payment types") @RequestBody PspChannelPaymentTypes pspChannelPaymentTypes
+    ) {
 
         return channelService.createPaymentTypeOnChannel(pspChannelPaymentTypes, channelCode);
     }
@@ -147,8 +171,10 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "delete payment type of a channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public void deleteChannelPaymentType(@Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
-                                         @Parameter(description = "Code of the payment type") @PathVariable("payment-type-code") String paymentTypeCode) {
+    public void deleteChannelPaymentType(
+            @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
+            @Parameter(description = "Code of the payment type") @PathVariable("payment-type-code") String paymentTypeCode
+    ) {
 
         channelService.deletePaymentTypeOnChannel(channelCode, paymentTypeCode);
     }
@@ -158,11 +184,13 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get All Channels from cosmos db merged whit apiConfig", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public WrapperChannelsResource getAllChannelsMerged(@Parameter(description = "") @RequestParam(required = false, defaultValue = "50") Integer limit,
-                                                        @Parameter(description = "Channel code") @RequestParam(required = false, value = "channelcodefilter") String channelcode,
-                                                        @Parameter(description = "Broker code filter for search") @RequestParam(required = false, value = "brokerCode") String brokerCode,
-                                                        @Parameter(description = "Page number. Page value starts from 0") @RequestParam Integer page,
-                                                        @Parameter(description = "Method of sorting") @RequestParam(required = false, value = "sorting") String sorting) {
+    public WrapperChannelsResource getAllChannelsMerged(
+            @Parameter(description = "") @RequestParam(required = false, defaultValue = "50") Integer limit,
+            @Parameter(description = "Channel code") @RequestParam(required = false, value = "channelcodefilter") String channelcode,
+            @Parameter(description = "Broker code filter for search") @RequestParam(required = false, value = "brokerCode") String brokerCode,
+            @Parameter(description = "Page number. Page value starts from 0") @RequestParam Integer page,
+            @Parameter(description = "Method of sorting") @RequestParam(required = false, value = "sorting") String sorting
+    ) {
 
         return channelService.getAllMergedChannel(limit, channelcode, brokerCode, page, sorting);
     }

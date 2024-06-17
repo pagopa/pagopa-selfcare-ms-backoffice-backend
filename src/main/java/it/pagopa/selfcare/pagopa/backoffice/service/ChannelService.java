@@ -19,7 +19,10 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelPspLi
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
@@ -174,9 +177,23 @@ public class ChannelService {
     }
 
 
-    public ChannelsResource getChannels(Integer limit, Integer page, String code, String sort) {
-        Channels dto = apiConfigClient.getChannels(limit, page, code, null, sort);
-        return ChannelMapper.toResource(dto);
+    public WrapperChannelsResource getChannels(
+            ConfigurationStatus status,
+            String channelCode,
+            String brokerCode,
+            Integer limit,
+            Integer page
+    ) {
+        WrapperChannels response;
+        if (status.equals(ConfigurationStatus.ACTIVE)) {
+            Channels channels = this.apiConfigClient.getChannels(limit, page, channelCode, brokerCode, "DESC");
+            response = ChannelMapper.toWrapperChannels(channels);
+        } else {
+            WrapperEntitiesList wrapperChannels = this.wrapperService.getWrapperChannels(channelCode, brokerCode, page, limit);
+            response = ChannelMapper.toWrapperChannels(wrapperChannels);
+        }
+
+        return ChannelMapper.toWrapperChannelsResource(response);
     }
 
     public ChannelDetailsResource getChannel(String channelCode) {
