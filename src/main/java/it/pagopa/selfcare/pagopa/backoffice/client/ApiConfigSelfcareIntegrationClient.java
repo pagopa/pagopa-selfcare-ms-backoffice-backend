@@ -6,7 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.AvailableCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.BrokerCreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
-import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -84,7 +84,7 @@ public interface ApiConfigSelfcareIntegrationClient {
     @Valid
     List<CreditorInstitutionInfo> getStationCreditorInstitutions(
             @PathVariable(value = "station-code") String stationCode,
-            @RequestParam List<String> taxCodeList
+            @RequestParam List<String> ciTaxCodeList
     );
 
     @GetMapping(value = "/ibans/{creditorinstitutioncode}/list")

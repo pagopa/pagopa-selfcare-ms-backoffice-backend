@@ -261,10 +261,7 @@ public class CreditorInstitutionService {
                     .toList();
 
             if (!delegationExternalTaxCodes.isEmpty()) {
-                infoList.addAll(
-                        this.apiConfigSelfcareIntegrationClient
-                                .getStationCreditorInstitutions(stationCode, delegationExternalTaxCodes)
-                );
+                infoList.addAll(getAvailableCIInfo(stationCode, delegationExternalTaxCodes));
             }
             page++;
             fromIndex = page * limit;
@@ -274,6 +271,16 @@ public class CreditorInstitutionService {
         return CreditorInstitutionInfoResource.builder()
                 .creditorInstitutionInfos(infoList)
                 .build();
+    }
+
+    private List<CreditorInstitutionInfo> getAvailableCIInfo(
+            String stationCode,
+            List<String> delegationExternalTaxCodes
+    ) {
+        return this.apiConfigSelfcareIntegrationClient
+                .getStationCreditorInstitutions(stationCode, delegationExternalTaxCodes).parallelStream()
+                .map(ciInfo -> this.modelMapper.map(ciInfo, CreditorInstitutionInfo.class))
+                .toList();
     }
 
     private List<DelegationExternal> getDelegationExternals(String brokerId, String ciName) {

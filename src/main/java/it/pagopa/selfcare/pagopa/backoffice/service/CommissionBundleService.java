@@ -40,7 +40,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Public
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
-import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
