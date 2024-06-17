@@ -65,8 +65,8 @@ public class CommissionBundleMailNotificationScheduler {
         updateMDCForStartExecution("commissionBundleMailNotification", "");
         log.info("[Mail-Notification] process starting");
         try {
-            String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern(VALID_FROM_DATE_FORMAT));
-            String in7Days = LocalDate.now().plusDays(7).format(DateTimeFormatter.ofPattern(VALID_FROM_DATE_FORMAT));
+            LocalDate tomorrow = LocalDate.now().plusDays(1);
+            LocalDate in7Days = LocalDate.now().plusDays(7);
 
             notify(in7Days);
             notify(tomorrow);
@@ -82,7 +82,8 @@ public class CommissionBundleMailNotificationScheduler {
         }
     }
 
-    private void notify(String expireAt) {
+    private void notify(LocalDate date) {
+        String expireAt = date.format(DateTimeFormatter.ofPattern(VALID_FROM_DATE_FORMAT));
         Set<Bundle> expiringBundles = this.bundleAllPages.getAllBundlesWithExpireDate(expireAt);
         log.info("[Mail-Notification] {} expiring bundle in {} days retrieved",
                 expiringBundles.size(),
