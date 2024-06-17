@@ -55,3 +55,8 @@ variable "hostname" {
   default     = null
   description = "Hostname for the API"
 }
+
+variable "pr_number" {
+  type = string
+  default = null
+}
