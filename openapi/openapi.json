@@ -4783,6 +4783,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "description": "Creditor institution's name, used to filter out results",
+            "in": "query",
+            "name": "ciName",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -11536,7 +11545,7 @@
         "required": [
           "address",
           "businessName",
-          "creditorInstitutionCode",
+          "ciTaxCode",
           "enabled",
           "pspPayment",
           "reportingFtp",
@@ -11567,7 +11576,7 @@
             "type": "string",
             "description": "Creditor Institution's CBill interbank code"
           },
-          "creditorInstitutionCode": {
+          "ciTaxCode": {
             "maxLength": 30,
             "minLength": 0,
             "type": "string",
@@ -11650,7 +11659,7 @@
       "CreditorInstitutionInfo": {
         "required": [
           "businessName",
-          "creditorInstitutionCode"
+          "ciTaxCode"
         ],
         "type": "object",
         "properties": {
@@ -11659,7 +11668,7 @@
             "description": "The business name of the creditor institution",
             "example": "Comune di Roma"
           },
-          "creditorInstitutionCode": {
+          "ciTaxCode": {
             "type": "string",
             "description": "The tax code of the creditor institution",
             "example": "02438750586"
@@ -11680,7 +11689,7 @@
       "CreditorInstitutionResource": {
         "required": [
           "businessName",
-          "creditorInstitutionCode",
+          "ciTaxCode",
           "enabled"
         ],
         "type": "object",
@@ -11705,7 +11714,7 @@
             "type": "string",
             "description": "Creditor Institution's CBill interbank code"
           },
-          "creditorInstitutionCode": {
+          "ciTaxCode": {
             "maxLength": 30,
             "minLength": 0,
             "type": "string",
