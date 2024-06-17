@@ -2,19 +2,19 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.OperatorStationReview;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.service.ChannelService;
 import it.pagopa.selfcare.pagopa.backoffice.service.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
@@ -211,4 +211,33 @@ public class ChannelController {
 
         return wrapperService.updateByOpt(ChannelMapper.fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
     }
+
+    /**
+     * Updates a station wrapper with the operator review's note
+     *
+     * @param channelCode channel identifier
+     * @param brokerPspCode   broker code related to the channel
+     * @param note        operator review note
+     * @return the updated channel wrapper
+     */
+    @PutMapping(value = "/wrapper/{channelCode}/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Update a WrapperChannel with Operator review", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChannelDetailsResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @OpenApiTableMetadata
+    public ChannelDetailsResource updateWrapperChannelWithOperatorReview(
+            @Parameter(description = "Channel Id") @PathVariable(value = "channelCode") String channelCode,
+            @Parameter(description = "Broker Core related to the channel") @RequestParam String brokerPspCode,
+            @RequestBody @Valid OperatorChannelReview note
+    ) {
+        return this.channelService.updateWrapperChannelWithOperatorReview(channelCode, brokerPspCode, note.getNote());
+    }
+
 }

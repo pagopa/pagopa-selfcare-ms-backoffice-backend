@@ -407,4 +407,29 @@ public class WrapperService {
         }
         return newWrapperStatus;
     }
+
+    public WrapperEntities<ChannelDetails> updateChannelWithOperatorReview(String channelCode, String note) {
+        Optional<WrapperEntities> optionalWrapperEntities = this.repository.findById(channelCode);
+        if (optionalWrapperEntities.isEmpty()) {
+            throw new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode);
+        }
+        WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) optionalWrapperEntities.get();
+        wrapperEntities.getEntities().sort(
+                Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
+
+        WrapperEntity<ChannelDetails> wrapper = wrapperEntities.getEntities().get(0);
+        WrapperStatus newWrapperStatus = getNewWrapperStatus(channelCode, wrapper.getStatus());
+        String modifiedByOpt = this.auditorAware.getCurrentAuditor().orElse(null);
+
+        wrapperEntities.setStatus(newWrapperStatus);
+        wrapperEntities.setModifiedAt(Instant.now());
+        wrapperEntities.setModifiedByOpt(modifiedByOpt);
+
+        wrapper.setNote(note);
+        wrapper.setModifiedAt(Instant.now());
+        wrapper.setModifiedByOpt(modifiedByOpt);
+        wrapper.setStatus(newWrapperStatus);
+
+        return this.repository.save(wrapperEntities);
+    }
 }

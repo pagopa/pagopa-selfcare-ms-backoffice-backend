@@ -190,4 +190,7 @@ public class ChannelDetailsResource extends ChannelResource {
     @Schema(description = " modification date")
     private Instant modifiedAt;
 
+    @Schema(description = "Operator review note")
+    private String note;
+
 }

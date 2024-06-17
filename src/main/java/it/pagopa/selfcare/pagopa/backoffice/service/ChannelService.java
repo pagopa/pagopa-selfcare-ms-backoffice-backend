@@ -4,6 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
@@ -19,6 +20,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelPspLi
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
@@ -47,6 +49,10 @@ public class ChannelService {
     private static final String CREATE_CHANEL_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato il canale %s che hai creato. Da questo momento puoi utilizzarlo per attivare i tuoi servizi.%n%n%nA presto,%n%n Back-office pagoPA";
     private static final String UPDATE_CHANEL_SUBJECT = "Modifica canale attiva";
     private static final String UPDATE_CHANEL_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato il canale %s che hai modificato. Da questo momento la modifica effettuata risulta attiva.%n%n%nA presto,%n%n Back-office pagoPA";
+
+    private static final String CHANNEL_REVIEW_SUBJECT = "Modifiche richieste";
+
+    private static final String CHANNEL_REVIEW_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha richiesto delle modifiche al canale %s che hai creato.%n Puoi vedere le modifiche qui sotto oppure nel dettaglio del canale (https://selfcare.platform.pagopa.it/ui/channels/%s).%n Modifiche richieste %n '%s' %n%n%nA presto,%n%n Pagamenti pagoPA";
 
     private final ApiConfigClient apiConfigClient;
 
@@ -124,7 +130,7 @@ public class ChannelService {
                 .subject(CREATE_CHANEL_SUBJECT)
                 .textBody(String.format(CREATE_CHANEL_EMAIL_BODY, channelCode))
                 .htmlBodyFileName("channelCreationValidatedEmail.html")
-                .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode))
+                .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode, null))
                 .destinationUserType(SelfcareProductUser.OPERATOR)
                 .build();
 
@@ -144,7 +150,7 @@ public class ChannelService {
                 .subject(UPDATE_CHANEL_SUBJECT)
                 .textBody(String.format(UPDATE_CHANEL_EMAIL_BODY, channelCode))
                 .htmlBodyFileName("channelUpdateValidatedEmail.html")
-                .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode))
+                .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode, null))
                 .destinationUserType(SelfcareProductUser.OPERATOR)
                 .build();
 
@@ -170,7 +176,7 @@ public class ChannelService {
             ptResponse = apiConfigClient.getChannelPaymentTypes(channelcode);
             status = WrapperStatus.APPROVED;
         }
-        return ChannelMapper.toResource(channelDetail, ptResponse, status, createdBy, modifiedBy);
+        return ChannelMapper.toResource(channelDetail, ptResponse, status, createdBy, modifiedBy, null);
     }
 
 
@@ -214,15 +220,51 @@ public class ChannelService {
         return ChannelMapper.toResource(dto);
     }
 
-    private Context buildChannelHtmlEmailBodyContext(String channelCode) {
+    private Context buildChannelHtmlEmailBodyContext(String channelCode, String note) {
         // Thymeleaf Context
         Context context = new Context();
 
         // Properties to show up in Template after stored in Context
         Map<String, Object> properties = new HashMap<>();
         properties.put("channelCode", channelCode);
+        if (note != null) {
+            properties.put("reviewNote", note);
+        }
 
         context.setVariables(properties);
         return context;
+    }
+
+    public ChannelDetailsResource updateWrapperChannelWithOperatorReview(
+            String channelCode, String brokerPspCode, String note) {
+
+        WrapperEntities<ChannelDetails> updatedWrapper =
+                this.wrapperService.updateChannelWithOperatorReview(channelCode, note);
+
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(brokerPspCode)
+                .subject(CHANNEL_REVIEW_SUBJECT)
+                .textBody(String.format(CHANNEL_REVIEW_EMAIL_BODY, channelCode, channelCode, note))
+                .htmlBodyFileName("channelReviewRequestedEmail.html")
+                .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode, note))
+                .destinationUserType(SelfcareProductUser.OPERATOR)
+                .build();
+        this.awsSesClient.sendEmail(messageDetail);
+
+        WrapperEntityOperations<ChannelDetails> entityOperations =
+                getWrapperEntityOperationsSortedList(updatedWrapper).get(0);
+        PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
+        List<String> paymentTypeList = entityOperations.getEntity().getPaymentTypeList();
+        pspChannelPaymentTypes.setPaymentTypeList(paymentTypeList);
+
+        return ChannelMapper.toResource(
+                entityOperations.getEntity(),
+                pspChannelPaymentTypes,
+                updatedWrapper.getStatus(),
+                updatedWrapper.getCreatedBy(),
+                updatedWrapper.getModifiedBy(),
+                entityOperations.getNote()
+        );
+
     }
 }
