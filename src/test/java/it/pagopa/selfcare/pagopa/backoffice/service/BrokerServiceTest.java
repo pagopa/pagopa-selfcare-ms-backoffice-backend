@@ -197,7 +197,6 @@ class BrokerServiceTest {
         List<DelegationExternal> delegationExternalList = new ArrayList<>();
         delegationExternalList.add(buildDelegationExternal("PA", INSTITUTION_TAX_CODE_1, "my test"));
         delegationExternalList.add(buildDelegationExternal("GSP", INSTITUTION_TAX_CODE_2, "test test"));
-        delegationExternalList.add(buildDelegationExternal("PG", INSTITUTION_TAX_CODE_3, "pippo"));
         delegationExternalList.add(buildDelegationExternal("PSP", "institutionTaxCode4"));
 
         when(externalApiClient.getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString(), anyString()))
