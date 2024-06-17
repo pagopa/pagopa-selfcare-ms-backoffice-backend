@@ -130,7 +130,7 @@ class BrokerServiceTest {
         delegationExternalList.add(buildDelegationExternal("PG", INSTITUTION_TAX_CODE_3));
         delegationExternalList.add(buildDelegationExternal("PSP", "institutionTaxCode4"));
 
-        when(externalApiClient.getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString()))
+        when(externalApiClient.getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString(), eq(null)))
                 .thenReturn(delegationExternalList);
 
         when(apiConfigSelfcareIntegrationClient.getStationsDetailsListByBroker(
@@ -186,68 +186,10 @@ class BrokerServiceTest {
         assertNull(ciBrokerDelegationResource3.getCbillCode());
         assertTrue(ciBrokerDelegationResource3.getIsInstitutionSignedIn());
 
-        verify(externalApiClient).getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString());
+        verify(externalApiClient).getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString(), eq(null));
         verify(apiConfigSelfcareIntegrationClient, times(3))
                 .getStationsDetailsListByBroker(anyString(), eq(null), anyString(), anyInt(), anyInt());
         verify(apiConfigClient, times(3)).getCreditorInstitutionDetails(anyString());
-    }
-
-    @Test
-    void getBrokerDelegationTestWithFilter() {
-        List<DelegationExternal> delegationExternalList = new ArrayList<>();
-        delegationExternalList.add(buildDelegationExternal("PA", INSTITUTION_TAX_CODE_1, "my test"));
-        delegationExternalList.add(buildDelegationExternal("GSP", INSTITUTION_TAX_CODE_2, "test test"));
-        delegationExternalList.add(buildDelegationExternal("PG", INSTITUTION_TAX_CODE_3, "pippo"));
-        delegationExternalList.add(buildDelegationExternal("PSP", "institutionTaxCode4"));
-
-        when(externalApiClient.getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString()))
-                .thenReturn(delegationExternalList);
-
-        when(apiConfigSelfcareIntegrationClient.getStationsDetailsListByBroker(
-                eq(BROKER_CODE), eq(null), eq(INSTITUTION_TAX_CODE_1), anyInt(), anyInt()))
-                .thenReturn(buildStationDetailsList(3L));
-        when(apiConfigSelfcareIntegrationClient.getStationsDetailsListByBroker(
-                eq(BROKER_CODE), eq(null), eq(INSTITUTION_TAX_CODE_2), anyInt(), anyInt()))
-                .thenReturn(buildStationDetailsList(3L));
-
-        when(apiConfigClient.getCreditorInstitutionDetails(INSTITUTION_TAX_CODE_1))
-                .thenReturn(buildCreditorInstitutionDetails(CBILL_1));
-        when(apiConfigClient.getCreditorInstitutionDetails(INSTITUTION_TAX_CODE_2))
-                .thenReturn(buildCreditorInstitutionDetails(CBILL_2));
-
-        CIBrokerDelegationPage result = assertDoesNotThrow(
-                () -> sut.getCIBrokerDelegation(BROKER_CODE, BROKER_ID, "test", PAGE_0, LIMIT));
-
-        assertNotNull(result);
-        assertNotNull(result.getCiBrokerDelegationResources());
-        assertNotNull(result.getPageInfo());
-
-        List<CIBrokerDelegationResource> delegationResources = result.getCiBrokerDelegationResources();
-        assertNotEquals(delegationExternalList.size(), delegationResources.size());
-        assertEquals(2, delegationResources.size());
-
-        Optional<CIBrokerDelegationResource> first = delegationResources.stream().filter(delegation -> delegation
-                        .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_1))
-                .findFirst();
-        assertTrue(first.isPresent());
-        CIBrokerDelegationResource ciBrokerDelegationResource1 = first.get();
-        assertEquals(3L, ciBrokerDelegationResource1.getInstitutionStationCount());
-        assertEquals(CBILL_1, ciBrokerDelegationResource1.getCbillCode());
-        assertTrue(ciBrokerDelegationResource1.getIsInstitutionSignedIn());
-
-        Optional<CIBrokerDelegationResource> second = delegationResources.stream().filter(delegation -> delegation
-                        .getInstitutionTaxCode().equals(INSTITUTION_TAX_CODE_2))
-                .findFirst();
-        assertTrue(second.isPresent());
-        CIBrokerDelegationResource ciBrokerDelegationResource2 = second.get();
-        assertEquals(3L, ciBrokerDelegationResource2.getInstitutionStationCount());
-        assertEquals(CBILL_2, ciBrokerDelegationResource2.getCbillCode());
-        assertTrue(ciBrokerDelegationResource2.getIsInstitutionSignedIn());
-
-        verify(externalApiClient).getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString());
-        verify(apiConfigSelfcareIntegrationClient, times(2))
-                .getStationsDetailsListByBroker(anyString(), eq(null), anyString(), anyInt(), anyInt());
-        verify(apiConfigClient, times(2)).getCreditorInstitutionDetails(anyString());
     }
 
     @Test
@@ -258,7 +200,7 @@ class BrokerServiceTest {
         delegationExternalList.add(buildDelegationExternal("PG", INSTITUTION_TAX_CODE_3, "pippo"));
         delegationExternalList.add(buildDelegationExternal("PSP", "institutionTaxCode4"));
 
-        when(externalApiClient.getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString()))
+        when(externalApiClient.getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString(), anyString()))
                 .thenReturn(delegationExternalList, delegationExternalList);
 
         when(apiConfigSelfcareIntegrationClient.getStationsDetailsListByBroker(
@@ -306,7 +248,7 @@ class BrokerServiceTest {
         assertEquals(0, secondPagePageInfo.getItemsFound());
 
         verify(externalApiClient, times(2))
-                .getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString());
+                .getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString(), anyString());
         verify(apiConfigSelfcareIntegrationClient, times(2))
                 .getStationsDetailsListByBroker(anyString(), eq(null), anyString(), anyInt(), anyInt());
         verify(apiConfigClient, times(2)).getCreditorInstitutionDetails(anyString());
@@ -317,7 +259,7 @@ class BrokerServiceTest {
         List<DelegationExternal> delegationExternalList = new ArrayList<>();
         delegationExternalList.add(buildDelegationExternal("PA", INSTITUTION_TAX_CODE_1));
 
-        when(externalApiClient.getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString()))
+        when(externalApiClient.getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString(), eq(null)))
                 .thenReturn(delegationExternalList);
 
         long stationCount = 0L;
@@ -348,7 +290,7 @@ class BrokerServiceTest {
         assertNull(ciBrokerDelegationResource1.getCbillCode());
         assertFalse(ciBrokerDelegationResource1.getIsInstitutionSignedIn());
 
-        verify(externalApiClient).getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString());
+        verify(externalApiClient).getBrokerDelegation(eq(null), eq(BROKER_ID), anyString(), anyString(), eq(null));
         verify(apiConfigSelfcareIntegrationClient, times(1))
                 .getStationsDetailsListByBroker(anyString(), eq(null), anyString(), anyInt(), anyInt());
         verify(apiConfigClient, times(1)).getCreditorInstitutionDetails(anyString());

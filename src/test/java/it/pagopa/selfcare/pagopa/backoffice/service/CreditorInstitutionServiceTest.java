@@ -412,14 +412,11 @@ class CreditorInstitutionServiceTest {
         delegations.add(expectedCI);
         InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.PSP, "1234");
 
-        when(externalApiClient.getBrokerDelegationPaginated(
+        when(externalApiClient.getBrokerDelegation(
                 null,
                 BROKER_ID,
                 "prod-pagopa",
                 "FULL",
-                null,
-                null,
-                null,
                 null)
         ).thenReturn(delegations);
         when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
@@ -450,14 +447,11 @@ class CreditorInstitutionServiceTest {
         delegations.add(expectedCI);
         InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.PA, "1234");
 
-        when(externalApiClient.getBrokerDelegationPaginated(
+        when(externalApiClient.getBrokerDelegation(
                 null,
                 BROKER_ID,
                 "prod-pagopa",
                 "FULL",
-                null,
-                null,
-                null,
                 null)
         ).thenReturn(delegations);
         when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
@@ -485,14 +479,11 @@ class CreditorInstitutionServiceTest {
     void getAvailableCreditorInstitutionsForStationSuccessOnlyWithAddItselfToDelegations() {
         InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.PA, "1234");
 
-        when(externalApiClient.getBrokerDelegationPaginated(
+        when(externalApiClient.getBrokerDelegation(
                 null,
                 BROKER_ID,
                 "prod-pagopa",
                 "FULL",
-                null,
-                null,
-                null,
                 null)
         ).thenReturn(new ArrayList<>());
         when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
@@ -523,14 +514,11 @@ class CreditorInstitutionServiceTest {
         );
         InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.SCP, CI_TAX_CODE_1);
 
-        when(externalApiClient.getBrokerDelegationPaginated(
+        when(externalApiClient.getBrokerDelegation(
                 null,
                 BROKER_ID,
                 "prod-pagopa",
                 "FULL",
-                null,
-                null,
-                null,
                 null)
         ).thenReturn(delegations);
         when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
@@ -558,15 +546,12 @@ class CreditorInstitutionServiceTest {
     void getAvailableCreditorInstitutionsForStationSuccessWithFilterNoResults() {
         InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.SCP, CI_TAX_CODE_1);
 
-        when(externalApiClient.getBrokerDelegationPaginated(
+        when(externalApiClient.getBrokerDelegation(
                 null,
                 BROKER_ID,
                 "prod-pagopa",
                 "FULL",
-                "EC",
-                null,
-                null,
-                null)
+                "EC")
         ).thenReturn(new ArrayList<>());
         when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
 
@@ -588,14 +573,11 @@ class CreditorInstitutionServiceTest {
         );
         InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.SCP, CI_TAX_CODE_1);
 
-        when(externalApiClient.getBrokerDelegationPaginated(
+        when(externalApiClient.getBrokerDelegation(
                 null,
                 BROKER_ID,
                 "prod-pagopa",
                 "FULL",
-                null,
-                null,
-                null,
                 null)
         ).thenReturn(delegations);
         when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
@@ -618,14 +600,11 @@ class CreditorInstitutionServiceTest {
         );
         InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.PSP, CI_TAX_CODE_1);
 
-        when(externalApiClient.getBrokerDelegationPaginated(
+        when(externalApiClient.getBrokerDelegation(
                 null,
                 BROKER_ID,
                 "prod-pagopa",
                 "FULL",
-                null,
-                null,
-                null,
                 null)
         ).thenReturn(delegations);
         when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);

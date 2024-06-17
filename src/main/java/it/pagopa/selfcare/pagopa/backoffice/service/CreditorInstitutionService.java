@@ -277,18 +277,16 @@ public class CreditorInstitutionService {
     }
 
     private List<DelegationExternal> getDelegationExternals(String brokerId, String ciName) {
-        List<DelegationExternal> delegationExternals = this.externalApiClient
-                .getBrokerDelegationPaginated(
+        List<DelegationExternal> response = this.externalApiClient
+                .getBrokerDelegation(
                         null,
                         brokerId,
                         "prod-pagopa",
                         "FULL",
-                        ciName,
-                        null,
-                        null,
-                        null
+                        ciName
                 );
 
+        List<DelegationExternal> delegationExternals = new ArrayList<>(response);
         InstitutionResponse broker = this.externalApiClient.getInstitution(brokerId);
         if (brokerCanBeAddedToDelegation(delegationExternals, broker, ciName)) {
             delegationExternals.add(DelegationExternal.builder()

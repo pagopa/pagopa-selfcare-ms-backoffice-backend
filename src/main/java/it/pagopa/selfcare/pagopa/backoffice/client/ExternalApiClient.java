@@ -57,19 +57,11 @@ public interface ExternalApiClient {
     @Cacheable(cacheNames = "getBrokerDelegation")
     @ResponseBody
     @Valid
-    List<DelegationExternal> getBrokerDelegation(@RequestParam String institutionId, @RequestParam String brokerId, @RequestParam String productId, @RequestParam String mode);
-
-    @GetMapping(value = "/delegations", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    @Valid
-    List<DelegationExternal> getBrokerDelegationPaginated(
+    List<DelegationExternal> getBrokerDelegation(
             @RequestParam String institutionId,
             @RequestParam String brokerId,
             @RequestParam String productId,
             @RequestParam String mode,
-            @RequestParam String search,
-            @RequestParam String taxCode,
-            @RequestParam Integer size,
-            @RequestParam Integer page
+            @RequestParam String search
     );
 }
