@@ -247,18 +247,18 @@ public class CreditorInstitutionService {
             String ciName
     ) {
         List<CreditorInstitutionInfo> infoList = new ArrayList<>();
-        List<DelegationExternal> delegations = getDelegationExternals(brokerId, ciName);
+        List<String> delegations = getDelegationExternals(brokerId, ciName).parallelStream()
+                .filter(Objects::nonNull)
+                .filter(delegation -> RoleType.CI.equals(RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType())))
+                .map(DelegationExternal::getTaxCode)
+                .toList();
 
         int page = 0;
         int limit = 10;
         int fromIndex = 0;
         while (infoList.size() < 10 && fromIndex < delegations.size()) {
             int toIndex = Math.min(fromIndex + limit, delegations.size());
-            List<String> delegationExternalTaxCodes = delegations.subList(fromIndex, toIndex).parallelStream()
-                    .filter(Objects::nonNull)
-                    .filter(delegation -> RoleType.CI.equals(RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType())))
-                    .map(DelegationExternal::getTaxCode)
-                    .toList();
+            List<String> delegationExternalTaxCodes = delegations.subList(fromIndex, toIndex);
 
             if (!delegationExternalTaxCodes.isEmpty()) {
                 infoList.addAll(getAvailableCIInfo(stationCode, delegationExternalTaxCodes));
