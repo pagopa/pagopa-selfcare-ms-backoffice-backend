@@ -1,5 +1,5 @@
 {
-  "creditorInstitutionCode": "12345678900",
+  "ciTaxCode": "12345678900",
   "enabled": true,
   "businessName": "Comune XYZ",
   "cbillCode": "COXYZ",
