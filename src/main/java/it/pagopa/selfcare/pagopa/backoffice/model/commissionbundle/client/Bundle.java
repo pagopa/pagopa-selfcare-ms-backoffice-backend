@@ -46,6 +46,8 @@ public class Bundle {
     private LocalDateTime lastUpdatedDate;
     @Schema(description = "ID of the linked channel")
     private String idChannel;
+    @Schema(description = "Identifier of the PSP that has created the bundle")
+    private String idPsp;
     @Schema(description = "TaxCode of the linked broker PSP")
     private String idBrokerPsp;
     @Schema(description = "If the payment needs a tax stamp, mutually exclusive with digitalStampRestriction")
