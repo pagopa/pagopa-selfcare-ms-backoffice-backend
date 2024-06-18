@@ -9,7 +9,6 @@ import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
@@ -19,10 +18,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelPspLi
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
@@ -68,7 +65,7 @@ public class ChannelService {
     }
 
     public WrapperChannelsResource getAllMergedChannel(Integer limit, String channelcode, String brokerCode, Integer page, String sorting) {
-        Channels channels = apiConfigClient.getChannels(limit, page, channelcode, brokerCode, sorting);
+        Channels channels = apiConfigClient.getChannels(channelcode, brokerCode, sorting, limit, page);
         WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(channelcode, WrapperType.CHANNEL, brokerCode, page, limit);
         WrapperChannels channelsMergedAndSorted = Utility.mergeAndSortWrapperChannels(ChannelMapper.toWrapperChannels(channels), ChannelMapper.toWrapperChannels(mongoList), sorting);
         return ChannelMapper.toWrapperChannelsResource(channelsMergedAndSorted);
@@ -176,7 +173,6 @@ public class ChannelService {
         return ChannelMapper.toResource(channelDetail, ptResponse, status, createdBy, modifiedBy);
     }
 
-
     /**
      * Retrieve a paginated list of channels from api-config if the provided status is {@link ConfigurationStatus#ACTIVE},
      * from wrapper otherwise. The result is filter out by channel's code and broker's code.
@@ -197,10 +193,10 @@ public class ChannelService {
     ) {
         WrapperChannels response;
         if (status.equals(ConfigurationStatus.ACTIVE)) {
-            Channels channels = this.apiConfigClient.getChannels(limit, page, channelCode, brokerCode, "DESC");
+            Channels channels = this.apiConfigClient.getChannels(channelCode, brokerCode, "DESC", limit, page);
             response = ChannelMapper.toWrapperChannels(channels);
         } else {
-            WrapperEntitiesList wrapperChannels = this.wrapperService.getWrapperChannels(channelCode, brokerCode, page, limit);
+            WrapperEntitiesList wrapperChannels = this.wrapperService.getWrapperChannels(channelCode, brokerCode, limit, page);
             response = ChannelMapper.toWrapperChannels(wrapperChannels);
         }
 

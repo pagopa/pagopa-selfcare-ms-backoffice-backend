@@ -150,7 +150,7 @@ public class StationService {
             Stations stations = this.apiConfigClient.getStations(limit, page, "DESC", brokerCode, null, stationCode);
             response = buildEnrichedWrapperStations(stations);
         } else {
-            WrapperEntitiesList wrapperStations = this.wrapperService.getWrapperStations(stationCode, brokerCode, page, limit);
+            WrapperEntitiesList wrapperStations = this.wrapperService.getWrapperStations(stationCode, brokerCode, limit, page);
             response = this.stationMapper.toWrapperStations(wrapperStations);
         }
         return this.stationMapper.toWrapperStationsResource(response);

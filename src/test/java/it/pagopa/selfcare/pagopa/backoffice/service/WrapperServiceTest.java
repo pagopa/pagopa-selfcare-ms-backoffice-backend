@@ -5,13 +5,14 @@ import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channel;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperRepository;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -37,6 +39,7 @@ import static org.mockito.Mockito.when;
 class WrapperServiceTest {
 
     private static final String STATION_CODE = "stationCode";
+    private static final String CHANNEL_CODE = "channelCode";
     private static final String BROKER_CODE = "brokerCode";
     private static final int PAGE = 0;
     private static final int LIMIT = 10;
@@ -81,7 +84,7 @@ class WrapperServiceTest {
         ).thenReturn(new PageImpl<>(Collections.singletonList(buildStationDetailsWrapperEntities())));
 
         WrapperEntitiesList result = assertDoesNotThrow(() ->
-                sut.getWrapperStations(STATION_CODE, BROKER_CODE, PAGE, LIMIT));
+                sut.getWrapperStations(STATION_CODE, BROKER_CODE, LIMIT, PAGE));
 
         assertNotNull(result);
         assertNotNull(result.getPageInfo());
@@ -108,7 +111,7 @@ class WrapperServiceTest {
         ).thenReturn(new PageImpl<>(Collections.singletonList(buildStationDetailsWrapperEntities())));
 
         WrapperEntitiesList result = assertDoesNotThrow(() ->
-                sut.getWrapperStations(null, BROKER_CODE, PAGE, LIMIT));
+                sut.getWrapperStations(null, BROKER_CODE, LIMIT, PAGE));
 
         assertNotNull(result);
         assertNotNull(result.getPageInfo());
@@ -120,6 +123,62 @@ class WrapperServiceTest {
 
         verify(repository, never()).findByIdLikeAndTypeAndBrokerCodeAndStatusNot(
                 eq(STATION_CODE),
+                eq(WrapperType.STATION),
+                eq(BROKER_CODE),
+                eq(WrapperStatus.APPROVED),
+                any());
+    }
+
+    @Test
+    void getWrapperChannelsWithStationCodeSuccess() {
+        when(repository.findByIdLikeAndTypeAndBrokerCodeAndStatusNot(
+                eq(CHANNEL_CODE),
+                eq(WrapperType.CHANNEL),
+                eq(BROKER_CODE),
+                eq(WrapperStatus.APPROVED),
+                any())
+        ).thenReturn(new PageImpl<>(Collections.singletonList(buildChannelDetailsWrapperEntities())));
+
+        WrapperEntitiesList result = assertDoesNotThrow(() ->
+                sut.getWrapperChannels(CHANNEL_CODE, BROKER_CODE, LIMIT, PAGE));
+
+        assertNotNull(result);
+        assertNotNull(result.getPageInfo());
+        assertEquals(PAGE, result.getPageInfo().getPage());
+        assertEquals(LIMIT, result.getPageInfo().getLimit());
+        assertEquals(1, result.getPageInfo().getTotalItems());
+        assertEquals(1, result.getPageInfo().getTotalPages());
+        assertEquals(1, result.getPageInfo().getItemsFound());
+
+        verify(repository, never()).findByTypeAndBrokerCodeAndStatusNot(
+                eq(WrapperType.CHANNEL),
+                eq(BROKER_CODE),
+                eq(WrapperStatus.APPROVED),
+                any());
+    }
+
+    @Test
+    void getWrapperChannelsWithoutStationCodeSuccess() {
+        when(repository.findByTypeAndBrokerCodeAndStatusNot(
+                eq(WrapperType.CHANNEL),
+                eq(BROKER_CODE),
+                eq(WrapperStatus.APPROVED),
+                any())
+        ).thenReturn(new PageImpl<>(Collections.singletonList(buildChannelDetailsWrapperEntities())));
+
+        WrapperEntitiesList result = assertDoesNotThrow(() ->
+                sut.getWrapperChannels(null, BROKER_CODE, LIMIT, PAGE));
+
+        assertNotNull(result);
+        assertNotNull(result.getPageInfo());
+        assertEquals(PAGE, result.getPageInfo().getPage());
+        assertEquals(LIMIT, result.getPageInfo().getLimit());
+        assertEquals(1, result.getPageInfo().getTotalItems());
+        assertEquals(1, result.getPageInfo().getTotalPages());
+        assertEquals(1, result.getPageInfo().getItemsFound());
+
+        verify(repository, never()).findByIdLikeAndTypeAndBrokerCodeAndStatusNot(
+                eq(CHANNEL_CODE),
                 eq(WrapperType.STATION),
                 eq(BROKER_CODE),
                 eq(WrapperStatus.APPROVED),
@@ -150,7 +209,7 @@ class WrapperServiceTest {
         verify(repository, never()).save(any());
     }
 
-    private @NotNull WrapperEntities<StationDetails> buildStationDetailsWrapperEntities() {
+    private WrapperEntities<StationDetails> buildStationDetailsWrapperEntities() {
         WrapperEntity<StationDetails> entity = new WrapperEntity<>();
         entity.setEntity(buildStationDetails());
         entity.setStatus(WrapperStatus.TO_CHECK);
@@ -159,11 +218,38 @@ class WrapperServiceTest {
         return entities;
     }
 
-    private @NotNull StationDetails buildStationDetails() {
+    private StationDetails buildStationDetails() {
         StationDetails stationDetails = new StationDetails();
         stationDetails.setStationCode(STATION_CODE);
         stationDetails.setEnabled(true);
         stationDetails.setVersion(1L);
         return stationDetails;
+    }
+
+    private WrapperEntities<ChannelDetails> buildChannelDetailsWrapperEntities() {
+        WrapperEntity<ChannelDetails> entity = new WrapperEntity<>();
+        entity.setEntity(buildChannelDetails());
+        entity.setStatus(WrapperStatus.TO_CHECK);
+        WrapperEntities<ChannelDetails> entities = new WrapperEntities<>();
+        entities.setCreatedAt(Instant.now());
+        entities.setEntities(Collections.singletonList(entity));
+        return entities;
+    }
+
+    private ChannelDetails buildChannelDetails() {
+        ChannelDetails channelDetails = new ChannelDetails();
+        channelDetails.setChannelCode(CHANNEL_CODE);
+        channelDetails.setEnabled(true);
+        channelDetails.setService("service");
+        channelDetails.setProtocol(Protocol.HTTPS);
+        channelDetails.setPort(2222L);
+        channelDetails.setBrokerPspCode("brokerPspCode");
+        channelDetails.setProxyPort(24444L);
+        channelDetails.setThreadNumber(2L);
+        channelDetails.setTimeoutA(22L);
+        channelDetails.setTimeoutB(28L);
+        channelDetails.setTimeoutC(10L);
+        channelDetails.setRedirectPort(6666L);
+        return channelDetails;
     }
 }

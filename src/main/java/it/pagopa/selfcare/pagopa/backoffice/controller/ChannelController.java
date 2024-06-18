@@ -14,14 +14,12 @@ import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationsResource;
 import it.pagopa.selfcare.pagopa.backoffice.service.ChannelService;
 import it.pagopa.selfcare.pagopa.backoffice.service.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
@@ -121,7 +119,6 @@ public class ChannelController {
     @Operation(summary = "Create a channel, validating the creation request previously inserted by user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public WrapperChannelDetailsResource createChannel(@RequestBody @NotNull ChannelDetailsDto channelDetailsDto) {
-
         return channelService.validateChannelCreation(channelDetailsDto);
     }
 
@@ -133,7 +130,6 @@ public class ChannelController {
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
             @RequestBody @NotNull ChannelDetailsDto channelDetailsDto
     ) {
-
         return channelService.validateChannelUpdate(channelCode, channelDetailsDto);
     }
 
@@ -142,7 +138,6 @@ public class ChannelController {
     @Operation(summary = "delete channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public void deleteChannel(@Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode) {
-
         channelService.deleteChannel(channelCode);
     }
 
@@ -150,8 +145,9 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get list of payment type of a channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public PspChannelPaymentTypesResource getChannelPaymentTypes(@Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode) {
-
+    public PspChannelPaymentTypesResource getChannelPaymentTypes(
+            @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode
+    ) {
         return channelService.getPaymentTypesByChannel(channelCode);
     }
 
@@ -163,7 +159,6 @@ public class ChannelController {
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
             @Parameter(description = " List of payment types") @RequestBody PspChannelPaymentTypes pspChannelPaymentTypes
     ) {
-
         return channelService.createPaymentTypeOnChannel(pspChannelPaymentTypes, channelCode);
     }
 
@@ -175,7 +170,6 @@ public class ChannelController {
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
             @Parameter(description = "Code of the payment type") @PathVariable("payment-type-code") String paymentTypeCode
     ) {
-
         channelService.deletePaymentTypeOnChannel(channelCode, paymentTypeCode);
     }
 
@@ -191,7 +185,6 @@ public class ChannelController {
             @Parameter(description = "Page number. Page value starts from 0") @RequestParam Integer page,
             @Parameter(description = "Method of sorting") @RequestParam(required = false, value = "sorting") String sorting
     ) {
-
         return channelService.getAllMergedChannel(limit, channelcode, brokerCode, page, sorting);
     }
 
@@ -199,8 +192,9 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get channel's details from cosmos db merged whit apiConfig", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public ChannelDetailsResource getChannelDetail(@Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode) {
-
+    public ChannelDetailsResource getChannelDetail(
+            @Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode
+    ) {
         return channelService.getChannelToBeValidated(channelCode);
     }
 
@@ -208,8 +202,9 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a channel that is currently in hold for operator validation", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public WrapperEntities getGenericWrapperEntities(@Parameter(description = "Channel code") @PathVariable("channel-code") String channelCode) {
-
+    public WrapperEntities getGenericWrapperEntities(
+            @Parameter(description = "Channel code") @PathVariable("channel-code") String channelCode
+    ) {
         return wrapperService.findById(channelCode);
     }
 

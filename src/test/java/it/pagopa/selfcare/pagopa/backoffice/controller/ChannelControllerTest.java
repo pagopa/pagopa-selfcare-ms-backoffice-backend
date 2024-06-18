@@ -1,38 +1,40 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleSubscriptionStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.service.ChannelService;
-import it.pagopa.selfcare.pagopa.backoffice.service.StationService;
+import it.pagopa.selfcare.pagopa.backoffice.service.WrapperService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.inject.Inject;
+import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -41,8 +43,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ChannelControllerTest {
 
     private static final String CHANNEL_CODE = "channelCode";
+
     @MockBean
     private ChannelService channelService;
+
+    @MockBean
+    private WrapperService wrapperService;
 
     @Autowired
     private MockMvc mvc;
@@ -89,15 +95,113 @@ class ChannelControllerTest {
 
         verify(channelService).getChannelsInCSVFile(any());
     }
-//
-//    @Test
-//    void createChannel() throws Exception {
-//        when(channelService.validateChannelCreation(any()))
-//                .thenReturn(WrapperChannelDetailsResource.builder().channelCode(CHANNEL_CODE).build());
-//
-//        mvc.perform(post("/channels")
-//                        .content(objectMapper.writeValueAsString(new ChannelDetailsDto()))
-//                        .content(MediaType.APPLICATION_JSON_VALUE))
-//                .andExpect(status().is2xxSuccessful());
-//    }
+
+    @Test
+    void createChannel() throws Exception {
+        when(channelService.validateChannelCreation(any()))
+                .thenReturn(WrapperChannelDetailsResource.builder().channelCode(CHANNEL_CODE).build());
+
+        mvc.perform(post("/channels")
+                        .content(objectMapper.writeValueAsString(new ChannelDetailsDto()))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void updateChannel() throws Exception {
+        when(channelService.validateChannelUpdate(eq(CHANNEL_CODE), any()))
+                .thenReturn(ChannelDetailsResource.builder().channelCode(CHANNEL_CODE).build());
+
+        mvc.perform(put("/channels/{channel-code}", CHANNEL_CODE)
+                        .content(objectMapper.writeValueAsString(new ChannelDetailsDto()))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void deleteChannel() throws Exception {
+        mvc.perform(delete("/channels/{channel-code}", CHANNEL_CODE))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(channelService).deleteChannel(CHANNEL_CODE);
+    }
+
+    @Test
+    void getChannelPaymentTypes() throws Exception {
+        when(channelService.getPaymentTypesByChannel(CHANNEL_CODE)).thenReturn(new PspChannelPaymentTypesResource());
+
+        mvc.perform(get("/channels/{channel-code}/payment-types", CHANNEL_CODE))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void createChannelPaymentType() throws Exception {
+        when(channelService.createPaymentTypeOnChannel(any(), eq(CHANNEL_CODE)))
+                .thenReturn(new PspChannelPaymentTypesResource());
+
+        mvc.perform(post("/channels/{channel-code}/payment-types", CHANNEL_CODE)
+                        .content(objectMapper.writeValueAsString(new PspChannelPaymentTypes()))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void deleteChannelPaymentType() throws Exception {
+        String paymentType = "payment-type-code";
+        mvc.perform(delete("/channels/{channel-code}/payment-types/{payment-type-code}", CHANNEL_CODE, paymentType))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(channelService).deletePaymentTypeOnChannel(CHANNEL_CODE, paymentType);
+    }
+
+    @Test
+    void getChannelDetail() throws Exception {
+        when(channelService.getChannelToBeValidated(CHANNEL_CODE))
+                .thenReturn(ChannelDetailsResource.builder().channelCode(CHANNEL_CODE).build());
+
+        mvc.perform(get("/channels/merged/{channel-code}", CHANNEL_CODE))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void getGenericWrapperEntities() throws Exception {
+        when(wrapperService.findById(CHANNEL_CODE)).thenReturn(new WrapperEntities());
+
+        mvc.perform(get("/channels/wrapper/{channel-code}", CHANNEL_CODE))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void createWrapperChannelDetails() throws Exception {
+        when(channelService.createChannelToBeValidated(any())).thenReturn(new WrapperEntities());
+
+        mvc.perform(post("/channels/wrapper", CHANNEL_CODE)
+                        .content(objectMapper.writeValueAsString(buildWrapperChannelDetailsDto()))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void updateWrapperChannelDetails() throws Exception {
+        when(channelService.updateChannelToBeValidated(any())).thenReturn(new WrapperEntities());
+
+        mvc.perform(put("/channels/wrapper", CHANNEL_CODE)
+                        .content(objectMapper.writeValueAsString(ChannelDetailsDto.builder().validationUrl("url").build()))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    private WrapperChannelDetailsDto buildWrapperChannelDetailsDto() {
+        return WrapperChannelDetailsDto.builder()
+                .channelCode(CHANNEL_CODE)
+                .brokerDescription("brokerDescription")
+                .brokerPspCode("brokerPspCode")
+                .targetHost("targetHost")
+                .targetPort(8088L)
+                .targetPath("targetPath")
+                .redirectProtocol(Protocol.HTTPS)
+                .paymentTypeList(Collections.emptyList())
+                .validationUrl("validationUrl")
+                .build();
+    }
 }

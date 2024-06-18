@@ -343,11 +343,11 @@ public class WrapperService {
      *
      * @param channelCode channel's code
      * @param brokerCode  broker's code
-     * @param page        page number
      * @param size        page size
+     * @param page        page number
      * @return the paginated list
      */
-    public WrapperEntitiesList getWrapperChannels(String channelCode, String brokerCode, Integer page, Integer size) {
+    public WrapperEntitiesList getWrapperChannels(String channelCode, String brokerCode, Integer size, Integer page) {
         return getWrapperEntities(WrapperType.CHANNEL, channelCode, brokerCode, size, page);
     }
 
@@ -356,11 +356,11 @@ public class WrapperService {
      *
      * @param stationCode station's code
      * @param brokerCode  broker's code
-     * @param page        page number
      * @param size        page size
+     * @param page        page number
      * @return the paginated list
      */
-    public WrapperEntitiesList getWrapperStations(String stationCode, String brokerCode, Integer page, Integer size) {
+    public WrapperEntitiesList getWrapperStations(String stationCode, String brokerCode, Integer size, Integer page) {
         return getWrapperEntities(WrapperType.STATION, stationCode, brokerCode, size, page);
     }
 
@@ -379,7 +379,7 @@ public class WrapperService {
     }
 
     public String getFirstValidChannelCodeV2(String taxCode) {
-        Channels channels = apiConfigClient.getChannels(100, 0, null, taxCode, "DESC");
+        Channels channels = apiConfigClient.getChannels(null, taxCode, "DESC", 100, 0);
         WrapperEntitiesList channelMongoList = findByIdLikeOrTypeOrBrokerCode(null, WrapperType.CHANNEL, taxCode, 0, 100);
 
         List<String> channelCodes = new LinkedList<>();
