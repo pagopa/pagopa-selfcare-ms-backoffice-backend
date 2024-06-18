@@ -352,7 +352,7 @@ class StationServiceTest {
 
         CreditorInstitution expectedCI = institutions.getCreditorInstitutionList().get(0);
         CreditorInstitutionResource actualCI = result.getCreditorInstitutionList().get(0);
-        assertEquals(expectedCI.getCreditorInstitutionCode(), actualCI.getCreditorInstitutionCode());
+        assertEquals(expectedCI.getCreditorInstitutionCode(), actualCI.getCiTaxCode());
         assertEquals(expectedCI.getEnabled(), actualCI.getEnabled());
         assertEquals(expectedCI.getBusinessName(), actualCI.getBusinessName());
     }

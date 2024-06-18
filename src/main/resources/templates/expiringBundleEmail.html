@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Expiring bundle mail</title>
+</head>
+
+<body>
+<img width="100" height="30"
+     src="https://raw.githubusercontent.com/pagopa/pagopa-selfcare-ms-backoffice-backend/main/src/main/resources/templates/logo-pagopa.png">
+<h1>Pacchetto commissionale in scadenza</h1>
+<p>
+    Ciao,
+</p>
+<br/>
+<p>
+    il pacchetto <span th:text="${bundleName}" th:remove="tag"></span> scadrà in data <span th:text="${expireAt}" th:remove="tag"></span>.
+</p>
+<p>
+    Puoi gestire i tuoi pacchetti qui <a
+        href="https://selfcare.platform.pagopa.it/ui/comm-bundles">https://selfcare.platform.pagopa.it/ui/comm-bundles</a>.
+</p>
+<br/>
+<p>
+    A presto,
+</p>
+<p>
+    Pagamenti pagoPA
+</p>
+<hr style="color:grey">
+<p style="color:grey">
+    Ricevi questo messaggio perchè hai un utenza attiva su Pagamenti pagoPA.
+</p>
+
+</body>
+</html>

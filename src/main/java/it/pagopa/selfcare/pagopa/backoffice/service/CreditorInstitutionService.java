@@ -36,6 +36,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.tavoloop.TavoloOpResource;
 import it.pagopa.selfcare.pagopa.backoffice.repository.TavoloOpRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.factory.Mappers;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -242,48 +243,76 @@ public class CreditorInstitutionService {
      */
     public CreditorInstitutionInfoResource getAvailableCreditorInstitutionsForStation(
             String stationCode,
-            String brokerId
+            String brokerId,
+            String ciName
     ) {
-        List<DelegationExternal> delegationExternals = this.externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
-
-        List<DelegationExternal> delegations = addItselfToDelegationsIfCI(brokerId, delegationExternals);
-
-        List<String> alreadyAssociatedCI = this.apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(stationCode);
-
-        // filter by roles
-        List<CreditorInstitutionInfo> infoList = delegations.parallelStream()
+        List<CreditorInstitutionInfo> infoList = new ArrayList<>();
+        List<String> delegations = getDelegationExternals(brokerId, ciName).parallelStream()
                 .filter(Objects::nonNull)
                 .filter(delegation -> RoleType.CI.equals(RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType())))
-                .filter(delegation -> !alreadyAssociatedCI.contains(delegation.getTaxCode()))
-                .map(elem -> this.modelMapper.map(elem, CreditorInstitutionInfo.class))
+                .map(DelegationExternal::getTaxCode)
                 .toList();
+
+        int page = 0;
+        int limit = 10;
+        int fromIndex = 0;
+        while (infoList.size() < 10 && fromIndex < delegations.size()) {
+            int toIndex = Math.min(fromIndex + limit, delegations.size());
+            List<String> delegationExternalTaxCodes = delegations.subList(fromIndex, toIndex);
+
+            if (!delegationExternalTaxCodes.isEmpty()) {
+                infoList.addAll(getAvailableCIInfo(stationCode, delegationExternalTaxCodes));
+            }
+            page++;
+            fromIndex = page * limit;
+        }
+
+        // filter by roles
         return CreditorInstitutionInfoResource.builder()
                 .creditorInstitutionInfos(infoList)
                 .build();
     }
 
-    private List<DelegationExternal> addItselfToDelegationsIfCI(
-            String brokerId,
-            List<DelegationExternal> delegationExternals
+    private List<CreditorInstitutionInfo> getAvailableCIInfo(
+            String stationCode,
+            List<String> delegationExternalTaxCodes
     ) {
-        List<DelegationExternal> delegations = new ArrayList<>(delegationExternals);
+        return this.apiConfigSelfcareIntegrationClient
+                .getStationCreditorInstitutions(stationCode, delegationExternalTaxCodes).parallelStream()
+                .map(ciInfo -> this.modelMapper.map(ciInfo, CreditorInstitutionInfo.class))
+                .toList();
+    }
+
+    private List<DelegationExternal> getDelegationExternals(String brokerId, String ciName) {
+        List<DelegationExternal> response = this.externalApiClient
+                .getBrokerDelegation(
+                        null,
+                        brokerId,
+                        "prod-pagopa",
+                        "FULL",
+                        ciName
+                );
+
+        List<DelegationExternal> delegationExternals = new ArrayList<>(response);
         InstitutionResponse broker = this.externalApiClient.getInstitution(brokerId);
-        if (brokerCanBeAddedToDelegation(delegationExternals, broker)) {
-            delegations.add(DelegationExternal.builder()
+        if (brokerCanBeAddedToDelegation(delegationExternals, broker, ciName)) {
+            delegationExternals.add(DelegationExternal.builder()
                     .taxCode(broker.getTaxCode())
                     .institutionName(broker.getDescription())
                     .institutionType(broker.getInstitutionType().toString())
                     .build()
             );
         }
-        return delegations;
+        return delegationExternals;
     }
 
     private boolean brokerCanBeAddedToDelegation(
             List<DelegationExternal> delegationExternals,
-            InstitutionResponse broker
+            InstitutionResponse broker,
+            String ciNameFilter
     ) {
         return RoleType.CI.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType().toString()))
+                && (StringUtils.isBlank(ciNameFilter) || broker.getDescription().toLowerCase().contains(ciNameFilter.toLowerCase()))
                 && delegationExternals.stream().noneMatch(delegationExternal -> delegationExternal.getTaxCode().equals(broker.getTaxCode()));
     }
 }

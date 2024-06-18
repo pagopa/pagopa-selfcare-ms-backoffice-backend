@@ -296,8 +296,9 @@ public class CreditorInstitutionController {
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public CreditorInstitutionInfoResource getAvailableCreditorInstitutionsForStation(
             @Parameter(description = "Station's code") @PathVariable("station-code") String stationCode,
-            @Parameter(description = "Broker's unique id") @RequestParam String brokerId
+            @Parameter(description = "Broker's unique id") @RequestParam String brokerId,
+            @Parameter(description = "Creditor institution's name, used to filter out results") @RequestParam(required = false) String ciName
     ) {
-        return this.ciService.getAvailableCreditorInstitutionsForStation(stationCode, brokerId);
+        return this.ciService.getAvailableCreditorInstitutionsForStation(stationCode, brokerId, ciName);
     }
 }
