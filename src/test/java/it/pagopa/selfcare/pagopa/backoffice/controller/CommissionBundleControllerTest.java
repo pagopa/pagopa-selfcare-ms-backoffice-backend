@@ -47,6 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CommissionBundleControllerTest {
 
     private static final String PSP_TAX_CODE = "pspTaxCode";
+    private static final String PSP_NAME = "pspName";
     private static final String CI_TAX_CODE = "ciTaxCode";
     public static final String BUNDLE_ID = "bundleId";
     private static final String CI_BUNDLE_ID = "ciBundleId";
@@ -200,9 +201,12 @@ class CommissionBundleControllerTest {
     void deletePSPBundleOK() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-code}";
 
-        mvc.perform(delete(url, BUNDLE_ID, PSP_TAX_CODE))
+        mvc.perform(delete(url, BUNDLE_ID, PSP_TAX_CODE)
+                        .param("bundleName", BUNDLE_NAME)
+                        .param("pspName", PSP_NAME)
+                        .param("bundleType", BundleType.GLOBAL.name()))
                 .andExpect(status().isOk());
-        verify(service).deletePSPBundle(PSP_TAX_CODE, BUNDLE_ID);
+        verify(service).deletePSPBundle(PSP_TAX_CODE, BUNDLE_ID, BUNDLE_NAME, PSP_NAME, BundleType.GLOBAL);
     }
 
     @Test

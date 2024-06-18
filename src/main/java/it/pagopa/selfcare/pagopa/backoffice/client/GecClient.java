@@ -125,6 +125,7 @@ public interface GecClient {
             @RequestParam(required = false) List<BundleType> types,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String validFrom,
+            @RequestParam(required = false) String expireAt,
             @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) Integer page
     );
