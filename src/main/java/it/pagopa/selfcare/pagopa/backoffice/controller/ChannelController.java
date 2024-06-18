@@ -88,8 +88,9 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get channel's details", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public ChannelDetailsResource getChannelDetails(@Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode) {
-
+    public ChannelDetailsResource getChannelDetails(
+            @Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode
+    ) {
         return channelService.getChannel(channelCode);
     }
 
@@ -99,11 +100,10 @@ public class ChannelController {
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public ChannelPspListResource getChannelPaymentServiceProviders(
             @Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode,
-            @Parameter(description = "") @RequestParam(required = false, defaultValue = "50") Integer limit,
-            @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = true) Integer page,
-            @Parameter(description = "Filter by PSP name") @RequestParam(name = "psp-name") String pspName
+            @Parameter(description = "Filter by PSP name") @RequestParam(name = "psp-name") String pspName,
+            @Parameter(description = "Number of elements on one page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
+            @Parameter(description = "Page number") @RequestParam(defaultValue = "0") @PositiveOrZero Integer page
     ) {
-
         return channelService.getPSPsByChannel(limit, page, channelCode, pspName);
     }
 

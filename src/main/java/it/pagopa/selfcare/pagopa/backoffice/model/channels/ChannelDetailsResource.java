@@ -5,13 +5,22 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentModel;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ChannelDetailsResource extends ChannelResource {
 
     @JsonProperty("password")
