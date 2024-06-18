@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.14.2-2-VAS-1119-improvement-get-available-ci-api"
+    "version": "2.14.2-3-next"
   },
   "servers": [
     {
