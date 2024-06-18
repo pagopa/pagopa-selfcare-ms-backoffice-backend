@@ -114,7 +114,7 @@ public class ApiManagementService {
     }
 
     public DelegationResource getBrokerDelegation(String institutionId, String brokerId, List<RoleType> roles) {
-        var response = externalApiClient.getBrokerDelegation(institutionId, brokerId, "prod-pagopa", "FULL");
+        var response = externalApiClient.getBrokerDelegation(institutionId, brokerId, "prod-pagopa", "FULL", null);
 
         var result = response.stream()
                 .map(elem -> modelMapper.map(elem, Delegation.class))
@@ -188,7 +188,7 @@ public class ApiManagementService {
                     .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
                     .findFirst()
                     .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
-            List<DelegationExternal> delegationResponse = this.externalApiClient.getBrokerDelegation(null, institutionId, "prod-pagopa", "FULL");
+            List<DelegationExternal> delegationResponse = this.externalApiClient.getBrokerDelegation(null, institutionId, "prod-pagopa", "FULL", null);
 
             // configure primary key
             Authorization authorizationPrimaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, delegationResponse, true, subscriptionCode);

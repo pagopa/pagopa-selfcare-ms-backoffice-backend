@@ -1,7 +1,6 @@
-package it.pagopa.selfcare.pagopa.backoffice.model.institutions.client;
+package it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,12 +19,10 @@ import javax.validation.constraints.NotNull;
 public class CreditorInstitutionInfo {
 
     @JsonProperty("business_name")
-    @Schema(example = "Comune di Roma", description = "The business name of the creditor institution", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private String businessName;
 
-    @JsonProperty("creditor_institution_code")
-    @Schema(example = "02438750586", description = "The tax code of the creditor institution", requiredMode = Schema.RequiredMode.REQUIRED)
+    @JsonProperty("ci_tax_code")
     @NotBlank
     private String ciTaxCode;
 }
