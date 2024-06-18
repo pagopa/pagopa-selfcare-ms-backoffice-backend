@@ -201,16 +201,6 @@ public class BrokerService {
                 .build();
     }
 
-    private boolean institutionNameMatchFilter(String filterCIName, String delegationInstitutionName) {
-        if (filterCIName == null || filterCIName.trim().isEmpty()) {
-            return true;
-        }
-        if (delegationInstitutionName == null) {
-            return false;
-        }
-        return delegationInstitutionName.toLowerCase().contains(filterCIName.toLowerCase());
-    }
-
     private Long getInstitutionsStationCount(String brokerCode, String institutionTaxCode) {
         StationDetailsList response = this.apiConfigSelfcareIntegrationClient
                 .getStationsDetailsListByBroker(brokerCode, null, institutionTaxCode, 1, 0);
@@ -270,14 +260,13 @@ public class BrokerService {
      * @return a filtered list of delegations
      */
     private List<DelegationExternal> getDelegationResponse(String brokerId, String ciName) {
-        List<DelegationExternal> delegationResponse = this.externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL");
+        List<DelegationExternal> delegationResponse = this.externalApiClient.getBrokerDelegation(null, brokerId, "prod-pagopa", "FULL", ciName);
 
         // filter by roles
         log.info(delegationResponse.toString());
         return delegationResponse.parallelStream()
                 .filter(Objects::nonNull)
                 .filter(delegation -> RoleType.CI.equals(RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType())))
-                .filter(delegation -> institutionNameMatchFilter(ciName, delegation.getInstitutionName()))
                 .toList();
     }
 }

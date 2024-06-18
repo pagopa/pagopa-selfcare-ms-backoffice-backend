@@ -102,7 +102,7 @@ class ApiManagementServiceTest {
 
     @Test
     void getBrokerDelegationPSP() {
-        when(externalApiClient.getBrokerDelegation(any(), any(), any(), any())).thenReturn(createDelegations());
+        when(externalApiClient.getBrokerDelegation(any(), any(), any(), any(), eq(null))).thenReturn(createDelegations());
         DelegationResource delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, Collections.singletonList(RoleType.PSP));
         assertNotNull(delegations);
         assertNotNull(delegations.getDelegations());
@@ -112,7 +112,7 @@ class ApiManagementServiceTest {
 
     @Test
     void getBrokerDelegationEC() {
-        when(externalApiClient.getBrokerDelegation(any(), any(), any(), any())).thenReturn(createDelegations());
+        when(externalApiClient.getBrokerDelegation(any(), any(), any(), any(), eq(null))).thenReturn(createDelegations());
         DelegationResource delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, Collections.singletonList(RoleType.CI));
         assertNotNull(delegations);
         assertNotNull(delegations.getDelegations());
@@ -122,7 +122,7 @@ class ApiManagementServiceTest {
 
     @Test
     void getBrokerDelegationCombinedRoles() {
-        when(externalApiClient.getBrokerDelegation(any(), any(), any(), any())).thenReturn(createDelegations());
+        when(externalApiClient.getBrokerDelegation(any(), any(), any(), any(), eq(null))).thenReturn(createDelegations());
         DelegationResource delegations = service.getBrokerDelegation(INSTITUTION_ID, BROKER_ID, List.of(RoleType.CI, RoleType.PSP));
         assertNotNull(delegations);
         assertNotNull(delegations.getDelegations());

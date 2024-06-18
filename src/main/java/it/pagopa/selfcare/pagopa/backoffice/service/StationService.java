@@ -57,7 +57,7 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
 @Service
 public class StationService {
 
-    private static final String CREATE_STATION_SUBJECT = "Nuova stazione attivo";
+    private static final String CREATE_STATION_SUBJECT = "Nuova stazione attiva";
     private static final String CREATE_STATION_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato la stazione %s che hai creato. Da questo momento puoi utilizzarla per attivare i tuoi servizi.%n%n%nA presto,%n%n Pagamenti pagoPA";
     private static final String UPDATE_STATION_SUBJECT = "Modifica stazione attiva";
     private static final String UPDATE_STATION_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato la stazione %s che hai modificato. Da questo momento la modifica effettuata risulta attiva.%n%n%nA presto,%n%n Pagamenti pagoPA";

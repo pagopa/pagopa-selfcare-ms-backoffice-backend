@@ -97,7 +97,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
 
         CreditorInstitutionDetailsResource creditorInstitutionDetailsResource = new CreditorInstitutionDetailsResource();
 
-        creditorInstitutionDetailsResource.setCreditorInstitutionCode(model.getCreditorInstitutionCode());
+        creditorInstitutionDetailsResource.setCiTaxCode(model.getCreditorInstitutionCode());
         creditorInstitutionDetailsResource.setEnabled(model.getEnabled());
         creditorInstitutionDetailsResource.setBusinessName(model.getBusinessName());
         creditorInstitutionDetailsResource.setCbillCode(model.getCbillCode());
@@ -169,7 +169,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         CreditorInstitutionResource creditorInstitutionResource = new CreditorInstitutionResource();
 
         creditorInstitutionResource.setBusinessName(model.getBusinessName());
-        creditorInstitutionResource.setCreditorInstitutionCode(model.getCreditorInstitutionCode());
+        creditorInstitutionResource.setCiTaxCode(model.getCreditorInstitutionCode());
         creditorInstitutionResource.setCbillCode(model.getCbillCode());
         creditorInstitutionResource.setEnabled(model.getEnabled());
         creditorInstitutionResource.setBroadcast(model.getBroadcast());

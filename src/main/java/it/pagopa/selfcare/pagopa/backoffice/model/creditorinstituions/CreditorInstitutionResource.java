@@ -12,7 +12,7 @@ public class CreditorInstitutionResource {
     @Schema(description = "Creditor Institution's code(Fiscal Code)",requiredMode = Schema.RequiredMode.REQUIRED)
     @Size(max = 30)
     @NotBlank
-    private String creditorInstitutionCode;
+    private String ciTaxCode;
 
     @Schema(description = "Creditor Institution activation state on ApiConfig",requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
