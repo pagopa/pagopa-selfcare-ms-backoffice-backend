@@ -3717,7 +3717,38 @@
         "operationId": "getChannels",
         "parameters": [
           {
-            "description": "Number of elements on one page. Default = 50",
+            "description": "Channel's status",
+            "in": "query",
+            "name": "status",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ACTIVE",
+                "TO_BE_VALIDATED"
+              ]
+            }
+          },
+          {
+            "description": "Channel's 'code, to filter out result",
+            "in": "query",
+            "name": "channelCode",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker code, to filter out result",
+            "in": "query",
+            "name": "brokerCode",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Number of elements on one page",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -3728,32 +3759,15 @@
             }
           },
           {
-            "description": "Page number. Page value starts from 0",
+            "description": "Page number",
             "in": "query",
             "name": "page",
-            "required": true,
+            "required": false,
             "schema": {
+              "minimum": 0,
               "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "description": "Filter channel by code",
-            "in": "query",
-            "name": "code",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Sort Direction ordering",
-            "in": "query",
-            "name": "ordering",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "default": "DESC"
+              "format": "int32",
+              "default": 0
             }
           }
         ],
@@ -3762,11 +3776,69 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ChannelsResource"
+                  "$ref": "#/components/schemas/WrapperChannelsResource"
                 }
               }
             },
             "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
@@ -4414,6 +4486,16 @@
             }
           },
           {
+            "description": "Filter by PSP name",
+            "in": "query",
+            "name": "psp-name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Number of elements on one page",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -4424,22 +4506,15 @@
             }
           },
           {
-            "description": "Page number. Page value starts from 0",
+            "description": "Page number",
             "in": "query",
             "name": "page",
-            "required": true,
+            "required": false,
             "schema": {
+              "minimum": 0,
               "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "description": "Filter by PSP name",
-            "in": "query",
-            "name": "psp-name",
-            "required": true,
-            "schema": {
-              "type": "string"
+              "format": "int32",
+              "default": 0
             }
           }
         ],
@@ -11801,45 +11876,6 @@
           }
         },
         "description": "enabled"
-      },
-      "ChannelResource": {
-        "required": [
-          "channel_code"
-        ],
-        "type": "object",
-        "properties": {
-          "broker_description": {
-            "type": "string",
-            "description": "Broker description. Read only field"
-          },
-          "channel_code": {
-            "type": "string",
-            "description": "Channel code"
-          },
-          "enabled": {
-            "type": "boolean"
-          }
-        },
-        "description": "list of psp and ec channels"
-      },
-      "ChannelsResource": {
-        "required": [
-          "channels",
-          "page_info"
-        ],
-        "type": "object",
-        "properties": {
-          "channels": {
-            "type": "array",
-            "description": "list of psp and ec channels",
-            "items": {
-              "$ref": "#/components/schemas/ChannelResource"
-            }
-          },
-          "page_info": {
-            "$ref": "#/components/schemas/PageInfo"
-          }
-        }
       },
       "CiTaxCodeList": {
         "required": [

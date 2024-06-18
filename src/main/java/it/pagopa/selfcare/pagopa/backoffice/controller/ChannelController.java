@@ -77,7 +77,7 @@ public class ChannelController {
             @Parameter(description = "Channel's 'code, to filter out result") @RequestParam(required = false) String channelCode,
             @Parameter(description = "Broker code, to filter out result") @RequestParam(required = false, value = "brokerCode") String brokerCode,
             @Parameter(description = "Number of elements on one page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
-            @Parameter(description = "Page number") @RequestParam(defaultValue = "0") @PositiveOrZero Integer page
+            @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page
     ) {
         return this.channelService.getChannels(status, channelCode, brokerCode, limit, page);
     }
@@ -100,7 +100,7 @@ public class ChannelController {
             @Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode,
             @Parameter(description = "Filter by PSP name") @RequestParam(name = "psp-name") String pspName,
             @Parameter(description = "Number of elements on one page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
-            @Parameter(description = "Page number") @RequestParam(defaultValue = "0") @PositiveOrZero Integer page
+            @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page
     ) {
         return channelService.getPSPsByChannel(limit, page, channelCode, pspName);
     }
