@@ -1,7 +1,7 @@
 {
   "creditor_institutions": [
     {
-      "creditorInstitutionCode": "12345678900",
+      "ciTaxCode": "12345678900",
       "enabled": true,
       "businessName": "Comune XYZ",
       "cbillCode": "COXYZ",
@@ -12,7 +12,7 @@
       "broadcast": false
     },
     {
-      "creditorInstitutionCode": "12345678901",
+      "ciTaxCode": "12345678901",
       "enabled": true,
       "businessName": "Comune ABC",
       "cbillCode": "COABC",

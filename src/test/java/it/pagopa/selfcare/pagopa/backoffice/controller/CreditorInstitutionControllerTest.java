@@ -165,11 +165,12 @@ class CreditorInstitutionControllerTest {
     @Test
     void getAvailableCreditorInstitutionsForStation() throws Exception {
         String url = "/creditor-institutions/stations/{station-code}";
-        when(ciService.getAvailableCreditorInstitutionsForStation(anyString(), anyString()))
+        when(ciService.getAvailableCreditorInstitutionsForStation(anyString(), anyString(), anyString()))
                 .thenReturn(new CreditorInstitutionInfoResource());
 
         mvc.perform(get(url, "stationCode")
                         .param("brokerId", "brokerId")
+                        .param("ciName", "ciName")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
