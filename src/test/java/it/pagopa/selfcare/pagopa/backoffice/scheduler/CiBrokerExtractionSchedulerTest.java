@@ -22,25 +22,20 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest(classes = CiBrokerExtractionScheduler.class)
 class CiBrokerExtractionSchedulerTest {
-
 
     @MockBean
     private AllPages allPages;
 
-
     @MockBean
     private BrokerInstitutionsRepository brokerInstitutionsRepository;
 
-
     @Autowired
-    @InjectMocks
     private CiBrokerExtractionScheduler scheduler;
 
     @Captor
     ArgumentCaptor<BrokerInstitutionsEntity> captor;
-
 
     @Test
     void extractCi() throws IOException {
@@ -68,6 +63,5 @@ class CiBrokerExtractionSchedulerTest {
         assertEquals(BROKER_CODE, captor.getValue().getBrokerCode());
         assertEquals(1, captor.getValue().getInstitutions().size());
         assertEquals("9999_01", captor.getValue().getInstitutions().get(0).getStationId());
-
     }
 }
