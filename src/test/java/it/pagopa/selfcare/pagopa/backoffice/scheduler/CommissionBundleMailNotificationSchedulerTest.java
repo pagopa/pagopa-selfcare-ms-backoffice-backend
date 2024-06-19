@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -61,13 +62,13 @@ class CommissionBundleMailNotificationSchedulerTest {
         when(bundleAllPages.getAllBundlesWithExpireDate(anyString()))
                 .thenReturn(bundles)
                 .thenReturn(bundles);
-        when(bundleAllPages.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE))
+        when(bundleAllPages.getAllCITaxCodesAssociatedToABundle(ID_BUNDLE, BundleType.GLOBAL, PSP_CODE))
                 .thenReturn(Set.of(CI_TAX_CODE))
                 .thenReturn(Set.of(CI_TAX_CODE));
-        when(bundleAllPages.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, ID_BUNDLE_2))
+        when(bundleAllPages.getAllCITaxCodesAssociatedToABundle(ID_BUNDLE_2, BundleType.PUBLIC, PSP_CODE))
                 .thenReturn(Set.of(CI_TAX_CODE_2))
                 .thenReturn(Set.of(CI_TAX_CODE_2));
-        when(bundleAllPages.getPrivateBundleOffersByPSP(PSP_CODE, ID_BUNDLE_3))
+        when(bundleAllPages.getAllCITaxCodesAssociatedToABundle(ID_BUNDLE_3, BundleType.PRIVATE, PSP_CODE))
                 .thenReturn(Set.of(CI_TAX_CODE_3))
                 .thenReturn(Set.of(CI_TAX_CODE_3));
         when(apiConfigClient.getPSPDetails(PSP_CODE))
@@ -93,13 +94,13 @@ class CommissionBundleMailNotificationSchedulerTest {
         when(bundleAllPages.getAllBundlesWithExpireDate(anyString()))
                 .thenReturn(bundles)
                 .thenReturn(bundles);
-        when(bundleAllPages.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE))
+        when(bundleAllPages.getAllCITaxCodesAssociatedToABundle(ID_BUNDLE, BundleType.GLOBAL, PSP_CODE))
                 .thenReturn(Set.of(CI_TAX_CODE))
                 .thenReturn(Set.of(CI_TAX_CODE));
-        when(bundleAllPages.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, ID_BUNDLE_2))
+        when(bundleAllPages.getAllCITaxCodesAssociatedToABundle(ID_BUNDLE_2, BundleType.PUBLIC, PSP_CODE))
                 .thenReturn(Set.of(CI_TAX_CODE_2))
                 .thenReturn(Set.of(CI_TAX_CODE_2));
-        when(bundleAllPages.getPrivateBundleOffersByPSP(PSP_CODE, ID_BUNDLE_3))
+        when(bundleAllPages.getAllCITaxCodesAssociatedToABundle(ID_BUNDLE_3, BundleType.PRIVATE, PSP_CODE))
                 .thenReturn(Set.of(CI_TAX_CODE_3))
                 .thenReturn(Set.of(CI_TAX_CODE_3));
         when(apiConfigClient.getPSPDetails(PSP_CODE))

@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest(classes = TaxonomiesExtractionScheduler.class)
 class TaxonomiesExtractionSchedulerTest {
 
     @MockBean
@@ -43,7 +43,6 @@ class TaxonomiesExtractionSchedulerTest {
     ArgumentCaptor<List<TaxonomyEntity>> taxonomyEntityCaptor;
 
     @Autowired
-    @InjectMocks
     private TaxonomiesExtractionScheduler scheduler;
 
     @BeforeEach

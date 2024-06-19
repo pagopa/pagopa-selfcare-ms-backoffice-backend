@@ -11,6 +11,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
 import it.pagopa.selfcare.pagopa.backoffice.repository.TransactionalBulkDAO;
+import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperRepository;
+import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.AllPages;
 import it.pagopa.selfcare.pagopa.backoffice.util.Constants;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -29,7 +31,7 @@ import java.util.stream.IntStream;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest(classes = {IbanByBrokerExtractionScheduler.class, AllPages.class})
 class IbanByBrokerExtractionSchedulerTest {
 
     private static final int PAGE_LIMIT = 5;
@@ -43,10 +45,14 @@ class IbanByBrokerExtractionSchedulerTest {
     @MockBean
     private TransactionalBulkDAO dao;
 
-    @Autowired
-    @InjectMocks
-    private IbanByBrokerExtractionScheduler scheduler;
+    @MockBean
+    private WrapperRepository wrapperRepository;
 
+    @Autowired
+    private AllPages allPages;
+
+    @Autowired
+    private IbanByBrokerExtractionScheduler scheduler;
 
     @ParameterizedTest
     @CsvSource({
