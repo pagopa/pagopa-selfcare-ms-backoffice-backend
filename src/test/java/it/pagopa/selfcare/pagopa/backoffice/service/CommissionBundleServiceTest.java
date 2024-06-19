@@ -6,32 +6,8 @@ import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleSubscriptionStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleAttributeResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsDetail;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCIOffers;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleOffers;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequestId;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleAttribute;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleOffer;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleOffer;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
@@ -46,23 +22,11 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = {MappingsConfiguration.class, CommissionBundleService.class})
 class CommissionBundleServiceTest {
@@ -1049,47 +1013,6 @@ class CommissionBundleServiceTest {
         verify(awsSesClient).sendEmail(any());
     }
 
-    @Test
-    void createCIBundleOffersSuccess(){
-        List<String> ciTaxCodes = List.of(CI_TAX_CODE, "taxCode2", "taxCode3");
-        CiTaxCodeList ciTaxCodeList = CiTaxCodeList.builder().ciTaxCodes(ciTaxCodes).build();
-
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-
-        assertDoesNotThrow(() ->
-                sut.createCIBundleOffers(ID_BUNDLE, PSP_TAX_CODE, BUNDLE_NAME, ciTaxCodeList));
-
-        verify(gecClient).createPrivateBundleOffer(PSP_CODE, ID_BUNDLE, ciTaxCodeList);
-        verify(awsSesClient, times(ciTaxCodes.size())).sendEmail(any());
-    }
-
-    @Test
-    void createCIBundleOffersSuccess(){
-        List<String> ciTaxCodes = List.of(CI_TAX_CODE, "taxCode2", "taxCode3");
-        CiTaxCodeList ciTaxCodeList = CiTaxCodeList.builder().ciTaxCodes(ciTaxCodes).build();
-
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-
-        assertDoesNotThrow(() ->
-                sut.createCIBundleOffers(ID_BUNDLE, PSP_TAX_CODE, BUNDLE_NAME, ciTaxCodeList));
-
-        verify(gecClient).createPrivateBundleOffer(PSP_CODE, ID_BUNDLE, ciTaxCodeList);
-        verify(awsSesClient, times(ciTaxCodes.size())).sendEmail(any());
-    }
-
-    @Test
-    void createCIBundleOffersSuccess(){
-        List<String> ciTaxCodes = List.of(CI_TAX_CODE, "taxCode2", "taxCode3");
-        CiTaxCodeList ciTaxCodeList = CiTaxCodeList.builder().ciTaxCodes(ciTaxCodes).build();
-
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-
-        assertDoesNotThrow(() ->
-                sut.createCIBundleOffers(ID_BUNDLE, PSP_TAX_CODE, BUNDLE_NAME, ciTaxCodeList));
-
-        verify(gecClient).createPrivateBundleOffer(PSP_CODE, ID_BUNDLE, ciTaxCodeList);
-        verify(awsSesClient, times(ciTaxCodes.size())).sendEmail(any());
-    }
 
     private PublicBundleRequests buildPspRequests() {
         return PublicBundleRequests.builder()
