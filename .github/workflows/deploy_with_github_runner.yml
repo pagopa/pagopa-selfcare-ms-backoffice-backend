@@ -29,6 +29,11 @@ on:
         required: false
         default: ''
         type: string
+      uninstall:
+        description: 'true if you want to uninstall instead of install'
+        required: false
+        type: boolean
+        default: false
 
 env:
   APP_NAME: pagopaselfcaremsbackofficebackend
@@ -67,6 +72,7 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Deploy
+        if: ${{inputs.uninstall  == 'false' }}
         uses: pagopa/github-actions-template/aks-deploy@main
         with:
           branch: ${{ inputs.branch }}
@@ -80,6 +86,12 @@ jobs:
           app_name: ${{ env.APP_NAME }}${{inputs.suffix_name}}
           helm_upgrade_options: "--debug ${{inputs.helm_options}}"
           timeout: '10m0s'
+
+      - name: Remove deployment
+        if: ${{ inputs.uninstall == 'true' }}
+        shell: bash
+        run: |
+          helm uninstall ${{ env.APP_NAME }}${{inputs.suffix_name}} -n ${{ vars.NAMESPACE }}
 
   cleanup_runner:
     name: Cleanup Runner

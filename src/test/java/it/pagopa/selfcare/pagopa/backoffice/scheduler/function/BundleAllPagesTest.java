@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = BundleAllPages.class)
@@ -35,6 +37,7 @@ class BundleAllPagesTest {
     private static final String ID_BUNDLE = "idBundle";
     private static final String PSP_CODE = "pspCode";
     private static final String CI_TAX_CODE = "ciTaxCode";
+    private static final String CI_TAX_CODE_2 = "ciTaxCode2";
 
     @MockBean
     private GecClient gecClient;
@@ -137,5 +140,96 @@ class BundleAllPagesTest {
 
         assertNotNull(result);
         assertEquals(numOfBundles, result.size());
+    }
+
+    @Test
+    void getAllCITaxCodesAssociatedToABundleSuccessGlobal() {
+        int limit = 2;
+        ReflectionTestUtils.setField(sut, "getAllBundlesPageLimit", limit);
+
+        long numOfBundles = 1L;
+        BundleCreditorInstitutionResource resource = BundleCreditorInstitutionResource.builder()
+                .ciBundleDetails(Collections.singletonList(CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE).build()))
+                .pageInfo(PageInfo.builder().totalItems(numOfBundles).build())
+                .build();
+
+        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, 1, 0)).thenReturn(resource);
+        when(gecClient.getBundleSubscriptionByPSP(eq(PSP_CODE), eq(ID_BUNDLE), eq(null), eq(limit), anyInt())).thenReturn(resource);
+
+        Set<String> result = assertDoesNotThrow(
+                () -> sut.getAllCITaxCodesAssociatedToABundle(ID_BUNDLE, BundleType.GLOBAL, PSP_CODE)
+        );
+
+        assertNotNull(result);
+        assertEquals(numOfBundles, result.size());
+
+        verify(gecClient, never()).getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
+        verify(gecClient, never()).getPrivateBundleOffersByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
+    }
+
+    @Test
+    void getAllCITaxCodesAssociatedToABundleSuccessPublic() {
+        int limit = 2;
+        ReflectionTestUtils.setField(sut, "getAllBundlesPageLimit", limit);
+
+        long numOfBundles = 1L;
+        long numOfPublicBundles = 1L;
+        BundleCreditorInstitutionResource resource = BundleCreditorInstitutionResource.builder()
+                .ciBundleDetails(Collections.singletonList(CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE).build()))
+                .pageInfo(PageInfo.builder().totalItems(numOfBundles).build())
+                .build();
+        PublicBundleRequests publicResource = PublicBundleRequests.builder()
+                .requestsList(Collections.singletonList(PublicBundleRequest.builder().ciFiscalCode(CI_TAX_CODE_2).build()))
+                .pageInfo(PageInfo.builder().totalItems(numOfPublicBundles).build())
+                .build();
+
+        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, 1, 0)).thenReturn(resource);
+        when(gecClient.getBundleSubscriptionByPSP(eq(PSP_CODE), eq(ID_BUNDLE), eq(null), eq(limit), anyInt())).thenReturn(resource);
+
+        when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, ID_BUNDLE, null, 1, 0))
+                .thenReturn(publicResource);
+        when(gecClient.getPublicBundleSubscriptionRequestByPSP(eq(PSP_CODE), eq(ID_BUNDLE), eq(null), eq(limit), anyInt()))
+                .thenReturn(publicResource);
+
+        Set<String> result = assertDoesNotThrow(
+                () -> sut.getAllCITaxCodesAssociatedToABundle(ID_BUNDLE, BundleType.PUBLIC, PSP_CODE)
+        );
+
+        assertNotNull(result);
+        assertEquals(numOfBundles + numOfPublicBundles, result.size());
+
+        verify(gecClient, never()).getPrivateBundleOffersByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
+    }
+
+    @Test
+    void getAllCITaxCodesAssociatedToABundleSuccessPrivate() {
+        int limit = 2;
+        ReflectionTestUtils.setField(sut, "getAllBundlesPageLimit", limit);
+
+        long numOfBundles = 1L;
+        long numOfPrivateBundles = 1L;
+        BundleCreditorInstitutionResource resource = BundleCreditorInstitutionResource.builder()
+                .ciBundleDetails(Collections.singletonList(CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE).build()))
+                .pageInfo(PageInfo.builder().totalItems(numOfBundles).build())
+                .build();
+
+        BundleOffers privateResource = BundleOffers.builder()
+                .offers(Collections.singletonList(PspBundleOffer.builder().ciFiscalCode(CI_TAX_CODE_2).build()))
+                .pageInfo(PageInfo.builder().totalItems(numOfBundles).build())
+                .build();
+
+        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, 1, 0)).thenReturn(resource);
+        when(gecClient.getBundleSubscriptionByPSP(eq(PSP_CODE), eq(ID_BUNDLE), eq(null), eq(limit), anyInt())).thenReturn(resource);
+        when(gecClient.getPrivateBundleOffersByPSP(PSP_CODE, ID_BUNDLE, null, 1, 0)).thenReturn(privateResource);
+        when(gecClient.getPrivateBundleOffersByPSP(eq(PSP_CODE), eq(ID_BUNDLE), eq(null), eq(limit), anyInt())).thenReturn(privateResource);
+
+        Set<String> result = assertDoesNotThrow(
+                () -> sut.getAllCITaxCodesAssociatedToABundle(ID_BUNDLE, BundleType.PRIVATE, PSP_CODE)
+        );
+
+        assertNotNull(result);
+        assertEquals(numOfBundles + numOfPrivateBundles, result.size());
+
+        verify(gecClient, never()).getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
     }
 }

@@ -79,6 +79,8 @@ public class CommissionBundleService {
 
     private final AwsSesClient awsSesClient;
 
+    private final AsyncNotificationService asyncNotificationService;
+
     @Autowired
     public CommissionBundleService(
             GecClient gecClient,
@@ -86,7 +88,8 @@ public class CommissionBundleService {
             TaxonomyService taxonomyService,
             LegacyPspCodeUtil legacyPspCodeUtil,
             ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
-            AwsSesClient awsSesClient
+            AwsSesClient awsSesClient,
+            AsyncNotificationService asyncNotificationService
     ) {
         this.gecClient = gecClient;
         this.modelMapper = modelMapper;
@@ -94,6 +97,7 @@ public class CommissionBundleService {
         this.legacyPspCodeUtil = legacyPspCodeUtil;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
         this.awsSesClient = awsSesClient;
+        this.asyncNotificationService = asyncNotificationService;
     }
 
     public BundlePaymentTypes getBundlesPaymentTypes(Integer limit, Integer page) {
@@ -141,32 +145,23 @@ public class CommissionBundleService {
     }
 
     /**
-     * Delete a bundle of a PSP and notify via mail all creditor institutions that are subscribed to the bundle or have
+     * Delete a bundle of a PSP and asynchronously notify via mail all creditor institutions that are subscribed to the bundle or have
      * active request/offer
      *
      * @param pspTaxCode tax code of the PSP that own the bundle
-     * @param idBundle bundle identifier
+     * @param idBundle   bundle identifier
      * @param bundleName bundle name
      * @param bundleType bundle type
      */
-    public void deletePSPBundle(String pspTaxCode, String idBundle, String bundleName, String pspName, BundleType bundleType) {
+    public void deletePSPBundle(
+            String pspTaxCode,
+            String idBundle,
+            String bundleName,
+            String pspName,
+            BundleType bundleType
+    ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
-        List<String> ciTaxCodes = getAllCITaxCodesAssociatedToABundle(idBundle, bundleType, pspCode);
-
-        Context bodyContext = buildEmailHtmlBodyContext(bundleName, pspName);
-        ciTaxCodes.parallelStream().forEach(
-                ciTaxCode -> {
-                    EmailMessageDetail messageDetail = EmailMessageDetail.builder()
-                            .institutionTaxCode(ciTaxCode)
-                            .subject(BUNDLE_DELETE_SUBJECT)
-                            .textBody(String.format(BUNDLE_DELETE_BODY, pspName, bundleName))
-                            .htmlBodyFileName("deleteBundleEmail.html")
-                            .htmlBodyContext(bodyContext)
-                            .destinationUserType(SelfcareProductUser.ADMIN)
-                            .build();
-                    this.awsSesClient.sendEmail(messageDetail);
-                }
-        );
+        this.asyncNotificationService.notifyDeletePSPBundleAsync(pspCode, idBundle, bundleName, pspName, bundleType);
 
         this.gecClient.deletePSPBundle(pspCode, idBundle);
     }
@@ -628,6 +623,7 @@ public class CommissionBundleService {
         return context;
 
     }
+
     private Context buildEmailHtmlBodyContext(String bundleName) {
         return buildEmailHtmlBodyContext(bundleName, null);
     }
@@ -842,35 +838,5 @@ public class CommissionBundleService {
 
     private boolean isCIBundleEnabled(CiBundleDetails ciBundle) {
         return ciBundle.getValidityDateTo() == null || ciBundle.getValidityDateTo().isAfter(LocalDate.now());
-    }
-
-    private List<String> getAllCITaxCodesAssociatedToABundle(String idBundle, BundleType bundleType, String pspCode) {
-        BundleCreditorInstitutionResource bundleSubscriptions = this.gecClient
-                .getBundleSubscriptionByPSP(pspCode, idBundle, null, 1000, 0);
-        List<String> ciTaxCodes = new ArrayList<>(
-                bundleSubscriptions.getCiBundleDetails().parallelStream()
-                        .map(CiBundleDetails::getCiTaxCode)
-                        .toList()
-        );
-
-        if (BundleType.PUBLIC.equals(bundleType)) {
-            PublicBundleRequests requests = this.gecClient
-                    .getPublicBundleSubscriptionRequestByPSP(pspCode, null, idBundle, 1000, 0);
-            ciTaxCodes.addAll(
-                    requests.getRequestsList().parallelStream()
-                            .map(PublicBundleRequest::getCiFiscalCode)
-                            .toList()
-            );
-        }
-        if (BundleType.PRIVATE.equals(bundleType)) {
-            BundleOffers offers = this.gecClient
-                    .getPrivateBundleOffersByPSP(pspCode, null, idBundle, 1000, 0);
-            ciTaxCodes.addAll(
-                    offers.getOffers().parallelStream()
-                            .map(PspBundleOffer::getCiFiscalCode)
-                            .toList()
-            );
-        }
-        return ciTaxCodes;
     }
 }

@@ -94,7 +94,8 @@ public class CommissionBundleMailNotificationScheduler {
         log.info("[Mail-Notification] CI mail notification starting");
         expiringBundles.parallelStream()
                 .forEach(bundle ->
-                        getAllCITaxCodesAssociatedToABundle(bundle.getId(), bundle.getType(), bundle.getIdPsp()).parallelStream()
+                        this.bundleAllPages
+                                .getAllCITaxCodesAssociatedToABundle(bundle.getId(), bundle.getType(), bundle.getIdPsp()).parallelStream()
                                 .forEach(ciTaxCode -> sendMail(expireAt, bundle, ciTaxCode))
                 );
 
@@ -145,19 +146,5 @@ public class CommissionBundleMailNotificationScheduler {
 
         context.setVariables(properties);
         return context;
-    }
-
-    private Set<String> getAllCITaxCodesAssociatedToABundle(String idBundle, BundleType bundleType, String pspCode) {
-        Set<String> bundleSubscriptions = this.bundleAllPages.getBundleSubscriptionByPSP(pspCode, idBundle);
-
-        if (BundleType.PUBLIC.equals(bundleType)) {
-            Set<String> requests = this.bundleAllPages.getPublicBundleSubscriptionRequestByPSP(pspCode, idBundle);
-            bundleSubscriptions.addAll(requests);
-        }
-        if (BundleType.PRIVATE.equals(bundleType)) {
-            Set<String> offers = this.bundleAllPages.getPrivateBundleOffersByPSP(pspCode, idBundle);
-            bundleSubscriptions.addAll(offers);
-        }
-        return bundleSubscriptions;
     }
 }

@@ -124,6 +124,7 @@ jobs:
       terraform_options: '-target=module.apim_api_backoffice_api_staging'
       suffix_name: '-${{ github.event.number }}'
       pr_number: ${{ github.event.number }}
+      uninstall: ${{ github.event.action == 'closed' }}
     secrets: inherit
 
   smoke_test:
