@@ -1,10 +1,10 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "description": "@project.description@",
+    "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "title": "@project.name@",
-    "version": "2.14.3"
+    "title": "SelfCare Backoffice",
+    "version": "2.14.3-1-next"
   },
   "servers": [
     {
@@ -3335,334 +3335,6 @@
         }
       ]
     },
-    "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/offers/{bundle-offer-id}": {
-      "delete": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "deletePrivateBundleOffer",
-        "parameters": [
-          {
-            "description": "Commission bundle's id",
-            "in": "path",
-            "name": "id-bundle",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Payment Service Provider's tax code",
-            "in": "path",
-            "name": "psp-tax-code",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Id of the private bundle offer",
-            "in": "path",
-            "name": "bundle-offer-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Creditor institution's tax code for email notification",
-            "in": "query",
-            "name": "ciTaxCode",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Bundle's name for email notification",
-            "in": "query",
-            "name": "bundleName",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {}
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Bad Request",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Not found",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too many requests",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Service unavailable",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Delete private bundle offer",
-        "tags": [
-          "Commission bundles"
-        ]
-      },
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ]
-    },
-    "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/offers/{bundle-offer-id}": {
-      "delete": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "deletePrivateBundleOffer",
-        "parameters": [
-          {
-            "description": "Commission bundle's id",
-            "in": "path",
-            "name": "id-bundle",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Payment Service Provider's tax code",
-            "in": "path",
-            "name": "psp-tax-code",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Id of the private bundle offer",
-            "in": "path",
-            "name": "bundle-offer-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Creditor institution's tax code for email notification",
-            "in": "query",
-            "name": "ciTaxCode",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Bundle's name for email notification",
-            "in": "query",
-            "name": "bundleName",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {}
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Bad Request",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Not found",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too many requests",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            },
-            "description": "Service unavailable",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Delete private bundle offer",
-        "tags": [
-          "Commission bundles"
-        ]
-      },
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ]
-    },
     "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
@@ -5529,6 +5201,15 @@
             "in": "query",
             "name": "brokerId",
             "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Creditor institution's name, used to filter out results",
+            "in": "query",
+            "name": "ciName",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -12285,7 +11966,7 @@
         "required": [
           "address",
           "businessName",
-          "creditorInstitutionCode",
+          "ciTaxCode",
           "enabled",
           "pspPayment",
           "reportingFtp",
@@ -12316,7 +11997,7 @@
             "type": "string",
             "description": "Creditor Institution's CBill interbank code"
           },
-          "creditorInstitutionCode": {
+          "ciTaxCode": {
             "maxLength": 30,
             "minLength": 0,
             "type": "string",
@@ -12399,7 +12080,7 @@
       "CreditorInstitutionInfo": {
         "required": [
           "businessName",
-          "creditorInstitutionCode"
+          "ciTaxCode"
         ],
         "type": "object",
         "properties": {
@@ -12408,7 +12089,7 @@
             "description": "The business name of the creditor institution",
             "example": "Comune di Roma"
           },
-          "creditorInstitutionCode": {
+          "ciTaxCode": {
             "type": "string",
             "description": "The tax code of the creditor institution",
             "example": "02438750586"
@@ -12429,7 +12110,7 @@
       "CreditorInstitutionResource": {
         "required": [
           "businessName",
-          "creditorInstitutionCode",
+          "ciTaxCode",
           "enabled"
         ],
         "type": "object",
@@ -12454,7 +12135,7 @@
             "type": "string",
             "description": "Creditor Institution's CBill interbank code"
           },
-          "creditorInstitutionCode": {
+          "ciTaxCode": {
             "maxLength": 30,
             "minLength": 0,
             "type": "string",
