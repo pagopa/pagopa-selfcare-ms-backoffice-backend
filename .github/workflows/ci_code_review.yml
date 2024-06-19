@@ -133,4 +133,5 @@ jobs:
     uses: ./.github/workflows/ci_integration_test.yml
     with:
       environment: 'local'
+      notify: false
     secrets: inherit
