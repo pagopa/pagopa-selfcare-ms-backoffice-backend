@@ -3739,10 +3739,10 @@
             }
           },
           {
-            "description": "Broker code, to filter out result",
+            "description": "Broker's code",
             "in": "query",
             "name": "brokerCode",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "string"
             }
