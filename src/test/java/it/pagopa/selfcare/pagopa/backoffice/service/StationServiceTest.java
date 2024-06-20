@@ -385,56 +385,6 @@ class StationServiceTest {
     }
 
     @Test
-    void getAllStationsMergedSuccess() {
-        when(apiConfigClient.getStations(LIMIT, PAGE, SORTING_DESC, BROKER_CODE, null, STATION_CODE))
-                .thenReturn(buildStations("station"));
-        when(wrapperService.findByIdLikeOrTypeOrBrokerCode(STATION_CODE, WrapperType.STATION, BROKER_CODE, PAGE, LIMIT))
-                .thenReturn(buildWrapperEntitiesList());
-
-        WrapperStationsResource result = assertDoesNotThrow(() ->
-                service.getAllStationsMerged(LIMIT, STATION_CODE, BROKER_CODE, PAGE, SORTING_DESC)
-        );
-
-        assertNotNull(result);
-        assertNotNull(result.getStationsList());
-        assertEquals(2, result.getStationsList().size());
-        assertNotNull(result.getPageInfo());
-        assertEquals(LIMIT, result.getPageInfo().getLimit());
-        assertEquals(PAGE, result.getPageInfo().getPage());
-    }
-
-    @Test
-    void getAllStationsMergedApiConfigNotFoundSuccess() {
-        when(apiConfigClient.getStations(LIMIT, PAGE, SORTING_ASC, BROKER_CODE, null, STATION_CODE))
-                .thenThrow(new RuntimeException("[404 Not Found]"));
-        when(wrapperService.findByIdLikeOrTypeOrBrokerCode(STATION_CODE, WrapperType.STATION, BROKER_CODE, PAGE, LIMIT))
-                .thenReturn(buildWrapperEntitiesList());
-
-        WrapperStationsResource result = assertDoesNotThrow(() ->
-                service.getAllStationsMerged(LIMIT, STATION_CODE, BROKER_CODE, PAGE, SORTING_ASC)
-        );
-
-        assertNotNull(result);
-        assertNotNull(result.getStationsList());
-        assertEquals(1, result.getStationsList().size());
-        assertNotNull(result.getPageInfo());
-    }
-
-    @Test
-    void getAllStationsMergedApiConfigErrorFail() {
-        when(apiConfigClient.getStations(LIMIT, PAGE, SORTING_DESC, BROKER_CODE, null, STATION_CODE))
-                .thenThrow(new RuntimeException("error"));
-
-        Exception e = assertThrows(RuntimeException.class, () ->
-                service.getAllStationsMerged(LIMIT, STATION_CODE, BROKER_CODE, PAGE, SORTING_DESC)
-        );
-
-        assertNotNull(e);
-
-        verify(wrapperService, never()).findByIdLikeOrTypeOrBrokerCode(STATION_CODE, WrapperType.STATION, BROKER_CODE, PAGE, LIMIT);
-    }
-
-    @Test
     void testStationShouldReturnSuccessOnValidForwardCall() {
         HttpResponse<String> response = mock(HttpResponse.class);
         when(response.getStatus()).thenReturn(200);

@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
@@ -174,21 +173,6 @@ public class ChannelController {
         channelService.deletePaymentTypeOnChannel(channelCode, paymentTypeCode);
     }
 
-
-    @GetMapping(value = "/merged", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get All Channels from cosmos db merged whit apiConfig", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
-    public WrapperChannelsResource getAllChannelsMerged(
-            @Parameter(description = "") @RequestParam(required = false, defaultValue = "50") Integer limit,
-            @Parameter(description = "Channel code") @RequestParam(required = false, value = "channelcodefilter") String channelcode,
-            @Parameter(description = "Broker code filter for search") @RequestParam(required = false, value = "brokerCode") String brokerCode,
-            @Parameter(description = "Page number. Page value starts from 0") @RequestParam Integer page,
-            @Parameter(description = "Method of sorting") @RequestParam(required = false, value = "sorting") String sorting
-    ) {
-        return channelService.getAllMergedChannel(limit, channelcode, brokerCode, page, sorting);
-    }
-
     @GetMapping(value = "/merged/{channel-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get channel's details from cosmos db merged whit apiConfig", security = {@SecurityRequirement(name = "JWT")})
@@ -232,15 +216,6 @@ public class ChannelController {
     public WrapperEntities updateWrapperChannelDetails(@RequestBody @Valid ChannelDetailsDto channelDetailsDto) {
 
         return channelService.updateChannelToBeValidated(channelDetailsDto);
-    }
-
-    @PutMapping(value = "/wrapper/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Execute the update as operator in the channel request that must be validated", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
-    public WrapperEntities updateWrapperChannelDetailsByOpt(@RequestBody @Valid ChannelDetailsDto channelDetailsDto) {
-
-        return wrapperService.updateByOpt(ChannelMapper.fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
     }
 
     /**
