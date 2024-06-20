@@ -22,6 +22,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPa
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,6 +35,7 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -298,6 +300,33 @@ class ChannelServiceTest {
         assertNotNull(result);
     }
 
+    @Test
+    void updateWrapperStationWithOperatorReviewSuccess() {
+        when(wrapperService.updateChannelWithOperatorReview(anyString(), anyString()))
+                .thenReturn(buildChannelDetailsWrapperEntities());
+
+        ChannelDetailsResource result = assertDoesNotThrow(() -> sut.updateWrapperChannelWithOperatorReview(
+                CHANNEL_CODE, "brokerCode", "nota"));
+
+        assertNotNull(result);
+
+        verify(awsSesClient).sendEmail(any());
+    }
+
+    @Test
+    void updateWrapperStationWithOperatorReviewFail() {
+        when(wrapperService.updateChannelWithOperatorReview(anyString(), anyString()))
+                .thenThrow(AppException.class);
+
+        AppException e = assertThrows(AppException.class,
+                () -> sut.updateWrapperChannelWithOperatorReview(
+                        CHANNEL_CODE, "brokerCode", "nota"));
+
+        assertNotNull(e);
+
+        verify(awsSesClient, never()).sendEmail(any());
+    }
+
     private WrapperChannelDetailsDto buildWrapperChannelDetailsDto() {
         return WrapperChannelDetailsDto.builder()
                 .channelCode(CHANNEL_CODE)
@@ -329,6 +358,23 @@ class ChannelServiceTest {
                 .note("note")
                 .build();
     }
+
+    private @NotNull WrapperEntities<ChannelDetails> buildChannelDetailsWrapperEntities() {
+        WrapperEntity<ChannelDetails> entity = new WrapperEntity<>();
+        entity.setEntity(buildChannelDetails());
+        WrapperEntities<ChannelDetails> entities = new WrapperEntities<>();
+        entities.setCreatedAt(Instant.now());
+        entities.setEntities(Collections.singletonList(entity));
+        return entities;
+    }
+
+    private @NotNull ChannelDetails buildChannelDetails() {
+        ChannelDetails channelDetails = new ChannelDetails();
+        channelDetails.setChannelCode(CHANNEL_CODE);
+        channelDetails.setEnabled(true);
+        return channelDetails;
+    }
+
 
     private WrapperEntities<ChannelDetails> buildChannelDetailsWrapperEntities() {
         WrapperEntity<ChannelDetails> entity = new WrapperEntity<>();

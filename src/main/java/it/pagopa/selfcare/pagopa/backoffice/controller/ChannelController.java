@@ -234,4 +234,33 @@ public class ChannelController {
 
         return wrapperService.updateByOpt(ChannelMapper.fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
     }
+
+    /**
+     * Updates a station wrapper with the operator review's note
+     *
+     * @param channelCode channel identifier
+     * @param brokerPspCode   broker code related to the channel
+     * @param note        operator review note
+     * @return the updated channel wrapper
+     */
+    @PutMapping(value = "/wrapper/{channelCode}/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Update a WrapperChannel with Operator review", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChannelDetailsResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @OpenApiTableMetadata
+    public ChannelDetailsResource updateWrapperChannelWithOperatorReview(
+            @Parameter(description = "Channel Id") @PathVariable(value = "channelCode") String channelCode,
+            @Parameter(description = "Broker Core related to the channel") @RequestParam String brokerPspCode,
+            @RequestBody @Valid OperatorChannelReview note
+    ) {
+        return this.channelService.updateWrapperChannelWithOperatorReview(channelCode, brokerPspCode, note.getNote());
+    }
+
 }

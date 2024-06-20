@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Station review requested mail</title>
+</head>
+
+<body>
+<img width="100" height="30"
+     src="https://raw.githubusercontent.com/pagopa/pagopa-selfcare-ms-backoffice-backend/main/src/main/resources/templates/logo-pagopa.png">
+<h1>Modifiche richieste</h1>
+<p>
+    Ciao,
+</p>
+<br/>
+<p>
+    pagoPA ha richiesto delle modifiche al canale <span th:text="${channelCode}" th:remove="tag"></span> che hai
+    creato.
+</p>
+<p>
+    Puoi vedere le modifiche qui sotto oppure nel <a
+        th:href="@{https://selfcare.platform.pagopa.it/ui/channels/{pathVar}(pathVar=${channelCode})}">dettaglio
+    del canale</a>.
+</p>
+<p>
+    <div style="background: #F2F6FA; padding:10px; padding-left:20px; width:500px; overflow-wrap:break-word;">
+    <p><strong>Modifiche richieste</strong></p>
+    <p>"<span th:text="${reviewNote}" th:remove="tag"></span>".</p>
+    </div>
+</p>
+<br/>
+<p>
+    A presto,
+</p>
+<p>
+    Pagamenti pagoPA
+</p>
+<hr style="color:grey">
+<p style="color:grey">
+    Ricevi questo messaggio perchè hai un utenza attiva su Pagamenti pagoPA.
+</p>
+
+</body>
+</html>

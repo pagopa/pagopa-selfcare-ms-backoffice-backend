@@ -12,9 +12,14 @@ import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResour
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.OperatorChannelReview;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.service.ChannelService;
 import it.pagopa.selfcare.pagopa.backoffice.service.WrapperService;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +29,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
+import javax.inject.Inject;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -88,6 +94,7 @@ class ChannelControllerTest {
                 .andExpect(status().is2xxSuccessful());
     }
 
+
     @Test
     void getChannelsCSV() throws Exception {
         mvc.perform(get("/channels/csv"))
@@ -124,7 +131,7 @@ class ChannelControllerTest {
                 .andExpect(status().is2xxSuccessful());
 
         verify(channelService).deleteChannel(CHANNEL_CODE);
-    }
+}
 
     @Test
     void getChannelPaymentTypes() throws Exception {
@@ -189,6 +196,42 @@ class ChannelControllerTest {
                         .content(objectMapper.writeValueAsString(ChannelDetailsDto.builder().validationUrl("url").build()))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void updateWrapperChannelWithOperatorReview() throws Exception {
+        when(channelService.updateWrapperChannelWithOperatorReview(anyString(), anyString(), anyString()))
+                .thenReturn(buildChannelDetailsResource());
+        mvc.perform(put("/channels/wrapper/{channelCode}/operator", CHANNEL_CODE)
+                        .param("brokerPspCode", "brokerPspCode")
+                        .content(objectMapper.writeValueAsBytes(
+                                OperatorChannelReview.builder().note("note").build()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void updateWrapperChannelWithOperatorReviewKoForBadRequestOnCode() throws Exception {
+        mvc.perform(put("/channels/wrapper/{channelCode}/operator", CHANNEL_CODE)
+                        .content(objectMapper.writeValueAsBytes(
+                                OperatorChannelReview.builder().note("note").build()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
+
+    @Test
+    void updateWrapperChannelWithOperatorReviewKoForBadRequestOnNote() throws Exception {
+        mvc.perform(put("/channels/wrapper/{channelCode}/operator", CHANNEL_CODE)
+                        .param("brokerPspCode", "brokerPspCode")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
+    private @NotNull ChannelDetailsResource buildChannelDetailsResource() {
+        ChannelDetailsResource resource = new ChannelDetailsResource();
+        resource.setChannelCode(CHANNEL_CODE);
+        return resource;
     }
 
     private WrapperChannelDetailsDto buildWrapperChannelDetailsDto() {
