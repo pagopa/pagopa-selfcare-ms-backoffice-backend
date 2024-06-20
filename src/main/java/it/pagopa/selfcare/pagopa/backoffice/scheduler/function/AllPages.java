@@ -35,17 +35,14 @@ public class AllPages {
     @Autowired
     private ApiConfigSelfcareIntegrationClient apiConfigSCIntClient;
 
-
     @Autowired
     private WrapperRepository wrapperRepository;
-
 
     @Value("${extraction.ibans.getBrokers.pageLimit}")
     private Integer getBrokersPageLimit;
 
     @Value("${extraction.ibans.getCIByBroker.pageLimit}")
     private Integer getCIByBrokerPageLimit;
-
 
     /**
      * @return the set of all brokers in pagoPA platform

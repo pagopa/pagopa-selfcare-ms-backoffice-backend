@@ -150,6 +150,29 @@ public class BundleAllPages {
         return joinFutures(futures);
     }
 
+    /**
+     * Retrieve a list of creditor institution tax codes that have an active subscription or a request/offer to the
+     * specified bundle
+     *
+     * @param idBundle   bundle identifier
+     * @param bundleType bundle type
+     * @param pspCode    payment service provider code
+     * @return the set of creditor institution tax codes
+     */
+    public Set<String> getAllCITaxCodesAssociatedToABundle(String idBundle, BundleType bundleType, String pspCode) {
+        Set<String> bundleSubscriptions = getBundleSubscriptionByPSP(pspCode, idBundle);
+
+        if (BundleType.PUBLIC.equals(bundleType)) {
+            Set<String> requests = getPublicBundleSubscriptionRequestByPSP(pspCode, idBundle);
+            bundleSubscriptions.addAll(requests);
+        }
+        if (BundleType.PRIVATE.equals(bundleType)) {
+            Set<String> offers = getPrivateBundleOffersByPSP(pspCode, idBundle);
+            bundleSubscriptions.addAll(offers);
+        }
+        return bundleSubscriptions;
+    }
+
     private Bundles getAllExpiringBundles(String expireAt, Integer getAllBundlesWithExpireDatePageLimit, int page) {
         return this.gecClient.getBundles(
                 List.of(BundleType.GLOBAL, BundleType.PUBLIC, BundleType.PRIVATE),

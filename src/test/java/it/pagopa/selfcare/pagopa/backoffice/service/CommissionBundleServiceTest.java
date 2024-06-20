@@ -6,32 +6,8 @@ import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleSubscriptionStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleAttributeResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsDetail;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCIOffers;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleOffers;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequestId;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleAttribute;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleOffer;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleOffer;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
@@ -46,23 +22,11 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = {MappingsConfiguration.class, CommissionBundleService.class})
 class CommissionBundleServiceTest {
@@ -70,7 +34,6 @@ class CommissionBundleServiceTest {
     private static final String PSP_CODE = "pspCode";
     private static final String PSP_TAX_CODE = "pspTaxCode";
     private static final String CI_TAX_CODE = "ciTaxCode";
-    private static final String CI_TAX_CODE_2 = "ciTaxCode2";
     private static final String PSP_NAME = "pspName";
     private static final int LIMIT = 50;
     private static final int PAGE = 0;
@@ -99,6 +62,9 @@ class CommissionBundleServiceTest {
 
     @MockBean
     private AwsSesClient awsSesClient;
+
+    @MockBean
+    private AsyncNotificationService asyncNotificationService;
 
     @Test
     void getBundlesPaymentTypes() {
@@ -175,79 +141,14 @@ class CommissionBundleServiceTest {
     }
 
     @Test
-    void deletePSPBundleSuccessGlobal() {
+    void deletePSPBundleSuccess() {
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-        List<CiBundleDetails> ciBundleDetails = List.of(
-                CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE).build(),
-                CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE_2).build()
-        );
-        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, 1000, 0))
-                .thenReturn(BundleCreditorInstitutionResource.builder()
-                        .ciBundleDetails(ciBundleDetails)
-                        .build()
-                );
 
         assertDoesNotThrow(
                 () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE, BUNDLE_NAME, PSP_NAME, BundleType.GLOBAL)
         );
 
-        verify(gecClient, never()).getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
-        verify(gecClient, never()).getPrivateBundleOffersByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
-        verify(awsSesClient, times(ciBundleDetails.size())).sendEmail(any());
-        verify(gecClient).deletePSPBundle(PSP_CODE, ID_BUNDLE);
-    }
-
-    @Test
-    void deletePSPBundleSuccessPublic() {
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-        List<CiBundleDetails> ciBundleDetails = List.of(
-                CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE).build(),
-                CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE_2).build()
-        );
-        PublicBundleRequests requests = buildPspRequests();
-
-        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, 1000, 0))
-                .thenReturn(BundleCreditorInstitutionResource.builder()
-                        .ciBundleDetails(ciBundleDetails)
-                        .build()
-                );
-        when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0))
-                .thenReturn(requests);
-
-        assertDoesNotThrow(
-                () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE, BUNDLE_NAME, PSP_NAME, BundleType.PUBLIC)
-        );
-
-        verify(gecClient, never()).getPrivateBundleOffersByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
-        verify(awsSesClient, times(ciBundleDetails.size() + requests.getRequestsList().size())).sendEmail(any());
-        verify(gecClient).deletePSPBundle(PSP_CODE, ID_BUNDLE);
-    }
-
-    @Test
-    void deletePSPBundleSuccessPrivate() {
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-        List<CiBundleDetails> ciBundleDetails = List.of(
-                CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE).build(),
-                CiBundleDetails.builder().ciTaxCode(CI_TAX_CODE_2).build()
-        );
-        BundleOffers offers = BundleOffers.builder()
-                .offers(Collections.singletonList(PspBundleOffer.builder().ciFiscalCode(CI_TAX_CODE).build()))
-                .build();
-
-        when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, 1000, 0))
-                .thenReturn(BundleCreditorInstitutionResource.builder()
-                        .ciBundleDetails(ciBundleDetails)
-                        .build()
-                );
-        when(gecClient.getPrivateBundleOffersByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0))
-                .thenReturn(offers);
-
-        assertDoesNotThrow(
-                () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE, BUNDLE_NAME, PSP_NAME, BundleType.PRIVATE)
-        );
-
-        verify(gecClient, never()).getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
-        verify(awsSesClient, times(ciBundleDetails.size() + offers.getOffers().size())).sendEmail(any());
+        verify(asyncNotificationService).notifyDeletePSPBundleAsync(PSP_CODE, ID_BUNDLE, BUNDLE_NAME, PSP_NAME, BundleType.GLOBAL);
         verify(gecClient).deletePSPBundle(PSP_CODE, ID_BUNDLE);
     }
 
@@ -1048,6 +949,7 @@ class CommissionBundleServiceTest {
         verify(gecClient).rejectPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER);
         verify(awsSesClient).sendEmail(any());
     }
+
 
     private PublicBundleRequests buildPspRequests() {
         return PublicBundleRequests.builder()
