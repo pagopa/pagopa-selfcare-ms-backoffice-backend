@@ -359,23 +359,6 @@ class ChannelServiceTest {
                 .build();
     }
 
-    private @NotNull WrapperEntities<ChannelDetails> buildChannelDetailsWrapperEntities() {
-        WrapperEntity<ChannelDetails> entity = new WrapperEntity<>();
-        entity.setEntity(buildChannelDetails());
-        WrapperEntities<ChannelDetails> entities = new WrapperEntities<>();
-        entities.setCreatedAt(Instant.now());
-        entities.setEntities(Collections.singletonList(entity));
-        return entities;
-    }
-
-    private @NotNull ChannelDetails buildChannelDetails() {
-        ChannelDetails channelDetails = new ChannelDetails();
-        channelDetails.setChannelCode(CHANNEL_CODE);
-        channelDetails.setEnabled(true);
-        return channelDetails;
-    }
-
-
     private WrapperEntities<ChannelDetails> buildChannelDetailsWrapperEntities() {
         WrapperEntity<ChannelDetails> entity = new WrapperEntity<>();
         entity.setEntity(buildChannelDetails());

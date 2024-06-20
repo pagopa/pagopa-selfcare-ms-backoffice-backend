@@ -423,18 +423,6 @@ public class WrapperService {
         }
     }
 
-    private WrapperStatus getNewWrapperStatus(String stationCode, WrapperStatus oldWrapperStatus) {
-        WrapperStatus newWrapperStatus;
-        if (oldWrapperStatus.equals(WrapperStatus.TO_CHECK)) {
-            newWrapperStatus = WrapperStatus.TO_FIX;
-        } else if (oldWrapperStatus.equals(WrapperStatus.TO_CHECK_UPDATE)) {
-            newWrapperStatus = WrapperStatus.TO_FIX_UPDATE;
-        } else {
-            throw new AppException(AppError.WRAPPER_STATION_INVALID_STATUS, stationCode);
-        }
-        return newWrapperStatus;
-    }
-
     public WrapperEntities<ChannelDetails> updateChannelWithOperatorReview(String channelCode, String note) {
         Optional<WrapperEntities> optionalWrapperEntities = this.repository.findById(channelCode);
         if (optionalWrapperEntities.isEmpty()) {
@@ -458,6 +446,18 @@ public class WrapperService {
         wrapper.setStatus(newWrapperStatus);
 
         return this.repository.save(wrapperEntities);
+    }
+
+    private WrapperStatus getNewWrapperStatus(String stationCode, WrapperStatus oldWrapperStatus) {
+        WrapperStatus newWrapperStatus;
+        if (oldWrapperStatus.equals(WrapperStatus.TO_CHECK)) {
+            newWrapperStatus = WrapperStatus.TO_FIX;
+        } else if (oldWrapperStatus.equals(WrapperStatus.TO_CHECK_UPDATE)) {
+            newWrapperStatus = WrapperStatus.TO_FIX_UPDATE;
+        } else {
+            throw new AppException(AppError.WRAPPER_STATION_INVALID_STATUS, stationCode);
+        }
+        return newWrapperStatus;
     }
 
     private WrapperEntitiesList getWrapperEntities(

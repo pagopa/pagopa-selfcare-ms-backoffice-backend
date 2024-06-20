@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.OperatorChannelReview;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
@@ -12,14 +13,10 @@ import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResour
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.OperatorChannelReview;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
 import it.pagopa.selfcare.pagopa.backoffice.service.ChannelService;
 import it.pagopa.selfcare.pagopa.backoffice.service.WrapperService;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,7 +26,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
-import javax.inject.Inject;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -94,7 +90,6 @@ class ChannelControllerTest {
                 .andExpect(status().is2xxSuccessful());
     }
 
-
     @Test
     void getChannelsCSV() throws Exception {
         mvc.perform(get("/channels/csv"))
@@ -131,7 +126,7 @@ class ChannelControllerTest {
                 .andExpect(status().is2xxSuccessful());
 
         verify(channelService).deleteChannel(CHANNEL_CODE);
-}
+    }
 
     @Test
     void getChannelPaymentTypes() throws Exception {
@@ -218,7 +213,6 @@ class ChannelControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
     }
-
 
     @Test
     void updateWrapperChannelWithOperatorReviewKoForBadRequestOnNote() throws Exception {

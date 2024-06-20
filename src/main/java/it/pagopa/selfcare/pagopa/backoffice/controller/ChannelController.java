@@ -14,6 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.OperatorChannelReview;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
@@ -238,12 +239,12 @@ public class ChannelController {
     /**
      * Updates a station wrapper with the operator review's note
      *
-     * @param channelCode channel identifier
-     * @param brokerPspCode   broker code related to the channel
-     * @param note        operator review note
+     * @param channelCode   channel identifier
+     * @param brokerPspCode broker code related to the channel
+     * @param note          operator review note
      * @return the updated channel wrapper
      */
-    @PutMapping(value = "/wrapper/{channelCode}/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/wrapper/{channel-code}/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a WrapperChannel with Operator review", security = {@SecurityRequirement(name = "JWT")})
     @ApiResponses(value = {
@@ -256,11 +257,10 @@ public class ChannelController {
     })
     @OpenApiTableMetadata
     public ChannelDetailsResource updateWrapperChannelWithOperatorReview(
-            @Parameter(description = "Channel Id") @PathVariable(value = "channelCode") String channelCode,
-            @Parameter(description = "Broker Core related to the channel") @RequestParam String brokerPspCode,
+            @Parameter(description = "Channel Id") @PathVariable("channel-code") String channelCode,
+            @Parameter(description = "Broker Code related to the channel") @RequestParam String brokerPspCode,
             @RequestBody @Valid OperatorChannelReview note
     ) {
         return this.channelService.updateWrapperChannelWithOperatorReview(channelCode, brokerPspCode, note.getNote());
     }
-
 }

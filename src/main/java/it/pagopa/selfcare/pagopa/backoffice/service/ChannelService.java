@@ -20,7 +20,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
@@ -49,9 +48,7 @@ public class ChannelService {
     private static final String CREATE_CHANEL_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato il canale %s che hai creato. Da questo momento puoi utilizzarlo per attivare i tuoi servizi.%n%n%nA presto,%n%n Back-office pagoPA";
     private static final String UPDATE_CHANEL_SUBJECT = "Modifica canale attiva";
     private static final String UPDATE_CHANEL_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato il canale %s che hai modificato. Da questo momento la modifica effettuata risulta attiva.%n%n%nA presto,%n%n Back-office pagoPA";
-
     private static final String CHANNEL_REVIEW_SUBJECT = "Modifiche richieste";
-
     private static final String CHANNEL_REVIEW_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha richiesto delle modifiche al canale %s che hai creato.%n Puoi vedere le modifiche qui sotto oppure nel dettaglio del canale (https://selfcare.platform.pagopa.it/ui/channels/%s).%n Modifiche richieste %n '%s' %n%n%nA presto,%n%n Pagamenti pagoPA";
 
     private final ApiConfigClient apiConfigClient;
@@ -63,14 +60,25 @@ public class ChannelService {
     private final AwsSesClient awsSesClient;
 
     @Autowired
-    public ChannelService(ApiConfigClient apiConfigClient, WrapperService wrapperService, JiraServiceManagerClient jsmClient, AwsSesClient awsSesClient) {
+    public ChannelService(
+            ApiConfigClient apiConfigClient,
+            WrapperService wrapperService,
+            JiraServiceManagerClient jsmClient,
+            AwsSesClient awsSesClient
+    ) {
         this.apiConfigClient = apiConfigClient;
         this.wrapperService = wrapperService;
         this.jsmClient = jsmClient;
         this.awsSesClient = awsSesClient;
     }
 
-    public WrapperChannelsResource getAllMergedChannel(Integer limit, String channelcode, String brokerCode, Integer page, String sorting) {
+    public WrapperChannelsResource getAllMergedChannel(
+            Integer limit,
+            String channelcode,
+            String brokerCode,
+            Integer page,
+            String sorting
+    ) {
         Channels channels = apiConfigClient.getChannels(channelcode, brokerCode, sorting, limit, page);
         WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(channelcode, WrapperType.CHANNEL, brokerCode, page, limit);
         WrapperChannels channelsMergedAndSorted = Utility.mergeAndSortWrapperChannels(ChannelMapper.toWrapperChannels(channels), ChannelMapper.toWrapperChannels(mongoList), sorting);
@@ -220,7 +228,10 @@ public class ChannelService {
         return ChannelMapper.toResource(dto);
     }
 
-    public PspChannelPaymentTypesResource createPaymentTypeOnChannel(PspChannelPaymentTypes pspChannelPaymentTypes, String channelCode) {
+    public PspChannelPaymentTypesResource createPaymentTypeOnChannel(
+            PspChannelPaymentTypes pspChannelPaymentTypes,
+            String channelCode
+    ) {
         PspChannelPaymentTypes dto = apiConfigClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
         return ChannelMapper.toResource(dto);
     }
@@ -260,7 +271,8 @@ public class ChannelService {
     }
 
     public ChannelDetailsResource updateWrapperChannelWithOperatorReview(
-            String channelCode, String brokerPspCode, String note) {
+            String channelCode, String brokerPspCode, String note
+    ) {
 
         WrapperEntities<ChannelDetails> updatedWrapper =
                 this.wrapperService.updateChannelWithOperatorReview(channelCode, note);
