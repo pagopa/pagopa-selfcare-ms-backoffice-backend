@@ -192,6 +192,13 @@ public class ChannelController {
     @GetMapping(value = "/merged/{channel-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get channel's details from cosmos db merged whit apiConfig", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChannelDetailsResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @OpenApiTableMetadata
     public ChannelDetailsResource getChannelDetail(
             @Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode

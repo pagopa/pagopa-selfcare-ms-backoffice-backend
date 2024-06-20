@@ -202,5 +202,4 @@ public class ChannelDetailsResource extends ChannelResource {
 
     @Schema(description = "Operator review note")
     private String note;
-
 }

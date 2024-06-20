@@ -163,6 +163,12 @@ public class StationService {
         return stationMapper.toResource(stationDetails);
     }
 
+    /**
+     * Retrieve the station details from Wrapper and if not found from Api-Config
+     *
+     * @param stationCode station's code
+     * @return the station details
+     */
     public StationDetailResource getStationDetail(String stationCode) {
         StationDetails stationDetails;
         WrapperStatus status;
@@ -171,7 +177,7 @@ public class StationService {
         String modifiedBy = "";
         String note = "";
         try {
-            WrapperEntities<StationDetails> result = wrapperService.findById(stationCode);
+            WrapperEntities<StationDetails> result = this.wrapperService.findById(stationCode);
             createdBy = result.getCreatedBy();
             createdAt = result.getCreatedAt();
             modifiedBy = result.getModifiedBy();
@@ -180,12 +186,11 @@ public class StationService {
             stationDetails = wrapperEntity.getEntity();
             note = wrapperEntity.getNote();
         } catch (AppException e) {
-
-            stationDetails = apiConfigClient.getStation(stationCode);
+            stationDetails = this.apiConfigClient.getStation(stationCode);
             status = WrapperStatus.APPROVED;
         }
 
-        return stationMapper.toResource(stationDetails, status, createdBy, modifiedBy, createdAt, note);
+        return this.stationMapper.toResource(stationDetails, status, createdBy, modifiedBy, createdAt, note);
     }
 
     public StationCodeResource getStationCode(String ecCode, Boolean v2) {
@@ -234,7 +239,11 @@ public class StationService {
      * @param note        operator review note
      * @return the updated station wrapper
      */
-    public StationDetailResource updateWrapperStationWithOperatorReview(String stationCode, String ciTaxCode, String note) {
+    public StationDetailResource updateWrapperStationWithOperatorReview(
+            String stationCode,
+            String ciTaxCode,
+            String note
+    ) {
         WrapperEntities<StationDetails> updatedWrapper = this.wrapperService.updateStationWithOperatorReview(stationCode, note);
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
@@ -258,7 +267,12 @@ public class StationService {
         );
     }
 
-    public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(String stationcode, Integer limit, Integer page, String ciNameOrFiscalCode) {
+    public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(
+            String stationcode,
+            Integer limit,
+            Integer page,
+            String ciNameOrFiscalCode
+    ) {
         CreditorInstitutions creditorInstitutions = apiConfigClient.getCreditorInstitutionsByStation(stationcode, limit, page, ciNameOrFiscalCode);
         return creditorInstitutionMapper.toResource(creditorInstitutions);
     }
@@ -286,7 +300,13 @@ public class StationService {
         return wrapperService.findById(code);
     }
 
-    public WrapperStationsResource getAllStationsMerged(Integer limit, String stationCode, String brokerCode, Integer page, String sorting) {
+    public WrapperStationsResource getAllStationsMerged(
+            Integer limit,
+            String stationCode,
+            String brokerCode,
+            Integer page,
+            String sorting
+    ) {
         Stations stations = getStations(limit, page, sorting, brokerCode, null, stationCode);
         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
 
@@ -344,7 +364,14 @@ public class StationService {
         return generateStationCode(ecCode);
     }
 
-    private Stations getStations(Integer limit, Integer page, String sort, String brokerCode, String ecCode, String stationCode) {
+    private Stations getStations(
+            Integer limit,
+            Integer page,
+            String sort,
+            String brokerCode,
+            String ecCode,
+            String stationCode
+    ) {
         Stations response = null;
         try {
             response = apiConfigClient.getStations(limit, page, sort, brokerCode, ecCode, stationCode);
@@ -376,7 +403,11 @@ public class StationService {
     }
 
 
-    private WrapperStations mergeAndSortWrapperStations(WrapperStations wrapperStationsApiConfig, WrapperStations wrapperStationsMongo, String sorting) {
+    private WrapperStations mergeAndSortWrapperStations(
+            WrapperStations wrapperStationsApiConfig,
+            WrapperStations wrapperStationsMongo,
+            String sorting
+    ) {
         List<WrapperStation> mergedList = new ArrayList<>();
         mergedList.addAll(wrapperStationsMongo.getStationsList());
         mergedList.addAll(

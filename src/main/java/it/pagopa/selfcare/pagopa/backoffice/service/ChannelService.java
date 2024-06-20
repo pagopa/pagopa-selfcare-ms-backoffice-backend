@@ -166,25 +166,34 @@ public class ChannelService {
         return resource;
     }
 
-    public ChannelDetailsResource getChannelToBeValidated(String channelcode) {
+    /**
+     * Retrieve the channel details from Wrapper and if not found from Api-Config
+     *
+     * @param channelCode channel's code
+     * @return the channel details
+     */
+    public ChannelDetailsResource getChannelToBeValidated(String channelCode) {
         ChannelDetails channelDetail;
         WrapperStatus status;
         String createdBy = "";
         String modifiedBy = "";
+        String note = "";
         PspChannelPaymentTypes ptResponse = new PspChannelPaymentTypes();
         try {
-            WrapperEntities<ChannelDetails> result = wrapperService.findById(channelcode);
+            WrapperEntities<ChannelDetails> result = this.wrapperService.findById(channelCode);
             createdBy = result.getCreatedBy();
             modifiedBy = result.getModifiedBy();
-            channelDetail = (ChannelDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
             status = result.getStatus();
+            WrapperEntityOperations<ChannelDetails> wrapperEntity = getWrapperEntityOperationsSortedList(result).get(0);
+            note = wrapperEntity.getNote();
+            channelDetail = wrapperEntity.getEntity();
             ptResponse.setPaymentTypeList(channelDetail.getPaymentTypeList());
         } catch (AppException e) {
-            channelDetail = apiConfigClient.getChannelDetails(channelcode);
-            ptResponse = apiConfigClient.getChannelPaymentTypes(channelcode);
+            channelDetail = this.apiConfigClient.getChannelDetails(channelCode);
+            ptResponse = this.apiConfigClient.getChannelPaymentTypes(channelCode);
             status = WrapperStatus.APPROVED;
         }
-        return ChannelMapper.toResource(channelDetail, ptResponse, status, createdBy, modifiedBy, null);
+        return ChannelMapper.toResource(channelDetail, ptResponse, status, createdBy, modifiedBy, note);
     }
 
     /**
@@ -255,25 +264,19 @@ public class ChannelService {
         return ChannelMapper.toResource(dto);
     }
 
-    private Context buildChannelHtmlEmailBodyContext(String channelCode, String note) {
-        // Thymeleaf Context
-        Context context = new Context();
-
-        // Properties to show up in Template after stored in Context
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("channelCode", channelCode);
-        if (note != null) {
-            properties.put("reviewNote", note);
-        }
-
-        context.setVariables(properties);
-        return context;
-    }
-
+    /**
+     * Update the wrapper channel with the operator review's note and notify the channel owner via email.
+     *
+     * @param channelCode   channel's code
+     * @param brokerPspCode payment service provider's tax code that own the channel
+     * @param note          operator review note
+     * @return the updated channel wrapper
+     */
     public ChannelDetailsResource updateWrapperChannelWithOperatorReview(
-            String channelCode, String brokerPspCode, String note
+            String channelCode,
+            String brokerPspCode,
+            String note
     ) {
-
         WrapperEntities<ChannelDetails> updatedWrapper =
                 this.wrapperService.updateChannelWithOperatorReview(channelCode, note);
 
@@ -301,6 +304,20 @@ public class ChannelService {
                 updatedWrapper.getModifiedBy(),
                 entityOperations.getNote()
         );
+    }
 
+    private Context buildChannelHtmlEmailBodyContext(String channelCode, String note) {
+        // Thymeleaf Context
+        Context context = new Context();
+
+        // Properties to show up in Template after stored in Context
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("channelCode", channelCode);
+        if (note != null) {
+            properties.put("reviewNote", note);
+        }
+
+        context.setVariables(properties);
+        return context;
     }
 }
