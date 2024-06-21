@@ -87,40 +87,61 @@ public class ChannelService {
         return ChannelMapper.toWrapperChannelsResource(channelsMergedAndSorted);
     }
 
-    public WrapperEntities createChannelToBeValidated(WrapperChannelDetailsDto wrapperChannelDetailsDto) {
+    /**
+     * Creates a new wrapper channel in status {@link WrapperStatus#TO_CHECK} and open a JIRA ticket for operator
+     * review
+     *
+     * @param wrapperChannelDetailsDto detail of the new channel
+     * @return the created wrapper channel
+     */
+    public WrapperEntities<ChannelDetails> createChannelToBeValidated(WrapperChannelDetailsDto wrapperChannelDetailsDto) {
         final String CREATE_CHANNEL_SUMMARY = "Validazione canale creazione: %s";
         final String CREATE_CHANEL_DESCRIPTION = "Il canale %s deve essere validato: %s";
-        WrapperEntities createdWrapperEntities = wrapperService.insert(
-                ChannelMapper.fromWrapperChannelDetailsDto(wrapperChannelDetailsDto),
-                wrapperChannelDetailsDto.getNote(),
-                wrapperChannelDetailsDto.getStatus().name());
-        jsmClient.createTicket(
-                String.format(
-                        CREATE_CHANNEL_SUMMARY,
-                        wrapperChannelDetailsDto.getChannelCode()),
-                String.format(
-                        CREATE_CHANEL_DESCRIPTION,
-                        wrapperChannelDetailsDto.getChannelCode(),
-                        wrapperChannelDetailsDto.getValidationUrl()));
-        return createdWrapperEntities;
+
+        WrapperEntities<ChannelDetails> createdWrapperChannel =
+                this.wrapperService.createWrapperChannel(
+                        ChannelMapper.fromWrapperChannelDetailsDto(wrapperChannelDetailsDto),
+                        WrapperStatus.TO_CHECK
+                );
+        this.jsmClient.createTicket(
+                String.format(CREATE_CHANNEL_SUMMARY, wrapperChannelDetailsDto.getChannelCode()),
+                String.format(CREATE_CHANEL_DESCRIPTION, wrapperChannelDetailsDto.getChannelCode(), wrapperChannelDetailsDto.getValidationUrl())
+        );
+        return createdWrapperChannel;
     }
 
-    public WrapperEntities updateChannelToBeValidated(ChannelDetailsDto channelDetailsDto) {
+    /**
+     * Updated the wrapper channel with the provided code in status {@link WrapperStatus#TO_CHECK_UPDATE} and open a JIRA ticket
+     * for operator review
+     *
+     * @param channelCode the code of the channel to be updated
+     * @param channelDetailsDto detail of the channel
+     * @return the updated wrapper channel
+     */
+    public WrapperEntities<ChannelDetails> updateChannelToBeValidated(String channelCode, ChannelDetailsDto channelDetailsDto) {
         final String CREATE_CHANNEL_SUMMARY = "Validazione modifica canale: %s";
         final String CREATE_CHANEL_DESCRIPTION = "Il canale %s modificato dal broker %s deve essere validato: %s";
-        WrapperEntities createdWrapperEntities = wrapperService.update(ChannelMapper.fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), WrapperStatus.TO_CHECK_UPDATE.name(), null);
-        jsmClient.createTicket(
-                String.format(
-                        CREATE_CHANNEL_SUMMARY,
-                        channelDetailsDto.getChannelCode()),
-                String.format(
-                        CREATE_CHANEL_DESCRIPTION,
-                        channelDetailsDto.getChannelCode(),
-                        channelDetailsDto.getBrokerPspCode(),
-                        channelDetailsDto.getValidationUrl()));
-        return createdWrapperEntities;
+
+        WrapperEntities<ChannelDetails> updatedWrapperChannel =
+                this.wrapperService.updateWrapperChannel(
+                        channelCode,
+                        ChannelMapper.fromChannelDetailsDto(channelDetailsDto),
+                        WrapperStatus.TO_CHECK_UPDATE
+                );
+        this.jsmClient.createTicket(
+                String.format(CREATE_CHANNEL_SUMMARY, channelCode),
+                String.format(CREATE_CHANEL_DESCRIPTION, channelCode, channelDetailsDto.getBrokerPspCode(), channelDetailsDto.getValidationUrl())
+        );
+        return updatedWrapperChannel;
     }
 
+    /**
+     * Creates a validated channel and update the relative wrapper channel with status {@link WrapperStatus#APPROVED}.
+     * Notify the channel owner via email.
+     *
+     * @param channelDetailsDto the channel details
+     * @return the created channel
+     */
     public WrapperChannelDetailsResource validateChannelCreation(ChannelDetailsDto channelDetailsDto) {
         PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
         List<String> paymentTypeList = channelDetailsDto.getPaymentTypeList();
@@ -130,8 +151,7 @@ public class ChannelService {
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         this.apiConfigClient.createChannel(channelDetails);
 
-        WrapperEntities<ChannelDetails> response = this.wrapperService
-                .updateByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
+        WrapperEntities<ChannelDetails> response = this.wrapperService.updateValidatedWrapperChannel(channelDetails, WrapperStatus.APPROVED);
         PspChannelPaymentTypes paymentType = this.apiConfigClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
         WrapperChannelDetailsResource resource = ChannelMapper.toResource(getWrapperEntityOperationsSortedList(response).get(0), paymentType);
 
@@ -148,7 +168,13 @@ public class ChannelService {
         return resource;
     }
 
-
+    /**
+     * Updates a validated channel and update the relative wrapper channel
+     * Notify the channel owner via email.
+     *
+     * @param channelDetailsDto the channel details
+     * @return the updated channel
+     */
     public ChannelDetailsResource validateChannelUpdate(String channelCode, ChannelDetailsDto channelDetailsDto) {
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         ChannelDetails response = this.apiConfigClient.updateChannel(channelDetails, channelCode);

@@ -19,6 +19,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentType
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.service.ChannelService;
@@ -118,20 +119,34 @@ public class ChannelController {
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a channel, validating the creation request previously inserted by user", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WrapperChannelDetailsResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public WrapperChannelDetailsResource createChannel(@RequestBody @NotNull ChannelDetailsDto channelDetailsDto) {
-        return channelService.validateChannelCreation(channelDetailsDto);
+        return this.channelService.validateChannelCreation(channelDetailsDto);
     }
 
     @PutMapping(value = "/{channel-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a channel, validating the update request previously inserted by user", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChannelDetailsResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public ChannelDetailsResource updateChannel(
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
             @RequestBody @NotNull ChannelDetailsDto channelDetailsDto
     ) {
-        return channelService.validateChannelUpdate(channelCode, channelDetailsDto);
+        return this.channelService.validateChannelUpdate(channelCode, channelDetailsDto);
     }
 
     @DeleteMapping(value = "/{channel-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -219,19 +234,34 @@ public class ChannelController {
     @PostMapping(value = "/wrapper", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Request the creation of a channel that will be validated by an operator", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WrapperEntities.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @OpenApiTableMetadata
-    public WrapperEntities createWrapperChannelDetails(@RequestBody @Valid WrapperChannelDetailsDto wrapperChannelDetailsDto) {
-
-        return channelService.createChannelToBeValidated(wrapperChannelDetailsDto);
+    public WrapperEntities<ChannelDetails> createWrapperChannelDetails(@RequestBody @Valid WrapperChannelDetailsDto wrapperChannelDetailsDto) {
+        return this.channelService.createChannelToBeValidated(wrapperChannelDetailsDto);
     }
 
-    @PutMapping(value = "/wrapper", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/wrapper/{channel-code}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Request the update of a channel that will be validated by an operator", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WrapperEntities.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @OpenApiTableMetadata
-    public WrapperEntities updateWrapperChannelDetails(@RequestBody @Valid ChannelDetailsDto channelDetailsDto) {
-
-        return channelService.updateChannelToBeValidated(channelDetailsDto);
+    public WrapperEntities<ChannelDetails> updateWrapperChannelDetails(
+            @Parameter(description = "Channel's code") @PathVariable("channel-code") String channelCode,
+            @RequestBody @Valid ChannelDetailsDto channelDetailsDto
+    ) {
+        return this.channelService.updateChannelToBeValidated(channelCode, channelDetailsDto);
     }
 
     @PutMapping(value = "/wrapper/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -240,7 +270,7 @@ public class ChannelController {
     @OpenApiTableMetadata
     public WrapperEntities updateWrapperChannelDetailsByOpt(@RequestBody @Valid ChannelDetailsDto channelDetailsDto) {
 
-        return wrapperService.updateByOpt(ChannelMapper.fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
+        return wrapperService.updateValidatedWrapperChannel(ChannelMapper.fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getStatus());
     }
 
     /**
@@ -264,7 +294,7 @@ public class ChannelController {
     })
     @OpenApiTableMetadata
     public ChannelDetailsResource updateWrapperChannelWithOperatorReview(
-            @Parameter(description = "Channel Id") @PathVariable("channel-code") String channelCode,
+            @Parameter(description = "Channel's code") @PathVariable("channel-code") String channelCode,
             @Parameter(description = "Broker Code related to the channel") @RequestParam String brokerPspCode,
             @RequestBody @Valid OperatorChannelReview note
     ) {

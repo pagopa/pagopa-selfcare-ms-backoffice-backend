@@ -85,19 +85,27 @@ public class WrapperService {
         wrapper.setStatus(WrapperStatus.valueOf(status));
     }
 
-    public WrapperEntities<ChannelDetails> insert(ChannelDetails channelDetails, String note, String status) {
+    /**
+     * Creates a new wrapper channel to be validated
+     *
+     * @param channelDetails the details of the new channel
+     * @param status the status of the new channel
+     * @return the created wrapper channel
+     */
+    public WrapperEntities<ChannelDetails> createWrapperChannel(ChannelDetails channelDetails, WrapperStatus status) {
+        String modifiedBy = this.auditorAware.getCurrentAuditor().orElse(null);
+
         WrapperEntity<ChannelDetails> wrapperEntity = new WrapperEntity<>(channelDetails);
-        wrapperEntity.setNote(note);
-        wrapperEntity.setStatus(WrapperStatus.valueOf(status));
+        wrapperEntity.setStatus(status);
         WrapperEntities<ChannelDetails> wrapperEntities = new WrapperEntities<>(wrapperEntity);
-        wrapperEntities.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
-        String createdBy = wrapperEntities.getCreatedBy();
-        WrapperEntities<ChannelDetails> response = null;
+        wrapperEntities.setModifiedBy(modifiedBy);
+
+        WrapperEntities<ChannelDetails> response;
         try {
-            wrapperEntities.setCreatedBy(auditorAware.getCurrentAuditor().orElse(null));
-            response = repository.insert(wrapperEntities);
+            wrapperEntities.setCreatedBy(modifiedBy);
+            response = this.repository.insert(wrapperEntities);
         } catch (DuplicateKeyException e) {
-            response = update(channelDetails, note, status, createdBy);
+            response = update(channelDetails, null, status.name(),  wrapperEntities.getCreatedBy());
         }
         return response;
     }
@@ -141,21 +149,55 @@ public class WrapperService {
         if (createdBy != null)
             wrapperEntities.setCreatedBy(createdBy);
         return repository.save(wrapperEntities);
+    }
+
+    /**
+     * Updates a wrapper channel with the provided information
+     *
+     * @param channelCode code of the channel to be updated
+     * @param channelDetails details of the updated channel
+     * @param status new status of the channel
+     * @return the updated wrapper channel
+     */
+    public WrapperEntities<ChannelDetails> updateWrapperChannel(
+            String channelCode,
+            ChannelDetails channelDetails,
+            WrapperStatus status
+    ) {
+        String modifiedBy = this.auditorAware.getCurrentAuditor().orElse(null);
+
+        WrapperEntities wrapperEntities = this.repository.findById(channelCode)
+                .orElseThrow(() -> new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode));
+        wrapperEntities.setModifiedBy(modifiedBy);
+        wrapperEntities.setStatus(status);
+
+        WrapperEntity<ChannelDetails> wrapperEntity = new WrapperEntity<>(channelDetails);
+        wrapperEntity.setStatus(status);
+        wrapperEntity.setModifiedBy(modifiedBy);
+        wrapperEntities.getEntities().add(wrapperEntity);
+        return this.repository.save(wrapperEntities);
 
     }
 
-    public WrapperEntities<ChannelDetails> updateByOpt(ChannelDetails channelDetails, String note, String status) {
+    /**
+     * Updates a validated wrapper channel
+     *
+     * @param channelDetails the details of the channel
+     * @param status the status of the validated channel
+     * @return the validated wrapper channel
+     */
+    public WrapperEntities<ChannelDetails> updateValidatedWrapperChannel(ChannelDetails channelDetails, WrapperStatus status) {
         String channelCode = channelDetails.getChannelCode();
-        Optional<WrapperEntities> opt = repository.findById(channelCode);
+        Optional<WrapperEntities> opt = this.repository.findById(channelCode);
         if (opt.isEmpty()) {
             throw new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode);
         }
         WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) opt.get();
-        String modifiedByOpt = auditorAware.getCurrentAuditor().orElse(null);
+        String modifiedByOpt = this.auditorAware.getCurrentAuditor().orElse(null);
         WrapperEntity<ChannelDetails> wrapperEntity = new WrapperEntity<>(channelDetails);
         wrapperEntity.setModifiedByOpt(modifiedByOpt);
-        updateCurrentWrapperEntity(wrapperEntities, new WrapperEntity<>(channelDetails), status, note, modifiedByOpt);
-        return repository.save(wrapperEntities);
+        updateCurrentWrapperEntity(wrapperEntities, new WrapperEntity<>(channelDetails), status.name(), null, modifiedByOpt);
+        return this.repository.save(wrapperEntities);
     }
 
     public WrapperEntities<StationDetails> updateByOpt(StationDetails stationDetails, String note, String status) {
@@ -423,12 +465,17 @@ public class WrapperService {
         }
     }
 
+    /**
+     * Updates the wrapper channel with the operator review
+     *
+     * @param channelCode code of the channel to be updated
+     * @param note operator's note
+     * @return the updated wrapper channel
+     */
     public WrapperEntities<ChannelDetails> updateChannelWithOperatorReview(String channelCode, String note) {
-        Optional<WrapperEntities> optionalWrapperEntities = this.repository.findById(channelCode);
-        if (optionalWrapperEntities.isEmpty()) {
-            throw new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode);
-        }
-        WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) optionalWrapperEntities.get();
+        WrapperEntities<ChannelDetails> wrapperEntities = this.repository.findById(channelCode)
+                .orElseThrow(() -> new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode));
+
         wrapperEntities.getEntities().sort(
                 Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
 
