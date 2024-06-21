@@ -133,6 +133,7 @@ jobs:
     uses: ./.github/workflows/deploy_with_github_runner.yml
     with:
       environment: ${{ needs.setup.outputs.environment }}
+      uninstall: false
     secrets: inherit
 
   notify:
