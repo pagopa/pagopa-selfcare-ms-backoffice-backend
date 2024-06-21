@@ -156,27 +156,26 @@ public class WrapperService {
      *
      * @param channelCode code of the channel to be updated
      * @param channelDetails details of the updated channel
-     * @param status new status of the channel
      * @return the updated wrapper channel
      */
-    public WrapperEntities<ChannelDetails> updateWrapperChannel(
-            String channelCode,
-            ChannelDetails channelDetails,
-            WrapperStatus status
-    ) {
+    public WrapperEntities<ChannelDetails> updateWrapperChannel(String channelCode, ChannelDetails channelDetails) {
         String modifiedBy = this.auditorAware.getCurrentAuditor().orElse(null);
 
-        WrapperEntities wrapperEntities = this.repository.findById(channelCode)
+        WrapperEntities<ChannelDetails> wrapperEntities = this.repository.findById(channelCode)
                 .orElseThrow(() -> new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode));
+
+        wrapperEntities.getEntities().sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
+        WrapperEntity<ChannelDetails> wrapper = wrapperEntities.getEntities().get(0);
+        WrapperStatus newWrapperStatus = getNewWrapperStatusForUpdate(channelCode, wrapper.getStatus());
+
         wrapperEntities.setModifiedBy(modifiedBy);
-        wrapperEntities.setStatus(status);
+        wrapperEntities.setStatus(newWrapperStatus);
 
         WrapperEntity<ChannelDetails> wrapperEntity = new WrapperEntity<>(channelDetails);
-        wrapperEntity.setStatus(status);
+        wrapperEntity.setStatus(newWrapperStatus);
         wrapperEntity.setModifiedBy(modifiedBy);
         wrapperEntities.getEntities().add(wrapperEntity);
         return this.repository.save(wrapperEntities);
-
     }
 
     /**
@@ -230,7 +229,7 @@ public class WrapperService {
         wrapperEntities.getEntities().sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
 
         WrapperEntity<StationDetails> wrapper = wrapperEntities.getEntities().get(0);
-        WrapperStatus newWrapperStatus = getNewWrapperStatus(stationCode, wrapper.getStatus());
+        WrapperStatus newWrapperStatus = getNewWrapperStatusForReview(stationCode, wrapper.getStatus());
         String modifiedByOpt = this.auditorAware.getCurrentAuditor().orElse(null);
 
         wrapperEntities.setStatus(newWrapperStatus);
@@ -480,7 +479,7 @@ public class WrapperService {
                 Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
 
         WrapperEntity<ChannelDetails> wrapper = wrapperEntities.getEntities().get(0);
-        WrapperStatus newWrapperStatus = getNewWrapperStatus(channelCode, wrapper.getStatus());
+        WrapperStatus newWrapperStatus = getNewWrapperStatusForReview(channelCode, wrapper.getStatus());
         String modifiedByOpt = this.auditorAware.getCurrentAuditor().orElse(null);
 
         wrapperEntities.setStatus(newWrapperStatus);
@@ -495,12 +494,28 @@ public class WrapperService {
         return this.repository.save(wrapperEntities);
     }
 
-    private WrapperStatus getNewWrapperStatus(String stationCode, WrapperStatus oldWrapperStatus) {
+    private WrapperStatus getNewWrapperStatusForReview(String stationCode, WrapperStatus oldWrapperStatus) {
         WrapperStatus newWrapperStatus;
         if (oldWrapperStatus.equals(WrapperStatus.TO_CHECK)) {
             newWrapperStatus = WrapperStatus.TO_FIX;
         } else if (oldWrapperStatus.equals(WrapperStatus.TO_CHECK_UPDATE)) {
             newWrapperStatus = WrapperStatus.TO_FIX_UPDATE;
+        } else {
+            throw new AppException(AppError.WRAPPER_STATION_INVALID_STATUS, stationCode);
+        }
+        return newWrapperStatus;
+    }
+
+    private WrapperStatus getNewWrapperStatusForUpdate(String stationCode, WrapperStatus oldWrapperStatus) {
+        WrapperStatus newWrapperStatus;
+         if (oldWrapperStatus.equals(WrapperStatus.TO_CHECK) || oldWrapperStatus.equals(WrapperStatus.TO_FIX)) {
+            newWrapperStatus = WrapperStatus.TO_CHECK;
+        } else if (
+                oldWrapperStatus.equals(WrapperStatus.APPROVED)
+                        || oldWrapperStatus.equals(WrapperStatus.TO_CHECK_UPDATE)
+                        || oldWrapperStatus.equals(WrapperStatus.TO_FIX_UPDATE))
+        {
+            newWrapperStatus = WrapperStatus.TO_CHECK_UPDATE;
         } else {
             throw new AppException(AppError.WRAPPER_STATION_INVALID_STATUS, stationCode);
         }

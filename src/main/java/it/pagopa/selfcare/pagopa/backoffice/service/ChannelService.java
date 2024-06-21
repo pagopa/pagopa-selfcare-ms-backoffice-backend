@@ -125,8 +125,7 @@ public class ChannelService {
         WrapperEntities<ChannelDetails> updatedWrapperChannel =
                 this.wrapperService.updateWrapperChannel(
                         channelCode,
-                        ChannelMapper.fromChannelDetailsDto(channelDetailsDto),
-                        WrapperStatus.TO_CHECK_UPDATE
+                        ChannelMapper.fromChannelDetailsDto(channelDetailsDto)
                 );
         this.jsmClient.createTicket(
                 String.format(CREATE_CHANNEL_SUMMARY, channelCode),
@@ -169,7 +168,7 @@ public class ChannelService {
     }
 
     /**
-     * Updates a validated channel and update the relative wrapper channel
+     * Updates a validated channel and update the relative wrapper channel with status {@link WrapperStatus#APPROVED}.
      * Notify the channel owner via email.
      *
      * @param channelDetailsDto the channel details
@@ -178,7 +177,7 @@ public class ChannelService {
     public ChannelDetailsResource validateChannelUpdate(String channelCode, ChannelDetailsDto channelDetailsDto) {
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         ChannelDetails response = this.apiConfigClient.updateChannel(channelDetails, channelCode);
-        this.wrapperService.update(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
+        this.wrapperService.update(channelDetails, channelDetailsDto.getNote(), WrapperStatus.APPROVED.name(), null);
         ChannelDetailsResource resource = ChannelMapper.toResource(response, null);
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()

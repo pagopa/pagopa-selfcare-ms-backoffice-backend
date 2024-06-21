@@ -189,7 +189,6 @@ public class ChannelController {
         channelService.deletePaymentTypeOnChannel(channelCode, paymentTypeCode);
     }
 
-
     @GetMapping(value = "/merged", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get All Channels from cosmos db merged whit apiConfig", security = {@SecurityRequirement(name = "JWT")})
