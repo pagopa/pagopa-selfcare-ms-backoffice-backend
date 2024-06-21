@@ -78,7 +78,7 @@ public class LegacyPspCodeUtil {
                     .cf(pspDetails.getTaxCode());
 
             // if the abi is present we need to add it into the list
-            if(pspDetails.getAbi() != null && !pspDetails.getAbi().isEmpty()) {
+            if(pspDetails.getAbi() != null && !pspDetails.getAbi().isEmpty() && !pspDetails.getAbi().equals("N/A")) {
                 builder.abi(List.of(pspDetails.getPspCode()));
             }
             // if the bic is present we need to add it into the list
