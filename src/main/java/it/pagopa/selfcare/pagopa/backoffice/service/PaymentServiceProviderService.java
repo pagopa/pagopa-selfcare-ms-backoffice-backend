@@ -55,8 +55,7 @@ public class PaymentServiceProviderService {
         this.legacyPspCodeUtil = legacyPspCodeUtil;
     }
 
-    public PaymentServiceProviderDetailsResource createPSP(
-            PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto, Boolean isDirect) {
+    public PaymentServiceProviderDetailsResource createPSP(PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto, Boolean isDirect) {
         BrokerPspDetails brokerPspDetails = ChannelMapper.fromPaymentServiceProviderDetailsDtoToMap(
                 paymentServiceProviderDetailsDto);
         if(Boolean.TRUE.equals(isDirect)) {
