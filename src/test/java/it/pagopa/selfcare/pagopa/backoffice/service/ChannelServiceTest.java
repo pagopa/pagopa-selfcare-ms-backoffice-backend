@@ -79,7 +79,7 @@ class ChannelServiceTest {
 
     @Test
     void updateChannelToBeValidatedSuccess() {
-        when(wrapperService.update(any(ChannelDetails.class), anyString(), anyString(), eq(null)))
+        when(wrapperService.updateWrapperChannel(anyString(), any(ChannelDetails.class), any()))
                 .thenReturn(buildChannelDetailsWrapperEntities());
 
         WrapperEntities<ChannelDetails> result = assertDoesNotThrow(() ->
