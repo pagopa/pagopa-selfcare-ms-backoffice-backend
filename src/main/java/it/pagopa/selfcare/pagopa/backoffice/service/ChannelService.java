@@ -20,6 +20,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannel;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
@@ -37,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 
@@ -106,7 +108,7 @@ public class ChannelService {
     public WrapperEntities updateChannelToBeValidated(ChannelDetailsDto channelDetailsDto) {
         final String CREATE_CHANNEL_SUMMARY = "Validazione modifica canale: %s";
         final String CREATE_CHANEL_DESCRIPTION = "Il canale %s modificato dal broker %s deve essere validato: %s";
-        WrapperEntities createdWrapperEntities = wrapperService.update(ChannelMapper.fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
+        WrapperEntities createdWrapperEntities = wrapperService.update(ChannelMapper.fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), WrapperStatus.TO_CHECK_UPDATE.name(), null);
         jsmClient.createTicket(
                 String.format(
                         CREATE_CHANNEL_SUMMARY,
@@ -217,7 +219,7 @@ public class ChannelService {
         WrapperChannels response;
         if (status.equals(ConfigurationStatus.ACTIVE)) {
             Channels channels = this.apiConfigClient.getChannels(channelCode, brokerCode, "DESC", limit, page);
-            response = ChannelMapper.toWrapperChannels(channels);
+            response = buildEnrichedWrapperChannels(channels);
         } else {
             WrapperEntitiesList wrapperChannels = this.wrapperService.getWrapperChannels(channelCode, brokerCode, limit, page);
             response = ChannelMapper.toWrapperChannels(wrapperChannels);
@@ -319,5 +321,24 @@ public class ChannelService {
 
         context.setVariables(properties);
         return context;
+    }
+
+    private WrapperChannels buildEnrichedWrapperChannels(Channels channels) {
+        WrapperChannels response;
+        List<WrapperChannel> wrapperChannels = channels.getChannelList().parallelStream()
+                .map(channel -> {
+                    WrapperChannel wrapperChannel = ChannelMapper.toWrapperChannel(channel);
+                    Optional<WrapperEntities> optionalWrapperEntities = this.wrapperService.findByIdOptional(channel.getChannelCode());
+                    if (optionalWrapperEntities.isPresent()) {
+                        WrapperEntities<ChannelDetails> wrapperEntities = optionalWrapperEntities.get();
+                        wrapperChannel.setCreatedAt(wrapperEntities.getCreatedAt());
+                    }
+                    return wrapperChannel;
+                }).toList();
+        response = WrapperChannels.builder()
+                .channelList(wrapperChannels)
+                .pageInfo(channels.getPageInfo())
+                .build();
+        return response;
     }
 }

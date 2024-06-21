@@ -37,7 +37,6 @@ class CommissionBundleMailNotificationSchedulerTest {
     private static final String CI_TAX_CODE = "ciTaxCode";
     private static final String CI_TAX_CODE_2 = "ciTaxCode2";
     private static final String CI_TAX_CODE_3 = "ciTaxCode3";
-    ;
 
     @MockBean
     private BundleAllPages bundleAllPages;
