@@ -33,7 +33,7 @@ on:
         description: 'true if you want to uninstall instead of install'
         required: false
         type: boolean
-        default: false
+        default: 'false'
 
 env:
   APP_NAME: pagopaselfcaremsbackofficebackend
@@ -72,7 +72,7 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Deploy
-        if: ${{inputs.uninstall  == 'false' }}
+        if: ${{ inputs.uninstall  == 'false' }}
         uses: pagopa/github-actions-template/aks-deploy@main
         with:
           branch: ${{ inputs.branch }}
