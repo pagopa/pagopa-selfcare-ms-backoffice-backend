@@ -160,7 +160,7 @@ class StationServiceTest {
     void getStationsToBeValidatedSuccess() {
         WrapperEntitiesList wrapperEntitiesList = buildWrapperEntitiesList();
 
-        when(wrapperService.getWrapperStations(STATION_CODE, BROKER_CODE, PAGE, LIMIT))
+        when(wrapperService.getWrapperStations(STATION_CODE, BROKER_CODE, LIMIT, PAGE))
                 .thenReturn(wrapperEntitiesList);
 
         WrapperStationsResource result =

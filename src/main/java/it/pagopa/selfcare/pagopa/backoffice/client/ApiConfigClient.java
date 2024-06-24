@@ -51,11 +51,13 @@ public interface ApiConfigClient {
 
     @GetMapping(value = "/channels", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid
-    Channels getChannels(@RequestParam(required = false, defaultValue = "50") Integer limit,
-                         @RequestParam(required = true) Integer page,
-                         @RequestParam(required = false) String code,
-                         @RequestParam(required = false) String brokercode,
-                         @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort);
+    Channels getChannels(
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String brokercode,
+            @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort,
+            @RequestParam(required = false, defaultValue = "50") Integer limit,
+            @RequestParam Integer page
+    );
 
     @PostMapping(value = "/channels", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid

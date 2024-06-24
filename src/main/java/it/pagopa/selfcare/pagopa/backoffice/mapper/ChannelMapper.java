@@ -179,7 +179,10 @@ public class ChannelMapper {
         return resource;
     }
 
-    public static ChannelDetailsResource toResource(ChannelDetails model, PspChannelPaymentTypes listModel, WrapperStatus status, String createdBy, String modifiedBy) {
+    public static ChannelDetailsResource toResource(
+            ChannelDetails model, PspChannelPaymentTypes listModel,
+            WrapperStatus status, String createdBy, String modifiedBy,
+            String note) {
         ChannelDetailsResource resource = null;
         if(model != null) {
             resource = new ChannelDetailsResource();
@@ -231,6 +234,7 @@ public class ChannelMapper {
             resource.setModifiedBy(modifiedBy);
             resource.setModifiedAt(model.getModifiedAt());
             resource.setCreatedAt(model.getCreatedAt());
+            resource.setNote(note);
         }
         return resource;
     }

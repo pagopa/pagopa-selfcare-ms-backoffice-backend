@@ -3717,7 +3717,38 @@
         "operationId": "getChannels",
         "parameters": [
           {
-            "description": "Number of elements on one page. Default = 50",
+            "description": "Channel's status",
+            "in": "query",
+            "name": "status",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ACTIVE",
+                "TO_BE_VALIDATED"
+              ]
+            }
+          },
+          {
+            "description": "Channel's 'code, to filter out result",
+            "in": "query",
+            "name": "channelCode",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker code, to filter out result",
+            "in": "query",
+            "name": "brokerCode",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Number of elements on one page",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -3728,32 +3759,15 @@
             }
           },
           {
-            "description": "Page number. Page value starts from 0",
+            "description": "Page number",
             "in": "query",
             "name": "page",
-            "required": true,
+            "required": false,
             "schema": {
+              "minimum": 0,
               "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "description": "Filter channel by code",
-            "in": "query",
-            "name": "code",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Sort Direction ordering",
-            "in": "query",
-            "name": "ordering",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "default": "DESC"
+              "format": "int32",
+              "default": 0
             }
           }
         ],
@@ -3762,11 +3776,69 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ChannelsResource"
+                  "$ref": "#/components/schemas/WrapperChannelsResource"
                 }
               }
             },
             "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
@@ -3811,6 +3883,24 @@
           "required": true
         },
         "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WrapperChannelDetailsResource"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "201": {
             "content": {
               "application/json": {
@@ -3820,6 +3910,64 @@
               }
             },
             "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
@@ -4020,6 +4168,64 @@
                 }
               }
             }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -4068,49 +4274,6 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WrapperEntities"
-                }
-              }
-            },
-            "description": "Created",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Request the creation of a channel that will be validated by an operator",
-        "tags": [
-          "Channels"
-        ]
-      },
-      "put": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "updateWrapperChannelDetails",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChannelDetailsDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
           "200": {
             "content": {
               "application/json": {
@@ -4128,6 +4291,82 @@
                 }
               }
             }
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WrapperEntitiesChannelDetails"
+                }
+              }
+            },
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -4135,7 +4374,7 @@
             "JWT": []
           }
         ],
-        "summary": "Request the update of a channel that will be validated by an operator",
+        "summary": "Request the creation of a channel that will be validated by an operator",
         "tags": [
           "Channels"
         ]
@@ -4250,7 +4489,270 @@
             "type": "string"
           }
         }
-      ]
+      ],
+      "put": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "updateWrapperChannelDetails",
+        "parameters": [
+          {
+            "description": "Channel's code",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChannelDetailsDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WrapperEntities"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Request the update of a channel that will be validated by an operator",
+        "tags": [
+          "Channels"
+        ]
+      }
+    },
+    "/channels/wrapper/{channel-code}/operator": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "put": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "updateWrapperChannelWithOperatorReview",
+        "parameters": [
+          {
+            "description": "Channel's code",
+            "in": "path",
+            "name": "channel-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker Code related to the channel",
+            "in": "query",
+            "name": "brokerPspCode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperatorChannelReview"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelDetailsResource"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Update a WrapperChannel with Operator review",
+        "tags": [
+          "Channels"
+        ]
+      }
     },
     "/channels/{channel-code}": {
       "delete": {
@@ -4386,6 +4888,64 @@
                 }
               }
             }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -4414,6 +4974,16 @@
             }
           },
           {
+            "description": "Filter by PSP name",
+            "in": "query",
+            "name": "psp-name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Number of elements on one page",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -4424,22 +4994,15 @@
             }
           },
           {
-            "description": "Page number. Page value starts from 0",
+            "description": "Page number",
             "in": "query",
             "name": "page",
-            "required": true,
+            "required": false,
             "schema": {
+              "minimum": 0,
               "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "description": "Filter by PSP name",
-            "in": "query",
-            "name": "psp-name",
-            "required": true,
-            "schema": {
-              "type": "string"
+              "format": "int32",
+              "default": 0
             }
           }
         ],
@@ -11276,6 +11839,195 @@
           }
         }
       },
+      "ChannelDetails": {
+        "required": [
+          "agid",
+          "broker_psp_code",
+          "card_chart",
+          "digital_stamp_brand",
+          "on_us",
+          "payment_model",
+          "port",
+          "protocol",
+          "recovery",
+          "rt_push",
+          "thread_number",
+          "timeout_a",
+          "timeout_b",
+          "timeout_c"
+        ],
+        "type": "object",
+        "properties": {
+          "agid": {
+            "type": "boolean"
+          },
+          "broker_description": {
+            "type": "string"
+          },
+          "broker_psp_code": {
+            "type": "string"
+          },
+          "card_chart": {
+            "type": "boolean"
+          },
+          "channel_code": {
+            "type": "string"
+          },
+          "digital_stamp_brand": {
+            "type": "boolean"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "flag_io": {
+            "type": "boolean"
+          },
+          "flag_psp_cp": {
+            "type": "boolean"
+          },
+          "ip": {
+            "type": "string"
+          },
+          "new_fault_code": {
+            "type": "boolean"
+          },
+          "new_password": {
+            "type": "string"
+          },
+          "nmp_service": {
+            "type": "string"
+          },
+          "on_us": {
+            "type": "boolean"
+          },
+          "password": {
+            "type": "string"
+          },
+          "payment_model": {
+            "type": "string",
+            "enum": [
+              "IMMEDIATE",
+              "IMMEDIATE_MULTIBENEFICIARY",
+              "DEFERRED",
+              "ACTIVATED_AT_PSP"
+            ]
+          },
+          "payment_types": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "port": {
+            "maximum": 65535,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int64"
+          },
+          "primitive_version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "protocol": {
+            "type": "string",
+            "enum": [
+              "HTTPS",
+              "HTTP"
+            ]
+          },
+          "proxy_enabled": {
+            "type": "boolean"
+          },
+          "proxy_host": {
+            "type": "string"
+          },
+          "proxy_password": {
+            "type": "string"
+          },
+          "proxy_port": {
+            "maximum": 65535,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int64"
+          },
+          "proxy_username": {
+            "type": "string"
+          },
+          "recovery": {
+            "type": "boolean"
+          },
+          "redirect_ip": {
+            "type": "string"
+          },
+          "redirect_path": {
+            "type": "string"
+          },
+          "redirect_port": {
+            "maximum": 65535,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int64"
+          },
+          "redirect_protocol": {
+            "type": "string",
+            "enum": [
+              "HTTPS",
+              "HTTP"
+            ]
+          },
+          "redirect_query_string": {
+            "type": "string"
+          },
+          "rt_push": {
+            "type": "boolean"
+          },
+          "serv_plugin": {
+            "type": "string"
+          },
+          "service": {
+            "type": "string"
+          },
+          "target_host": {
+            "type": "string"
+          },
+          "target_host_nmp": {
+            "type": "string"
+          },
+          "target_path": {
+            "type": "string"
+          },
+          "target_path_nmp": {
+            "type": "string"
+          },
+          "target_port": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "target_port_nmp": {
+            "type": "string"
+          },
+          "thread_number": {
+            "minimum": 1,
+            "type": "integer",
+            "format": "int64"
+          },
+          "timeout_a": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int64"
+          },
+          "timeout_b": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int64"
+          },
+          "timeout_c": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
       "ChannelDetailsDto": {
         "required": [
           "validationUrl"
@@ -11568,6 +12320,10 @@
             "type": "string",
             "description": " nmp service"
           },
+          "note": {
+            "type": "string",
+            "description": "Operator review note"
+          },
           "on_us": {
             "type": "boolean",
             "description": " on us"
@@ -11801,45 +12557,6 @@
           }
         },
         "description": "enabled"
-      },
-      "ChannelResource": {
-        "required": [
-          "channel_code"
-        ],
-        "type": "object",
-        "properties": {
-          "broker_description": {
-            "type": "string",
-            "description": "Broker description. Read only field"
-          },
-          "channel_code": {
-            "type": "string",
-            "description": "Channel code"
-          },
-          "enabled": {
-            "type": "boolean"
-          }
-        },
-        "description": "list of psp and ec channels"
-      },
-      "ChannelsResource": {
-        "required": [
-          "channels",
-          "page_info"
-        ],
-        "type": "object",
-        "properties": {
-          "channels": {
-            "type": "array",
-            "description": "list of psp and ec channels",
-            "items": {
-              "$ref": "#/components/schemas/ChannelResource"
-            }
-          },
-          "page_info": {
-            "$ref": "#/components/schemas/PageInfo"
-          }
-        }
       },
       "CiTaxCodeList": {
         "required": [
@@ -12754,6 +13471,15 @@
           "pageMessage": {
             "type": "string",
             "description": "Maintenance page message"
+          }
+        }
+      },
+      "OperatorChannelReview": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "description": "Operator review note"
           }
         }
       },
@@ -14903,6 +15629,63 @@
           }
         }
       },
+      "WrapperEntitiesChannelDetails": {
+        "type": "object",
+        "properties": {
+          "brokerCode": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string"
+          },
+          "entities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WrapperEntityChannelDetails"
+            }
+          },
+          "id": {
+            "type": "string"
+          },
+          "modifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modifiedBy": {
+            "type": "string"
+          },
+          "modifiedByOpt": {
+            "type": "string"
+          },
+          "new": {
+            "type": "boolean"
+          },
+          "note": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "APPROVED",
+              "TO_CHECK",
+              "TO_FIX",
+              "TO_CHECK_UPDATE",
+              "TO_FIX_UPDATE"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "CHANNEL",
+              "STATION"
+            ]
+          }
+        }
+      },
       "WrapperEntitiesList": {
         "required": [
           "page_info",
@@ -15012,6 +15795,51 @@
           },
           "new": {
             "type": "boolean"
+          },
+          "note": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "APPROVED",
+              "TO_CHECK",
+              "TO_FIX",
+              "TO_CHECK_UPDATE",
+              "TO_FIX_UPDATE"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "CHANNEL",
+              "STATION"
+            ]
+          }
+        }
+      },
+      "WrapperEntityChannelDetails": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "entity": {
+            "$ref": "#/components/schemas/ChannelDetails"
+          },
+          "id": {
+            "type": "string"
+          },
+          "modifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modifiedBy": {
+            "type": "string"
+          },
+          "modifiedByOpt": {
+            "type": "string"
           },
           "note": {
             "type": "string"

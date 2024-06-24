@@ -3,11 +3,20 @@ package it.pagopa.selfcare.pagopa.backoffice.model.channels;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 
-@Data
+@Getter
+@Setter
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public class WrapperChannelDetailsResource extends ChannelDetailsResource {
 
     @JsonProperty("id")

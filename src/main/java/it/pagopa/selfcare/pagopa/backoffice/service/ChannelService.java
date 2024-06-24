@@ -4,12 +4,12 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
@@ -19,6 +19,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelPspLi
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannel;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
@@ -36,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 
@@ -47,6 +50,8 @@ public class ChannelService {
     private static final String CREATE_CHANEL_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato il canale %s che hai creato. Da questo momento puoi utilizzarlo per attivare i tuoi servizi.%n%n%nA presto,%n%n Back-office pagoPA";
     private static final String UPDATE_CHANEL_SUBJECT = "Modifica canale attiva";
     private static final String UPDATE_CHANEL_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato il canale %s che hai modificato. Da questo momento la modifica effettuata risulta attiva.%n%n%nA presto,%n%n Back-office pagoPA";
+    private static final String CHANNEL_REVIEW_SUBJECT = "Modifiche richieste";
+    private static final String CHANNEL_REVIEW_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha richiesto delle modifiche al canale %s che hai creato.%n Puoi vedere le modifiche qui sotto oppure nel dettaglio del canale (https://selfcare.platform.pagopa.it/ui/channels/%s).%n Modifiche richieste %n '%s' %n%n%nA presto,%n%n Pagamenti pagoPA";
 
     private final ApiConfigClient apiConfigClient;
 
@@ -57,54 +62,85 @@ public class ChannelService {
     private final AwsSesClient awsSesClient;
 
     @Autowired
-    public ChannelService(ApiConfigClient apiConfigClient, WrapperService wrapperService, JiraServiceManagerClient jsmClient, AwsSesClient awsSesClient) {
+    public ChannelService(
+            ApiConfigClient apiConfigClient,
+            WrapperService wrapperService,
+            JiraServiceManagerClient jsmClient,
+            AwsSesClient awsSesClient
+    ) {
         this.apiConfigClient = apiConfigClient;
         this.wrapperService = wrapperService;
         this.jsmClient = jsmClient;
         this.awsSesClient = awsSesClient;
     }
 
-    public WrapperChannelsResource getAllMergedChannel(Integer limit, String channelcode, String brokerCode, Integer page, String sorting) {
-        Channels channels = apiConfigClient.getChannels(limit, page, channelcode, brokerCode, sorting);
+    public WrapperChannelsResource getAllMergedChannel(
+            Integer limit,
+            String channelcode,
+            String brokerCode,
+            Integer page,
+            String sorting
+    ) {
+        Channels channels = apiConfigClient.getChannels(channelcode, brokerCode, sorting, limit, page);
         WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(channelcode, WrapperType.CHANNEL, brokerCode, page, limit);
         WrapperChannels channelsMergedAndSorted = Utility.mergeAndSortWrapperChannels(ChannelMapper.toWrapperChannels(channels), ChannelMapper.toWrapperChannels(mongoList), sorting);
         return ChannelMapper.toWrapperChannelsResource(channelsMergedAndSorted);
     }
 
-    public WrapperEntities createChannelToBeValidated(WrapperChannelDetailsDto wrapperChannelDetailsDto) {
+    /**
+     * Creates a new wrapper channel in status {@link WrapperStatus#TO_CHECK} and open a JIRA ticket for operator
+     * review
+     *
+     * @param wrapperChannelDetailsDto detail of the new channel
+     * @return the created wrapper channel
+     */
+    public WrapperEntities<ChannelDetails> createChannelToBeValidated(WrapperChannelDetailsDto wrapperChannelDetailsDto) {
         final String CREATE_CHANNEL_SUMMARY = "Validazione canale creazione: %s";
         final String CREATE_CHANEL_DESCRIPTION = "Il canale %s deve essere validato: %s";
-        WrapperEntities createdWrapperEntities = wrapperService.insert(
-                ChannelMapper.fromWrapperChannelDetailsDto(wrapperChannelDetailsDto),
-                wrapperChannelDetailsDto.getNote(),
-                wrapperChannelDetailsDto.getStatus().name());
-        jsmClient.createTicket(
-                String.format(
-                        CREATE_CHANNEL_SUMMARY,
-                        wrapperChannelDetailsDto.getChannelCode()),
-                String.format(
-                        CREATE_CHANEL_DESCRIPTION,
-                        wrapperChannelDetailsDto.getChannelCode(),
-                        wrapperChannelDetailsDto.getValidationUrl()));
-        return createdWrapperEntities;
+
+        WrapperEntities<ChannelDetails> createdWrapperChannel =
+                this.wrapperService.createWrapperChannel(
+                        ChannelMapper.fromWrapperChannelDetailsDto(wrapperChannelDetailsDto),
+                        WrapperStatus.TO_CHECK
+                );
+        this.jsmClient.createTicket(
+                String.format(CREATE_CHANNEL_SUMMARY, wrapperChannelDetailsDto.getChannelCode()),
+                String.format(CREATE_CHANEL_DESCRIPTION, wrapperChannelDetailsDto.getChannelCode(), wrapperChannelDetailsDto.getValidationUrl())
+        );
+        return createdWrapperChannel;
     }
 
-    public WrapperEntities updateChannelToBeValidated(ChannelDetailsDto channelDetailsDto) {
+    /**
+     * Updated the wrapper channel with the provided code in status {@link WrapperStatus#TO_CHECK_UPDATE} and open a JIRA ticket
+     * for operator review
+     *
+     * @param channelCode the code of the channel to be updated
+     * @param channelDetailsDto detail of the channel
+     * @return the updated wrapper channel
+     */
+    public WrapperEntities<ChannelDetails> updateChannelToBeValidated(String channelCode, ChannelDetailsDto channelDetailsDto) {
         final String CREATE_CHANNEL_SUMMARY = "Validazione modifica canale: %s";
         final String CREATE_CHANEL_DESCRIPTION = "Il canale %s modificato dal broker %s deve essere validato: %s";
-        WrapperEntities createdWrapperEntities = wrapperService.update(ChannelMapper.fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
-        jsmClient.createTicket(
-                String.format(
-                        CREATE_CHANNEL_SUMMARY,
-                        channelDetailsDto.getChannelCode()),
-                String.format(
-                        CREATE_CHANEL_DESCRIPTION,
-                        channelDetailsDto.getChannelCode(),
-                        channelDetailsDto.getBrokerPspCode(),
-                        channelDetailsDto.getValidationUrl()));
-        return createdWrapperEntities;
+
+        WrapperEntities<ChannelDetails> updatedWrapperChannel =
+                this.wrapperService.updateWrapperChannel(
+                        channelCode,
+                        ChannelMapper.fromChannelDetailsDto(channelDetailsDto)
+                );
+        this.jsmClient.createTicket(
+                String.format(CREATE_CHANNEL_SUMMARY, channelCode),
+                String.format(CREATE_CHANEL_DESCRIPTION, channelCode, channelDetailsDto.getBrokerPspCode(), channelDetailsDto.getValidationUrl())
+        );
+        return updatedWrapperChannel;
     }
 
+    /**
+     * Creates a validated channel and update the relative wrapper channel with status {@link WrapperStatus#APPROVED}.
+     * Notify the channel owner via email.
+     *
+     * @param channelDetailsDto the channel details
+     * @return the created channel
+     */
     public WrapperChannelDetailsResource validateChannelCreation(ChannelDetailsDto channelDetailsDto) {
         PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
         List<String> paymentTypeList = channelDetailsDto.getPaymentTypeList();
@@ -114,8 +150,7 @@ public class ChannelService {
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         this.apiConfigClient.createChannel(channelDetails);
 
-        WrapperEntities<ChannelDetails> response = this.wrapperService
-                .updateByOpt(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name());
+        WrapperEntities<ChannelDetails> response = this.wrapperService.updateValidatedWrapperChannel(channelDetails, WrapperStatus.APPROVED);
         PspChannelPaymentTypes paymentType = this.apiConfigClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
         WrapperChannelDetailsResource resource = ChannelMapper.toResource(getWrapperEntityOperationsSortedList(response).get(0), paymentType);
 
@@ -124,7 +159,7 @@ public class ChannelService {
                 .subject(CREATE_CHANEL_SUBJECT)
                 .textBody(String.format(CREATE_CHANEL_EMAIL_BODY, channelCode))
                 .htmlBodyFileName("channelCreationValidatedEmail.html")
-                .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode))
+                .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode, null))
                 .destinationUserType(SelfcareProductUser.OPERATOR)
                 .build();
 
@@ -132,11 +167,17 @@ public class ChannelService {
         return resource;
     }
 
-
+    /**
+     * Updates a validated channel and update the relative wrapper channel with status {@link WrapperStatus#APPROVED}.
+     * Notify the channel owner via email.
+     *
+     * @param channelDetailsDto the channel details
+     * @return the updated channel
+     */
     public ChannelDetailsResource validateChannelUpdate(String channelCode, ChannelDetailsDto channelDetailsDto) {
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         ChannelDetails response = this.apiConfigClient.updateChannel(channelDetails, channelCode);
-        this.wrapperService.update(channelDetails, channelDetailsDto.getNote(), channelDetailsDto.getStatus().name(), null);
+        this.wrapperService.update(channelDetails, channelDetailsDto.getNote(), WrapperStatus.APPROVED.name(), null);
         ChannelDetailsResource resource = ChannelMapper.toResource(response, null);
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
@@ -144,7 +185,7 @@ public class ChannelService {
                 .subject(UPDATE_CHANEL_SUBJECT)
                 .textBody(String.format(UPDATE_CHANEL_EMAIL_BODY, channelCode))
                 .htmlBodyFileName("channelUpdateValidatedEmail.html")
-                .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode))
+                .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode, null))
                 .destinationUserType(SelfcareProductUser.OPERATOR)
                 .build();
 
@@ -152,31 +193,64 @@ public class ChannelService {
         return resource;
     }
 
-    public ChannelDetailsResource getChannelToBeValidated(String channelcode) {
+    /**
+     * Retrieve the channel details from Wrapper and if not found from Api-Config
+     *
+     * @param channelCode channel's code
+     * @return the channel details
+     */
+    public ChannelDetailsResource getChannelToBeValidated(String channelCode) {
         ChannelDetails channelDetail;
         WrapperStatus status;
         String createdBy = "";
         String modifiedBy = "";
+        String note = "";
         PspChannelPaymentTypes ptResponse = new PspChannelPaymentTypes();
         try {
-            WrapperEntities<ChannelDetails> result = wrapperService.findById(channelcode);
+            WrapperEntities<ChannelDetails> result = this.wrapperService.findById(channelCode);
             createdBy = result.getCreatedBy();
             modifiedBy = result.getModifiedBy();
-            channelDetail = (ChannelDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
             status = result.getStatus();
+            WrapperEntityOperations<ChannelDetails> wrapperEntity = getWrapperEntityOperationsSortedList(result).get(0);
+            note = wrapperEntity.getNote();
+            channelDetail = wrapperEntity.getEntity();
             ptResponse.setPaymentTypeList(channelDetail.getPaymentTypeList());
         } catch (AppException e) {
-            channelDetail = apiConfigClient.getChannelDetails(channelcode);
-            ptResponse = apiConfigClient.getChannelPaymentTypes(channelcode);
+            channelDetail = this.apiConfigClient.getChannelDetails(channelCode);
+            ptResponse = this.apiConfigClient.getChannelPaymentTypes(channelCode);
             status = WrapperStatus.APPROVED;
         }
-        return ChannelMapper.toResource(channelDetail, ptResponse, status, createdBy, modifiedBy);
+        return ChannelMapper.toResource(channelDetail, ptResponse, status, createdBy, modifiedBy, note);
     }
 
+    /**
+     * Retrieve a paginated list of channels from api-config if the provided status is {@link ConfigurationStatus#ACTIVE},
+     * from wrapper otherwise. The result is filter out by channel's code and broker's code.
+     *
+     * @param status      channel's status
+     * @param channelCode channel's code
+     * @param brokerCode  broker's code
+     * @param limit       page size
+     * @param page        page number
+     * @return the paginated list
+     */
+    public WrapperChannelsResource getChannels(
+            ConfigurationStatus status,
+            String channelCode,
+            String brokerCode,
+            Integer limit,
+            Integer page
+    ) {
+        WrapperChannels response;
+        if (status.equals(ConfigurationStatus.ACTIVE)) {
+            Channels channels = this.apiConfigClient.getChannels(channelCode, brokerCode, "DESC", limit, page);
+            response = buildEnrichedWrapperChannels(channels);
+        } else {
+            WrapperEntitiesList wrapperChannels = this.wrapperService.getWrapperChannels(channelCode, brokerCode, limit, page);
+            response = ChannelMapper.toWrapperChannels(wrapperChannels);
+        }
 
-    public ChannelsResource getChannels(Integer limit, Integer page, String code, String sort) {
-        Channels dto = apiConfigClient.getChannels(limit, page, code, null, sort);
-        return ChannelMapper.toResource(dto);
+        return ChannelMapper.toWrapperChannelsResource(response);
     }
 
     public ChannelDetailsResource getChannel(String channelCode) {
@@ -190,7 +264,10 @@ public class ChannelService {
         return ChannelMapper.toResource(dto);
     }
 
-    public PspChannelPaymentTypesResource createPaymentTypeOnChannel(PspChannelPaymentTypes pspChannelPaymentTypes, String channelCode) {
+    public PspChannelPaymentTypesResource createPaymentTypeOnChannel(
+            PspChannelPaymentTypes pspChannelPaymentTypes,
+            String channelCode
+    ) {
         PspChannelPaymentTypes dto = apiConfigClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
         return ChannelMapper.toResource(dto);
     }
@@ -214,15 +291,79 @@ public class ChannelService {
         return ChannelMapper.toResource(dto);
     }
 
-    private Context buildChannelHtmlEmailBodyContext(String channelCode) {
+    /**
+     * Update the wrapper channel with the operator review's note and notify the channel owner via email.
+     *
+     * @param channelCode   channel's code
+     * @param brokerPspCode payment service provider's tax code that own the channel
+     * @param note          operator review note
+     * @return the updated channel wrapper
+     */
+    public ChannelDetailsResource updateWrapperChannelWithOperatorReview(
+            String channelCode,
+            String brokerPspCode,
+            String note
+    ) {
+        WrapperEntities<ChannelDetails> updatedWrapper =
+                this.wrapperService.updateChannelWithOperatorReview(channelCode, note);
+
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(brokerPspCode)
+                .subject(CHANNEL_REVIEW_SUBJECT)
+                .textBody(String.format(CHANNEL_REVIEW_EMAIL_BODY, channelCode, channelCode, note))
+                .htmlBodyFileName("channelReviewRequestedEmail.html")
+                .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode, note))
+                .destinationUserType(SelfcareProductUser.OPERATOR)
+                .build();
+        this.awsSesClient.sendEmail(messageDetail);
+
+        WrapperEntityOperations<ChannelDetails> entityOperations =
+                getWrapperEntityOperationsSortedList(updatedWrapper).get(0);
+        PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
+        List<String> paymentTypeList = entityOperations.getEntity().getPaymentTypeList();
+        pspChannelPaymentTypes.setPaymentTypeList(paymentTypeList);
+
+        return ChannelMapper.toResource(
+                entityOperations.getEntity(),
+                pspChannelPaymentTypes,
+                updatedWrapper.getStatus(),
+                updatedWrapper.getCreatedBy(),
+                updatedWrapper.getModifiedBy(),
+                entityOperations.getNote()
+        );
+    }
+
+    private Context buildChannelHtmlEmailBodyContext(String channelCode, String note) {
         // Thymeleaf Context
         Context context = new Context();
 
         // Properties to show up in Template after stored in Context
         Map<String, Object> properties = new HashMap<>();
         properties.put("channelCode", channelCode);
+        if (note != null) {
+            properties.put("reviewNote", note);
+        }
 
         context.setVariables(properties);
         return context;
+    }
+
+    private WrapperChannels buildEnrichedWrapperChannels(Channels channels) {
+        WrapperChannels response;
+        List<WrapperChannel> wrapperChannels = channels.getChannelList().parallelStream()
+                .map(channel -> {
+                    WrapperChannel wrapperChannel = ChannelMapper.toWrapperChannel(channel);
+                    Optional<WrapperEntities> optionalWrapperEntities = this.wrapperService.findByIdOptional(channel.getChannelCode());
+                    if (optionalWrapperEntities.isPresent()) {
+                        WrapperEntities<ChannelDetails> wrapperEntities = optionalWrapperEntities.get();
+                        wrapperChannel.setCreatedAt(wrapperEntities.getCreatedAt());
+                    }
+                    return wrapperChannel;
+                }).toList();
+        response = WrapperChannels.builder()
+                .channelList(wrapperChannels)
+                .pageInfo(channels.getPageInfo())
+                .build();
+        return response;
     }
 }
