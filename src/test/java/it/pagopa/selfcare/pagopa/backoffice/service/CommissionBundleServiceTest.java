@@ -951,34 +951,6 @@ class CommissionBundleServiceTest {
     }
 
 
-    @Test
-    void createCIBundleOffersSuccess(){
-        List<String> ciTaxCodes = List.of(CI_TAX_CODE, "taxCode2", "taxCode3");
-        CiTaxCodeList ciTaxCodeList = CiTaxCodeList.builder().ciTaxCodes(ciTaxCodes).build();
-
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-
-        assertDoesNotThrow(() ->
-                sut.createCIBundleOffers(ID_BUNDLE, PSP_TAX_CODE, BUNDLE_NAME, ciTaxCodeList));
-
-        verify(gecClient).createPrivateBundleOffer(PSP_CODE, ID_BUNDLE, ciTaxCodeList);
-        verify(awsSesClient, times(ciTaxCodes.size())).sendEmail(any());
-    }
-
-    @Test
-    void createCIBundleOffersSuccess(){
-        List<String> ciTaxCodes = List.of(CI_TAX_CODE, "taxCode2", "taxCode3");
-        CiTaxCodeList ciTaxCodeList = CiTaxCodeList.builder().ciTaxCodes(ciTaxCodes).build();
-
-        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-
-        assertDoesNotThrow(() ->
-                sut.createCIBundleOffers(ID_BUNDLE, PSP_TAX_CODE, BUNDLE_NAME, ciTaxCodeList));
-
-        verify(gecClient).createPrivateBundleOffer(PSP_CODE, ID_BUNDLE, ciTaxCodeList);
-        verify(awsSesClient, times(ciTaxCodes.size())).sendEmail(any());
-    }
-
     private PublicBundleRequests buildPspRequests() {
         return PublicBundleRequests.builder()
                 .requestsList(
