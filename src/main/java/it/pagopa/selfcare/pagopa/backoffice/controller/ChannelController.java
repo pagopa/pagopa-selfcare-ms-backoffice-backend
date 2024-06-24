@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
-import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResource;
@@ -91,7 +90,7 @@ public class ChannelController {
     public ChannelDetailsResource getChannelDetails(
             @Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode
     ) {
-        return channelService.getChannel(channelCode);
+        return this.channelService.getChannel(channelCode);
     }
 
     @GetMapping(value = "/{channel-code}/payment-service-providers", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -104,7 +103,7 @@ public class ChannelController {
             @Parameter(description = "Number of elements on one page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
             @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page
     ) {
-        return channelService.getPSPsByChannel(limit, page, channelCode, pspName);
+        return this.channelService.getPSPsByChannel(limit, page, channelCode, pspName);
     }
 
     @GetMapping(value = "/csv", produces = {MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE})
@@ -113,7 +112,7 @@ public class ChannelController {
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public Resource getChannelsCSV(HttpServletResponse response) {
 
-        return channelService.getChannelsInCSVFile(response);
+        return this.channelService.getChannelsInCSVFile(response);
     }
 
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -154,7 +153,7 @@ public class ChannelController {
     @Operation(summary = "delete channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public void deleteChannel(@Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode) {
-        channelService.deleteChannel(channelCode);
+        this.channelService.deleteChannel(channelCode);
     }
 
     @GetMapping(value = "/{channel-code}/payment-types", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -164,7 +163,7 @@ public class ChannelController {
     public PspChannelPaymentTypesResource getChannelPaymentTypes(
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode
     ) {
-        return channelService.getPaymentTypesByChannel(channelCode);
+        return this.channelService.getPaymentTypesByChannel(channelCode);
     }
 
     @PostMapping(value = "/{channel-code}/payment-types", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -175,7 +174,7 @@ public class ChannelController {
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
             @Parameter(description = " List of payment types") @RequestBody PspChannelPaymentTypes pspChannelPaymentTypes
     ) {
-        return channelService.createPaymentTypeOnChannel(pspChannelPaymentTypes, channelCode);
+        return this.channelService.createPaymentTypeOnChannel(pspChannelPaymentTypes, channelCode);
     }
 
     @DeleteMapping(value = "/{channel-code}/payment-types/{payment-type-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -186,7 +185,7 @@ public class ChannelController {
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
             @Parameter(description = "Code of the payment type") @PathVariable("payment-type-code") String paymentTypeCode
     ) {
-        channelService.deletePaymentTypeOnChannel(channelCode, paymentTypeCode);
+        this.channelService.deletePaymentTypeOnChannel(channelCode, paymentTypeCode);
     }
 
     @GetMapping(value = "/merged/{channel-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -203,7 +202,7 @@ public class ChannelController {
     public ChannelDetailsResource getChannelDetail(
             @Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode
     ) {
-        return channelService.getChannelToBeValidated(channelCode);
+        return this.channelService.getChannelToBeValidated(channelCode);
     }
 
     @GetMapping(value = "/wrapper/{channel-code}")
@@ -213,7 +212,7 @@ public class ChannelController {
     public WrapperEntities getGenericWrapperEntities(
             @Parameter(description = "Channel code") @PathVariable("channel-code") String channelCode
     ) {
-        return wrapperService.findById(channelCode);
+        return this.wrapperService.findById(channelCode);
     }
 
     @PostMapping(value = "/wrapper", consumes = MediaType.APPLICATION_JSON_VALUE)

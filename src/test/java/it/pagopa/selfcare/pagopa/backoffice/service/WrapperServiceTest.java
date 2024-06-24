@@ -147,62 +147,6 @@ class WrapperServiceTest {
                 eq(BROKER_CODE),
                 eq(WrapperStatus.APPROVED),
                 any())
-        ).thenReturn(new PageImpl<>(Collections.singletonList(buildChannelDetailsWrapperEntities())));
-
-        WrapperEntitiesList result = assertDoesNotThrow(() ->
-                sut.getWrapperChannels(CHANNEL_CODE, BROKER_CODE, LIMIT, PAGE));
-
-        assertNotNull(result);
-        assertNotNull(result.getPageInfo());
-        assertEquals(PAGE, result.getPageInfo().getPage());
-        assertEquals(LIMIT, result.getPageInfo().getLimit());
-        assertEquals(1, result.getPageInfo().getTotalItems());
-        assertEquals(1, result.getPageInfo().getTotalPages());
-        assertEquals(1, result.getPageInfo().getItemsFound());
-
-        verify(repository, never()).findByTypeAndBrokerCodeAndStatusNot(
-                eq(WrapperType.CHANNEL),
-                eq(BROKER_CODE),
-                eq(WrapperStatus.APPROVED),
-                any());
-    }
-
-    @Test
-    void getWrapperChannelsWithoutStationCodeSuccess() {
-        when(repository.findByTypeAndBrokerCodeAndStatusNot(
-                eq(WrapperType.CHANNEL),
-                eq(BROKER_CODE),
-                eq(WrapperStatus.APPROVED),
-                any())
-        ).thenReturn(new PageImpl<>(Collections.singletonList(buildChannelDetailsWrapperEntities())));
-
-        WrapperEntitiesList result = assertDoesNotThrow(() ->
-                sut.getWrapperChannels(null, BROKER_CODE, LIMIT, PAGE));
-
-        assertNotNull(result);
-        assertNotNull(result.getPageInfo());
-        assertEquals(PAGE, result.getPageInfo().getPage());
-        assertEquals(LIMIT, result.getPageInfo().getLimit());
-        assertEquals(1, result.getPageInfo().getTotalItems());
-        assertEquals(1, result.getPageInfo().getTotalPages());
-        assertEquals(1, result.getPageInfo().getItemsFound());
-
-        verify(repository, never()).findByIdLikeAndTypeAndBrokerCodeAndStatusNot(
-                eq(CHANNEL_CODE),
-                eq(WrapperType.STATION),
-                eq(BROKER_CODE),
-                eq(WrapperStatus.APPROVED),
-                any());
-    }
-
-    @Test
-    void getWrapperChannelsWithStationCodeSuccess() {
-        when(repository.findByIdLikeAndTypeAndBrokerCodeAndStatusNot(
-                eq(CHANNEL_CODE),
-                eq(WrapperType.CHANNEL),
-                eq(BROKER_CODE),
-                eq(WrapperStatus.APPROVED),
-                any())
         ).thenReturn(new PageImpl<>(Collections.singletonList(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK))));
 
         WrapperEntitiesList result = assertDoesNotThrow(() ->
