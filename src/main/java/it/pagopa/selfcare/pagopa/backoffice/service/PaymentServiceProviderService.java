@@ -55,15 +55,14 @@ public class PaymentServiceProviderService {
         this.legacyPspCodeUtil = legacyPspCodeUtil;
     }
 
-    public PaymentServiceProviderDetailsResource createPSP(
-            PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto, Boolean isDirect) {
+    public PaymentServiceProviderDetailsResource createPSP(PaymentServiceProviderDetailsDto paymentServiceProviderDetailsDto, Boolean isDirect) {
         BrokerPspDetails brokerPspDetails = ChannelMapper.fromPaymentServiceProviderDetailsDtoToMap(
                 paymentServiceProviderDetailsDto);
         if(Boolean.TRUE.equals(isDirect)) {
             apiConfigClient.createBrokerPsp(brokerPspDetails);
         }
 
-        if(StringUtils.isNotEmpty(paymentServiceProviderDetailsDto.getAbi())) {
+        if(StringUtils.isNotEmpty(paymentServiceProviderDetailsDto.getAbi()) && !paymentServiceProviderDetailsDto.getAbi().equals("N/A")) {
             paymentServiceProviderDetailsDto.setPspCode("ABI".concat(paymentServiceProviderDetailsDto.getAbi()));
         } else if(StringUtils.isNotEmpty(paymentServiceProviderDetailsDto.getBic())) {
             paymentServiceProviderDetailsDto.setPspCode(paymentServiceProviderDetailsDto.getBic());

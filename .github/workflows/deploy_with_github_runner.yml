@@ -72,7 +72,7 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Deploy
-        if: ${{inputs.uninstall  == 'false' }}
+        if: ${{ inputs.uninstall  == 'false' ||  inputs.uninstall  == false }}
         uses: pagopa/github-actions-template/aks-deploy@main
         with:
           branch: ${{ inputs.branch }}
@@ -88,7 +88,7 @@ jobs:
           timeout: '10m0s'
 
       - name: Remove deployment
-        if: ${{ inputs.uninstall == 'true' }}
+        if: ${{ inputs.uninstall == 'true' ||  inputs.uninstall  == true}}
         shell: bash
         run: |
           helm uninstall ${{ env.APP_NAME }}${{inputs.suffix_name}} -n ${{ vars.NAMESPACE }}
