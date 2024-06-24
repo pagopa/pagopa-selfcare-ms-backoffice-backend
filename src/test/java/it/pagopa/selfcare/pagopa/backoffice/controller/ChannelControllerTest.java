@@ -10,7 +10,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentType
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
