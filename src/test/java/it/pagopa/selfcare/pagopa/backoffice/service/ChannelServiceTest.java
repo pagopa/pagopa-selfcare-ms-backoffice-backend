@@ -66,10 +66,11 @@ class ChannelServiceTest {
 
     @Test
     void createChannelToBeValidatedSuccess() {
-        when(wrapperService.insert(any(ChannelDetails.class), anyString(), anyString()))
+        when(wrapperService.createWrapperChannel(any(ChannelDetails.class), any()))
                 .thenReturn(buildChannelDetailsWrapperEntities());
 
-        WrapperEntities result = assertDoesNotThrow(() -> sut.createChannelToBeValidated(buildWrapperChannelDetailsDto()));
+        WrapperEntities<ChannelDetails> result = assertDoesNotThrow(() ->
+                sut.createChannelToBeValidated(buildWrapperChannelDetailsDto()));
 
         assertNotNull(result);
 
@@ -78,10 +79,11 @@ class ChannelServiceTest {
 
     @Test
     void updateChannelToBeValidatedSuccess() {
-        when(wrapperService.update(any(ChannelDetails.class), anyString(), anyString(), eq(null)))
+        when(wrapperService.updateWrapperChannel(anyString(), any(ChannelDetails.class)))
                 .thenReturn(buildChannelDetailsWrapperEntities());
 
-        WrapperEntities result = assertDoesNotThrow(() -> sut.updateChannelToBeValidated(buildChannelDetailsDto()));
+        WrapperEntities<ChannelDetails> result = assertDoesNotThrow(() ->
+                sut.updateChannelToBeValidated(CHANNEL_CODE, buildChannelDetailsDto()));
 
         assertNotNull(result);
 
@@ -92,7 +94,7 @@ class ChannelServiceTest {
     void validateChannelCreationSuccess() {
         WrapperEntities<ChannelDetails> wrapperEntities = buildChannelDetailsWrapperEntities();
 
-        when(wrapperService.updateByOpt(any(ChannelDetails.class), anyString(), anyString()))
+        when(wrapperService.updateValidatedWrapperChannel(any(ChannelDetails.class), any()))
                 .thenReturn(wrapperEntities);
         when(apiConfigClient.createChannelPaymentType(any(), anyString()))
                 .thenReturn(new PspChannelPaymentTypes());
@@ -161,7 +163,7 @@ class ChannelServiceTest {
 
     @Test
     void getChannelToBeValidatedSuccessFromApiConfig() {
-        WrapperEntities wrapperEntities = buildChannelDetailsWrapperEntities();
+        WrapperEntities<ChannelDetails> wrapperEntities = buildChannelDetailsWrapperEntities();
 
         when(wrapperService.findById(CHANNEL_CODE)).thenThrow(AppException.class);
         when(apiConfigClient.getChannelDetails(CHANNEL_CODE)).thenReturn(buildChannelDetails());
@@ -171,7 +173,7 @@ class ChannelServiceTest {
 
         assertNotNull(result);
 
-        ChannelDetails expected = ((WrapperEntity<ChannelDetails>) wrapperEntities.getEntities().get(0)).getEntity();
+        ChannelDetails expected = wrapperEntities.getEntities().get(0).getEntity();
         assertEquals(expected.getChannelCode(), result.getChannelCode());
         assertEquals(expected.getBrokerPspCode(), result.getBrokerPspCode());
         assertEquals(expected.getTimeoutA(), result.getTimeoutA());

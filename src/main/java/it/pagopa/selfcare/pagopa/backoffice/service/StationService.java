@@ -351,6 +351,7 @@ public class StationService {
         return generator(codes, ecCode);
     }
 
+
     private WrapperStations buildEnrichedWrapperStations(Stations stations) {
         WrapperStations response;
         List<WrapperStation> wrapperStations = stations.getStationsList().parallelStream()

@@ -167,7 +167,7 @@ class ChannelControllerTest {
 
     @Test
     void getGenericWrapperEntities() throws Exception {
-        when(wrapperService.findById(CHANNEL_CODE)).thenReturn(new WrapperEntities());
+        when(wrapperService.findById(CHANNEL_CODE)).thenReturn(new WrapperEntities<>());
 
         mvc.perform(get("/channels/wrapper/{channel-code}", CHANNEL_CODE))
                 .andExpect(status().is2xxSuccessful());
@@ -175,9 +175,9 @@ class ChannelControllerTest {
 
     @Test
     void createWrapperChannelDetails() throws Exception {
-        when(channelService.createChannelToBeValidated(any())).thenReturn(new WrapperEntities());
+        when(channelService.createChannelToBeValidated(any())).thenReturn(new WrapperEntities<>());
 
-        mvc.perform(post("/channels/wrapper", CHANNEL_CODE)
+        mvc.perform(post("/channels/wrapper")
                         .content(objectMapper.writeValueAsString(buildWrapperChannelDetailsDto()))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful());
@@ -185,9 +185,9 @@ class ChannelControllerTest {
 
     @Test
     void updateWrapperChannelDetails() throws Exception {
-        when(channelService.updateChannelToBeValidated(any())).thenReturn(new WrapperEntities());
+        when(channelService.updateChannelToBeValidated(anyString(), any())).thenReturn(new WrapperEntities<>());
 
-        mvc.perform(put("/channels/wrapper", CHANNEL_CODE)
+        mvc.perform(put("/channels/wrapper/{channel-code}", CHANNEL_CODE)
                         .content(objectMapper.writeValueAsString(ChannelDetailsDto.builder().validationUrl("url").build()))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful());
