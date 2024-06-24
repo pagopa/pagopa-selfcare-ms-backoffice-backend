@@ -35,17 +35,14 @@ public class AllPages {
     @Autowired
     private ApiConfigSelfcareIntegrationClient apiConfigSCIntClient;
 
-
     @Autowired
     private WrapperRepository wrapperRepository;
-
 
     @Value("${extraction.ibans.getBrokers.pageLimit}")
     private Integer getBrokersPageLimit;
 
     @Value("${extraction.ibans.getCIByBroker.pageLimit}")
     private Integer getCIByBrokerPageLimit;
-
 
     /**
      * @return the set of all brokers in pagoPA platform
@@ -172,6 +169,11 @@ public class AllPages {
                 .cbillCode(ci.getCbillCode())
                 .stationId(ci.getStationCode())
                 .stationState(ci.getStationEnabled() ? "ENABLED" : "DISABLED")
+                .endpointRT(ci.getEndpointRT())
+                .endpointRedirect(ci.getEndpointRedirect())
+                .endpointMU(ci.getEndpointMU())
+                .primitiveVersion(ci.getVersionePrimitive())
+                .ciStatus(ci.getCiStatus())
                 .activationDate(activationDate)
                 .version(String.valueOf(ci.getStationVersion()))
                 .broadcast(ci.getBroadcast())

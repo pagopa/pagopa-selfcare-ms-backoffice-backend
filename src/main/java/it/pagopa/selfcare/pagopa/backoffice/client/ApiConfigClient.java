@@ -8,6 +8,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.configuration.WfespPluginConfs
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.ApiConfigCreditorInstitutionsOrderBy;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
@@ -175,11 +176,15 @@ public interface ApiConfigClient {
 
     @GetMapping(value = "/creditorinstitutions", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid
-    CreditorInstitutions getCreditorInstitutions(@RequestParam(required = false, defaultValue = "50") Integer limit,
-                                                 @RequestParam(required = true) Integer page,
-                                                 @RequestParam(required = false, name = "code") String ecCode,
-                                                 @RequestParam(required = false, name = "name") String name,
-                                                 @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sorting);
+    CreditorInstitutions getCreditorInstitutions(
+            @RequestParam(required = false, name = "code") String ciTaxCode,
+            @RequestParam(required = false, name = "name") String businessName,
+            @RequestParam(required = false, name = "enabled") Boolean enabled,
+            @RequestParam(required = false, name = "orderby") ApiConfigCreditorInstitutionsOrderBy orderBy,
+            @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sorting,
+            @RequestParam(required = false, defaultValue = "50") Integer limit,
+            @RequestParam Integer page
+    );
 
     @PutMapping(value = "/creditorinstitutions/{creditorinstitutioncode}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid
