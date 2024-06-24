@@ -5,5 +5,5 @@ package it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle;
  */
 public enum CIBundleStatus {
 
-    ENABLED, ON_REMOVAL, REQUESTED, AVAILABLE
+    ENABLED, ON_REMOVAL, REQUESTED, AVAILABLE, AVAILABLE_EXPIRED
 }
