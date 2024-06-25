@@ -1,9 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.entity.*;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
@@ -52,9 +50,9 @@ public class WrapperService {
         return list;
 
     }
-    public static List<WrapperEntity<StationDetails>> getStationWrapperEntityOperationsSortedList(WrapperEntities<StationDetails> wrapperEntities) {
-        var list = wrapperEntities.getEntities();
-        list.sort(Comparator.comparing(WrapperEntity::getCreatedAt, Comparator.reverseOrder()));
+    public static List<WrapperEntityStation> getStationWrapperEntityOperationsSortedList(WrapperEntityStations wrapperEntities) {
+        List<WrapperEntityStation> list = wrapperEntities.getEntities();
+        list.sort(Comparator.comparing(WrapperEntityStation::getCreatedAt, Comparator.reverseOrder()));
         return list;
 
     }
@@ -304,7 +302,7 @@ public class WrapperService {
 
     public WrapperStationList findStationByIdLikeOrTypeOrBrokerCode(String idLike, WrapperType wrapperType, String brokerCode, Integer page, Integer size) {
         Pageable paging = PageRequest.of(page, size);
-        Page<WrapperEntities<StationDetails>> response;
+        Page<WrapperEntityStations> response;
 
         if (brokerCode == null && idLike == null) {
             response = wrapperStationsRepository.findByType(wrapperType, paging);
@@ -364,13 +362,13 @@ public class WrapperService {
     public WrapperStationList getWrapperStationsList(String stationCode, String brokerCode, Integer page, Integer size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
 
-        Page<WrapperEntities<StationDetails>> response;
+        Page<WrapperEntityStations> response;
         if (stationCode == null) {
             response = this.wrapperStationsRepository
-                    .findStationByTypeAndBrokerCodeAndStatusNot(WrapperType.STATION, brokerCode, WrapperStatus.APPROVED, paging);
+                    .findByTypeAndBrokerCodeAndStatusNot(WrapperType.STATION, brokerCode, WrapperStatus.APPROVED, paging);
         } else {
             response = this.wrapperStationsRepository
-                    .findStationByIdLikeAndTypeAndBrokerCodeAndStatusNot(stationCode, WrapperType.STATION, brokerCode, WrapperStatus.APPROVED, paging);
+                    .findByIdLikeAndTypeAndBrokerCodeAndStatusNot(stationCode, WrapperType.STATION, brokerCode, WrapperStatus.APPROVED, paging);
         }
 
         return WrapperStationList.builder()
@@ -390,7 +388,7 @@ public class WrapperService {
         var stationMongoList = findStationByIdLikeOrTypeOrBrokerCode(taxCode, WrapperType.STATION, null, 0, 100);
 
         List<String> stationCodes = new LinkedList<>();
-        stationCodes.addAll(stationMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).toList());
+        stationCodes.addAll(stationMongoList.getWrapperEntities().stream().map(WrapperEntityStations::getId).toList());
         stationCodes.addAll(stations.getStationsList().stream().map(Station::getStationCode).toList());
 
         Set<String> validCodes = stationCodes.stream()
