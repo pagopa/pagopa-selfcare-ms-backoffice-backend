@@ -217,7 +217,7 @@ class PaymentServiceProviderServiceTest {
         assertNotNull(result);
         assertEquals(channelCodeV2, result.getChannelCode());
         verify(wrapperServiceMock).getFirstValidChannelCodeV2(anyString());
-        verify(apiConfigClientMock, never()).getChannels(anyInt(), anyInt(), anyString(), eq(null), anyString());
+        verify(apiConfigClientMock, never()).getChannels(anyString(), eq(null), anyString(), anyInt(), anyInt());
     }
 
     @Test
@@ -229,7 +229,7 @@ class PaymentServiceProviderServiceTest {
                                 .channelCode("channel_23")
                                 .build())
                 , new PageInfo());
-        when(apiConfigClientMock.getChannels(anyInt(), anyInt(), eq(null), anyString(), anyString()))
+        when(apiConfigClientMock.getChannels(eq(null), anyString(), anyString(), anyInt(), anyInt()))
                 .thenReturn(channels);
         ChannelCodeResource result =
                 assertDoesNotThrow(() -> sut.getFirstValidChannelCode(TAX_CODE, false));
@@ -237,7 +237,7 @@ class PaymentServiceProviderServiceTest {
         assertNotNull(result);
         assertNotEquals(channelCode, result.getChannelCode());
         verify(wrapperServiceMock, never()).getFirstValidChannelCodeV2(anyString());
-        verify(apiConfigClientMock).getChannels(anyInt(), anyInt(), eq(null), anyString(), anyString());
+        verify(apiConfigClientMock).getChannels(eq(null), anyString(), anyString(), anyInt(), anyInt());
     }
 
     private PaymentServiceProviderDetails getPaymentServiceProviderDetails() {
