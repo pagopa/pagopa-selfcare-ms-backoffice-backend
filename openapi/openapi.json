@@ -11702,6 +11702,10 @@
             "type": "string",
             "description": "Payment type for which the bundle can be applied"
           },
+          "pspBusinessName": {
+            "type": "string",
+            "description": "Name of the linked broker PSP"
+          },
           "touchpoint": {
             "type": "string",
             "description": "Touch-point where the bundle can be applied"
@@ -13559,6 +13563,10 @@
           "paymentType": {
             "type": "string",
             "description": "Payment type for which the bundle can be applied"
+          },
+          "pspBusinessName": {
+            "type": "string",
+            "description": "Name of the linked broker PSP"
           },
           "touchpoint": {
             "type": "string",
