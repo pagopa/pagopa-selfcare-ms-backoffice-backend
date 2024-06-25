@@ -3883,24 +3883,6 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WrapperChannelDetailsResource"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "201": {
             "content": {
               "application/json": {
@@ -3909,7 +3891,7 @@
                 }
               }
             },
-            "description": "Created",
+            "description": "OK",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
@@ -4180,7 +4162,7 @@
           "required": true
         },
         "responses": {
-          "200": {
+          "201": {
             "content": {
               "application/json": {
                 "schema": {
@@ -4189,24 +4171,6 @@
               }
             },
             "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WrapperEntitiesChannelDetails"
-                }
-              }
-            },
-            "description": "Created",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
@@ -11594,195 +11558,6 @@
           }
         }
       },
-      "ChannelDetails": {
-        "required": [
-          "agid",
-          "broker_psp_code",
-          "card_chart",
-          "digital_stamp_brand",
-          "on_us",
-          "payment_model",
-          "port",
-          "protocol",
-          "recovery",
-          "rt_push",
-          "thread_number",
-          "timeout_a",
-          "timeout_b",
-          "timeout_c"
-        ],
-        "type": "object",
-        "properties": {
-          "agid": {
-            "type": "boolean"
-          },
-          "broker_description": {
-            "type": "string"
-          },
-          "broker_psp_code": {
-            "type": "string"
-          },
-          "card_chart": {
-            "type": "boolean"
-          },
-          "channel_code": {
-            "type": "string"
-          },
-          "digital_stamp_brand": {
-            "type": "boolean"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "flag_io": {
-            "type": "boolean"
-          },
-          "flag_psp_cp": {
-            "type": "boolean"
-          },
-          "ip": {
-            "type": "string"
-          },
-          "new_fault_code": {
-            "type": "boolean"
-          },
-          "new_password": {
-            "type": "string"
-          },
-          "nmp_service": {
-            "type": "string"
-          },
-          "on_us": {
-            "type": "boolean"
-          },
-          "password": {
-            "type": "string"
-          },
-          "payment_model": {
-            "type": "string",
-            "enum": [
-              "IMMEDIATE",
-              "IMMEDIATE_MULTIBENEFICIARY",
-              "DEFERRED",
-              "ACTIVATED_AT_PSP"
-            ]
-          },
-          "payment_types": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "port": {
-            "maximum": 65535,
-            "minimum": 1,
-            "type": "integer",
-            "format": "int64"
-          },
-          "primitive_version": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "protocol": {
-            "type": "string",
-            "enum": [
-              "HTTPS",
-              "HTTP"
-            ]
-          },
-          "proxy_enabled": {
-            "type": "boolean"
-          },
-          "proxy_host": {
-            "type": "string"
-          },
-          "proxy_password": {
-            "type": "string"
-          },
-          "proxy_port": {
-            "maximum": 65535,
-            "minimum": 1,
-            "type": "integer",
-            "format": "int64"
-          },
-          "proxy_username": {
-            "type": "string"
-          },
-          "recovery": {
-            "type": "boolean"
-          },
-          "redirect_ip": {
-            "type": "string"
-          },
-          "redirect_path": {
-            "type": "string"
-          },
-          "redirect_port": {
-            "maximum": 65535,
-            "minimum": 1,
-            "type": "integer",
-            "format": "int64"
-          },
-          "redirect_protocol": {
-            "type": "string",
-            "enum": [
-              "HTTPS",
-              "HTTP"
-            ]
-          },
-          "redirect_query_string": {
-            "type": "string"
-          },
-          "rt_push": {
-            "type": "boolean"
-          },
-          "serv_plugin": {
-            "type": "string"
-          },
-          "service": {
-            "type": "string"
-          },
-          "target_host": {
-            "type": "string"
-          },
-          "target_host_nmp": {
-            "type": "string"
-          },
-          "target_path": {
-            "type": "string"
-          },
-          "target_path_nmp": {
-            "type": "string"
-          },
-          "target_port": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "target_port_nmp": {
-            "type": "string"
-          },
-          "thread_number": {
-            "minimum": 1,
-            "type": "integer",
-            "format": "int64"
-          },
-          "timeout_a": {
-            "minimum": 0,
-            "type": "integer",
-            "format": "int64"
-          },
-          "timeout_b": {
-            "minimum": 0,
-            "type": "integer",
-            "format": "int64"
-          },
-          "timeout_c": {
-            "minimum": 0,
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
       "ChannelDetailsDto": {
         "required": [
           "validationUrl"
@@ -15384,63 +15159,6 @@
           }
         }
       },
-      "WrapperEntitiesChannelDetails": {
-        "type": "object",
-        "properties": {
-          "brokerCode": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "createdBy": {
-            "type": "string"
-          },
-          "entities": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/WrapperEntityChannelDetails"
-            }
-          },
-          "id": {
-            "type": "string"
-          },
-          "modifiedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "modifiedBy": {
-            "type": "string"
-          },
-          "modifiedByOpt": {
-            "type": "string"
-          },
-          "new": {
-            "type": "boolean"
-          },
-          "note": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "APPROVED",
-              "TO_CHECK",
-              "TO_FIX",
-              "TO_CHECK_UPDATE",
-              "TO_FIX_UPDATE"
-            ]
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "CHANNEL",
-              "STATION"
-            ]
-          }
-        }
-      },
       "WrapperEntitiesList": {
         "required": [
           "page_info",
@@ -15550,51 +15268,6 @@
           },
           "new": {
             "type": "boolean"
-          },
-          "note": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "APPROVED",
-              "TO_CHECK",
-              "TO_FIX",
-              "TO_CHECK_UPDATE",
-              "TO_FIX_UPDATE"
-            ]
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "CHANNEL",
-              "STATION"
-            ]
-          }
-        }
-      },
-      "WrapperEntityChannelDetails": {
-        "type": "object",
-        "properties": {
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "entity": {
-            "$ref": "#/components/schemas/ChannelDetails"
-          },
-          "id": {
-            "type": "string"
-          },
-          "modifiedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "modifiedBy": {
-            "type": "string"
-          },
-          "modifiedByOpt": {
-            "type": "string"
           },
           "note": {
             "type": "string"
