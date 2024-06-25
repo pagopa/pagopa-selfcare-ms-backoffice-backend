@@ -12,26 +12,16 @@ import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStation;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStations;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationCodeResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestResultEnum;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,14 +30,7 @@ import org.thymeleaf.context.Context;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
@@ -150,7 +133,7 @@ public class StationService {
             Stations stations = this.apiConfigClient.getStations(limit, page, "DESC", brokerCode, null, stationCode);
             response = buildEnrichedWrapperStations(stations);
         } else {
-            WrapperEntitiesList wrapperStations = this.wrapperService.getWrapperStations(stationCode, brokerCode, page, limit);
+            WrapperStationList wrapperStations = this.wrapperService.getWrapperStationsList(stationCode, brokerCode, page, limit);
             response = this.stationMapper.toWrapperStations(wrapperStations);
         }
         return this.stationMapper.toWrapperStationsResource(response);
@@ -290,7 +273,7 @@ public class StationService {
         Stations stations = getStations(limit, page, sorting, brokerCode, null, stationCode);
         WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
 
-        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, brokerCode, page, limit);
+        var mongoList = wrapperService.findStationByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, brokerCode, page, limit);
 
         WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
 

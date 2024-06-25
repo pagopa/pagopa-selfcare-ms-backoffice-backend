@@ -11,6 +11,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperRepository;
+import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperStationsRepository;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +24,10 @@ import org.springframework.http.HttpStatus;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = WrapperService.class)
 class WrapperServiceTest {
@@ -46,6 +42,9 @@ class WrapperServiceTest {
 
     @MockBean
     private WrapperRepository repository;
+
+    @MockBean
+    private WrapperStationsRepository wrapperStationsRepository;
 
     @MockBean
     private AuditorAware<String> auditorAware;

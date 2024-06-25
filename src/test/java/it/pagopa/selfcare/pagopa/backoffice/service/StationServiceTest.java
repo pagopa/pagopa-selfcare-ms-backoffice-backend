@@ -10,6 +10,7 @@ import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
@@ -20,14 +21,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatu
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationCodeResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestResultEnum;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 import kong.unirest.HttpResponse;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -42,17 +36,9 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = {StationService.class})
 class StationServiceTest {
@@ -158,9 +144,9 @@ class StationServiceTest {
 
     @Test
     void getStationsToBeValidatedSuccess() {
-        WrapperEntitiesList wrapperEntitiesList = buildWrapperEntitiesList();
+        var wrapperEntitiesList = buildWrapperStationList();
 
-        when(wrapperService.getWrapperStations(STATION_CODE, BROKER_CODE, PAGE, LIMIT))
+        when(wrapperService.getWrapperStationsList(STATION_CODE, BROKER_CODE, PAGE, LIMIT))
                 .thenReturn(wrapperEntitiesList);
 
         WrapperStationsResource result =
@@ -388,8 +374,8 @@ class StationServiceTest {
     void getAllStationsMergedSuccess() {
         when(apiConfigClient.getStations(LIMIT, PAGE, SORTING_DESC, BROKER_CODE, null, STATION_CODE))
                 .thenReturn(buildStations("station"));
-        when(wrapperService.findByIdLikeOrTypeOrBrokerCode(STATION_CODE, WrapperType.STATION, BROKER_CODE, PAGE, LIMIT))
-                .thenReturn(buildWrapperEntitiesList());
+        when(wrapperService.findStationByIdLikeOrTypeOrBrokerCode(STATION_CODE, WrapperType.STATION, BROKER_CODE, PAGE, LIMIT))
+                .thenReturn(buildWrapperStationList());
 
         WrapperStationsResource result = assertDoesNotThrow(() ->
                 service.getAllStationsMerged(LIMIT, STATION_CODE, BROKER_CODE, PAGE, SORTING_DESC)
@@ -407,8 +393,8 @@ class StationServiceTest {
     void getAllStationsMergedApiConfigNotFoundSuccess() {
         when(apiConfigClient.getStations(LIMIT, PAGE, SORTING_ASC, BROKER_CODE, null, STATION_CODE))
                 .thenThrow(new RuntimeException("[404 Not Found]"));
-        when(wrapperService.findByIdLikeOrTypeOrBrokerCode(STATION_CODE, WrapperType.STATION, BROKER_CODE, PAGE, LIMIT))
-                .thenReturn(buildWrapperEntitiesList());
+        when(wrapperService.findStationByIdLikeOrTypeOrBrokerCode(STATION_CODE, WrapperType.STATION, BROKER_CODE, PAGE, LIMIT))
+                .thenReturn(buildWrapperStationList());
 
         WrapperStationsResource result = assertDoesNotThrow(() ->
                 service.getAllStationsMerged(LIMIT, STATION_CODE, BROKER_CODE, PAGE, SORTING_ASC)
@@ -490,6 +476,19 @@ class StationServiceTest {
     private @NotNull WrapperEntitiesList buildWrapperEntitiesList() {
         WrapperEntities<StationDetails> entities = buildStationDetailsWrapperEntities();
         WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
+        wrapperEntitiesList.setWrapperEntities(Collections.singletonList(entities));
+        wrapperEntitiesList.setPageInfo(PageInfo.builder()
+                .itemsFound(1)
+                .totalPages(1)
+                .limit(LIMIT)
+                .page(PAGE)
+                .totalItems(1L)
+                .build());
+        return wrapperEntitiesList;
+    }
+    private @NotNull WrapperStationList buildWrapperStationList() {
+        WrapperEntities<StationDetails> entities = buildStationDetailsWrapperEntities();
+        WrapperStationList wrapperEntitiesList = new WrapperStationList();
         wrapperEntitiesList.setWrapperEntities(Collections.singletonList(entities));
         wrapperEntitiesList.setPageInfo(PageInfo.builder()
                 .itemsFound(1)

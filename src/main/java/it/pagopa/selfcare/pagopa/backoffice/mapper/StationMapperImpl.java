@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.mapper;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
@@ -17,6 +18,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getStationWrapperEntityOperationsSortedList;
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 
 
@@ -283,7 +285,7 @@ public class StationMapperImpl implements StationMapper {
     }
 
     @Override
-    public WrapperStations toWrapperStations(WrapperEntitiesList wrapperEntitiesList) {
+    public WrapperStations toWrapperStations(WrapperStationList wrapperEntitiesList) {
         if(wrapperEntitiesList == null) {
             return null;
         }
@@ -293,7 +295,7 @@ public class StationMapperImpl implements StationMapper {
 
         wrapperEntitiesList.getWrapperEntities().forEach(
                 ent -> {
-                    WrapperStation wrapperStation = toWrapperStation((WrapperEntityOperations<StationDetails>) getWrapperEntityOperationsSortedList(ent).get(0));
+                    WrapperStation wrapperStation = toWrapperStation(getStationWrapperEntityOperationsSortedList(ent).get(0));
                     wrapperStation.setCreatedAt(ent.getCreatedAt());
                     stationList.add(wrapperStation);
                 });
