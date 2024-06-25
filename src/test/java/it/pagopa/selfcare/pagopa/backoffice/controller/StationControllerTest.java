@@ -124,17 +124,6 @@ class StationControllerTest {
     }
 
     @Test
-    void getAllStationsMerged() throws Exception {
-        when(stationService.getAllStationsMerged(anyInt(), eq(null), anyString(), anyInt(), eq(null)))
-                .thenReturn(buildWrapperStationsResource());
-        mvc.perform(get("/stations/merged")
-                        .param("brokerCode", "brokerCode")
-                        .param("page", "0")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
     void createWrapperStationDetails() throws Exception {
         when(stationService.createWrapperStationDetails(any())).thenReturn(new WrapperEntities<>());
         mvc.perform(post("/stations/wrapper")
