@@ -270,6 +270,13 @@ public class WrapperService {
         return response;
     }
 
+    public WrapperEntityStations findStationById(String id) {
+        var response = wrapperStationsRepository.findById(id)
+                .orElseThrow(() -> new AppException(AppError.WRAPPER_NOT_FOUND, id));
+        response.sortEntitiesById();
+        return response;
+    }
+
     public Optional<WrapperEntities> findByIdOptional(String id) {
         return repository.findById(id);
     }

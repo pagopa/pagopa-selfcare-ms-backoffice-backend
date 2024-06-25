@@ -33,6 +33,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getStationWrapperEntityOperationsSortedList;
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.REGEX_GENERATE;
 import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
@@ -154,16 +155,15 @@ public class StationService {
         String modifiedBy = "";
         String note = "";
         try {
-            WrapperEntities<StationDetails> result = wrapperService.findById(stationCode);
+            var result = wrapperService.findStationById(stationCode);
             createdBy = result.getCreatedBy();
             createdAt = result.getCreatedAt();
             modifiedBy = result.getModifiedBy();
             status = result.getStatus();
-            WrapperEntityOperations<StationDetails> wrapperEntity = getWrapperEntityOperationsSortedList(result).get(0);
+            var wrapperEntity = getStationWrapperEntityOperationsSortedList(result).get(0);
             stationDetails = wrapperEntity.getEntity();
             note = wrapperEntity.getNote();
         } catch (AppException e) {
-
             stationDetails = apiConfigClient.getStation(stationCode);
             status = WrapperStatus.APPROVED;
         }

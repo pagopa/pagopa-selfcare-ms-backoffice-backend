@@ -4,9 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ForwarderClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.entity.*;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
@@ -176,8 +174,8 @@ class StationServiceTest {
 
     @Test
     void getStationDetailInWrapperSuccess() {
-        WrapperEntities<?> entities = buildStationDetailsWrapperEntities();
-        when(wrapperService.findById(STATION_CODE)).thenReturn((WrapperEntities<Object>) entities);
+        WrapperEntityStations entities = buildWrapperEntityStation();
+        when(wrapperService.findStationById(STATION_CODE)).thenReturn(entities);
 
         StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetail(STATION_CODE));
 
@@ -192,7 +190,7 @@ class StationServiceTest {
 
     @Test
     void getStationDetailInApiConfigSuccess() {
-        when(wrapperService.findById(STATION_CODE)).thenThrow(AppException.class);
+        when(wrapperService.findStationById(STATION_CODE)).thenThrow(AppException.class);
         when(apiConfigClient.getStation(STATION_CODE)).thenReturn(buildStationDetails());
 
         StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetail(STATION_CODE));
@@ -487,7 +485,7 @@ class StationServiceTest {
         return wrapperEntitiesList;
     }
     private @NotNull WrapperStationList buildWrapperStationList() {
-        WrapperEntities<StationDetails> entities = buildStationDetailsWrapperEntities();
+        var entities = buildWrapperEntityStation();
         WrapperStationList wrapperEntitiesList = new WrapperStationList();
         wrapperEntitiesList.setWrapperEntities(Collections.singletonList(entities));
         wrapperEntitiesList.setPageInfo(PageInfo.builder()
@@ -504,6 +502,15 @@ class StationServiceTest {
         WrapperEntity<StationDetails> entity = new WrapperEntity<>();
         entity.setEntity(buildStationDetails());
         WrapperEntities<StationDetails> entities = new WrapperEntities<>();
+        entities.setCreatedAt(Instant.now());
+        entities.setEntities(Collections.singletonList(entity));
+        return entities;
+    }
+
+    private @NotNull WrapperEntityStations buildWrapperEntityStation() {
+        WrapperEntityStation entity = new WrapperEntityStation();
+        entity.setEntity(buildStationDetails());
+        WrapperEntityStations entities = new WrapperEntityStations();
         entities.setCreatedAt(Instant.now());
         entities.setEntities(Collections.singletonList(entity));
         return entities;
