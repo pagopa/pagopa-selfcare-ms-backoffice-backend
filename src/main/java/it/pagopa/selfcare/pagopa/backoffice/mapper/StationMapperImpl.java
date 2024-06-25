@@ -1,6 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.mapper;
 
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperStationList;
@@ -307,7 +307,7 @@ public class StationMapperImpl implements StationMapper {
     }
 
     @Override
-    public WrapperStation toWrapperStation(WrapperEntityOperations<StationDetails> wrapperEntityOperations) {
+    public WrapperStation toWrapperStation(WrapperEntity<StationDetails> wrapperEntityOperations) {
         if(wrapperEntityOperations == null) {
             return null;
         }

@@ -52,9 +52,9 @@ public class WrapperService {
         return list;
 
     }
-    public static List<WrapperEntityOperations<StationDetails>> getStationWrapperEntityOperationsSortedList(WrapperEntities<StationDetails> wrapperEntities) {
-        List<WrapperEntityOperations<StationDetails>> list = new ArrayList<>(wrapperEntities.getEntities());
-        list.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
+    public static List<WrapperEntity<StationDetails>> getStationWrapperEntityOperationsSortedList(WrapperEntities<StationDetails> wrapperEntities) {
+        var list = wrapperEntities.getEntities();
+        list.sort(Comparator.comparing(WrapperEntity::getCreatedAt, Comparator.reverseOrder()));
         return list;
 
     }
