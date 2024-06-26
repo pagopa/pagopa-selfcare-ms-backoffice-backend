@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ForwarderClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStation;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
@@ -17,11 +18,22 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStation;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStations;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationCodeResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestResultEnum;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationsResource;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +42,11 @@ import org.thymeleaf.context.Context;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getStationWrapperEntityOperationsSortedList;
@@ -105,16 +121,28 @@ public class StationService {
         return result;
     }
 
+    /**
+     * Creates a new wrapper station in status {@link WrapperStatus#TO_CHECK} and open a JIRA ticket for operator
+     * review
+     *
+     * @param wrapperStationDetailsDto detail of the new channel
+     * @return the created wrapper channel
+     */
     public WrapperEntities<StationDetails> createWrapperStationDetails(@Valid WrapperStationDetailsDto wrapperStationDetailsDto) {
         final String CREATE_STATION_SUMMARY = " Validazione stazione - creazione: %s";
         final String CREATE_STATION_DESCRIPTION = "La stazione %s deve essere validata: %s";
 
-        WrapperEntities<StationDetails> createdWrapperEntities = wrapperService.
-                insert(stationMapper.
-                        fromWrapperStationDetailsDto(wrapperStationDetailsDto), wrapperStationDetailsDto.getNote(), wrapperStationDetailsDto.getStatus().name());
+        WrapperEntities<StationDetails> createdWrapperEntities =
+                this.wrapperService.createWrapperStation(
+                        this.stationMapper.fromWrapperStationDetailsDto(wrapperStationDetailsDto),
+                        WrapperStatus.TO_CHECK
+                );
 
-        jiraServiceManagerClient.createTicket(String.format(CREATE_STATION_SUMMARY, wrapperStationDetailsDto.getStationCode()),
-                String.format(CREATE_STATION_DESCRIPTION, wrapperStationDetailsDto.getStationCode(), wrapperStationDetailsDto.getValidationUrl()));
+        String stationCode = wrapperStationDetailsDto.getStationCode();
+        this.jiraServiceManagerClient.createTicket(
+                String.format(CREATE_STATION_SUMMARY, stationCode),
+                String.format(CREATE_STATION_DESCRIPTION, stationCode, wrapperStationDetailsDto.getValidationUrl())
+        );
 
         return createdWrapperEntities;
     }
@@ -200,15 +228,16 @@ public class StationService {
      * @param stationDetailsDto the new station details
      * @return the updated station
      */
-    public WrapperEntities updateWrapperStationDetails(@Valid StationDetailsDto stationDetailsDto) {
+    public StationDetailResource updateWrapperStationDetails(
+            String stationCode,
+            @Valid StationDetailsDto stationDetailsDto
+    ) {
         final String UPDATE_STATION_SUMMARY = "Station creation validation: %s";
         final String UPDATE_STATION_DESCRIPTION = "The station %s created by broker %s needs to be validated: %s";
 
-        WrapperEntities createdWrapperEntities = this.wrapperService.upsert(
-                this.stationMapper.fromDto(stationDetailsDto),
-                stationDetailsDto.getNote(),
-                stationDetailsDto.getStatus().name(),
-                null
+        WrapperEntityStations wrapperEntityStations = this.wrapperService.updateWrapperStation(
+                stationCode,
+                this.stationMapper.fromDto(stationDetailsDto)
         );
 
         this.jiraServiceManagerClient.createTicket(
@@ -220,7 +249,8 @@ public class StationService {
                         stationDetailsDto.getValidationUrl()
                 )
         );
-        return createdWrapperEntities;
+        return this.stationMapper
+                .toResource(getStationWrapperEntityOperationsSortedList(wrapperEntityStations).get(0).getEntity());
     }
 
     /**
@@ -236,7 +266,7 @@ public class StationService {
             String ciTaxCode,
             String note
     ) {
-        WrapperEntities<StationDetails> updatedWrapper = this.wrapperService.updateStationWithOperatorReview(stationCode, note);
+        WrapperEntityStations updatedWrapper = this.wrapperService.updateStationWithOperatorReview(stationCode, note);
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
@@ -248,7 +278,7 @@ public class StationService {
                 .build();
         this.awsSesClient.sendEmail(messageDetail);
 
-        WrapperEntityOperations<StationDetails> entityOperations = getWrapperEntityOperationsSortedList(updatedWrapper).get(0);
+        WrapperEntityStation entityOperations = getStationWrapperEntityOperationsSortedList(updatedWrapper).get(0);
         return this.stationMapper.toResource(
                 entityOperations.getEntity(),
                 updatedWrapper.getStatus(),
@@ -273,7 +303,7 @@ public class StationService {
      * Updates a validated station and update the relative wrapper station with status {@link WrapperStatus#APPROVED}.
      * Notify the channel owner via email.
      *
-     * @param stationCode station's code
+     * @param stationCode       station's code
      * @param stationDetailsDto the station details
      * @return the updated station
      */
@@ -361,9 +391,10 @@ public class StationService {
         List<WrapperStation> wrapperStations = stations.getStationsList().parallelStream()
                 .map(station -> {
                     WrapperStation wrapperStation = this.stationMapper.toWrapperStation(station);
-                    Optional<WrapperEntities> optionalWrapperEntities = this.wrapperService.findByIdOptional(station.getStationCode());
+                    Optional<WrapperEntityStations> optionalWrapperEntities =
+                            this.wrapperService.findStationByIdOptional(station.getStationCode());
                     if (optionalWrapperEntities.isPresent()) {
-                        WrapperEntities<StationDetails> wrapperEntities = optionalWrapperEntities.get();
+                        WrapperEntityStations wrapperEntities = optionalWrapperEntities.get();
                         wrapperStation.setCreatedAt(wrapperEntities.getCreatedAt());
                     }
                     return wrapperStation;

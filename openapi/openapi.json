@@ -9621,7 +9621,7 @@
     },
     "/stations": {
       "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId": "getStations",
         "parameters": [
           {
@@ -9795,11 +9795,69 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/WrapperEntityOperationsStationDetails"
+                  "$ref": "#/components/schemas/StationDetailResource"
                 }
               }
             },
-            "description": "Created",
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
@@ -10071,13 +10129,71 @@
         "responses": {
           "201": {
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/WrapperEntitiesStationDetails"
+                  "$ref": "#/components/schemas/WrapperEntities"
                 }
               }
             },
-            "description": "Created",
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
@@ -10093,7 +10209,7 @@
             "JWT": []
           }
         ],
-        "summary": "Create a WrapperChannel on Cosmodb",
+        "summary": "Request the creation of a station that will be validated by an operator",
         "tags": [
           "Stations"
         ]
@@ -10181,13 +10297,71 @@
         "responses": {
           "200": {
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/WrapperEntities"
+                  "$ref": "#/components/schemas/WrapperEntityStations"
                 }
               }
             },
             "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
@@ -10203,7 +10377,7 @@
             "JWT": []
           }
         ],
-        "summary": "Update WrapperStationDetails",
+        "summary": "Request the update of a station that will be validated by an operator",
         "tags": [
           "Stations"
         ]
@@ -10449,6 +10623,64 @@
               }
             },
             "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
@@ -15243,63 +15475,6 @@
           }
         }
       },
-      "WrapperEntitiesStationDetails": {
-        "type": "object",
-        "properties": {
-          "brokerCode": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "createdBy": {
-            "type": "string"
-          },
-          "entities": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/WrapperEntityStationDetails"
-            }
-          },
-          "id": {
-            "type": "string"
-          },
-          "modifiedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "modifiedBy": {
-            "type": "string"
-          },
-          "modifiedByOpt": {
-            "type": "string"
-          },
-          "new": {
-            "type": "boolean"
-          },
-          "note": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "APPROVED",
-              "TO_CHECK",
-              "TO_FIX",
-              "TO_CHECK_UPDATE",
-              "TO_FIX_UPDATE"
-            ]
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "CHANNEL",
-              "STATION"
-            ]
-          }
-        }
-      },
       "WrapperEntityObject": {
         "type": "object",
         "properties": {
@@ -15345,7 +15520,7 @@
           }
         }
       },
-      "WrapperEntityOperationsStationDetails": {
+      "WrapperEntityStation": {
         "type": "object",
         "properties": {
           "createdAt": {
@@ -15390,15 +15565,24 @@
           }
         }
       },
-      "WrapperEntityStationDetails": {
+      "WrapperEntityStations": {
         "type": "object",
         "properties": {
+          "brokerCode": {
+            "type": "string"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
           },
-          "entity": {
-            "$ref": "#/components/schemas/StationDetails"
+          "createdBy": {
+            "type": "string"
+          },
+          "entities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WrapperEntityStation"
+            }
           },
           "id": {
             "type": "string"
@@ -15412,6 +15596,9 @@
           },
           "modifiedByOpt": {
             "type": "string"
+          },
+          "new": {
+            "type": "boolean"
           },
           "note": {
             "type": "string"
