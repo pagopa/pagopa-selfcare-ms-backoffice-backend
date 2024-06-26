@@ -417,7 +417,27 @@ public class WrapperService {
      * @return the paginated list
      */
     public WrapperEntitiesList getWrapperChannels(String channelCode, String brokerCode, Integer size, Integer page) {
-        return getWrapperEntities(WrapperType.CHANNEL, channelCode, brokerCode, size, page);
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+
+        Page<WrapperEntities<?>> response;
+        if (channelCode == null) {
+            response = this.repository
+                    .findByTypeAndBrokerCodeAndStatusNot(WrapperType.CHANNEL, brokerCode, WrapperStatus.APPROVED, paging);
+        } else {
+            response = this.repository
+                    .findByIdLikeAndTypeAndBrokerCodeAndStatusNot(channelCode, WrapperType.CHANNEL, brokerCode, WrapperStatus.APPROVED, paging);
+        }
+
+        return WrapperEntitiesList.builder()
+                .wrapperEntities(response.getContent())
+                .pageInfo(PageInfo.builder()
+                        .page(page)
+                        .limit(size)
+                        .totalItems(response.getTotalElements())
+                        .totalPages(response.getTotalPages())
+                        .itemsFound(response.getNumberOfElements())
+                        .build())
+                .build();
     }
 
     /**
@@ -429,11 +449,7 @@ public class WrapperService {
      * @param page        page number
      * @return the paginated list
      */
-    public WrapperEntitiesList getWrapperStations(String stationCode, String brokerCode, Integer size, Integer page) {
-        return getWrapperEntities(WrapperType.STATION, stationCode, brokerCode, size, page);
-    }
-
-    public WrapperStationList getWrapperStationsList(String stationCode, String brokerCode, Integer page, Integer size) {
+    public WrapperStationList getWrapperStations(String stationCode, String brokerCode, Integer size, Integer page) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
 
         Page<WrapperEntityStations> response;
@@ -572,35 +588,5 @@ public class WrapperService {
             throw new AppException(AppError.WRAPPER_STATION_INVALID_STATUS, stationCode);
         }
         return newWrapperStatus;
-    }
-
-    private WrapperEntitiesList getWrapperEntities(
-            WrapperType wrapperType,
-            String code,
-            String brokerCode,
-            Integer size,
-            Integer page
-    ) {
-        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
-
-        Page<WrapperEntities<?>> response;
-        if (code == null) {
-            response = this.repository
-                    .findByTypeAndBrokerCodeAndStatusNot(wrapperType, brokerCode, WrapperStatus.APPROVED, paging);
-        } else {
-            response = this.repository
-                    .findByIdLikeAndTypeAndBrokerCodeAndStatusNot(code, wrapperType, brokerCode, WrapperStatus.APPROVED, paging);
-        }
-
-        return WrapperEntitiesList.builder()
-                .wrapperEntities(response.getContent())
-                .pageInfo(PageInfo.builder()
-                        .page(page)
-                        .limit(size)
-                        .totalItems(response.getTotalElements())
-                        .totalPages(response.getTotalPages())
-                        .itemsFound(response.getNumberOfElements())
-                        .build())
-                .build();
     }
 }

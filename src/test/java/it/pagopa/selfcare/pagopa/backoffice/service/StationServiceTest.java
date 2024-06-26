@@ -144,7 +144,7 @@ class StationServiceTest {
     void getStationsToBeValidatedSuccess() {
         var wrapperEntitiesList = buildWrapperStationList();
 
-        when(wrapperService.getWrapperStationsList(STATION_CODE, BROKER_CODE, LIMIT, PAGE))
+        when(wrapperService.getWrapperStations(STATION_CODE, BROKER_CODE, LIMIT, PAGE))
                 .thenReturn(wrapperEntitiesList);
 
         WrapperStationsResource result =

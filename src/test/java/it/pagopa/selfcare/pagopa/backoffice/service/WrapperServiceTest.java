@@ -3,6 +3,8 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStation;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channel;
@@ -10,6 +12,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
@@ -85,15 +88,15 @@ class WrapperServiceTest {
 
     @Test
     void getWrapperStationsWithStationCodeSuccess() {
-        when(repository.findByIdLikeAndTypeAndBrokerCodeAndStatusNot(
+        when(wrapperStationsRepository.findByIdLikeAndTypeAndBrokerCodeAndStatusNot(
                 eq(STATION_CODE),
                 eq(WrapperType.STATION),
                 eq(BROKER_CODE),
                 eq(WrapperStatus.APPROVED),
                 any())
-        ).thenReturn(new PageImpl<>(Collections.singletonList(buildStationDetailsWrapperEntities())));
+        ).thenReturn(new PageImpl<>(Collections.singletonList(buildWrapperEntityStations())));
 
-        WrapperEntitiesList result = assertDoesNotThrow(() ->
+        WrapperStationList result = assertDoesNotThrow(() ->
                 sut.getWrapperStations(STATION_CODE, BROKER_CODE, LIMIT, PAGE));
 
         assertNotNull(result);
@@ -113,14 +116,14 @@ class WrapperServiceTest {
 
     @Test
     void getWrapperStationsWithoutStationCodeSuccess() {
-        when(repository.findByTypeAndBrokerCodeAndStatusNot(
+        when(wrapperStationsRepository.findByTypeAndBrokerCodeAndStatusNot(
                 eq(WrapperType.STATION),
                 eq(BROKER_CODE),
                 eq(WrapperStatus.APPROVED),
                 any())
-        ).thenReturn(new PageImpl<>(Collections.singletonList(buildStationDetailsWrapperEntities())));
+        ).thenReturn(new PageImpl<>(Collections.singletonList(buildWrapperEntityStations())));
 
-        WrapperEntitiesList result = assertDoesNotThrow(() ->
+        WrapperStationList result = assertDoesNotThrow(() ->
                 sut.getWrapperStations(null, BROKER_CODE, LIMIT, PAGE));
 
         assertNotNull(result);
@@ -365,6 +368,15 @@ class WrapperServiceTest {
         assertEquals(AppError.WRAPPER_CHANNEL_NOT_FOUND.title, e.getTitle());
 
         verify(repository, never()).save(any());
+    }
+
+    private WrapperEntityStations buildWrapperEntityStations() {
+        WrapperEntityStation entity = new WrapperEntityStation();
+        entity.setEntity(buildStationDetails());
+        entity.setStatus(WrapperStatus.TO_CHECK);
+        WrapperEntityStations entities = new WrapperEntityStations();
+        entities.setEntities(Collections.singletonList(entity));
+        return entities;
     }
 
     private WrapperEntities<StationDetails> buildStationDetailsWrapperEntities() {
