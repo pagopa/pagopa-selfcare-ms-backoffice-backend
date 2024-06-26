@@ -10,7 +10,7 @@
         <version>2.5.14</version>
     </parent>
     <artifactId>pagopa-selfcare-ms-backoffice</artifactId>
-    <version>2.15.0-3-next</version>
+    <version>2.15.0-4-next</version>
     <name>SelfCare Backoffice</name>
     <description>Microservice to manage PagoPA Backoffice</description>
 
