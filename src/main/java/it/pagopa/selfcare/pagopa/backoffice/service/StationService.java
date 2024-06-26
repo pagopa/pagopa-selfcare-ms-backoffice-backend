@@ -11,26 +11,16 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStation;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStations;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationCodeResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestResultEnum;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,13 +29,10 @@ import org.thymeleaf.context.Context;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getStationWrapperEntityOperationsSortedList;
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.REGEX_GENERATE;
 import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
@@ -146,7 +133,7 @@ public class StationService {
             Stations stations = this.apiConfigClient.getStations(limit, page, "DESC", brokerCode, null, stationCode);
             response = buildEnrichedWrapperStations(stations);
         } else {
-            WrapperEntitiesList wrapperStations = this.wrapperService.getWrapperStations(stationCode, brokerCode, limit, page);
+            WrapperStationList wrapperStations = this.wrapperService.getWrapperStationsList(stationCode, brokerCode, page, limit);
             response = this.stationMapper.toWrapperStations(wrapperStations);
         }
         return this.stationMapper.toWrapperStationsResource(response);
@@ -173,12 +160,12 @@ public class StationService {
         String modifiedBy = "";
         String note = "";
         try {
-            WrapperEntities<StationDetails> result = this.wrapperService.findById(stationCode);
+            var result = this.wrapperService.findStationById(stationCode);
             createdBy = result.getCreatedBy();
             createdAt = result.getCreatedAt();
             modifiedBy = result.getModifiedBy();
             status = result.getStatus();
-            WrapperEntityOperations<StationDetails> wrapperEntity = getWrapperEntityOperationsSortedList(result).get(0);
+            var wrapperEntity = getStationWrapperEntityOperationsSortedList(result).get(0);
             stationDetails = wrapperEntity.getEntity();
             note = wrapperEntity.getNote();
         } catch (AppException e) {
