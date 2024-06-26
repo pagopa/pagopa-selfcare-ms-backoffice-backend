@@ -11636,7 +11636,8 @@
               "ENABLED",
               "ON_REMOVAL",
               "REQUESTED",
-              "AVAILABLE"
+              "AVAILABLE",
+              "AVAILABLE_EXPIRED"
             ]
           },
           "ciOfferId": {
