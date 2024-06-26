@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
@@ -91,7 +90,7 @@ public class ChannelController {
     public ChannelDetailsResource getChannelDetails(
             @Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode
     ) {
-        return channelService.getChannel(channelCode);
+        return this.channelService.getChannel(channelCode);
     }
 
     @GetMapping(value = "/{channel-code}/payment-service-providers", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -104,7 +103,7 @@ public class ChannelController {
             @Parameter(description = "Number of elements on one page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
             @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page
     ) {
-        return channelService.getPSPsByChannel(limit, page, channelCode, pspName);
+        return this.channelService.getPSPsByChannel(limit, page, channelCode, pspName);
     }
 
     @GetMapping(value = "/csv", produces = {MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE})
@@ -113,14 +112,14 @@ public class ChannelController {
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public Resource getChannelsCSV(HttpServletResponse response) {
 
-        return channelService.getChannelsInCSVFile(response);
+        return this.channelService.getChannelsInCSVFile(response);
     }
 
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a channel, validating the creation request previously inserted by user", security = {@SecurityRequirement(name = "JWT")})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WrapperChannelDetailsResource.class))),
+            @ApiResponse(responseCode = "201", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WrapperChannelDetailsResource.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
@@ -154,7 +153,7 @@ public class ChannelController {
     @Operation(summary = "delete channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
     public void deleteChannel(@Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode) {
-        channelService.deleteChannel(channelCode);
+        this.channelService.deleteChannel(channelCode);
     }
 
     @GetMapping(value = "/{channel-code}/payment-types", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -164,7 +163,7 @@ public class ChannelController {
     public PspChannelPaymentTypesResource getChannelPaymentTypes(
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode
     ) {
-        return channelService.getPaymentTypesByChannel(channelCode);
+        return this.channelService.getPaymentTypesByChannel(channelCode);
     }
 
     @PostMapping(value = "/{channel-code}/payment-types", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -175,7 +174,7 @@ public class ChannelController {
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
             @Parameter(description = " List of payment types") @RequestBody PspChannelPaymentTypes pspChannelPaymentTypes
     ) {
-        return channelService.createPaymentTypeOnChannel(pspChannelPaymentTypes, channelCode);
+        return this.channelService.createPaymentTypeOnChannel(pspChannelPaymentTypes, channelCode);
     }
 
     @DeleteMapping(value = "/{channel-code}/payment-types/{payment-type-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -186,21 +185,7 @@ public class ChannelController {
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
             @Parameter(description = "Code of the payment type") @PathVariable("payment-type-code") String paymentTypeCode
     ) {
-        channelService.deletePaymentTypeOnChannel(channelCode, paymentTypeCode);
-    }
-
-    @GetMapping(value = "/merged", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get All Channels from cosmos db merged whit apiConfig", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
-    public WrapperChannelsResource getAllChannelsMerged(
-            @Parameter(description = "") @RequestParam(required = false, defaultValue = "50") Integer limit,
-            @Parameter(description = "Channel code") @RequestParam(required = false, value = "channelcodefilter") String channelcode,
-            @Parameter(description = "Broker code filter for search") @RequestParam(required = false, value = "brokerCode") String brokerCode,
-            @Parameter(description = "Page number. Page value starts from 0") @RequestParam Integer page,
-            @Parameter(description = "Method of sorting") @RequestParam(required = false, value = "sorting") String sorting
-    ) {
-        return channelService.getAllMergedChannel(limit, channelcode, brokerCode, page, sorting);
+        this.channelService.deletePaymentTypeOnChannel(channelCode, paymentTypeCode);
     }
 
     @GetMapping(value = "/merged/{channel-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -217,7 +202,7 @@ public class ChannelController {
     public ChannelDetailsResource getChannelDetail(
             @Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode
     ) {
-        return channelService.getChannelToBeValidated(channelCode);
+        return this.channelService.getChannelToBeValidated(channelCode);
     }
 
     @GetMapping(value = "/wrapper/{channel-code}")
@@ -227,14 +212,14 @@ public class ChannelController {
     public WrapperEntities getGenericWrapperEntities(
             @Parameter(description = "Channel code") @PathVariable("channel-code") String channelCode
     ) {
-        return wrapperService.findById(channelCode);
+        return this.wrapperService.findById(channelCode);
     }
 
     @PostMapping(value = "/wrapper", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Request the creation of a channel that will be validated by an operator", security = {@SecurityRequirement(name = "JWT")})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WrapperEntities.class))),
+            @ApiResponse(responseCode = "201", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WrapperEntities.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
@@ -261,15 +246,6 @@ public class ChannelController {
             @RequestBody @Valid ChannelDetailsDto channelDetailsDto
     ) {
         return this.channelService.updateChannelToBeValidated(channelCode, channelDetailsDto);
-    }
-
-    @PutMapping(value = "/wrapper/operator", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Execute the update as operator in the channel request that must be validated", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
-    public WrapperEntities updateWrapperChannelDetailsByOpt(@RequestBody @Valid ChannelDetailsDto channelDetailsDto) {
-
-        return wrapperService.updateValidatedWrapperChannel(ChannelMapper.fromChannelDetailsDto(channelDetailsDto), channelDetailsDto.getStatus());
     }
 
     /**

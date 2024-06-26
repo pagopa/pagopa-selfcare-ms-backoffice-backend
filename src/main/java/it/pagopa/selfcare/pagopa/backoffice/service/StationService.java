@@ -10,7 +10,6 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.StationMapper;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
@@ -40,12 +39,9 @@ import org.thymeleaf.context.Context;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -296,26 +292,8 @@ public class StationService {
         return resource;
     }
 
-    public WrapperEntities getWrapperEntitiesStation(String code) {
+    public WrapperEntities<StationDetails> getWrapperEntitiesStation(String code) {
         return wrapperService.findById(code);
-    }
-
-    public WrapperStationsResource getAllStationsMerged(
-            Integer limit,
-            String stationCode,
-            String brokerCode,
-            Integer page,
-            String sorting
-    ) {
-        Stations stations = getStations(limit, page, sorting, brokerCode, null, stationCode);
-        WrapperStations responseApiConfig = stationMapper.toWrapperStations(stations);
-
-        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(stationCode, WrapperType.STATION, brokerCode, page, limit);
-
-        WrapperStations responseMongo = stationMapper.toWrapperStations(mongoList);
-
-        WrapperStations stationsMergedAndSorted = mergeAndSortWrapperStations(responseApiConfig, responseMongo, sorting);
-        return stationMapper.toWrapperStationsResource(stationsMergedAndSorted);
     }
 
     public TestStationResource testStation(StationTestDto stationTestDto) {
@@ -364,35 +342,6 @@ public class StationService {
         return generateStationCode(ecCode);
     }
 
-    private Stations getStations(
-            Integer limit,
-            Integer page,
-            String sort,
-            String brokerCode,
-            String ecCode,
-            String stationCode
-    ) {
-        Stations response = null;
-        try {
-            response = apiConfigClient.getStations(limit, page, sort, brokerCode, ecCode, stationCode);
-        } catch (Exception e) {
-            if (e.getMessage().contains("[404 Not Found]")) {
-                response = new Stations();
-                response.setStationsList(new ArrayList<>());
-                PageInfo pageInfo = new PageInfo();
-                pageInfo.setPage(0);
-                pageInfo.setTotalPages(0);
-                pageInfo.setLimit(50);
-                pageInfo.setItemsFound(0);
-                pageInfo.setTotalItems(0L);
-                response.setPageInfo(pageInfo);
-            } else {
-                throw e;
-            }
-        }
-        return response;
-    }
-
     private String generateStationCode(String ecCode) {
         Stations stations = apiConfigClient.getStations(100, 0, "ASC", null, null, ecCode);
         List<Station> stationsList = stations.getStationsList();
@@ -402,36 +351,6 @@ public class StationService {
         return generator(codes, ecCode);
     }
 
-
-    private WrapperStations mergeAndSortWrapperStations(
-            WrapperStations wrapperStationsApiConfig,
-            WrapperStations wrapperStationsMongo,
-            String sorting
-    ) {
-        List<WrapperStation> mergedList = new ArrayList<>();
-        mergedList.addAll(wrapperStationsMongo.getStationsList());
-        mergedList.addAll(
-                wrapperStationsApiConfig.getStationsList().stream()
-                        .filter(obj2 -> wrapperStationsMongo.getStationsList().stream().noneMatch(obj1 -> Objects.equals(obj1.getStationCode(), obj2.getStationCode())))
-                        .toList()
-        );
-
-        if ("asc".equalsIgnoreCase(sorting)) {
-            mergedList.sort(Comparator.comparing(WrapperStation::getStationCode));
-        } else if ("desc".equalsIgnoreCase(sorting)) {
-            mergedList.sort(Comparator.comparing(WrapperStation::getStationCode, Comparator.reverseOrder()));
-        }
-        WrapperStations result = new WrapperStations();
-        result.setStationsList(mergedList);
-        PageInfo pageInfo = new PageInfo();
-        pageInfo.setLimit(wrapperStationsApiConfig.getPageInfo().getLimit());
-        pageInfo.setTotalPages(wrapperStationsApiConfig.getPageInfo().getTotalPages());
-        pageInfo.setPage(wrapperStationsApiConfig.getPageInfo().getPage());
-        pageInfo.setItemsFound(mergedList.size());
-        pageInfo.setTotalItems(wrapperStationsApiConfig.getPageInfo().getTotalItems());
-        result.setPageInfo(pageInfo);
-        return result;
-    }
 
     private WrapperStations buildEnrichedWrapperStations(Stations stations) {
         WrapperStations response;

@@ -23,10 +23,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.Configuratio
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannel;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
-import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -72,19 +70,6 @@ public class ChannelService {
         this.wrapperService = wrapperService;
         this.jsmClient = jsmClient;
         this.awsSesClient = awsSesClient;
-    }
-
-    public WrapperChannelsResource getAllMergedChannel(
-            Integer limit,
-            String channelcode,
-            String brokerCode,
-            Integer page,
-            String sorting
-    ) {
-        Channels channels = apiConfigClient.getChannels(channelcode, brokerCode, sorting, limit, page);
-        WrapperEntitiesList mongoList = wrapperService.findByIdLikeOrTypeOrBrokerCode(channelcode, WrapperType.CHANNEL, brokerCode, page, limit);
-        WrapperChannels channelsMergedAndSorted = Utility.mergeAndSortWrapperChannels(ChannelMapper.toWrapperChannels(channels), ChannelMapper.toWrapperChannels(mongoList), sorting);
-        return ChannelMapper.toWrapperChannelsResource(channelsMergedAndSorted);
     }
 
     /**
