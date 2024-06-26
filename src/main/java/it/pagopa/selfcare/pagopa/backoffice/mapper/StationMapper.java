@@ -1,7 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.mapper;
 
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStation;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
@@ -45,9 +46,9 @@ public interface StationMapper {
 
     WrapperStations toWrapperStations(Stations station);
 
-    WrapperStations toWrapperStations(WrapperEntitiesList wrapperEntitiesList);
+    WrapperStations toWrapperStations(WrapperStationList wrapperEntitiesList);
 
-    WrapperStation toWrapperStation(WrapperEntityOperations<StationDetails> wrapperEntitiesList);
+    WrapperStation toWrapperStation(WrapperEntityStation wrapperEntityOperations);
 
     WrapperStationsResource toWrapperStationsResource(WrapperStations wrapperStations);
 
