@@ -107,7 +107,6 @@ class StationControllerTest {
 
     @Test
     void updateStation() throws Exception {
-
         when(stationService.updateStation(any(), anyString())).thenReturn(buildStationDetailResource());
         mvc.perform(put("/stations/{station-code}", STATION_CODE)
                         .content(objectMapper.writeValueAsBytes(buildStationDetailsDto()))

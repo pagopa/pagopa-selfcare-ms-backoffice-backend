@@ -116,12 +116,19 @@ public class StationController {
     @PutMapping(value = "/{station-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a station", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = StationDetailResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @OpenApiTableMetadata
     public StationDetailResource updateStation(
-            @RequestBody @NotNull StationDetailsDto stationDetailsDto,
-            @Parameter(description = "Station's unique identifier") @PathVariable("station-code") String stationCode
+            @Parameter(description = "Station's unique identifier") @PathVariable("station-code") String stationCode,
+            @RequestBody @NotNull StationDetailsDto stationDetailsDto
     ) {
-        return stationService.updateStation(stationDetailsDto, stationCode);
+        return this.stationService.updateStation(stationDetailsDto, stationCode);
     }
 
     @GetMapping(value = "/wrapper/{station-code}")

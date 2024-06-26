@@ -257,11 +257,9 @@ public class WrapperService {
             String createdBy
     ) {
         String stationCode = stationDetails.getStationCode();
-        Optional<WrapperEntities> opt = repository.findById(stationCode);
-        if (opt.isEmpty()) {
-            throw new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode);
-        }
-        WrapperEntities<StationDetails> wrapperEntities = (WrapperEntities) opt.get();
+        WrapperEntities<StationDetails> wrapperEntities = this.repository.findById(stationCode)
+                .orElseThrow(() -> new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode));
+
         WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetails);
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
@@ -269,7 +267,7 @@ public class WrapperService {
         wrapperEntities.getEntities().add(wrapperEntity);
         if (createdBy != null)
             wrapperEntities.setCreatedBy(createdBy);
-        return repository.save(wrapperEntities);
+        return this.repository.save(wrapperEntities);
     }
 
     public WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(

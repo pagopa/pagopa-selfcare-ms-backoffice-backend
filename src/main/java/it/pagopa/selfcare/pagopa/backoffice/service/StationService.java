@@ -269,18 +269,26 @@ public class StationService {
         return creditorInstitutionMapper.toResource(creditorInstitutions);
     }
 
+    /**
+     * Updates a validated station and update the relative wrapper station with status {@link WrapperStatus#APPROVED}.
+     * Notify the channel owner via email.
+     *
+     * @param stationCode station's code
+     * @param stationDetailsDto the station details
+     * @return the updated station
+     */
     public StationDetailResource updateStation(@NotNull StationDetailsDto stationDetailsDto, String stationCode) {
         StationDetails stationDetails = this.stationMapper.fromDto(stationDetailsDto);
         StationDetails response = this.apiConfigClient.updateStation(stationCode, stationDetails);
-        this.wrapperService.update(stationDetails, stationDetailsDto.getNote(), stationDetailsDto.getStatus().name(), null);
+        this.wrapperService.update(stationDetails, stationDetailsDto.getNote(), WrapperStatus.APPROVED.name(), null);
         StationDetailResource resource = this.stationMapper.toResource(response);
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(stationDetails.getBrokerCode())
                 .subject(UPDATE_STATION_SUBJECT)
-                .textBody(String.format(UPDATE_STATION_EMAIL_BODY, stationDetails.getStationCode()))
+                .textBody(String.format(UPDATE_STATION_EMAIL_BODY, stationCode))
                 .htmlBodyFileName("stationUpdateValidatedEmail.html")
-                .htmlBodyContext(buildStationHtmlEmailBodyContext(stationDetails.getStationCode()))
+                .htmlBodyContext(buildStationHtmlEmailBodyContext(stationCode))
                 .destinationUserType(SelfcareProductUser.OPERATOR)
                 .build();
 
