@@ -187,11 +187,9 @@ public class WrapperService {
      */
     public WrapperEntities<ChannelDetails> updateValidatedWrapperChannel(ChannelDetails channelDetails, WrapperStatus status) {
         String channelCode = channelDetails.getChannelCode();
-        Optional<WrapperEntities> opt = this.repository.findById(channelCode);
-        if (opt.isEmpty()) {
-            throw new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode);
-        }
-        WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) opt.get();
+        WrapperEntities<ChannelDetails> wrapperEntities = this.repository.findById(channelCode)
+                .orElseThrow(() -> new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode));
+
         String modifiedByOpt = this.auditorAware.getCurrentAuditor().orElse(null);
         WrapperEntity<ChannelDetails> wrapperEntity = new WrapperEntity<>(channelDetails);
         wrapperEntity.setModifiedByOpt(modifiedByOpt);

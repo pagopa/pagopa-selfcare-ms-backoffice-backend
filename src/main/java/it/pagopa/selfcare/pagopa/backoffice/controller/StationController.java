@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -92,7 +91,6 @@ public class StationController {
             @Parameter(description = "Station's unique identifier") @PathVariable("station-code") String stationCode
     ) {
         return stationService.getStation(stationCode);
-
     }
 
     @GetMapping(value = "/{station-code}/creditor-institutions")
@@ -127,20 +125,6 @@ public class StationController {
             @Parameter(description = "ChannelCode or StationCode") @PathVariable("station-code") String code
     ) {
         return stationService.getWrapperEntitiesStation(code);
-    }
-
-    @GetMapping(value = "/merged", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get All Stations from cosmos db merged whit apiConfig", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
-    public WrapperStationsResource getAllStationsMerged(
-            @Parameter(description = "Number of elements in one page") @RequestParam(required = false, defaultValue = "50") Integer limit,
-            @Parameter(description = "Station's unique identifier") @RequestParam(required = false, value = "stationcodefilter") String stationCode,
-            @Parameter(description = "Broker code filter for search") @RequestParam("brokerCode") String brokerCode,
-            @Parameter(description = "Page number") @PositiveOrZero @Min(0) @RequestParam Integer page,
-            @Parameter(description = "Method of sorting") @RequestParam(required = false, value = "sorting") String sorting
-    ) {
-        return stationService.getAllStationsMerged(limit, stationCode, brokerCode, page, sorting);
     }
 
     @PostMapping(value = "/wrapper", consumes = MediaType.APPLICATION_JSON_VALUE)
