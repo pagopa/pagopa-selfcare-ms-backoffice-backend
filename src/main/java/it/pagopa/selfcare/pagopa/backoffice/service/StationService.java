@@ -324,10 +324,6 @@ public class StationService {
         return resource;
     }
 
-    public WrapperEntities<StationDetails> getWrapperEntitiesStation(String code) {
-        return wrapperService.findById(code);
-    }
-
     public TestStationResource testStation(StationTestDto stationTestDto) {
         var response = forwarderClient.testForwardConnection(
                 stationTestDto.getHostProtocol(),

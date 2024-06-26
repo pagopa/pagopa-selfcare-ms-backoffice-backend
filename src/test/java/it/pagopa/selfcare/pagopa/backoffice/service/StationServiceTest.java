@@ -375,16 +375,6 @@ class StationServiceTest {
     }
 
     @Test
-    void getWrapperEntitiesStationSuccess() {
-        WrapperEntities<?> entities = buildStationDetailsWrapperEntities();
-        when(wrapperService.findById(STATION_CODE)).thenReturn((WrapperEntities<Object>) entities);
-
-        WrapperEntities result = assertDoesNotThrow(() -> service.getWrapperEntitiesStation(STATION_CODE));
-
-        assertNotNull(result);
-    }
-
-    @Test
     void testStationShouldReturnSuccessOnValidForwardCall() {
         HttpResponse<String> response = mock(HttpResponse.class);
         when(response.getStatus()).thenReturn(200);
