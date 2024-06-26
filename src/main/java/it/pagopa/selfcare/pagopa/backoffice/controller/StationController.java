@@ -54,18 +54,9 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create new station", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
-    public WrapperEntityOperations<StationDetails> createStation(@RequestBody @NotNull StationDetailsDto stationDetailsDto) {
-        return stationService.createStation(stationDetailsDto);
-    }
-
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get paginated list of stations", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WrapperStationsResource.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
@@ -73,6 +64,7 @@ public class StationController {
             @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public WrapperStationsResource getStations(
             @Parameter(description = "Station's status") @RequestParam ConfigurationStatus status,
             @Parameter(description = "Station's unique identifier") @RequestParam(required = false) String stationCode,
@@ -104,6 +96,21 @@ public class StationController {
             @Parameter(description = "Filter by creditor institution name or creditor institution fiscal code") @RequestParam(required = false, name = "ci-name-or-fiscalcode") String ciNameOrFiscalCode
     ) {
         return stationService.getCreditorInstitutionsByStationCode(stationCode, limit, page, ciNameOrFiscalCode);
+    }
+
+    @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Create new station", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = StationDetailResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @OpenApiTableMetadata
+    public StationDetailResource createStation(@RequestBody @NotNull StationDetailsDto stationDetailsDto) {
+        return this.stationService.createStation(stationDetailsDto);
     }
 
     @PutMapping(value = "/{station-code}", produces = {MediaType.APPLICATION_JSON_VALUE})

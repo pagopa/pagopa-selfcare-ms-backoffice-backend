@@ -156,6 +156,7 @@ public class ChannelService {
      * Updates a validated channel and update the relative wrapper channel with status {@link WrapperStatus#APPROVED}.
      * Notify the channel owner via email.
      *
+     * @param channelCode channel's code
      * @param channelDetailsDto the channel details
      * @return the updated channel
      */

@@ -18,7 +18,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatu
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperStationsRepository;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -94,7 +93,7 @@ class WrapperServiceTest {
                 eq(BROKER_CODE),
                 eq(WrapperStatus.APPROVED),
                 any())
-        ).thenReturn(new PageImpl<>(Collections.singletonList(buildWrapperEntityStations())));
+        ).thenReturn(new PageImpl<>(Collections.singletonList(buildWrapperEntityStations(WrapperStatus.TO_CHECK))));
 
         WrapperStationList result = assertDoesNotThrow(() ->
                 sut.getWrapperStations(STATION_CODE, BROKER_CODE, LIMIT, PAGE));
@@ -121,7 +120,7 @@ class WrapperServiceTest {
                 eq(BROKER_CODE),
                 eq(WrapperStatus.APPROVED),
                 any())
-        ).thenReturn(new PageImpl<>(Collections.singletonList(buildWrapperEntityStations())));
+        ).thenReturn(new PageImpl<>(Collections.singletonList(buildWrapperEntityStations(WrapperStatus.TO_CHECK))));
 
         WrapperStationList result = assertDoesNotThrow(() ->
                 sut.getWrapperStations(null, BROKER_CODE, LIMIT, PAGE));
@@ -338,6 +337,32 @@ class WrapperServiceTest {
     }
 
     @Test
+    void updateValidatedWrapperStationSuccess() {
+        when(wrapperStationsRepository.findById(STATION_CODE)).thenReturn(Optional.of(buildWrapperEntityStations(WrapperStatus.TO_CHECK)));
+        when(wrapperStationsRepository.save(any())).thenReturn(buildWrapperEntityStations(WrapperStatus.TO_CHECK));
+
+        WrapperEntityStations result = assertDoesNotThrow(() ->
+                sut.updateValidatedWrapperStation(buildStationDetails(), WrapperStatus.TO_FIX));
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void updateValidatedWrapperStationFailNotFound() {
+        when(wrapperStationsRepository.findById(STATION_CODE)).thenReturn(Optional.empty());
+
+        StationDetails stationDetails = buildStationDetails();
+        AppException e = assertThrows(AppException.class, () ->
+                sut.updateValidatedWrapperStation(stationDetails, WrapperStatus.TO_FIX_UPDATE));
+
+        assertNotNull(e);
+        assertEquals(AppError.WRAPPER_STATION_NOT_FOUND.httpStatus, e.getHttpStatus());
+        assertEquals(AppError.WRAPPER_STATION_NOT_FOUND.title, e.getTitle());
+
+        verify(wrapperStationsRepository, never()).save(any());
+    }
+
+    @Test
     void updateChannelWithOperatorReviewSuccessToCheck() {
         when(repository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK)));
 
@@ -370,10 +395,10 @@ class WrapperServiceTest {
         verify(repository, never()).save(any());
     }
 
-    private WrapperEntityStations buildWrapperEntityStations() {
+    private WrapperEntityStations buildWrapperEntityStations(WrapperStatus wrapperStatus) {
         WrapperEntityStation entity = new WrapperEntityStation();
         entity.setEntity(buildStationDetails());
-        entity.setStatus(WrapperStatus.TO_CHECK);
+        entity.setStatus(wrapperStatus);
         WrapperEntityStations entities = new WrapperEntityStations();
         entities.setEntities(Collections.singletonList(entity));
         return entities;

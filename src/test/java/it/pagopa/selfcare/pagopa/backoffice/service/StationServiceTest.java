@@ -73,11 +73,10 @@ class StationServiceTest {
         WrapperEntities<StationDetails> entities = new WrapperEntities<>();
         entities.setEntities(Collections.singletonList(entity));
 
-        when(wrapperService.updateByOpt(any(StationDetails.class), anyString(), anyString()))
-                .thenReturn(entities);
+        when(wrapperService.updateValidatedWrapperStation(any(StationDetails.class), any()))
+                .thenReturn(buildWrapperEntityStation());
 
-        WrapperEntityOperations<StationDetails> result =
-                assertDoesNotThrow(() -> service.createStation(buildStationDetailsDto()));
+        StationDetailResource result = assertDoesNotThrow(() -> service.createStation(buildStationDetailsDto()));
 
         assertNotNull(result);
 
@@ -405,7 +404,7 @@ class StationServiceTest {
         verify(forwarderClient).testForwardConnection(any(), any(), any(), any(), any());
     }
 
-    private @NotNull StationDetailsDto buildStationDetailsDto() {
+    private StationDetailsDto buildStationDetailsDto() {
         StationDetailsDto dto = new StationDetailsDto();
         dto.setStationCode(STATION_CODE);
         dto.setVersion(1L);
@@ -414,14 +413,14 @@ class StationServiceTest {
         return dto;
     }
 
-    private @NotNull WrapperStationDetailsDto buildWrapperStationDetailsDto() {
+    private WrapperStationDetailsDto buildWrapperStationDetailsDto() {
         WrapperStationDetailsDto dto = new WrapperStationDetailsDto();
         dto.setPrimitiveVersion(1);
         dto.setStationCode(STATION_CODE);
         return dto;
     }
 
-    private @NotNull WrapperEntitiesList buildWrapperEntitiesList() {
+    private WrapperEntitiesList buildWrapperEntitiesList() {
         WrapperEntities<StationDetails> entities = buildStationDetailsWrapperEntities();
         WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
         wrapperEntitiesList.setWrapperEntities(Collections.singletonList(entities));
@@ -435,7 +434,7 @@ class StationServiceTest {
         return wrapperEntitiesList;
     }
 
-    private @NotNull WrapperStationList buildWrapperStationList() {
+    private WrapperStationList buildWrapperStationList() {
         var entities = buildWrapperEntityStation();
         WrapperStationList wrapperEntitiesList = new WrapperStationList();
         wrapperEntitiesList.setWrapperEntities(Collections.singletonList(entities));
@@ -449,7 +448,7 @@ class StationServiceTest {
         return wrapperEntitiesList;
     }
 
-    private @NotNull WrapperEntities<StationDetails> buildStationDetailsWrapperEntities() {
+    private WrapperEntities<StationDetails> buildStationDetailsWrapperEntities() {
         WrapperEntity<StationDetails> entity = new WrapperEntity<>();
         entity.setEntity(buildStationDetails());
         WrapperEntities<StationDetails> entities = new WrapperEntities<>();
@@ -458,7 +457,7 @@ class StationServiceTest {
         return entities;
     }
 
-    private @NotNull WrapperEntityStations buildWrapperEntityStation() {
+    private WrapperEntityStations buildWrapperEntityStation() {
         WrapperEntityStation entity = new WrapperEntityStation();
         entity.setEntity(buildStationDetails());
         WrapperEntityStations entities = new WrapperEntityStations();
@@ -467,7 +466,7 @@ class StationServiceTest {
         return entities;
     }
 
-    private @NotNull StationDetails buildStationDetails() {
+    private StationDetails buildStationDetails() {
         StationDetails stationDetails = new StationDetails();
         stationDetails.setStationCode(STATION_CODE);
         stationDetails.setEnabled(true);
@@ -476,7 +475,7 @@ class StationServiceTest {
         return stationDetails;
     }
 
-    private @NotNull Stations buildStations(String stationCode) {
+    private Stations buildStations(String stationCode) {
         Station station = new Station();
         station.setStationCode(stationCode);
         station.setEnabled(true);

@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ForwarderClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
@@ -76,12 +77,20 @@ public class StationService {
         this.jiraServiceManagerClient = jiraServiceManagerClient;
     }
 
-    public WrapperEntityOperations<StationDetails> createStation(@NotNull StationDetailsDto stationDetailsDto) {
+    /**
+     * Creates a validated station and update the relative wrapper station with status {@link WrapperStatus#APPROVED}.
+     * Notify the channel owner via email.
+     *
+     * @param stationDetailsDto the station details
+     * @return the created station
+     */
+    public StationDetailResource createStation(@NotNull StationDetailsDto stationDetailsDto) {
         StationDetails stationDetails = this.stationMapper.fromDto(stationDetailsDto);
         this.apiConfigClient.createStation(stationDetails);
 
-        WrapperEntities<StationDetails> response = this.wrapperService.updateByOpt(stationDetails, stationDetailsDto.getNote(), WrapperStatus.APPROVED.name());
-        WrapperEntityOperations<StationDetails> result = getWrapperEntityOperationsSortedList(response).get(0);
+        WrapperEntityStations response = this.wrapperService.updateValidatedWrapperStation(stationDetails, WrapperStatus.APPROVED);
+        StationDetailResource result = this.stationMapper
+                .toResource(getStationWrapperEntityOperationsSortedList(response).get(0).getEntity());
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(stationDetails.getBrokerCode())

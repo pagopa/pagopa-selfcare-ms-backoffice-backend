@@ -68,7 +68,7 @@ class StationControllerTest {
 
     @Test
     void createStation() throws Exception {
-        when(stationService.createStation(any())).thenReturn(new WrapperEntity<>());
+        when(stationService.createStation(any())).thenReturn(buildStationDetailResource());
         mvc.perform(post("/stations")
                         .content(objectMapper.writeValueAsBytes(new StationDetailsDto()))
                         .contentType(MediaType.APPLICATION_JSON))

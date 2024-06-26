@@ -194,18 +194,29 @@ public class WrapperService {
         return this.repository.save(wrapperEntities);
     }
 
-    public WrapperEntities<StationDetails> updateByOpt(StationDetails stationDetails, String note, String status) {
+    /**
+     * Updates a validated wrapper station
+     *
+     * @param stationDetails the details of the station
+     * @param status the status of the validated station
+     * @return the validated wrapper station
+     */
+    public WrapperEntityStations updateValidatedWrapperStation(StationDetails stationDetails, WrapperStatus status) {
         String stationCode = stationDetails.getStationCode();
-        Optional<WrapperEntities> opt = repository.findById(stationCode);
-        if (opt.isEmpty()) {
-            throw new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode);
-        }
-        WrapperEntities<StationDetails> wrapperEntities = (WrapperEntities) opt.get();
-        String modifiedByOpt = auditorAware.getCurrentAuditor().orElse(null);
-        WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetails);
-        wrapperEntity.setModifiedByOpt(modifiedByOpt);
-        updateCurrentWrapperEntity(wrapperEntities, wrapperEntity, status, note, modifiedByOpt);
-        return repository.save(wrapperEntities);
+        WrapperEntityStations wrapperEntities = this.wrapperStationsRepository.findById(stationCode)
+                .orElseThrow(() -> new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode));
+        String modifiedByOpt = this.auditorAware.getCurrentAuditor().orElse(null);
+
+        wrapperEntities.setStatus(status);
+        wrapperEntities.setModifiedAt(Instant.now());
+        wrapperEntities.setModifiedByOpt(modifiedByOpt);
+
+        WrapperEntityStation entityStation = getStationWrapperEntityOperationsSortedList(wrapperEntities).get(0);
+        entityStation.setEntity(stationDetails);
+        entityStation.setModifiedAt(Instant.now());
+        entityStation.setModifiedByOpt(modifiedByOpt);
+        entityStation.setStatus(status);
+        return this.wrapperStationsRepository.save(wrapperEntities);
     }
 
     /**
