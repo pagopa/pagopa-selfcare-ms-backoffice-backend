@@ -786,7 +786,7 @@ public class CommissionBundleService {
             ciRequestId = request.getId();
             bundleFees = getCIBundleFeeList(request.getCiBundleAttributes());
         } else {
-            bundleStatus = CIBundleStatus.AVAILABLE;
+            bundleStatus = isBundleExpired(bundle) ? CIBundleStatus.AVAILABLE_EXPIRED : CIBundleStatus.AVAILABLE;
             bundleFees = getBundleTaxonomies(bundle.getTransferCategoryList(), CIBundleFee.class);
         }
 
@@ -803,7 +803,7 @@ public class CommissionBundleService {
                     Bundle bundle = this.gecClient.getBundleDetail(offer.getIdBundle());
                     CIBundleResource bundleResource = this.modelMapper.map(bundle, CIBundleResource.class);
 
-                    bundleResource.setCiBundleStatus(CIBundleStatus.AVAILABLE);
+                    bundleResource.setCiBundleStatus(isBundleExpired(bundle) ? CIBundleStatus.AVAILABLE_EXPIRED : CIBundleStatus.AVAILABLE);
                     bundleResource.setCiOfferId(offer.getId());
                     bundleResource.setCiBundleFeeList(getBundleTaxonomies(bundle.getTransferCategoryList(), CIBundleFee.class));
                     return bundleResource;
@@ -838,5 +838,9 @@ public class CommissionBundleService {
 
     private boolean isCIBundleEnabled(CiBundleDetails ciBundle) {
         return ciBundle.getValidityDateTo() == null || ciBundle.getValidityDateTo().isAfter(LocalDate.now());
+    }
+
+    private boolean isBundleExpired(Bundle bundle) {
+        return bundle.getValidityDateTo() != null && !bundle.getValidityDateTo().isAfter(LocalDate.now());
     }
 }
