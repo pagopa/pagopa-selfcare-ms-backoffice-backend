@@ -11,6 +11,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
+import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperChannelsRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperStationsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ public class WrapperService {
 
     private final WrapperStationsRepository wrapperStationsRepository;
 
+    private final WrapperChannelsRepository wrapperChannelsRepository;
+
     private final AuditorAware<String> auditorAware;
 
     @Autowired
@@ -41,11 +44,13 @@ public class WrapperService {
             ApiConfigClient apiConfigClient,
             WrapperRepository repository,
             WrapperStationsRepository wrapperStationsRepository,
+            WrapperChannelsRepository wrapperChannelsRepository,
             AuditorAware<String> auditorAware
     ) {
         this.apiConfigClient = apiConfigClient;
         this.repository = repository;
         this.wrapperStationsRepository = wrapperStationsRepository;
+        this.wrapperChannelsRepository = wrapperChannelsRepository;
         this.auditorAware = auditorAware;
     }
 
@@ -55,11 +60,17 @@ public class WrapperService {
         return list;
 
     }
+
     public static List<WrapperEntityStation> getStationWrapperEntityOperationsSortedList(WrapperEntityStations wrapperEntities) {
         List<WrapperEntityStation> list = wrapperEntities.getEntities();
         list.sort(Comparator.comparing(WrapperEntityStation::getCreatedAt, Comparator.reverseOrder()));
         return list;
+    }
 
+    public static List<WrapperEntityChannel> getChannelWrapperEntityOperationsSortedList(WrapperEntityChannels wrapperEntities) {
+        List<WrapperEntityChannel> list = wrapperEntities.getEntities();
+        list.sort(Comparator.comparing(WrapperEntityChannel::getCreatedAt, Comparator.reverseOrder()));
+        return list;
     }
 
     public static void updateCurrentWrapperEntity(
@@ -338,15 +349,26 @@ public class WrapperService {
         return response;
     }
 
-    public WrapperEntityStations findStationById(String id) {
-        var response = wrapperStationsRepository.findById(id)
-                .orElseThrow(() -> new AppException(AppError.WRAPPER_NOT_FOUND, id));
+    public WrapperEntityStations findStationById(String stationCode) {
+        var response = this.wrapperStationsRepository.findById(stationCode)
+                .orElseThrow(() -> new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode));
+        response.sortEntitiesById();
+        return response;
+    }
+
+    public WrapperEntityChannels findChannelById(String channelCode) {
+        var response = this.wrapperChannelsRepository.findById(channelCode)
+                .orElseThrow(() -> new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode));
         response.sortEntitiesById();
         return response;
     }
 
     public Optional<WrapperEntities> findByIdOptional(String id) {
         return repository.findById(id);
+    }
+
+    public Optional<WrapperEntityChannels> findChannelByIdOptional(String channelCode) {
+        return this.wrapperChannelsRepository.findById(channelCode);
     }
 
     public WrapperEntitiesList findByIdLikeOrTypeOrBrokerCode(
@@ -416,19 +438,19 @@ public class WrapperService {
      * @param page        page number
      * @return the paginated list
      */
-    public WrapperEntitiesList getWrapperChannels(String channelCode, String brokerCode, Integer size, Integer page) {
+    public WrapperChannelList getWrapperChannels(String channelCode, String brokerCode, Integer size, Integer page) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
 
-        Page<WrapperEntities<?>> response;
+        Page<WrapperEntityChannels> response;
         if (channelCode == null) {
-            response = this.repository
+            response = this.wrapperChannelsRepository
                     .findByTypeAndBrokerCodeAndStatusNot(WrapperType.CHANNEL, brokerCode, WrapperStatus.APPROVED, paging);
         } else {
-            response = this.repository
+            response = this.wrapperChannelsRepository
                     .findByIdLikeAndTypeAndBrokerCodeAndStatusNot(channelCode, WrapperType.CHANNEL, brokerCode, WrapperStatus.APPROVED, paging);
         }
 
-        return WrapperEntitiesList.builder()
+        return WrapperChannelList.builder()
                 .wrapperEntities(response.getContent())
                 .pageInfo(PageInfo.builder()
                         .page(page)
