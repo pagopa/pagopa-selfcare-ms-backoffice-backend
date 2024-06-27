@@ -5,6 +5,8 @@ import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityChannel;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityChannels;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
@@ -13,13 +15,14 @@ import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentType
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channel;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelPspList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperChannelList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import org.junit.jupiter.api.Test;
@@ -30,6 +33,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import javax.servlet.http.HttpServletResponse;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -141,15 +145,15 @@ class ChannelServiceTest {
 
     @Test
     void getChannelToBeValidatedSuccessFromWrapper() {
-        WrapperEntities wrapperEntities = buildChannelDetailsWrapperEntities();
+        WrapperEntityChannels wrapperEntities = buildWrapperEntityChannels();
 
-        when(wrapperService.findById(CHANNEL_CODE)).thenReturn(wrapperEntities);
+        when(wrapperService.findChannelById(CHANNEL_CODE)).thenReturn(wrapperEntities);
 
         ChannelDetailsResource result = assertDoesNotThrow(() -> sut.getChannelToBeValidated(CHANNEL_CODE));
 
         assertNotNull(result);
 
-        ChannelDetails expected = ((WrapperEntity<ChannelDetails>) wrapperEntities.getEntities().get(0)).getEntity();
+        ChannelDetails expected = wrapperEntities.getEntities().get(0).getEntity();
         assertEquals(expected.getChannelCode(), result.getChannelCode());
         assertEquals(expected.getBrokerPspCode(), result.getBrokerPspCode());
         assertEquals(expected.getTimeoutA(), result.getTimeoutA());
@@ -165,7 +169,7 @@ class ChannelServiceTest {
     void getChannelToBeValidatedSuccessFromApiConfig() {
         WrapperEntities<ChannelDetails> wrapperEntities = buildChannelDetailsWrapperEntities();
 
-        when(wrapperService.findById(CHANNEL_CODE)).thenThrow(AppException.class);
+        when(wrapperService.findChannelById(CHANNEL_CODE)).thenThrow(AppException.class);
         when(apiConfigClient.getChannelDetails(CHANNEL_CODE)).thenReturn(buildChannelDetails());
         when(apiConfigClient.getChannelPaymentTypes(CHANNEL_CODE)).thenReturn(new PspChannelPaymentTypes());
 
@@ -184,10 +188,33 @@ class ChannelServiceTest {
     }
 
     @Test
-    void getChannelsSuccessActive() {
+    void getChannelsSuccessActiveWithWrapperFound() {
         Channels channels = buildChannels();
         when(apiConfigClient.getChannels(CHANNEL_CODE, BROKER_CODE, "DESC", 10, 0))
                 .thenReturn(channels);
+        when(wrapperService.findChannelByIdOptional(CHANNEL_CODE)).thenReturn(Optional.of(buildWrapperEntityChannels()));
+
+        WrapperChannelsResource result = assertDoesNotThrow(() ->
+                sut.getChannels(ConfigurationStatus.ACTIVE, CHANNEL_CODE, BROKER_CODE, 10, 0));
+
+        assertNotNull(result);
+        assertNotNull(result.getChannelList());
+        assertEquals(1, result.getChannelList().size());
+
+        Channel expected = channels.getChannelList().get(0);
+        assertEquals(expected.getChannelCode(), result.getChannelList().get(0).getChannelCode());
+        assertEquals(expected.getBrokerDescription(), result.getChannelList().get(0).getBrokerDescription());
+        assertEquals(expected.getEnabled(), result.getChannelList().get(0).getEnabled());
+
+        verify(wrapperService, never()).getWrapperChannels(CHANNEL_CODE, BROKER_CODE, 0, 10);
+    }
+
+    @Test
+    void getChannelsSuccessActiveWithWrapperNotFound() {
+        Channels channels = buildChannels();
+        when(apiConfigClient.getChannels(CHANNEL_CODE, BROKER_CODE, "DESC", 10, 0))
+                .thenReturn(channels);
+        when(wrapperService.findChannelByIdOptional(CHANNEL_CODE)).thenReturn(Optional.empty());
 
         WrapperChannelsResource result = assertDoesNotThrow(() ->
                 sut.getChannels(ConfigurationStatus.ACTIVE, CHANNEL_CODE, BROKER_CODE, 10, 0));
@@ -206,12 +233,10 @@ class ChannelServiceTest {
 
     @Test
     void getChannelsSuccessToBeValidated() {
-        WrapperEntities<ChannelDetails> wrapperEntities = buildChannelDetailsWrapperEntities();
-        WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
-        wrapperEntitiesList.setWrapperEntities(Collections.singletonList(wrapperEntities));
+        WrapperChannelList wrapperChannelList = buildWrapperChannelList();
 
         when(wrapperService.getWrapperChannels(CHANNEL_CODE, BROKER_CODE, 10, 0))
-                .thenReturn(wrapperEntitiesList);
+                .thenReturn(wrapperChannelList);
 
         WrapperChannelsResource result = assertDoesNotThrow(() ->
                 sut.getChannels(ConfigurationStatus.TO_BE_VALIDATED, CHANNEL_CODE, BROKER_CODE, 10, 0));
@@ -220,7 +245,7 @@ class ChannelServiceTest {
         assertNotNull(result.getChannelList());
         assertEquals(1, result.getChannelList().size());
 
-        ChannelDetails expected = wrapperEntities.getEntities().get(0).getEntity();
+        ChannelDetails expected = wrapperChannelList.getWrapperEntities().get(0).getEntities().get(0).getEntity();
         assertEquals(expected.getChannelCode(), result.getChannelList().get(0).getChannelCode());
         assertEquals(expected.getBrokerDescription(), result.getChannelList().get(0).getBrokerDescription());
         assertEquals(expected.getEnabled(), result.getChannelList().get(0).getEnabled());
@@ -360,10 +385,33 @@ class ChannelServiceTest {
                 .build();
     }
 
+    private WrapperChannelList buildWrapperChannelList() {
+        var entities = buildWrapperEntityChannels();
+        WrapperChannelList wrapperEntitiesList = new WrapperChannelList();
+        wrapperEntitiesList.setWrapperEntities(Collections.singletonList(entities));
+        wrapperEntitiesList.setPageInfo(PageInfo.builder()
+                .itemsFound(1)
+                .totalPages(1)
+                .limit(10)
+                .page(0)
+                .totalItems(1L)
+                .build());
+        return wrapperEntitiesList;
+    }
+
     private WrapperEntities<ChannelDetails> buildChannelDetailsWrapperEntities() {
         WrapperEntity<ChannelDetails> entity = new WrapperEntity<>();
         entity.setEntity(buildChannelDetails());
         WrapperEntities<ChannelDetails> entities = new WrapperEntities<>();
+        entities.setCreatedAt(Instant.now());
+        entities.setEntities(Collections.singletonList(entity));
+        return entities;
+    }
+
+    private WrapperEntityChannels buildWrapperEntityChannels() {
+        WrapperEntityChannel entity = new WrapperEntityChannel();
+        entity.setEntity(buildChannelDetails());
+        WrapperEntityChannels entities = new WrapperEntityChannels();
         entities.setCreatedAt(Instant.now());
         entities.setEntities(Collections.singletonList(entity));
         return entities;
