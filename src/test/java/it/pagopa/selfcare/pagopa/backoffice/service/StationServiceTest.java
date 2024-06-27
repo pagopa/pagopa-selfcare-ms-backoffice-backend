@@ -46,8 +46,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
@@ -92,7 +94,7 @@ class StationServiceTest {
         entities.setEntities(Collections.singletonList(entity));
 
         when(wrapperService.updateValidatedWrapperStation(any(StationDetails.class), any()))
-                .thenReturn(buildWrapperEntityStation());
+                .thenReturn(buildWrapperEntityStation(WrapperStatus.TO_CHECK));
 
         StationDetailResource result = assertDoesNotThrow(() -> service.createStation(buildStationDetailsDto()));
 
@@ -125,7 +127,7 @@ class StationServiceTest {
 
         when(apiConfigClient.getStations(LIMIT, PAGE, SORTING_DESC, BROKER_CODE, null, STATION_CODE))
                 .thenReturn(stations);
-        when(wrapperService.findStationByIdOptional(STATION_CODE)).thenReturn(Optional.of(buildWrapperEntityStation()));
+        when(wrapperService.findStationByIdOptional(STATION_CODE)).thenReturn(Optional.of(buildWrapperEntityStation(WrapperStatus.TO_CHECK)));
 
         WrapperStationsResource result =
                 assertDoesNotThrow(() -> service.getStations(ConfigurationStatus.ACTIVE, STATION_CODE, BROKER_CODE, LIMIT, PAGE));
@@ -177,46 +179,66 @@ class StationServiceTest {
     }
 
     @Test
-    void getStationSuccess() {
-        when(apiConfigClient.getStation(STATION_CODE)).thenReturn(buildStationDetails());
+    void getStationDetailSuccessFromWrapper() {
+        when(wrapperService.findStationById(STATION_CODE)).thenReturn(buildWrapperEntityStation(WrapperStatus.TO_CHECK));
 
-        StationDetailResource result = assertDoesNotThrow(() -> service.getStation(STATION_CODE));
-
-        assertNotNull(result);
-
-        assertEquals(STATION_CODE, result.getStationCode());
-        assertEquals(true, result.getEnabled());
-        assertEquals(1L, result.getVersion());
-    }
-
-    @Test
-    void getStationDetailInWrapperSuccess() {
-        WrapperEntityStations entities = buildWrapperEntityStation();
-        when(wrapperService.findStationById(STATION_CODE)).thenReturn(entities);
-
-        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetail(STATION_CODE));
+        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetail(STATION_CODE, ConfigurationStatus.TO_BE_VALIDATED));
 
         assertNotNull(result);
 
         assertEquals(STATION_CODE, result.getStationCode());
-        assertEquals(true, result.getEnabled());
+        assertTrue(result.getEnabled());
         assertEquals(1L, result.getVersion());
 
         verify(apiConfigClient, never()).getStation(STATION_CODE);
+        verify(wrapperService, never()).findStationByIdOptional(STATION_CODE);
     }
 
     @Test
-    void getStationDetailInApiConfigSuccess() {
-        when(wrapperService.findStationById(STATION_CODE)).thenThrow(AppException.class);
+    void getStationDetailSuccessFromApiConfigWithNoPendingUpdateNoWrapperFound() {
         when(apiConfigClient.getStation(STATION_CODE)).thenReturn(buildStationDetails());
+        when(wrapperService.findStationByIdOptional(STATION_CODE)).thenReturn(Optional.empty());
 
-        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetail(STATION_CODE));
+        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetail(STATION_CODE, ConfigurationStatus.ACTIVE));
 
         assertNotNull(result);
 
         assertEquals(STATION_CODE, result.getStationCode());
-        assertEquals(true, result.getEnabled());
+        assertTrue(result.getEnabled());
         assertEquals(1L, result.getVersion());
+        assertFalse(result.getPendingUpdate());
+    }
+
+    @Test
+    void getStationDetailSuccessFromApiConfigWithNoPendingUpdate() {
+        when(apiConfigClient.getStation(STATION_CODE)).thenReturn(buildStationDetails());
+        when(wrapperService.findStationByIdOptional(STATION_CODE))
+                .thenReturn(Optional.of(buildWrapperEntityStation(WrapperStatus.APPROVED)));
+
+        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetail(STATION_CODE, ConfigurationStatus.ACTIVE));
+
+        assertNotNull(result);
+
+        assertEquals(STATION_CODE, result.getStationCode());
+        assertTrue(result.getEnabled());
+        assertEquals(1L, result.getVersion());
+        assertFalse(result.getPendingUpdate());
+    }
+
+    @Test
+    void getStationDetailSuccessFromApiConfigWithPendingUpdate() {
+        when(apiConfigClient.getStation(STATION_CODE)).thenReturn(buildStationDetails());
+        when(wrapperService.findStationByIdOptional(STATION_CODE))
+                .thenReturn(Optional.of(buildWrapperEntityStation(WrapperStatus.TO_CHECK)));
+
+        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetail(STATION_CODE, ConfigurationStatus.ACTIVE));
+
+        assertNotNull(result);
+
+        assertEquals(STATION_CODE, result.getStationCode());
+        assertTrue(result.getEnabled());
+        assertEquals(1L, result.getVersion());
+        assertTrue(result.getPendingUpdate());
     }
 
     @Test
@@ -301,7 +323,7 @@ class StationServiceTest {
 
     @Test
     void updateWrapperStationDetailsSuccess() {
-        when(wrapperService.updateWrapperStation(anyString(), any())).thenReturn(buildWrapperEntityStation());
+        when(wrapperService.updateWrapperStation(anyString(), any())).thenReturn(buildWrapperEntityStation(WrapperStatus.TO_CHECK));
 
         StationDetailResource result = assertDoesNotThrow(() -> service.updateWrapperStationDetails(STATION_CODE, buildStationDetailsDto()));
 
@@ -313,7 +335,7 @@ class StationServiceTest {
     @Test
     void updateWrapperStationWithOperatorReviewSuccess() {
         when(wrapperService.updateStationWithOperatorReview(anyString(), anyString()))
-                .thenReturn(buildWrapperEntityStation());
+                .thenReturn(buildWrapperEntityStation(WrapperStatus.TO_CHECK));
 
         StationDetailResource result = assertDoesNotThrow(() -> service.updateWrapperStationWithOperatorReview(STATION_CODE, BROKER_CODE, "nota"));
 
@@ -442,7 +464,7 @@ class StationServiceTest {
     }
 
     private WrapperStationList buildWrapperStationList() {
-        var entities = buildWrapperEntityStation();
+        var entities = buildWrapperEntityStation(WrapperStatus.TO_CHECK);
         WrapperStationList wrapperEntitiesList = new WrapperStationList();
         wrapperEntitiesList.setWrapperEntities(Collections.singletonList(entities));
         wrapperEntitiesList.setPageInfo(PageInfo.builder()
@@ -464,9 +486,10 @@ class StationServiceTest {
         return entities;
     }
 
-    private WrapperEntityStations buildWrapperEntityStation() {
+    private WrapperEntityStations buildWrapperEntityStation(WrapperStatus wrapperStatus) {
         WrapperEntityStation entity = new WrapperEntityStation();
         entity.setEntity(buildStationDetails());
+        entity.setStatus(wrapperStatus);
         WrapperEntityStations entities = new WrapperEntityStations();
         entities.setCreatedAt(Instant.now());
         entities.setEntities(Collections.singletonList(entity));

@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.OperatorStationReview;
@@ -88,8 +89,9 @@ class StationControllerTest {
 
     @Test
     void getStation() throws Exception {
-        when(stationService.getStation(anyString())).thenReturn(buildStationDetailResource());
+        when(stationService.getStationDetail(anyString(), any())).thenReturn(buildStationDetailResource());
         mvc.perform(get("/stations/{station-code}", STATION_CODE)
+                        .param("status", ConfigurationStatus.ACTIVE.name())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
     }

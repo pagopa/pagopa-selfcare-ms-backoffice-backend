@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.mapper;
 
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStation;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
@@ -21,6 +22,8 @@ public interface StationMapper {
     StationDetailResource toResource(StationDetails model);
 
     StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy, Instant createdAt, String note);
+
+    StationDetailResource toResource(WrapperEntityStations wrapperEntities);
 
     StationsResource toResource(Stations model);
 

@@ -522,15 +522,6 @@ class WrapperServiceTest {
         return entities;
     }
 
-    private WrapperEntities<StationDetails> buildStationDetailsWrapperEntities() {
-        WrapperEntity<StationDetails> entity = new WrapperEntity<>();
-        entity.setEntity(buildStationDetails());
-        entity.setStatus(WrapperStatus.TO_CHECK);
-        WrapperEntities<StationDetails> entities = new WrapperEntities<>();
-        entities.setEntities(Collections.singletonList(entity));
-        return entities;
-    }
-
     private StationDetails buildStationDetails() {
         StationDetails stationDetails = new StationDetails();
         stationDetails.setStationCode(STATION_CODE);

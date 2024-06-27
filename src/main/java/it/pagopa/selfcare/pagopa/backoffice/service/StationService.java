@@ -40,7 +40,6 @@ import org.thymeleaf.context.Context;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,41 +173,25 @@ public class StationService {
         return this.stationMapper.toWrapperStationsResource(response);
     }
 
-    public StationDetailResource getStation(String stationCode) {
-
-        StationDetails stationDetails = apiConfigClient.getStation(stationCode);
-
-        return stationMapper.toResource(stationDetails);
-    }
-
     /**
-     * Retrieve the station details from Wrapper and if not found from Api-Config
+     * Retrieve the station details from api-config if the provided status is {@link ConfigurationStatus#ACTIVE},
+     * from wrapper otherwise. If the provided status is {@link ConfigurationStatus#ACTIVE} set the pending update flag
+     * to false if the most recent wrapper status is {@link WrapperStatus#APPROVED}, true otherwise.
      *
      * @param stationCode station's code
+     * @param status      station's status
      * @return the station details
      */
-    public StationDetailResource getStationDetail(String stationCode) {
-        StationDetails stationDetails;
-        WrapperStatus status;
-        String createdBy = "";
-        Instant createdAt = null;
-        String modifiedBy = "";
-        String note = "";
-        try {
-            var result = this.wrapperService.findStationById(stationCode);
-            createdBy = result.getCreatedBy();
-            createdAt = result.getCreatedAt();
-            modifiedBy = result.getModifiedBy();
-            status = result.getStatus();
-            var wrapperEntity = getStationWrapperEntityOperationsSortedList(result).get(0);
-            stationDetails = wrapperEntity.getEntity();
-            note = wrapperEntity.getNote();
-        } catch (AppException e) {
-            stationDetails = this.apiConfigClient.getStation(stationCode);
-            status = WrapperStatus.APPROVED;
+    public StationDetailResource getStationDetail(String stationCode, ConfigurationStatus status) {
+        StationDetailResource stationDetailResource;
+        if (status.equals(ConfigurationStatus.ACTIVE)) {
+            StationDetails stationDetails = this.apiConfigClient.getStation(stationCode);
+            stationDetailResource = buildActiveStationDetails(stationCode, stationDetails);
+        } else {
+            WrapperEntityStations wrapperEntities = this.wrapperService.findStationById(stationCode);
+            stationDetailResource = this.stationMapper.toResource(wrapperEntities);
         }
-
-        return this.stationMapper.toResource(stationDetails, status, createdBy, modifiedBy, createdAt, note);
+        return stationDetailResource;
     }
 
     public StationCodeResource getStationCode(String ecCode, Boolean v2) {
@@ -398,5 +381,25 @@ public class StationService {
                 .pageInfo(stations.getPageInfo())
                 .build();
         return response;
+    }
+
+    private StationDetailResource buildActiveStationDetails(
+            String stationCode,
+            StationDetails stationDetails
+    ) {
+        StationDetailResource stationDetailResource = this.stationMapper.toResource(stationDetails);
+        stationDetailResource.setWrapperStatus(WrapperStatus.APPROVED);
+
+        Optional<WrapperEntityStations> optionalWrapperEntities = this.wrapperService.findStationByIdOptional(stationCode);
+        if (optionalWrapperEntities.isPresent()) {
+            WrapperEntityStations wrapperEntities = optionalWrapperEntities.get();
+            stationDetailResource.setCreatedAt(wrapperEntities.getCreatedAt());
+
+            WrapperEntityStation mostRecentEntity = getStationWrapperEntityOperationsSortedList(wrapperEntities).get(0);
+            stationDetailResource.setPendingUpdate(!WrapperStatus.APPROVED.equals(mostRecentEntity.getStatus()));
+        } else {
+            stationDetailResource.setPendingUpdate(false);
+        }
+        return stationDetailResource;
     }
 }

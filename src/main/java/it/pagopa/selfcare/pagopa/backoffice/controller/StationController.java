@@ -77,11 +77,19 @@ public class StationController {
     @GetMapping(value = "/{station-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get station's details", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = StationDetailResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @OpenApiTableMetadata
     public StationDetailResource getStation(
-            @Parameter(description = "Station's unique identifier") @PathVariable("station-code") String stationCode
+            @Parameter(description = "Station's code") @PathVariable("station-code") String stationCode,
+            @Parameter(description = "Station's status") @RequestParam ConfigurationStatus status
     ) {
-        return this.stationService.getStation(stationCode);
+        return this.stationService.getStationDetail(stationCode, status);
     }
 
     @GetMapping(value = "/{station-code}/creditor-institutions")
@@ -145,16 +153,6 @@ public class StationController {
             @RequestBody @Valid WrapperStationDetailsDto wrapperStationDetailsDto
     ) {
         return this.stationService.createWrapperStationDetails(wrapperStationDetailsDto);
-    }
-
-    @GetMapping(value = "/merged/{station-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get station's details", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
-    public StationDetailResource getStationDetail(
-            @Parameter(description = "Station's unique identifier") @PathVariable("station-code") String stationCode
-    ) {
-        return this.stationService.getStationDetail(stationCode);
     }
 
     @GetMapping(value = "/station-code", produces = {MediaType.APPLICATION_JSON_VALUE})
