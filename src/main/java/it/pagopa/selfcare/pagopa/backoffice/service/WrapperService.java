@@ -379,13 +379,6 @@ public class WrapperService {
                 .build();
     }
 
-    public <T> WrapperEntities<T> findById(String id) {
-        var response = repository.findById(id)
-                .orElseThrow(() -> new AppException(AppError.WRAPPER_NOT_FOUND, id));
-        response.sortEntitiesById();
-        return response;
-    }
-
     public WrapperEntityStations findStationById(String stationCode) {
         var response = this.wrapperStationsRepository.findById(stationCode)
                 .orElseThrow(() -> new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode));
@@ -400,12 +393,8 @@ public class WrapperService {
         return response;
     }
 
-    public Optional<WrapperEntityStations> findStationByIdOptional(String id) {
-        return this.wrapperStationsRepository.findById(id);
-    }
-
-    public Optional<WrapperEntities> findByIdOptional(String id) {
-        return repository.findById(id);
+    public Optional<WrapperEntityStations> findStationByIdOptional(String stationCode) {
+        return this.wrapperStationsRepository.findById(stationCode);
     }
 
     public Optional<WrapperEntityChannels> findChannelByIdOptional(String channelCode) {

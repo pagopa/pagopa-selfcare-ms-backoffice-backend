@@ -188,33 +188,6 @@ public class ChannelController {
         this.channelService.deletePaymentTypeOnChannel(channelCode, paymentTypeCode);
     }
 
-    @GetMapping(value = "/merged/{channel-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get channel's details from cosmos db merged whit apiConfig", security = {@SecurityRequirement(name = "JWT")})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChannelDetailsResource.class))),
-            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
-            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
-            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
-    })
-    @OpenApiTableMetadata
-    public ChannelDetailsResource getChannelDetail(
-            @Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode
-    ) {
-        return this.channelService.getChannelToBeValidated(channelCode);
-    }
-
-    @GetMapping(value = "/wrapper/{channel-code}")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get a channel that is currently in hold for operator validation", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
-    public WrapperEntities getGenericWrapperEntities(
-            @Parameter(description = "Channel code") @PathVariable("channel-code") String channelCode
-    ) {
-        return this.wrapperService.findById(channelCode);
-    }
-
     @PostMapping(value = "/wrapper", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Request the creation of a channel that will be validated by an operator", security = {@SecurityRequirement(name = "JWT")})

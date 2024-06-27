@@ -157,23 +157,6 @@ class ChannelControllerTest {
     }
 
     @Test
-    void getChannelDetail() throws Exception {
-        when(channelService.getChannelToBeValidated(CHANNEL_CODE))
-                .thenReturn(ChannelDetailsResource.builder().channelCode(CHANNEL_CODE).build());
-
-        mvc.perform(get("/channels/merged/{channel-code}", CHANNEL_CODE))
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
-    void getGenericWrapperEntities() throws Exception {
-        when(wrapperService.findById(CHANNEL_CODE)).thenReturn(new WrapperEntities<>());
-
-        mvc.perform(get("/channels/wrapper/{channel-code}", CHANNEL_CODE))
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
     void createWrapperChannelDetails() throws Exception {
         when(channelService.createChannelToBeValidated(any())).thenReturn(new WrapperEntities<>());
 
