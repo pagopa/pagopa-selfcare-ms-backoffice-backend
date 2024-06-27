@@ -558,17 +558,18 @@ public class WrapperService {
                 .orElseThrow(() -> new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode));
         String modifiedBy = this.auditorAware.getCurrentAuditor().orElse(null);
 
-        WrapperEntityStation entityStation = getStationWrapperEntityOperationsSortedList(wrapperEntities).get(0);
-        WrapperStatus newWrapperStatus = getNewWrapperStatusForUpdate(stationCode, entityStation.getStatus());
+        WrapperEntityStation mostRecentEntity = getStationWrapperEntityOperationsSortedList(wrapperEntities).get(0);
+        WrapperStatus newWrapperStatus = getNewWrapperStatusForUpdate(stationCode, mostRecentEntity.getStatus());
+
+        WrapperEntityStation entityStation = new WrapperEntityStation(stationDetails);
+        entityStation.setModifiedAt(Instant.now());
+        entityStation.setModifiedBy(modifiedBy);
+        entityStation.setStatus(newWrapperStatus);
 
         wrapperEntities.setStatus(newWrapperStatus);
         wrapperEntities.setModifiedAt(Instant.now());
         wrapperEntities.setModifiedBy(modifiedBy);
-
-        entityStation.setEntity(stationDetails);
-        entityStation.setModifiedAt(Instant.now());
-        entityStation.setModifiedBy(modifiedBy);
-        entityStation.setStatus(newWrapperStatus);
+        wrapperEntities.getEntities().add(entityStation);
         return this.wrapperStationsRepository.save(wrapperEntities);
     }
 
