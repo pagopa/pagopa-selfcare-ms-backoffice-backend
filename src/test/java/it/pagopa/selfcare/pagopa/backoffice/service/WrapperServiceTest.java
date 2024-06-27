@@ -42,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -378,6 +379,56 @@ class WrapperServiceTest {
         assertEquals(AppError.WRAPPER_CHANNEL_NOT_FOUND.title, e.getTitle());
 
         verify(repository, never()).save(any());
+    }
+
+    @Test
+    void findStationByIdSuccess() {
+        when(wrapperStationsRepository.findById(STATION_CODE)).thenReturn(Optional.of(buildWrapperEntityStations()));
+
+        WrapperEntityStations result = assertDoesNotThrow(() -> sut.findStationById(STATION_CODE));
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void findStationByIdFail() {
+        when(wrapperStationsRepository.findById(STATION_CODE)).thenReturn(Optional.empty());
+
+        AppException e = assertThrows(AppException.class, () -> sut.findStationById(STATION_CODE));
+
+        assertNotNull(e);
+        assertEquals(AppError.WRAPPER_STATION_NOT_FOUND.httpStatus, e.getHttpStatus());
+        assertEquals(AppError.WRAPPER_STATION_NOT_FOUND.title, e.getTitle());
+    }
+
+    @Test
+    void findChannelByIdSuccess() {
+        when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildWrapperEntityChannels(WrapperStatus.APPROVED)));
+
+        WrapperEntityChannels result = assertDoesNotThrow(() -> sut.findChannelById(CHANNEL_CODE));
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void findChannelByIdFail() {
+        when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.empty());
+
+        AppException e = assertThrows(AppException.class, () -> sut.findChannelById(CHANNEL_CODE));
+
+        assertNotNull(e);
+        assertEquals(AppError.WRAPPER_CHANNEL_NOT_FOUND.httpStatus, e.getHttpStatus());
+        assertEquals(AppError.WRAPPER_CHANNEL_NOT_FOUND.title, e.getTitle());
+    }
+
+    @Test
+    void findChannelByIdOptionalSuccess() {
+        when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildWrapperEntityChannels(WrapperStatus.APPROVED)));
+
+        Optional<WrapperEntityChannels> result = assertDoesNotThrow(() -> sut.findChannelByIdOptional(CHANNEL_CODE));
+
+        assertNotNull(result);
+        assertTrue(result.isPresent());
     }
 
     private WrapperEntityStations buildWrapperEntityStations() {
