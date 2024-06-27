@@ -501,7 +501,7 @@ class WrapperServiceTest {
 
     @Test
     void findStationByIdSuccess() {
-        when(wrapperStationsRepository.findById(STATION_CODE)).thenReturn(Optional.of(buildWrapperEntityStations()));
+        when(wrapperStationsRepository.findById(STATION_CODE)).thenReturn(Optional.of(buildWrapperEntityStations(WrapperStatus.APPROVED)));
 
         WrapperEntityStations result = assertDoesNotThrow(() -> sut.findStationById(STATION_CODE));
 
@@ -573,8 +573,11 @@ class WrapperServiceTest {
         WrapperEntityStation entity = new WrapperEntityStation();
         entity.setEntity(buildStationDetails());
         entity.setStatus(wrapperStatus);
+
+        List<WrapperEntityStation> entityList = new ArrayList<>();
+        entityList.add(entity);
         WrapperEntityStations entities = new WrapperEntityStations();
-        entities.setEntities(Collections.singletonList(entity));
+        entities.setEntities(entityList);
         return entities;
     }
 
