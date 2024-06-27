@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.15.0-4-next"
+    "version": "2.15.0-6-next"
   },
   "servers": [
     {
@@ -7590,7 +7590,8 @@
                 "FDR_ORG",
                 "FDR_PSP",
                 "BO_EXT_EC",
-                "BO_EXT_PSP"
+                "BO_EXT_PSP",
+                "PRINT_NOTICE"
               ]
             }
           }

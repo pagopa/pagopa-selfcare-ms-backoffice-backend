@@ -4,6 +4,8 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityChannel;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityChannels;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
@@ -18,7 +20,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelPspList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperChannelList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannel;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperChannels;
@@ -38,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getChannelWrapperEntityOperationsSortedList;
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 
 @Slf4j
@@ -193,11 +196,11 @@ public class ChannelService {
         String note = "";
         PspChannelPaymentTypes ptResponse = new PspChannelPaymentTypes();
         try {
-            WrapperEntities<ChannelDetails> result = this.wrapperService.findById(channelCode);
+            WrapperEntityChannels result = this.wrapperService.findChannelById(channelCode);
             createdBy = result.getCreatedBy();
             modifiedBy = result.getModifiedBy();
             status = result.getStatus();
-            WrapperEntityOperations<ChannelDetails> wrapperEntity = getWrapperEntityOperationsSortedList(result).get(0);
+            WrapperEntityChannel wrapperEntity = getChannelWrapperEntityOperationsSortedList(result).get(0);
             note = wrapperEntity.getNote();
             channelDetail = wrapperEntity.getEntity();
             ptResponse.setPaymentTypeList(channelDetail.getPaymentTypeList());
@@ -232,7 +235,7 @@ public class ChannelService {
             Channels channels = this.apiConfigClient.getChannels(channelCode, brokerCode, "DESC", limit, page);
             response = buildEnrichedWrapperChannels(channels);
         } else {
-            WrapperEntitiesList wrapperChannels = this.wrapperService.getWrapperChannels(channelCode, brokerCode, limit, page);
+            WrapperChannelList wrapperChannels = this.wrapperService.getWrapperChannels(channelCode, brokerCode, limit, page);
             response = ChannelMapper.toWrapperChannels(wrapperChannels);
         }
 
@@ -339,9 +342,10 @@ public class ChannelService {
         List<WrapperChannel> wrapperChannels = channels.getChannelList().parallelStream()
                 .map(channel -> {
                     WrapperChannel wrapperChannel = ChannelMapper.toWrapperChannel(channel);
-                    Optional<WrapperEntities> optionalWrapperEntities = this.wrapperService.findByIdOptional(channel.getChannelCode());
+                    Optional<WrapperEntityChannels> optionalWrapperEntities =
+                            this.wrapperService.findChannelByIdOptional(channel.getChannelCode());
                     if (optionalWrapperEntities.isPresent()) {
-                        WrapperEntities<ChannelDetails> wrapperEntities = optionalWrapperEntities.get();
+                        WrapperEntityChannels wrapperEntities = optionalWrapperEntities.get();
                         wrapperChannel.setCreatedAt(wrapperEntities.getCreatedAt());
                     }
                     return wrapperChannel;
