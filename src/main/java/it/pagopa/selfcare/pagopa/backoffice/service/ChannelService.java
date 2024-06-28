@@ -14,7 +14,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResourc
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelPspList;
@@ -129,7 +128,7 @@ public class ChannelService {
      * @param channelDetailsDto the channel details
      * @return the created channel
      */
-    public WrapperChannelDetailsResource validateChannelCreation(ChannelDetailsDto channelDetailsDto) {
+    public ChannelDetailsResource validateChannelCreation(ChannelDetailsDto channelDetailsDto) {
         PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
         List<String> paymentTypeList = channelDetailsDto.getPaymentTypeList();
         String channelCode = channelDetailsDto.getChannelCode();
@@ -138,9 +137,10 @@ public class ChannelService {
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         this.apiConfigClient.createChannel(channelDetails);
 
-        WrapperEntities<ChannelDetails> response = this.wrapperService.updateValidatedWrapperChannel(channelDetails, WrapperStatus.APPROVED);
+        WrapperEntityChannels response = this.wrapperService.updateValidatedWrapperChannel(channelDetails, WrapperStatus.APPROVED);
         PspChannelPaymentTypes paymentType = this.apiConfigClient.createChannelPaymentType(pspChannelPaymentTypes, channelCode);
-        WrapperChannelDetailsResource resource = ChannelMapper.toResource(getWrapperEntityOperationsSortedList(response).get(0), paymentType);
+        ChannelDetailsResource resource =
+                ChannelMapper.toResource(getChannelWrapperEntityOperationsSortedList(response).get(0).getEntity(), paymentType);
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(channelDetailsDto.getBrokerPspCode())

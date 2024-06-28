@@ -416,10 +416,10 @@ class WrapperServiceTest {
 
     @Test
     void updateValidatedWrapperChannelSuccess() {
-        when(repository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK)));
-        when(repository.save(any())).thenReturn(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK));
+        when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildWrapperEntityChannels(WrapperStatus.TO_CHECK)));
+        when(wrapperChannelsRepository.save(any())).thenReturn(buildWrapperEntityChannels(WrapperStatus.TO_CHECK));
 
-        WrapperEntities<ChannelDetails> result = assertDoesNotThrow(() ->
+        WrapperEntityChannels result = assertDoesNotThrow(() ->
                 sut.updateValidatedWrapperChannel(buildChannelDetails(), WrapperStatus.TO_FIX));
 
         assertNotNull(result);
@@ -427,7 +427,7 @@ class WrapperServiceTest {
 
     @Test
     void updateValidatedWrapperChannelFailNotFound() {
-        when(repository.findById(CHANNEL_CODE)).thenReturn(Optional.empty());
+        when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.empty());
 
         ChannelDetails channelDetails = buildChannelDetails();
         AppException e = assertThrows(AppException.class, () ->
@@ -437,7 +437,7 @@ class WrapperServiceTest {
         assertEquals(AppError.WRAPPER_CHANNEL_NOT_FOUND.httpStatus, e.getHttpStatus());
         assertEquals(AppError.WRAPPER_CHANNEL_NOT_FOUND.title, e.getTitle());
 
-        verify(repository, never()).save(any());
+        verify(wrapperChannelsRepository, never()).save(any());
     }
 
     @Test

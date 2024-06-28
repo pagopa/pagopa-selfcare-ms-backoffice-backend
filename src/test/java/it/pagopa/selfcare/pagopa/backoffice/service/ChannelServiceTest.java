@@ -96,14 +96,14 @@ class ChannelServiceTest {
 
     @Test
     void validateChannelCreationSuccess() {
-        WrapperEntities<ChannelDetails> wrapperEntities = buildChannelDetailsWrapperEntities();
+        WrapperEntityChannels wrapperEntities = buildWrapperEntityChannels();
 
         when(wrapperService.updateValidatedWrapperChannel(any(ChannelDetails.class), any()))
                 .thenReturn(wrapperEntities);
         when(apiConfigClient.createChannelPaymentType(any(), anyString()))
                 .thenReturn(new PspChannelPaymentTypes());
 
-        WrapperChannelDetailsResource result = assertDoesNotThrow(() -> sut.validateChannelCreation(buildChannelDetailsDto()));
+        ChannelDetailsResource result = assertDoesNotThrow(() -> sut.validateChannelCreation(buildChannelDetailsDto()));
 
         assertNotNull(result);
 

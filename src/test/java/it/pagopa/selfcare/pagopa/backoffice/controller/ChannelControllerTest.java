@@ -100,8 +100,7 @@ class ChannelControllerTest {
 
     @Test
     void createChannel() throws Exception {
-        when(channelService.validateChannelCreation(any()))
-                .thenReturn(WrapperChannelDetailsResource.builder().channelCode(CHANNEL_CODE).build());
+        when(channelService.validateChannelCreation(any())).thenReturn(buildChannelDetailsResource());
 
         mvc.perform(post("/channels")
                         .content(objectMapper.writeValueAsString(new ChannelDetailsDto()))

@@ -93,26 +93,6 @@ public class WrapperService {
         return list;
     }
 
-    public static void updateCurrentWrapperEntity(
-            WrapperEntities wrapperEntities,
-            WrapperEntityOperations wrapperEntity,
-            String status,
-            String note,
-            String modifiedByOpt
-    ) {
-        wrapperEntities.getEntities().sort(Comparator.comparing((WrapperEntityOperations t) -> t.getCreatedAt(), Comparator.reverseOrder()));
-
-        WrapperEntity wrapper = (WrapperEntity) wrapperEntities.getEntities().get(0);
-        wrapperEntities.setStatus(WrapperStatus.valueOf(status));
-        wrapper.setEntity(wrapperEntity.getEntity());
-        wrapperEntities.setModifiedAt(Instant.now());
-        wrapperEntities.setModifiedByOpt(modifiedByOpt);
-        wrapper.setNote(note);
-        wrapper.setModifiedAt(Instant.now());
-        wrapper.setModifiedByOpt(modifiedByOpt);
-        wrapper.setStatus(WrapperStatus.valueOf(status));
-    }
-
     /**
      * Creates a new wrapper channel to be validated
      *
@@ -222,19 +202,26 @@ public class WrapperService {
      * @param status         the status of the validated channel
      * @return the validated wrapper channel
      */
-    public WrapperEntities<ChannelDetails> updateValidatedWrapperChannel(
+    public WrapperEntityChannels updateValidatedWrapperChannel(
             ChannelDetails channelDetails,
             WrapperStatus status
     ) {
         String channelCode = channelDetails.getChannelCode();
-        WrapperEntities<ChannelDetails> wrapperEntities = this.repository.findById(channelCode)
+        WrapperEntityChannels wrapperEntities = this.wrapperChannelsRepository.findById(channelCode)
                 .orElseThrow(() -> new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode));
-
         String modifiedByOpt = this.auditorAware.getCurrentAuditor().orElse(null);
-        WrapperEntity<ChannelDetails> wrapperEntity = new WrapperEntity<>(channelDetails);
-        wrapperEntity.setModifiedByOpt(modifiedByOpt);
-        updateCurrentWrapperEntity(wrapperEntities, new WrapperEntity<>(channelDetails), status.name(), null, modifiedByOpt);
-        return this.repository.save(wrapperEntities);
+
+        wrapperEntities.setStatus(status);
+        wrapperEntities.setModifiedAt(Instant.now());
+        wrapperEntities.setModifiedByOpt(modifiedByOpt);
+
+
+        WrapperEntityChannel entityChannel = getChannelWrapperEntityOperationsSortedList(wrapperEntities).get(0);
+        entityChannel.setEntity(channelDetails);
+        entityChannel.setModifiedAt(Instant.now());
+        entityChannel.setModifiedByOpt(modifiedByOpt);
+        entityChannel.setStatus(status);
+        return this.wrapperChannelsRepository.save(wrapperEntities);
     }
 
     /**
