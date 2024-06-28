@@ -84,9 +84,9 @@ class ChannelServiceTest {
     @Test
     void updateChannelToBeValidatedSuccess() {
         when(wrapperService.updateWrapperChannel(anyString(), any(ChannelDetails.class)))
-                .thenReturn(buildChannelDetailsWrapperEntities());
+                .thenReturn(buildWrapperEntityChannels());
 
-        WrapperEntities<ChannelDetails> result = assertDoesNotThrow(() ->
+        ChannelDetailsResource result = assertDoesNotThrow(() ->
                 sut.updateChannelToBeValidated(CHANNEL_CODE, buildChannelDetailsDto()));
 
         assertNotNull(result);
@@ -329,7 +329,7 @@ class ChannelServiceTest {
     @Test
     void updateWrapperStationWithOperatorReviewSuccess() {
         when(wrapperService.updateChannelWithOperatorReview(anyString(), anyString()))
-                .thenReturn(buildChannelDetailsWrapperEntities());
+                .thenReturn(buildWrapperEntityChannels());
 
         ChannelDetailsResource result = assertDoesNotThrow(() -> sut.updateWrapperChannelWithOperatorReview(
                 CHANNEL_CODE, "brokerCode", "nota"));

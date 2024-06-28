@@ -167,7 +167,7 @@ class ChannelControllerTest {
 
     @Test
     void updateWrapperChannelDetails() throws Exception {
-        when(channelService.updateChannelToBeValidated(anyString(), any())).thenReturn(new WrapperEntities<>());
+        when(channelService.updateChannelToBeValidated(anyString(), any())).thenReturn(buildChannelDetailsResource());
 
         mvc.perform(put("/channels/wrapper/{channel-code}", CHANNEL_CODE)
                         .content(objectMapper.writeValueAsString(ChannelDetailsDto.builder().validationUrl("url").build()))

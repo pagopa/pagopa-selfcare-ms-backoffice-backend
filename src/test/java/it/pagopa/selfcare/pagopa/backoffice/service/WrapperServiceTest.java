@@ -75,7 +75,7 @@ class WrapperServiceTest {
     private AuditorAware<String> auditorAware;
 
     @Captor
-    private ArgumentCaptor<WrapperEntities<ChannelDetails>> argumentCaptorChannels;
+    private ArgumentCaptor<WrapperEntityChannels> argumentCaptorChannels;
 
     @Captor
     private ArgumentCaptor<WrapperEntityStations> argumentCaptorStations;
@@ -288,57 +288,57 @@ class WrapperServiceTest {
 
     @Test
     void updateWrapperChannelSuccessToCheck() {
-        when(repository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK)));
+        when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildWrapperEntityChannels(WrapperStatus.TO_CHECK)));
 
         assertDoesNotThrow(() -> sut.updateWrapperChannel(CHANNEL_CODE, buildChannelDetails()));
 
-        verify(repository).save(argumentCaptorChannels.capture());
+        verify(wrapperChannelsRepository).save(argumentCaptorChannels.capture());
         assertEquals(WrapperStatus.TO_CHECK, argumentCaptorChannels.getValue().getStatus());
     }
 
     @Test
     void updateWrapperChannelSuccessToCheckUpdate() {
-        when(repository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK_UPDATE)));
+        when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildWrapperEntityChannels(WrapperStatus.TO_CHECK_UPDATE)));
 
         assertDoesNotThrow(() -> sut.updateWrapperChannel(CHANNEL_CODE, buildChannelDetails()));
 
-        verify(repository).save(argumentCaptorChannels.capture());
+        verify(wrapperChannelsRepository).save(argumentCaptorChannels.capture());
         assertEquals(WrapperStatus.TO_CHECK_UPDATE, argumentCaptorChannels.getValue().getStatus());
     }
 
     @Test
     void updateWrapperChannelSuccessToFix() {
-        when(repository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildChannelDetailsWrapperEntities(WrapperStatus.TO_FIX)));
+        when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildWrapperEntityChannels(WrapperStatus.TO_FIX)));
 
         assertDoesNotThrow(() -> sut.updateWrapperChannel(CHANNEL_CODE, buildChannelDetails()));
 
-        verify(repository).save(argumentCaptorChannels.capture());
+        verify(wrapperChannelsRepository).save(argumentCaptorChannels.capture());
         assertEquals(WrapperStatus.TO_CHECK, argumentCaptorChannels.getValue().getStatus());
     }
 
     @Test
     void updateWrapperChannelSuccessToFixUpdate() {
-        when(repository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildChannelDetailsWrapperEntities(WrapperStatus.TO_FIX_UPDATE)));
+        when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildWrapperEntityChannels(WrapperStatus.TO_FIX_UPDATE)));
 
         assertDoesNotThrow(() -> sut.updateWrapperChannel(CHANNEL_CODE, buildChannelDetails()));
 
-        verify(repository).save(argumentCaptorChannels.capture());
+        verify(wrapperChannelsRepository).save(argumentCaptorChannels.capture());
         assertEquals(WrapperStatus.TO_CHECK_UPDATE, argumentCaptorChannels.getValue().getStatus());
     }
 
     @Test
     void updateWrapperChannelSuccessApproved() {
-        when(repository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildChannelDetailsWrapperEntities(WrapperStatus.APPROVED)));
+        when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildWrapperEntityChannels(WrapperStatus.APPROVED)));
 
         assertDoesNotThrow(() -> sut.updateWrapperChannel(CHANNEL_CODE, buildChannelDetails()));
 
-        verify(repository).save(argumentCaptorChannels.capture());
+        verify(wrapperChannelsRepository).save(argumentCaptorChannels.capture());
         assertEquals(WrapperStatus.TO_CHECK_UPDATE, argumentCaptorChannels.getValue().getStatus());
     }
 
     @Test
     void updateWrapperChannelFailNotFound() {
-        when(repository.findById(CHANNEL_CODE)).thenReturn(Optional.empty());
+        when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.empty());
 
         ChannelDetails channelDetails = buildChannelDetails();
         AppException e = assertThrows(AppException.class, () -> sut.updateWrapperChannel(CHANNEL_CODE, channelDetails));
@@ -347,7 +347,7 @@ class WrapperServiceTest {
         assertEquals(AppError.WRAPPER_CHANNEL_NOT_FOUND.httpStatus, e.getHttpStatus());
         assertEquals(AppError.WRAPPER_CHANNEL_NOT_FOUND.title, e.getTitle());
 
-        verify(repository, never()).save(any());
+        verify(wrapperChannelsRepository, never()).save(any());
     }
 
     @Test
@@ -468,27 +468,27 @@ class WrapperServiceTest {
 
     @Test
     void updateChannelWithOperatorReviewSuccessToCheck() {
-        when(repository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK)));
+        when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildWrapperEntityChannels(WrapperStatus.TO_CHECK)));
 
         assertDoesNotThrow(() -> sut.updateChannelWithOperatorReview(CHANNEL_CODE, "note"));
 
-        verify(repository).save(argumentCaptorChannels.capture());
+        verify(wrapperChannelsRepository).save(argumentCaptorChannels.capture());
         assertEquals(WrapperStatus.TO_FIX, argumentCaptorChannels.getValue().getStatus());
     }
 
     @Test
     void updateChannelWithOperatorReviewSuccessToCheckUpdate() {
-        when(repository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK_UPDATE)));
+        when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.of(buildWrapperEntityChannels(WrapperStatus.TO_CHECK_UPDATE)));
 
         assertDoesNotThrow(() -> sut.updateChannelWithOperatorReview(CHANNEL_CODE, "note"));
 
-        verify(repository).save(argumentCaptorChannels.capture());
+        verify(wrapperChannelsRepository).save(argumentCaptorChannels.capture());
         assertEquals(WrapperStatus.TO_FIX_UPDATE, argumentCaptorChannels.getValue().getStatus());
     }
 
     @Test
     void updateChannelWithOperatorReviewFailNotFound() {
-        when(repository.findById(CHANNEL_CODE)).thenReturn(Optional.empty());
+        when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.empty());
 
         AppException e = assertThrows(AppException.class, () -> sut.updateChannelWithOperatorReview(CHANNEL_CODE, "note"));
 
@@ -496,7 +496,7 @@ class WrapperServiceTest {
         assertEquals(AppError.WRAPPER_CHANNEL_NOT_FOUND.httpStatus, e.getHttpStatus());
         assertEquals(AppError.WRAPPER_CHANNEL_NOT_FOUND.title, e.getTitle());
 
-        verify(repository, never()).save(any());
+        verify(wrapperChannelsRepository, never()).save(any());
     }
 
     @Test

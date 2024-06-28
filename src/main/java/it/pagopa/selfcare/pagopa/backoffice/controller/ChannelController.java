@@ -16,7 +16,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResourc
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.OperatorChannelReview;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
@@ -207,14 +206,14 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Request the update of a channel that will be validated by an operator", security = {@SecurityRequirement(name = "JWT")})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WrapperEntities.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChannelDetailsResource.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
-    public WrapperEntities<ChannelDetails> updateWrapperChannelDetails(
+    public ChannelDetailsResource updateWrapperChannelDetails(
             @Parameter(description = "Channel's code") @PathVariable("channel-code") String channelCode,
             @RequestBody @Valid ChannelDetailsDto channelDetailsDto
     ) {

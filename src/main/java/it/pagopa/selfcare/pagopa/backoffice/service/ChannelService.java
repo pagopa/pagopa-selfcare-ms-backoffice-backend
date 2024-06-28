@@ -6,7 +6,6 @@ import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityChannel;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityChannels;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
@@ -40,7 +39,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getChannelWrapperEntityOperationsSortedList;
-import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
 
 @Slf4j
 @Service
@@ -101,15 +99,15 @@ public class ChannelService {
      * Updated the wrapper channel with the provided code in status {@link WrapperStatus#TO_CHECK_UPDATE} and open a JIRA ticket
      * for operator review
      *
-     * @param channelCode the code of the channel to be updated
+     * @param channelCode       the code of the channel to be updated
      * @param channelDetailsDto detail of the channel
      * @return the updated wrapper channel
      */
-    public WrapperEntities<ChannelDetails> updateChannelToBeValidated(String channelCode, ChannelDetailsDto channelDetailsDto) {
+    public ChannelDetailsResource updateChannelToBeValidated(String channelCode, ChannelDetailsDto channelDetailsDto) {
         final String CREATE_CHANNEL_SUMMARY = "Validazione modifica canale: %s";
         final String CREATE_CHANEL_DESCRIPTION = "Il canale %s modificato dal broker %s deve essere validato: %s";
 
-        WrapperEntities<ChannelDetails> updatedWrapperChannel =
+        WrapperEntityChannels updatedWrapperChannel =
                 this.wrapperService.updateWrapperChannel(
                         channelCode,
                         ChannelMapper.fromChannelDetailsDto(channelDetailsDto)
@@ -118,7 +116,7 @@ public class ChannelService {
                 String.format(CREATE_CHANNEL_SUMMARY, channelCode),
                 String.format(CREATE_CHANEL_DESCRIPTION, channelCode, channelDetailsDto.getBrokerPspCode(), channelDetailsDto.getValidationUrl())
         );
-        return updatedWrapperChannel;
+        return ChannelMapper.toResource(getChannelWrapperEntityOperationsSortedList(updatedWrapperChannel).get(0).getEntity());
     }
 
     /**
@@ -293,7 +291,7 @@ public class ChannelService {
             String brokerPspCode,
             String note
     ) {
-        WrapperEntities<ChannelDetails> updatedWrapper =
+        WrapperEntityChannels updatedWrapper =
                 this.wrapperService.updateChannelWithOperatorReview(channelCode, note);
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
@@ -306,8 +304,7 @@ public class ChannelService {
                 .build();
         this.awsSesClient.sendEmail(messageDetail);
 
-        WrapperEntityOperations<ChannelDetails> entityOperations =
-                getWrapperEntityOperationsSortedList(updatedWrapper).get(0);
+        WrapperEntityChannel entityOperations = getChannelWrapperEntityOperationsSortedList(updatedWrapper).get(0);
         PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
         List<String> paymentTypeList = entityOperations.getEntity().getPaymentTypeList();
         pspChannelPaymentTypes.setPaymentTypeList(paymentTypeList);
