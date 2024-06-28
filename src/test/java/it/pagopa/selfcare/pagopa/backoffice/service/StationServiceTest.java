@@ -11,7 +11,7 @@ import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperStationList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;

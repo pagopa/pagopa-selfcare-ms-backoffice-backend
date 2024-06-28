@@ -1,4 +1,4 @@
-package it.pagopa.selfcare.pagopa.backoffice.model.connector.channel;
+package it.pagopa.selfcare.pagopa.backoffice.model.connector.station;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;

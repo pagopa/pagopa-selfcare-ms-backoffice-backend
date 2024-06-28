@@ -3,7 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.mapper;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStation;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperStationList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;

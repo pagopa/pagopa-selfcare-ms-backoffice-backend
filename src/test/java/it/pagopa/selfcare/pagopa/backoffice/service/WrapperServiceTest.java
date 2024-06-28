@@ -14,7 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperChannelList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperStationList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
