@@ -11,12 +11,11 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
 import it.pagopa.selfcare.pagopa.backoffice.repository.TransactionalBulkDAO;
-import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperRepository;
+import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperStationsRepository;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.AllPages;
 import it.pagopa.selfcare.pagopa.backoffice.util.Constants;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -46,7 +45,7 @@ class IbanByBrokerExtractionSchedulerTest {
     private TransactionalBulkDAO dao;
 
     @MockBean
-    private WrapperRepository wrapperRepository;
+    private WrapperStationsRepository wrapperRepository;
 
     @Autowired
     private AllPages allPages;

@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.Optional;
+
 public interface WrapperStationsRepository extends MongoRepository<WrapperEntityStations, String> {
 
     Page<WrapperEntityStations> findByIdLikeAndTypeAndBrokerCodeAndStatusNot(String id, WrapperType wrapperType, String brokerCode, WrapperStatus status, Pageable pageable);
@@ -20,5 +22,8 @@ public interface WrapperStationsRepository extends MongoRepository<WrapperEntity
     Page<WrapperEntityStations> findByTypeAndBrokerCode(WrapperType wrapperType, String brokerCode, Pageable pageable);
 
     Page<WrapperEntityStations> findByIdLikeAndTypeAndBrokerCode(String id, WrapperType wrapperType, String brokerCode, Pageable pageable);
+
+    Optional<WrapperEntityStations> findByIdAndType(String id, WrapperType wrapperType);
+
 
 }
