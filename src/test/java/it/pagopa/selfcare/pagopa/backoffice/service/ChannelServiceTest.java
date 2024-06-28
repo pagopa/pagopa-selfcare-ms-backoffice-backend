@@ -13,7 +13,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResourc
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channel;
@@ -25,6 +24,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPa
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperChannelList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,8 +37,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -84,7 +86,7 @@ class ChannelServiceTest {
     @Test
     void updateChannelToBeValidatedSuccess() {
         when(wrapperService.updateWrapperChannel(anyString(), any(ChannelDetails.class)))
-                .thenReturn(buildWrapperEntityChannels());
+                .thenReturn(buildWrapperEntityChannels(WrapperStatus.APPROVED));
 
         ChannelDetailsResource result = assertDoesNotThrow(() ->
                 sut.updateChannelToBeValidated(CHANNEL_CODE, buildChannelDetailsDto()));
@@ -96,7 +98,7 @@ class ChannelServiceTest {
 
     @Test
     void validateChannelCreationSuccess() {
-        WrapperEntityChannels wrapperEntities = buildWrapperEntityChannels();
+        WrapperEntityChannels wrapperEntities = buildWrapperEntityChannels(WrapperStatus.APPROVED);
 
         when(wrapperService.updateValidatedWrapperChannel(any(ChannelDetails.class), any()))
                 .thenReturn(wrapperEntities);
@@ -144,55 +146,12 @@ class ChannelServiceTest {
     }
 
     @Test
-    void getChannelToBeValidatedSuccessFromWrapper() {
-        WrapperEntityChannels wrapperEntities = buildWrapperEntityChannels();
-
-        when(wrapperService.findChannelById(CHANNEL_CODE)).thenReturn(wrapperEntities);
-
-        ChannelDetailsResource result = assertDoesNotThrow(() -> sut.getChannelToBeValidated(CHANNEL_CODE));
-
-        assertNotNull(result);
-
-        ChannelDetails expected = wrapperEntities.getEntities().get(0).getEntity();
-        assertEquals(expected.getChannelCode(), result.getChannelCode());
-        assertEquals(expected.getBrokerPspCode(), result.getBrokerPspCode());
-        assertEquals(expected.getTimeoutA(), result.getTimeoutA());
-        assertEquals(expected.getTimeoutB(), result.getTimeoutB());
-        assertEquals(expected.getTimeoutC(), result.getTimeoutC());
-        assertEquals(expected.getProtocol(), result.getProtocol());
-
-        verify(apiConfigClient, never()).getChannelDetails(CHANNEL_CODE);
-        verify(apiConfigClient, never()).getChannelPaymentTypes(CHANNEL_CODE);
-    }
-
-    @Test
-    void getChannelToBeValidatedSuccessFromApiConfig() {
-        WrapperEntities<ChannelDetails> wrapperEntities = buildChannelDetailsWrapperEntities();
-
-        when(wrapperService.findChannelById(CHANNEL_CODE)).thenThrow(AppException.class);
-        when(apiConfigClient.getChannelDetails(CHANNEL_CODE)).thenReturn(buildChannelDetails());
-        when(apiConfigClient.getChannelPaymentTypes(CHANNEL_CODE)).thenReturn(new PspChannelPaymentTypes());
-
-        ChannelDetailsResource result = assertDoesNotThrow(() -> sut.getChannelToBeValidated(CHANNEL_CODE));
-
-        assertNotNull(result);
-
-        ChannelDetails expected = wrapperEntities.getEntities().get(0).getEntity();
-        assertEquals(expected.getChannelCode(), result.getChannelCode());
-        assertEquals(expected.getBrokerPspCode(), result.getBrokerPspCode());
-        assertEquals(expected.getTimeoutA(), result.getTimeoutA());
-        assertEquals(expected.getTimeoutB(), result.getTimeoutB());
-        assertEquals(expected.getTimeoutC(), result.getTimeoutC());
-        assertEquals(expected.getProtocol(), result.getProtocol());
-        assertEquals(WrapperStatus.APPROVED, result.getWrapperStatus());
-    }
-
-    @Test
     void getChannelsSuccessActiveWithWrapperFound() {
         Channels channels = buildChannels();
         when(apiConfigClient.getChannels(CHANNEL_CODE, BROKER_CODE, "DESC", 10, 0))
                 .thenReturn(channels);
-        when(wrapperService.findChannelByIdOptional(CHANNEL_CODE)).thenReturn(Optional.of(buildWrapperEntityChannels()));
+        when(wrapperService.findChannelByIdOptional(CHANNEL_CODE))
+                .thenReturn(Optional.of(buildWrapperEntityChannels(WrapperStatus.APPROVED)));
 
         WrapperChannelsResource result = assertDoesNotThrow(() ->
                 sut.getChannels(ConfigurationStatus.ACTIVE, CHANNEL_CODE, BROKER_CODE, 10, 0));
@@ -254,13 +213,14 @@ class ChannelServiceTest {
     }
 
     @Test
-    void getChannelSuccess() {
+    void getChannelDetailsSuccessFromWrapper() {
         ChannelDetails expected = buildChannelDetails();
 
-        when(apiConfigClient.getChannelDetails(CHANNEL_CODE)).thenReturn(expected);
-        when(apiConfigClient.getChannelPaymentTypes(CHANNEL_CODE)).thenReturn(new PspChannelPaymentTypes());
+        when(wrapperService.findChannelById(CHANNEL_CODE))
+                .thenReturn(buildWrapperEntityChannels(WrapperStatus.APPROVED));
 
-        ChannelDetailsResource result = assertDoesNotThrow(() -> sut.getChannel(CHANNEL_CODE));
+        ChannelDetailsResource result = assertDoesNotThrow(() ->
+                sut.getChannelDetails(CHANNEL_CODE, ConfigurationStatus.TO_BE_VALIDATED));
 
         assertNotNull(result);
 
@@ -270,6 +230,74 @@ class ChannelServiceTest {
         assertEquals(expected.getTimeoutB(), result.getTimeoutB());
         assertEquals(expected.getTimeoutC(), result.getTimeoutC());
         assertEquals(expected.getProtocol(), result.getProtocol());
+
+        verify(apiConfigClient, never()).getChannelDetails(CHANNEL_CODE);
+        verify(apiConfigClient, never()).getChannelPaymentTypes(CHANNEL_CODE);
+    }
+
+    @Test
+    void getChannelDetailsSuccessFromApiConfigWithNoPendingUpdateNoWrapperFound() {
+        ChannelDetails expected = buildChannelDetails();
+
+        when(apiConfigClient.getChannelDetails(CHANNEL_CODE)).thenReturn(expected);
+        when(apiConfigClient.getChannelPaymentTypes(CHANNEL_CODE)).thenReturn(new PspChannelPaymentTypes());
+        when(wrapperService.findChannelByIdOptional(CHANNEL_CODE)).thenReturn(Optional.empty());
+
+        ChannelDetailsResource result = assertDoesNotThrow(() -> sut.getChannelDetails(CHANNEL_CODE, ConfigurationStatus.ACTIVE));
+
+        assertNotNull(result);
+
+        assertEquals(CHANNEL_CODE, result.getChannelCode());
+        assertEquals(expected.getBrokerPspCode(), result.getBrokerPspCode());
+        assertEquals(expected.getTimeoutA(), result.getTimeoutA());
+        assertEquals(expected.getTimeoutB(), result.getTimeoutB());
+        assertEquals(expected.getTimeoutC(), result.getTimeoutC());
+        assertEquals(expected.getProtocol(), result.getProtocol());
+        assertFalse(result.getPendingUpdate());
+    }
+
+    @Test
+    void getChannelDetailsSuccessFromApiConfigWithNoPendingUpdate() {
+        ChannelDetails expected = buildChannelDetails();
+
+        when(apiConfigClient.getChannelDetails(CHANNEL_CODE)).thenReturn(expected);
+        when(apiConfigClient.getChannelPaymentTypes(CHANNEL_CODE)).thenReturn(new PspChannelPaymentTypes());
+        when(wrapperService.findChannelByIdOptional(CHANNEL_CODE))
+                .thenReturn(Optional.of(buildWrapperEntityChannels(WrapperStatus.APPROVED)));
+
+        ChannelDetailsResource result = assertDoesNotThrow(() -> sut.getChannelDetails(CHANNEL_CODE, ConfigurationStatus.ACTIVE));
+
+        assertNotNull(result);
+
+        assertEquals(CHANNEL_CODE, result.getChannelCode());
+        assertEquals(expected.getBrokerPspCode(), result.getBrokerPspCode());
+        assertEquals(expected.getTimeoutA(), result.getTimeoutA());
+        assertEquals(expected.getTimeoutB(), result.getTimeoutB());
+        assertEquals(expected.getTimeoutC(), result.getTimeoutC());
+        assertEquals(expected.getProtocol(), result.getProtocol());
+        assertFalse(result.getPendingUpdate());
+    }
+
+    @Test
+    void getChannelDetailsSuccessFromApiConfigWithPendingUpdate() {
+        ChannelDetails expected = buildChannelDetails();
+
+        when(apiConfigClient.getChannelDetails(CHANNEL_CODE)).thenReturn(expected);
+        when(apiConfigClient.getChannelPaymentTypes(CHANNEL_CODE)).thenReturn(new PspChannelPaymentTypes());
+        when(wrapperService.findChannelByIdOptional(CHANNEL_CODE))
+                .thenReturn(Optional.of(buildWrapperEntityChannels(WrapperStatus.TO_CHECK)));
+
+        ChannelDetailsResource result = assertDoesNotThrow(() -> sut.getChannelDetails(CHANNEL_CODE, ConfigurationStatus.ACTIVE));
+
+        assertNotNull(result);
+
+        assertEquals(CHANNEL_CODE, result.getChannelCode());
+        assertEquals(expected.getBrokerPspCode(), result.getBrokerPspCode());
+        assertEquals(expected.getTimeoutA(), result.getTimeoutA());
+        assertEquals(expected.getTimeoutB(), result.getTimeoutB());
+        assertEquals(expected.getTimeoutC(), result.getTimeoutC());
+        assertEquals(expected.getProtocol(), result.getProtocol());
+        assertTrue(result.getPendingUpdate());
     }
 
     @Test
@@ -329,7 +357,7 @@ class ChannelServiceTest {
     @Test
     void updateWrapperStationWithOperatorReviewSuccess() {
         when(wrapperService.updateChannelWithOperatorReview(anyString(), anyString()))
-                .thenReturn(buildWrapperEntityChannels());
+                .thenReturn(buildWrapperEntityChannels(WrapperStatus.APPROVED));
 
         ChannelDetailsResource result = assertDoesNotThrow(() -> sut.updateWrapperChannelWithOperatorReview(
                 CHANNEL_CODE, "brokerCode", "nota"));
@@ -386,7 +414,7 @@ class ChannelServiceTest {
     }
 
     private WrapperChannelList buildWrapperChannelList() {
-        var entities = buildWrapperEntityChannels();
+        var entities = buildWrapperEntityChannels(WrapperStatus.APPROVED);
         WrapperChannelList wrapperEntitiesList = new WrapperChannelList();
         wrapperEntitiesList.setWrapperEntities(Collections.singletonList(entities));
         wrapperEntitiesList.setPageInfo(PageInfo.builder()
@@ -408,11 +436,13 @@ class ChannelServiceTest {
         return entities;
     }
 
-    private WrapperEntityChannels buildWrapperEntityChannels() {
+    private WrapperEntityChannels buildWrapperEntityChannels(WrapperStatus wrapperStatus) {
         WrapperEntityChannel entity = new WrapperEntityChannel();
         entity.setEntity(buildChannelDetails());
+        entity.setStatus(wrapperStatus);
         WrapperEntityChannels entities = new WrapperEntityChannels();
         entities.setCreatedAt(Instant.now());
+        entities.setStatus(wrapperStatus);
         entities.setEntities(Collections.singletonList(entity));
         return entities;
     }

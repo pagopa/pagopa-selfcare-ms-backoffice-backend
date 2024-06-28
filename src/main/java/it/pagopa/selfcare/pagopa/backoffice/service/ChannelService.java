@@ -6,7 +6,6 @@ import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityChannel;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityChannels;
-import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
@@ -116,7 +115,7 @@ public class ChannelService {
                 String.format(CREATE_CHANNEL_SUMMARY, channelCode),
                 String.format(CREATE_CHANEL_DESCRIPTION, channelCode, channelDetailsDto.getBrokerPspCode(), channelDetailsDto.getValidationUrl())
         );
-        return ChannelMapper.toResource(getChannelWrapperEntityOperationsSortedList(updatedWrapperChannel).get(0).getEntity());
+        return ChannelMapper.toResource(updatedWrapperChannel);
     }
 
     /**
@@ -165,7 +164,10 @@ public class ChannelService {
         ChannelDetails channelDetails = ChannelMapper.fromChannelDetailsDto(channelDetailsDto);
         ChannelDetails response = this.apiConfigClient.updateChannel(channelDetails, channelCode);
         this.wrapperService.update(channelDetails, channelDetailsDto.getNote(), WrapperStatus.APPROVED.name(), null);
-        ChannelDetailsResource resource = ChannelMapper.toResource(response, null);
+        PspChannelPaymentTypes paymentTypes = PspChannelPaymentTypes.builder()
+                .paymentTypeList(response.getPaymentTypeList())
+                .build();
+        ChannelDetailsResource resource = ChannelMapper.toResource(response, paymentTypes);
 
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(channelDetailsDto.getBrokerPspCode())
@@ -180,35 +182,6 @@ public class ChannelService {
         return resource;
     }
 
-    /**
-     * Retrieve the channel details from Wrapper and if not found from Api-Config
-     *
-     * @param channelCode channel's code
-     * @return the channel details
-     */
-    public ChannelDetailsResource getChannelToBeValidated(String channelCode) {
-        ChannelDetails channelDetail;
-        WrapperStatus status;
-        String createdBy = "";
-        String modifiedBy = "";
-        String note = "";
-        PspChannelPaymentTypes ptResponse = new PspChannelPaymentTypes();
-        try {
-            WrapperEntityChannels result = this.wrapperService.findChannelById(channelCode);
-            createdBy = result.getCreatedBy();
-            modifiedBy = result.getModifiedBy();
-            status = result.getStatus();
-            WrapperEntityChannel wrapperEntity = getChannelWrapperEntityOperationsSortedList(result).get(0);
-            note = wrapperEntity.getNote();
-            channelDetail = wrapperEntity.getEntity();
-            ptResponse.setPaymentTypeList(channelDetail.getPaymentTypeList());
-        } catch (AppException e) {
-            channelDetail = this.apiConfigClient.getChannelDetails(channelCode);
-            ptResponse = this.apiConfigClient.getChannelPaymentTypes(channelCode);
-            status = WrapperStatus.APPROVED;
-        }
-        return ChannelMapper.toResource(channelDetail, ptResponse, status, createdBy, modifiedBy, note);
-    }
 
     /**
      * Retrieve a paginated list of channels from api-config if the provided status is {@link ConfigurationStatus#ACTIVE},
@@ -240,10 +213,26 @@ public class ChannelService {
         return ChannelMapper.toWrapperChannelsResource(response);
     }
 
-    public ChannelDetailsResource getChannel(String channelCode) {
-        ChannelDetails channelDetails = apiConfigClient.getChannelDetails(channelCode);
-        PspChannelPaymentTypes paymentTypes = apiConfigClient.getChannelPaymentTypes(channelCode);
-        return ChannelMapper.toResource(channelDetails, paymentTypes);
+    /**
+     * Retrieve the channel details from api-config if the provided status is {@link ConfigurationStatus#ACTIVE},
+     * from wrapper otherwise. If the provided status is {@link ConfigurationStatus#ACTIVE} set the pending update flag
+     * to false if the most recent wrapper status is {@link WrapperStatus#APPROVED}, true otherwise.
+     *
+     * @param channelCode channel's code
+     * @param status channel's status
+     * @return the detail of the channel
+     */
+    public ChannelDetailsResource getChannelDetails(String channelCode, ConfigurationStatus status) {
+        ChannelDetailsResource channelDetailsResource;
+        if (ConfigurationStatus.ACTIVE.equals(status)) {
+            ChannelDetails channelDetails = this.apiConfigClient.getChannelDetails(channelCode);
+            PspChannelPaymentTypes paymentTypes = this.apiConfigClient.getChannelPaymentTypes(channelCode);
+            channelDetailsResource = buildActiveChannelDetails(channelCode, channelDetails, paymentTypes);
+        } else {
+            WrapperEntityChannels wrapperChannel = this.wrapperService.findChannelById(channelCode);
+            channelDetailsResource = ChannelMapper.toResource(wrapperChannel);
+        }
+        return channelDetailsResource;
     }
 
     public PspChannelPaymentTypesResource getPaymentTypesByChannel(String channelCode) {
@@ -304,19 +293,7 @@ public class ChannelService {
                 .build();
         this.awsSesClient.sendEmail(messageDetail);
 
-        WrapperEntityChannel entityOperations = getChannelWrapperEntityOperationsSortedList(updatedWrapper).get(0);
-        PspChannelPaymentTypes pspChannelPaymentTypes = new PspChannelPaymentTypes();
-        List<String> paymentTypeList = entityOperations.getEntity().getPaymentTypeList();
-        pspChannelPaymentTypes.setPaymentTypeList(paymentTypeList);
-
-        return ChannelMapper.toResource(
-                entityOperations.getEntity(),
-                pspChannelPaymentTypes,
-                updatedWrapper.getStatus(),
-                updatedWrapper.getCreatedBy(),
-                updatedWrapper.getModifiedBy(),
-                entityOperations.getNote()
-        );
+        return ChannelMapper.toResource(updatedWrapper);
     }
 
     private Context buildChannelHtmlEmailBodyContext(String channelCode, String note) {
@@ -352,5 +329,26 @@ public class ChannelService {
                 .pageInfo(channels.getPageInfo())
                 .build();
         return response;
+    }
+
+    private ChannelDetailsResource buildActiveChannelDetails(
+            String channelCode,
+            ChannelDetails channelDetails,
+            PspChannelPaymentTypes paymentTypes
+    ) {
+        ChannelDetailsResource channelDetailsResource = ChannelMapper.toResource(channelDetails, paymentTypes);
+        channelDetailsResource.setWrapperStatus(WrapperStatus.APPROVED);
+
+        Optional<WrapperEntityChannels> optionalWrapperEntities = this.wrapperService.findChannelByIdOptional(channelCode);
+        if (optionalWrapperEntities.isPresent()) {
+            WrapperEntityChannels wrapperEntities = optionalWrapperEntities.get();
+            channelDetailsResource.setCreatedAt(wrapperEntities.getCreatedAt());
+
+            WrapperEntityChannel mostRecentEntity = getChannelWrapperEntityOperationsSortedList(wrapperEntities).get(0);
+            channelDetailsResource.setPendingUpdate(!WrapperStatus.APPROVED.equals(mostRecentEntity.getStatus()));
+        } else {
+            channelDetailsResource.setPendingUpdate(false);
+        }
+        return channelDetailsResource;
     }
 }

@@ -8,13 +8,11 @@ import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResourc
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.OperatorChannelReview;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.service.ChannelService;
-import it.pagopa.selfcare.pagopa.backoffice.service.WrapperService;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,10 +66,11 @@ class ChannelControllerTest {
 
     @Test
     void getChannelDetails() throws Exception {
-        when(channelService.getChannel(CHANNEL_CODE))
+        when(channelService.getChannelDetails(CHANNEL_CODE, ConfigurationStatus.ACTIVE))
                 .thenReturn(ChannelDetailsResource.builder().channelCode(CHANNEL_CODE).build());
 
-        mvc.perform(get("/channels/{channel-code}", CHANNEL_CODE))
+        mvc.perform(get("/channels/{channel-code}", CHANNEL_CODE)
+                        .param("status", ConfigurationStatus.ACTIVE.name()))
                 .andExpect(status().is2xxSuccessful());
     }
 
