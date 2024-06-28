@@ -182,7 +182,7 @@ public class StationService {
      * @param status      station's status
      * @return the station details
      */
-    public StationDetailResource getStationDetail(String stationCode, ConfigurationStatus status) {
+    public StationDetailResource getStationDetails(String stationCode, ConfigurationStatus status) {
         StationDetailResource stationDetailResource;
         if (status.equals(ConfigurationStatus.ACTIVE)) {
             StationDetails stationDetails = this.apiConfigClient.getStation(stationCode);

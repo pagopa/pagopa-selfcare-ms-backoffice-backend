@@ -85,11 +85,11 @@ public class StationController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
-    public StationDetailResource getStation(
+    public StationDetailResource getStationDetails(
             @Parameter(description = "Station's code") @PathVariable("station-code") String stationCode,
             @Parameter(description = "Station's status") @RequestParam ConfigurationStatus status
     ) {
-        return this.stationService.getStationDetail(stationCode, status);
+        return this.stationService.getStationDetails(stationCode, status);
     }
 
     @GetMapping(value = "/{station-code}/creditor-institutions")

@@ -88,8 +88,8 @@ class StationControllerTest {
     }
 
     @Test
-    void getStation() throws Exception {
-        when(stationService.getStationDetail(anyString(), any())).thenReturn(buildStationDetailResource());
+    void getStationDetails() throws Exception {
+        when(stationService.getStationDetails(anyString(), any())).thenReturn(buildStationDetailResource());
         mvc.perform(get("/stations/{station-code}", STATION_CODE)
                         .param("status", ConfigurationStatus.ACTIVE.name())
                         .contentType(MediaType.APPLICATION_JSON))

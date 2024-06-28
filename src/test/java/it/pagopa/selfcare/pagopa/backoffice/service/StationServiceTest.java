@@ -179,10 +179,10 @@ class StationServiceTest {
     }
 
     @Test
-    void getStationDetailSuccessFromWrapper() {
+    void getStationDetailsSuccessFromWrapper() {
         when(wrapperService.findStationById(STATION_CODE)).thenReturn(buildWrapperEntityStation(WrapperStatus.TO_CHECK));
 
-        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetail(STATION_CODE, ConfigurationStatus.TO_BE_VALIDATED));
+        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetails(STATION_CODE, ConfigurationStatus.TO_BE_VALIDATED));
 
         assertNotNull(result);
 
@@ -195,11 +195,11 @@ class StationServiceTest {
     }
 
     @Test
-    void getStationDetailSuccessFromApiConfigWithNoPendingUpdateNoWrapperFound() {
+    void getStationDetailsSuccessFromApiConfigWithNoPendingUpdateNoWrapperFound() {
         when(apiConfigClient.getStation(STATION_CODE)).thenReturn(buildStationDetails());
         when(wrapperService.findStationByIdOptional(STATION_CODE)).thenReturn(Optional.empty());
 
-        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetail(STATION_CODE, ConfigurationStatus.ACTIVE));
+        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetails(STATION_CODE, ConfigurationStatus.ACTIVE));
 
         assertNotNull(result);
 
@@ -210,12 +210,12 @@ class StationServiceTest {
     }
 
     @Test
-    void getStationDetailSuccessFromApiConfigWithNoPendingUpdate() {
+    void getStationDetailsSuccessFromApiConfigWithNoPendingUpdate() {
         when(apiConfigClient.getStation(STATION_CODE)).thenReturn(buildStationDetails());
         when(wrapperService.findStationByIdOptional(STATION_CODE))
                 .thenReturn(Optional.of(buildWrapperEntityStation(WrapperStatus.APPROVED)));
 
-        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetail(STATION_CODE, ConfigurationStatus.ACTIVE));
+        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetails(STATION_CODE, ConfigurationStatus.ACTIVE));
 
         assertNotNull(result);
 
@@ -226,12 +226,12 @@ class StationServiceTest {
     }
 
     @Test
-    void getStationDetailSuccessFromApiConfigWithPendingUpdate() {
+    void getStationDetailsSuccessFromApiConfigWithPendingUpdate() {
         when(apiConfigClient.getStation(STATION_CODE)).thenReturn(buildStationDetails());
         when(wrapperService.findStationByIdOptional(STATION_CODE))
                 .thenReturn(Optional.of(buildWrapperEntityStation(WrapperStatus.TO_CHECK)));
 
-        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetail(STATION_CODE, ConfigurationStatus.ACTIVE));
+        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetails(STATION_CODE, ConfigurationStatus.ACTIVE));
 
         assertNotNull(result);
 
