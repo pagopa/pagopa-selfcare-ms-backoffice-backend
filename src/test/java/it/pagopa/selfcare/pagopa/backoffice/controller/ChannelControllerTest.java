@@ -49,9 +49,6 @@ class ChannelControllerTest {
     @MockBean
     private ChannelService channelService;
 
-    @MockBean
-    private WrapperService wrapperService;
-
     @Autowired
     private MockMvc mvc;
 

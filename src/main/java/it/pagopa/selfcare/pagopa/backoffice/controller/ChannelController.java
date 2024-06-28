@@ -21,7 +21,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.service.ChannelService;
-import it.pagopa.selfcare.pagopa.backoffice.service.WrapperService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,12 +52,9 @@ public class ChannelController {
 
     private final ChannelService channelService;
 
-    private final WrapperService wrapperService;
-
     @Autowired
-    public ChannelController(ChannelService channelService, WrapperService wrapperService) {
+    public ChannelController(ChannelService channelService) {
         this.channelService = channelService;
-        this.wrapperService = wrapperService;
     }
 
     @GetMapping("")
