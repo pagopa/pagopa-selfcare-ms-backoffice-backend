@@ -11984,7 +11984,7 @@
           },
           "pendingUpdate": {
             "type": "boolean",
-            "description": "Flag that describe if there is a pending update for the station"
+            "description": "Flag that describe if there is a pending update for the channel"
           },
           "port": {
             "type": "integer",
