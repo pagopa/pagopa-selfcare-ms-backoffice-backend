@@ -29,10 +29,13 @@ public class WrapperEntityStation {
 
     private String note;
 
+
     public WrapperEntityStation(StationDetails entity) {
         this.createdAt = Instant.now();
         this.id = entity.getStationCode();
         this.type = WrapperType.STATION;
         this.entity = entity;
     }
+
+
 }

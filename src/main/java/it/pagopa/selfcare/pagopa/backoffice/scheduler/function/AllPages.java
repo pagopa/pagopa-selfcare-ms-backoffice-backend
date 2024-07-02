@@ -4,14 +4,13 @@ package it.pagopa.selfcare.pagopa.backoffice.scheduler.function;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionEntity;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Broker;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.BrokerCreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
-import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperRepository;
+import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperStationsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,7 @@ public class AllPages {
     private ApiConfigSelfcareIntegrationClient apiConfigSCIntClient;
 
     @Autowired
-    private WrapperRepository wrapperRepository;
+    private WrapperStationsRepository wrapperStationsRepository;
 
     @Value("${extraction.ibans.getBrokers.pageLimit}")
     private Integer getBrokersPageLimit;
@@ -150,9 +149,9 @@ public class AllPages {
 
     private BrokerInstitutionEntity convertCreditorInstitutionDetailToBrokerInstitutionEntity(CreditorInstitutionDetail ci) {
         Instant activationDate = null;
-        var wrapper = wrapperRepository.findByIdAndType(ci.getStationCode(), WrapperType.STATION);
+        var wrapper = wrapperStationsRepository.findByIdAndType(ci.getStationCode(), WrapperType.STATION);
         if(wrapper.isPresent() && wrapper.get().getEntities() != null && wrapper.get().getEntities().get(0) != null) {
-            StationDetails station = ((WrapperEntityOperations<StationDetails>) wrapper.get().getEntities().get(0)).getEntity();
+            StationDetails station = (wrapper.get().getEntities().get(0)).getEntity();
             activationDate = station.getActivationDate();
         }
 

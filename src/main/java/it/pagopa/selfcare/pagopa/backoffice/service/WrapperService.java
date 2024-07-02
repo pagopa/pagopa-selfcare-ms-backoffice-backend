@@ -27,20 +27,11 @@ import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperStationsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.domain.AuditorAware;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.REGEX_GENERATE;
@@ -54,7 +45,6 @@ public class WrapperService {
     private final WrapperRepository repository;
 
     private final WrapperStationsRepository wrapperStationsRepository;
-
     private final WrapperChannelsRepository wrapperChannelsRepository;
 
     private final AuditorAware<String> auditorAware;
@@ -77,6 +67,12 @@ public class WrapperService {
     public static List<WrapperEntityOperations> getWrapperEntityOperationsSortedList(WrapperEntities wrapperEntities) {
         List<WrapperEntityOperations> list = new ArrayList<>(wrapperEntities.getEntities());
         list.sort(Comparator.comparing(WrapperEntityOperations::getCreatedAt, Comparator.reverseOrder()));
+        return list;
+
+    }
+    public static List<WrapperEntityStation> getStationWrapperEntityOperationsSortedList(WrapperEntityStations wrapperEntities) {
+        List<WrapperEntityStation> list = wrapperEntities.getEntities();
+        list.sort(Comparator.comparing(WrapperEntityStation::getCreatedAt, Comparator.reverseOrder()));
         return list;
 
     }
@@ -372,6 +368,13 @@ public class WrapperService {
         return response;
     }
 
+    public WrapperEntityStations findStationById(String id) {
+        var response = wrapperStationsRepository.findById(id)
+                .orElseThrow(() -> new AppException(AppError.WRAPPER_NOT_FOUND, id));
+        response.sortEntitiesById();
+        return response;
+    }
+
     public WrapperEntityChannels findChannelById(String channelCode) {
         var response = this.wrapperChannelsRepository.findById(channelCode)
                 .orElseThrow(() -> new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode));
@@ -419,13 +422,7 @@ public class WrapperService {
                 .build();
     }
 
-    public WrapperStationList findStationByIdLikeOrTypeOrBrokerCode(
-            String idLike,
-            WrapperType wrapperType,
-            String brokerCode,
-            Integer page,
-            Integer size
-    ) {
+    public WrapperStationList findStationByIdLikeOrTypeOrBrokerCode(String idLike, WrapperType wrapperType, String brokerCode, Integer page, Integer size) {
         Pageable paging = PageRequest.of(page, size);
         Page<WrapperEntityStations> response;
 
@@ -452,27 +449,27 @@ public class WrapperService {
     }
 
     /**
-     * Retrieve a paginated list of wrapper channel filtered by broker's code and optionally by channel's code
+     * Retrieve a paginated list of wrapper station filtered by broker's code and optionally by station's code
      *
-     * @param channelCode channel's code
+     * @param stationCode station's code
      * @param brokerCode  broker's code
      * @param size        page size
      * @param page        page number
      * @return the paginated list
      */
-    public WrapperChannelList getWrapperChannels(String channelCode, String brokerCode, Integer size, Integer page) {
+    public WrapperStationList getWrapperStations(String stationCode, String brokerCode, Integer size, Integer page) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
 
-        Page<WrapperEntityChannels> response;
-        if (channelCode == null) {
-            response = this.wrapperChannelsRepository
-                    .findByTypeAndBrokerCodeAndStatusNot(WrapperType.CHANNEL, brokerCode, WrapperStatus.APPROVED, paging);
+        Page<WrapperEntityStations> response;
+        if (stationCode == null) {
+            response = this.wrapperStationsRepository
+                    .findByTypeAndBrokerCodeAndStatusNot(WrapperType.STATION, brokerCode, WrapperStatus.APPROVED, paging);
         } else {
-            response = this.wrapperChannelsRepository
-                    .findByIdLikeAndTypeAndBrokerCodeAndStatusNot(channelCode, WrapperType.CHANNEL, brokerCode, WrapperStatus.APPROVED, paging);
+            response = this.wrapperStationsRepository
+                    .findByIdLikeAndTypeAndBrokerCodeAndStatusNot(stationCode, WrapperType.STATION, brokerCode, WrapperStatus.APPROVED, paging);
         }
 
-        return WrapperChannelList.builder()
+        return WrapperStationList.builder()
                 .wrapperEntities(response.getContent())
                 .pageInfo(PageInfo.builder()
                         .page(page)
@@ -484,16 +481,7 @@ public class WrapperService {
                 .build();
     }
 
-    /**
-     * Retrieve a paginated list of wrapper station filtered by broker's code and optionally by station's code
-     *
-     * @param stationCode station's code
-     * @param brokerCode  broker's code
-     * @param size        page size
-     * @param page        page number
-     * @return the paginated list
-     */
-    public WrapperStationList getWrapperStations(String stationCode, String brokerCode, Integer size, Integer page) {
+    public WrapperStationList getWrapperStationsList(String stationCode, String brokerCode, Integer page, Integer size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
 
         Page<WrapperEntityStations> response;
