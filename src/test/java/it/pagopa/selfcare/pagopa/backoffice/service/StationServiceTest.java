@@ -4,11 +4,14 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ForwarderClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
-import it.pagopa.selfcare.pagopa.backoffice.entity.*;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStation;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperStationList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
@@ -19,7 +22,14 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatu
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationCodeResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestResultEnum;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationsResource;
 import kong.unirest.HttpResponse;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -34,9 +44,19 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {StationService.class})
 class StationServiceTest {
@@ -73,11 +93,10 @@ class StationServiceTest {
         WrapperEntities<StationDetails> entities = new WrapperEntities<>();
         entities.setEntities(Collections.singletonList(entity));
 
-        when(wrapperService.updateByOpt(any(StationDetails.class), anyString(), anyString()))
-                .thenReturn(entities);
+        when(wrapperService.updateValidatedWrapperStation(any(StationDetails.class), any()))
+                .thenReturn(buildWrapperEntityStation(WrapperStatus.TO_CHECK));
 
-        WrapperEntityOperations<StationDetails> result =
-                assertDoesNotThrow(() -> service.createStation(buildStationDetailsDto()));
+        StationDetailResource result = assertDoesNotThrow(() -> service.createStation(buildStationDetailsDto()));
 
         assertNotNull(result);
 
@@ -91,7 +110,7 @@ class StationServiceTest {
         WrapperEntities<StationDetails> entities = new WrapperEntities<>();
         entities.setEntities(Collections.singletonList(entity));
 
-        when(wrapperService.insert(any(StationDetails.class), anyString(), anyString()))
+        when(wrapperService.createWrapperStation(any(StationDetails.class), any()))
                 .thenReturn(entities);
 
         WrapperEntities<StationDetails> result =
@@ -108,7 +127,7 @@ class StationServiceTest {
 
         when(apiConfigClient.getStations(LIMIT, PAGE, SORTING_DESC, BROKER_CODE, null, STATION_CODE))
                 .thenReturn(stations);
-        when(wrapperService.findByIdOptional(STATION_CODE)).thenReturn(Optional.of(buildStationDetailsWrapperEntities()));
+        when(wrapperService.findStationByIdOptional(STATION_CODE)).thenReturn(Optional.of(buildWrapperEntityStation(WrapperStatus.TO_CHECK)));
 
         WrapperStationsResource result =
                 assertDoesNotThrow(() -> service.getStations(ConfigurationStatus.ACTIVE, STATION_CODE, BROKER_CODE, LIMIT, PAGE));
@@ -127,7 +146,7 @@ class StationServiceTest {
 
         when(apiConfigClient.getStations(LIMIT, PAGE, SORTING_DESC, BROKER_CODE, null, STATION_CODE))
                 .thenReturn(stations);
-        when(wrapperService.findByIdOptional(STATION_CODE)).thenReturn(Optional.empty());
+        when(wrapperService.findStationByIdOptional(STATION_CODE)).thenReturn(Optional.empty());
 
         WrapperStationsResource result =
                 assertDoesNotThrow(() -> service.getStations(ConfigurationStatus.ACTIVE, STATION_CODE, BROKER_CODE, LIMIT, PAGE));
@@ -160,46 +179,66 @@ class StationServiceTest {
     }
 
     @Test
-    void getStationSuccess() {
-        when(apiConfigClient.getStation(STATION_CODE)).thenReturn(buildStationDetails());
+    void getStationDetailsSuccessFromWrapper() {
+        when(wrapperService.findStationById(STATION_CODE)).thenReturn(buildWrapperEntityStation(WrapperStatus.TO_CHECK));
 
-        StationDetailResource result = assertDoesNotThrow(() -> service.getStation(STATION_CODE));
-
-        assertNotNull(result);
-
-        assertEquals(STATION_CODE, result.getStationCode());
-        assertEquals(true, result.getEnabled());
-        assertEquals(1L, result.getVersion());
-    }
-
-    @Test
-    void getStationDetailInWrapperSuccess() {
-        WrapperEntityStations entities = buildWrapperEntityStation();
-        when(wrapperService.findStationById(STATION_CODE)).thenReturn(entities);
-
-        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetail(STATION_CODE));
+        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetails(STATION_CODE, ConfigurationStatus.TO_BE_VALIDATED));
 
         assertNotNull(result);
 
         assertEquals(STATION_CODE, result.getStationCode());
-        assertEquals(true, result.getEnabled());
+        assertTrue(result.getEnabled());
         assertEquals(1L, result.getVersion());
 
         verify(apiConfigClient, never()).getStation(STATION_CODE);
+        verify(wrapperService, never()).findStationByIdOptional(STATION_CODE);
     }
 
     @Test
-    void getStationDetailInApiConfigSuccess() {
-        when(wrapperService.findStationById(STATION_CODE)).thenThrow(AppException.class);
+    void getStationDetailsSuccessFromApiConfigWithNoPendingUpdateNoWrapperFound() {
         when(apiConfigClient.getStation(STATION_CODE)).thenReturn(buildStationDetails());
+        when(wrapperService.findStationByIdOptional(STATION_CODE)).thenReturn(Optional.empty());
 
-        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetail(STATION_CODE));
+        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetails(STATION_CODE, ConfigurationStatus.ACTIVE));
 
         assertNotNull(result);
 
         assertEquals(STATION_CODE, result.getStationCode());
-        assertEquals(true, result.getEnabled());
+        assertTrue(result.getEnabled());
         assertEquals(1L, result.getVersion());
+        assertFalse(result.getPendingUpdate());
+    }
+
+    @Test
+    void getStationDetailsSuccessFromApiConfigWithNoPendingUpdate() {
+        when(apiConfigClient.getStation(STATION_CODE)).thenReturn(buildStationDetails());
+        when(wrapperService.findStationByIdOptional(STATION_CODE))
+                .thenReturn(Optional.of(buildWrapperEntityStation(WrapperStatus.APPROVED)));
+
+        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetails(STATION_CODE, ConfigurationStatus.ACTIVE));
+
+        assertNotNull(result);
+
+        assertEquals(STATION_CODE, result.getStationCode());
+        assertTrue(result.getEnabled());
+        assertEquals(1L, result.getVersion());
+        assertFalse(result.getPendingUpdate());
+    }
+
+    @Test
+    void getStationDetailsSuccessFromApiConfigWithPendingUpdate() {
+        when(apiConfigClient.getStation(STATION_CODE)).thenReturn(buildStationDetails());
+        when(wrapperService.findStationByIdOptional(STATION_CODE))
+                .thenReturn(Optional.of(buildWrapperEntityStation(WrapperStatus.TO_CHECK)));
+
+        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetails(STATION_CODE, ConfigurationStatus.ACTIVE));
+
+        assertNotNull(result);
+
+        assertEquals(STATION_CODE, result.getStationCode());
+        assertTrue(result.getEnabled());
+        assertEquals(1L, result.getVersion());
+        assertTrue(result.getPendingUpdate());
     }
 
     @Test
@@ -284,10 +323,9 @@ class StationServiceTest {
 
     @Test
     void updateWrapperStationDetailsSuccess() {
-        when(wrapperService.upsert(any(), anyString(), anyString(), eq(null)))
-                .thenReturn(buildStationDetailsWrapperEntities());
+        when(wrapperService.updateWrapperStation(anyString(), any())).thenReturn(buildWrapperEntityStation(WrapperStatus.TO_CHECK));
 
-        WrapperEntities result = assertDoesNotThrow(() -> service.updateWrapperStationDetails(buildStationDetailsDto()));
+        StationDetailResource result = assertDoesNotThrow(() -> service.updateWrapperStationDetails(STATION_CODE, buildStationDetailsDto()));
 
         assertNotNull(result);
 
@@ -297,7 +335,7 @@ class StationServiceTest {
     @Test
     void updateWrapperStationWithOperatorReviewSuccess() {
         when(wrapperService.updateStationWithOperatorReview(anyString(), anyString()))
-                .thenReturn(buildStationDetailsWrapperEntities());
+                .thenReturn(buildWrapperEntityStation(WrapperStatus.TO_CHECK));
 
         StationDetailResource result = assertDoesNotThrow(() -> service.updateWrapperStationWithOperatorReview(STATION_CODE, BROKER_CODE, "nota"));
 
@@ -359,16 +397,6 @@ class StationServiceTest {
     }
 
     @Test
-    void getWrapperEntitiesStationSuccess() {
-        WrapperEntities<?> entities = buildStationDetailsWrapperEntities();
-        when(wrapperService.findById(STATION_CODE)).thenReturn((WrapperEntities<Object>) entities);
-
-        WrapperEntities result = assertDoesNotThrow(() -> service.getWrapperEntitiesStation(STATION_CODE));
-
-        assertNotNull(result);
-    }
-
-    @Test
     void testStationShouldReturnSuccessOnValidForwardCall() {
         HttpResponse<String> response = mock(HttpResponse.class);
         when(response.getStatus()).thenReturn(200);
@@ -405,7 +433,7 @@ class StationServiceTest {
         verify(forwarderClient).testForwardConnection(any(), any(), any(), any(), any());
     }
 
-    private @NotNull StationDetailsDto buildStationDetailsDto() {
+    private StationDetailsDto buildStationDetailsDto() {
         StationDetailsDto dto = new StationDetailsDto();
         dto.setStationCode(STATION_CODE);
         dto.setVersion(1L);
@@ -414,14 +442,14 @@ class StationServiceTest {
         return dto;
     }
 
-    private @NotNull WrapperStationDetailsDto buildWrapperStationDetailsDto() {
+    private WrapperStationDetailsDto buildWrapperStationDetailsDto() {
         WrapperStationDetailsDto dto = new WrapperStationDetailsDto();
         dto.setPrimitiveVersion(1);
         dto.setStationCode(STATION_CODE);
         return dto;
     }
 
-    private @NotNull WrapperEntitiesList buildWrapperEntitiesList() {
+    private WrapperEntitiesList buildWrapperEntitiesList() {
         WrapperEntities<StationDetails> entities = buildStationDetailsWrapperEntities();
         WrapperEntitiesList wrapperEntitiesList = new WrapperEntitiesList();
         wrapperEntitiesList.setWrapperEntities(Collections.singletonList(entities));
@@ -435,8 +463,8 @@ class StationServiceTest {
         return wrapperEntitiesList;
     }
 
-    private @NotNull WrapperStationList buildWrapperStationList() {
-        var entities = buildWrapperEntityStation();
+    private WrapperStationList buildWrapperStationList() {
+        var entities = buildWrapperEntityStation(WrapperStatus.TO_CHECK);
         WrapperStationList wrapperEntitiesList = new WrapperStationList();
         wrapperEntitiesList.setWrapperEntities(Collections.singletonList(entities));
         wrapperEntitiesList.setPageInfo(PageInfo.builder()
@@ -449,7 +477,7 @@ class StationServiceTest {
         return wrapperEntitiesList;
     }
 
-    private @NotNull WrapperEntities<StationDetails> buildStationDetailsWrapperEntities() {
+    private WrapperEntities<StationDetails> buildStationDetailsWrapperEntities() {
         WrapperEntity<StationDetails> entity = new WrapperEntity<>();
         entity.setEntity(buildStationDetails());
         WrapperEntities<StationDetails> entities = new WrapperEntities<>();
@@ -458,16 +486,17 @@ class StationServiceTest {
         return entities;
     }
 
-    private @NotNull WrapperEntityStations buildWrapperEntityStation() {
+    private WrapperEntityStations buildWrapperEntityStation(WrapperStatus wrapperStatus) {
         WrapperEntityStation entity = new WrapperEntityStation();
         entity.setEntity(buildStationDetails());
+        entity.setStatus(wrapperStatus);
         WrapperEntityStations entities = new WrapperEntityStations();
         entities.setCreatedAt(Instant.now());
         entities.setEntities(Collections.singletonList(entity));
         return entities;
     }
 
-    private @NotNull StationDetails buildStationDetails() {
+    private StationDetails buildStationDetails() {
         StationDetails stationDetails = new StationDetails();
         stationDetails.setStationCode(STATION_CODE);
         stationDetails.setEnabled(true);
@@ -476,7 +505,7 @@ class StationServiceTest {
         return stationDetails;
     }
 
-    private @NotNull Stations buildStations(String stationCode) {
+    private Stations buildStations(String stationCode) {
         Station station = new Station();
         station.setStationCode(stationCode);
         station.setEnabled(true);

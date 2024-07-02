@@ -1,9 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.mapper;
 
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStation;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperStationList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
@@ -162,6 +163,24 @@ public class StationMapperImpl implements StationMapper {
         }
 
         return stationDetailResource;
+    }
+
+    @Override
+    public StationDetailResource toResource(WrapperEntityStations wrapperEntities) {
+        if(wrapperEntities == null) {
+            return null;
+        }
+        WrapperEntityStation mostRecentEntity = getStationWrapperEntityOperationsSortedList(wrapperEntities).get(0);
+        StationDetails model = mostRecentEntity.getEntity();
+
+        return toResource(
+                model,
+                wrapperEntities.getStatus(),
+                wrapperEntities.getCreatedBy(),
+                wrapperEntities.getModifiedBy(),
+                wrapperEntities.getCreatedAt(),
+                mostRecentEntity.getNote()
+        );
     }
 
     @Override

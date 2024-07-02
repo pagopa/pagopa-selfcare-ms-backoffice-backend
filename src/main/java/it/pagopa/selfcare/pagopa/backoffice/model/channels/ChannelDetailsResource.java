@@ -202,4 +202,7 @@ public class ChannelDetailsResource extends ChannelResource {
 
     @Schema(description = "Operator review note")
     private String note;
+
+    @Schema(description = "Flag that describe if there is a pending update for the channel")
+    private Boolean pendingUpdate;
 }

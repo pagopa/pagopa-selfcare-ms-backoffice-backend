@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.mapper;
 
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityChannel;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityChannels;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
@@ -238,6 +239,27 @@ public class ChannelMapper {
             resource.setNote(note);
         }
         return resource;
+    }
+
+    public static ChannelDetailsResource toResource(WrapperEntityChannels wrapperEntities) {
+        if (wrapperEntities == null) {
+            return null;
+        }
+
+        WrapperEntityChannel mostRecentEntity = getChannelWrapperEntityOperationsSortedList(wrapperEntities).get(0);
+        ChannelDetails model = mostRecentEntity.getEntity();
+        PspChannelPaymentTypes paymentTypes = PspChannelPaymentTypes.builder()
+                .paymentTypeList(model.getPaymentTypeList())
+                .build();
+
+        return toResource(
+                model,
+                paymentTypes,
+                wrapperEntities.getStatus(),
+                wrapperEntities.getCreatedBy(),
+                wrapperEntities.getModifiedBy(),
+                mostRecentEntity.getNote()
+        );
     }
 
     public static ChannelDetailsResource toResource(ChannelDetails model) {
@@ -613,7 +635,7 @@ public class ChannelMapper {
         WrapperChannelsResource wrapperChannelsResource = new WrapperChannelsResource();
 
         wrapperChannelsResource.setChannelList(wrapperChannels.getChannelList().stream()
-                .map(station -> toWrapperChannelResource(station))
+                .map(ChannelMapper::toWrapperChannelResource)
                 .toList());
         wrapperChannelsResource.setPageInfo(wrapperChannels.getPageInfo());
 

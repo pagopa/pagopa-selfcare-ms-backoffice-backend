@@ -5,8 +5,8 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStation;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
@@ -313,7 +313,7 @@ class BrokerServiceTest {
                         eq(null),
                         eq(null))
         ).thenReturn(institutionsView);
-        when(wrapperService.findByIdOptional(anyString())).thenReturn(Optional.of(buildWrapper(modifiedAt, activationDate)));
+        when(wrapperService.findStationByIdOptional(anyString())).thenReturn(Optional.of(buildWrapperEntityStations(modifiedAt, activationDate)));
 
         CIBrokerStationPage result = assertDoesNotThrow(() ->
                 sut.getCIBrokerStations("brokerTaxCode", "ciTaxCode", "stationCode", 0, 5));
@@ -358,7 +358,7 @@ class BrokerServiceTest {
         assertNotNull(result);
         assertTrue(result.getCiBrokerStations().isEmpty());
 
-        verify(wrapperService, never()).findById(anyString());
+        verify(wrapperService, never()).findStationByIdOptional(anyString());
     }
 
     @Test
@@ -377,7 +377,7 @@ class BrokerServiceTest {
                         eq(null),
                         eq(null))
         ).thenReturn(institutionsView);
-        when(wrapperService.findByIdOptional(anyString())).thenReturn(Optional.empty());
+        when(wrapperService.findStationByIdOptional(anyString())).thenReturn(Optional.empty());
 
         CIBrokerStationPage result = assertDoesNotThrow(() ->
                 sut.getCIBrokerStations("brokerTaxCode", "ciTaxCode", "stationCode", 0, 5));
@@ -405,19 +405,23 @@ class BrokerServiceTest {
         assertDoesNotThrow(() -> sut.deleteCIBroker(anyString()));
     }
 
-    private WrapperEntities<Object> buildWrapper(Instant modifiedAt, Instant activationDate) {
-        WrapperEntities<Object> entities = new WrapperEntities<>();
+    private WrapperEntityStations buildWrapperEntityStations(Instant modifiedAt, Instant activationDate) {
+        WrapperEntityStation entity = new WrapperEntityStation();
+        entity.setEntity(buildStationDetails(activationDate));
 
+        WrapperEntityStations entities = new WrapperEntityStations();
         entities.setModifiedAt(modifiedAt);
-
-        StationDetails station = new StationDetails();
-        station.setActivationDate(activationDate);
-
-        WrapperEntity<Object> entity = new WrapperEntity<>();
-        entity.setEntity(station);
-
         entities.setEntities(Collections.singletonList(entity));
         return entities;
+    }
+
+    private StationDetails buildStationDetails(Instant activationDate) {
+        StationDetails stationDetails = new StationDetails();
+        stationDetails.setStationCode("stationCode");
+        stationDetails.setEnabled(true);
+        stationDetails.setVersion(1L);
+        stationDetails.setActivationDate(activationDate);
+        return stationDetails;
     }
 
     private CreditorInstitutionsView buildInstitutionsView() {

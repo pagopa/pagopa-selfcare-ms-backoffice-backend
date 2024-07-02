@@ -8,13 +8,11 @@ import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelPspListResourc
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.OperatorChannelReview;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.service.ChannelService;
-import it.pagopa.selfcare.pagopa.backoffice.service.WrapperService;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +47,6 @@ class ChannelControllerTest {
     @MockBean
     private ChannelService channelService;
 
-    @MockBean
-    private WrapperService wrapperService;
-
     @Autowired
     private MockMvc mvc;
 
@@ -71,10 +66,11 @@ class ChannelControllerTest {
 
     @Test
     void getChannelDetails() throws Exception {
-        when(channelService.getChannel(CHANNEL_CODE))
+        when(channelService.getChannelDetails(CHANNEL_CODE, ConfigurationStatus.ACTIVE))
                 .thenReturn(ChannelDetailsResource.builder().channelCode(CHANNEL_CODE).build());
 
-        mvc.perform(get("/channels/{channel-code}", CHANNEL_CODE))
+        mvc.perform(get("/channels/{channel-code}", CHANNEL_CODE)
+                        .param("status", ConfigurationStatus.ACTIVE.name()))
                 .andExpect(status().is2xxSuccessful());
     }
 
@@ -100,8 +96,7 @@ class ChannelControllerTest {
 
     @Test
     void createChannel() throws Exception {
-        when(channelService.validateChannelCreation(any()))
-                .thenReturn(WrapperChannelDetailsResource.builder().channelCode(CHANNEL_CODE).build());
+        when(channelService.validateChannelCreation(any())).thenReturn(buildChannelDetailsResource());
 
         mvc.perform(post("/channels")
                         .content(objectMapper.writeValueAsString(new ChannelDetailsDto()))
@@ -157,23 +152,6 @@ class ChannelControllerTest {
     }
 
     @Test
-    void getChannelDetail() throws Exception {
-        when(channelService.getChannelToBeValidated(CHANNEL_CODE))
-                .thenReturn(ChannelDetailsResource.builder().channelCode(CHANNEL_CODE).build());
-
-        mvc.perform(get("/channels/merged/{channel-code}", CHANNEL_CODE))
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
-    void getGenericWrapperEntities() throws Exception {
-        when(wrapperService.findById(CHANNEL_CODE)).thenReturn(new WrapperEntities<>());
-
-        mvc.perform(get("/channels/wrapper/{channel-code}", CHANNEL_CODE))
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
     void createWrapperChannelDetails() throws Exception {
         when(channelService.createChannelToBeValidated(any())).thenReturn(new WrapperEntities<>());
 
@@ -185,7 +163,7 @@ class ChannelControllerTest {
 
     @Test
     void updateWrapperChannelDetails() throws Exception {
-        when(channelService.updateChannelToBeValidated(anyString(), any())).thenReturn(new WrapperEntities<>());
+        when(channelService.updateChannelToBeValidated(anyString(), any())).thenReturn(buildChannelDetailsResource());
 
         mvc.perform(put("/channels/wrapper/{channel-code}", CHANNEL_CODE)
                         .content(objectMapper.writeValueAsString(ChannelDetailsDto.builder().validationUrl("url").build()))
