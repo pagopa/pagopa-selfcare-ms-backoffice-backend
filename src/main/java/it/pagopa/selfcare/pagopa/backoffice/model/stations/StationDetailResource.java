@@ -92,5 +92,7 @@ public class StationDetailResource extends StationResource {
     private Boolean isConnectionSync = true;
     @Schema(description = "Operator review note")
     private String note;
+    @Schema(description = "Flag that describe if there is a pending update for the station")
+    private Boolean pendingUpdate;
 
 }

@@ -2,7 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.OperatorStationReview;
@@ -68,7 +68,7 @@ class StationControllerTest {
 
     @Test
     void createStation() throws Exception {
-        when(stationService.createStation(any())).thenReturn(new WrapperEntity<>());
+        when(stationService.createStation(any())).thenReturn(buildStationDetailResource());
         mvc.perform(post("/stations")
                         .content(objectMapper.writeValueAsBytes(new StationDetailsDto()))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -88,9 +88,10 @@ class StationControllerTest {
     }
 
     @Test
-    void getStation() throws Exception {
-        when(stationService.getStation(anyString())).thenReturn(buildStationDetailResource());
+    void getStationDetails() throws Exception {
+        when(stationService.getStationDetails(anyString(), any())).thenReturn(buildStationDetailResource());
         mvc.perform(get("/stations/{station-code}", STATION_CODE)
+                        .param("status", ConfigurationStatus.ACTIVE.name())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
     }
@@ -107,29 +108,9 @@ class StationControllerTest {
 
     @Test
     void updateStation() throws Exception {
-
         when(stationService.updateStation(any(), anyString())).thenReturn(buildStationDetailResource());
         mvc.perform(put("/stations/{station-code}", STATION_CODE)
                         .content(objectMapper.writeValueAsBytes(buildStationDetailsDto()))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
-    void getWrapperEntitiesStation() throws Exception {
-        when(stationService.getWrapperEntitiesStation(anyString())).thenReturn(new WrapperEntities());
-        mvc.perform(get("/stations/wrapper/{station-code}", STATION_CODE)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
-    void getAllStationsMerged() throws Exception {
-        when(stationService.getAllStationsMerged(anyInt(), eq(null), anyString(), anyInt(), eq(null)))
-                .thenReturn(buildWrapperStationsResource());
-        mvc.perform(get("/stations/merged")
-                        .param("brokerCode", "brokerCode")
-                        .param("page", "0")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
     }
@@ -165,7 +146,7 @@ class StationControllerTest {
     void updateWrapperStationDetails() throws Exception {
         StationDetailsDto dto = buildStationDetailsDto();
 
-        when(stationService.updateWrapperStationDetails(any())).thenReturn(new WrapperEntities());
+        when(stationService.updateWrapperStationDetails(anyString(), any())).thenReturn(buildStationDetailResource());
         mvc.perform(put("/stations/wrapper/{station-code}", STATION_CODE)
                         .content(objectMapper.writeValueAsBytes(dto))
                         .contentType(MediaType.APPLICATION_JSON))

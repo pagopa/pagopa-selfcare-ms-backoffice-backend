@@ -153,7 +153,7 @@ public class PaymentServiceProviderService {
     }
 
     private String getFirstValidChannelCodeAux(String taxCode) {
-        Channels response = apiConfigClient.getChannels(1, 0, null, taxCode, "DESC");
+        Channels response = apiConfigClient.getChannels(null, taxCode, "DESC", 1, 0);
         List<Channel> codeList = response.getChannelList();
         Set<String> codes = codeList.stream().map(Channel::getChannelCode)
                 .filter(s -> s.matches(REGEX_GENERATE)) // String_nn

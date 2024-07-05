@@ -4,7 +4,7 @@ import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
+import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getStationWrapperEntityOperationsSortedList;
 
 @Slf4j
 @Service
@@ -219,13 +219,13 @@ public class BrokerService {
     }
 
     private CIBrokerStationResource enrichBrokerStation(CIBrokerStationResource ciBrokerStation) {
-        Optional<WrapperEntities> optionalResult = this.wrapperService.findByIdOptional(ciBrokerStation.getStationCode());
+        Optional<WrapperEntityStations> optionalResult = this.wrapperService.findStationByIdOptional(ciBrokerStation.getStationCode());
         if (optionalResult.isEmpty()) {
             log.warn("Station with id {} not found in wrapper store", ciBrokerStation.getStationCode());
             return ciBrokerStation;
         }
-        WrapperEntities result = optionalResult.get();
-        StationDetails details = (StationDetails) getWrapperEntityOperationsSortedList(result).get(0).getEntity();
+        WrapperEntityStations result = optionalResult.get();
+        StationDetails details = getStationWrapperEntityOperationsSortedList(result).get(0).getEntity();
 
         ciBrokerStation.setActivationDate(details.getActivationDate());
         ciBrokerStation.setModifiedAt(result.getModifiedAt());

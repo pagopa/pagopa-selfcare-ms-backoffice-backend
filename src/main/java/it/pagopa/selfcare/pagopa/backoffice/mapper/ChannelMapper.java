@@ -1,5 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.mapper;
 
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityChannel;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityChannels;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityOperations;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
@@ -10,7 +12,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatu
 import java.util.ArrayList;
 import java.util.List;
 
-import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getWrapperEntityOperationsSortedList;
+import static it.pagopa.selfcare.pagopa.backoffice.service.WrapperService.getChannelWrapperEntityOperationsSortedList;
 
 public class ChannelMapper {
 
@@ -179,7 +181,10 @@ public class ChannelMapper {
         return resource;
     }
 
-    public static ChannelDetailsResource toResource(ChannelDetails model, PspChannelPaymentTypes listModel, WrapperStatus status, String createdBy, String modifiedBy) {
+    public static ChannelDetailsResource toResource(
+            ChannelDetails model, PspChannelPaymentTypes listModel,
+            WrapperStatus status, String createdBy, String modifiedBy,
+            String note) {
         ChannelDetailsResource resource = null;
         if(model != null) {
             resource = new ChannelDetailsResource();
@@ -231,8 +236,30 @@ public class ChannelMapper {
             resource.setModifiedBy(modifiedBy);
             resource.setModifiedAt(model.getModifiedAt());
             resource.setCreatedAt(model.getCreatedAt());
+            resource.setNote(note);
         }
         return resource;
+    }
+
+    public static ChannelDetailsResource toResource(WrapperEntityChannels wrapperEntities) {
+        if (wrapperEntities == null) {
+            return null;
+        }
+
+        WrapperEntityChannel mostRecentEntity = getChannelWrapperEntityOperationsSortedList(wrapperEntities).get(0);
+        ChannelDetails model = mostRecentEntity.getEntity();
+        PspChannelPaymentTypes paymentTypes = PspChannelPaymentTypes.builder()
+                .paymentTypeList(model.getPaymentTypeList())
+                .build();
+
+        return toResource(
+                model,
+                paymentTypes,
+                wrapperEntities.getStatus(),
+                wrapperEntities.getCreatedBy(),
+                wrapperEntities.getModifiedBy(),
+                mostRecentEntity.getNote()
+        );
     }
 
     public static ChannelDetailsResource toResource(ChannelDetails model) {
@@ -564,26 +591,25 @@ public class ChannelMapper {
     }
 
 
-    public static WrapperChannel toWrapperChannel(WrapperEntityOperations<ChannelDetails> wrapperEntityOperations) {
-        if(wrapperEntityOperations == null) {
+    public static WrapperChannel toWrapperChannel(WrapperEntityChannel wrapperEntityChannel) {
+        if(wrapperEntityChannel == null) {
             return null;
         }
 
         WrapperChannel wrapperChannel = new WrapperChannel();
 
-        wrapperChannel.setChannelCode(wrapperEntityOperations.getEntity().getChannelCode());
-        wrapperChannel.setEnabled(wrapperEntityOperations.getEntity().getEnabled());
-        wrapperChannel.setBrokerDescription(wrapperEntityOperations.getEntity().getBrokerDescription());
+        wrapperChannel.setChannelCode(wrapperEntityChannel.getEntity().getChannelCode());
+        wrapperChannel.setEnabled(wrapperEntityChannel.getEntity().getEnabled());
+        wrapperChannel.setBrokerDescription(wrapperEntityChannel.getEntity().getBrokerDescription());
 
-        wrapperChannel.setWrapperStatus(wrapperEntityOperations.getStatus());
-        wrapperChannel.setCreatedAt(wrapperEntityOperations.getCreatedAt());
-        wrapperChannel.setModifiedAt(wrapperEntityOperations.getModifiedAt());
+        wrapperChannel.setWrapperStatus(wrapperEntityChannel.getStatus());
+        wrapperChannel.setCreatedAt(wrapperEntityChannel.getCreatedAt());
+        wrapperChannel.setModifiedAt(wrapperEntityChannel.getModifiedAt());
 
         return wrapperChannel;
-
     }
 
-    public static WrapperChannels toWrapperChannels(WrapperEntitiesList wrapperEntitiesList) {
+    public static WrapperChannels toWrapperChannels(WrapperChannelList wrapperEntitiesList) {
         if(wrapperEntitiesList == null) {
             return null;
         }
@@ -591,9 +617,9 @@ public class ChannelMapper {
         WrapperChannels wrapperChannels = new WrapperChannels();
         List<WrapperChannel> channelList = new ArrayList<>();
 
-        wrapperEntitiesList.getWrapperEntities().forEach(
-                ent -> channelList.add(toWrapperChannel(
-                        (WrapperEntityOperations<ChannelDetails>) getWrapperEntityOperationsSortedList(ent).get(0))));
+        wrapperEntitiesList.getWrapperEntities()
+                .forEach(ent -> channelList.add(toWrapperChannel(getChannelWrapperEntityOperationsSortedList(ent).get(0)))
+                );
 
         wrapperChannels.setChannelList(channelList);
         wrapperChannels.setPageInfo(wrapperEntitiesList.getPageInfo());
@@ -609,7 +635,7 @@ public class ChannelMapper {
         WrapperChannelsResource wrapperChannelsResource = new WrapperChannelsResource();
 
         wrapperChannelsResource.setChannelList(wrapperChannels.getChannelList().stream()
-                .map(station -> toWrapperChannelResource(station))
+                .map(ChannelMapper::toWrapperChannelResource)
                 .toList());
         wrapperChannelsResource.setPageInfo(wrapperChannels.getPageInfo());
 

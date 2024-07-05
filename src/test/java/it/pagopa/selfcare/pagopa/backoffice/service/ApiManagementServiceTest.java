@@ -148,7 +148,7 @@ class ApiManagementServiceTest {
                         "response/externalapi/institution_response.json", InstitutionResponse.class));
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(new InstitutionApiKeys()));
 
-        InstitutionApiKeysResource institutionApiKeys = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.GPD);
+        InstitutionApiKeysResource institutionApiKeys = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.BIZ);
 
         assertNotNull(institutionApiKeys);
         assertNotNull(institutionApiKeys.getInstitutionApiKeys());
@@ -169,7 +169,7 @@ class ApiManagementServiceTest {
                         "response/externalapi/institution_response.json", InstitutionResponse.class));
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(new InstitutionApiKeys()));
 
-        InstitutionApiKeysResource institutionApiKeys = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.GPD);
+        InstitutionApiKeysResource institutionApiKeys = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.BIZ);
 
         assertNotNull(institutionApiKeys);
         assertNotNull(institutionApiKeys.getInstitutionApiKeys());

@@ -49,6 +49,8 @@ public class BundleResource {
     private String idChannel;
     @Schema(description = "TaxCode of the linked broker PSP")
     private String idBrokerPsp;
+    @Schema(description = "Name of the linked broker PSP")
+    private String pspBusinessName;
     @Schema(description = "If the payment needs a tax stamp, mutually exclusive with digitalStampRestriction")
     private Boolean digitalStamp;
     @Schema(description = "If the payment can be payed only with a tax stamp, mutually exclusive with digitalStamp")
