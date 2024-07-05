@@ -46,6 +46,7 @@ public class ApiManagementService {
 
     private static final String PRIMARY = "primary";
     private static final String SECONDARY = "secondary";
+
     private final AzureApiManagerClient apimClient;
 
     private final ExternalApiClient externalApiClient;
@@ -169,39 +170,39 @@ public class ApiManagementService {
 
         List<InstitutionApiKeys> apiSubscriptions = this.apimClient.getApiSubscriptions(institutionId);
 
-        if (subscriptionCode == Subscription.BO_EXT_EC || subscriptionCode == Subscription.BO_EXT_PSP) {
+        if (
+                subscriptionCode == Subscription.FDR_PSP ||
+                subscriptionCode == Subscription.FDR_ORG ||
+                subscriptionCode == Subscription.GPD ||
+                subscriptionCode == Subscription.BO_EXT_EC ||
+                subscriptionCode == Subscription.BO_EXT_PSP
+        ) {
+            List<DelegationExternal> delegationResponse = getDelegationResponse(institutionId, subscriptionCode);
+
             InstitutionApiKeys apiKeys = apiSubscriptions.stream()
                     .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
                     .findFirst()
                     .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
 
             // configure primary key
-            Authorization authorizationPrimaryKey = buildBOAuthorization(subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, true);
+            Authorization authorizationPrimaryKey = buildAuthorization(getAuthorizerDomain(subscriptionCode), subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, true, delegationResponse);
             this.authorizerConfigClient.createAuthorization(authorizationPrimaryKey);
 
             // configure secondary key
-            Authorization authorizationSecondaryKey = buildBOAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, false);
-            this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
-        }
-        if (subscriptionCode == Subscription.FDR_ORG || subscriptionCode == Subscription.FDR_PSP) {
-            InstitutionApiKeys apiKeys = apiSubscriptions.stream()
-                    .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
-                    .findFirst()
-                    .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
-            List<DelegationExternal> delegationResponse = this.externalApiClient.getBrokerDelegation(null, institutionId, "prod-pagopa", "FULL", null);
-
-            // configure primary key
-            Authorization authorizationPrimaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, delegationResponse, true, subscriptionCode);
-            this.authorizerConfigClient.createAuthorization(authorizationPrimaryKey);
-
-            // configure secondary key
-            Authorization authorizationSecondaryKey = buildFdrAuthorization(subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, delegationResponse, false, subscriptionCode);
+            Authorization authorizationSecondaryKey = buildAuthorization(getAuthorizerDomain(subscriptionCode), subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, false, delegationResponse);
             this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
         }
 
         return InstitutionApiKeysResource.builder()
                 .institutionApiKeys(apiSubscriptions)
                 .build();
+    }
+
+    private List<DelegationExternal> getDelegationResponse(String institutionId, Subscription subscriptionCode) {
+        if (subscriptionCode == Subscription.FDR_PSP || subscriptionCode == Subscription.FDR_ORG || subscriptionCode == Subscription.GPD) {
+            return this.externalApiClient.getBrokerDelegation(null, institutionId, "prod-pagopa", "FULL", null);
+        }
+        return new ArrayList<>();
     }
 
     /**
@@ -250,7 +251,7 @@ public class ApiManagementService {
                 .findFirst()
                 .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
 
-        String authorizationId = createAuthorizationBOId(subscriptionPrefixId, institutionId, isPrimaryKey);
+        String authorizationId = createAuthorizationId(subscriptionPrefixId, institutionId, isPrimaryKey);
         Authorization authorization = this.authorizerConfigClient.getAuthorization(authorizationId);
         if (authorization == null) {
             throw new AppException(AppError.AUTHORIZATION_NOT_FOUND, institutionId);
@@ -269,56 +270,33 @@ public class ApiManagementService {
         return institution;
     }
 
-    private Authorization buildBOAuthorization(
+    private Authorization buildAuthorization(
+            String domain,
             String subscriptionPrefixId,
             String subscriptionKey,
             InstitutionResponse institution,
-            boolean isPrimaryKey
-    ) {
-        log.info(institution.toString());
-        return Authorization.builder()
-                .id(createAuthorizationBOId(subscriptionPrefixId, institution.getId(), isPrimaryKey))
-                .domain("backoffice_external")
-                .subscriptionKey(subscriptionKey)
-                .description(String.format("%s key configuration for backoffice external", isPrimaryKey ? PRIMARY : SECONDARY))
-                .owner(AuthorizationOwner.builder()
-                        .id(institution.getTaxCode())
-                        .name(institution.getDescription())
-                        .type(RoleType.fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType().name()))
-                        .build())
-                .authorizedEntities(Collections.singletonList(AuthorizationEntity.builder()
-                        .name(institution.getDescription())
-                        .value(institution.getTaxCode())
-                        .values(null)
-                        .build()))
-                .otherMetadata(Collections.emptyList())
-                .build();
-    }
-
-    private Authorization buildFdrAuthorization(
-            String subscriptionPrefixId,
-            String subscriptionKey,
-            InstitutionResponse institution,
-            List<DelegationExternal> delegationResponse,
             boolean isPrimaryKey,
-            Subscription subscriptionCode) {
-
-        ArrayList<AuthorizationEntity> authorizedEntities = new ArrayList<>(delegationResponse.stream()
-                .map(elem -> AuthorizationEntity.builder()
-                        .name(elem.getInstitutionName())
-                        .value(elem.getTaxCode())
-                        .build())
-                .toList());
+            List<DelegationExternal> delegationResponse
+    ) {
+        List<AuthorizationEntity> authorizedEntities = new ArrayList<>();
+        if (delegationResponse != null && !delegationResponse.isEmpty()) {
+            authorizedEntities = new ArrayList<>(delegationResponse.stream()
+                    .map(elem -> AuthorizationEntity.builder()
+                            .name(elem.getInstitutionName())
+                            .value(elem.getTaxCode())
+                            .build())
+                    .toList());
+        }
         authorizedEntities.add(AuthorizationEntity.builder()
                 .name(institution.getDescription())
                 .value(institution.getTaxCode())
                 .build());
-        log.info(institution.toString());
+
         return Authorization.builder()
-                .id(createAuthorizationBOId(subscriptionPrefixId, institution.getId(), isPrimaryKey))
-                .domain("fdr")
+                .id(createAuthorizationId(subscriptionPrefixId, institution.getId(), isPrimaryKey))
+                .domain(domain)
                 .subscriptionKey(subscriptionKey)
-                .description(String.format("%s key configuration for %s", isPrimaryKey ? PRIMARY : SECONDARY, subscriptionCode.name()))
+                .description(String.format("%s key configuration for %s", isPrimaryKey ? PRIMARY : SECONDARY, domain))
                 .owner(AuthorizationOwner.builder()
                         .id(institution.getTaxCode())
                         .name(institution.getDescription())
@@ -329,7 +307,7 @@ public class ApiManagementService {
                 .build();
     }
 
-    private String createAuthorizationBOId(String subscriptionPrefixId, String institutionId, boolean isPrimaryKey) {
+    private String createAuthorizationId(String subscriptionPrefixId, String institutionId, boolean isPrimaryKey) {
         return String.format("%s%s_%s", subscriptionPrefixId, institutionId, isPrimaryKey ? PRIMARY : SECONDARY);
     }
 
@@ -348,6 +326,19 @@ public class ApiManagementService {
 
     private char getEnvironment() {
         return environment.toLowerCase().charAt(0);
+    }
+
+    private String getAuthorizerDomain(Subscription subType) {
+        if (subType == Subscription.BO_EXT_EC || subType == Subscription.BO_EXT_PSP) {
+            return "backoffice_external";
+        }
+        if (subType == Subscription.GPD) {
+            return "gpd";
+        }
+        if (subType == Subscription.FDR_PSP || subType == Subscription.FDR_ORG) {
+            return "fdr";
+        }
+        return null;
     }
 }
 
