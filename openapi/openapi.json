@@ -11143,6 +11143,10 @@
             "type": "string",
             "description": "Italian Banking Association numeric code used to identify banks or credit institutions"
           },
+          "cart": {
+            "type": "boolean",
+            "description": "If the bundle is valid for cart payments"
+          },
           "description": {
             "type": "string"
           },
@@ -11440,6 +11444,10 @@
             "items": {
               "$ref": "#/components/schemas/CIBundleFee"
             }
+          },
+          "cart": {
+            "type": "boolean",
+            "description": "If the bundle is valid for cart payments"
           },
           "ciBundleId": {
             "type": "string",
@@ -13140,6 +13148,10 @@
             "items": {
               "$ref": "#/components/schemas/PSPBundleTaxonomy"
             }
+          },
+          "cart": {
+            "type": "boolean",
+            "description": "If the bundle is valid for cart payments"
           },
           "description": {
             "type": "string"
