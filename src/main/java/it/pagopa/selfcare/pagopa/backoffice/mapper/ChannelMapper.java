@@ -571,6 +571,7 @@ public class ChannelMapper {
         wrapperChannel.setEnabled(model.getEnabled());
         wrapperChannel.setBrokerDescription(model.getBrokerDescription());
         wrapperChannel.setWrapperStatus(WrapperStatus.APPROVED);
+        wrapperChannel.setPrimitiveVersion(model.getPrimitiveVersion());
 
         return wrapperChannel;
     }
@@ -655,6 +656,7 @@ public class ChannelMapper {
         wrapperChannelResource.setWrapperStatus(wrapperChannel.getWrapperStatus());
         wrapperChannelResource.setModifiedAt(wrapperChannel.getModifiedAt());
         wrapperChannelResource.setCreatedAt(wrapperChannel.getCreatedAt());
+        wrapperChannelResource.setPrimitiveVersion(wrapperChannel.getPrimitiveVersion());
 
         return wrapperChannelResource;
 

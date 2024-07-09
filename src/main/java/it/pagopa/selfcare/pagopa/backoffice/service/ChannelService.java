@@ -321,6 +321,7 @@ public class ChannelService {
                     if (optionalWrapperEntities.isPresent()) {
                         WrapperEntityChannels wrapperEntities = optionalWrapperEntities.get();
                         wrapperChannel.setCreatedAt(wrapperEntities.getCreatedAt());
+                        wrapperChannel.setPrimitiveVersion(channel.getPrimitiveVersion());
                     }
                     return wrapperChannel;
                 }).toList();

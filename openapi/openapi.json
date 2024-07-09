@@ -14777,6 +14777,11 @@
             "description": " modification date",
             "format": "date-time"
           },
+          "primitive_version": {
+            "type": "integer",
+            "description": "Primitive number version",
+            "format": "int32"
+          },
           "wrapperStatus": {
             "type": "string",
             "description": "channel's validation status",

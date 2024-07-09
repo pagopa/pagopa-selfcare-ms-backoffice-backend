@@ -25,4 +25,7 @@ public class WrapperChannel {
     @JsonProperty(required = true)
     @NotNull
     private WrapperStatus wrapperStatus;
+
+    @JsonProperty("primitive_version")
+    private Integer primitiveVersion;
 }
