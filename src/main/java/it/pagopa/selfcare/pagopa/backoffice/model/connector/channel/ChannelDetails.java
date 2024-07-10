@@ -149,9 +149,6 @@ public class ChannelDetails extends Channel {
     @NotNull
     private Boolean agid;
 
-    @JsonProperty("primitive_version")
-    private Integer primitiveVersion;
-
     @JsonProperty("payment_types")
     private List<String> paymentTypeList;
 

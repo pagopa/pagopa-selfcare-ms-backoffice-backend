@@ -26,4 +26,8 @@ public class ChannelResource {
     @JsonProperty("broker_description")
     @Schema(description = "Broker description. Read only field")
     protected String brokerDescription;
+
+    @JsonProperty("primitive_version")
+    @Schema(description = "Primitive number version")
+    private Integer primitiveVersion;
 }

@@ -33,4 +33,8 @@ public class WrapperChannelResource {
     @NotNull
     private WrapperStatus wrapperStatus;
 
+    @Schema(description = "Primitive number version")
+    @JsonProperty("primitive_version")
+    private Integer primitiveVersion;
+
 }
