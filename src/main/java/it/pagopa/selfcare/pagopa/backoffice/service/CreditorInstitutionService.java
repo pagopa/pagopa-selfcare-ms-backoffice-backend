@@ -137,6 +137,20 @@ public class CreditorInstitutionService {
         return mapper.toResource(ecStation);
     }
 
+    public CreditorInstitutionStationEditResource updateStationAssociationToCreditorInstitution(
+            String ecCode,
+            @NotNull CreditorInstitutionStationDto dto
+    ) {
+        try {
+            apiConfigClient.getCreditorInstitutionDetails(ecCode);
+        } catch (FeignException e) {
+            throw new AppException(AppError.CREDITOR_INSTITUTION_NOT_FOUND, ecCode);
+        }
+        CreditorInstitutionStationEdit station = mapper.fromDto(dto);
+        CreditorInstitutionStationEdit ecStation = apiConfigClient.updateCreditorInstitutionStationRelationship(ecCode, station.getStationCode(), station);
+        return mapper.toResource(ecStation);
+    }
+
     public void deleteCreditorInstitutionStationRelationship(String ecCode, String stationCode) {
         apiConfigClient.deleteCreditorInstitutionStationRelationship(ecCode, stationCode);
     }
