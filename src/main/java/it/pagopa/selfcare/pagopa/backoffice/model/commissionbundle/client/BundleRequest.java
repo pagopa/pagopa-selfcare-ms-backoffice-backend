@@ -46,4 +46,6 @@ public class BundleRequest {
     private LocalDate validityDateFrom;
     @Schema(description = "Date after which the bundle is expired")
     private LocalDate validityDateTo;
+    @Schema(description = "If the bundle is valid for cart payments")
+    private Boolean cart;
 }

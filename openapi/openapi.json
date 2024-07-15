@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.16.2"
+    "version": "2.15.3-3-next"
   },
   "servers": [
     {
@@ -11143,6 +11143,10 @@
             "type": "string",
             "description": "Italian Banking Association numeric code used to identify banks or credit institutions"
           },
+          "cart": {
+            "type": "boolean",
+            "description": "If the bundle is valid for cart payments"
+          },
           "description": {
             "type": "string"
           },
@@ -11440,6 +11444,10 @@
             "items": {
               "$ref": "#/components/schemas/CIBundleFee"
             }
+          },
+          "cart": {
+            "type": "boolean",
+            "description": "If the bundle is valid for cart payments"
           },
           "ciBundleId": {
             "type": "string",
@@ -13141,6 +13149,10 @@
               "$ref": "#/components/schemas/PSPBundleTaxonomy"
             }
           },
+          "cart": {
+            "type": "boolean",
+            "description": "If the bundle is valid for cart payments"
+          },
           "description": {
             "type": "string"
           },
@@ -14764,6 +14776,11 @@
             "type": "string",
             "description": " modification date",
             "format": "date-time"
+          },
+          "primitive_version": {
+            "type": "integer",
+            "description": "Primitive number version",
+            "format": "int32"
           },
           "wrapperStatus": {
             "type": "string",

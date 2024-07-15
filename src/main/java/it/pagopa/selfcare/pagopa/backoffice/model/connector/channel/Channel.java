@@ -20,6 +20,8 @@ public class Channel {
     protected Boolean enabled;
     @JsonProperty("broker_description")
     protected String brokerDescription;
+    @JsonProperty("primitive_version")
+    protected Integer primitiveVersion;
 
     @JsonIgnore
     private Instant createdAt = Instant.now(); //FIXME when these fields will be available from apiConfig

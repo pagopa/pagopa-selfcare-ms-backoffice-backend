@@ -54,6 +54,8 @@ public class Bundle {
     private Boolean digitalStamp;
     @Schema(description = "If the payment can be payed only with a tax stamp, mutually exclusive with digitalStamp")
     private Boolean digitalStampRestriction;
+    @Schema(description = "If the bundle is valid for cart payments")
+    private Boolean cart;
 
     private String pspBusinessName;
     private String urlPolicyPsp;
