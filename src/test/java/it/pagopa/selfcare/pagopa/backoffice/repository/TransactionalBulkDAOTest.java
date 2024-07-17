@@ -304,7 +304,7 @@ class TransactionalBulkDAOTest {
         List<IbanEntity> brokerIbanEntities = List.of();
         if(numberOfIbans > 0) {
             brokerIbanEntities = IntStream.rangeClosed(1, numberOfIbans)
-                    .mapToObj(id -> IbanEntity.builder()
+                    .mapToObj(id -> (IbanEntity) IbanEntity.builder()
                             .ciName(creditorInstitution + " PA")
                             .ciFiscalCode(creditorInstitution)
                             .iban("IT00X" + creditorInstitution)
