@@ -92,7 +92,7 @@ public class ExportService {
      * @param ibans The list of IbanCsv objects to be processed.
      * @return The list of lists after mapping and ensuring no null values.
      */
-    private List<List<String>> mapIbanToCsv(List<BrokerIbanEntity> ibans) {
+    private List<List<String>> mapIbanToCsv(List<IbanEntity> ibans) {
         return ibans.stream()
                 .map(elem -> Arrays.asList(deNull(elem.getCiName()),
                         deNull(elem.getCiFiscalCode()),

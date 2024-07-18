@@ -2,8 +2,9 @@ package it.pagopa.selfcare.pagopa.backoffice.scheduler;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
-import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbanEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
+import it.pagopa.selfcare.pagopa.backoffice.entity.CreditorInstitutionIbansEntity;
+import it.pagopa.selfcare.pagopa.backoffice.entity.IbanEntity;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Broker;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionView;
@@ -11,6 +12,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
+import it.pagopa.selfcare.pagopa.backoffice.repository.CreditorInstitutionsIbansRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.TransactionalBulkDAO;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.AllPages;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.MapInRequiredClass;
@@ -51,6 +53,9 @@ public class IbanByBrokerExtractionScheduler {
 
     @Autowired
     private TransactionalBulkDAO dao;
+
+    @Autowired
+    private CreditorInstitutionsIbansRepository creditorInstitutionsIbansRepository;
 
     @Value("${extraction.ibans.getBrokers.pageLimit}")
     private Integer getBrokersPageLimit;
@@ -98,8 +103,8 @@ public class IbanByBrokerExtractionScheduler {
         return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getCIByBrokerPageLimit);
     };
 
-    private final MapInRequiredClass<IbanDetails, BrokerIbanEntity> convertIbanDetailsToBrokerIbanEntity = (IbanDetails elem) ->
-            BrokerIbanEntity.builder()
+    private final MapInRequiredClass<IbanDetails, IbanEntity> convertIbanDetailsToBrokerIbanEntity = (IbanDetails elem) ->
+            IbanEntity.builder()
                     .ciName(elem.getCiName())
                     .ciFiscalCode(elem.getCiFiscalCode())
                     .iban(elem.getIban())
@@ -173,7 +178,24 @@ public class IbanByBrokerExtractionScheduler {
             // gets all CIs delegated by broker
             Set<String> delegatedCITaxCodes = getDelegatedCreditorInstitutions(brokerCode);
             // gets all IBANs related to the CIs
-            Set<BrokerIbanEntity> ibans = getIbans(delegatedCITaxCodes, brokerCode);
+            Set<IbanEntity> ibans = getIbans(delegatedCITaxCodes, brokerCode);
+
+            // save all IBANs in creditorInstitutionIbans Collection in Mongo DB
+            List<CreditorInstitutionIbansEntity> ibanEntities = ibans.stream()
+                    .map(elem -> (CreditorInstitutionIbansEntity) CreditorInstitutionIbansEntity.builder()
+                            .id(elem.getIban())
+                            .iban(elem.getIban())
+                            .label(elem.getLabel())
+                            .ciName(elem.getCiName())
+                            .status(elem.getStatus())
+                            .validityDate(elem.getValidityDate())
+                            .description(elem.getDescription())
+                            .ciFiscalCode(elem.getCiFiscalCode())
+                            .build())
+                    .toList();
+            creditorInstitutionsIbansRepository.saveAll(ibanEntities);
+            log.info("[Export IBANs] - Upsert completed of a batch of {} IBANs in Creditor-Institution Collection", ibanEntities.size());
+
             // map retrieved data into new entity
             brokerIbansEntity = Optional.of(BrokerIbansEntity.builder()
                     .brokerCode(brokerCode)
@@ -199,8 +221,8 @@ public class IbanByBrokerExtractionScheduler {
         return delegatedCreditorInstitutions;
     }
 
-    private Set<BrokerIbanEntity> getIbans(Set<String> ciCodes, String brokerCode) {
-        Set<BrokerIbanEntity> brokerIbanEntities = new HashSet<>();
+    private Set<IbanEntity> getIbans(Set<String> ciCodes, String brokerCode) {
+        Set<IbanEntity> brokerIbanEntities = new HashSet<>();
         if(!ciCodes.isEmpty()) {
             log.debug(String.format("[Export IBANs] - Retrieving the list of all IBANs for [%d] creditor institutions related to broker [%s]...", ciCodes.size(), brokerCode));
             long startTime = Calendar.getInstance().getTimeInMillis();
@@ -211,7 +233,7 @@ public class IbanByBrokerExtractionScheduler {
             for (int i = 0; i < totalSize; i += limit) {
                 List<String> partition = ciCodesAsList.subList(i, Math.min(i + limit, totalSize));
                 String stringifiedCiCodesPartition = String.join(",", partition);
-                Set<BrokerIbanEntity> partitionedBrokerIbanEntities = allPages.executeParallelClientCalls(getIbansByBrokerCallback, getNumberOfIbansByBrokerPagesCallback,
+                Set<IbanEntity> partitionedBrokerIbanEntities = allPages.executeParallelClientCalls(getIbansByBrokerCallback, getNumberOfIbansByBrokerPagesCallback,
                         IbansList::getIbans, convertIbanDetailsToBrokerIbanEntity,
                         getIbansPageLimit, stringifiedCiCodesPartition);
                 brokerIbanEntities.addAll(partitionedBrokerIbanEntities);

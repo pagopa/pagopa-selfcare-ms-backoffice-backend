@@ -7,15 +7,9 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoException;
 import com.mongodb.TransactionOptions;
-import com.mongodb.client.ClientSession;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
-import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbanEntity;
+import com.mongodb.client.*;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
+import it.pagopa.selfcare.pagopa.backoffice.entity.IbanEntity;
 import lombok.SneakyThrows;
 import org.bson.conversions.Bson;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,14 +34,8 @@ import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
-import static org.springframework.test.util.AssertionErrors.assertFalse;
-import static org.springframework.test.util.AssertionErrors.assertTrue;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.util.AssertionErrors.*;
 
 @SpringBootTest(classes = {TransactionalBulkDAO.class})
 class TransactionalBulkDAOTest {
@@ -313,10 +301,10 @@ class TransactionalBulkDAOTest {
 
     private BrokerIbansEntity getBrokerIbansEntity(int numberOfIbans) {
         String creditorInstitution = "00000000000";
-        List<BrokerIbanEntity> brokerIbanEntities = List.of();
+        List<IbanEntity> brokerIbanEntities = List.of();
         if(numberOfIbans > 0) {
             brokerIbanEntities = IntStream.rangeClosed(1, numberOfIbans)
-                    .mapToObj(id -> BrokerIbanEntity.builder()
+                    .mapToObj(id -> (IbanEntity) IbanEntity.builder()
                             .ciName(creditorInstitution + " PA")
                             .ciFiscalCode(creditorInstitution)
                             .iban("IT00X" + creditorInstitution)
