@@ -10,6 +10,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
+import it.pagopa.selfcare.pagopa.backoffice.repository.CreditorInstitutionsIbansRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.TransactionalBulkDAO;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperStationsRepository;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.AllPages;
@@ -46,6 +47,9 @@ class IbanByBrokerExtractionSchedulerTest {
 
     @MockBean
     private WrapperStationsRepository wrapperRepository;
+
+    @MockBean
+    private CreditorInstitutionsIbansRepository creditorInstitutionsIbansRepository;
 
     @Autowired
     private AllPages allPages;
