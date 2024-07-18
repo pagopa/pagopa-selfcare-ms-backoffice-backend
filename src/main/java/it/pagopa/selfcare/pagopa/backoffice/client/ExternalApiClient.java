@@ -2,11 +2,11 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.ExternalFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
+import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -19,19 +19,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.validation.Valid;
 import java.util.List;
 
-@FeignClient(name = "external-api", url = "${rest-client.external-api.base-url}", configuration = ExternalFeignConfig.class)
+@FeignClient(name = "external-api", url = "${rest-client.external-api.base-url}",
+        configuration = ExternalFeignConfig.class)
 @Validated
 public interface ExternalApiClient {
 
     @GetMapping(value = "/institutions/{institutionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Valid
-    InstitutionResponse getInstitution(@PathVariable(value = "institutionId") String id);
+    Institution getInstitution(@PathVariable(value = "institutionId") String id);
 
-    @GetMapping(value = "/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    @Valid
-    List<InstitutionInfo> getInstitutions(@RequestParam(value = "userIdForAuth") String userIdForAuth);
 
     @GetMapping(value = "/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -41,7 +38,8 @@ public interface ExternalApiClient {
     @GetMapping(value = "/institutions/{institutionId}/products", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Valid
-    List<Product> getInstitutionUserProducts(@PathVariable(value = "institutionId") String institutionId, @RequestParam(value = "userId") String userId);
+    List<Product> getInstitutionUserProducts(@PathVariable(value = "institutionId") String institutionId,
+                                             @RequestParam(value = "userId") String userId);
 
     @GetMapping(value = "/institutions/{institution-id}/users", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -64,4 +62,18 @@ public interface ExternalApiClient {
             @RequestParam String mode,
             @RequestParam String search
     );
+
+    @GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    @Valid
+    List<UserInstitution> getUserInstitution(
+            @RequestParam(required = false) String userId,
+            @RequestParam(required = false) String institutionId,
+            @RequestParam(required = false) List<String> productRoles,
+            @RequestParam(required = false) List<String> roles,
+            @RequestParam(required = false) List<String> states,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
+    );
+
 }
