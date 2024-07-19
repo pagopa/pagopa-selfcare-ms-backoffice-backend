@@ -24,11 +24,15 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreateInst
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
+import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitutionProduct;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.util.Pair;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -79,6 +83,7 @@ public class ApiManagementService {
         this.featureManager = featureManager;
     }
 
+    @Cacheable(cacheNames = "getInstitutionsService")
     public InstitutionDetailResource getInstitutions(String taxCode) {
         List<InstitutionDetail> institutionDetails;
         if (taxCode != null && !taxCode.isEmpty()) {
@@ -91,9 +96,19 @@ public class ApiManagementService {
         } else {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String userIdForAuth = Utility.extractUserIdFromAuth(authentication);
-            Collection<InstitutionInfo> institutions = externalApiClient.getInstitutions(userIdForAuth);
+            Collection<UserInstitution> institutions = externalApiClient.getUserInstitution(
+                    userIdForAuth, null, null, null, null, null, null);
             institutionDetails = institutions.stream()
-                    .map(institution -> modelMapper.map(institution, InstitutionDetail.class))
+                    .map(userInstitution -> Pair.of(userInstitution, externalApiClient.getInstitution(
+                            userInstitution.getInstitutionId())))
+                    .map(pair -> {
+                        UserInstitution userInstitution = pair.getFirst();
+                        InstitutionDetail institutionDetail = modelMapper.map(pair.getSecond(), InstitutionDetail.class);
+                        institutionDetail.setUserProductRoles(userInstitution.getProducts() != null ?
+                                userInstitution.getProducts().stream().map(
+                                        UserInstitutionProduct::getProductRole).toList() : new ArrayList<>());
+                        return institutionDetail;
+                    })
                     .toList();
         }
         return InstitutionDetailResource.builder()
@@ -108,14 +123,16 @@ public class ApiManagementService {
 
     public ProductResource getInstitutionProducts(String institutionId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        List<Product> institutionUserProducts = externalApiClient.getInstitutionUserProducts(institutionId, Utility.extractUserIdFromAuth(authentication));
+        List<Product> institutionUserProducts = externalApiClient.getInstitutionUserProducts(
+                institutionId, Utility.extractUserIdFromAuth(authentication));
         return ProductResource.builder()
                 .products(institutionUserProducts)
                 .build();
     }
 
     public DelegationResource getBrokerDelegation(String institutionId, String brokerId, List<RoleType> roles) {
-        var response = externalApiClient.getBrokerDelegation(institutionId, brokerId, "prod-pagopa", "FULL", null);
+        var response = externalApiClient.getBrokerDelegation(
+                institutionId, brokerId, "prod-pagopa", "FULL", null);
 
         var result = response.stream()
                 .map(elem -> modelMapper.map(elem, Delegation.class))
@@ -127,7 +144,8 @@ public class ApiManagementService {
                     .filter(Objects::nonNull)
                     .filter(delegation -> {
                         log.info(delegation.toString());
-                        RoleType roleType = RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType());
+                        RoleType roleType = RoleType.fromSelfcareRole(
+                                delegation.getTaxCode(), delegation.getInstitutionType());
                         return roles.contains(roleType);
                     })
                     .toList();
@@ -155,7 +173,8 @@ public class ApiManagementService {
      * @return the list of all institution's subscription's api keys
      */
     public InstitutionApiKeysResource createSubscriptionKeys(String institutionId, Subscription subscriptionCode) {
-        InstitutionResponse institution = getInstitutionResponse(institutionId);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institution =
+                getInstitutionResponse(institutionId);
 
         String subscriptionId = String.format("%s%s", subscriptionCode.getPrefixId(), institution.getTaxCode());
         String subscriptionName = String.format("%s %s", subscriptionCode.getDisplayName(), institution.getDescription());
@@ -199,8 +218,11 @@ public class ApiManagementService {
     }
 
     private List<DelegationExternal> getDelegationResponse(String institutionId, Subscription subscriptionCode) {
-        if (subscriptionCode == Subscription.FDR_PSP || subscriptionCode == Subscription.FDR_ORG || subscriptionCode == Subscription.GPD) {
-            return this.externalApiClient.getBrokerDelegation(null, institutionId, "prod-pagopa", "FULL", null);
+        if (subscriptionCode == Subscription.FDR_PSP ||
+                subscriptionCode == Subscription.FDR_ORG ||
+                subscriptionCode == Subscription.GPD) {
+            return this.externalApiClient.getBrokerDelegation(
+                    null, institutionId, "prod-pagopa", "FULL", null);
         }
         return new ArrayList<>();
     }
@@ -245,7 +267,8 @@ public class ApiManagementService {
         }
     }
 
-    private void updateAuthorization(String institutionId, String subscriptionId, String subscriptionPrefixId, boolean isPrimaryKey) {
+    private void updateAuthorization(
+            String institutionId, String subscriptionId, String subscriptionPrefixId, boolean isPrimaryKey) {
         InstitutionApiKeys apiKeys = this.apimClient.getApiSubscriptions(institutionId).stream()
                 .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
                 .findFirst()
@@ -262,8 +285,9 @@ public class ApiManagementService {
         this.authorizerConfigClient.createAuthorization(authorization);
     }
 
-    private InstitutionResponse getInstitutionResponse(String institutionId) {
-        InstitutionResponse institution = this.externalApiClient.getInstitution(institutionId);
+    private it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution getInstitutionResponse(String institutionId) {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institution =
+                this.externalApiClient.getInstitution(institutionId);
         if (institution == null) {
             throw new AppException(AppError.APIM_USER_NOT_FOUND, institutionId);
         }
@@ -274,7 +298,7 @@ public class ApiManagementService {
             String domain,
             String subscriptionPrefixId,
             String subscriptionKey,
-            InstitutionResponse institution,
+            it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institution,
             boolean isPrimaryKey,
             List<DelegationExternal> delegationResponse
     ) {
@@ -300,7 +324,7 @@ public class ApiManagementService {
                 .owner(AuthorizationOwner.builder()
                         .id(institution.getTaxCode())
                         .name(institution.getDescription())
-                        .type(RoleType.fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType().name()))
+                        .type(RoleType.fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType()))
                         .build())
                 .authorizedEntities(authorizedEntities)
                 .otherMetadata(Collections.emptyList())
@@ -311,7 +335,8 @@ public class ApiManagementService {
         return String.format("%s%s_%s", subscriptionPrefixId, institutionId, isPrimaryKey ? PRIMARY : SECONDARY);
     }
 
-    private void createUserIfNotExist(String institutionId, InstitutionResponse institution) {
+    private void createUserIfNotExist(String institutionId,
+                                      it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institution) {
         try {
             this.apimClient.getInstitution(institutionId);
         } catch (IllegalArgumentException e) {

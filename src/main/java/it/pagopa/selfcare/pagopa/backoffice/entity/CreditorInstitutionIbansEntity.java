@@ -1,32 +1,26 @@
 package it.pagopa.selfcare.pagopa.backoffice.entity;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.util.List;
 
-
-@Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "brokerCode")
-@Document("brokerIbans")
+@Document("creditorInstitutionIbans")
+@Getter
+@Setter
 @ToString
-public class BrokerIbansEntity {
+public class CreditorInstitutionIbansEntity extends IbanEntity {
 
     @Id
     private String id;
 
-    @Indexed(unique = true)
-    private String brokerCode;
-
     @CreatedDate
     private Instant createdAt;
 
-    private List<IbanEntity> ibans;
 }
