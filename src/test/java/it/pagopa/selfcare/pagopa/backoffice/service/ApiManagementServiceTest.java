@@ -5,16 +5,16 @@ import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
 import it.pagopa.selfcare.pagopa.backoffice.client.AuthorizerConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
+import it.pagopa.selfcare.pagopa.backoffice.component.ApiManagementComponent;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitutionProduct;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -29,7 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = {MappingsConfiguration.class, ApiManagementService.class})
+@SpringBootTest(classes = {MappingsConfiguration.class, ApiManagementService.class, ApiManagementComponent.class})
 class ApiManagementServiceTest {
 
     private final String INSTITUTION_ID = "INSTITUTION_ID";
@@ -50,6 +50,10 @@ class ApiManagementServiceTest {
 
     @Autowired
     private ApiManagementService service;
+
+    @Autowired
+    @InjectMocks
+    private ApiManagementComponent component;
 
     @Test
     void getInstitutions() {
