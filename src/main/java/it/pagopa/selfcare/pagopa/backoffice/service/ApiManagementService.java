@@ -4,42 +4,26 @@ import com.azure.spring.cloud.feature.management.FeatureManager;
 import it.pagopa.selfcare.pagopa.backoffice.client.AuthorizerConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
+import it.pagopa.selfcare.pagopa.backoffice.component.ApiManagementComponent;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationEntity;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationOwner;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetailResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionResponse;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.ProductResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
-import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
-import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitutionProduct;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.util.Pair;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -65,6 +49,9 @@ public class ApiManagementService {
 
     private final FeatureManager featureManager;
 
+    private final ApiManagementComponent apiManagementComponent;
+
+
     @Autowired
     public ApiManagementService(AzureApiManagerClient apimClient,
                                 ExternalApiClient externalApiClient,
@@ -72,8 +59,8 @@ public class ApiManagementService {
                                 AuthorizerConfigClient authorizerConfigClient,
                                 FeatureManager featureManager,
                                 @Value("${institution.subscription.test-email}") String testEmail,
-                                @Value("${info.properties.environment}") String environment
-    ) {
+                                @Value("${info.properties.environment}") String environment,
+                                ApiManagementComponent apiManagementComponent) {
         this.apimClient = apimClient;
         this.externalApiClient = externalApiClient;
         this.modelMapper = modelMapper;
@@ -81,35 +68,20 @@ public class ApiManagementService {
         this.environment = environment;
         this.authorizerConfigClient = authorizerConfigClient;
         this.featureManager = featureManager;
+        this.apiManagementComponent = apiManagementComponent;
     }
 
-    @Cacheable(cacheNames = "getInstitutionsService")
     public InstitutionDetailResource getInstitutions(String taxCode) {
         List<InstitutionDetail> institutionDetails;
         if (taxCode != null && !taxCode.isEmpty()) {
             if (!featureManager.isEnabled("isOperator")) {
                 throw new AppException(AppError.UNAUTHORIZED);
             }
-            institutionDetails = externalApiClient.getInstitutionsFiltered(taxCode).getInstitutions().stream()
-                    .map(elem -> modelMapper.map(elem, InstitutionDetail.class))
-                    .toList();
+            institutionDetails = apiManagementComponent.getInstitutionDetailsForOperator(taxCode);
         } else {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String userIdForAuth = Utility.extractUserIdFromAuth(authentication);
-            Collection<UserInstitution> institutions = externalApiClient.getUserInstitution(
-                    userIdForAuth, null, null, null, null, null, null);
-            institutionDetails = institutions.stream()
-                    .map(userInstitution -> Pair.of(userInstitution, externalApiClient.getInstitution(
-                            userInstitution.getInstitutionId())))
-                    .map(pair -> {
-                        UserInstitution userInstitution = pair.getFirst();
-                        InstitutionDetail institutionDetail = modelMapper.map(pair.getSecond(), InstitutionDetail.class);
-                        institutionDetail.setUserProductRoles(userInstitution.getProducts() != null ?
-                                userInstitution.getProducts().stream().map(
-                                        UserInstitutionProduct::getProductRole).toList() : new ArrayList<>());
-                        return institutionDetail;
-                    })
-                    .toList();
+            institutionDetails = apiManagementComponent.getInstitutionDetails(userIdForAuth);
         }
         return InstitutionDetailResource.builder()
                 .institutionDetails(institutionDetails)

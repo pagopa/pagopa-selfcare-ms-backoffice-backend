@@ -78,6 +78,7 @@ microservice-chart:
           value: "70"
   envConfig:
     WEBSITE_SITE_NAME: 'pagopaselfcaremsbackofficebackend'
+    PAGOPA_BACKOFFICE_LOG_LEVEL: 'INFO'
     EXTERNAL_API_SERVICE_URL: https://api.selfcare.pagopa.it
     PAGOPA_APIM_SERVICE_URL: https://api.platform.pagopa.it
     PAGOPA_SELFCARE_INTEGRATION_APIM_SERVICE_URL: https://api.platform.pagopa.it
