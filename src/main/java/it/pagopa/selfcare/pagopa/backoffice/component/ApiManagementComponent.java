@@ -38,7 +38,7 @@ public class ApiManagementComponent {
     public List<InstitutionDetail> getInstitutionDetails(String userIdForAuth) {
         List<InstitutionDetail> institutionDetails;
         Collection<UserInstitution> institutions = externalApiClient.getUserInstitution(
-                userIdForAuth, null, null, null, null, null, null);
+                userIdForAuth, null, null, null, List.of("ACTIVE"), null, null);
         institutionDetails = institutions.stream()
                 .map(userInstitution -> Pair.of(userInstitution, externalApiClient.getInstitution(
                         userInstitution.getInstitutionId())))
