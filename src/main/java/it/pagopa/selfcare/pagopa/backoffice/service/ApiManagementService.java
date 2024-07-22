@@ -71,20 +71,20 @@ public class ApiManagementService {
         this.apiManagementComponent = apiManagementComponent;
     }
 
-    public InstitutionDetailResource getInstitutions(String taxCode) {
-        List<InstitutionDetail> institutionDetails;
+    public InstitutionBaseResources getInstitutions(String taxCode) {
+        List<InstitutionBase> institutionBases;
         if (taxCode != null && !taxCode.isEmpty()) {
             if (!featureManager.isEnabled("isOperator")) {
                 throw new AppException(AppError.UNAUTHORIZED);
             }
-            institutionDetails = apiManagementComponent.getInstitutionDetailsForOperator(taxCode);
+            institutionBases = apiManagementComponent.getInstitutionsForOperator(taxCode);
         } else {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String userIdForAuth = Utility.extractUserIdFromAuth(authentication);
-            institutionDetails = apiManagementComponent.getInstitutionDetails(userIdForAuth);
+            institutionBases = apiManagementComponent.getInstitutions(userIdForAuth);
         }
-        return InstitutionDetailResource.builder()
-                .institutionDetails(institutionDetails)
+        return InstitutionBaseResources.builder()
+                .institutions(institutionBases)
                 .build();
     }
 

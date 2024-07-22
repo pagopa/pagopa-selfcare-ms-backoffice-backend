@@ -72,5 +72,5 @@ public class Institution {
     @JsonProperty(required = true)
     @NotNull
     @Valid
-    private List<   @Valid Attribute> attributes;
+    private List<@Valid Attribute> attributes;
 }
