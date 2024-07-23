@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 
 import feign.FeignException;
 import feign.RequestLine;
+import io.swagger.v3.oas.annotations.Parameter;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.ApiConfigFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.configuration.PaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.configuration.WfespPluginConfs;
@@ -17,6 +18,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -289,4 +292,10 @@ public interface ApiConfigClient {
 
     @DeleteMapping(value = "/brokers/{brokerTaxCode}", produces = {MediaType.APPLICATION_JSON_VALUE})
     void deleteCIBroker(@PathVariable("brokerTaxCode") String brokerTaxCode);
+
+    @PostMapping(value = "/{brokercode}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
+    StationMaintenanceResource createStationMaintenance(
+            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
+            @RequestBody @Valid @NotNull CreateStationMaintenance createStationMaintenance
+    );
 }
