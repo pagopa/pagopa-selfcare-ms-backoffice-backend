@@ -26,10 +26,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionStationEditResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.UpdateCreditorInstitutionDto;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionResponse;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerAndEcDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerResource;
@@ -308,7 +305,7 @@ public class CreditorInstitutionService {
                 );
 
         List<DelegationExternal> delegationExternals = new ArrayList<>(response);
-        InstitutionResponse broker = this.externalApiClient.getInstitution(brokerId);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution broker = this.externalApiClient.getInstitution(brokerId);
         if (brokerCanBeAddedToDelegation(delegationExternals, broker, ciName)) {
             delegationExternals.add(DelegationExternal.builder()
                     .taxCode(broker.getTaxCode())
@@ -322,11 +319,12 @@ public class CreditorInstitutionService {
 
     private boolean brokerCanBeAddedToDelegation(
             List<DelegationExternal> delegationExternals,
-            InstitutionResponse broker,
+            it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution broker,
             String ciNameFilter
     ) {
-        return RoleType.CI.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType().toString()))
+        return RoleType.CI.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType()))
                 && (StringUtils.isBlank(ciNameFilter) || broker.getDescription().toLowerCase().contains(ciNameFilter.toLowerCase()))
                 && delegationExternals.stream().noneMatch(delegationExternal -> delegationExternal.getTaxCode().equals(broker.getTaxCode()));
     }
+
 }
