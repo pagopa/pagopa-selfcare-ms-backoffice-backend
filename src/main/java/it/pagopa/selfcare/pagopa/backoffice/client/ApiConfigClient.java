@@ -293,7 +293,7 @@ public interface ApiConfigClient {
     @DeleteMapping(value = "/brokers/{brokerTaxCode}", produces = {MediaType.APPLICATION_JSON_VALUE})
     void deleteCIBroker(@PathVariable("brokerTaxCode") String brokerTaxCode);
 
-    @PostMapping(value = "/{brokercode}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "brokers/{brokercode}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
     StationMaintenanceResource createStationMaintenance(
             @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
             @RequestBody @Valid @NotNull CreateStationMaintenance createStationMaintenance
