@@ -4,7 +4,6 @@ import com.azure.spring.cloud.feature.management.FeatureManager;
 import it.pagopa.selfcare.pagopa.backoffice.client.AuthorizerConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
-//import it.pagopa.selfcare.pagopa.backoffice.component.ApiManagementComponent;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
