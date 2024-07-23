@@ -33,7 +33,7 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.deNull;
 public class CommissionBundleService {
 
     private static final String VALID_FROM_DATE_FORMAT = "yyyy-MM-dd";
-    public static final String SUBJECT_NEW_BUNDLE_GEC = "Subject: Creazione Nuovo Pacchetto GEC %s";
+    public static final String SUBJECT_NEW_BUNDLE_GEC = "Creazione Nuovo Pacchetto GEC %s";
     public static final String DETAIL_NEW_BUNDLE_GEC = "E' stato creato un nuovo pacchetto GEC '%s' da parte di %s (CF: %s) che si attiverà a partire dal %s. Si prega di prenderne visione per verificare se il PSP ha configurato correttamente il pacchetto. \nLink: https://selfcare.platform.pagopa.it/ui/comm-bundles/detail/%s";
 
     private final GecClient gecClient;
