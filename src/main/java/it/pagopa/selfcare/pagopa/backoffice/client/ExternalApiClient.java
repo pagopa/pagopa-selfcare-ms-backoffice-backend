@@ -2,8 +2,10 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.ExternalFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
@@ -27,13 +29,18 @@ public interface ExternalApiClient {
     @GetMapping(value = "/institutions/{institutionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Valid
-    Institution getInstitution(@PathVariable(value = "institutionId") String id);
+    InstitutionResponse getInstitution(@PathVariable(value = "institutionId") String id);
 
 
     @GetMapping(value = "/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Valid
     Institutions getInstitutionsFiltered(@RequestParam(value = "taxCode") String institutionTaxCode);
+
+    @GetMapping(value = "/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    @Valid
+    List<InstitutionInfo> getInstitutions(@RequestParam(value = "userIdForAuth") String userIdForAuth);
 
     @GetMapping(value = "/institutions/{institutionId}/products", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
