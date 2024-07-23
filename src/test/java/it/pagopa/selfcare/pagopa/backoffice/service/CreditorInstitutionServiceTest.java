@@ -411,7 +411,7 @@ class CreditorInstitutionServiceTest {
         List<DelegationExternal> delegations = new ArrayList<>();
         delegations.add(buildDelegation("PSP", "12345678"));
         delegations.add(expectedCI);
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse =
+        InstitutionResponse institutionResponse =
                 buildInstitutionResponse(InstitutionType.PSP, "1234");
 
         when(externalApiClient.getBrokerDelegation(
@@ -447,7 +447,7 @@ class CreditorInstitutionServiceTest {
         List<DelegationExternal> delegations = new ArrayList<>();
         delegations.add(buildDelegation("PSP", "12345678"));
         delegations.add(expectedCI);
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse =
+        InstitutionResponse institutionResponse =
                 buildInstitutionResponse(InstitutionType.PA, "1234");
 
         when(externalApiClient.getBrokerDelegation(
@@ -480,7 +480,7 @@ class CreditorInstitutionServiceTest {
 
     @Test
     void getAvailableCreditorInstitutionsForStationSuccessOnlyWithAddItselfToDelegations() {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse =
+        InstitutionResponse institutionResponse =
                 buildInstitutionResponse(InstitutionType.PA, "1234");
 
         when(externalApiClient.getBrokerDelegation(
@@ -516,7 +516,7 @@ class CreditorInstitutionServiceTest {
                 buildDelegation("SCP", CI_TAX_CODE_1),
                 buildDelegation("PA", CI_TAX_CODE_2)
         );
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse =
+        InstitutionResponse institutionResponse =
                 buildInstitutionResponse(InstitutionType.SCP, CI_TAX_CODE_1);
 
         when(externalApiClient.getBrokerDelegation(
@@ -549,7 +549,7 @@ class CreditorInstitutionServiceTest {
 
     @Test
     void getAvailableCreditorInstitutionsForStationSuccessWithFilterNoResults() {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse =
+        InstitutionResponse institutionResponse =
                 buildInstitutionResponse(InstitutionType.SCP, CI_TAX_CODE_1);
 
         when(externalApiClient.getBrokerDelegation(
@@ -577,7 +577,7 @@ class CreditorInstitutionServiceTest {
                 buildDelegation("SCP", CI_TAX_CODE_1),
                 buildDelegation("PA", CI_TAX_CODE_2)
         );
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse =
+        InstitutionResponse institutionResponse =
                 buildInstitutionResponse(InstitutionType.SCP, CI_TAX_CODE_1);
 
         when(externalApiClient.getBrokerDelegation(
@@ -605,7 +605,7 @@ class CreditorInstitutionServiceTest {
                 buildDelegation("PSP", CI_TAX_CODE_1),
                 buildDelegation("PSP", CI_TAX_CODE_2)
         );
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse =
+        InstitutionResponse institutionResponse =
                 buildInstitutionResponse(InstitutionType.PSP, CI_TAX_CODE_1);
 
         when(externalApiClient.getBrokerDelegation(
@@ -660,7 +660,7 @@ class CreditorInstitutionServiceTest {
                 .build();
     }
 
-    private it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution buildInstitutionResponse(InstitutionType institutionType, String taxCode) {
-        return Institution.builder().description("Broker").taxCode(taxCode).institutionType(institutionType.toString()).build();
+    private InstitutionResponse buildInstitutionResponse(InstitutionType institutionType, String taxCode) {
+        return InstitutionResponse.builder().description("Broker").taxCode(taxCode).institutionType(institutionType).build();
     }
 }
