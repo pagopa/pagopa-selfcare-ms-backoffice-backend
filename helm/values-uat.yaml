@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.17.1-2-next" #improve
+    tag: "2.19.0" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -76,6 +76,7 @@ microservice-chart:
           value: "70"
   envConfig:
     WEBSITE_SITE_NAME: 'pagopaselfcaremsbackofficebackend'
+    PAGOPA_BACKOFFICE_LOG_LEVEL: 'INFO'
     EXTERNAL_API_SERVICE_URL: https://api.selfcare.pagopa.it
     PAGOPA_APIM_SERVICE_URL: https://api.uat.platform.pagopa.it
     PAGOPA_SELFCARE_INTEGRATION_APIM_SERVICE_URL: https://api.uat.platform.pagopa.it
