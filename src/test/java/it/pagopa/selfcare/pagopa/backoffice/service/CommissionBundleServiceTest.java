@@ -4,6 +4,7 @@ import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
@@ -61,6 +62,9 @@ class CommissionBundleServiceTest {
     private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
     @MockBean
+    private JiraServiceManagerClient jiraServiceManagerClient;
+
+    @MockBean
     private AwsSesClient awsSesClient;
 
     @MockBean
@@ -105,12 +109,13 @@ class CommissionBundleServiceTest {
     @Test
     void createPSPBundle() {
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-
+        when(gecClient.createPSPBundle(any(), any())).thenReturn(BundleCreateResponse.builder()
+                .idBundle("idbundle")
+                .build());
         BundleRequest bundleRequest = new BundleRequest();
-        assertDoesNotThrow(
-                () -> sut.createPSPBundle(PSP_TAX_CODE, bundleRequest)
-        );
+        assertDoesNotThrow(() -> sut.createPSPBundle(PSP_TAX_CODE, bundleRequest));
         verify(gecClient).createPSPBundle(PSP_CODE, bundleRequest);
+        verify(jiraServiceManagerClient).createTicket(anyString(), anyString());
     }
 
     @Test
@@ -268,7 +273,7 @@ class CommissionBundleServiceTest {
         );
         requests.setPageInfo(PageInfo.builder().totalItems(1L).build());
 
-        when(gecClient.getBundles(any(), eq(null),anyString(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
+        when(gecClient.getBundles(any(), eq(null), anyString(), eq(null), anyInt(), anyInt())).thenReturn(bundles);
         when(gecClient.getCIBundle(CI_TAX_CODE, ID_BUNDLE)).thenThrow(FeignException.NotFound.class);
         when(gecClient.getCIPublicBundleRequest(CI_TAX_CODE, null, ID_BUNDLE, 1, 0)).thenReturn(requests);
         when(taxonomyService.getTaxonomiesByCodes(transferCategoryList)).thenReturn(buildTaxonomyList());

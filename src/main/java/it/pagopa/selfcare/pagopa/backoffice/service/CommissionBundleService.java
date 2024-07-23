@@ -26,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.*;
+import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.deNull;
 
 @Slf4j
 @Service
@@ -103,7 +104,7 @@ public class CommissionBundleService {
         jiraServiceManagerClient.createTicket(
                 String.format(SUBJECT_NEW_BUNDLE_GEC, bundle.getPspBusinessName()),
                 String.format(DETAIL_NEW_BUNDLE_GEC,
-                        bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, bundle.getValidityDateFrom().toString(), result.getIdBundle())
+                        bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, deNull(bundle.getValidityDateFrom()), result.getIdBundle())
         );
         return result;
     }
@@ -119,11 +120,6 @@ public class CommissionBundleService {
     public void updatePSPBundle(String pspTaxCode, String idBundle, BundleRequest bundle) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
         gecClient.updatePSPBundle(pspCode, idBundle, bundle);
-        jiraServiceManagerClient.createTicket(
-                String.format(SUBJECT_NEW_BUNDLE_GEC, bundle.getPspBusinessName()),
-                String.format(DETAIL_NEW_BUNDLE_GEC,
-                        bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, bundle.getValidityDateFrom().toString(), idBundle)
-        );
     }
 
     /**
