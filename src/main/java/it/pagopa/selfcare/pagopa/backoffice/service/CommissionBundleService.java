@@ -18,6 +18,7 @@ import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
@@ -34,7 +35,10 @@ public class CommissionBundleService {
 
     private static final String VALID_FROM_DATE_FORMAT = "yyyy-MM-dd";
     public static final String SUBJECT_NEW_BUNDLE_GEC = "Creazione Nuovo Pacchetto GEC %s";
-    public static final String DETAIL_NEW_BUNDLE_GEC = "E' stato creato un nuovo pacchetto GEC '%s' da parte di %s (CF: %s) che si attiverà a partire dal %s. Si prega di prenderne visione per verificare se il PSP ha configurato correttamente il pacchetto. \nLink: https://selfcare.platform.pagopa.it/ui/comm-bundles/detail/%s";
+    public static final String DETAIL_NEW_BUNDLE_GEC = "E' stato creato un nuovo pacchetto GEC '%s' da parte di %s (CF: %s) che si attiverà a partire dal %s. Si prega di prenderne visione per verificare se il PSP ha configurato correttamente il pacchetto. \nLink: https://selfcare%s.platform.pagopa.it/ui/comm-bundles/detail/%s";
+
+    @Value("${info.properties.environment}")
+    private String environment;
 
     private final GecClient gecClient;
 
@@ -101,10 +105,11 @@ public class CommissionBundleService {
     public BundleCreateResponse createPSPBundle(String pspTaxCode, BundleRequest bundle) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
         var result = this.gecClient.createPSPBundle(pspCode, bundle);
+        String url = !"UAT".equals(environment) ? "" : ".uat";
         jiraServiceManagerClient.createTicket(
                 String.format(SUBJECT_NEW_BUNDLE_GEC, bundle.getPspBusinessName()),
                 String.format(DETAIL_NEW_BUNDLE_GEC,
-                        bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, deNull(bundle.getValidityDateFrom()), result.getIdBundle())
+                        bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, deNull(bundle.getValidityDateFrom()), url,result.getIdBundle())
         );
         return result;
     }
