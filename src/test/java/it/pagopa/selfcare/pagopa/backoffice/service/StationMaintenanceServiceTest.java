@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.MaintenanceHoursSummaryResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -58,4 +58,21 @@ class StationMaintenanceServiceTest {
 
         verify(apiConfigClient).createStationMaintenance(anyString(), any(CreateStationMaintenance.class));
     }
+
+    @Test
+    void getBrokerMaintenancesSummarySuccess() {
+        MaintenanceHoursSummaryResource mockedResult = MaintenanceHoursSummaryResource.builder()
+                .usedHours("2")
+                .scheduledHours("3")
+                .remainingHours("31")
+                .extraHours("0")
+                .annualHoursLimit("36")
+                .build();
+        when(apiConfigClient.getBrokerMaintenancesSummary(any(),any())).thenReturn(mockedResult);
+        MaintenanceHoursSummaryResource result =
+                stationMaintenanceService.getBrokerMaintenancesSummary(BROKER_CODE, "2024");
+        assertNotNull(result);
+        assertEquals(mockedResult, result);
+    }
+
 }

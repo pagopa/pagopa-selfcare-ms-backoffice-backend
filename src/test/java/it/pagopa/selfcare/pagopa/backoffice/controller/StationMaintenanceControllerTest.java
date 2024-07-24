@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.MaintenanceHoursSummaryResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
 import it.pagopa.selfcare.pagopa.backoffice.service.StationMaintenanceService;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,9 @@ import java.time.OffsetDateTime;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -65,4 +68,22 @@ class StationMaintenanceControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
     }
+
+    @Test
+    void getBrokerMaintenancesSummaryTest() throws Exception {
+        when(stationMaintenanceService.getBrokerMaintenancesSummary(anyString(), anyString()))
+                .thenReturn(MaintenanceHoursSummaryResource.builder()
+                        .usedHours("2")
+                        .scheduledHours("3")
+                        .remainingHours("31")
+                        .extraHours("0")
+                        .annualHoursLimit("36")
+                        .build());
+
+        mvc.perform(get("/brokers/{brokercode}/station-maintenances/summary", BROKER_CODE)
+                        .param("maintenanceYear", "2024")
+                ).andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
 }
