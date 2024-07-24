@@ -1,6 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
 import it.pagopa.selfcare.pagopa.backoffice.service.StationMaintenanceService;
@@ -18,10 +20,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.inject.Inject;
 import java.time.OffsetDateTime;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -46,14 +50,6 @@ class StationMaintenanceControllerTest {
 
     @Test
     void createStationMaintenance() throws Exception {
-        StationMaintenanceResource response = new StationMaintenanceResource();
-        response.setStationCode(STATION_CODE);
-        response.setStandIn(true);
-        response.setEndDateTime(OffsetDateTime.now());
-        response.setStartDateTime(OffsetDateTime.now());
-        response.setMaintenanceId(MAINTENANCE_ID);
-        response.setBrokerCode(BROKER_CODE);
-        when(stationMaintenanceService.createStationMaintenance(anyString(), any())).thenReturn(response);
 
         CreateStationMaintenance request = new CreateStationMaintenance();
         request.setStationCode(STATION_CODE);
@@ -65,4 +61,38 @@ class StationMaintenanceControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
     }
+
+    @Test
+    void getStationMaintenanceTest() throws Exception {
+        when(stationMaintenanceService.getStationMaintenance(anyString(), anyLong()))
+                .thenReturn(buildMaintenanceResource());
+
+        mvc.perform(get("/brokers/{brokercode}/station-maintenances/{maintenanceid}", BROKER_CODE, MAINTENANCE_ID)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                ).andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    void getStationMaintenanceTestOnKO() throws Exception {
+        when(stationMaintenanceService.getStationMaintenance(anyString(), anyLong()))
+                .thenThrow(new AppException(AppError.INTERNAL_SERVER_ERROR));
+
+        mvc.perform(get("/brokers/{brokercode}/station-maintenances/{maintenanceid}", BROKER_CODE, MAINTENANCE_ID)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                ).andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    StationMaintenanceResource buildMaintenanceResource() {
+        StationMaintenanceResource resource = new StationMaintenanceResource();
+        resource.setStationCode(STATION_CODE);
+        resource.setStandIn(true);
+        resource.setEndDateTime(OffsetDateTime.now());
+        resource.setStartDateTime(OffsetDateTime.now());
+        resource.setMaintenanceId(MAINTENANCE_ID);
+        resource.setBrokerCode(BROKER_CODE);
+        return resource;
+    }
+
 }

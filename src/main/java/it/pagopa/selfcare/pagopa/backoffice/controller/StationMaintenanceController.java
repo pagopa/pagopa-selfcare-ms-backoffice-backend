@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -59,4 +60,38 @@ public class StationMaintenanceController {
     ) {
         return this.stationMaintenanceService.createStationMaintenance(brokerCode, createStationMaintenance);
     }
+
+    /**
+     * Recovers a station maintenance, given its brokerCode and maintenanceId.
+     * If the the provided brokerCode doesnt match the one related to the persisted one for the given maintenance,
+     * it will throw the maintenance not found exception
+     * @param brokerCode brokerCode to be used as filter in the maintenance recovery
+     * @param maintenanceId station maintentance id to be used for the detail recovery
+     * @return station maintenance data, provided in an instance of StationMaintenanceResource
+     * @throws AppException thrown when a maintenance, given the input data, has not been found
+     */
+    @Operation(summary = "Get a maintenance for the specified station, given its broker code and maintenance id",
+            security = {@SecurityRequirement(name = "ApiKey"), @SecurityRequirement(name = "Authorization")})
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Created",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = StationMaintenanceResource.class))),
+                    @ApiResponse(responseCode = "400", description = "Bad Request",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+                    @ApiResponse(responseCode = "409", description = "Conflict",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+                    @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+                    @ApiResponse(responseCode = "500", description = "Service unavailable",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+            })
+    @GetMapping(value = "/{brokercode}/station-maintenances/{maintenanceid}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<StationMaintenanceResource> getStationMaintenance(
+            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
+            @Parameter(description = "Maintenance's id") @PathVariable("maintenanceid") Long maintenanceId
+    ) {
+        return ResponseEntity.ok(this.stationMaintenanceService.getStationMaintenance(brokerCode, maintenanceId));
+    }
+
 }

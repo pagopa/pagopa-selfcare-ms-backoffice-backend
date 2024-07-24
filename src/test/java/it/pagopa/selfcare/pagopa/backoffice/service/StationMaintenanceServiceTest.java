@@ -16,8 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -36,13 +35,7 @@ class StationMaintenanceServiceTest {
 
     @Test
     void createStationMaintenanceSuccess() {
-        StationMaintenanceResource response = new StationMaintenanceResource();
-        response.setStationCode(STATION_CODE);
-        response.setStandIn(true);
-        response.setEndDateTime(OffsetDateTime.now());
-        response.setStartDateTime(OffsetDateTime.now());
-        response.setMaintenanceId(MAINTENANCE_ID);
-        response.setBrokerCode(BROKER_CODE);
+        StationMaintenanceResource response = buildMaintenanceResource();
 
         when(apiConfigClient.createStationMaintenance(anyString(), any(CreateStationMaintenance.class)))
                 .thenReturn(response);
@@ -58,4 +51,26 @@ class StationMaintenanceServiceTest {
 
         verify(apiConfigClient).createStationMaintenance(anyString(), any(CreateStationMaintenance.class));
     }
+
+    @Test
+    void getStationMaintenanceDetailSuccess() {
+        StationMaintenanceResource mockedResult = buildMaintenanceResource();
+        when(apiConfigClient.getStationMaintenance(any(),any())).thenReturn(mockedResult);
+        StationMaintenanceResource resource =
+            stationMaintenanceService.getStationMaintenance("brokerCode",1L);
+        assertNotNull(resource);
+        assertEquals(mockedResult, resource);
+    }
+
+    StationMaintenanceResource buildMaintenanceResource() {
+        StationMaintenanceResource resource = new StationMaintenanceResource();
+        resource.setStationCode(STATION_CODE);
+        resource.setStandIn(true);
+        resource.setEndDateTime(OffsetDateTime.now());
+        resource.setStartDateTime(OffsetDateTime.now());
+        resource.setMaintenanceId(MAINTENANCE_ID);
+        resource.setBrokerCode(BROKER_CODE);
+        return resource;
+    }
+
 }

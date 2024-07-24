@@ -26,4 +26,17 @@ public class StationMaintenanceService {
                                                                CreateStationMaintenance createStationMaintenance) {
         return this.apiConfigClient.createStationMaintenance(brokerCode, createStationMaintenance);
     }
+
+    /**
+     * Recovers a station maintenance, given its brokerCode and maintenanceId.
+     * If the the provided brokerCode doesnt match the one related to the persisted one for the given maintenance,
+     * it will throw the maintenance not found exception
+     * @param brokerCode brokerCode to be used as filter in the maintenance recovery
+     * @param maintenanceId station maintentance id to be used for the detail recovery
+     * @return station maintenance data, provided in an instance of StationMaintenanceResource
+     */
+    public StationMaintenanceResource getStationMaintenance(String brokerCode, Long maintenanceId) {
+        return this.apiConfigClient.getStationMaintenance(brokerCode, maintenanceId);
+    }
+
 }
