@@ -19,16 +19,22 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+import java.time.OffsetDateTime;
 
 @FeignClient(name = "api-config", url = "${rest-client.api-config.base-url}", configuration = ApiConfigFeignConfig.class)
 public interface ApiConfigClient {
@@ -297,5 +303,21 @@ public interface ApiConfigClient {
     StationMaintenanceResource createStationMaintenance(
             @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
             @RequestBody @Valid @NotNull CreateStationMaintenance createStationMaintenance
+    );
+
+    @GetMapping(value = "brokers/{brokercode}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
+    StationMaintenanceListResource getStationMaintenances(
+            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
+            @Parameter(description = "Station's code") @RequestParam(required = false) String stationCode,
+            @Parameter(description = "Start date of maintenance, used to retrieve all maintenance that start before the provided date (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')", example = "2024-04-01T10:00:00.000Z")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDateTimeBefore,
+            @Parameter(description = "Start date of maintenance, used to retrieve all maintenance that start after the provided date (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')", example = "2024-04-01T10:00:00.000Z")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDateTimeAfter,
+            @Parameter(description = "End date of maintenance, used to retrieve all maintenance that start before the provided date (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')", example = "2024-04-01T13:00:00.000Z")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime endDateTimeBefore,
+            @Parameter(description = "End date of maintenance, used to retrieve all maintenance that start after the provided date (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')", example = "2024-04-01T13:00:00.000Z")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime endDateTimeAfter,
+            @Parameter(description = "Number of items for page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
+            @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") @Min(0) @PositiveOrZero Integer page
     );
 }
