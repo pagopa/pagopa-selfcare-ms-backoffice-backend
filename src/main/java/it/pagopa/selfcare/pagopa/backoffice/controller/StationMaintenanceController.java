@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.UpdateStationMaintenance;
 import it.pagopa.selfcare.pagopa.backoffice.service.StationMaintenanceService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -58,5 +59,32 @@ public class StationMaintenanceController {
             @RequestBody @Valid @NotNull CreateStationMaintenance createStationMaintenance
     ) {
         return this.stationMaintenanceService.createStationMaintenance(brokerCode, createStationMaintenance);
+    }
+
+    @Operation(summary = "Update a scheduled maintenance for the specified station",
+            security = {@SecurityRequirement(name = "Authorization")})
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "OK",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = StationMaintenanceResource.class))),
+                    @ApiResponse(responseCode = "400", description = "Bad Request",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+                    @ApiResponse(responseCode = "409", description = "Conflict",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+                    @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+                    @ApiResponse(responseCode = "500", description = "Service unavailable",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+            })
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping(value = "/{brokercode}/station-maintenances/{maintenanceid}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
+    public StationMaintenanceResource updateStationMaintenance(
+            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
+            @Parameter(description = "Maintenance's id") @PathVariable("maintenanceid") Long maintenanceId,
+            @RequestBody @Valid @NotNull UpdateStationMaintenance updateStationMaintenance
+    ) {
+        return this.stationMaintenanceService.updateStationMaintenance(brokerCode, maintenanceId, updateStationMaintenance);
     }
 }

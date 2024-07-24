@@ -20,6 +20,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.UpdateStationMaintenance;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -297,5 +298,12 @@ public interface ApiConfigClient {
     StationMaintenanceResource createStationMaintenance(
             @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
             @RequestBody @Valid @NotNull CreateStationMaintenance createStationMaintenance
+    );
+
+    @PutMapping(value = "brokers/{brokercode}/station-maintenances/{maintenanceid}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    StationMaintenanceResource updateStationMaintenance(
+            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
+            @Parameter(description = "Maintenance's id") @PathVariable("maintenanceid") Long maintenanceId,
+            @RequestBody @Valid @NotNull UpdateStationMaintenance updateStationMaintenance
     );
 }
