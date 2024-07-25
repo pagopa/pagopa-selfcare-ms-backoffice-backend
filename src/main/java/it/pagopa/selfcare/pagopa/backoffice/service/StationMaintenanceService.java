@@ -39,17 +39,17 @@ public class StationMaintenanceService {
 
         if (state != null) {
             if (state.equals(StationMaintenanceListState.FINISHED)) {
-                endDateTimeBefore = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+                endDateTimeBefore = getDateToday();
             }
             if (state.equals(StationMaintenanceListState.SCHEDULED_AND_IN_PROGRESS)) {
-                endDateTimeAfter = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+                endDateTimeAfter = getDateToday();
             }
             if (state.equals(StationMaintenanceListState.SCHEDULED)) {
-                startDateTimeAfter = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+                startDateTimeAfter = getDateToday();
             }
             if (state.equals(StationMaintenanceListState.IN_PROGRESS)) {
-                startDateTimeBefore = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-                endDateTimeAfter = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+                startDateTimeBefore = getDateToday();
+                endDateTimeAfter = getDateToday();
             }
         }
 
@@ -76,11 +76,15 @@ public class StationMaintenanceService {
         return this.apiConfigClient.createStationMaintenance(brokerCode, createStationMaintenance);
     }
 
+    private OffsetDateTime getDateToday(){
+        return OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+    }
+
     private OffsetDateTime getStartOfYear(int year) {
-        return OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES).withYear(year).withMonth(1).withDayOfMonth(1).withHour(0).withMinute(0);
+        return getDateToday().withYear(year).withMonth(1).withDayOfMonth(1).withHour(0).withMinute(0);
     }
 
     private OffsetDateTime getEndOfYear(int year) {
-        return OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES).withYear(year).withMonth(12).withDayOfMonth(31).withHour(23).withMinute(59);
+        return getDateToday().withYear(year).withMonth(12).withDayOfMonth(31).withHour(23).withMinute(59);
     }
 }
