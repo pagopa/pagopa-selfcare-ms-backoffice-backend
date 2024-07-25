@@ -34,9 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(username = "user1", password = "pwd", roles = "USER")
 class StationMaintenanceControllerTest {
 
-    private final static String STATION_CODE = "stationCode";
-    private final static String BROKER_CODE = "brokerCode";
-    private final static long MAINTENANCE_ID = 100;
+    private static final String STATION_CODE = "stationCode";
+    private static final String BROKER_CODE = "brokerCode";
+    private static final long MAINTENANCE_ID = 100;
     @MockBean
     private StationMaintenanceService stationMaintenanceService;
     @Autowired
