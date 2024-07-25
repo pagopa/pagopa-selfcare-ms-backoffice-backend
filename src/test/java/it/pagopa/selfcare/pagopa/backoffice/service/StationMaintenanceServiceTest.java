@@ -26,7 +26,7 @@ class StationMaintenanceServiceTest {
     private static final String STATION_CODE = "stationCode";
     private static final String BROKER_CODE = "brokerCode";
     private static final long MAINTENANCE_ID = 100;
-    private final static int YEAR_FILTER = 2024;
+    private static final int YEAR_FILTER = 2024;
     @Autowired
     private StationMaintenanceService stationMaintenanceService;
     @MockBean
