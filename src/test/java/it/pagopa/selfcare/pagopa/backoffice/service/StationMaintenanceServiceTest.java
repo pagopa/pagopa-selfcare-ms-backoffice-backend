@@ -23,11 +23,10 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = {StationMaintenanceService.class})
 class StationMaintenanceServiceTest {
 
-    private final static String STATION_CODE = "stationCode";
-    private final static String BROKER_CODE = "brokerCode";
-    private final static long MAINTENANCE_ID = 100;
+    private static final String STATION_CODE = "stationCode";
+    private static final String BROKER_CODE = "brokerCode";
+    private static final long MAINTENANCE_ID = 100;
     private final static int YEAR_FILTER = 2024;
-
     @Autowired
     private StationMaintenanceService stationMaintenanceService;
     @MockBean
