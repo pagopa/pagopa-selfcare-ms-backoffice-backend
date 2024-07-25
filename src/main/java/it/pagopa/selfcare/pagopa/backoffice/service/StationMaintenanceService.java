@@ -22,4 +22,9 @@ public class StationMaintenanceService {
                                                                CreateStationMaintenance createStationMaintenance) {
         return this.apiConfigClient.createStationMaintenance(brokerCode, createStationMaintenance);
     }
+
+    public void deleteStationMaintenance(String brokerCode,
+                                         Long maintenanceId) {
+        this.apiConfigClient.deleteStationMaintenance(brokerCode, maintenanceId);
+    }
 }

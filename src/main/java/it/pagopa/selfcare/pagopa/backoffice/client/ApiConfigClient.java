@@ -298,4 +298,10 @@ public interface ApiConfigClient {
             @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
             @RequestBody @Valid @NotNull CreateStationMaintenance createStationMaintenance
     );
+
+    @DeleteMapping(value = "brokers/{brokercode}/station-maintenances/{maintenanceid}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    void deleteStationMaintenance(
+            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
+            @Parameter(description = "Maintenance's id") @PathVariable("maintenanceid") Long maintenanceId
+    );
 }

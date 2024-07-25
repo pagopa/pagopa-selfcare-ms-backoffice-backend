@@ -12,8 +12,7 @@ import java.time.OffsetDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,5 +50,11 @@ class StationMaintenanceServiceTest {
         assertNotNull(result);
 
         verify(apiConfigClient).createStationMaintenance(anyString(), any(CreateStationMaintenance.class));
+    }
+
+    @Test
+    void deleteStationMaintenanceSuccess() {
+        assertDoesNotThrow(() -> stationMaintenanceService.deleteStationMaintenance(BROKER_CODE, MAINTENANCE_ID));
+        verify(apiConfigClient).deleteStationMaintenance(anyString(), anyLong());
     }
 }
