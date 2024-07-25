@@ -55,6 +55,8 @@ public enum AppError {
     INSTITUTION_RETRIEVE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error while retrieving Institution data",
             "Unexpected error occurred while retrieving institution data"),
 
+    STATION_MAINTENANCE_NOT_IN_PROGRESS(HttpStatus.INTERNAL_SERVER_ERROR, "Station maintenance not in progress", "Station maintenance must be in progress in order to finish it"),
+
     UNKNOWN(null, null, null);
 
     public final HttpStatus httpStatus;

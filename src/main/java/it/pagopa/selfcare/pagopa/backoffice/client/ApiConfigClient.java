@@ -20,6 +20,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.UpdateStationMaintenance;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -293,9 +294,22 @@ public interface ApiConfigClient {
     @DeleteMapping(value = "/brokers/{brokerTaxCode}", produces = {MediaType.APPLICATION_JSON_VALUE})
     void deleteCIBroker(@PathVariable("brokerTaxCode") String brokerTaxCode);
 
-    @PostMapping(value = "brokers/{brokercode}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/brokers/{broker-code}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
     StationMaintenanceResource createStationMaintenance(
-            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
+            @PathVariable("broker-code") String brokerCode,
             @RequestBody @Valid @NotNull CreateStationMaintenance createStationMaintenance
+    );
+
+    @PutMapping(value = "/brokers/{broker-code}/station-maintenances/{maintenance-id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    StationMaintenanceResource updateStationMaintenance(
+            @PathVariable("broker-code") String brokerCode,
+            @PathVariable("maintenance-id") Long maintenanceId,
+            @RequestBody @Valid @NotNull UpdateStationMaintenance updateStationMaintenance
+    );
+
+    @GetMapping(value = "/brokers/{broker-code}/station-maintenances/{maintenance-id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    StationMaintenanceResource getStationMaintenance(
+            @PathVariable("broker-code") String brokerCode,
+            @PathVariable("maintenance-id") Long maintenanceId
     );
 }
