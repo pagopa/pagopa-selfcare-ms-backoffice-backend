@@ -9,6 +9,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMain
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -31,8 +32,6 @@ public class StationMaintenanceService {
             Integer limit,
             Integer page
     ) {
-        OffsetDateTime dateNow = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-
         OffsetDateTime startDateTimeBefore = null;
         OffsetDateTime startDateTimeAfter = null;
         OffsetDateTime endDateTimeBefore = null;
@@ -40,24 +39,24 @@ public class StationMaintenanceService {
 
         if (state != null) {
             if (state.equals(StationMaintenanceListState.FINISHED)) {
-                endDateTimeBefore = dateNow;
+                endDateTimeBefore = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
             }
             if (state.equals(StationMaintenanceListState.SCHEDULED_AND_IN_PROGRESS)) {
-                endDateTimeAfter = dateNow;
+                endDateTimeAfter = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
             }
             if (state.equals(StationMaintenanceListState.SCHEDULED)) {
-                startDateTimeAfter = dateNow;
+                startDateTimeAfter = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
             }
             if (state.equals(StationMaintenanceListState.IN_PROGRESS)) {
-                startDateTimeBefore = dateNow;
-                endDateTimeAfter = dateNow;
+                startDateTimeBefore = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+                endDateTimeAfter = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
             }
         }
 
         if (year != null
         ) {
-            startDateTimeBefore = startDateTimeBefore != null ? startDateTimeBefore.withYear(year) : dateNow.withYear(year).withMonth(12).withDayOfMonth(31).withHour(23).withMinute(59);
-            startDateTimeAfter = startDateTimeAfter != null ? startDateTimeAfter.withYear(year) : dateNow.withYear(year).withMonth(1).withDayOfMonth(1).withHour(0).withMinute(0);
+            startDateTimeBefore = startDateTimeBefore != null ? startDateTimeBefore.withYear(year) : getEndOfYear(year);
+            startDateTimeAfter = startDateTimeAfter != null ? startDateTimeAfter.withYear(year) : getStartOfYear(year);
         }
 
         return this.apiConfigClient.getStationMaintenances(
@@ -75,5 +74,13 @@ public class StationMaintenanceService {
     public StationMaintenanceResource createStationMaintenance(String brokerCode,
                                                                CreateStationMaintenance createStationMaintenance) {
         return this.apiConfigClient.createStationMaintenance(brokerCode, createStationMaintenance);
+    }
+
+    private OffsetDateTime getStartOfYear(int year) {
+        return OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES).withYear(year).withMonth(1).withDayOfMonth(1).withHour(0).withMinute(0);
+    }
+
+    private OffsetDateTime getEndOfYear(int year) {
+        return OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES).withYear(year).withMonth(12).withDayOfMonth(31).withHour(23).withMinute(59);
     }
 }
