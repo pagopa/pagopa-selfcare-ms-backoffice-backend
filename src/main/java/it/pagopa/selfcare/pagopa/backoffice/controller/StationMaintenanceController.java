@@ -78,11 +78,11 @@ public class StationMaintenanceController {
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
             })
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping(value = "/{brokercode}/station-maintenances/{maintenanceid}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PutMapping(value = "/{broker-tax-code}/station-maintenances/{maintenance-id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public StationMaintenanceResource updateStationMaintenance(
-            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
-            @Parameter(description = "Maintenance's id") @PathVariable("maintenanceid") Long maintenanceId,
+            @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
+            @Parameter(description = "Maintenance's id") @PathVariable("maintenance-id") Long maintenanceId,
             @RequestBody @Valid @NotNull UpdateStationMaintenance updateStationMaintenance
     ) {
         return this.stationMaintenanceService.updateStationMaintenance(brokerCode, maintenanceId, updateStationMaintenance);
