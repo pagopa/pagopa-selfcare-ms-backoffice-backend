@@ -6,10 +6,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMain
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @Slf4j
 @Service

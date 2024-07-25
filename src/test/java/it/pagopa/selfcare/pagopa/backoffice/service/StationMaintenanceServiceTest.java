@@ -1,20 +1,14 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.OffsetDateTime;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -26,9 +20,9 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = {StationMaintenanceService.class})
 class StationMaintenanceServiceTest {
 
-    private final static String STATION_CODE = "stationCode";
-    private final static String BROKER_CODE = "brokerCode";
-    private final static long MAINTENANCE_ID = 100;
+    private static final String STATION_CODE = "stationCode";
+    private static final String BROKER_CODE = "brokerCode";
+    private static final long MAINTENANCE_ID = 100;
     @Autowired
     private StationMaintenanceService stationMaintenanceService;
     @MockBean
