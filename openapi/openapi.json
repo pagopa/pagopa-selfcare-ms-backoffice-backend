@@ -1055,11 +1055,7 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MaintenanceHoursSummaryResource"
-                }
-              }
+              "application/json": {}
             },
             "description": "OK",
             "headers": {
@@ -13434,38 +13430,6 @@
           "webChannel": {
             "type": "boolean",
             "description": "Boolean to refer if it has a web channel"
-          }
-        }
-      },
-      "MaintenanceHoursSummaryResource": {
-        "required": [
-          "annual_hours_limit",
-          "extra_hours",
-          "remaining_hours",
-          "scheduled_hours",
-          "used_hours"
-        ],
-        "type": "object",
-        "properties": {
-          "annual_hours_limit": {
-            "type": "string",
-            "description": "Annual limit of maintenance hours"
-          },
-          "extra_hours": {
-            "type": "string",
-            "description": "Count of maintenance's hours that exceed annual limit"
-          },
-          "remaining_hours": {
-            "type": "string",
-            "description": "Count of remaining maintenance's hours before annual limit"
-          },
-          "scheduled_hours": {
-            "type": "string",
-            "description": "Count of scheduled maintenance's hours"
-          },
-          "used_hours": {
-            "type": "string",
-            "description": "Count of used maintenance's hours"
           }
         }
       },
