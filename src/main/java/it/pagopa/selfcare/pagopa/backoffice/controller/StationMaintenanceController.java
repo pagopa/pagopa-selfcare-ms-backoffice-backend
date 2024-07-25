@@ -35,7 +35,7 @@ public class StationMaintenanceController {
         this.stationMaintenanceService = stationMaintenanceService;
     }
 
-    @PostMapping(value = "/{brokercode}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/{broker-tax-code}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "201", description = "Created",
@@ -54,7 +54,7 @@ public class StationMaintenanceController {
     @Operation(summary = "Schedule a maintenance period for a Station", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public StationMaintenanceResource createStationMaintenance(
-            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
+            @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
             @RequestBody @Valid @NotNull CreateStationMaintenance createStationMaintenance
     ) {
         return this.stationMaintenanceService.createStationMaintenance(brokerCode, createStationMaintenance);
