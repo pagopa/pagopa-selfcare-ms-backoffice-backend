@@ -60,7 +60,7 @@ public class StationMaintenanceController {
         return this.stationMaintenanceService.createStationMaintenance(brokerCode, createStationMaintenance);
     }
 
-    @PostMapping(value = "/{broker-tax-code}/station-maintenances/{maintenance-id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/{broker-tax-code}/station-maintenances/{maintenance-id}/finish", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "400", description = "Bad Request",

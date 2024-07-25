@@ -20,6 +20,7 @@ import java.time.OffsetDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -64,5 +65,13 @@ class StationMaintenanceControllerTest {
                         .content(objectMapper.writeValueAsBytes(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    void finishStationMaintenanceTest() throws Exception {
+        mvc.perform(post("/brokers/{broker-tax-code}/station-maintenances/{maintenance-id}/finish", BROKER_CODE, MAINTENANCE_ID))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(stationMaintenanceService).finishStationMaintenance(BROKER_CODE, MAINTENANCE_ID);
     }
 }
