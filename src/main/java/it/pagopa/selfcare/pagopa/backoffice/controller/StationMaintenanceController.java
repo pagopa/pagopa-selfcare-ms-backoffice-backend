@@ -53,9 +53,9 @@ public class StationMaintenanceController {
             @ApiResponse(responseCode = "500", description = "Service unavailable",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
-    @GetMapping(value = "/{brokercode}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{broker-tax-code}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
     public StationMaintenanceListResource getStationMaintenances(
-            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
+            @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
             @Parameter(description = "Station's code") @RequestParam(required = false) String stationCode,
             @Parameter(description = "Maintenances' state") @RequestParam(required = false) StationMaintenanceListState state,
             @Parameter(description = "Maintenance's starting year") @RequestParam(required = false) Integer year,
@@ -73,7 +73,7 @@ public class StationMaintenanceController {
                 );
     }
 
-    @PostMapping(value = "/{brokercode}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/{broker-tax-code}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "201", description = "Created",
@@ -92,7 +92,7 @@ public class StationMaintenanceController {
     @Operation(summary = "Schedule a maintenance period for a Station", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public StationMaintenanceResource createStationMaintenance(
-            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
+            @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
             @RequestBody @Valid @NotNull CreateStationMaintenance createStationMaintenance
     ) {
         return this.stationMaintenanceService.createStationMaintenance(brokerCode, createStationMaintenance);
