@@ -41,7 +41,7 @@ public class StationMaintenanceController {
     }
 
     @Operation(summary = "Get a paginated list of station's maintenance for the specified broker",
-            security = {@SecurityRequirement(name = "Authorization")})
+            security = {@SecurityRequirement(name = "JWT")})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ok",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = StationMaintenanceListResource.class))),
