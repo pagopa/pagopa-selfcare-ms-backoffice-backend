@@ -222,6 +222,28 @@ class CreditorInstitutionServiceTest {
     }
 
     @Test
+    void updateStationAssociationToCreditorInstitution_ok() throws IOException {
+        when(apiConfigClient.getCreditorInstitutionDetails(anyString())).thenReturn(new CreditorInstitutionDetails());
+        when(apiConfigClient.updateCreditorInstitutionStationRelationship(anyString(),anyString(), any(CreditorInstitutionStationEdit.class)))
+                .thenReturn(TestUtil.fileToObject("response/apiconfig/post_creditor_institution_station_association_ok.json", CreditorInstitutionStationEdit.class));
+
+        CreditorInstitutionStationDto dto = TestUtil.fileToObject("request/post_creditor_institution_station_association.json", CreditorInstitutionStationDto.class);
+        CreditorInstitutionStationEditResource result = service.updateStationAssociationToCreditorInstitution("12345678900", dto);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void updateStationAssociationToCreditorInstitutio_ko() throws IOException {
+        FeignException feignException = mock(FeignException.InternalServerError.class);
+        when(apiConfigClient.getCreditorInstitutionDetails(anyString())).thenThrow(feignException);
+
+        CreditorInstitutionStationDto dto = TestUtil.fileToObject("request/post_creditor_institution_station_association.json", CreditorInstitutionStationDto.class);
+        assertThrows(AppException.class, () -> service.updateStationAssociationToCreditorInstitution("12345678900", dto));
+        verify(apiConfigClient, times(0)).updateCreditorInstitutionStationRelationship(anyString(), anyString(),any(CreditorInstitutionStationEdit.class));
+    }
+
+    @Test
     void deleteCreditorInstitutionStationRelationship_ok() {
         doNothing().when(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
 
