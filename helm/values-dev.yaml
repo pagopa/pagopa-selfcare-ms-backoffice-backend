@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.19.0-1-hotfix-regenarateApiKey"
+    tag: "2.19.0-2-hotfix-regenarateApiKey"
     pullPolicy: Always
   livenessProbe:
     httpGet:
