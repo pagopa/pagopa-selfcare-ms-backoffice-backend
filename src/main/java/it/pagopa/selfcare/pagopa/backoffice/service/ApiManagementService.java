@@ -304,11 +304,16 @@ public class ApiManagementService {
                 .owner(AuthorizationOwner.builder()
                         .id(institution.getTaxCode())
                         .name(institution.getDescription())
-                        .type(RoleType.fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType().name()))
+                        .type(getOwnerType(institution))
                         .build())
                 .authorizedEntities(authorizedEntities)
                 .otherMetadata(Collections.emptyList())
                 .build();
+    }
+
+    private String getOwnerType(InstitutionResponse institution) {
+        RoleType type =  RoleType.fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType().name());
+        return RoleType.PT.equals(type) ? "BROKER" : type.name();
     }
 
     private String createAuthorizationId(String subscriptionPrefixId, String institutionId, boolean isPrimaryKey) {
