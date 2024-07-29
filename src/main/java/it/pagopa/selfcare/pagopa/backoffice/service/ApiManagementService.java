@@ -1,10 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import com.azure.spring.cloud.feature.management.FeatureManager;
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.AuthorizerConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
-import it.pagopa.selfcare.pagopa.backoffice.component.ApiManagementComponent;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
@@ -246,22 +246,23 @@ public class ApiManagementService {
         }
     }
 
-    private void updateAuthorization(
-            String institutionId, String subscriptionId, String subscriptionPrefixId, boolean isPrimaryKey) {
+    private void updateAuthorization(String institutionId, String subscriptionId, String subscriptionPrefixId, boolean isPrimaryKey) {
         InstitutionApiKeys apiKeys = this.apimClient.getApiSubscriptions(institutionId).stream()
                 .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
                 .findFirst()
                 .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
 
-        String authorizationId = createAuthorizationId(subscriptionPrefixId, institutionId, isPrimaryKey);
-        Authorization authorization = this.authorizerConfigClient.getAuthorization(authorizationId);
-        if (authorization == null) {
-            throw new AppException(AppError.AUTHORIZATION_NOT_FOUND, institutionId);
+        Authorization authorization;
+        try {
+            String authorizationId = createAuthorizationId(subscriptionPrefixId, institutionId, isPrimaryKey);
+            authorization = this.authorizerConfigClient.getAuthorization(authorizationId);
+            this.authorizerConfigClient.deleteAuthorization(authorization.getId());
+            authorization.setSubscriptionKey(isPrimaryKey ? apiKeys.getPrimaryKey() : apiKeys.getSecondaryKey());
+            this.authorizerConfigClient.createAuthorization(authorization);
+        } catch (FeignException.NotFound e) {
+            createSubscriptionKeys(institutionId, Subscription.fromPrefix(subscriptionPrefixId));
         }
 
-        this.authorizerConfigClient.deleteAuthorization(authorization.getId());
-        authorization.setSubscriptionKey(isPrimaryKey ? apiKeys.getPrimaryKey() : apiKeys.getSecondaryKey());
-        this.authorizerConfigClient.createAuthorization(authorization);
     }
 
     private InstitutionResponse getInstitutionResponse(String institutionId) {
@@ -344,7 +345,6 @@ public class ApiManagementService {
         }
         return null;
     }
-
 
 
     private boolean isAuthorizerConfigurationRequired(Subscription subscriptionCode) {
