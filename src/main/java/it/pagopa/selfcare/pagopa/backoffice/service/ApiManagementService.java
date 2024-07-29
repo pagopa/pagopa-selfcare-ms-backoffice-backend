@@ -177,13 +177,7 @@ public class ApiManagementService {
 
         List<InstitutionApiKeys> apiSubscriptions = this.apimClient.getApiSubscriptions(institutionId);
 
-        if (
-                subscriptionCode == Subscription.FDR_PSP ||
-                subscriptionCode == Subscription.FDR_ORG ||
-                subscriptionCode == Subscription.GPD ||
-                subscriptionCode == Subscription.BO_EXT_EC ||
-                subscriptionCode == Subscription.BO_EXT_PSP
-        ) {
+        if (isAuthorizerConfigurationRequired(subscriptionCode)) {
             List<DelegationExternal> delegationResponse = getDelegationResponse(institutionId, subscriptionCode);
 
             InstitutionApiKeys apiKeys = apiSubscriptions.stream()
@@ -204,6 +198,7 @@ public class ApiManagementService {
                 .institutionApiKeys(apiSubscriptions)
                 .build();
     }
+
 
     private List<DelegationExternal> getDelegationResponse(String institutionId, Subscription subscriptionCode) {
         if (subscriptionCode == Subscription.FDR_PSP ||
@@ -228,9 +223,7 @@ public class ApiManagementService {
         this.apimClient.regeneratePrimaryKey(subscriptionId);
 
         var prefix = subscriptionId.split("-")[0] + "-";
-        if (prefix.equals(Subscription.BO_EXT_EC.getPrefixId()) || prefix.equals(Subscription.BO_EXT_PSP.getPrefixId()) // BO
-                || prefix.equals(Subscription.FDR_ORG.getPrefixId()) || prefix.equals(Subscription.FDR_PSP.getPrefixId()) // Fdr
-        ) {
+        if (isAuthorizerConfigurationRequired(Subscription.fromPrefix(prefix))) {
             updateAuthorization(institutionId, subscriptionId, prefix, true);
         }
     }
@@ -248,9 +241,7 @@ public class ApiManagementService {
         this.apimClient.regenerateSecondaryKey(subscriptionId);
 
         var prefix = subscriptionId.split("-")[0] + "-";
-        if (prefix.equals(Subscription.BO_EXT_EC.getPrefixId()) || prefix.equals(Subscription.BO_EXT_PSP.getPrefixId()) // BO
-                || prefix.equals(Subscription.FDR_ORG.getPrefixId()) || prefix.equals(Subscription.FDR_PSP.getPrefixId()) // Fdr
-        ) {
+        if (isAuthorizerConfigurationRequired(Subscription.fromPrefix(prefix))) {
             updateAuthorization(institutionId, subscriptionId, prefix, false);
         }
     }
@@ -352,6 +343,14 @@ public class ApiManagementService {
             return "fdr";
         }
         return null;
+    }
+
+
+
+    private boolean isAuthorizerConfigurationRequired(Subscription subscriptionCode) {
+        return subscriptionCode == Subscription.FDR_PSP || subscriptionCode == Subscription.FDR_ORG || // FdR
+                subscriptionCode == Subscription.GPD || // GPD
+                subscriptionCode == Subscription.BO_EXT_EC || subscriptionCode == Subscription.BO_EXT_PSP; // BO
     }
 }
 
