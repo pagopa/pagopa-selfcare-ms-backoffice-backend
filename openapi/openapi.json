@@ -1037,7 +1037,7 @@
         },
         "security": [
           {
-            "Authorization": []
+            "JWT": []
           }
         ],
         "summary": "Get a paginated list of station's maintenance for the specified broker",
