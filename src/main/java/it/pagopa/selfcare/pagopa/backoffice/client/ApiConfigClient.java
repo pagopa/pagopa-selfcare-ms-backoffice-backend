@@ -173,6 +173,12 @@ public interface ApiConfigClient {
     CreditorInstitutionStationEdit createCreditorInstitutionStationRelationship(@PathVariable("creditorinstitutioncode") String ecCode,
                                                                                 @RequestBody CreditorInstitutionStationEdit station);
 
+    @PutMapping(value = "/creditorinstitutions/{creditorinstitutioncode}/stations/{stationCode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
+    CreditorInstitutionStationEdit updateCreditorInstitutionStationRelationship(@PathVariable("creditorinstitutioncode") String ecCode,
+                                                                                @PathVariable("stationCode") String stationCode,
+                                                                                @RequestBody CreditorInstitutionStationEdit station);
+
     @GetMapping(value = "/paymentserviceproviders/{pspcode}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid
     PaymentServiceProviderDetails getPSPDetails(@PathVariable("pspcode") String pspCode);
