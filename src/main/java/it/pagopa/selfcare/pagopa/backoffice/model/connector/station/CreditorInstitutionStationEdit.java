@@ -22,4 +22,10 @@ public class CreditorInstitutionStationEdit {
 
     @JsonProperty("broadcast")
     private Boolean broadcast;
+
+    @JsonProperty("aca")
+    private Boolean aca;
+
+    @JsonProperty("stand_in")
+    private Boolean standIn;
 }

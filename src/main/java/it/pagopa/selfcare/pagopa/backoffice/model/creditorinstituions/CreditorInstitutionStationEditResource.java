@@ -3,7 +3,6 @@ package it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
 
@@ -24,10 +23,8 @@ public class CreditorInstitutionStationEditResource {
     private Boolean mod4;
     @Schema(description = "Station's broadcast enabled")
     private Boolean broadcast;
-    @Nullable
     @JsonProperty("aca")
     private Boolean aca;
-    @Nullable
     @JsonProperty("stand_in")
     private Boolean standIn;
 }
