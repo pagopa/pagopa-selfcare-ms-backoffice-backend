@@ -305,7 +305,7 @@ public class CreditorInstitutionService {
                 );
 
         List<DelegationExternal> delegationExternals = new ArrayList<>(response);
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution broker = this.externalApiClient.getInstitution(brokerId);
+        InstitutionResponse broker = this.externalApiClient.getInstitution(brokerId);
         if (brokerCanBeAddedToDelegation(delegationExternals, broker, ciName)) {
             delegationExternals.add(DelegationExternal.builder()
                     .taxCode(broker.getTaxCode())
@@ -319,10 +319,10 @@ public class CreditorInstitutionService {
 
     private boolean brokerCanBeAddedToDelegation(
             List<DelegationExternal> delegationExternals,
-            it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution broker,
+            InstitutionResponse broker,
             String ciNameFilter
     ) {
-        return RoleType.CI.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType()))
+        return RoleType.CI.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType().name()))
                 && (StringUtils.isBlank(ciNameFilter) || broker.getDescription().toLowerCase().contains(ciNameFilter.toLowerCase()))
                 && delegationExternals.stream().noneMatch(delegationExternal -> delegationExternal.getTaxCode().equals(broker.getTaxCode()));
     }

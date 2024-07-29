@@ -4,41 +4,11 @@ import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.GecClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleSubscriptionStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleTaxonomy;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleAttributeResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleFee;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleStatus;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsDetail;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CISubscriptionInfo;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleTaxonomy;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundlesResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCIOffers;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreditorInstitutionResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleOffers;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundlePaymentTypesDTO;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleAttribute;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundleDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiBundles;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PspBundleOffer;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
@@ -48,24 +18,27 @@ import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.*;
+import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.deNull;
 
 @Slf4j
 @Service
 public class CommissionBundleService {
 
     private static final String VALID_FROM_DATE_FORMAT = "yyyy-MM-dd";
+    public static final String SUBJECT_NEW_BUNDLE_GEC = "Creazione Nuovo Pacchetto GEC %s";
+    public static final String DETAIL_NEW_BUNDLE_GEC = "E' stato creato un nuovo pacchetto GEC '%s' da parte di %s (CF: %s) che si attiverà a partire dal %s. Si prega di prenderne visione per verificare se il PSP ha configurato correttamente il pacchetto. \nLink: https://selfcare%s.platform.pagopa.it/ui/comm-bundles/detail/%s";
+
+    @Value("${info.properties.environment}")
+    private String environment;
 
     private final GecClient gecClient;
 
@@ -81,6 +54,8 @@ public class CommissionBundleService {
 
     private final AsyncNotificationService asyncNotificationService;
 
+    private final JiraServiceManagerClient jiraServiceManagerClient;
+
     @Autowired
     public CommissionBundleService(
             GecClient gecClient,
@@ -89,8 +64,8 @@ public class CommissionBundleService {
             LegacyPspCodeUtil legacyPspCodeUtil,
             ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
             AwsSesClient awsSesClient,
-            AsyncNotificationService asyncNotificationService
-    ) {
+            AsyncNotificationService asyncNotificationService,
+            JiraServiceManagerClient jiraServiceManagerClient) {
         this.gecClient = gecClient;
         this.modelMapper = modelMapper;
         this.taxonomyService = taxonomyService;
@@ -98,6 +73,7 @@ public class CommissionBundleService {
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
         this.awsSesClient = awsSesClient;
         this.asyncNotificationService = asyncNotificationService;
+        this.jiraServiceManagerClient = jiraServiceManagerClient;
     }
 
     public BundlePaymentTypes getBundlesPaymentTypes(Integer limit, Integer page) {
@@ -128,7 +104,14 @@ public class CommissionBundleService {
 
     public BundleCreateResponse createPSPBundle(String pspTaxCode, BundleRequest bundle) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
-        return this.gecClient.createPSPBundle(pspCode, bundle);
+        var result = this.gecClient.createPSPBundle(pspCode, bundle);
+        String url = !"UAT".equals(environment) ? "" : ".uat";
+        jiraServiceManagerClient.createTicket(
+                String.format(SUBJECT_NEW_BUNDLE_GEC, bundle.getPspBusinessName()),
+                String.format(DETAIL_NEW_BUNDLE_GEC,
+                        bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, deNull(bundle.getValidityDateFrom()), url,result.getIdBundle())
+        );
+        return result;
     }
 
     public PSPBundleResource getBundleDetailByPSP(String pspTaxCode, String idBundle) {
@@ -141,7 +124,7 @@ public class CommissionBundleService {
 
     public void updatePSPBundle(String pspTaxCode, String idBundle, BundleRequest bundle) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
-        this.gecClient.updatePSPBundle(pspCode, idBundle, bundle);
+        gecClient.updatePSPBundle(pspCode, idBundle, bundle);
     }
 
     /**
