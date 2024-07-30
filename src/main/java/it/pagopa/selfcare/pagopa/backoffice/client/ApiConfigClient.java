@@ -321,30 +321,26 @@ public interface ApiConfigClient {
 
     @PostMapping(value = "brokers/{brokercode}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
     StationMaintenanceResource createStationMaintenance(
-            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
+            @PathVariable("brokercode") String brokerCode,
             @RequestBody @Valid @NotNull CreateStationMaintenance createStationMaintenance
     );
 
     @PutMapping(value = "brokers/{brokercode}/station-maintenances/{maintenanceid}", produces = {MediaType.APPLICATION_JSON_VALUE})
     StationMaintenanceResource updateStationMaintenance(
-            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
-            @Parameter(description = "Maintenance's id") @PathVariable("maintenanceid") Long maintenanceId,
+            @PathVariable("brokercode") String brokerCode,
+            @PathVariable("maintenanceid") Long maintenanceId,
             @RequestBody @Valid @NotNull UpdateStationMaintenance updateStationMaintenance
     );
 
     @GetMapping(value = "brokers/{brokercode}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
     StationMaintenanceListResource getStationMaintenances(
-            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
-            @Parameter(description = "Station's code") @RequestParam(required = false) String stationCode,
-            @Parameter(description = "Start date of maintenance, used to retrieve all maintenance that start before the provided date (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')", example = "2024-04-01T10:00:00.000Z")
+            @PathVariable("brokercode") String brokerCode,
+            @RequestParam(required = false) String stationCode,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDateTimeBefore,
-            @Parameter(description = "Start date of maintenance, used to retrieve all maintenance that start after the provided date (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')", example = "2024-04-01T10:00:00.000Z")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDateTimeAfter,
-            @Parameter(description = "End date of maintenance, used to retrieve all maintenance that start before the provided date (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')", example = "2024-04-01T13:00:00.000Z")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime endDateTimeBefore,
-            @Parameter(description = "End date of maintenance, used to retrieve all maintenance that start after the provided date (yyyy-MM-dd'T'HH:mm:ss.SSS'Z')", example = "2024-04-01T13:00:00.000Z")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime endDateTimeAfter,
-            @Parameter(description = "Number of items for page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
-            @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") @Min(0) @PositiveOrZero Integer page
+            @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
+            @RequestParam(required = false, defaultValue = "0") @Min(0) @PositiveOrZero Integer page
     );
 }
