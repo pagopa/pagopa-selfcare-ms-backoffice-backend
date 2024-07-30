@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.MaintenanceHoursSummaryResource;
@@ -21,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -157,11 +157,11 @@ public class StationMaintenanceController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @GetMapping(value = "/{broker-tax-code}/station-maintenances/summary", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<MaintenanceHoursSummaryResource> getBrokerMaintenancesSummary(
+    public MaintenanceHoursSummaryResource getBrokerMaintenancesSummary(
             @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
             @Parameter(description = "Year of maintenance (yyyy)", example = "2024") @RequestParam @Size(min = 4, max = 4) String maintenanceYear
     ) {
-        return ResponseEntity.ok(this.stationMaintenanceService.getBrokerMaintenancesSummary(brokerCode, maintenanceYear));
+        return this.stationMaintenanceService.getBrokerMaintenancesSummary(brokerCode, maintenanceYear);
     }
 
     /**
@@ -189,11 +189,11 @@ public class StationMaintenanceController {
             @ApiResponse(responseCode = "500", description = "Service unavailable",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
-    @GetMapping(value = "/{brokercode}/station-maintenances/{maintenanceid}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<StationMaintenanceResource> getStationMaintenance(
-            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
-            @Parameter(description = "Maintenance's id") @PathVariable("maintenanceid") Long maintenanceId
+    @GetMapping(value = "/{broker-tax-code}/station-maintenances/{maintenance-id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public StationMaintenanceResource getStationMaintenance(
+            @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
+            @Parameter(description = "Maintenance's id") @PathVariable("maintenance-id") Long maintenanceId
     ) {
-        return ResponseEntity.ok(this.stationMaintenanceService.getStationMaintenance(brokerCode, maintenanceId));
+        return this.stationMaintenanceService.getStationMaintenance(brokerCode, maintenanceId);
     }
 }

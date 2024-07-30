@@ -74,7 +74,7 @@ class StationMaintenanceControllerTest {
         request.setStandIn(true);
         request.setEndDateTime(OffsetDateTime.now());
         request.setStartDateTime(OffsetDateTime.now());
-        mvc.perform(post("/brokers/{brokercode}/station-maintenances", BROKER_CODE)
+        mvc.perform(post("/brokers/{broker-tax-code}/station-maintenances", BROKER_CODE)
                         .content(objectMapper.writeValueAsBytes(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
@@ -95,7 +95,7 @@ class StationMaintenanceControllerTest {
         request.setStandIn(true);
         request.setEndDateTime(OffsetDateTime.now());
         request.setStartDateTime(OffsetDateTime.now());
-        mvc.perform(put("/brokers/{brokercode}/station-maintenances/{maintenanceid}", BROKER_CODE, MAINTENANCE_ID)
+        mvc.perform(put("/brokers/{broker-tax-code}/station-maintenances/{maintenance-id}", BROKER_CODE, MAINTENANCE_ID)
                         .content(objectMapper.writeValueAsBytes(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -115,7 +115,7 @@ class StationMaintenanceControllerTest {
         response.setPageInfo(new PageInfo());
         when(stationMaintenanceService.getStationMaintenances(anyString(), anyString(), any(StationMaintenanceListState.class), anyInt(), anyInt(), anyInt())).thenReturn(response);
 
-        mvc.perform(get("/brokers/{brokercode}/station-maintenances", BROKER_CODE)
+        mvc.perform(get("/brokers/{broker-tax-code}/station-maintenances", BROKER_CODE)
                         .param("stationCode", STATION_CODE)
                         .param("state", String.valueOf(StationMaintenanceListState.SCHEDULED_AND_IN_PROGRESS))
                         .param("year", String.valueOf(2024))
@@ -136,7 +136,7 @@ class StationMaintenanceControllerTest {
                         .annualHoursLimit("36")
                         .build());
 
-        mvc.perform(get("/brokers/{brokercode}/station-maintenances/summary", BROKER_CODE)
+        mvc.perform(get("/brokers/{broker-tax-code}/station-maintenances/summary", BROKER_CODE)
                         .param("maintenanceYear", "2024")
                 ).andExpect(status().is2xxSuccessful())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -147,7 +147,7 @@ class StationMaintenanceControllerTest {
         when(stationMaintenanceService.getStationMaintenance(anyString(), anyLong()))
                 .thenReturn(buildMaintenanceResource());
 
-        mvc.perform(get("/brokers/{brokercode}/station-maintenances/{maintenanceid}", BROKER_CODE, MAINTENANCE_ID)
+        mvc.perform(get("/brokers/{broker-tax-code}/station-maintenances/{maintenance-id}", BROKER_CODE, MAINTENANCE_ID)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                 ).andExpect(status().is2xxSuccessful())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -158,7 +158,7 @@ class StationMaintenanceControllerTest {
         when(stationMaintenanceService.getStationMaintenance(anyString(), anyLong()))
                 .thenThrow(new AppException(AppError.INTERNAL_SERVER_ERROR));
 
-        mvc.perform(get("/brokers/{brokercode}/station-maintenances/{maintenanceid}", BROKER_CODE, MAINTENANCE_ID)
+        mvc.perform(get("/brokers/{broker-tax-code}/station-maintenances/{maintenance-id}", BROKER_CODE, MAINTENANCE_ID)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                 ).andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
