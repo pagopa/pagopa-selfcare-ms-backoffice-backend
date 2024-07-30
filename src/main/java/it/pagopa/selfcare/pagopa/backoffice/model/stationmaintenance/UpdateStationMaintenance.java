@@ -19,22 +19,16 @@ import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 
 /**
- * Model class the response for station's maintenance APIs
+ * Model class that define the input field for updating a station's maintenance
  */
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StationMaintenanceResource {
-
-    @JsonProperty("maintenance_id")
-    @Schema(description = "Maintenance's id")
-    @NotNull
-    private Long maintenanceId;
+public class UpdateStationMaintenance {
 
     @JsonProperty("start_date_time")
-    @NotNull
     @JsonFormat(pattern = Constants.DATE_TIME_FORMAT)
     @JsonSerialize(using = OffsetDateTimeSerializer.class)
     @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
@@ -57,16 +51,5 @@ public class StationMaintenanceResource {
 
     @JsonProperty("stand_in")
     @Schema(description = "StandIn flag")
-    @NotNull
     private Boolean standIn;
-
-    @JsonProperty("station_code")
-    @Schema(description = "Code of the station subject of the maintenance")
-    @NotNull
-    private String stationCode;
-
-    @JsonProperty("broker_code")
-    @Schema(description = "Code of the broker that owns the station")
-    @NotNull
-    private String brokerCode;
 }
