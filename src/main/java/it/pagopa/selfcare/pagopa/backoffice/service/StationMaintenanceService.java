@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.UpdateStationMaintenance;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,11 @@ public class StationMaintenanceService {
     public StationMaintenanceResource createStationMaintenance(String brokerCode,
                                                                CreateStationMaintenance createStationMaintenance) {
         return this.apiConfigClient.createStationMaintenance(brokerCode, createStationMaintenance);
+    }
+
+    public StationMaintenanceResource updateStationMaintenance(String brokerCode,
+                                                               Long maintenanceId,
+                                                               UpdateStationMaintenance updateStationMaintenance) {
+        return this.apiConfigClient.updateStationMaintenance(brokerCode, maintenanceId, updateStationMaintenance);
     }
 }
