@@ -42,13 +42,7 @@ class StationMaintenanceServiceTest {
 
     @Test
     void getStationMaintenancesFINISHEDWithoutYearFilterSuccess() {
-        StationMaintenanceResource maintenanceResource = new StationMaintenanceResource();
-        maintenanceResource.setStationCode(STATION_CODE);
-        maintenanceResource.setStandIn(true);
-        maintenanceResource.setEndDateTime(OffsetDateTime.now());
-        maintenanceResource.setStartDateTime(OffsetDateTime.now());
-        maintenanceResource.setMaintenanceId(MAINTENANCE_ID);
-        maintenanceResource.setBrokerCode(BROKER_CODE);
+        StationMaintenanceResource maintenanceResource = buildMaintenanceResource();
         StationMaintenanceListResource response = new StationMaintenanceListResource();
         response.setMaintenanceList(Collections.singletonList(maintenanceResource));
         response.setPageInfo(new PageInfo());
@@ -66,13 +60,7 @@ class StationMaintenanceServiceTest {
 
     @Test
     void getStationMaintenancesFINISHEDWithYearFilterSuccess() {
-        StationMaintenanceResource maintenanceResource = new StationMaintenanceResource();
-        maintenanceResource.setStationCode(STATION_CODE);
-        maintenanceResource.setStandIn(true);
-        maintenanceResource.setEndDateTime(OffsetDateTime.now());
-        maintenanceResource.setStartDateTime(OffsetDateTime.now());
-        maintenanceResource.setMaintenanceId(MAINTENANCE_ID);
-        maintenanceResource.setBrokerCode(BROKER_CODE);
+        StationMaintenanceResource maintenanceResource = buildMaintenanceResource();
         StationMaintenanceListResource response = new StationMaintenanceListResource();
         response.setMaintenanceList(Collections.singletonList(maintenanceResource));
         response.setPageInfo(new PageInfo());
@@ -90,13 +78,7 @@ class StationMaintenanceServiceTest {
 
     @Test
     void getStationMaintenancesIN_PROGRESSWithoutYearFilterSuccess() {
-        StationMaintenanceResource maintenanceResource = new StationMaintenanceResource();
-        maintenanceResource.setStationCode(STATION_CODE);
-        maintenanceResource.setStandIn(true);
-        maintenanceResource.setEndDateTime(OffsetDateTime.now());
-        maintenanceResource.setStartDateTime(OffsetDateTime.now());
-        maintenanceResource.setMaintenanceId(MAINTENANCE_ID);
-        maintenanceResource.setBrokerCode(BROKER_CODE);
+        StationMaintenanceResource maintenanceResource = buildMaintenanceResource();
         StationMaintenanceListResource response = new StationMaintenanceListResource();
         response.setMaintenanceList(Collections.singletonList(maintenanceResource));
         response.setPageInfo(new PageInfo());
@@ -114,13 +96,7 @@ class StationMaintenanceServiceTest {
 
     @Test
     void getStationMaintenancesIN_PROGRESSWithYearFilterSuccess() {
-        StationMaintenanceResource maintenanceResource = new StationMaintenanceResource();
-        maintenanceResource.setStationCode(STATION_CODE);
-        maintenanceResource.setStandIn(true);
-        maintenanceResource.setEndDateTime(OffsetDateTime.now());
-        maintenanceResource.setStartDateTime(OffsetDateTime.now());
-        maintenanceResource.setMaintenanceId(MAINTENANCE_ID);
-        maintenanceResource.setBrokerCode(BROKER_CODE);
+        StationMaintenanceResource maintenanceResource = buildMaintenanceResource();
         StationMaintenanceListResource response = new StationMaintenanceListResource();
         response.setMaintenanceList(Collections.singletonList(maintenanceResource));
         response.setPageInfo(new PageInfo());
@@ -138,13 +114,7 @@ class StationMaintenanceServiceTest {
 
     @Test
     void getStationMaintenancesSCHEDULEDWithoutYearFilterSuccess() {
-        StationMaintenanceResource maintenanceResource = new StationMaintenanceResource();
-        maintenanceResource.setStationCode(STATION_CODE);
-        maintenanceResource.setStandIn(true);
-        maintenanceResource.setEndDateTime(OffsetDateTime.now());
-        maintenanceResource.setStartDateTime(OffsetDateTime.now());
-        maintenanceResource.setMaintenanceId(MAINTENANCE_ID);
-        maintenanceResource.setBrokerCode(BROKER_CODE);
+        StationMaintenanceResource maintenanceResource = buildMaintenanceResource();
         StationMaintenanceListResource response = new StationMaintenanceListResource();
         response.setMaintenanceList(Collections.singletonList(maintenanceResource));
         response.setPageInfo(new PageInfo());
@@ -162,13 +132,7 @@ class StationMaintenanceServiceTest {
 
     @Test
     void getStationMaintenancesSCHEDULEDWithYearFilterSuccess() {
-        StationMaintenanceResource maintenanceResource = new StationMaintenanceResource();
-        maintenanceResource.setStationCode(STATION_CODE);
-        maintenanceResource.setStandIn(true);
-        maintenanceResource.setEndDateTime(OffsetDateTime.now());
-        maintenanceResource.setStartDateTime(OffsetDateTime.now());
-        maintenanceResource.setMaintenanceId(MAINTENANCE_ID);
-        maintenanceResource.setBrokerCode(BROKER_CODE);
+        StationMaintenanceResource maintenanceResource = buildMaintenanceResource();
         StationMaintenanceListResource response = new StationMaintenanceListResource();
         response.setMaintenanceList(Collections.singletonList(maintenanceResource));
         response.setPageInfo(new PageInfo());
@@ -186,13 +150,7 @@ class StationMaintenanceServiceTest {
 
     @Test
     void getStationMaintenancesSCHEDULED_AND_IN_PROGRESSWithoutYearFilterSuccess() {
-        StationMaintenanceResource maintenanceResource = new StationMaintenanceResource();
-        maintenanceResource.setStationCode(STATION_CODE);
-        maintenanceResource.setStandIn(true);
-        maintenanceResource.setEndDateTime(OffsetDateTime.now());
-        maintenanceResource.setStartDateTime(OffsetDateTime.now());
-        maintenanceResource.setMaintenanceId(MAINTENANCE_ID);
-        maintenanceResource.setBrokerCode(BROKER_CODE);
+        StationMaintenanceResource maintenanceResource = buildMaintenanceResource();
         StationMaintenanceListResource response = new StationMaintenanceListResource();
         response.setMaintenanceList(Collections.singletonList(maintenanceResource));
         response.setPageInfo(new PageInfo());
@@ -210,13 +168,7 @@ class StationMaintenanceServiceTest {
 
     @Test
     void getStationMaintenancesSCHEDULED_AND_IN_PROGRESSWithYearFilterSuccess() {
-        StationMaintenanceResource maintenanceResource = new StationMaintenanceResource();
-        maintenanceResource.setStationCode(STATION_CODE);
-        maintenanceResource.setStandIn(true);
-        maintenanceResource.setEndDateTime(OffsetDateTime.now());
-        maintenanceResource.setStartDateTime(OffsetDateTime.now());
-        maintenanceResource.setMaintenanceId(MAINTENANCE_ID);
-        maintenanceResource.setBrokerCode(BROKER_CODE);
+        StationMaintenanceResource maintenanceResource = buildMaintenanceResource();
         StationMaintenanceListResource response = new StationMaintenanceListResource();
         response.setMaintenanceList(Collections.singletonList(maintenanceResource));
         response.setPageInfo(new PageInfo());
@@ -234,13 +186,7 @@ class StationMaintenanceServiceTest {
 
     @Test
     void createStationMaintenanceSuccess() {
-        StationMaintenanceResource response = new StationMaintenanceResource();
-        response.setStationCode(STATION_CODE);
-        response.setStandIn(true);
-        response.setEndDateTime(OffsetDateTime.now());
-        response.setStartDateTime(OffsetDateTime.now());
-        response.setMaintenanceId(MAINTENANCE_ID);
-        response.setBrokerCode(BROKER_CODE);
+        StationMaintenanceResource response = buildMaintenanceResource();
 
         when(apiConfigClient.createStationMaintenance(anyString(), any(CreateStationMaintenance.class)))
                 .thenReturn(response);
@@ -259,13 +205,7 @@ class StationMaintenanceServiceTest {
 
     @Test
     void updateStationMaintenanceSuccess() {
-        StationMaintenanceResource response = new StationMaintenanceResource();
-        response.setStationCode(STATION_CODE);
-        response.setStandIn(true);
-        response.setEndDateTime(OffsetDateTime.now());
-        response.setStartDateTime(OffsetDateTime.now());
-        response.setMaintenanceId(MAINTENANCE_ID);
-        response.setBrokerCode(BROKER_CODE);
+        StationMaintenanceResource response = buildMaintenanceResource();
 
         when(apiConfigClient.updateStationMaintenance(anyString(), anyLong(), any(UpdateStationMaintenance.class)))
                 .thenReturn(response);
@@ -295,5 +235,26 @@ class StationMaintenanceServiceTest {
                 stationMaintenanceService.getBrokerMaintenancesSummary(BROKER_CODE, "2024");
         assertNotNull(result);
         assertEquals(mockedResult, result);
+    }
+
+    @Test
+    void getStationMaintenanceDetailSuccess() {
+        StationMaintenanceResource mockedResult = buildMaintenanceResource();
+        when(apiConfigClient.getStationMaintenance(any(), any())).thenReturn(mockedResult);
+        StationMaintenanceResource resource =
+                stationMaintenanceService.getStationMaintenance("brokerCode", 1L);
+        assertNotNull(resource);
+        assertEquals(mockedResult, resource);
+    }
+
+    private StationMaintenanceResource buildMaintenanceResource() {
+        StationMaintenanceResource resource = new StationMaintenanceResource();
+        resource.setStationCode(STATION_CODE);
+        resource.setStandIn(true);
+        resource.setEndDateTime(OffsetDateTime.now());
+        resource.setStartDateTime(OffsetDateTime.now());
+        resource.setMaintenanceId(MAINTENANCE_ID);
+        resource.setBrokerCode(BROKER_CODE);
+        return resource;
     }
 }

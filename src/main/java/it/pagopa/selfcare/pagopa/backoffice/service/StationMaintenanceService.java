@@ -98,6 +98,19 @@ public class StationMaintenanceService {
         return this.apiConfigClient.getBrokerMaintenancesSummary(brokerCode, maintenanceYear);
     }
 
+    /**
+     * Recovers a station maintenance, given its brokerCode and maintenanceId.
+     * If the provided brokerCode doesn't match the one related to the persisted one for the given maintenance,
+     * it will throw the maintenance not found exception
+     *
+     * @param brokerCode    brokerCode to be used as filter in the maintenance recovery
+     * @param maintenanceId station maintenance id to be used for the detail recovery
+     * @return station maintenance data, provided in an instance of StationMaintenanceResource
+     */
+    public StationMaintenanceResource getStationMaintenance(String brokerCode, Long maintenanceId) {
+        return this.apiConfigClient.getStationMaintenance(brokerCode, maintenanceId);
+    }
+
     private OffsetDateTime getDateToday() {
         return OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
     }

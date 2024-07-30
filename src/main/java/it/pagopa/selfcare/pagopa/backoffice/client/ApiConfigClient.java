@@ -398,4 +398,10 @@ public interface ApiConfigClient {
             @PathVariable("brokercode") String brokerCode,
             @RequestParam @Size(min = 4, max = 4) String maintenanceYear
     );
+
+    @GetMapping(value = "/{brokercode}/station-maintenances/{maintenanceid}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    StationMaintenanceResource getStationMaintenance(
+            @PathVariable("brokercode") String brokerCode,
+            @PathVariable("maintenanceid") Long maintenanceId
+    );
 }
