@@ -141,6 +141,27 @@ public class CreditorInstitutionController {
         return ciService.associateStationToCreditorInstitution(ciTaxCode, dto);
     }
 
+    @PutMapping(value = "/{ci-tax-code}/station", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = CreditorInstitutionStationEditResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "409", description = "Conflict", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Updates the relationship between the created station and the creditorInstitution", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public CreditorInstitutionStationEditResource updateStationAssociationToCreditorInstitution(
+            @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
+            @RequestBody @NotNull CreditorInstitutionStationDto dto
+    ) {
+        return ciService.updateStationAssociationToCreditorInstitution(ciTaxCode, dto);
+    }
+
 
     @DeleteMapping(value = "/{ci-tax-code}/station/{station-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ApiResponses(value = {
