@@ -8,7 +8,14 @@ import it.pagopa.selfcare.pagopa.backoffice.model.configuration.PaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.configuration.WfespPluginConfs;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.BrokerPspDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.BrokersPsp;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelPspList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviderDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviders;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.ApiConfigCreditorInstitutionsOrderBy;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
@@ -19,17 +26,29 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.UpdateStationMaintenance;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+import java.time.OffsetDateTime;
 
 @FeignClient(name = "api-config", url = "${rest-client.api-config.base-url}", configuration = ApiConfigFeignConfig.class)
 public interface ApiConfigClient {
@@ -302,14 +321,26 @@ public interface ApiConfigClient {
 
     @PostMapping(value = "brokers/{brokercode}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
     StationMaintenanceResource createStationMaintenance(
-            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
+            @PathVariable("brokercode") String brokerCode,
             @RequestBody @Valid @NotNull CreateStationMaintenance createStationMaintenance
     );
 
     @PutMapping(value = "brokers/{brokercode}/station-maintenances/{maintenanceid}", produces = {MediaType.APPLICATION_JSON_VALUE})
     StationMaintenanceResource updateStationMaintenance(
-            @Parameter(description = "Broker's tax code") @PathVariable("brokercode") String brokerCode,
-            @Parameter(description = "Maintenance's id") @PathVariable("maintenanceid") Long maintenanceId,
+            @PathVariable("brokercode") String brokerCode,
+            @PathVariable("maintenanceid") Long maintenanceId,
             @RequestBody @Valid @NotNull UpdateStationMaintenance updateStationMaintenance
+    );
+
+    @GetMapping(value = "brokers/{brokercode}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
+    StationMaintenanceListResource getStationMaintenances(
+            @PathVariable("brokercode") String brokerCode,
+            @RequestParam(required = false) String stationCode,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDateTimeBefore,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDateTimeAfter,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime endDateTimeBefore,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime endDateTimeAfter,
+            @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
+            @RequestParam(required = false, defaultValue = "0") @Min(0) @PositiveOrZero Integer page
     );
 }

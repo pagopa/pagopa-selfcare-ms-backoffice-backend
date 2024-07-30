@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListState;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.UpdateStationMaintenance;
 import it.pagopa.selfcare.pagopa.backoffice.service.StationMaintenanceService;
@@ -21,7 +23,10 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @Slf4j
 @RestController
@@ -34,6 +39,39 @@ public class StationMaintenanceController {
     @Autowired
     public StationMaintenanceController(StationMaintenanceService stationMaintenanceService) {
         this.stationMaintenanceService = stationMaintenanceService;
+    }
+
+    @Operation(summary = "Get a paginated list of station's maintenance for the specified broker",
+            security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = StationMaintenanceListResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @GetMapping(value = "/{broker-tax-code}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public StationMaintenanceListResource getStationMaintenances(
+            @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
+            @Parameter(description = "Station's code") @RequestParam(required = false) String stationCode,
+            @Parameter(description = "Maintenances' state") @RequestParam(required = false) StationMaintenanceListState state,
+            @Parameter(description = "Maintenance's starting year") @RequestParam(required = false) Integer year,
+            @Parameter(description = "Number of items for page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
+            @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") @Min(0) @PositiveOrZero Integer page
+    ) {
+        return
+                this.stationMaintenanceService.getStationMaintenances(
+                        brokerCode,
+                        stationCode,
+                        state,
+                        year,
+                        limit,
+                        page
+                );
     }
 
     @PostMapping(value = "/{broker-tax-code}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
