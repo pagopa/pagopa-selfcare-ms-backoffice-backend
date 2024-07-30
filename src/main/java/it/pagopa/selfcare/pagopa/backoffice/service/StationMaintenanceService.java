@@ -27,6 +27,17 @@ public class StationMaintenanceService {
         this.apiConfigClient = apiConfigClient;
     }
 
+    /**
+     * Retrieves the list of station's maintenance of the specified broker that match the provided filters
+     *
+     * @param brokerCode broker's tax code
+     * @param stationCode station's code, used to filter out results
+     * @param state state of the maintenance (based on start and end date), used to filter out results
+     * @param year year of the maintenance, used to filter out results
+     * @param limit size of the requested page
+     * @param page page number
+     * @return the filtered list of station's maintenance
+     */
     public StationMaintenanceListResource getStationMaintenances(
             String brokerCode,
             String stationCode,
@@ -74,6 +85,13 @@ public class StationMaintenanceService {
         );
     }
 
+    /**
+     * Creates a new station maintenance for the specified broker with the provided details
+     *
+     * @param brokerCode broker's tax code
+     * @param createStationMaintenance detail of the new station's maintenance
+     * @return the details of the created maintenance
+     */
     public StationMaintenanceResource createStationMaintenance(
             String brokerCode,
             CreateStationMaintenance createStationMaintenance
@@ -81,6 +99,16 @@ public class StationMaintenanceService {
         return this.apiConfigClient.createStationMaintenance(brokerCode, createStationMaintenance);
     }
 
+    /**
+     * Updates the station's maintenance with the specified broker tax code and maintenance id with the provided new
+     * details. If the maintenance is in progress only end date time can be updated otherwise start date time and standIn
+     * flag can be updated too.
+     *
+     * @param brokerCode    broker's tax code
+     * @param maintenanceId station maintenance id
+     * @param updateStationMaintenance details to be updated
+     * @return the details of the updated maintenance
+     */
     public StationMaintenanceResource updateStationMaintenance(
             String brokerCode,
             Long maintenanceId,
@@ -113,6 +141,12 @@ public class StationMaintenanceService {
         return this.apiConfigClient.getStationMaintenance(brokerCode, maintenanceId);
     }
 
+    /**
+     * Delete the station's maintenance with the provided maintenance id and broker code
+     *
+     * @param brokerCode    broker's tax code
+     * @param maintenanceId station maintenance id
+     */
     public void deleteStationMaintenance(
             String brokerCode,
             Long maintenanceId
