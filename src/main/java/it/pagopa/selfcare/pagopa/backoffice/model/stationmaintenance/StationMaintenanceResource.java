@@ -2,10 +2,12 @@ package it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.util.Constants;
+import it.pagopa.selfcare.pagopa.backoffice.util.OffsetDateTimeDeserializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,6 +37,7 @@ public class StationMaintenanceResource {
     @NotNull
     @JsonFormat(pattern = Constants.DATE_TIME_FORMAT)
     @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
     @Schema(
             example = "2024-04-01T13:00:00.000Z",
             description = "The start date time of the station maintenance")
@@ -45,6 +48,7 @@ public class StationMaintenanceResource {
     @NotNull
     @JsonFormat(pattern = Constants.DATE_TIME_FORMAT)
     @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
     @Schema(
             example = "2024-04-01T13:00:00.000Z",
             description = "The end date time of the station maintenance")

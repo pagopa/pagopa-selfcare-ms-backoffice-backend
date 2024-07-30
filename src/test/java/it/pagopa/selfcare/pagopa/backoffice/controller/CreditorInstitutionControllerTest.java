@@ -93,6 +93,18 @@ class CreditorInstitutionControllerTest {
     }
 
     @Test
+    void updateStationAssociationToCreditorInstitution() throws Exception {
+        String url = "/creditor-institutions/12345678900/station";
+        when(ciService.updateStationAssociationToCreditorInstitution(anyString(), any(CreditorInstitutionStationDto.class)))
+                .thenReturn(TestUtil.fileToObject("response/service/post_creditor_institution_station_association_ok.json", CreditorInstitutionStationEditResource.class));
+        mvc.perform(put(url)
+                        .content(TestUtil.readJsonFromFile("request/post_creditor_institution_station_association.json"))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
     void deleteCreditorInstitutionStationRelationship() throws Exception {
         String url = "/creditor-institutions/12345678900/station/00000000000_01";
         doNothing().when(ciService).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
