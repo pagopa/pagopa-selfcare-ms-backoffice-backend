@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -39,4 +40,10 @@ public class CreditorInstitutionResource {
 
     @Schema(description = "Broadcast")
     private Boolean broadcast;
+
+    @JsonProperty("aca")
+    private Boolean aca;
+
+    @JsonProperty("stand_in")
+    private Boolean standIn;
 }
