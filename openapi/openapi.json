@@ -958,6 +958,159 @@
         }
       ]
     },
+    "/brokers/{brokercode}/station-maintenances": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
+        "operationId": "createStationMaintenance",
+        "parameters": [
+          {
+            "description": "Broker's tax code",
+            "in": "path",
+            "name": "brokercode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStationMaintenance"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StationMaintenanceResource"
+                }
+              }
+            },
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Conflict",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Schedule a maintenance period for a Station",
+        "tags": [
+          "Station Maintenance"
+        ]
+      }
+    },
     "/bundles/creditor-institutions": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
@@ -6914,7 +7067,7 @@
         "summary": "Creates the relationship between the created station and the creditorInstitution",
         "tags": [
           "Creditor institutions"
-        ]
+       ]
       },
       "put": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
@@ -12393,6 +12546,37 @@
         },
         "description": "GPS, SCP, PT optional data"
       },
+      "CreateStationMaintenance": {
+        "required": [
+          "end_date_time",
+          "stand_in",
+          "start_date_time",
+          "station_code"
+        ],
+        "type": "object",
+        "properties": {
+          "end_date_time": {
+            "type": "string",
+            "description": "The end date time of the station maintenance",
+            "format": "date-time",
+            "example": "2024-04-01T13:00:00Z"
+          },
+          "stand_in": {
+            "type": "boolean",
+            "description": "StandIn flag"
+          },
+          "start_date_time": {
+            "type": "string",
+            "description": "The start date time of the station maintenance",
+            "format": "date-time",
+            "example": "2024-04-01T13:00:00Z"
+          },
+          "station_code": {
+            "type": "string",
+            "description": "Code of the station subject of the maintenance"
+          }
+        }
+      },
       "CreditorInstitutionAddressDto": {
         "required": [
           "city",
@@ -14394,6 +14578,48 @@
             "items": {
               "$ref": "#/components/schemas/StationDetailResource"
             }
+          }
+        }
+      },
+      "StationMaintenanceResource": {
+        "required": [
+          "broker_code",
+          "end_date_time",
+          "maintenance_id",
+          "stand_in",
+          "start_date_time",
+          "station_code"
+        ],
+        "type": "object",
+        "properties": {
+          "broker_code": {
+            "type": "string",
+            "description": "Code of the broker that owns the station"
+          },
+          "end_date_time": {
+            "type": "string",
+            "description": "The end date time of the station maintenance",
+            "format": "date-time",
+            "example": "2024-04-01T13:00:00Z"
+          },
+          "maintenance_id": {
+            "type": "integer",
+            "description": "Maintenance's id",
+            "format": "int64"
+          },
+          "stand_in": {
+            "type": "boolean",
+            "description": "StandIn flag"
+          },
+          "start_date_time": {
+            "type": "string",
+            "description": "The start date time of the station maintenance",
+            "format": "date-time",
+            "example": "2024-04-01T13:00:00Z"
+          },
+          "station_code": {
+            "type": "string",
+            "description": "Code of the station subject of the maintenance"
           }
         }
       },
