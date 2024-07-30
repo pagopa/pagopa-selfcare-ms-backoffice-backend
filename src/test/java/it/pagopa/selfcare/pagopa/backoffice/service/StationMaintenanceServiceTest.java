@@ -247,6 +247,12 @@ class StationMaintenanceServiceTest {
         assertEquals(mockedResult, resource);
     }
 
+    @Test
+    void deleteStationMaintenanceSuccess() {
+        assertDoesNotThrow(() -> stationMaintenanceService.deleteStationMaintenance(BROKER_CODE, MAINTENANCE_ID));
+        verify(apiConfigClient).deleteStationMaintenance(anyString(), anyLong());
+    }
+
     private StationMaintenanceResource buildMaintenanceResource() {
         StationMaintenanceResource resource = new StationMaintenanceResource();
         resource.setStationCode(STATION_CODE);

@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -195,5 +196,26 @@ public class StationMaintenanceController {
             @Parameter(description = "Maintenance's id") @PathVariable("maintenance-id") Long maintenanceId
     ) {
         return this.stationMaintenanceService.getStationMaintenance(brokerCode, maintenanceId);
+    }
+
+    @Operation(summary = "Delete a station's maintenance", security = {@SecurityRequirement(name = "JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not Found",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @DeleteMapping(value = "/{broker-tax-code}/station-maintenances/{maintenance-id}")
+    public void deleteStationMaintenance(
+            @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
+            @Parameter(description = "Maintenance's id") @PathVariable("maintenance-id") Long maintenanceId
+    ) {
+        this.stationMaintenanceService.deleteStationMaintenance(brokerCode, maintenanceId);
     }
 }

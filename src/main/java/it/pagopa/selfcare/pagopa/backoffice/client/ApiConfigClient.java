@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 
 import feign.FeignException;
 import feign.RequestLine;
+import io.swagger.v3.oas.annotations.Parameter;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.ApiConfigFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.configuration.PaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.configuration.WfespPluginConfs;
@@ -24,6 +25,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.MaintenanceHoursSummaryResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListResource;
@@ -401,6 +404,12 @@ public interface ApiConfigClient {
 
     @GetMapping(value = "/{brokercode}/station-maintenances/{maintenanceid}", produces = {MediaType.APPLICATION_JSON_VALUE})
     StationMaintenanceResource getStationMaintenance(
+            @PathVariable("brokercode") String brokerCode,
+            @PathVariable("maintenanceid") Long maintenanceId
+    );
+
+    @DeleteMapping(value = "brokers/{brokercode}/station-maintenances/{maintenanceid}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    void deleteStationMaintenance(
             @PathVariable("brokercode") String brokerCode,
             @PathVariable("maintenanceid") Long maintenanceId
     );

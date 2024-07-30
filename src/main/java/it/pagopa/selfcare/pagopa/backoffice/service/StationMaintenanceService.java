@@ -111,6 +111,13 @@ public class StationMaintenanceService {
         return this.apiConfigClient.getStationMaintenance(brokerCode, maintenanceId);
     }
 
+    public void deleteStationMaintenance(
+            String brokerCode,
+            Long maintenanceId
+    ) {
+        this.apiConfigClient.deleteStationMaintenance(brokerCode, maintenanceId);
+    }
+
     private OffsetDateTime getDateToday() {
         return OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
     }

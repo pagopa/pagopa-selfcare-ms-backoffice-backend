@@ -31,6 +31,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -164,7 +165,14 @@ class StationMaintenanceControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
-    StationMaintenanceResource buildMaintenanceResource() {
+    @Test
+    void deleteStationMaintenance() throws Exception {
+        mvc.perform(delete("/brokers/{broker-tax-code}/station-maintenances/{maintenance-id}", BROKER_CODE, MAINTENANCE_ID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    private StationMaintenanceResource buildMaintenanceResource() {
         StationMaintenanceResource resource = new StationMaintenanceResource();
         resource.setStationCode(STATION_CODE);
         resource.setStandIn(true);
