@@ -23,4 +23,8 @@ public class CreditorInstitutionStationEditResource {
     private Boolean mod4;
     @Schema(description = "Station's broadcast enabled")
     private Boolean broadcast;
+    @JsonProperty("aca")
+    private Boolean aca;
+    @JsonProperty("stand_in")
+    private Boolean standIn;
 }
