@@ -1,7 +1,11 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.institutions;
 
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.Arrays;
 
 /**
  * Enum of all the subscription that can be requested via Backoffice
@@ -25,4 +29,10 @@ public enum Subscription {
     private final String displayName;
     private final String prefixId;
 
+    public static Subscription fromPrefix(String prefix) {
+        return Arrays.stream(Subscription.values())
+                .filter(elem -> prefix.equals(elem.prefixId))
+                .findFirst()
+                .orElseThrow(() -> new AppException(AppError.SUBSCRIPTION_PREFIX_NOT_FOUND, prefix));
+    }
 }
