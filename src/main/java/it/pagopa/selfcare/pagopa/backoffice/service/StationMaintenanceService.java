@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.MaintenanceHoursSummaryResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListState;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
@@ -71,18 +72,33 @@ public class StationMaintenanceService {
         );
     }
 
-    public StationMaintenanceResource createStationMaintenance(String brokerCode,
-                                                               CreateStationMaintenance createStationMaintenance) {
+    public StationMaintenanceResource createStationMaintenance(
+            String brokerCode,
+            CreateStationMaintenance createStationMaintenance
+    ) {
         return this.apiConfigClient.createStationMaintenance(brokerCode, createStationMaintenance);
     }
 
-    public StationMaintenanceResource updateStationMaintenance(String brokerCode,
-                                                               Long maintenanceId,
-                                                               UpdateStationMaintenance updateStationMaintenance) {
+    public StationMaintenanceResource updateStationMaintenance(
+            String brokerCode,
+            Long maintenanceId,
+            UpdateStationMaintenance updateStationMaintenance
+    ) {
         return this.apiConfigClient.updateStationMaintenance(brokerCode, maintenanceId, updateStationMaintenance);
     }
 
-    private OffsetDateTime getDateToday(){
+    /**
+     * Retrieves broker related station maintenance summary for the provided year
+     *
+     * @param brokerCode      broker id to use for summary retrieval
+     * @param maintenanceYear year in format yyyy, to be used for summary retreival
+     * @return maintenance summary for the provided year and brokerCode
+     */
+    public MaintenanceHoursSummaryResource getBrokerMaintenancesSummary(String brokerCode, String maintenanceYear) {
+        return this.apiConfigClient.getBrokerMaintenancesSummary(brokerCode, maintenanceYear);
+    }
+
+    private OffsetDateTime getDateToday() {
         return OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
     }
 

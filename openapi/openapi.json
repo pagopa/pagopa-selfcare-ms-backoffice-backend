@@ -1197,12 +1197,12 @@
         ]
       }
     },
-    "/brokers/{broker-tax-code}/stations": {
+    "/brokers/{broker-tax-code}/station-maintenances/summary": {
       "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId": "getStationsDetailsListByBroker",
+        "operationId": "getBrokerMaintenancesSummary",
         "parameters": [
           {
+            "description": "Broker's tax code",
             "in": "path",
             "name": "broker-tax-code",
             "required": true,
@@ -1211,31 +1211,15 @@
             }
           },
           {
+            "description": "Year of maintenance (yyyy)",
+            "example": 2024,
             "in": "query",
-            "name": "stationId",
-            "required": false,
+            "name": "maintenanceYear",
+            "required": true,
             "schema": {
+              "maxLength": 4,
+              "minLength": 4,
               "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 10
-            }
-          },
-          {
-            "in": "query",
-            "name": "page",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
             }
           }
         ],
@@ -1244,11 +1228,98 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/StationDetailsResourceList"
+                  "$ref": "#/components/schemas/MaintenanceHoursSummaryResource"
                 }
               }
             },
             "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not Found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
@@ -1264,9 +1335,9 @@
             "JWT": []
           }
         ],
-        "summary": "Get paginated list of stations given a broker code",
+        "summary": "Get the hours' summary of stations' maintenance for the specified broker",
         "tags": [
-          "Creditor institution's Brokers"
+          "Station Maintenance"
         ]
       },
       "parameters": [
@@ -1280,7 +1351,7 @@
         }
       ]
     },
-    "/brokers/{brokercode}/station-maintenances": {
+    "/brokers/{broker-tax-code}/station-maintenances/{maintenance-id}": {
       "parameters": [
         {
           "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
@@ -1291,17 +1362,27 @@
           }
         }
       ],
-      "post": {
+      "put": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
-        "operationId": "createStationMaintenance",
+        "operationId": "updateStationMaintenance",
         "parameters": [
           {
             "description": "Broker's tax code",
             "in": "path",
-            "name": "brokercode",
+            "name": "broker-tax-code",
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "description": "Maintenance's id",
+            "in": "path",
+            "name": "maintenance-id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
             }
           }
         ],
@@ -1309,14 +1390,14 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateStationMaintenance"
+                "$ref": "#/components/schemas/UpdateStationMaintenance"
               }
             }
           },
           "required": true
         },
         "responses": {
-          "201": {
+          "200": {
             "content": {
               "application/json": {
                 "schema": {
@@ -1324,7 +1405,7 @@
                 }
               }
             },
-            "description": "Created",
+            "description": "OK",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
@@ -1427,11 +1508,94 @@
             "JWT": []
           }
         ],
-        "summary": "Schedule a maintenance period for a Station",
+        "summary": "Update a scheduled maintenance for the specified station",
         "tags": [
           "Station Maintenance"
         ]
       }
+    },
+    "/brokers/{broker-tax-code}/stations": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
+        "operationId": "getStationsDetailsListByBroker",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "broker-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "stationId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StationDetailsResourceList"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Get paginated list of stations given a broker code",
+        "tags": [
+          "Creditor institution's Brokers"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
     },
     "/bundles/creditor-institutions": {
       "get": {
@@ -13789,6 +13953,38 @@
           "webChannel": {
             "type": "boolean",
             "description": "Boolean to refer if it has a web channel"
+          }
+        }
+      },
+      "MaintenanceHoursSummaryResource": {
+        "required": [
+          "annual_hours_limit",
+          "extra_hours",
+          "remaining_hours",
+          "scheduled_hours",
+          "used_hours"
+        ],
+        "type": "object",
+        "properties": {
+          "annual_hours_limit": {
+            "type": "string",
+            "description": "Annual limit of maintenance hours"
+          },
+          "extra_hours": {
+            "type": "string",
+            "description": "Count of maintenance's hours that exceed annual limit"
+          },
+          "remaining_hours": {
+            "type": "string",
+            "description": "Count of remaining maintenance's hours before annual limit"
+          },
+          "scheduled_hours": {
+            "type": "string",
+            "description": "Count of scheduled maintenance's hours"
+          },
+          "used_hours": {
+            "type": "string",
+            "description": "Count of used maintenance's hours"
           }
         }
       },

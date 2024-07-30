@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.MaintenanceHoursSummaryResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListState;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -38,9 +40,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(username = "user1", password = "pwd", roles = "USER")
 class StationMaintenanceControllerTest {
 
-    private static final String STATION_CODE = "stationCode";
-    private static final String BROKER_CODE = "brokerCode";
-    private static final long MAINTENANCE_ID = 100;
+    private final static String STATION_CODE = "stationCode";
+    private final static String BROKER_CODE = "brokerCode";
+    private final static long MAINTENANCE_ID = 100;
+
     @MockBean
     private StationMaintenanceService stationMaintenanceService;
     @Autowired
@@ -74,7 +77,6 @@ class StationMaintenanceControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
     }
-
 
     @Test
     void updateStationMaintenance() throws Exception {
@@ -119,5 +121,22 @@ class StationMaintenanceControllerTest {
                         .param("page", String.valueOf(0))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void getBrokerMaintenancesSummaryTest() throws Exception {
+        when(stationMaintenanceService.getBrokerMaintenancesSummary(anyString(), anyString()))
+                .thenReturn(MaintenanceHoursSummaryResource.builder()
+                        .usedHours("2")
+                        .scheduledHours("3")
+                        .remainingHours("31")
+                        .extraHours("0")
+                        .annualHoursLimit("36")
+                        .build());
+
+        mvc.perform(get("/brokers/{brokercode}/station-maintenances/summary", BROKER_CODE)
+                        .param("maintenanceYear", "2024")
+                ).andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 }

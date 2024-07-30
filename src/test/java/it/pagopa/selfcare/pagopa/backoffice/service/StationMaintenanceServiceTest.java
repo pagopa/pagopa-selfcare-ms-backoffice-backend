@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.MaintenanceHoursSummaryResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListState;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
@@ -16,6 +17,7 @@ import java.time.OffsetDateTime;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -32,6 +34,7 @@ class StationMaintenanceServiceTest {
     private static final String BROKER_CODE = "brokerCode";
     private static final long MAINTENANCE_ID = 100;
     private static final int YEAR_FILTER = 2024;
+
     @Autowired
     private StationMaintenanceService stationMaintenanceService;
     @MockBean
@@ -276,5 +279,21 @@ class StationMaintenanceServiceTest {
         assertNotNull(result);
 
         verify(apiConfigClient).updateStationMaintenance(anyString(), anyLong(), any(UpdateStationMaintenance.class));
+    }
+
+    @Test
+    void getBrokerMaintenancesSummarySuccess() {
+        MaintenanceHoursSummaryResource mockedResult = MaintenanceHoursSummaryResource.builder()
+                .usedHours("2")
+                .scheduledHours("3")
+                .remainingHours("31")
+                .extraHours("0")
+                .annualHoursLimit("36")
+                .build();
+        when(apiConfigClient.getBrokerMaintenancesSummary(any(), any())).thenReturn(mockedResult);
+        MaintenanceHoursSummaryResource result =
+                stationMaintenanceService.getBrokerMaintenancesSummary(BROKER_CODE, "2024");
+        assertNotNull(result);
+        assertEquals(mockedResult, result);
     }
 }
