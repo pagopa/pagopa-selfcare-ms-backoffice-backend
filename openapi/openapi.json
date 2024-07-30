@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.19.0"
+    "version": "2.19.0-2-next"
   },
   "servers": [
     {
@@ -7067,6 +7067,165 @@
         "summary": "Creates the relationship between the created station and the creditorInstitution",
         "tags": [
           "Creditor institutions"
+       ]
+      },
+      "put": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "updateStationAssociationToCreditorInstitution",
+        "parameters": [
+          {
+            "description": "Creditor institution's tax code",
+            "in": "path",
+            "name": "ci-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreditorInstitutionStationDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditorInstitutionStationEditResource"
+                }
+              }
+            },
+            "description": "Updated",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Conflict",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Updates the relationship between the created station and the creditorInstitution",
+        "tags": [
+          "Creditor institutions"
         ]
       }
     },
@@ -12519,6 +12678,9 @@
         ],
         "type": "object",
         "properties": {
+          "aca": {
+            "type": "boolean"
+          },
           "address": {
             "$ref": "#/components/schemas/CreditorInstitutionAddressResource"
           },
@@ -12571,6 +12733,9 @@
           "segregationCode": {
             "type": "string",
             "description": "SegregationCode"
+          },
+          "stand_in": {
+            "type": "boolean"
           }
         }
       },
@@ -12660,6 +12825,9 @@
         ],
         "type": "object",
         "properties": {
+          "aca": {
+            "type": "boolean"
+          },
           "applicationCode": {
             "type": "string",
             "description": "ApplicationCode"
@@ -12697,6 +12865,9 @@
           "segregationCode": {
             "type": "string",
             "description": "SegregationCode"
+          },
+          "stand_in": {
+            "type": "boolean"
           }
         },
         "description": "A list of Creditor Institution's"
@@ -12710,6 +12881,10 @@
         ],
         "type": "object",
         "properties": {
+          "aca": {
+            "type": "boolean",
+            "description": "Station's ACA enabled"
+          },
           "applicationCode": {
             "type": "integer",
             "description": "Station's application code",
@@ -12731,6 +12906,10 @@
           "segregationCode": {
             "type": "string",
             "description": "Station's segregation code number"
+          },
+          "stand_in": {
+            "type": "boolean",
+            "description": "Station's StandIn enabled"
           },
           "stationCode": {
             "type": "string",
@@ -12744,6 +12923,9 @@
         ],
         "type": "object",
         "properties": {
+          "aca": {
+            "type": "boolean"
+          },
           "applicationCode": {
             "type": "integer",
             "description": "Station's application code",
@@ -12765,6 +12947,9 @@
           "segregationCode": {
             "type": "string",
             "description": "Station's segregation code number"
+          },
+          "stand_in": {
+            "type": "boolean"
           },
           "stationCode": {
             "type": "string",
