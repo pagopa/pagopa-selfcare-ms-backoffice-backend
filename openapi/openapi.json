@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.19.0-2-next"
+    "version": "2.19.0-4-next"
   },
   "servers": [
     {
@@ -1279,6 +1279,159 @@
           }
         }
       ]
+    },
+    "/brokers/{brokercode}/station-maintenances": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
+        "operationId": "createStationMaintenance",
+        "parameters": [
+          {
+            "description": "Broker's tax code",
+            "in": "path",
+            "name": "brokercode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStationMaintenance"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StationMaintenanceResource"
+                }
+              }
+            },
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Conflict",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Schedule a maintenance period for a Station",
+        "tags": [
+          "Station Maintenance"
+        ]
+      }
     },
     "/bundles/creditor-institutions": {
       "get": {
@@ -15205,6 +15358,30 @@
           "reportingZip": {
             "type": "boolean",
             "description": "Enables the zipping of the content that goes through fstp"
+          }
+        }
+      },
+      "UpdateStationMaintenance": {
+        "required": [
+          "end_date_time"
+        ],
+        "type": "object",
+        "properties": {
+          "end_date_time": {
+            "type": "string",
+            "description": "The end date time of the station maintenance",
+            "format": "date-time",
+            "example": "2024-04-01T13:00:00Z"
+          },
+          "stand_in": {
+            "type": "boolean",
+            "description": "StandIn flag"
+          },
+          "start_date_time": {
+            "type": "string",
+            "description": "The start date time of the station maintenance",
+            "format": "date-time",
+            "example": "2024-04-01T13:00:00Z"
           }
         }
       },

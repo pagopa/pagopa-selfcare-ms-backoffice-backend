@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStati
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListState;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.UpdateStationMaintenance;
 import it.pagopa.selfcare.pagopa.backoffice.service.StationMaintenanceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,10 +23,14 @@ import javax.inject.Inject;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -68,6 +73,28 @@ class StationMaintenanceControllerTest {
                         .content(objectMapper.writeValueAsBytes(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
+    }
+
+
+    @Test
+    void updateStationMaintenance() throws Exception {
+        StationMaintenanceResource response = new StationMaintenanceResource();
+        response.setStationCode(STATION_CODE);
+        response.setStandIn(true);
+        response.setEndDateTime(OffsetDateTime.now());
+        response.setStartDateTime(OffsetDateTime.now());
+        response.setMaintenanceId(MAINTENANCE_ID);
+        response.setBrokerCode(BROKER_CODE);
+        when(stationMaintenanceService.updateStationMaintenance(anyString(), anyLong(), any())).thenReturn(response);
+
+        UpdateStationMaintenance request = new UpdateStationMaintenance();
+        request.setStandIn(true);
+        request.setEndDateTime(OffsetDateTime.now());
+        request.setStartDateTime(OffsetDateTime.now());
+        mvc.perform(put("/brokers/{brokercode}/station-maintenances/{maintenanceid}", BROKER_CODE, MAINTENANCE_ID)
+                        .content(objectMapper.writeValueAsBytes(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
