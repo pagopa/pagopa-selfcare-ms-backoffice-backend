@@ -17,27 +17,27 @@ import javax.validation.constraints.NotNull;
 public class MaintenanceHoursSummaryResource {
 
     @JsonProperty("used_hours")
-    @Schema(description = "Count of used maintenance's hours", required = true)
+    @Schema(description = "Count of used maintenance's hours", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private String usedHours;
 
     @JsonProperty("scheduled_hours")
-    @Schema(description = "Count of scheduled maintenance's hours", required = true)
+    @Schema(description = "Count of scheduled maintenance's hours", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private String scheduledHours;
 
     @JsonProperty("remaining_hours")
-    @Schema(description = "Count of remaining maintenance's hours before annual limit", required = true)
+    @Schema(description = "Count of remaining maintenance's hours before annual limit", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private String remainingHours;
 
     @JsonProperty("extra_hours")
-    @Schema(description = "Count of maintenance's hours that exceed annual limit", required = true)
+    @Schema(description = "Count of maintenance's hours that exceed annual limit", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private String extraHours;
 
     @JsonProperty("annual_hours_limit")
-    @Schema(description = "Annual limit of maintenance hours", required = true)
+    @Schema(description = "Annual limit of maintenance hours", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private String annualHoursLimit;
 }

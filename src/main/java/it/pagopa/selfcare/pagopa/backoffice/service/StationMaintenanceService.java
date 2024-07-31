@@ -1,6 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.MaintenanceHoursSummaryResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListResource;
@@ -25,6 +27,17 @@ public class StationMaintenanceService {
         this.apiConfigClient = apiConfigClient;
     }
 
+    /**
+     * Retrieves the list of station's maintenance of the specified broker that match the provided filters
+     *
+     * @param brokerCode broker's tax code
+     * @param stationCode station's code, used to filter out results
+     * @param state state of the maintenance (based on start and end date), used to filter out results
+     * @param year year of the maintenance, used to filter out results
+     * @param limit size of the requested page
+     * @param page page number
+     * @return the filtered list of station's maintenance
+     */
     public StationMaintenanceListResource getStationMaintenances(
             String brokerCode,
             String stationCode,
@@ -72,6 +85,13 @@ public class StationMaintenanceService {
         );
     }
 
+    /**
+     * Creates a new station maintenance for the specified broker with the provided details
+     *
+     * @param brokerCode broker's tax code
+     * @param createStationMaintenance detail of the new station's maintenance
+     * @return the details of the created maintenance
+     */
     public StationMaintenanceResource createStationMaintenance(
             String brokerCode,
             CreateStationMaintenance createStationMaintenance
@@ -79,6 +99,16 @@ public class StationMaintenanceService {
         return this.apiConfigClient.createStationMaintenance(brokerCode, createStationMaintenance);
     }
 
+    /**
+     * Updates the station's maintenance with the specified broker tax code and maintenance id with the provided new
+     * details. If the maintenance is in progress only end date time can be updated otherwise start date time and standIn
+     * flag can be updated too.
+     *
+     * @param brokerCode    broker's tax code
+     * @param maintenanceId station maintenance id
+     * @param updateStationMaintenance details to be updated
+     * @return the details of the updated maintenance
+     */
     public StationMaintenanceResource updateStationMaintenance(
             String brokerCode,
             Long maintenanceId,
@@ -111,11 +141,40 @@ public class StationMaintenanceService {
         return this.apiConfigClient.getStationMaintenance(brokerCode, maintenanceId);
     }
 
+    /**
+     * Delete the station's maintenance with the provided maintenance id and broker code
+     *
+     * @param brokerCode    broker's tax code
+     * @param maintenanceId station maintenance id
+     */
     public void deleteStationMaintenance(
             String brokerCode,
             Long maintenanceId
     ) {
         this.apiConfigClient.deleteStationMaintenance(brokerCode, maintenanceId);
+    }
+
+    /**
+     * Terminate the station's maintenance with the specified id.
+     * Update the endDateTime field with the current timestamp rounded to the next 15 minutes.
+     *
+     * @param brokerCode    broker's tax code
+     * @param maintenanceId maintenance's id
+     */
+    public void finishStationMaintenance(String brokerCode, Long maintenanceId) {
+        StationMaintenanceResource maintenance = this.apiConfigClient.getStationMaintenance(brokerCode, maintenanceId);
+
+        OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        if (!(maintenance.getStartDateTime().isBefore(now) && maintenance.getEndDateTime().isAfter(now))) {
+            throw new AppException(AppError.STATION_MAINTENANCE_NOT_IN_PROGRESS);
+        }
+
+        long mod = now.getMinute() % 15;
+        UpdateStationMaintenance update = UpdateStationMaintenance.builder()
+                .endDateTime(now.plusMinutes(15 - mod))
+                .build();
+
+        this.apiConfigClient.updateStationMaintenance(brokerCode, maintenanceId, update);
     }
 
     private OffsetDateTime getDateToday() {

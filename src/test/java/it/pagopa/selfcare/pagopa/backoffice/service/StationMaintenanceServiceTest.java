@@ -1,6 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.MaintenanceHoursSummaryResource;
@@ -14,16 +16,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -253,6 +258,55 @@ class StationMaintenanceServiceTest {
         verify(apiConfigClient).deleteStationMaintenance(anyString(), anyLong());
     }
 
+    @Test
+    void finishStationMaintenanceSuccess() {
+        when(apiConfigClient.getStationMaintenance(BROKER_CODE, MAINTENANCE_ID))
+                .thenReturn(buildMaintenanceResource(
+                        OffsetDateTime.now().minusHours(1).truncatedTo(ChronoUnit.MINUTES),
+                        OffsetDateTime.now().plusHours(1).truncatedTo(ChronoUnit.MINUTES)
+                ));
+
+        assertDoesNotThrow(() -> stationMaintenanceService.finishStationMaintenance(BROKER_CODE, MAINTENANCE_ID));
+
+        verify(apiConfigClient).updateStationMaintenance(anyString(), anyLong(), any());
+    }
+
+    @Test
+    void finishStationMaintenanceFailMaintenanceNotStarted() {
+        when(apiConfigClient.getStationMaintenance(BROKER_CODE, MAINTENANCE_ID))
+                .thenReturn(buildMaintenanceResource(
+                        OffsetDateTime.now().plusHours(1).truncatedTo(ChronoUnit.MINUTES),
+                        OffsetDateTime.now().plusHours(2).truncatedTo(ChronoUnit.MINUTES)
+                ));
+
+        AppException e = assertThrows(AppException.class, () ->
+                stationMaintenanceService.finishStationMaintenance(BROKER_CODE, MAINTENANCE_ID));
+
+        assertNotNull(e);
+        assertEquals(AppError.STATION_MAINTENANCE_NOT_IN_PROGRESS.title, e.getTitle());
+        assertEquals(AppError.STATION_MAINTENANCE_NOT_IN_PROGRESS.httpStatus, e.getHttpStatus());
+
+        verify(apiConfigClient, never()).updateStationMaintenance(anyString(), anyLong(), any());
+    }
+
+    @Test
+    void finishStationMaintenanceFailMaintenanceAlreadyTerminated() {
+        when(apiConfigClient.getStationMaintenance(BROKER_CODE, MAINTENANCE_ID))
+                .thenReturn(buildMaintenanceResource(
+                        OffsetDateTime.now().minusHours(2).truncatedTo(ChronoUnit.MINUTES),
+                        OffsetDateTime.now().minusHours(1).truncatedTo(ChronoUnit.MINUTES)
+                ));
+
+        AppException e = assertThrows(AppException.class, () ->
+                stationMaintenanceService.finishStationMaintenance(BROKER_CODE, MAINTENANCE_ID));
+
+        assertNotNull(e);
+        assertEquals(AppError.STATION_MAINTENANCE_NOT_IN_PROGRESS.title, e.getTitle());
+        assertEquals(AppError.STATION_MAINTENANCE_NOT_IN_PROGRESS.httpStatus, e.getHttpStatus());
+
+        verify(apiConfigClient, never()).updateStationMaintenance(anyString(), anyLong(), any());
+    }
+
     private StationMaintenanceResource buildMaintenanceResource() {
         StationMaintenanceResource resource = new StationMaintenanceResource();
         resource.setStationCode(STATION_CODE);
@@ -262,5 +316,16 @@ class StationMaintenanceServiceTest {
         resource.setMaintenanceId(MAINTENANCE_ID);
         resource.setBrokerCode(BROKER_CODE);
         return resource;
+    }
+
+    private StationMaintenanceResource buildMaintenanceResource(OffsetDateTime startDateTime, OffsetDateTime endDateTime) {
+        return StationMaintenanceResource.builder()
+                .maintenanceId(123L)
+                .stationCode(STATION_CODE)
+                .startDateTime(startDateTime)
+                .endDateTime(endDateTime)
+                .standIn(true)
+                .brokerCode(BROKER_CODE)
+                .build();
     }
 }

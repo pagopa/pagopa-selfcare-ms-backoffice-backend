@@ -2,7 +2,6 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 
 import feign.FeignException;
 import feign.RequestLine;
-import io.swagger.v3.oas.annotations.Parameter;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.ApiConfigFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.configuration.PaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.configuration.WfespPluginConfs;
@@ -25,8 +24,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
-import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
-import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.MaintenanceHoursSummaryResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListResource;
@@ -371,22 +368,22 @@ public interface ApiConfigClient {
     @DeleteMapping(value = "/brokers/{brokerTaxCode}", produces = {MediaType.APPLICATION_JSON_VALUE})
     void deleteCIBroker(@PathVariable("brokerTaxCode") String brokerTaxCode);
 
-    @PostMapping(value = "brokers/{brokercode}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "brokers/{broker-code}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
     StationMaintenanceResource createStationMaintenance(
-            @PathVariable("brokercode") String brokerCode,
+            @PathVariable("broker-code") String brokerCode,
             @RequestBody @Valid @NotNull CreateStationMaintenance createStationMaintenance
     );
 
-    @PutMapping(value = "brokers/{brokercode}/station-maintenances/{maintenanceid}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PutMapping(value = "brokers/{broker-code}/station-maintenances/{maintenance-id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     StationMaintenanceResource updateStationMaintenance(
-            @PathVariable("brokercode") String brokerCode,
-            @PathVariable("maintenanceid") Long maintenanceId,
+            @PathVariable("broker-code") String brokerCode,
+            @PathVariable("maintenance-id") Long maintenanceId,
             @RequestBody @Valid @NotNull UpdateStationMaintenance updateStationMaintenance
     );
 
-    @GetMapping(value = "brokers/{brokercode}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "brokers/{broker-code}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
     StationMaintenanceListResource getStationMaintenances(
-            @PathVariable("brokercode") String brokerCode,
+            @PathVariable("broker-code") String brokerCode,
             @RequestParam(required = false) String stationCode,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDateTimeBefore,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDateTimeAfter,
@@ -396,21 +393,21 @@ public interface ApiConfigClient {
             @RequestParam(required = false, defaultValue = "0") @Min(0) @PositiveOrZero Integer page
     );
 
-    @GetMapping(value = "/{brokercode}/station-maintenances/summary", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{broker-code}/station-maintenances/summary", produces = {MediaType.APPLICATION_JSON_VALUE})
     MaintenanceHoursSummaryResource getBrokerMaintenancesSummary(
-            @PathVariable("brokercode") String brokerCode,
+            @PathVariable("broker-code") String brokerCode,
             @RequestParam @Size(min = 4, max = 4) String maintenanceYear
     );
 
-    @GetMapping(value = "/{brokercode}/station-maintenances/{maintenanceid}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{broker-code}/station-maintenances/{maintenance-id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     StationMaintenanceResource getStationMaintenance(
-            @PathVariable("brokercode") String brokerCode,
-            @PathVariable("maintenanceid") Long maintenanceId
+            @PathVariable("broker-code") String brokerCode,
+            @PathVariable("maintenance-id") Long maintenanceId
     );
 
-    @DeleteMapping(value = "brokers/{brokercode}/station-maintenances/{maintenanceid}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @DeleteMapping(value = "brokers/{broker-code}/station-maintenances/{maintenance-id}")
     void deleteStationMaintenance(
-            @PathVariable("brokercode") String brokerCode,
-            @PathVariable("maintenanceid") Long maintenanceId
+            @PathVariable("broker-code") String brokerCode,
+            @PathVariable("maintenance-id") Long maintenanceId
     );
 }

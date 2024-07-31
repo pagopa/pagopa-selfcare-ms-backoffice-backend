@@ -30,6 +30,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,9 +44,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(username = "user1", password = "pwd", roles = "USER")
 class StationMaintenanceControllerTest {
 
-    private final static String STATION_CODE = "stationCode";
-    private final static String BROKER_CODE = "brokerCode";
-    private final static long MAINTENANCE_ID = 100;
+    private static final String STATION_CODE = "stationCode";
+    private static final String BROKER_CODE = "brokerCode";
+    private static final long MAINTENANCE_ID = 100;
 
     @MockBean
     private StationMaintenanceService stationMaintenanceService;
@@ -172,6 +173,14 @@ class StationMaintenanceControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void finishStationMaintenanceTest() throws Exception {
+        mvc.perform(post("/brokers/{broker-tax-code}/station-maintenances/{maintenance-id}/finish", BROKER_CODE, MAINTENANCE_ID))
+                .andExpect(status().is2xxSuccessful());
+
+        verify(stationMaintenanceService).finishStationMaintenance(BROKER_CODE, MAINTENANCE_ID);
+    }
+
     private StationMaintenanceResource buildMaintenanceResource() {
         StationMaintenanceResource resource = new StationMaintenanceResource();
         resource.setStationCode(STATION_CODE);
@@ -182,5 +191,4 @@ class StationMaintenanceControllerTest {
         resource.setBrokerCode(BROKER_CODE);
         return resource;
     }
-
 }

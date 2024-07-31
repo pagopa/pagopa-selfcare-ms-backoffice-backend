@@ -218,4 +218,26 @@ public class StationMaintenanceController {
     ) {
         this.stationMaintenanceService.deleteStationMaintenance(brokerCode, maintenanceId);
     }
+
+    @PostMapping(value = "/{broker-tax-code}/station-maintenances/{maintenance-id}/finish", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found",
+                    content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @Operation(summary = "Finish an in progress station's maintenance", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.NONE)
+    public void finishStationMaintenance(
+            @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
+            @Parameter(description = "Maintenance's id") @PathVariable("maintenance-id") Long maintenanceId
+    ) {
+        this.stationMaintenanceService.finishStationMaintenance(brokerCode, maintenanceId);
+    }
 }
