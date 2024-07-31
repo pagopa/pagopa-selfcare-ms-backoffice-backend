@@ -393,13 +393,13 @@ public interface ApiConfigClient {
             @RequestParam(required = false, defaultValue = "0") @Min(0) @PositiveOrZero Integer page
     );
 
-    @GetMapping(value = "/{broker-code}/station-maintenances/summary", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "brokers/{broker-code}/station-maintenances/summary", produces = {MediaType.APPLICATION_JSON_VALUE})
     MaintenanceHoursSummaryResource getBrokerMaintenancesSummary(
             @PathVariable("broker-code") String brokerCode,
             @RequestParam @Size(min = 4, max = 4) String maintenanceYear
     );
 
-    @GetMapping(value = "/{broker-code}/station-maintenances/{maintenance-id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "brokers/{broker-code}/station-maintenances/{maintenance-id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     StationMaintenanceResource getStationMaintenance(
             @PathVariable("broker-code") String brokerCode,
             @PathVariable("maintenance-id") Long maintenanceId
