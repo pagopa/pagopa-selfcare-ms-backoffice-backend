@@ -13464,7 +13464,7 @@
             "type": "string",
             "description": "The end date time of the station maintenance",
             "format": "date-time",
-            "example": "2024-04-01T13:00:00Z"
+            "example": "2024-04-01T13:00:00+02:00"
           },
           "stand_in": {
             "type": "boolean",
@@ -13474,7 +13474,7 @@
             "type": "string",
             "description": "The start date time of the station maintenance",
             "format": "date-time",
-            "example": "2024-04-01T13:00:00Z"
+            "example": "2024-04-01T13:00:00+02:00"
           },
           "station_code": {
             "type": "string",
@@ -15556,7 +15556,7 @@
             "type": "string",
             "description": "The end date time of the station maintenance",
             "format": "date-time",
-            "example": "2024-04-01T13:00:00Z"
+            "example": "2024-04-01T13:00:00+02:00"
           },
           "maintenance_id": {
             "type": "integer",
@@ -15571,7 +15571,7 @@
             "type": "string",
             "description": "The start date time of the station maintenance",
             "format": "date-time",
-            "example": "2024-04-01T13:00:00Z"
+            "example": "2024-04-01T13:00:00+02:00"
           },
           "station_code": {
             "type": "string",
@@ -15985,7 +15985,7 @@
             "type": "string",
             "description": "The end date time of the station maintenance",
             "format": "date-time",
-            "example": "2024-04-01T13:00:00Z"
+            "example": "2024-04-01T13:00:00+02:00"
           },
           "stand_in": {
             "type": "boolean",
@@ -15995,7 +15995,7 @@
             "type": "string",
             "description": "The start date time of the station maintenance",
             "format": "date-time",
-            "example": "2024-04-01T13:00:00Z"
+            "example": "2024-04-01T13:00:00+02:00"
           }
         }
       },

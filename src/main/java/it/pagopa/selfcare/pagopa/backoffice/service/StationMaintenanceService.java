@@ -121,7 +121,7 @@ public class StationMaintenanceService {
      * Retrieves broker related station maintenance summary for the provided year
      *
      * @param brokerCode      broker id to use for summary retrieval
-     * @param maintenanceYear year in format yyyy, to be used for summary retreival
+     * @param maintenanceYear year in format yyyy, to be used for summary retrieval
      * @return maintenance summary for the provided year and brokerCode
      */
     public MaintenanceHoursSummaryResource getBrokerMaintenancesSummary(String brokerCode, String maintenanceYear) {
