@@ -195,6 +195,23 @@ class StationServiceTest {
     }
 
     @Test
+    void getStationDetailsSuccessFromWrapperFallbackToApiConfig() {
+        when(wrapperService.findStationById(STATION_CODE)).thenThrow(AppException.class);
+        when(apiConfigClient.getStation(STATION_CODE)).thenReturn(buildStationDetails());
+        when(wrapperService.findStationByIdOptional(STATION_CODE))
+                .thenReturn(Optional.of(buildWrapperEntityStation(WrapperStatus.APPROVED)));
+
+        StationDetailResource result = assertDoesNotThrow(() -> service.getStationDetails(STATION_CODE, ConfigurationStatus.TO_BE_VALIDATED));
+
+        assertNotNull(result);
+
+        assertEquals(STATION_CODE, result.getStationCode());
+        assertTrue(result.getEnabled());
+        assertEquals(1L, result.getVersion());
+        assertFalse(result.getPendingUpdate());
+    }
+
+    @Test
     void getStationDetailsSuccessFromApiConfigWithNoPendingUpdateNoWrapperFound() {
         when(apiConfigClient.getStation(STATION_CODE)).thenReturn(buildStationDetails());
         when(wrapperService.findStationByIdOptional(STATION_CODE)).thenReturn(Optional.empty());

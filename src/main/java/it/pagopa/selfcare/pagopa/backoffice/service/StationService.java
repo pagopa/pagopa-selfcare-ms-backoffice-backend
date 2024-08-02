@@ -173,8 +173,7 @@ public class StationService {
             StationDetails stationDetails = this.apiConfigClient.getStation(stationCode);
             stationDetailResource = buildActiveStationDetails(stationCode, stationDetails);
         } else {
-            WrapperEntityStations wrapperEntities = this.wrapperService.findStationById(stationCode);
-            stationDetailResource = this.stationMapper.toResource(wrapperEntities);
+            stationDetailResource = findInWrapperOrElseInApiConfig(stationCode);
         }
         return stationDetailResource;
     }
@@ -386,5 +385,16 @@ public class StationService {
             stationDetailResource.setPendingUpdate(false);
         }
         return stationDetailResource;
+    }
+
+    private StationDetailResource findInWrapperOrElseInApiConfig(String stationCode) {
+        // handle legacy stations
+        try {
+            WrapperEntityStations wrapperEntities = this.wrapperService.findStationById(stationCode);
+            return this.stationMapper.toResource(wrapperEntities);
+        } catch (AppException e) {
+            StationDetails stationDetails = this.apiConfigClient.getStation(stationCode);
+            return buildActiveStationDetails(stationCode, stationDetails);
+        }
     }
 }

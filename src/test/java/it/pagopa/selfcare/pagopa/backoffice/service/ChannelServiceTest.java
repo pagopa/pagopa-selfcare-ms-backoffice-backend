@@ -236,6 +236,30 @@ class ChannelServiceTest {
     }
 
     @Test
+    void getChannelDetailsSuccessFromWrapperFallbackToApiConfig() {
+        ChannelDetails expected = buildChannelDetails();
+
+        when(wrapperService.findChannelById(CHANNEL_CODE)).thenThrow(AppException.class);
+        when(apiConfigClient.getChannelDetails(CHANNEL_CODE)).thenReturn(expected);
+        when(apiConfigClient.getChannelPaymentTypes(CHANNEL_CODE)).thenReturn(new PspChannelPaymentTypes());
+        when(wrapperService.findChannelByIdOptional(CHANNEL_CODE))
+                .thenReturn(Optional.of(buildWrapperEntityChannels(WrapperStatus.APPROVED)));
+
+        ChannelDetailsResource result = assertDoesNotThrow(() ->
+                sut.getChannelDetails(CHANNEL_CODE, ConfigurationStatus.TO_BE_VALIDATED));
+
+        assertNotNull(result);
+
+        assertEquals(CHANNEL_CODE, result.getChannelCode());
+        assertEquals(expected.getBrokerPspCode(), result.getBrokerPspCode());
+        assertEquals(expected.getTimeoutA(), result.getTimeoutA());
+        assertEquals(expected.getTimeoutB(), result.getTimeoutB());
+        assertEquals(expected.getTimeoutC(), result.getTimeoutC());
+        assertEquals(expected.getProtocol(), result.getProtocol());
+        assertFalse(result.getPendingUpdate());
+    }
+
+    @Test
     void getChannelDetailsSuccessFromApiConfigWithNoPendingUpdateNoWrapperFound() {
         ChannelDetails expected = buildChannelDetails();
 
