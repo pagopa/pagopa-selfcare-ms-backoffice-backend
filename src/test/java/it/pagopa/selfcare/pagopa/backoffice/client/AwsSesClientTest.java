@@ -179,6 +179,26 @@ class AwsSesClientTest {
         verify(sesClient, never()).sendEmail(any(SendEmailRequest.class));
     }
 
+    @Test
+    void sendEmailPRODSWithPagopaOperatorSuccess() {
+        ReflectionTestUtils.setField(sut, "environment", "prod");
+
+        Institutions institutions = buildInstitutions();
+        List<InstitutionProductUsers> institutionProductUsers = buildInstitutionProductUsers();
+
+        when(externalApiClient.getInstitutionsFiltered(INSTITUTION_TAX_CODE)).thenReturn(institutions);
+        when(externalApiClient.getInstitutionProductUsers(
+                INSTITUTION_ID,
+                null,
+                null,
+                Collections.singletonList(SelfcareProductUser.ADMIN.getProductUser()))
+        ).thenReturn(institutionProductUsers);
+        when(templateEngine.process(anyString(), any())).thenReturn("html template");
+        when(sesClient.sendEmail(any(SendEmailRequest.class))).thenReturn(SendEmailResponse.builder().build());
+
+        assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail(INSTITUTION_TAX_CODE), true));
+    }
+
     private EmailMessageDetail buildEmailMessageDetail(String institutionTaxCode) {
         return EmailMessageDetail.builder()
                 .institutionTaxCode(institutionTaxCode)
