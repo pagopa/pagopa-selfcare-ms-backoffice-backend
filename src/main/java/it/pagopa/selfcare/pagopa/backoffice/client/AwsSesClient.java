@@ -65,8 +65,10 @@ public class AwsSesClient {
      *     <li> if {@link SelfcareProductUser#ADMIN} notify all payment contacts
      *     <li> if {@link SelfcareProductUser#OPERATOR} notify all technical contacts
      * </ul>
+     * Optionally sends a blind carbon copy of the email to the pagopa operator
      *
      * @param email contains all the necessary info to build and send the email
+     * @param sendEmailToPagopaOperator if true sends a copy of the email to the pagopa operator
      */
     public void sendEmail(EmailMessageDetail email, boolean sendEmailToPagopaOperator) {
         String taxCode = email.getInstitutionTaxCode();
@@ -92,6 +94,17 @@ public class AwsSesClient {
         }
     }
 
+    /**
+     * Build and send an email with the provided info.
+     * <p> The email is sent only if the environment is prod.
+     * <p> Retrieve the destination of the mail based on the specified {@link SelfcareProductUser}:
+     * <ul>
+     *     <li> if {@link SelfcareProductUser#ADMIN} notify all payment contacts
+     *     <li> if {@link SelfcareProductUser#OPERATOR} notify all technical contacts
+     * </ul>
+     *
+     * @param email contains all the necessary info to build and send the email
+     */
     public void sendEmail(EmailMessageDetail email) {
         sendEmail(email, false);
     }
