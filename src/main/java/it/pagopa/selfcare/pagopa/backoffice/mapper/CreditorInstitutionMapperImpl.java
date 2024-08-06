@@ -36,6 +36,8 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
             station.setAuxDigit(dto.getAuxDigit());
             station.setBroadcast(dto.getBroadcast());
             station.setApplicationCode(dto.getApplicationCode());
+            station.setAca(dto.getAca());
+            station.setStandIn(dto.getStandIn());
         }
         return station;
     }
@@ -177,6 +179,8 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         creditorInstitutionResource.setApplicationCode(model.getApplicationCode());
         creditorInstitutionResource.setAuxDigit(model.getAuxDigit());
         creditorInstitutionResource.setSegregationCode(model.getSegregationCode());
+        creditorInstitutionResource.setAca(model.getAca());
+        creditorInstitutionResource.setStandIn(model.getStandIn());
 
         return creditorInstitutionResource;
     }

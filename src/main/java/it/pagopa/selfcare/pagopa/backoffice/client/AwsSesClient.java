@@ -36,6 +36,8 @@ public class AwsSesClient {
 
     private final String testEmailAddress;
 
+    private final String pagopaOperatorEmailAddress;
+
     @Autowired
     public AwsSesClient(
             SesClient sesClient,
@@ -43,7 +45,8 @@ public class AwsSesClient {
             SpringTemplateEngine templateEngine,
             ExternalApiClient externalApiClient,
             @Value("${info.properties.environment}") String environment,
-            @Value("${institution.subscription.test-email}") String testEmailAddress
+            @Value("${institution.subscription.test-email}") String testEmailAddress,
+            @Value("${institution.subscription.pagopa-operator-email}") String pagopaOperatorEmailAddress
     ) {
         this.sesClient = sesClient;
         this.from = from;
@@ -51,6 +54,7 @@ public class AwsSesClient {
         this.externalApiClient = externalApiClient;
         this.environment = environment;
         this.testEmailAddress = testEmailAddress;
+        this.pagopaOperatorEmailAddress = pagopaOperatorEmailAddress;
     }
 
     /**
@@ -61,10 +65,12 @@ public class AwsSesClient {
      *     <li> if {@link SelfcareProductUser#ADMIN} notify all payment contacts
      *     <li> if {@link SelfcareProductUser#OPERATOR} notify all technical contacts
      * </ul>
+     * Optionally sends a blind carbon copy of the email to the pagopa operator
      *
      * @param email contains all the necessary info to build and send the email
+     * @param sendEmailToPagopaOperator if true sends a copy of the email to the pagopa operator
      */
-    public void sendEmail(EmailMessageDetail email) {
+    public void sendEmail(EmailMessageDetail email, boolean sendEmailToPagopaOperator) {
         String taxCode = email.getInstitutionTaxCode();
         if (isNotProdWithoutTestEmail() || isProdWithNullDestinationInstitutionTaxCode(taxCode)) {
             log.warn("Skip send email process");
@@ -79,7 +85,7 @@ public class AwsSesClient {
         }
 
         try {
-            SendEmailRequest request = buildEmailRequest(email, toAddressList);
+            SendEmailRequest request = buildEmailRequest(email, toAddressList, sendEmailToPagopaOperator);
             SendEmailResponse response = this.sesClient.sendEmail(request);
             log.debug("Email sent! Message ID: {}", response.messageId());
         } catch (Exception e) {
@@ -88,12 +94,33 @@ public class AwsSesClient {
         }
     }
 
-    private SendEmailRequest buildEmailRequest(EmailMessageDetail email, String[] toAddressList) {
+    /**
+     * Build and send an email with the provided info.
+     * <p> The email is sent only if the environment is prod.
+     * <p> Retrieve the destination of the mail based on the specified {@link SelfcareProductUser}:
+     * <ul>
+     *     <li> if {@link SelfcareProductUser#ADMIN} notify all payment contacts
+     *     <li> if {@link SelfcareProductUser#OPERATOR} notify all technical contacts
+     * </ul>
+     *
+     * @param email contains all the necessary info to build and send the email
+     */
+    public void sendEmail(EmailMessageDetail email) {
+        sendEmail(email, false);
+    }
+
+    private SendEmailRequest buildEmailRequest(EmailMessageDetail email, String[] toAddressList, boolean sendEmailToPagopaOperator) {
         String html = this.templateEngine.process(email.getHtmlBodyFileName(), email.getHtmlBodyContext());
 
         return SendEmailRequest.builder()
                 .source(this.from)
-                .destination(d -> d.toAddresses(toAddressList))
+                .destination(d -> {
+                    if (Boolean.TRUE.equals(sendEmailToPagopaOperator) && !pagopaOperatorEmailAddress.isEmpty()) {
+                        d.toAddresses(toAddressList).bccAddresses(pagopaOperatorEmailAddress);
+                    } else {
+                        d.toAddresses(toAddressList);
+                    }
+                })
                 .message(m -> m
                         .subject(c -> c.data(email.getSubject()))
                         .body(b -> b

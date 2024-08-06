@@ -121,7 +121,7 @@ public class CommissionBundleMailNotificationScheduler {
                 .htmlBodyContext(buildEmailHtmlBodyContext(bundle.getName(), expireAt))
                 .destinationUserType(SelfcareProductUser.ADMIN)
                 .build();
-        this.awsSesClient.sendEmail(messageDetail);
+        this.awsSesClient.sendEmail(messageDetail, true);
     }
 
     private String getPspTaxCode(Bundle bundle) {
