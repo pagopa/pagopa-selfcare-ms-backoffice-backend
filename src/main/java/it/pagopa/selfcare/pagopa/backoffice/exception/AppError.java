@@ -32,6 +32,7 @@ public enum AppError {
     CREDITOR_INSTITUTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Creditor institution Not Found", "No creditor institution found with code %s"),
     OPERATIVE_TABLE_NOT_FOUND(HttpStatus.NOT_FOUND, "Operative Table Not Found", "No operative table found with code %s"),
     MAINTENANCE_MESSAGES_NOT_FOUND(HttpStatus.NOT_FOUND, "Maintenance messages Not Found", "No maintenance messages found"),
+    SUBSCRIPTION_PREFIX_NOT_FOUND(HttpStatus.NOT_FOUND, "Subscription Prefix Not Found", "No prefix found with code %s"),
 
     WRAPPER_STATION_INVALID_STATUS(HttpStatus.BAD_REQUEST, "Invalid wrapper Station status", "The requested operation cannot be done. Wrapper station with code %s is not in the expected status"),
     PSP_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "Psp Code Not Found", "No psp code found for taxCode %s"),

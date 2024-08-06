@@ -9,7 +9,6 @@ import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
 import org.junit.jupiter.api.Test;
@@ -230,12 +229,18 @@ class ApiManagementServiceTest {
 
     @Test
     void regeneratePrimaryKey() {
-        assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, SUBSCRIPTION_ID));
+        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys("gdp-123456");
+        when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
+        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder()
+                .id("auth-id")
+                .build());
 
-        verify(apimClient).regeneratePrimaryKey(SUBSCRIPTION_ID);
-        verify(apimClient, never()).getApiSubscriptions(INSTITUTION_ID);
-        verify(authorizerConfigClient, never()).deleteAuthorization(anyString());
-        verify(authorizerConfigClient, never()).createAuthorization(any());
+        assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, "gdp-123456"));
+
+        verify(apimClient).regeneratePrimaryKey("gdp-123456");
+        verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
+        verify(authorizerConfigClient).deleteAuthorization("auth-id");
+        verify(authorizerConfigClient).createAuthorization(any());
     }
 
     @Test
@@ -278,12 +283,18 @@ class ApiManagementServiceTest {
 
     @Test
     void regenerateSecondaryKey() {
-        assertDoesNotThrow(() -> service.regenerateSecondaryKey(INSTITUTION_ID, SUBSCRIPTION_ID));
+        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys("gdp-123456");
+        when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
+        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder()
+                .id("auth-id")
+                .build());
 
-        verify(apimClient).regenerateSecondaryKey(SUBSCRIPTION_ID);
-        verify(apimClient, never()).getApiSubscriptions(INSTITUTION_ID);
-        verify(authorizerConfigClient, never()).deleteAuthorization(anyString());
-        verify(authorizerConfigClient, never()).createAuthorization(any());
+        assertDoesNotThrow(() -> service.regenerateSecondaryKey(INSTITUTION_ID, "gdp-123456"));
+
+        verify(apimClient).regenerateSecondaryKey("gdp-123456");
+        verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
+        verify(authorizerConfigClient).deleteAuthorization("auth-id");
+        verify(authorizerConfigClient).createAuthorization(any());
     }
 
     @Test

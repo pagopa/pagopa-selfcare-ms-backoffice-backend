@@ -27,7 +27,6 @@ public class PspData {
 
     @Schema(description = "PSP's legal register number", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "legal_register_number", required = true)
-    @NotBlank
     private String legalRegisterNumber;
 
     @Schema(description = "PSP's ABI code", requiredMode = Schema.RequiredMode.REQUIRED)

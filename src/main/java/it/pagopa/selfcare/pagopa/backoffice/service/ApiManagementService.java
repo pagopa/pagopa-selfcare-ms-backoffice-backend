@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import com.azure.spring.cloud.feature.management.FeatureManager;
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.AuthorizerConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
@@ -176,13 +177,7 @@ public class ApiManagementService {
 
         List<InstitutionApiKeys> apiSubscriptions = this.apimClient.getApiSubscriptions(institutionId);
 
-        if (
-                subscriptionCode == Subscription.FDR_PSP ||
-                subscriptionCode == Subscription.FDR_ORG ||
-                subscriptionCode == Subscription.GPD ||
-                subscriptionCode == Subscription.BO_EXT_EC ||
-                subscriptionCode == Subscription.BO_EXT_PSP
-        ) {
+        if (isAuthorizerConfigurationRequired(subscriptionCode)) {
             List<DelegationExternal> delegationResponse = getDelegationResponse(institutionId, subscriptionCode);
 
             InstitutionApiKeys apiKeys = apiSubscriptions.stream()
@@ -203,6 +198,7 @@ public class ApiManagementService {
                 .institutionApiKeys(apiSubscriptions)
                 .build();
     }
+
 
     private List<DelegationExternal> getDelegationResponse(String institutionId, Subscription subscriptionCode) {
         if (subscriptionCode == Subscription.FDR_PSP ||
@@ -227,9 +223,7 @@ public class ApiManagementService {
         this.apimClient.regeneratePrimaryKey(subscriptionId);
 
         var prefix = subscriptionId.split("-")[0] + "-";
-        if (prefix.equals(Subscription.BO_EXT_EC.getPrefixId()) || prefix.equals(Subscription.BO_EXT_PSP.getPrefixId()) // BO
-                || prefix.equals(Subscription.FDR_ORG.getPrefixId()) || prefix.equals(Subscription.FDR_PSP.getPrefixId()) // Fdr
-        ) {
+        if (isAuthorizerConfigurationRequired(Subscription.fromPrefix(prefix))) {
             updateAuthorization(institutionId, subscriptionId, prefix, true);
         }
     }
@@ -247,29 +241,28 @@ public class ApiManagementService {
         this.apimClient.regenerateSecondaryKey(subscriptionId);
 
         var prefix = subscriptionId.split("-")[0] + "-";
-        if (prefix.equals(Subscription.BO_EXT_EC.getPrefixId()) || prefix.equals(Subscription.BO_EXT_PSP.getPrefixId()) // BO
-                || prefix.equals(Subscription.FDR_ORG.getPrefixId()) || prefix.equals(Subscription.FDR_PSP.getPrefixId()) // Fdr
-        ) {
+        if (isAuthorizerConfigurationRequired(Subscription.fromPrefix(prefix))) {
             updateAuthorization(institutionId, subscriptionId, prefix, false);
         }
     }
 
-    private void updateAuthorization(
-            String institutionId, String subscriptionId, String subscriptionPrefixId, boolean isPrimaryKey) {
+    private void updateAuthorization(String institutionId, String subscriptionId, String subscriptionPrefixId, boolean isPrimaryKey) {
         InstitutionApiKeys apiKeys = this.apimClient.getApiSubscriptions(institutionId).stream()
                 .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
                 .findFirst()
                 .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
 
-        String authorizationId = createAuthorizationId(subscriptionPrefixId, institutionId, isPrimaryKey);
-        Authorization authorization = this.authorizerConfigClient.getAuthorization(authorizationId);
-        if (authorization == null) {
-            throw new AppException(AppError.AUTHORIZATION_NOT_FOUND, institutionId);
+        Authorization authorization;
+        try {
+            String authorizationId = createAuthorizationId(subscriptionPrefixId, institutionId, isPrimaryKey);
+            authorization = this.authorizerConfigClient.getAuthorization(authorizationId);
+            this.authorizerConfigClient.deleteAuthorization(authorization.getId());
+            authorization.setSubscriptionKey(isPrimaryKey ? apiKeys.getPrimaryKey() : apiKeys.getSecondaryKey());
+            this.authorizerConfigClient.createAuthorization(authorization);
+        } catch (FeignException.NotFound e) {
+            createSubscriptionKeys(institutionId, Subscription.fromPrefix(subscriptionPrefixId));
         }
 
-        this.authorizerConfigClient.deleteAuthorization(authorization.getId());
-        authorization.setSubscriptionKey(isPrimaryKey ? apiKeys.getPrimaryKey() : apiKeys.getSecondaryKey());
-        this.authorizerConfigClient.createAuthorization(authorization);
     }
 
     private InstitutionResponse getInstitutionResponse(String institutionId) {
@@ -311,11 +304,16 @@ public class ApiManagementService {
                 .owner(AuthorizationOwner.builder()
                         .id(institution.getTaxCode())
                         .name(institution.getDescription())
-                        .type(RoleType.fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType().name()))
+                        .type(getOwnerType(institution))
                         .build())
                 .authorizedEntities(authorizedEntities)
                 .otherMetadata(Collections.emptyList())
                 .build();
+    }
+
+    private String getOwnerType(InstitutionResponse institution) {
+        RoleType type =  RoleType.fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType().name());
+        return RoleType.PT.equals(type) ? "BROKER" : type.name();
     }
 
     private String createAuthorizationId(String subscriptionPrefixId, String institutionId, boolean isPrimaryKey) {
@@ -351,6 +349,13 @@ public class ApiManagementService {
             return "fdr";
         }
         return null;
+    }
+
+
+    private boolean isAuthorizerConfigurationRequired(Subscription subscriptionCode) {
+        return subscriptionCode == Subscription.FDR_PSP || subscriptionCode == Subscription.FDR_ORG || // FdR
+                subscriptionCode == Subscription.GPD || // GPD
+                subscriptionCode == Subscription.BO_EXT_EC || subscriptionCode == Subscription.BO_EXT_PSP; // BO
     }
 }
 

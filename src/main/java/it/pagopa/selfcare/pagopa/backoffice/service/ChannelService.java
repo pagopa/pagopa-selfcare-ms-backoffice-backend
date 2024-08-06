@@ -6,6 +6,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityChannel;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityChannels;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.ChannelMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelDetailsResource;
@@ -229,8 +230,7 @@ public class ChannelService {
             PspChannelPaymentTypes paymentTypes = this.apiConfigClient.getChannelPaymentTypes(channelCode);
             channelDetailsResource = buildActiveChannelDetails(channelCode, channelDetails, paymentTypes);
         } else {
-            WrapperEntityChannels wrapperChannel = this.wrapperService.findChannelById(channelCode);
-            channelDetailsResource = ChannelMapper.toResource(wrapperChannel);
+            channelDetailsResource = findInWrapperOrElseInApiConfig(channelCode);
         }
         return channelDetailsResource;
     }
@@ -351,5 +351,17 @@ public class ChannelService {
             channelDetailsResource.setPendingUpdate(false);
         }
         return channelDetailsResource;
+    }
+
+    private ChannelDetailsResource findInWrapperOrElseInApiConfig(String channelCode) {
+        // handle legacy channels
+        try {
+            WrapperEntityChannels wrapperChannel = this.wrapperService.findChannelById(channelCode);
+            return ChannelMapper.toResource(wrapperChannel);
+        } catch (AppException e) {
+            ChannelDetails channelDetails = this.apiConfigClient.getChannelDetails(channelCode);
+            PspChannelPaymentTypes paymentTypes = this.apiConfigClient.getChannelPaymentTypes(channelCode);
+            return buildActiveChannelDetails(channelCode, channelDetails, paymentTypes);
+        }
     }
 }
