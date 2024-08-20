@@ -4,6 +4,7 @@ import com.azure.spring.cloud.feature.management.FeatureManager;
 import it.pagopa.selfcare.pagopa.backoffice.client.AuthorizerConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
+import it.pagopa.selfcare.pagopa.backoffice.component.ApiManagementComponent;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
@@ -22,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 
@@ -46,6 +48,8 @@ public class ApiManagementService {
 
     private final FeatureManager featureManager;
 
+    private final ApiManagementComponent apiManagementComponent;
+
 
     @Autowired
     public ApiManagementService(AzureApiManagerClient apimClient,
@@ -54,7 +58,8 @@ public class ApiManagementService {
                                 AuthorizerConfigClient authorizerConfigClient,
                                 FeatureManager featureManager,
                                 @Value("${institution.subscription.test-email}") String testEmail,
-                                @Value("${info.properties.environment}") String environment) {
+                                @Value("${info.properties.environment}") String environment,
+                                ApiManagementComponent apiManagementComponent) {
         this.apimClient = apimClient;
         this.externalApiClient = externalApiClient;
         this.modelMapper = modelMapper;
@@ -62,45 +67,28 @@ public class ApiManagementService {
         this.environment = environment;
         this.authorizerConfigClient = authorizerConfigClient;
         this.featureManager = featureManager;
+        this.apiManagementComponent = apiManagementComponent;
     }
 
-//    public InstitutionDetailResource getInstitutions(String taxCode) {
-//        List<InstitutionDetail> institutionDetails;
-//        if (taxCode != null && !taxCode.isEmpty()) {
-//            if (!featureManager.isEnabled("isOperator")) {
-//                throw new AppException(AppError.UNAUTHORIZED);
-//            }
-//            institutionDetails = apiManagementComponent.getInstitutionDetailsForOperator(taxCode);
-//        } else {
-//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//            String userIdForAuth = Utility.extractUserIdFromAuth(authentication);
-//            institutionDetails = apiManagementComponent.getInstitutionDetails(userIdForAuth);
-//        }
-//        return InstitutionDetailResource.builder()
-//                .institutionDetails(institutionDetails)
-//                .build();
-//    }
-
-    public InstitutionDetailResource getInstitutions(String taxCode) {
-        List<InstitutionDetail> institutionDetails;
+    public InstitutionBaseResources getInstitutions(String taxCode) {
+        List<InstitutionBase> institutionBases;
         if (taxCode != null && !taxCode.isEmpty()) {
             if (!featureManager.isEnabled("isOperator")) {
                 throw new AppException(AppError.UNAUTHORIZED);
             }
-            institutionDetails = externalApiClient.getInstitutionsFiltered(taxCode).getInstitutions().stream()
-                    .map(elem -> modelMapper.map(elem, InstitutionDetail.class))
-                    .toList();
+            institutionBases = apiManagementComponent.getInstitutionsForOperator(taxCode);
         } else {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String userIdForAuth = Utility.extractUserIdFromAuth(authentication);
-            Collection<InstitutionInfo> institutions = externalApiClient.getInstitutions(userIdForAuth);
-            institutionDetails = institutions.stream()
-                    .map(institution -> modelMapper.map(institution, InstitutionDetail.class))
-                    .toList();
+            institutionBases = apiManagementComponent.getInstitutions(userIdForAuth);
         }
-        return InstitutionDetailResource.builder()
-                .institutionDetails(institutionDetails)
+        return InstitutionBaseResources.builder()
+                .institutions(institutionBases)
                 .build();
+    }
+
+    public InstitutionDetail getInstitutionFullDetail(String institutionId) {
+        return apiManagementComponent.getInstitutionDetail(institutionId);
     }
 
 
@@ -273,12 +261,12 @@ public class ApiManagementService {
     }
 
     private InstitutionResponse getInstitutionResponse(String institutionId) {
-        InstitutionResponse institution =
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institution =
                 this.externalApiClient.getInstitution(institutionId);
         if (institution == null) {
             throw new AppException(AppError.APIM_USER_NOT_FOUND, institutionId);
         }
-        return institution;
+        return modelMapper.map(institution, InstitutionResponse.class);
     }
 
     private Authorization buildAuthorization(

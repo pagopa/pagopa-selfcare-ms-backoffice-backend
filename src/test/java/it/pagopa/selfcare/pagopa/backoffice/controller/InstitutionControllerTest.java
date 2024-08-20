@@ -57,15 +57,10 @@ class InstitutionControllerTest {
                         .attributes(List.of())
                         .build());
         when(apiManagementService.getInstitutions(null))
-                .thenReturn(InstitutionDetailResource.builder()
-                        .institutionDetails(Collections.singletonList(InstitutionDetail.builder()
+                .thenReturn(InstitutionBaseResources.builder()
+                        .institutions(Collections.singletonList(InstitutionBase.builder()
                                 .id("1")
                                 .description("some description")
-                                .originId("1")
-                                .institutionType(InstitutionType.PA)
-                                .externalId("externalId")
-                                .taxCode("taxCode")
-                                .origin("origin")
                                 .build()))
                         .build());
         when(apiManagementService.getBrokerDelegation(anyString(), anyString(), any()))
@@ -76,11 +71,25 @@ class InstitutionControllerTest {
                 .thenReturn(buildInstitutionApiKeysResource());
         when(apiManagementService.createSubscriptionKeys(any(), any()))
                 .thenReturn(buildInstitutionApiKeysResource());
+        when(apiManagementService.getInstitutionFullDetail(any())).thenReturn(
+                InstitutionDetail.builder().id("1")
+                        .taxCode("tax")
+                        .externalId("ext")
+                        .originId("test")
+                        .origin("test")
+                        .description("someDescription").build());
     }
 
     @Test
     void getInstitutions() throws Exception {
         mvc.perform(get("/institutions")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getInstitutionsFullDetail() throws Exception {
+        mvc.perform(get("/institutions/{institution-id}/full-detail", INSTITUTION_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

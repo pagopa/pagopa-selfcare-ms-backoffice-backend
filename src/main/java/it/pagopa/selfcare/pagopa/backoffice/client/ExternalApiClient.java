@@ -29,7 +29,7 @@ public interface ExternalApiClient {
     @GetMapping(value = "/institutions/{institutionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Valid
-    InstitutionResponse getInstitution(@PathVariable(value = "institutionId") String id);
+    Institution getInstitution(@PathVariable(value = "institutionId") String id);
 
 
     @GetMapping(value = "/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
