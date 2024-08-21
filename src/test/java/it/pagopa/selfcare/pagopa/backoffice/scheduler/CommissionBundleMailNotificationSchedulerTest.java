@@ -18,8 +18,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -79,7 +78,7 @@ class CommissionBundleMailNotificationSchedulerTest {
 
         assertDoesNotThrow(() -> scheduler.mailNotification());
 
-        verify(awsSesClient, times(12)).sendEmail(any());
+        verify(awsSesClient, times(12)).sendEmail(any(), anyBoolean());
     }
 
     @Test
@@ -111,7 +110,7 @@ class CommissionBundleMailNotificationSchedulerTest {
 
         assertDoesNotThrow(() -> scheduler.mailNotification());
 
-        verify(awsSesClient, times(11)).sendEmail(any());
+        verify(awsSesClient, times(11)).sendEmail(any(), anyBoolean());
     }
 
     @Test
@@ -123,7 +122,7 @@ class CommissionBundleMailNotificationSchedulerTest {
 
         assertNotNull(e);
 
-        verify(awsSesClient, never()).sendEmail(any());
+        verify(awsSesClient, never()).sendEmail(any(), anyBoolean());
         verify(bundleAllPages, never()).getBundleSubscriptionByPSP(anyString(), anyString());
         verify(bundleAllPages, never()).getPublicBundleSubscriptionRequestByPSP(anyString(), anyString());
         verify(bundleAllPages, never()).getPrivateBundleOffersByPSP(anyString(), anyString());

@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.19.0" #improve
+    tag: "2.19.0-13-next" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -137,6 +137,7 @@ microservice-chart:
     JIRA_PROJECT_KEY: jira-u-project-key
     JIRA_REQ_TYPE_TASKID: jira-u-req-task-id
     OTEL_EXPORTER_OTLP_HEADERS: elastic-apm-secret-token
+    PAGOPA_OPERATOR_EMAIL: pagopa-u-env-operator-email
   keyvault:
     name: "pagopa-u-selfcare-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
