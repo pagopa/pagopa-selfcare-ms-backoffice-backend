@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.20.0"
+    "version": "2.20.0-1-PPANTT-93-new-api-key-aca"
   },
   "servers": [
     {
@@ -8721,7 +8721,8 @@
                 "FDR_PSP",
                 "BO_EXT_EC",
                 "BO_EXT_PSP",
-                "PRINT_NOTICE"
+                "PRINT_NOTICE",
+                "ACA"
               ]
             }
           }
