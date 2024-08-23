@@ -177,7 +177,7 @@ public class ApiManagementService {
 
         List<InstitutionApiKeys> apiSubscriptions = this.apimClient.getApiSubscriptions(institutionId);
 
-        if (isAuthorizerConfigurationRequired(subscriptionCode)) {
+        if (subscriptionCode.getAuthDomain() != null) {
             List<DelegationExternal> delegationResponse = getDelegationResponse(institutionId, subscriptionCode);
 
             InstitutionApiKeys apiKeys = apiSubscriptions.stream()
@@ -186,11 +186,11 @@ public class ApiManagementService {
                     .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
 
             // configure primary key
-            Authorization authorizationPrimaryKey = buildAuthorization(getAuthorizerDomain(subscriptionCode), subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, true, delegationResponse);
+            Authorization authorizationPrimaryKey = buildAuthorization(subscriptionCode.getAuthDomain(), subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, true, delegationResponse);
             this.authorizerConfigClient.createAuthorization(authorizationPrimaryKey);
 
             // configure secondary key
-            Authorization authorizationSecondaryKey = buildAuthorization(getAuthorizerDomain(subscriptionCode), subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, false, delegationResponse);
+            Authorization authorizationSecondaryKey = buildAuthorization(subscriptionCode.getAuthDomain(), subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, false, delegationResponse);
             this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
         }
 
@@ -223,7 +223,7 @@ public class ApiManagementService {
         this.apimClient.regeneratePrimaryKey(subscriptionId);
 
         var prefix = subscriptionId.split("-")[0] + "-";
-        if (isAuthorizerConfigurationRequired(Subscription.fromPrefix(prefix))) {
+        if (Subscription.fromPrefix(prefix).getAuthDomain() != null) {
             updateAuthorization(institutionId, subscriptionId, prefix, true);
         }
     }
@@ -241,7 +241,7 @@ public class ApiManagementService {
         this.apimClient.regenerateSecondaryKey(subscriptionId);
 
         var prefix = subscriptionId.split("-")[0] + "-";
-        if (isAuthorizerConfigurationRequired(Subscription.fromPrefix(prefix))) {
+        if (Subscription.fromPrefix(prefix).getAuthDomain() != null) {
             updateAuthorization(institutionId, subscriptionId, prefix, false);
         }
     }
@@ -312,7 +312,7 @@ public class ApiManagementService {
     }
 
     private String getOwnerType(InstitutionResponse institution) {
-        RoleType type =  RoleType.fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType().name());
+        RoleType type = RoleType.fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType().name());
         return RoleType.PT.equals(type) ? "BROKER" : type.name();
     }
 
@@ -336,26 +336,6 @@ public class ApiManagementService {
 
     private char getEnvironment() {
         return environment.toLowerCase().charAt(0);
-    }
-
-    private String getAuthorizerDomain(Subscription subType) {
-        if (subType == Subscription.BO_EXT_EC || subType == Subscription.BO_EXT_PSP) {
-            return "backoffice_external";
-        }
-        if (subType == Subscription.GPD) {
-            return "gpd";
-        }
-        if (subType == Subscription.FDR_PSP || subType == Subscription.FDR_ORG) {
-            return "fdr";
-        }
-        return null;
-    }
-
-
-    private boolean isAuthorizerConfigurationRequired(Subscription subscriptionCode) {
-        return subscriptionCode == Subscription.FDR_PSP || subscriptionCode == Subscription.FDR_ORG || // FdR
-                subscriptionCode == Subscription.GPD || // GPD
-                subscriptionCode == Subscription.BO_EXT_EC || subscriptionCode == Subscription.BO_EXT_PSP; // BO
     }
 }
 
