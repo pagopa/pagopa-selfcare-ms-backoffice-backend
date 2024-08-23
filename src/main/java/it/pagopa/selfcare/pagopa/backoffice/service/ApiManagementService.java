@@ -177,7 +177,7 @@ public class ApiManagementService {
 
         List<InstitutionApiKeys> apiSubscriptions = this.apimClient.getApiSubscriptions(institutionId);
 
-        if (!subscriptionCode.getAuthDomain().isEmpty()) {
+        if (subscriptionCode.getAuthDomain() != null) {
             List<DelegationExternal> delegationResponse = getDelegationResponse(institutionId, subscriptionCode);
 
             InstitutionApiKeys apiKeys = apiSubscriptions.stream()
@@ -223,7 +223,7 @@ public class ApiManagementService {
         this.apimClient.regeneratePrimaryKey(subscriptionId);
 
         var prefix = subscriptionId.split("-")[0] + "-";
-        if (!Subscription.fromPrefix(prefix).getAuthDomain().isEmpty()) {
+        if (Subscription.fromPrefix(prefix).getAuthDomain() != null) {
             updateAuthorization(institutionId, subscriptionId, prefix, true);
         }
     }
@@ -241,7 +241,7 @@ public class ApiManagementService {
         this.apimClient.regenerateSecondaryKey(subscriptionId);
 
         var prefix = subscriptionId.split("-")[0] + "-";
-        if (!Subscription.fromPrefix(prefix).getAuthDomain().isEmpty()) {
+        if (Subscription.fromPrefix(prefix).getAuthDomain() != null) {
             updateAuthorization(institutionId, subscriptionId, prefix, false);
         }
     }
