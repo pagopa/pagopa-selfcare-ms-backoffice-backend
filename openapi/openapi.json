@@ -2876,6 +2876,40 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "description": "Order bundles by maxPaymentAmount",
+            "example": "ASC",
+            "in": "query",
+            "name": "maxPaymentAmountOrder",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "description": "Filter bundles with paymentAmount less than",
+            "in": "query",
+            "name": "paymentAmountMinRange",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "Filter bundles with paymentAmount more than",
+            "in": "query",
+            "name": "paymentAmountMaxRange",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {

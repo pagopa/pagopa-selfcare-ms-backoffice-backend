@@ -22,6 +22,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Public
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -67,6 +68,9 @@ public interface GecClient {
             @PathVariable("psp-code") String pspCode,
             @RequestParam(required = false) List<BundleType> types,
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) Sort.Direction maxPaymentAmountOrder,
+            @RequestParam(required = false) Long paymentAmountMinRange,
+            @RequestParam(required = false) Long paymentAmountMaxRange,
             @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) Integer page
     );

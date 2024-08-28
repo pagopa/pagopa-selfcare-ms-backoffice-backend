@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
@@ -89,11 +90,13 @@ public class CommissionBundleService {
     public PSPBundlesResource getBundlesByPSP(
             String pspTaxCode,
             List<BundleType> bundleType,
-            String name, Integer limit,
+            String name,
+            Sort.Direction maxPaymentAmountOrder, Long paymentAmountMinRange, Long paymentAmountMaxRange,
+            Integer limit,
             Integer page
     ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
-        Bundles bundles = this.gecClient.getBundlesByPSP(pspCode, bundleType, name, limit, page);
+        Bundles bundles = this.gecClient.getBundlesByPSP(pspCode, bundleType, name, maxPaymentAmountOrder, paymentAmountMinRange, paymentAmountMaxRange, limit, page);
         List<PSPBundleResource> bundlesResource = new ArrayList<>();
         if (bundles.getBundleList() != null) {
             bundlesResource = getPSPBundlesResource(bundles);
@@ -109,7 +112,7 @@ public class CommissionBundleService {
         jiraServiceManagerClient.createTicket(
                 String.format(SUBJECT_NEW_BUNDLE_GEC, bundle.getPspBusinessName()),
                 String.format(DETAIL_NEW_BUNDLE_GEC,
-                        bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, deNull(bundle.getValidityDateFrom()), url,result.getIdBundle())
+                        bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, deNull(bundle.getValidityDateFrom()), url, result.getIdBundle())
         );
         return result;
     }

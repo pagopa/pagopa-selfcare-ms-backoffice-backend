@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
@@ -93,7 +94,7 @@ class CommissionBundleServiceTest {
     @Test
     void getBundlesByPSP() {
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-        when(gecClient.getBundlesByPSP(any(), any(), any(), any(), any())).thenReturn(
+        when(gecClient.getBundlesByPSP(any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
                 Bundles.builder().bundleList(Collections.singletonList(
                         Bundle.builder().transferCategoryList(Collections.singletonList("test")).build())).build()
         );
@@ -101,9 +102,9 @@ class CommissionBundleServiceTest {
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
         List<BundleType> bundleTypeList = Collections.singletonList(BundleType.GLOBAL);
         assertDoesNotThrow(
-                () -> sut.getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, PSP_NAME, LIMIT, PAGE)
+                () -> sut.getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, PSP_NAME, Sort.Direction.ASC, null, null, LIMIT, PAGE)
         );
-        verify(gecClient).getBundlesByPSP(PSP_CODE, bundleTypeList, PSP_NAME, LIMIT, PAGE);
+        verify(gecClient).getBundlesByPSP(PSP_CODE, bundleTypeList, PSP_NAME, Sort.Direction.ASC, null, null, LIMIT, PAGE);
     }
 
     @Test
