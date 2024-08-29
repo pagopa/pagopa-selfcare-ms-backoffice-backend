@@ -620,6 +620,21 @@ public class CommissionBundleService {
         this.awsSesClient.sendEmail(messageDetail);
     }
 
+    /**
+     * Export all bundles of the specified PSP and bundle types.
+     * <p>
+     * Retrieves all bundles with the provided filters and return the list in CSV format
+     *
+     * @param pspTaxCode PSP's tax code
+     * @param bundleTypeList the types of bundle to be retrieved
+     * @return the bundles in CSV format
+     */
+    public byte[] exportPSPBundleList(String pspTaxCode, List<BundleType> bundleTypeList) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
+
+        return this.exportService.exportPSPBundlesToCsv(pspCode, bundleTypeList);
+    }
+
     private Context buildEmailHtmlBodyContext(String bundleName, String pspName) {
         // Thymeleaf Context
         Context context = new Context();
@@ -855,11 +870,5 @@ public class CommissionBundleService {
 
     private boolean isBundleExpired(Bundle bundle) {
         return bundle.getValidityDateTo() != null && !bundle.getValidityDateTo().isAfter(LocalDate.now());
-    }
-
-    public byte[] exportPSPBundleList(String pspTaxCode, List<BundleType> bundleTypeList) {
-        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
-
-        return this.exportService.exportPSPBundlesToCsv(pspCode, bundleTypeList);
     }
 }

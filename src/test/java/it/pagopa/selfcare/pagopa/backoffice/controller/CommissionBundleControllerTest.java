@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -290,5 +291,15 @@ class CommissionBundleControllerTest {
 
         mvc.perform(post(url, CI_TAX_CODE, ID_BUNDLE_OFFER).param("bundleName", BUNDLE_NAME).param("pspTaxCode", PSP_TAX_CODE)).andExpect(status().isOk());
         verify(service).rejectPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER, PSP_TAX_CODE, BUNDLE_NAME);
+    }
+
+    @Test
+    void exportPSPBundleListTest() throws Exception {
+        when(service.exportPSPBundleList(anyString(), anyList())).thenReturn("test file".getBytes());
+        String url = "/bundles/payment-service-providers/{psp-tax-code}/export";
+
+        mvc.perform(get(url, PSP_TAX_CODE)
+                        .param("bundleTypeList", BundleType.GLOBAL.name()))
+                .andExpect(status().isOk());
     }
 }
