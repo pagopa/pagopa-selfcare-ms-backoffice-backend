@@ -92,11 +92,12 @@ public class CommissionBundleService {
             List<BundleType> bundleType,
             String name,
             Sort.Direction maxPaymentAmountOrder, Long paymentAmountMinRange, Long paymentAmountMaxRange,
+            LocalDate validBefore, LocalDate validAfter, LocalDate expireBefore, LocalDate expireAfter,
             Integer limit,
             Integer page
     ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
-        Bundles bundles = this.gecClient.getBundlesByPSP(pspCode, bundleType, name, maxPaymentAmountOrder, paymentAmountMinRange, paymentAmountMaxRange, limit, page);
+        Bundles bundles = this.gecClient.getBundlesByPSP(pspCode, bundleType, name, maxPaymentAmountOrder, paymentAmountMinRange, paymentAmountMaxRange, validBefore, validAfter, expireBefore, expireAfter, limit, page);
         List<PSPBundleResource> bundlesResource = new ArrayList<>();
         if (bundles.getBundleList() != null) {
             bundlesResource = getPSPBundlesResource(bundles);

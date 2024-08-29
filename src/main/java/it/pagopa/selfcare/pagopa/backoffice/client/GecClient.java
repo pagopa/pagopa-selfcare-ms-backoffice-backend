@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.List;
 
 @FeignClient(name = "gec", url = "${rest-client.gec.base-url}", configuration = GecFeignConfig.class)
@@ -71,6 +72,10 @@ public interface GecClient {
             @RequestParam(required = false) Sort.Direction maxPaymentAmountOrder,
             @RequestParam(required = false) Long paymentAmountMinRange,
             @RequestParam(required = false) Long paymentAmountMaxRange,
+            @RequestParam(required = false) LocalDate validBefore,
+            @RequestParam(required = false) LocalDate validAfter,
+            @RequestParam(required = false) LocalDate expireBefore,
+            @RequestParam(required = false) LocalDate expireAfter,
             @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) Integer page
     );
