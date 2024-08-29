@@ -3,9 +3,12 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import it.pagopa.selfcare.pagopa.backoffice.entity.*;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.export.BrokerECExportStatus;
 import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerIbansRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerInstitutionsRepository;
+import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.BundleAllPages;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.deNull;
 
@@ -26,10 +30,17 @@ public class ExportService {
 
     private final BrokerInstitutionsRepository brokerInstitutionsRepository;
 
+    private final BundleAllPages bundleAllPages;
+
     @Autowired
-    public ExportService(BrokerIbansRepository brokerIbansRepository, BrokerInstitutionsRepository brokerInstitutionsRepository) {
+    public ExportService(
+            BrokerIbansRepository brokerIbansRepository,
+            BrokerInstitutionsRepository brokerInstitutionsRepository,
+            BundleAllPages bundleAllPages
+    ) {
         this.brokerIbansRepository = brokerIbansRepository;
         this.brokerInstitutionsRepository = brokerInstitutionsRepository;
+        this.bundleAllPages = bundleAllPages;
     }
 
     /**
@@ -69,7 +80,7 @@ public class ExportService {
     }
 
     public BrokerECExportStatus getBrokerExportStatus(@NotNull String brokerCode) {
-        if(brokerCode == null) {
+        if (brokerCode == null) {
             throw new AppException(AppError.BAD_REQUEST, "No valid broker code is passed.");
         }
         Optional<ProjectCreatedAt> brokerIbansCreatedAt = Optional.empty();
@@ -84,6 +95,49 @@ public class ExportService {
                 .brokerIbansLastUpdate(brokerIbansCreatedAt.map(ProjectCreatedAt::getCreatedAt).orElse(null))
                 .brokerInstitutionsLastUpdate(brokerInstitutionsCreatedAt.map(ProjectCreatedAt::getCreatedAt).orElse(null))
                 .build();
+    }
+
+    /**
+     * This method is used for exporting all bundle of the specified PSP and of the specified types.
+     * Retrieve all the bundles and then format the list in a CSV row structure.
+     *
+     * @param pspCode the PSP code used to retrieve the bundles
+     * @param bundleTypeList the list of bundle type to be retrieved
+     * @return The byte array representation of the generated CSV file.
+     */
+    public byte[] exportPSPBundlesToCsv(String pspCode, List<BundleType> bundleTypeList) {
+        Set<Bundle> pspBundles = this.bundleAllPages.getAllPSPBundles(pspCode, bundleTypeList);
+
+        List<String> headers = Arrays.asList(
+                "id",
+                "nome",
+                "descrizione",
+                "commissione",
+                "importo pagamento minimo",
+                "importo pagamento massimo",
+                "touchpoint",
+                "tipo",
+                "valido da",
+                "valido a",
+                "id canale",
+                "carrello"
+        );
+        return Utility.createCsv(headers, pspBundles.parallelStream()
+                .map(bundle -> Arrays.asList(
+                        deNull(bundle.getId()),
+                        deNull(bundle.getName()),
+                        deNull(bundle.getDescription()),
+                        deNull(bundle.getPaymentAmount()),
+                        deNull(bundle.getMinPaymentAmount()),
+                        deNull(bundle.getMaxPaymentAmount()),
+                        deNull(bundle.getTouchpoint()),
+                        deNull(bundle.getType().name()),
+                        deNull(bundle.getValidityDateFrom()),
+                        deNull(bundle.getValidityDateTo()),
+                        deNull(bundle.getIdChannel()),
+                        Boolean.TRUE.equals(deNull(bundle.getCart())) ? "true" : "false")
+                )
+                .toList());
     }
 
     /**

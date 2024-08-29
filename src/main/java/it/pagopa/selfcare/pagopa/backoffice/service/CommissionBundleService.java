@@ -57,6 +57,8 @@ public class CommissionBundleService {
 
     private final JiraServiceManagerClient jiraServiceManagerClient;
 
+    private final ExportService exportService;
+
     @Autowired
     public CommissionBundleService(
             GecClient gecClient,
@@ -66,7 +68,9 @@ public class CommissionBundleService {
             ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
             AwsSesClient awsSesClient,
             AsyncNotificationService asyncNotificationService,
-            JiraServiceManagerClient jiraServiceManagerClient) {
+            JiraServiceManagerClient jiraServiceManagerClient,
+            ExportService exportService
+    ) {
         this.gecClient = gecClient;
         this.modelMapper = modelMapper;
         this.taxonomyService = taxonomyService;
@@ -75,6 +79,7 @@ public class CommissionBundleService {
         this.awsSesClient = awsSesClient;
         this.asyncNotificationService = asyncNotificationService;
         this.jiraServiceManagerClient = jiraServiceManagerClient;
+        this.exportService = exportService;
     }
 
     public BundlePaymentTypes getBundlesPaymentTypes(Integer limit, Integer page) {
@@ -850,5 +855,11 @@ public class CommissionBundleService {
 
     private boolean isBundleExpired(Bundle bundle) {
         return bundle.getValidityDateTo() != null && !bundle.getValidityDateTo().isAfter(LocalDate.now());
+    }
+
+    public byte[] exportPSPBundleList(String pspTaxCode, List<BundleType> bundleTypeList) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
+
+        return this.exportService.exportPSPBundlesToCsv(pspCode, bundleTypeList);
     }
 }

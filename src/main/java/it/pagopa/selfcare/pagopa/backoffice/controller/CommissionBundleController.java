@@ -9,17 +9,43 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.*;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundlePaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.BundleSubscriptionStatus;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleAttributeResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundleSubscriptionsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.CIBundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundleResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.PSPBundlesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.Touchpoints;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleCreateResponse;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CIBundleId;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.CiTaxCodeList;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequest;
 import it.pagopa.selfcare.pagopa.backoffice.service.CommissionBundleService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -504,4 +530,29 @@ public class CommissionBundleController {
         this.commissionBundleService.rejectPrivateBundleOffer(ciTaxCode, idBundleOffer, pspTaxCode, bundleName);
     }
 
+
+    @GetMapping(value = "/payment-service-providers/{psp-tax-code}/export", produces = "text/csv")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "text/csv", schema = @Schema(type = "string", format = "binary"))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @Operation(summary = "Export all commission bundle related to a PSP", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
+    public ResponseEntity<Resource> exportPSPBundleList(
+            @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
+            @Parameter(description = "Commission bundle's type") @RequestParam List<BundleType> bundleTypeList
+    ) {
+        byte[] file = this.commissionBundleService.exportPSPBundleList(pspTaxCode, bundleTypeList);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=bundle-export.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(new ByteArrayResource(file));
+    }
 }
