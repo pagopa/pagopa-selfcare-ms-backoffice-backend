@@ -2910,6 +2910,50 @@
               "type": "integer",
               "format": "int64"
             }
+          },
+          {
+            "description": "Validity date of bundles, used to retrieve all bundles valid before the specified date (yyyy-MM-dd)",
+            "example": "2024-05-10",
+            "in": "query",
+            "name": "validBefore",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "description": "Validity date of bundles, used to retrieve all bundles valid after the specified date (yyyy-MM-dd)",
+            "example": "2024-05-10",
+            "in": "query",
+            "name": "validAfter",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "description": "Validity date of bundles, used to retrieve all bundles that expire before the specified date (yyyy-MM-dd)",
+            "example": "2024-05-10",
+            "in": "query",
+            "name": "expireBefore",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "description": "Validity date of bundles, used to retrieve all bundles that expire after the specified date (yyyy-MM-dd)",
+            "example": "2024-05-10",
+            "in": "query",
+            "name": "expireAfter",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
           }
         ],
         "responses": {
