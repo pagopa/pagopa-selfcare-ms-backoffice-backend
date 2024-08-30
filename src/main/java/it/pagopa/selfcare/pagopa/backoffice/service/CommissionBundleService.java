@@ -87,12 +87,33 @@ public class CommissionBundleService {
         return modelMapper.map(dto, Touchpoints.class);
     }
 
+    /**
+     * Retrieve bundles' list by PSP tax code
+     * @param pspTaxCode PSP's tax code
+     * @param name bundle name
+     * @param bundleType list of bundle types
+     * @param maxPaymentAmountOrder direction to order the list based on the bundle's maxPaymentAmount
+     * @param paymentAmountMinRange filters bundles with paymentAmount more than paymentAmountMinRange
+     * @param paymentAmountMaxRange filters bundles with paymentAmount less than paymentAmountMaxRange
+     * @param validBefore filters bundles with validityDateFrom before the value of validBefore
+     * @param validAfter filters bundles with validityDateFrom after the value of validAfter
+     * @param expireBefore filters bundles with validityDateTo before the value of expireBefore
+     * @param expireAfter filters bundles with validityDateTo after the value of expireAfter
+     * @param page page's number for pagination
+     * @param limit maximum number of elements for page
+     * @return list of bundles ordered and filtered
+     */
     public PSPBundlesResource getBundlesByPSP(
             String pspTaxCode,
             List<BundleType> bundleType,
             String name,
-            Sort.Direction maxPaymentAmountOrder, Long paymentAmountMinRange, Long paymentAmountMaxRange,
-            LocalDate validBefore, LocalDate validAfter, LocalDate expireBefore, LocalDate expireAfter,
+            Sort.Direction maxPaymentAmountOrder,
+            Long paymentAmountMinRange,
+            Long paymentAmountMaxRange,
+            LocalDate validBefore,
+            LocalDate validAfter,
+            LocalDate expireBefore,
+            LocalDate expireAfter,
             Integer limit,
             Integer page
     ) {
