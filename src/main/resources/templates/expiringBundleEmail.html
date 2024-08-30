@@ -14,7 +14,10 @@
 </p>
 <br/>
 <p>
-    il pacchetto <span th:text="${bundleName}" th:remove="tag"></span> scadrà in data <span th:text="${expireAt}" th:remove="tag"></span>.
+    il pacchetto <span th:text="${bundleName}" th:remove="tag"></span>
+    del PSP <span th:text="${pspName}" th:remove="tag"></span>
+    (codice fiscale: <span th:text="${pspTaxCode}" th:remove="tag"></span>)
+    scadrà in data <span th:text="${expireAt}" th:remove="tag"></span>.
 </p>
 <p>
     Puoi gestire i tuoi pacchetti qui <a
