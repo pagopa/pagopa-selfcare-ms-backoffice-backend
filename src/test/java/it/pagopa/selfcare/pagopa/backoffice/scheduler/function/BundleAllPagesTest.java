@@ -111,9 +111,9 @@ class BundleAllPagesTest {
                 .pageInfo(PageInfo.builder().totalItems(numOfBundles).build())
                 .build();
 
-        when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, ID_BUNDLE, null, 1, 0))
+        when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, 1, 0))
                 .thenReturn(resource);
-        when(gecClient.getPublicBundleSubscriptionRequestByPSP(eq(PSP_CODE), eq(ID_BUNDLE), eq(null), eq(limit), anyInt()))
+        when(gecClient.getPublicBundleSubscriptionRequestByPSP(eq(PSP_CODE), eq(null), eq(ID_BUNDLE), eq(limit), anyInt()))
                 .thenReturn(resource);
 
         Set<String> result = assertDoesNotThrow(() -> sut.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, ID_BUNDLE));
@@ -133,8 +133,8 @@ class BundleAllPagesTest {
                 .pageInfo(PageInfo.builder().totalItems(numOfBundles).build())
                 .build();
 
-        when(gecClient.getPrivateBundleOffersByPSP(PSP_CODE, ID_BUNDLE, null, 1, 0)).thenReturn(resource);
-        when(gecClient.getPrivateBundleOffersByPSP(eq(PSP_CODE), eq(ID_BUNDLE), eq(null), eq(limit), anyInt())).thenReturn(resource);
+        when(gecClient.getPrivateBundleOffersByPSP(PSP_CODE, null, ID_BUNDLE, 1, 0)).thenReturn(resource);
+        when(gecClient.getPrivateBundleOffersByPSP(eq(PSP_CODE), eq(null), eq(ID_BUNDLE), eq(limit), anyInt())).thenReturn(resource);
 
         Set<String> result = assertDoesNotThrow(() -> sut.getPrivateBundleOffersByPSP(PSP_CODE, ID_BUNDLE));
 
@@ -186,9 +186,9 @@ class BundleAllPagesTest {
         when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, 1, 0)).thenReturn(resource);
         when(gecClient.getBundleSubscriptionByPSP(eq(PSP_CODE), eq(ID_BUNDLE), eq(null), eq(limit), anyInt())).thenReturn(resource);
 
-        when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, ID_BUNDLE, null, 1, 0))
+        when(gecClient.getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, 1, 0))
                 .thenReturn(publicResource);
-        when(gecClient.getPublicBundleSubscriptionRequestByPSP(eq(PSP_CODE), eq(ID_BUNDLE), eq(null), eq(limit), anyInt()))
+        when(gecClient.getPublicBundleSubscriptionRequestByPSP(eq(PSP_CODE), eq(null), eq(ID_BUNDLE), eq(limit), anyInt()))
                 .thenReturn(publicResource);
 
         Set<String> result = assertDoesNotThrow(
@@ -220,8 +220,8 @@ class BundleAllPagesTest {
 
         when(gecClient.getBundleSubscriptionByPSP(PSP_CODE, ID_BUNDLE, null, 1, 0)).thenReturn(resource);
         when(gecClient.getBundleSubscriptionByPSP(eq(PSP_CODE), eq(ID_BUNDLE), eq(null), eq(limit), anyInt())).thenReturn(resource);
-        when(gecClient.getPrivateBundleOffersByPSP(PSP_CODE, ID_BUNDLE, null, 1, 0)).thenReturn(privateResource);
-        when(gecClient.getPrivateBundleOffersByPSP(eq(PSP_CODE), eq(ID_BUNDLE), eq(null), eq(limit), anyInt())).thenReturn(privateResource);
+        when(gecClient.getPrivateBundleOffersByPSP(PSP_CODE, null, ID_BUNDLE, 1, 0)).thenReturn(privateResource);
+        when(gecClient.getPrivateBundleOffersByPSP(eq(PSP_CODE), eq(null), eq(ID_BUNDLE), eq(limit), anyInt())).thenReturn(privateResource);
 
         Set<String> result = assertDoesNotThrow(
                 () -> sut.getAllCITaxCodesAssociatedToABundle(ID_BUNDLE, BundleType.PRIVATE, PSP_CODE)

@@ -14,6 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.Cre
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
+import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.BundleAllPages;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -59,6 +60,8 @@ public class CommissionBundleService {
 
     private final ExportService exportService;
 
+    private final BundleAllPages bundleAllPages;
+
     @Autowired
     public CommissionBundleService(
             GecClient gecClient,
@@ -69,7 +72,8 @@ public class CommissionBundleService {
             AwsSesClient awsSesClient,
             AsyncNotificationService asyncNotificationService,
             JiraServiceManagerClient jiraServiceManagerClient,
-            ExportService exportService
+            ExportService exportService,
+            BundleAllPages bundleAllPages
     ) {
         this.gecClient = gecClient;
         this.modelMapper = modelMapper;
@@ -80,6 +84,7 @@ public class CommissionBundleService {
         this.asyncNotificationService = asyncNotificationService;
         this.jiraServiceManagerClient = jiraServiceManagerClient;
         this.exportService = exportService;
+        this.bundleAllPages = bundleAllPages;
     }
 
     public BundlePaymentTypes getBundlesPaymentTypes(Integer limit, Integer page) {
@@ -174,7 +179,8 @@ public class CommissionBundleService {
             BundleType bundleType
     ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
-        this.asyncNotificationService.notifyDeletePSPBundleAsync(pspCode, idBundle, bundleName, pspName, bundleType);
+        Set<String> ciTaxCodes = this.bundleAllPages.getAllCITaxCodesAssociatedToABundle(idBundle, bundleType, pspCode);
+        this.asyncNotificationService.notifyDeletePSPBundleAsync(ciTaxCodes, bundleName, pspName);
 
         this.gecClient.deletePSPBundle(pspCode, idBundle);
     }

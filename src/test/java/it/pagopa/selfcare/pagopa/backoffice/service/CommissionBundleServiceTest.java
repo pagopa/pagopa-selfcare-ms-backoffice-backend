@@ -12,6 +12,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
+import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.BundleAllPages;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -36,6 +38,7 @@ class CommissionBundleServiceTest {
     private static final String PSP_CODE = "pspCode";
     private static final String PSP_TAX_CODE = "pspTaxCode";
     private static final String CI_TAX_CODE = "ciTaxCode";
+    private static final String CI_TAX_CODE_2 = "ciTaxCode2";
     private static final String PSP_NAME = "pspName";
     private static final int LIMIT = 50;
     private static final int PAGE = 0;
@@ -73,6 +76,9 @@ class CommissionBundleServiceTest {
 
     @MockBean
     private ExportService exportService;
+
+    @MockBean
+    private BundleAllPages bundleAllPages;
 
     @Test
     void getBundlesPaymentTypes() {
@@ -151,13 +157,17 @@ class CommissionBundleServiceTest {
 
     @Test
     void deletePSPBundleSuccess() {
+        Set<String> ciTaxCodes = Set.of(CI_TAX_CODE, CI_TAX_CODE_2);
+
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+        when(bundleAllPages.getAllCITaxCodesAssociatedToABundle(ID_BUNDLE, BundleType.GLOBAL, PSP_CODE))
+                .thenReturn(ciTaxCodes);
 
         assertDoesNotThrow(
                 () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE, BUNDLE_NAME, PSP_NAME, BundleType.GLOBAL)
         );
 
-        verify(asyncNotificationService).notifyDeletePSPBundleAsync(PSP_CODE, ID_BUNDLE, BUNDLE_NAME, PSP_NAME, BundleType.GLOBAL);
+        verify(asyncNotificationService).notifyDeletePSPBundleAsync(ciTaxCodes, BUNDLE_NAME, PSP_NAME);
         verify(gecClient).deletePSPBundle(PSP_CODE, ID_BUNDLE);
     }
 
