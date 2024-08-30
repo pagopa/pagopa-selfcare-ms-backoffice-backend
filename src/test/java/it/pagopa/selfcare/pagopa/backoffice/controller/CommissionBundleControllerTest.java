@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -99,7 +100,7 @@ class CommissionBundleControllerTest {
     @Test
     void getBundleByPSPWithDefaultParamsOK() throws Exception {
         String url = "/bundles/payment-service-providers/{psp-code}";
-        when(service.getBundlesByPSP(PSP_TAX_CODE, null, null, Sort.Direction.ASC, null, null, 50, 0)).thenReturn(new PSPBundlesResource());
+        when(service.getBundlesByPSP(PSP_TAX_CODE, null, null, null, null, null, null, null, null, null, 50, 0)).thenReturn(new PSPBundlesResource());
         mvc.perform(get(url, PSP_TAX_CODE)).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
@@ -110,9 +111,22 @@ class CommissionBundleControllerTest {
         List<BundleType> bundleTypeList = Collections.singletonList(BundleType.PRIVATE);
         Integer page = 2;
         String name = "pspName";
-        when(service.getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, name, Sort.Direction.ASC, null, null, limit, page)).thenReturn(new PSPBundlesResource());
-        mvc.perform(get(url, PSP_TAX_CODE).param("limit", String.valueOf(limit)).param("page", String.valueOf(page)).param("name", name).param("bundle-type", BundleType.PRIVATE.name())).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
-        verify(service).getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, name, Sort.Direction.ASC, null, null, limit, page);
+        LocalDate date = LocalDate.now();
+        when(service.getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, name, Sort.Direction.ASC, 0L, 0L, date, date, date, date, limit, page)).thenReturn(new PSPBundlesResource());
+        mvc.perform(get(url, PSP_TAX_CODE)
+                .param("limit", String.valueOf(limit))
+                .param("page", String.valueOf(page))
+                .param("name", name)
+                .param("bundle-type", BundleType.PRIVATE.name())
+                .param("maxPaymentAmountOrder", Sort.Direction.ASC.name())
+                .param("paymentAmountMinRange", "0")
+                .param("paymentAmountMaxRange", "0")
+                .param("validBefore", date.toString())
+                .param("validAfter", date.toString())
+                .param("expireBefore", date.toString())
+                .param("expireAfter", date.toString())
+        ).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        verify(service).getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, name, Sort.Direction.ASC, 0L, 0L, date, date, date, date, limit, page);
     }
 
     @Test

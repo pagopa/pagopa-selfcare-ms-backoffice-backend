@@ -13,6 +13,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
+import org.apache.tomcat.jni.Time;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -94,7 +95,7 @@ class CommissionBundleServiceTest {
     @Test
     void getBundlesByPSP() {
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-        when(gecClient.getBundlesByPSP(any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
+        when(gecClient.getBundlesByPSP(any(), any(), any(), any(), any(),any(), any(), any(), any(), any(), any(), any())).thenReturn(
                 Bundles.builder().bundleList(Collections.singletonList(
                         Bundle.builder().transferCategoryList(Collections.singletonList("test")).build())).build()
         );
@@ -102,9 +103,9 @@ class CommissionBundleServiceTest {
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
         List<BundleType> bundleTypeList = Collections.singletonList(BundleType.GLOBAL);
         assertDoesNotThrow(
-                () -> sut.getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, PSP_NAME, Sort.Direction.ASC, null, null, LIMIT, PAGE)
+                () -> sut.getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, PSP_NAME, Sort.Direction.ASC, 0L, 0L, LocalDate.now(), LocalDate.now(), LocalDate.now(), LocalDate.now(), LIMIT, PAGE)
         );
-        verify(gecClient).getBundlesByPSP(PSP_CODE, bundleTypeList, PSP_NAME, Sort.Direction.ASC, null, null, LIMIT, PAGE);
+        verify(gecClient).getBundlesByPSP(PSP_CODE, bundleTypeList, PSP_NAME, Sort.Direction.ASC, 0L, 0L, LocalDate.now(), LocalDate.now(), LocalDate.now(), LocalDate.now(), LIMIT, PAGE);
     }
 
     @Test
