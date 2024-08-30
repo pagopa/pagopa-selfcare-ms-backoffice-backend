@@ -89,36 +89,31 @@ public class CommissionBundleMailNotificationScheduler {
                 expireAt
         );
 
-        // notify CI
-        log.info("[Mail-Notification] CI mail notification starting");
+        log.info("[Mail-Notification] Mail notification starting");
         expiringBundles.parallelStream()
-                .forEach(bundle ->
-                        this.bundleAllPages
-                                .getAllCITaxCodesAssociatedToABundle(bundle.getId(), bundle.getType(), bundle.getIdPsp()).parallelStream()
-                                .forEach(ciTaxCode -> sendMail(expireAt, bundle, ciTaxCode))
-                );
-
-        // notify PSP
-        log.info("[Mail-Notification] CI mail notification completed, PSP notification starting");
-        expiringBundles.parallelStream().forEach(
-                bundle -> {
+                .forEach(bundle -> {
                     String pspTaxCode = getPspTaxCode(bundle);
+                    // notify CI
+                    this.bundleAllPages
+                            .getAllCITaxCodesAssociatedToABundle(bundle.getId(), bundle.getType(), bundle.getIdPsp()).parallelStream()
+                            .forEach(ciTaxCode -> sendMail(expireAt, bundle, ciTaxCode, pspTaxCode));
+
+                    // notify PSP
                     if (pspTaxCode != null) {
-                        sendMail(expireAt, bundle, pspTaxCode);
+                        sendMail(expireAt, bundle, pspTaxCode, pspTaxCode);
                     }
-                }
-        );
-        log.info("[Mail-Notification] PSP mail notification completed, Email notification completed for expiring bundle in {} days",
+                });
+        log.info("[Mail-Notification] Mail notification completed for expiring bundle in {} days",
                 expireAt);
     }
 
-    private void sendMail(String expireAt, Bundle bundle, String taxCode) {
+    private void sendMail(String expireAt, Bundle bundle, String notifyTaxCode, String pspTaxCode) {
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
-                .institutionTaxCode(taxCode)
+                .institutionTaxCode(notifyTaxCode)
                 .subject(BUNDLE_EXPIRE_SUBJECT)
-                .textBody(String.format(BUNDLE_EXPIRE_BODY, bundle.getName(), expireAt))
-                .htmlBodyFileName("deleteBundleEmail.html")
-                .htmlBodyContext(buildEmailHtmlBodyContext(bundle.getName(), expireAt))
+                .textBody(String.format(BUNDLE_EXPIRE_BODY, bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, expireAt))
+                .htmlBodyFileName("expiringBundleEmail.html")
+                .htmlBodyContext(buildEmailHtmlBodyContext(bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, expireAt))
                 .destinationUserType(SelfcareProductUser.ADMIN)
                 .build();
         this.awsSesClient.sendEmail(messageDetail, true);
@@ -134,13 +129,20 @@ public class CommissionBundleMailNotificationScheduler {
         }
     }
 
-    private Context buildEmailHtmlBodyContext(String bundleName, String expireAt) {
+    private Context buildEmailHtmlBodyContext(
+            String bundleName,
+            String pspBusinessName,
+            String pspTaxCode,
+            String expireAt
+    ) {
         // Thymeleaf Context
         Context context = new Context();
 
         // Properties to show up in Template after stored in Context
         Map<String, Object> properties = new HashMap<>();
         properties.put("bundleName", bundleName);
+        properties.put("pspName", pspBusinessName);
+        properties.put("pspTaxCode", pspTaxCode);
         properties.put("expireAt", expireAt);
 
         context.setVariables(properties);

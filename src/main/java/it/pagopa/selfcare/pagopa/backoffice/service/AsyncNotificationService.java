@@ -1,10 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
-import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
-import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.BundleAllPages;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -19,12 +17,9 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.BUNDLE
 @Service
 public class AsyncNotificationService {
 
-    private final BundleAllPages bundleAllPages;
-
     private final AwsSesClient awsSesClient;
 
-    public AsyncNotificationService(BundleAllPages bundleAllPages, AwsSesClient awsSesClient) {
-        this.bundleAllPages = bundleAllPages;
+    public AsyncNotificationService(AwsSesClient awsSesClient) {
         this.awsSesClient = awsSesClient;
     }
 
@@ -32,22 +27,16 @@ public class AsyncNotificationService {
      * Notify all creditor institutions that have an active subscription or a request/offer to the
      * specified bundle
      *
-     * @param pspCode    payment service provider code
-     * @param idBundle   bundle identifier
+     * @param ciTaxCodes  set of tax codes to be notified
      * @param bundleName bundle name
      * @param pspName    payment service provider name
-     * @param bundleType bundle type
      */
     @Async
     public void notifyDeletePSPBundleAsync(
-            String pspCode,
-            String idBundle,
+            Set<String> ciTaxCodes,
             String bundleName,
-            String pspName,
-            BundleType bundleType
+            String pspName
     ) {
-        Set<String> ciTaxCodes = this.bundleAllPages.getAllCITaxCodesAssociatedToABundle(idBundle, bundleType, pspCode);
-
         Context bodyContext = buildEmailHtmlBodyContext(bundleName, pspName);
         ciTaxCodes.parallelStream().forEach(
                 ciTaxCode -> {

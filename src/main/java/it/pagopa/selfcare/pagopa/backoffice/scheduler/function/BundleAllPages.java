@@ -101,7 +101,7 @@ public class BundleAllPages {
     @Cacheable(value = "getPublicBundleSubscriptionRequestByPSP")
     public Set<String> getPublicBundleSubscriptionRequestByPSP(String pspCode, String idBundle) {
         Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
-        PublicBundleRequests bundles = this.gecClient.getPublicBundleSubscriptionRequestByPSP(pspCode, idBundle, null, 1, 0);
+        PublicBundleRequests bundles = this.gecClient.getPublicBundleSubscriptionRequestByPSP(pspCode, null, idBundle, 1, 0);
         int numberOfPages = (int) Math.floor((double) bundles.getPageInfo().getTotalItems() / getAllBundlesPageLimit);
 
         List<CompletableFuture<Set<String>>> futures = new LinkedList<>();
@@ -113,7 +113,7 @@ public class BundleAllPages {
             }
             return IntStream.rangeClosed(0, numberOfPages)
                     .parallel()
-                    .mapToObj(page -> this.gecClient.getPublicBundleSubscriptionRequestByPSP(pspCode, idBundle, null, getAllBundlesPageLimit, page))
+                    .mapToObj(page -> this.gecClient.getPublicBundleSubscriptionRequestByPSP(pspCode, null, idBundle, getAllBundlesPageLimit, page))
                     .flatMap(response -> response.getRequestsList().stream())
                     .map(PublicBundleRequest::getCiFiscalCode)
                     .collect(Collectors.toSet());
@@ -127,7 +127,7 @@ public class BundleAllPages {
     @Cacheable(value = "getPrivateBundleOffersByPSP")
     public Set<String> getPrivateBundleOffersByPSP(String pspCode, String idBundle) {
         Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
-        BundleOffers bundles = this.gecClient.getPrivateBundleOffersByPSP(pspCode, idBundle, null, 1, 0);
+        BundleOffers bundles = this.gecClient.getPrivateBundleOffersByPSP(pspCode, null, idBundle, 1, 0);
         int numberOfPages = (int) Math.floor((double) bundles.getPageInfo().getTotalItems() / getAllBundlesPageLimit);
 
         List<CompletableFuture<Set<String>>> futures = new LinkedList<>();
@@ -139,7 +139,7 @@ public class BundleAllPages {
             }
             return IntStream.rangeClosed(0, numberOfPages)
                     .parallel()
-                    .mapToObj(page -> this.gecClient.getPrivateBundleOffersByPSP(pspCode, idBundle, null, getAllBundlesPageLimit, page))
+                    .mapToObj(page -> this.gecClient.getPrivateBundleOffersByPSP(pspCode, null, idBundle, getAllBundlesPageLimit, page))
                     .flatMap(response -> response.getOffers().stream())
                     .map(PspBundleOffer::getCiFiscalCode)
                     .collect(Collectors.toSet());
