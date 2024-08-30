@@ -50,6 +50,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -547,10 +549,28 @@ public class CommissionBundleController {
     ) {
         byte[] file = this.commissionBundleService.exportPSPBundleList(pspTaxCode, bundleTypeList);
 
+        String fileNameHeader = String.format("attachment; filename=%s_%s_%s_bundle-export.csv",
+                pspTaxCode, mapBundleType(bundleTypeList), LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=bundle-export.csv")
+                .header(HttpHeaders.CONTENT_DISPOSITION, fileNameHeader)
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(new ByteArrayResource(file));
+    }
+
+    private String mapBundleType(List<BundleType> bundleTypeList) {
+        if (bundleTypeList.size() == 3) {
+            return "tutti";
+        }
+        if (BundleType.GLOBAL.equals(bundleTypeList.get(0))) {
+            return "per-tutti";
+        }
+        if (BundleType.PUBLIC.equals(bundleTypeList.get(0))) {
+            return "su-richiesta";
+        }
+        if (BundleType.PRIVATE.equals(bundleTypeList.get(0))) {
+            return "su-invito";
+        }
+        return "";
     }
 }

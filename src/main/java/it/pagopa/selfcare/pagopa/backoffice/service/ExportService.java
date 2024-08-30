@@ -15,8 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -25,6 +28,8 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.deNull;
 @Slf4j
 @Service
 public class ExportService {
+
+    private static final List<String> BUNDLE_EXPORT_HEADERS = Arrays.asList("Id", "Nome", "Descrizione", "Tipologia", "Commissione", "Importo pagamento minimo", "Importo pagamento massimo", "Tipo di pagamento", "Touchpoint", "Valido da", "Valido a", "Ultima Modifica", "Id canale", "Nome PSP", "Codice fiscale PSP", "Gestione carrello di pagamenti", "Pagamento con marca da bollo", "Pagamento solo con marca da bollo");
 
     private final BrokerIbansRepository brokerIbansRepository;
 
@@ -101,43 +106,75 @@ public class ExportService {
      * This method is used for exporting all bundle of the specified PSP and of the specified types.
      * Retrieve all the bundles and then format the list in a CSV row structure.
      *
-     * @param pspCode the PSP code used to retrieve the bundles
+     * @param pspCode        the PSP code used to retrieve the bundles
      * @param bundleTypeList the list of bundle type to be retrieved
      * @return The byte array representation of the generated CSV file.
      */
     public byte[] exportPSPBundlesToCsv(String pspCode, List<BundleType> bundleTypeList) {
         Set<Bundle> pspBundles = this.bundleAllPages.getAllPSPBundles(pspCode, bundleTypeList);
 
-        List<String> headers = Arrays.asList(
-                "id",
-                "nome",
-                "descrizione",
-                "commissione",
-                "importo pagamento minimo",
-                "importo pagamento massimo",
-                "touchpoint",
-                "tipo",
-                "valido da",
-                "valido a",
-                "id canale",
-                "carrello"
-        );
-        return Utility.createCsv(headers, pspBundles.parallelStream()
+        return Utility.createCsv(BUNDLE_EXPORT_HEADERS, mapBundlesToStringList(pspBundles));
+    }
+
+    private List<List<String>> mapBundlesToStringList(Set<Bundle> pspBundles) {
+        return pspBundles.parallelStream()
                 .map(bundle -> Arrays.asList(
                         deNull(bundle.getId()),
                         deNull(bundle.getName()),
                         deNull(bundle.getDescription()),
-                        deNull(bundle.getPaymentAmount()),
-                        deNull(bundle.getMinPaymentAmount()),
-                        deNull(bundle.getMaxPaymentAmount()),
-                        deNull(bundle.getTouchpoint()),
-                        deNull(bundle.getType().name()),
+                        mapBundleType(bundle.getType()),
+                        formatCurrency(bundle.getPaymentAmount()),
+                        formatCurrency(bundle.getMinPaymentAmount()),
+                        formatCurrency(bundle.getMaxPaymentAmount()),
+                        mapTouchpointAndPaymentType(bundle.getPaymentType()),
+                        mapTouchpointAndPaymentType(bundle.getTouchpoint()),
                         deNull(bundle.getValidityDateFrom()),
                         deNull(bundle.getValidityDateTo()),
+                        deNull(bundle.getLastUpdatedDate()),
                         deNull(bundle.getIdChannel()),
-                        Boolean.TRUE.equals(deNull(bundle.getCart())) ? "true" : "false")
-                )
-                .toList());
+                        deNull(bundle.getPspBusinessName()),
+                        deNull(bundle.getIdBrokerPsp()),
+                        parseBoolean(bundle.getCart()),
+                        parseBoolean(bundle.getDigitalStamp()),
+                        parseBoolean(bundle.getDigitalStampRestriction())
+                ))
+                .toList();
+    }
+
+    private String mapTouchpointAndPaymentType(String value) {
+        value = deNull(value);
+        if (value.isBlank() || value.equals("ANY")) {
+            return "Tutti";
+        }
+        return value;
+    }
+
+    private String parseBoolean(Boolean booleanValue) {
+        return Boolean.TRUE.equals(deNull(booleanValue)) ? "true" : "false";
+    }
+
+    private String formatCurrency(Long value) {
+        if (value == null) {
+            return "";
+        }
+        BigDecimal valueToFormat = BigDecimal.valueOf(value / 100.00);
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.ITALY);
+        numberFormat.setMaximumFractionDigits(2);
+        numberFormat.setMinimumFractionDigits(2);
+        return numberFormat.format(valueToFormat);
+    }
+
+    private String mapBundleType(BundleType bundleType) {
+        if (BundleType.GLOBAL.equals(bundleType)) {
+            return "Per tutti";
+        }
+        if (BundleType.PUBLIC.equals(bundleType)) {
+            return "Su richiesta";
+        }
+        if (BundleType.PRIVATE.equals(bundleType)) {
+            return "Su invito";
+        }
+        return "";
     }
 
     /**
@@ -170,7 +207,7 @@ public class ExportService {
                 .map(elem -> Arrays.asList(
                         deNull(elem.getCompanyName()),
                         deNull(elem.getTaxCode()),
-                        Boolean.TRUE.equals(deNull(elem.getIntermediated())) ? "true" : "false",
+                        parseBoolean(elem.getIntermediated()),
                         deNull(elem.getBrokerCompanyName()),
                         deNull(elem.getBrokerTaxCode()),
                         deNull(elem.getModel()),
@@ -182,13 +219,13 @@ public class ExportService {
                         deNull(elem.getStationState()),
                         deNull(elem.getActivationDate()),
                         deNull(elem.getVersion()),
-                        Boolean.TRUE.equals(deNull(elem.getBroadcast())) ? "true" : "false",
-                        Boolean.TRUE.equals(deNull(elem.getPspPayment())) ? "true" : "false",
+                        parseBoolean(elem.getBroadcast()),
+                        parseBoolean(elem.getPspPayment()),
                         deNull(elem.getEndpointRT()),
                         deNull(elem.getEndpointRedirect()),
                         deNull(elem.getEndpointMU()),
                         deNull(elem.getPrimitiveVersion()),
-                        Boolean.TRUE.equals(deNull(elem.getCiStatus())) ? "true" : "false"))
+                        parseBoolean(elem.getCiStatus())))
                 .toList();
     }
 }
