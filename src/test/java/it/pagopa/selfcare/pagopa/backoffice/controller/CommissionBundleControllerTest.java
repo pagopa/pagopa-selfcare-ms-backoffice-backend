@@ -20,10 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -66,15 +68,8 @@ class CommissionBundleControllerTest {
     @Test
     void getBundlesPaymentTypesWithDefaultParamsOK() throws Exception {
         String url = "/bundles/payment-types";
-        when(service.getBundlesPaymentTypes(50, 0)).thenReturn(
-                BundlePaymentTypes.builder()
-                        .paymentTypes(new ArrayList<>())
-                        .pageInfo(PageInfo.builder().build())
-                        .build()
-        );
-        mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        when(service.getBundlesPaymentTypes(50, 0)).thenReturn(BundlePaymentTypes.builder().paymentTypes(new ArrayList<>()).pageInfo(PageInfo.builder().build()).build());
+        mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
     @Test
@@ -82,28 +77,15 @@ class CommissionBundleControllerTest {
         String url = "/bundles/payment-types";
         int limit = 25;
         int page = 2;
-        when(service.getBundlesPaymentTypes(limit, page)).thenReturn(
-                BundlePaymentTypes.builder()
-                        .paymentTypes(new ArrayList<>())
-                        .pageInfo(PageInfo.builder().build())
-                        .build()
-        );
-        mvc.perform(get(url)
-                        .param("limit", String.valueOf(limit))
-                        .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        when(service.getBundlesPaymentTypes(limit, page)).thenReturn(BundlePaymentTypes.builder().paymentTypes(new ArrayList<>()).pageInfo(PageInfo.builder().build()).build());
+        mvc.perform(get(url).param("limit", String.valueOf(limit)).param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
     @Test
     void getTouchpointsWithDefaultParamsOK() throws Exception {
         String url = "/bundles/touchpoints";
-        when(service.getTouchpoints(10, 0)).thenReturn(
-                new Touchpoints()
-        );
-        mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        when(service.getTouchpoints(10, 0)).thenReturn(new Touchpoints());
+        mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
     @Test
@@ -111,25 +93,15 @@ class CommissionBundleControllerTest {
         String url = "/bundles/touchpoints";
         int limit = 25;
         int page = 2;
-        when(service.getTouchpoints(limit, page)).thenReturn(
-                new Touchpoints()
-        );
-        mvc.perform(get(url)
-                        .param("limit", String.valueOf(limit))
-                        .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        when(service.getTouchpoints(limit, page)).thenReturn(new Touchpoints());
+        mvc.perform(get(url).param("limit", String.valueOf(limit)).param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
     @Test
     void getBundleByPSPWithDefaultParamsOK() throws Exception {
         String url = "/bundles/payment-service-providers/{psp-code}";
-        when(service.getBundlesByPSP(PSP_TAX_CODE, null, null, 50, 0)).thenReturn(
-                new PSPBundlesResource()
-        );
-        mvc.perform(get(url, PSP_TAX_CODE)
-                ).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        when(service.getBundlesByPSP(PSP_TAX_CODE, null, null, null, null, null, null, null, null, null, 50, 0)).thenReturn(new PSPBundlesResource());
+        mvc.perform(get(url, PSP_TAX_CODE)).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
     @Test
@@ -139,17 +111,22 @@ class CommissionBundleControllerTest {
         List<BundleType> bundleTypeList = Collections.singletonList(BundleType.PRIVATE);
         Integer page = 2;
         String name = "pspName";
-        when(service.getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, name, limit, page)).thenReturn(
-                new PSPBundlesResource()
-        );
+        LocalDate date = LocalDate.now();
+        when(service.getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, name, Sort.Direction.ASC, 0L, 0L, date, date, date, date, limit, page)).thenReturn(new PSPBundlesResource());
         mvc.perform(get(url, PSP_TAX_CODE)
-                        .param("limit", String.valueOf(limit))
-                        .param("page", String.valueOf(page))
-                        .param("name", name)
-                        .param("bundle-type", BundleType.PRIVATE.name())
-                ).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
-        verify(service).getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, name, limit, page);
+                .param("limit", String.valueOf(limit))
+                .param("page", String.valueOf(page))
+                .param("name", name)
+                .param("bundle-type", BundleType.PRIVATE.name())
+                .param("maxPaymentAmountOrder", Sort.Direction.ASC.name())
+                .param("paymentAmountMinRange", "0")
+                .param("paymentAmountMaxRange", "0")
+                .param("validBefore", date.toString())
+                .param("validAfter", date.toString())
+                .param("expireBefore", date.toString())
+                .param("expireAfter", date.toString())
+        ).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        verify(service).getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, name, Sort.Direction.ASC, 0L, 0L, date, date, date, date, limit, page);
     }
 
     @Test
@@ -158,20 +135,14 @@ class CommissionBundleControllerTest {
         BundleRequest bundleRequest = new BundleRequest();
         when(service.createPSPBundle(PSP_TAX_CODE, bundleRequest)).thenReturn(new BundleCreateResponse());
 
-        mvc.perform(post(url, PSP_TAX_CODE)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(mapper.writeValueAsString(bundleRequest))
-                ).andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        mvc.perform(post(url, PSP_TAX_CODE).contentType(MediaType.APPLICATION_JSON_VALUE).content(mapper.writeValueAsString(bundleRequest))).andExpect(status().isCreated()).andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
     @Test
     void createPSPBundleNoBundleKO() throws Exception {
         String url = "/bundles/payment-service-providers/{psp-code}";
 
-        mvc.perform(post(url, PSP_TAX_CODE)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().is4xxClientError());
+        mvc.perform(post(url, PSP_TAX_CODE).contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -179,9 +150,7 @@ class CommissionBundleControllerTest {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-code}";
         when(service.getBundleDetailByPSP(PSP_TAX_CODE, BUNDLE_ID)).thenReturn(new PSPBundleResource());
 
-        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE)).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
         verify(service).getBundleDetailByPSP(PSP_TAX_CODE, BUNDLE_ID);
     }
 
@@ -189,11 +158,7 @@ class CommissionBundleControllerTest {
     void updatePSPBundleOK() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-code}";
         BundleRequest bundleRequest = new BundleRequest();
-        mvc.perform(put(url, BUNDLE_ID, PSP_TAX_CODE)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(bundleRequest))
-                )
-                .andExpect(status().isOk());
+        mvc.perform(put(url, BUNDLE_ID, PSP_TAX_CODE).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(bundleRequest))).andExpect(status().isOk());
         verify(service).updatePSPBundle(PSP_TAX_CODE, BUNDLE_ID, bundleRequest);
     }
 
@@ -201,11 +166,7 @@ class CommissionBundleControllerTest {
     void deletePSPBundleOK() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-code}";
 
-        mvc.perform(delete(url, BUNDLE_ID, PSP_TAX_CODE)
-                        .param("bundleName", BUNDLE_NAME)
-                        .param("pspName", PSP_NAME)
-                        .param("bundleType", BundleType.GLOBAL.name()))
-                .andExpect(status().isOk());
+        mvc.perform(delete(url, BUNDLE_ID, PSP_TAX_CODE).param("bundleName", BUNDLE_NAME).param("pspName", PSP_NAME).param("bundleType", BundleType.GLOBAL.name())).andExpect(status().isOk());
         verify(service).deletePSPBundle(PSP_TAX_CODE, BUNDLE_ID, BUNDLE_NAME, PSP_NAME, BundleType.GLOBAL);
     }
 
@@ -213,11 +174,7 @@ class CommissionBundleControllerTest {
     void acceptPublicBundleSubscriptionsOK() throws Exception {
         String url = "/bundles/payment-service-providers/{tax-code}/requests/{bundle-request-id}/accept";
 
-        mvc.perform(post(url, PSP_TAX_CODE, ID_BUNDLE_REQUEST)
-                        .param(CI_TAX_CODE, CI_TAX_CODE)
-                        .param(BUNDLE_NAME, BUNDLE_NAME)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+        mvc.perform(post(url, PSP_TAX_CODE, ID_BUNDLE_REQUEST).param(CI_TAX_CODE, CI_TAX_CODE).param(BUNDLE_NAME, BUNDLE_NAME).contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
         verify(service).acceptPublicBundleSubscriptionsByPSP(PSP_TAX_CODE, ID_BUNDLE_REQUEST, CI_TAX_CODE, BUNDLE_NAME);
     }
 
@@ -226,17 +183,8 @@ class CommissionBundleControllerTest {
         String url = "/bundles/creditor-institutions";
         int limit = 25;
         int page = 2;
-        when(service.getCIBundles(BundleType.PRIVATE, BundleSubscriptionStatus.WAITING, CI_TAX_CODE, "name", limit, page))
-                .thenReturn(new CIBundlesResource());
-        mvc.perform(get(url)
-                        .param("name", "name")
-                        .param("bundleType", BundleType.PRIVATE.name())
-                        .param("status", BundleSubscriptionStatus.WAITING.name())
-                        .param("ciTaxCode", CI_TAX_CODE)
-                        .param("limit", String.valueOf(limit))
-                        .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        when(service.getCIBundles(BundleType.PRIVATE, BundleSubscriptionStatus.WAITING, CI_TAX_CODE, "name", limit, page)).thenReturn(new CIBundlesResource());
+        mvc.perform(get(url).param("name", "name").param("bundleType", BundleType.PRIVATE.name()).param("status", BundleSubscriptionStatus.WAITING.name()).param("ciTaxCode", CI_TAX_CODE).param("limit", String.valueOf(limit)).param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
     @Test
@@ -244,38 +192,21 @@ class CommissionBundleControllerTest {
         String url = "/bundles/creditor-institutions";
         int limit = 25;
         int page = 2;
-        when(service.getCIBundles(BundleType.PUBLIC, null, null, null, limit, page)).thenReturn(
-                new CIBundlesResource()
-        );
-        mvc.perform(get(url)
-                        .param("bundleType", BundleType.PUBLIC.name())
-                        .param("limit", String.valueOf(limit))
-                        .param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        when(service.getCIBundles(BundleType.PUBLIC, null, null, null, limit, page)).thenReturn(new CIBundlesResource());
+        mvc.perform(get(url).param("bundleType", BundleType.PUBLIC.name()).param("limit", String.valueOf(limit)).param("page", String.valueOf(page)).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
     @Test
     void rejectPublicBundleSubscriptionsOK() throws Exception {
         String url = "/bundles/payment-service-providers/{psp-tax-code}/requests/{bundle-request-id}/reject";
-        mvc.perform(post(url, PSP_TAX_CODE, ID_BUNDLE_REQUEST)
-                        .param(CI_TAX_CODE, CI_TAX_CODE)
-                        .param(BUNDLE_NAME, BUNDLE_NAME)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+        mvc.perform(post(url, PSP_TAX_CODE, ID_BUNDLE_REQUEST).param(CI_TAX_CODE, CI_TAX_CODE).param(BUNDLE_NAME, BUNDLE_NAME).contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
         verify(service).rejectPublicBundleSubscriptionByPSP(PSP_TAX_CODE, ID_BUNDLE_REQUEST, CI_TAX_CODE, BUNDLE_NAME);
     }
 
     @Test
     void getBundleCISubscriptionsWithAcceptedStatus() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions";
-        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE)
-                        .param("bundleType", BundleType.PUBLIC.name())
-                        .param("status", BundleSubscriptionStatus.ACCEPTED.name())
-                        .param("limit", "10")
-                        .param("page", "0")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE).param("bundleType", BundleType.PUBLIC.name()).param("status", BundleSubscriptionStatus.ACCEPTED.name()).param("limit", "10").param("page", "0").contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
         verify(service).getAcceptedBundleCISubscriptions(BUNDLE_ID, PSP_TAX_CODE, null, 10, 0);
         verify(service, never()).getWaitingBundleCISubscriptions(BUNDLE_ID, PSP_TAX_CODE, BundleType.PUBLIC, null, 10, 0);
     }
@@ -283,13 +214,7 @@ class CommissionBundleControllerTest {
     @Test
     void getBundleCISubscriptionsWithWaitingStatus() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions";
-        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE)
-                        .param("bundleType", BundleType.PUBLIC.name())
-                        .param("status", BundleSubscriptionStatus.WAITING.name())
-                        .param("limit", "10")
-                        .param("page", "0")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE).param("bundleType", BundleType.PUBLIC.name()).param("status", BundleSubscriptionStatus.WAITING.name()).param("limit", "10").param("page", "0").contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
         verify(service, never()).getAcceptedBundleCISubscriptions(BUNDLE_ID, PSP_TAX_CODE, null, 10, 0);
         verify(service).getWaitingBundleCISubscriptions(BUNDLE_ID, PSP_TAX_CODE, BundleType.PUBLIC, null, 10, 0);
     }
@@ -297,11 +222,7 @@ class CommissionBundleControllerTest {
     @Test
     void getBundleCISubscriptionsDetailWithAcceptedStatus() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}";
-        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE)
-                        .param("bundleType", BundleType.PUBLIC.name())
-                        .param("status", BundleSubscriptionStatus.ACCEPTED.name())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE).param("bundleType", BundleType.PUBLIC.name()).param("status", BundleSubscriptionStatus.ACCEPTED.name()).contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
         verify(service).getAcceptedBundleCISubscriptionsDetail(BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE);
         verify(service, never()).getWaitingBundleCISubscriptionsDetail(BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE, BundleType.PUBLIC);
     }
@@ -309,11 +230,7 @@ class CommissionBundleControllerTest {
     @Test
     void getBundleCISubscriptionsDetailWithWaitingStatus() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/subscriptions/{ci-tax-code}";
-        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE)
-                        .param("bundleType", BundleType.PUBLIC.name())
-                        .param("status", BundleSubscriptionStatus.WAITING.name())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+        mvc.perform(get(url, BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE).param("bundleType", BundleType.PUBLIC.name()).param("status", BundleSubscriptionStatus.WAITING.name()).contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
         verify(service, never()).getAcceptedBundleCISubscriptionsDetail(BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE);
         verify(service).getWaitingBundleCISubscriptionsDetail(BUNDLE_ID, PSP_TAX_CODE, CI_TAX_CODE, BundleType.PUBLIC);
     }
@@ -321,19 +238,14 @@ class CommissionBundleControllerTest {
     @Test
     void deleteCIBundleSubscriptionOK() throws Exception {
         String url = "/bundles/{ci-bundle-id}/creditor-institutions/{ci-tax-code}";
-        mvc.perform(delete(url, CI_BUNDLE_ID, CI_TAX_CODE)
-                        .param(BUNDLE_NAME, BUNDLE_NAME)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+        mvc.perform(delete(url, CI_BUNDLE_ID, CI_TAX_CODE).param(BUNDLE_NAME, BUNDLE_NAME).contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
         verify(service).deleteCIBundleSubscription(CI_BUNDLE_ID, CI_TAX_CODE, BUNDLE_NAME);
     }
 
     @Test
     void deleteCIBundleRequestOK() throws Exception {
         String url = "/bundles/creditor-institutions/{ci-tax-code}/requests/{bundle-request-id}";
-        mvc.perform(delete(url, CI_TAX_CODE, ID_BUNDLE_REQUEST)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+        mvc.perform(delete(url, CI_TAX_CODE, ID_BUNDLE_REQUEST).contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
         verify(service).deleteCIBundleRequest(ID_BUNDLE_REQUEST, CI_TAX_CODE);
     }
 
@@ -342,22 +254,14 @@ class CommissionBundleControllerTest {
         PublicBundleRequest bundleRequest = new PublicBundleRequest();
 
         String url = "/bundles/creditor-institutions/{ci-tax-code}/requests";
-        mvc.perform(post(url, CI_TAX_CODE)
-                        .param(BUNDLE_NAME, BUNDLE_NAME)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(mapper.writeValueAsString(bundleRequest))
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+        mvc.perform(post(url, CI_TAX_CODE).param(BUNDLE_NAME, BUNDLE_NAME).contentType(MediaType.APPLICATION_JSON_VALUE).content(mapper.writeValueAsString(bundleRequest)).contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
         verify(service).createCIBundleRequest(CI_TAX_CODE, bundleRequest, BUNDLE_NAME);
     }
 
     @Test
     void deletePrivateBundleOfferOK() throws Exception {
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/offers/{bundle-offer-id}";
-        mvc.perform(delete(url, BUNDLE_ID, PSP_TAX_CODE, ID_BUNDLE_OFFER)
-                        .param("ciTaxCode", CI_TAX_CODE)
-                        .param("bundleName", BUNDLE_NAME))
-                .andExpect(status().isOk());
+        mvc.perform(delete(url, BUNDLE_ID, PSP_TAX_CODE, ID_BUNDLE_OFFER).param("ciTaxCode", CI_TAX_CODE).param("bundleName", BUNDLE_NAME)).andExpect(status().isOk());
 
         verify(service).deletePrivateBundleOffer(BUNDLE_ID, PSP_TAX_CODE, ID_BUNDLE_OFFER, CI_TAX_CODE, BUNDLE_NAME);
     }
@@ -367,11 +271,7 @@ class CommissionBundleControllerTest {
         CiTaxCodeList body = CiTaxCodeList.builder().ciTaxCodes(Collections.singletonList(CI_TAX_CODE)).build();
 
         String url = "/bundles/{id-bundle}/payment-service-providers/{psp-tax-code}/offers";
-        mvc.perform(post(url, BUNDLE_ID, PSP_TAX_CODE)
-                        .param("bundleName", BUNDLE_NAME)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(mapper.writeValueAsString(body)))
-                .andExpect(status().isOk());
+        mvc.perform(post(url, BUNDLE_ID, PSP_TAX_CODE).param("bundleName", BUNDLE_NAME).contentType(MediaType.APPLICATION_JSON_VALUE).content(mapper.writeValueAsString(body))).andExpect(status().isOk());
 
         verify(service).createCIBundleOffers(anyString(), anyString(), anyString(), any());
     }
@@ -380,12 +280,7 @@ class CommissionBundleControllerTest {
     void acceptPrivateBundleOfferTest() throws Exception {
         String url = "/bundles/creditor-institutions/{ci-tax-code}/offers/{id-bundle-offer}/accept";
 
-        mvc.perform(post(url, CI_TAX_CODE, ID_BUNDLE_OFFER)
-                        .param("bundleName", BUNDLE_NAME)
-                        .param("pspTaxCode", PSP_TAX_CODE)
-                        .content(mapper.writeValueAsString(new CIBundleAttributeResource()))
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+        mvc.perform(post(url, CI_TAX_CODE, ID_BUNDLE_OFFER).param("bundleName", BUNDLE_NAME).param("pspTaxCode", PSP_TAX_CODE).content(mapper.writeValueAsString(new CIBundleAttributeResource())).contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
         verify(service).acceptPrivateBundleOffer(eq(CI_TAX_CODE), eq(ID_BUNDLE_OFFER), eq(PSP_TAX_CODE), eq(BUNDLE_NAME), any());
     }
 
@@ -393,10 +288,7 @@ class CommissionBundleControllerTest {
     void rejectPrivateBundleOfferTest() throws Exception {
         String url = "/bundles/creditor-institutions/{ci-tax-code}/offers/{id-bundle-offer}/reject";
 
-        mvc.perform(post(url, CI_TAX_CODE, ID_BUNDLE_OFFER)
-                        .param("bundleName", BUNDLE_NAME)
-                        .param("pspTaxCode", PSP_TAX_CODE))
-                .andExpect(status().isOk());
+        mvc.perform(post(url, CI_TAX_CODE, ID_BUNDLE_OFFER).param("bundleName", BUNDLE_NAME).param("pspTaxCode", PSP_TAX_CODE)).andExpect(status().isOk());
         verify(service).rejectPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER, PSP_TAX_CODE, BUNDLE_NAME);
     }
 }

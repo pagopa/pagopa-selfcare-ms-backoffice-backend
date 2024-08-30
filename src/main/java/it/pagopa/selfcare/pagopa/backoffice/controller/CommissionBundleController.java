@@ -15,12 +15,15 @@ import it.pagopa.selfcare.pagopa.backoffice.service.CommissionBundleService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -98,9 +101,16 @@ public class CommissionBundleController {
             @Parameter(description = "Commission bundle's type") @RequestParam(name = "bundle-type", required = false) List<BundleType> bundleType,
             @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = false, defaultValue = "0") Integer page,
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
-            @Parameter(description = "Commission bundle's name") @RequestParam(required = false) String name
+            @Parameter(description = "Commission bundle's name") @RequestParam(required = false) String name,
+            @Parameter(description = "Order bundles by maxPaymentAmount", example = "ASC") @RequestParam(required = false) Sort.Direction maxPaymentAmountOrder,
+            @Parameter(description = "Filter bundles with paymentAmount less than") @RequestParam(required = false) Long paymentAmountMinRange,
+            @Parameter(description = "Filter bundles with paymentAmount more than") @RequestParam(required = false) Long paymentAmountMaxRange,
+            @Parameter(description = "Validity date of bundles, used to retrieve all bundles valid before the specified date (yyyy-MM-dd)", example = "2024-05-10") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate validBefore,
+            @Parameter(description = "Validity date of bundles, used to retrieve all bundles valid after the specified date (yyyy-MM-dd)", example = "2024-05-10") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate validAfter,
+            @Parameter(description = "Validity date of bundles, used to retrieve all bundles that expire before the specified date (yyyy-MM-dd)", example = "2024-05-10") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expireBefore,
+            @Parameter(description = "Validity date of bundles, used to retrieve all bundles that expire after the specified date (yyyy-MM-dd)", example = "2024-05-10") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expireAfter
     ) {
-        return this.commissionBundleService.getBundlesByPSP(pspTaxCode, bundleType, name, limit, page);
+        return this.commissionBundleService.getBundlesByPSP(pspTaxCode, bundleType, name, maxPaymentAmountOrder, paymentAmountMinRange, paymentAmountMaxRange, validBefore, validAfter, expireBefore, expireAfter, limit, page);
     }
 
     @PostMapping(value = "/payment-service-providers/{psp-tax-code}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})

@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.20.0-3-next"
+    "version": "2.20.0-4-PPANTT-99-new-filters-bundle-list"
   },
   "servers": [
     {
@@ -2875,6 +2875,84 @@
             "required": false,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "description": "Order bundles by maxPaymentAmount",
+            "example": "ASC",
+            "in": "query",
+            "name": "maxPaymentAmountOrder",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "description": "Filter bundles with paymentAmount less than",
+            "in": "query",
+            "name": "paymentAmountMinRange",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "Filter bundles with paymentAmount more than",
+            "in": "query",
+            "name": "paymentAmountMaxRange",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "Validity date of bundles, used to retrieve all bundles valid before the specified date (yyyy-MM-dd)",
+            "example": "2024-05-10",
+            "in": "query",
+            "name": "validBefore",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "description": "Validity date of bundles, used to retrieve all bundles valid after the specified date (yyyy-MM-dd)",
+            "example": "2024-05-10",
+            "in": "query",
+            "name": "validAfter",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "description": "Validity date of bundles, used to retrieve all bundles that expire before the specified date (yyyy-MM-dd)",
+            "example": "2024-05-10",
+            "in": "query",
+            "name": "expireBefore",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "description": "Validity date of bundles, used to retrieve all bundles that expire after the specified date (yyyy-MM-dd)",
+            "example": "2024-05-10",
+            "in": "query",
+            "name": "expireAfter",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
             }
           }
         ],
