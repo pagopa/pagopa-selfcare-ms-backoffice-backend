@@ -218,6 +218,13 @@ public class BundleAllPages {
                 pspCode,
                 bundleTypeList,
                 null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
                 getAllBundlesWithExpireDatePageLimit,
                 page);
     }
