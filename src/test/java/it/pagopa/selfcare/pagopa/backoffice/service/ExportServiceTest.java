@@ -4,34 +4,35 @@ import com.mongodb.MongoException;
 import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionsEntity;
-import it.pagopa.selfcare.pagopa.backoffice.entity.ProjectCreatedAt;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
+import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.export.BrokerECExportStatus;
 import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerIbansRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerInstitutionsRepository;
+import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.BundleAllPages;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.io.IOException;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@WithMockUser(username = "user1", password = "pwd", roles = "USER")
+@SpringBootTest(classes = {ExportService.class})
 class ExportServiceTest {
 
     @MockBean
@@ -40,8 +41,10 @@ class ExportServiceTest {
     @MockBean
     private BrokerInstitutionsRepository brokerInstitutionsRepository;
 
+    @MockBean
+    private BundleAllPages bundleAllPages;
+
     @Autowired
-    @InjectMocks
     private ExportService exportService;
 
     @Test
@@ -163,5 +166,29 @@ class ExportServiceTest {
             assertNull(result.getBrokerIbansLastUpdate());
             assertNull(result.getBrokerInstitutionsLastUpdate());
         }
+    }
+
+    @Test
+    void exportPSPBundleToCSV() throws IOException {
+        when(bundleAllPages.getAllPSPBundles("pspCode", Collections.singletonList(BundleType.GLOBAL)))
+                .thenReturn(Set.of(buildBundle("id_bundle1"), buildBundle("id_bundle2")));
+
+        byte[] result = assertDoesNotThrow(() ->
+                exportService.exportPSPBundlesToCsv("pspCode", Collections.singletonList(BundleType.GLOBAL)));
+
+        assertNotNull(result);
+    }
+
+    private Bundle buildBundle(String idBundle) {
+        return Bundle.builder()
+                .id(idBundle)
+                .name("bundle_name")
+                .description("description")
+                .paymentAmount(5L)
+                .minPaymentAmount(0L)
+                .maxPaymentAmount(100L)
+                .type(BundleType.GLOBAL)
+                .validityDateTo(LocalDate.now())
+                .build();
     }
 }

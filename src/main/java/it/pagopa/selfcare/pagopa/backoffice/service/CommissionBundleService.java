@@ -58,6 +58,8 @@ public class CommissionBundleService {
 
     private final JiraServiceManagerClient jiraServiceManagerClient;
 
+    private final ExportService exportService;
+
     private final BundleAllPages bundleAllPages;
 
     @Autowired
@@ -70,6 +72,7 @@ public class CommissionBundleService {
             AwsSesClient awsSesClient,
             AsyncNotificationService asyncNotificationService,
             JiraServiceManagerClient jiraServiceManagerClient,
+            ExportService exportService,
             BundleAllPages bundleAllPages
     ) {
         this.gecClient = gecClient;
@@ -80,6 +83,7 @@ public class CommissionBundleService {
         this.awsSesClient = awsSesClient;
         this.asyncNotificationService = asyncNotificationService;
         this.jiraServiceManagerClient = jiraServiceManagerClient;
+        this.exportService = exportService;
         this.bundleAllPages = bundleAllPages;
     }
 
@@ -620,6 +624,21 @@ public class CommissionBundleService {
                 .build();
 
         this.awsSesClient.sendEmail(messageDetail);
+    }
+
+    /**
+     * Export all bundles of the specified PSP and bundle types.
+     * <p>
+     * Retrieves all bundles with the provided filters and return the list in CSV format
+     *
+     * @param pspTaxCode PSP's tax code
+     * @param bundleTypeList the types of bundle to be retrieved
+     * @return the bundles in CSV format
+     */
+    public byte[] exportPSPBundleList(String pspTaxCode, List<BundleType> bundleTypeList) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
+
+        return this.exportService.exportPSPBundlesToCsv(pspCode, bundleTypeList);
     }
 
     private Context buildEmailHtmlBodyContext(String bundleName, String pspName) {

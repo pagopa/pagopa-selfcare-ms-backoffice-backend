@@ -150,6 +150,36 @@ public class BundleAllPages {
         return joinFutures(futures);
     }
 
+    @Cacheable(value = "getAllPSPBundles")
+    public Set<Bundle> getAllPSPBundles(String pspCode, List<BundleType> bundleTypeList) {
+        Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
+        Bundles bundles = getAllPSPBundles(pspCode, bundleTypeList, 1, 0);
+        int numberOfPages = (int) Math.floor((double) bundles.getPageInfo().getTotalItems() / getAllBundlesPageLimit);
+
+        List<CompletableFuture<Set<Bundle>>> futures = new LinkedList<>();
+
+        // create parallel calls
+        CompletableFuture<Set<Bundle>> future = CompletableFuture.supplyAsync(() -> {
+            if (mdcContextMap != null) {
+                MDC.setContextMap(mdcContextMap);
+            }
+            return IntStream.rangeClosed(0, numberOfPages)
+                    .parallel()
+                    .mapToObj(page -> getAllPSPBundles(pspCode, bundleTypeList, getAllBundlesPageLimit, page))
+                    .flatMap(response -> response.getBundleList().stream())
+                    .collect(Collectors.toSet());
+        });
+        futures.add(future);
+
+        // join parallel calls
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(e -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toSet()))
+                .join();
+    }
+
     /**
      * Retrieve a list of creditor institution tax codes that have an active subscription or a request/offer to the
      * specified bundle
@@ -179,6 +209,22 @@ public class BundleAllPages {
                 null,
                 null,
                 expireAt,
+                getAllBundlesWithExpireDatePageLimit,
+                page);
+    }
+
+    private Bundles getAllPSPBundles(String pspCode, List<BundleType> bundleTypeList, Integer getAllBundlesWithExpireDatePageLimit, int page) {
+        return this.gecClient.getBundlesByPSP(
+                pspCode,
+                bundleTypeList,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
                 getAllBundlesWithExpireDatePageLimit,
                 page);
     }

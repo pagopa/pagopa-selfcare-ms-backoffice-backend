@@ -232,4 +232,52 @@ class BundleAllPagesTest {
 
         verify(gecClient, never()).getPublicBundleSubscriptionRequestByPSP(PSP_CODE, null, ID_BUNDLE, 1000, 0);
     }
+
+    @Test
+    void getAllPSPBundlesSuccess() {
+        int limit = 2;
+        ReflectionTestUtils.setField(sut, "getAllBundlesPageLimit", limit);
+
+        String expireAt = LocalDate.now().toString();
+        long numOfBundles = 1L;
+        Bundles bundles = Bundles.builder()
+                .bundleList(Collections.singletonList(new Bundle()))
+                .pageInfo(PageInfo.builder().totalItems(numOfBundles).build())
+                .build();
+        List<BundleType> bundleTypeList = List.of(BundleType.GLOBAL, BundleType.PUBLIC, BundleType.PRIVATE);
+
+        when(gecClient.getBundlesByPSP(
+                PSP_CODE,
+                bundleTypeList,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1,
+                0
+        )).thenReturn(bundles);
+        when(gecClient.getBundlesByPSP(
+                eq(PSP_CODE),
+                eq(bundleTypeList),
+                eq(null),
+                eq(null),
+                eq(null),
+                eq(null),
+                eq(null),
+                eq(null),
+                eq(null),
+                eq(null),
+                eq(limit),
+                anyInt()
+        )).thenReturn(bundles);
+
+        Set<Bundle> result = assertDoesNotThrow(() -> sut.getAllPSPBundles(PSP_CODE, bundleTypeList));
+
+        assertNotNull(result);
+        assertEquals(numOfBundles, result.size());
+    }
 }

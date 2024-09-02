@@ -75,6 +75,9 @@ class CommissionBundleServiceTest {
     private AsyncNotificationService asyncNotificationService;
 
     @MockBean
+    private ExportService exportService;
+
+    @MockBean
     private BundleAllPages bundleAllPages;
 
     @Test
@@ -1028,6 +1031,16 @@ class CommissionBundleServiceTest {
 
         verify(gecClient).rejectPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER);
         verify(awsSesClient).sendEmail(any());
+    }
+
+    @Test
+    void exportPSPBundleListSuccess() {
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+
+        List<BundleType> bundleTypeList = Collections.singletonList(BundleType.GLOBAL);
+        assertDoesNotThrow(() -> sut.exportPSPBundleList(PSP_TAX_CODE, bundleTypeList));
+
+        verify(exportService).exportPSPBundlesToCsv(PSP_CODE, bundleTypeList);
     }
 
 

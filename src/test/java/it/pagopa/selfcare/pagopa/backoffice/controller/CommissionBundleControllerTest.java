@@ -16,6 +16,9 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Public
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.service.CommissionBundleService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,8 +32,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -290,5 +296,26 @@ class CommissionBundleControllerTest {
 
         mvc.perform(post(url, CI_TAX_CODE, ID_BUNDLE_OFFER).param("bundleName", BUNDLE_NAME).param("pspTaxCode", PSP_TAX_CODE)).andExpect(status().isOk());
         verify(service).rejectPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER, PSP_TAX_CODE, BUNDLE_NAME);
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateExportPSPBundleListTestData")
+    void exportPSPBundleListTest(List<BundleType> bundleTypeList) throws Exception {
+        when(service.exportPSPBundleList(anyString(), anyList())).thenReturn("test file".getBytes());
+        String url = "/bundles/payment-service-providers/{psp-tax-code}/export";
+
+        mvc.perform(get(url, PSP_TAX_CODE)
+                        .param("bundleTypeList", bundleTypeList.stream().map(Object::toString)
+                                .collect(Collectors.joining(", "))))
+                .andExpect(status().isOk());
+    }
+
+    private static Stream<Arguments> generateExportPSPBundleListTestData() {
+        return Stream.of(
+                Arguments.of(Collections.singletonList(BundleType.GLOBAL)),
+                Arguments.of(Collections.singletonList(BundleType.PUBLIC)),
+                Arguments.of(Collections.singletonList(BundleType.PRIVATE)),
+                Arguments.of(List.of(BundleType.GLOBAL, BundleType.PUBLIC, BundleType.PRIVATE))
+        );
     }
 }
