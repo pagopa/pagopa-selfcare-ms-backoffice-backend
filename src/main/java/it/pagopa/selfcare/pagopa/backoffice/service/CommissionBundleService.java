@@ -14,11 +14,13 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.Cre
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
+import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.BundleAllPages;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
@@ -56,6 +58,10 @@ public class CommissionBundleService {
 
     private final JiraServiceManagerClient jiraServiceManagerClient;
 
+    private final ExportService exportService;
+
+    private final BundleAllPages bundleAllPages;
+
     @Autowired
     public CommissionBundleService(
             GecClient gecClient,
@@ -65,7 +71,10 @@ public class CommissionBundleService {
             ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
             AwsSesClient awsSesClient,
             AsyncNotificationService asyncNotificationService,
-            JiraServiceManagerClient jiraServiceManagerClient) {
+            JiraServiceManagerClient jiraServiceManagerClient,
+            ExportService exportService,
+            BundleAllPages bundleAllPages
+    ) {
         this.gecClient = gecClient;
         this.modelMapper = modelMapper;
         this.taxonomyService = taxonomyService;
@@ -74,6 +83,8 @@ public class CommissionBundleService {
         this.awsSesClient = awsSesClient;
         this.asyncNotificationService = asyncNotificationService;
         this.jiraServiceManagerClient = jiraServiceManagerClient;
+        this.exportService = exportService;
+        this.bundleAllPages = bundleAllPages;
     }
 
     public BundlePaymentTypes getBundlesPaymentTypes(Integer limit, Integer page) {
@@ -86,14 +97,38 @@ public class CommissionBundleService {
         return modelMapper.map(dto, Touchpoints.class);
     }
 
+    /**
+     * Retrieve bundles' list by PSP tax code
+     * @param pspTaxCode PSP's tax code
+     * @param name bundle name
+     * @param bundleType list of bundle types
+     * @param maxPaymentAmountOrder direction to order the list based on the bundle's maxPaymentAmount
+     * @param paymentAmountMinRange filters bundles with paymentAmount more than paymentAmountMinRange
+     * @param paymentAmountMaxRange filters bundles with paymentAmount less than paymentAmountMaxRange
+     * @param validBefore filters bundles with validityDateFrom before the value of validBefore
+     * @param validAfter filters bundles with validityDateFrom after the value of validAfter
+     * @param expireBefore filters bundles with validityDateTo before the value of expireBefore
+     * @param expireAfter filters bundles with validityDateTo after the value of expireAfter
+     * @param page page's number for pagination
+     * @param limit maximum number of elements for page
+     * @return list of bundles ordered and filtered
+     */
     public PSPBundlesResource getBundlesByPSP(
             String pspTaxCode,
             List<BundleType> bundleType,
-            String name, Integer limit,
+            String name,
+            Sort.Direction maxPaymentAmountOrder,
+            Long paymentAmountMinRange,
+            Long paymentAmountMaxRange,
+            LocalDate validBefore,
+            LocalDate validAfter,
+            LocalDate expireBefore,
+            LocalDate expireAfter,
+            Integer limit,
             Integer page
     ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
-        Bundles bundles = this.gecClient.getBundlesByPSP(pspCode, bundleType, name, limit, page);
+        Bundles bundles = this.gecClient.getBundlesByPSP(pspCode, bundleType, name, maxPaymentAmountOrder, paymentAmountMinRange, paymentAmountMaxRange, validBefore, validAfter, expireBefore, expireAfter, limit, page);
         List<PSPBundleResource> bundlesResource = new ArrayList<>();
         if (bundles.getBundleList() != null) {
             bundlesResource = getPSPBundlesResource(bundles);
@@ -109,7 +144,7 @@ public class CommissionBundleService {
         jiraServiceManagerClient.createTicket(
                 String.format(SUBJECT_NEW_BUNDLE_GEC, bundle.getPspBusinessName()),
                 String.format(DETAIL_NEW_BUNDLE_GEC,
-                        bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, deNull(bundle.getValidityDateFrom()), url,result.getIdBundle())
+                        bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, deNull(bundle.getValidityDateFrom()), url, result.getIdBundle())
         );
         return result;
     }
@@ -144,7 +179,8 @@ public class CommissionBundleService {
             BundleType bundleType
     ) {
         String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
-        this.asyncNotificationService.notifyDeletePSPBundleAsync(pspCode, idBundle, bundleName, pspName, bundleType);
+        Set<String> ciTaxCodes = this.bundleAllPages.getAllCITaxCodesAssociatedToABundle(idBundle, bundleType, pspCode);
+        this.asyncNotificationService.notifyDeletePSPBundleAsync(ciTaxCodes, bundleName, pspName);
 
         this.gecClient.deletePSPBundle(pspCode, idBundle);
     }
@@ -588,6 +624,21 @@ public class CommissionBundleService {
                 .build();
 
         this.awsSesClient.sendEmail(messageDetail);
+    }
+
+    /**
+     * Export all bundles of the specified PSP and bundle types.
+     * <p>
+     * Retrieves all bundles with the provided filters and return the list in CSV format
+     *
+     * @param pspTaxCode PSP's tax code
+     * @param bundleTypeList the types of bundle to be retrieved
+     * @return the bundles in CSV format
+     */
+    public byte[] exportPSPBundleList(String pspTaxCode, List<BundleType> bundleTypeList) {
+        String pspCode = this.legacyPspCodeUtil.retrievePspCode(pspTaxCode, true);
+
+        return this.exportService.exportPSPBundlesToCsv(pspCode, bundleTypeList);
     }
 
     private Context buildEmailHtmlBodyContext(String bundleName, String pspName) {

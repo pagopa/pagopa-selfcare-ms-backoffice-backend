@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.22.0"
+    "version": "2.20.0-8-next"
   },
   "servers": [
     {
@@ -2876,6 +2876,84 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "description": "Order bundles by maxPaymentAmount",
+            "example": "ASC",
+            "in": "query",
+            "name": "maxPaymentAmountOrder",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "description": "Filter bundles with paymentAmount less than",
+            "in": "query",
+            "name": "paymentAmountMinRange",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "Filter bundles with paymentAmount more than",
+            "in": "query",
+            "name": "paymentAmountMaxRange",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "Validity date of bundles, used to retrieve all bundles valid before the specified date (yyyy-MM-dd)",
+            "example": "2024-05-10",
+            "in": "query",
+            "name": "validBefore",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "description": "Validity date of bundles, used to retrieve all bundles valid after the specified date (yyyy-MM-dd)",
+            "example": "2024-05-10",
+            "in": "query",
+            "name": "validAfter",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "description": "Validity date of bundles, used to retrieve all bundles that expire before the specified date (yyyy-MM-dd)",
+            "example": "2024-05-10",
+            "in": "query",
+            "name": "expireBefore",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "description": "Validity date of bundles, used to retrieve all bundles that expire after the specified date (yyyy-MM-dd)",
+            "example": "2024-05-10",
+            "in": "query",
+            "name": "expireAfter",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
           }
         ],
         "responses": {
@@ -3048,6 +3126,138 @@
           "Commission bundles"
         ]
       }
+    },
+    "/bundles/payment-service-providers/{psp-tax-code}/export": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | Y\n",
+        "operationId": "exportPSPBundleList",
+        "parameters": [
+          {
+            "description": "Tax code of the payment service provider",
+            "in": "path",
+            "name": "psp-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Commission bundle's type",
+            "in": "query",
+            "name": "bundleTypeList",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "GLOBAL",
+                  "PUBLIC",
+                  "PRIVATE"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Export all commission bundle related to a PSP",
+        "tags": [
+          "Commission bundles"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
     },
     "/bundles/payment-service-providers/{psp-tax-code}/requests/{bundle-request-id}/accept": {
       "parameters": [
