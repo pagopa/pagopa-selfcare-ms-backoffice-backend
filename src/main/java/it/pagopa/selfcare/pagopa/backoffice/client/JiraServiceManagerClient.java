@@ -6,7 +6,6 @@ import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import it.pagopa.selfcare.pagopa.backoffice.util.Constants;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,32 +13,45 @@ import org.springframework.stereotype.Service;
 @Service
 public class JiraServiceManagerClient {
 
-    @Autowired
-    private JiraRestClient jiraRestClient;
+    private final JiraRestClient jiraRestClient;
 
-    @Value("${jira.project.key}")
-    private String projectKey;
+    private final String projectKey;
 
-    @Value("${jira.reqTypeTaskId}")
-    private String reqTypeTaskId;
+    private final String reqTypeTaskId;
 
-    @Value("${info.properties.environment}")
-    private String env;
+    private final String env;
 
-    public void setReqTypeTaskId(String reqTypeTaskId) {
+    public JiraServiceManagerClient(
+            JiraRestClient jiraRestClient,
+            @Value("${jira.project.key}") String projectKey,
+            @Value("${jira.reqTypeTaskId}") String reqTypeTaskId,
+            @Value("${info.properties.environment}") String env
+    ) {
+        this.jiraRestClient = jiraRestClient;
+        this.projectKey = projectKey;
         this.reqTypeTaskId = reqTypeTaskId;
+        this.env = env;
     }
 
-    public String createTicket(String summary, String description) {
+    /**
+     * Create a ticket with the given summary and description
+     *
+     * @param summary     the ticket summary
+     * @param description the ticket description
+     */
+    public void createTicket(String summary, String description) {
+        if (!this.env.equals("uat") && !this.env.equals("prod")) {
+            log.warn("Skip JIRA ticket creation process");
+            return;
+        }
+        log.trace("createTicket start");
+        log.debug("createInstitution summary = {}, description = {}", summary, description);
         try {
-            log.trace("createTicket start");
-            log.debug("createInstitution summary = {}, description = {}", summary, description);
-
             // https://sitename.atlassian.net/rest/api/latest/project
-            IssueRestClient issueClient = jiraRestClient.getIssueClient();
+            IssueRestClient issueClient = this.jiraRestClient.getIssueClient();
 
-            IssueInput newIssue = new IssueInputBuilder(
-                    projectKey, Long.parseLong(reqTypeTaskId), "[BOpagopa] [" + env + "] " + summary)
+            String ticketSummary = String.format("[BOpagopa] [%s] %s", env, summary);
+            IssueInput newIssue = new IssueInputBuilder(this.projectKey, Long.parseLong(this.reqTypeTaskId), ticketSummary)
                     .setFieldValue("description", description)
                     .build();
 
@@ -47,10 +59,8 @@ public class JiraServiceManagerClient {
 
             log.debug(Constants.CONFIDENTIAL_MARKER, "createTicket number = {}", ticketId);
             log.trace("createTicket end");
-            return String.format("Created ticket %s", ticketId);
         } catch (Exception e) {
-            log.error("createTicket error: " + e.getMessage());
-            return "createTicket error: " + e.getMessage();
+            log.error("createTicket error", e);
         }
     }
 }
