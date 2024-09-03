@@ -228,12 +228,15 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void regeneratePrimaryKey() {
+    void regeneratePrimaryKey() throws IOException {
+        InstitutionResponse institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json", InstitutionResponse.class);
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys("gdp-123456");
         when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
         when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder()
                 .id("auth-id")
                 .build());
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
 
         assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, "gdp-123456"));
 
@@ -282,8 +285,12 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void regenerateSecondaryKey() {
+    void regenerateSecondaryKey() throws IOException {
+        InstitutionResponse institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json", InstitutionResponse.class);
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys("gdp-123456");
+
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
         when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder()
                 .id("auth-id")

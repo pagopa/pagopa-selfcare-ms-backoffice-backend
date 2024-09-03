@@ -201,9 +201,7 @@ public class ApiManagementService {
 
 
     private List<DelegationExternal> getDelegationResponse(String institutionId, Subscription subscriptionCode) {
-        if (subscriptionCode == Subscription.FDR_PSP ||
-                subscriptionCode == Subscription.FDR_ORG ||
-                subscriptionCode == Subscription.GPD) {
+        if (Boolean.TRUE.equals(subscriptionCode.getAuthDelegations())) {
             return this.externalApiClient.getBrokerDelegation(
                     null, institutionId, "prod-pagopa", "FULL", null);
         }
@@ -257,7 +255,14 @@ public class ApiManagementService {
             String authorizationId = createAuthorizationId(subscriptionPrefixId, institutionId, isPrimaryKey);
             authorization = this.authorizerConfigClient.getAuthorization(authorizationId);
             this.authorizerConfigClient.deleteAuthorization(authorization.getId());
+
             authorization.setSubscriptionKey(isPrimaryKey ? apiKeys.getPrimaryKey() : apiKeys.getSecondaryKey());
+
+            InstitutionResponse institution =
+                    getInstitutionResponse(institutionId);
+            List<DelegationExternal> delegationResponse = getDelegationResponse(institutionId, Subscription.fromPrefix(subscriptionPrefixId));
+            authorization.setAuthorizedEntities(getAuthorizationEntities(institution, delegationResponse));
+
             this.authorizerConfigClient.createAuthorization(authorization);
         } catch (FeignException.NotFound e) {
             createSubscriptionKeys(institutionId, Subscription.fromPrefix(subscriptionPrefixId));
@@ -282,7 +287,24 @@ public class ApiManagementService {
             boolean isPrimaryKey,
             List<DelegationExternal> delegationResponse
     ) {
+        return Authorization.builder()
+                .id(createAuthorizationId(subscriptionPrefixId, institution.getId(), isPrimaryKey))
+                .domain(domain)
+                .subscriptionKey(subscriptionKey)
+                .description(String.format("%s key configuration for %s", isPrimaryKey ? PRIMARY : SECONDARY, domain))
+                .owner(AuthorizationOwner.builder()
+                        .id(institution.getTaxCode())
+                        .name(institution.getDescription())
+                        .type(getOwnerType(institution))
+                        .build())
+                .authorizedEntities(getAuthorizationEntities(institution, delegationResponse))
+                .otherMetadata(Collections.emptyList())
+                .build();
+    }
+
+    private static List<AuthorizationEntity> getAuthorizationEntities(InstitutionResponse institution, List<DelegationExternal> delegationResponse) {
         List<AuthorizationEntity> authorizedEntities = new ArrayList<>();
+
         if (delegationResponse != null && !delegationResponse.isEmpty()) {
             authorizedEntities = new ArrayList<>(delegationResponse.stream()
                     .map(elem -> AuthorizationEntity.builder()
@@ -295,20 +317,7 @@ public class ApiManagementService {
                 .name(institution.getDescription())
                 .value(institution.getTaxCode())
                 .build());
-
-        return Authorization.builder()
-                .id(createAuthorizationId(subscriptionPrefixId, institution.getId(), isPrimaryKey))
-                .domain(domain)
-                .subscriptionKey(subscriptionKey)
-                .description(String.format("%s key configuration for %s", isPrimaryKey ? PRIMARY : SECONDARY, domain))
-                .owner(AuthorizationOwner.builder()
-                        .id(institution.getTaxCode())
-                        .name(institution.getDescription())
-                        .type(getOwnerType(institution))
-                        .build())
-                .authorizedEntities(authorizedEntities)
-                .otherMetadata(Collections.emptyList())
-                .build();
+        return authorizedEntities;
     }
 
     private String getOwnerType(InstitutionResponse institution) {
