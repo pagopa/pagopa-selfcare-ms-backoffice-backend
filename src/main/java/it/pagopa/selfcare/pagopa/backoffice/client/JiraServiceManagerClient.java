@@ -6,8 +6,11 @@ import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import it.pagopa.selfcare.pagopa.backoffice.util.Constants;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.sanitizeLogParam;
 
 @Slf4j
 @Service
@@ -21,6 +24,7 @@ public class JiraServiceManagerClient {
 
     private final String env;
 
+    @Autowired
     public JiraServiceManagerClient(
             JiraRestClient jiraRestClient,
             @Value("${jira.project.key}") String projectKey,
@@ -45,7 +49,7 @@ public class JiraServiceManagerClient {
             return;
         }
         log.trace("createTicket start");
-        log.debug("createInstitution summary = {}, description = {}", summary, description);
+        log.debug("createInstitution summary = {}, description = {}", sanitizeLogParam(summary), sanitizeLogParam(description));
         try {
             // https://sitename.atlassian.net/rest/api/latest/project
             IssueRestClient issueClient = this.jiraRestClient.getIssueClient();
