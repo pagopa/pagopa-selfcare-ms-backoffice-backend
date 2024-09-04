@@ -44,7 +44,7 @@ public class JiraServiceManagerClient {
      * @param description the ticket description
      */
     public void createTicket(String summary, String description) {
-        if (!this.env.equals("uat") && !this.env.equals("prod")) {
+        if (!this.env.equals("UAT") && !this.env.equals("PROD")) {
             log.warn("Skip JIRA ticket creation process");
             return;
         }
