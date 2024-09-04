@@ -132,7 +132,7 @@ public class AwsSesClient {
     }
 
     private String[] getToAddressList(String taxCode, SelfcareProductUser destinationUserType) {
-        if (!this.environment.equals("prod")) {
+        if (!this.environment.equals("PROD")) {
             return new String[]{testEmailAddress};
         }
         Optional<Institution> optionalInstitution = this.externalApiClient.getInstitutionsFiltered(taxCode)
@@ -159,10 +159,10 @@ public class AwsSesClient {
     }
 
     private boolean isProdWithNullDestinationInstitutionTaxCode(String taxCode) {
-        return this.environment.equals("prod") && taxCode == null;
+        return this.environment.equals("PROD") && taxCode == null;
     }
 
     private boolean isNotProdWithoutTestEmail() {
-        return !this.environment.equals("prod") && StringUtils.isBlank(testEmailAddress);
+        return !this.environment.equals("PROD") && StringUtils.isBlank(testEmailAddress);
     }
 }

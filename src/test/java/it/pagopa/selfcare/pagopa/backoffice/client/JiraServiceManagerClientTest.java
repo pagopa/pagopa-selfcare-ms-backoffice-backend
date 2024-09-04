@@ -29,7 +29,7 @@ class JiraServiceManagerClientTest {
 
     @Test
     void createTicketSuccessPROD() {
-        ReflectionTestUtils.setField(sut, "env", "prod");
+        ReflectionTestUtils.setField(sut, "env", "PROD");
         ReflectionTestUtils.setField(sut, "projectKey", "project");
         ReflectionTestUtils.setField(sut, "reqTypeTaskId", "12345");
 
@@ -46,7 +46,7 @@ class JiraServiceManagerClientTest {
 
     @Test
     void createTicketSuccessUAT() {
-        ReflectionTestUtils.setField(sut, "env", "uat");
+        ReflectionTestUtils.setField(sut, "env", "UAT");
         ReflectionTestUtils.setField(sut, "projectKey", "project");
         ReflectionTestUtils.setField(sut, "reqTypeTaskId", "12345");
 
@@ -63,7 +63,7 @@ class JiraServiceManagerClientTest {
 
     @Test
     void createTicketFailDEV() {
-        ReflectionTestUtils.setField(sut, "env", "dev");
+        ReflectionTestUtils.setField(sut, "env", "DEV");
         ReflectionTestUtils.setField(sut, "projectKey", "project");
         ReflectionTestUtils.setField(sut, "reqTypeTaskId", "12345");
 
@@ -85,7 +85,7 @@ class JiraServiceManagerClientTest {
 
     @Test
     void createTicketFail() {
-        ReflectionTestUtils.setField(sut, "env", "uat");
+        ReflectionTestUtils.setField(sut, "env", "UAT");
         ReflectionTestUtils.setField(sut, "projectKey", "project");
         ReflectionTestUtils.setField(sut, "reqTypeTaskId", "12345");
 
