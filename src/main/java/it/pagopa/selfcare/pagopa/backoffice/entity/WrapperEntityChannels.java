@@ -58,7 +58,7 @@ public class WrapperEntityChannels implements Persistable<String> {
     public WrapperEntityChannels(WrapperEntityChannel wrapperEntity) {
         this.createdAt = Instant.now();
         this.id = wrapperEntity.getEntity().getChannelCode();
-        this.type = WrapperType.STATION;
+        this.type = WrapperType.CHANNEL;
         this.brokerCode = wrapperEntity.getEntity().getBrokerPspCode();
         this.status = wrapperEntity.getStatus();
         if (entities == null) {
