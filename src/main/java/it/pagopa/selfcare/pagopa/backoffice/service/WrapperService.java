@@ -151,11 +151,13 @@ public class WrapperService {
             String createdBy
     ) {
         String channelCode = channelDetails.getChannelCode();
-        Optional<WrapperEntities> opt = repository.findById(channelCode);
-        if (opt.isEmpty()) {
-            throw new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode);
+        Optional<WrapperEntities> optionalWrapperEntities = repository.findById(channelCode);
+
+        if (optionalWrapperEntities.isEmpty()) {
+            return createWrapperChannel(channelDetails, WrapperStatus.valueOf(status));
         }
-        WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) opt.get();
+
+        WrapperEntities<ChannelDetails> wrapperEntities = optionalWrapperEntities.get();
         wrapperEntities.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
         WrapperEntity<ChannelDetails> wrapperEntity = new WrapperEntity<>(channelDetails);
         wrapperEntity.setNote(note);
@@ -177,19 +179,37 @@ public class WrapperService {
      */
     public WrapperEntityChannels updateWrapperChannel(String channelCode, ChannelDetails channelDetails) {
         String modifiedBy = this.auditorAware.getCurrentAuditor().orElse(null);
+        Instant now = Instant.now();
 
-        WrapperEntityChannels wrapperEntities = this.wrapperChannelsRepository.findById(channelCode)
-                .orElseThrow(() -> new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode));
+        Optional<WrapperEntityChannels> optionalWrapperEntities = this.wrapperChannelsRepository.findById(channelCode);
 
+        if (optionalWrapperEntities.isEmpty()) {
+            WrapperEntityChannel entityChannel = new WrapperEntityChannel(channelDetails);
+            entityChannel.setCreatedAt(now);
+            entityChannel.setModifiedAt(now);
+            entityChannel.setModifiedBy(modifiedBy);
+            entityChannel.setStatus(WrapperStatus.TO_CHECK_UPDATE);
+
+            WrapperEntityChannels wrapperEntities = new WrapperEntityChannels(entityChannel);
+            wrapperEntities.setStatus(WrapperStatus.TO_CHECK_UPDATE);
+            wrapperEntities.setModifiedBy(modifiedBy);
+            wrapperEntities.setCreatedBy(modifiedBy);
+            wrapperEntities.setCreatedAt(now);
+            return this.wrapperChannelsRepository.save(wrapperEntities);
+        }
+
+        WrapperEntityChannels wrapperEntities = optionalWrapperEntities.get();
         WrapperEntityChannel wrapper = getChannelWrapperEntityOperationsSortedList(wrapperEntities).get(0);
         WrapperStatus newWrapperStatus = getNewWrapperStatusForUpdate(channelCode, wrapper.getStatus());
 
         wrapperEntities.setModifiedBy(modifiedBy);
+        wrapperEntities.setModifiedAt(now);
         wrapperEntities.setStatus(newWrapperStatus);
 
         WrapperEntityChannel wrapperEntity = new WrapperEntityChannel(channelDetails);
         wrapperEntity.setStatus(newWrapperStatus);
         wrapperEntity.setModifiedBy(modifiedBy);
+        wrapperEntity.setModifiedAt(now);
         wrapperEntities.getEntities().add(wrapperEntity);
         return this.wrapperChannelsRepository.save(wrapperEntities);
     }
@@ -282,9 +302,13 @@ public class WrapperService {
             String createdBy
     ) {
         String stationCode = stationDetails.getStationCode();
-        WrapperEntities<StationDetails> wrapperEntities = this.repository.findById(stationCode)
-                .orElseThrow(() -> new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode));
+        Optional<WrapperEntities> optionalWrapperEntities = this.repository.findById(stationCode);
 
+        if (optionalWrapperEntities.isEmpty()) {
+            return createWrapperStation(stationDetails, WrapperStatus.valueOf(status));
+        }
+
+        WrapperEntities<StationDetails> wrapperEntities = optionalWrapperEntities.get();
         WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetails);
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
@@ -553,20 +577,36 @@ public class WrapperService {
      * @return the updated wrapper station
      */
     public WrapperEntityStations updateWrapperStation(String stationCode, StationDetails stationDetails) {
-        WrapperEntityStations wrapperEntities = this.wrapperStationsRepository.findById(stationCode)
-                .orElseThrow(() -> new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode));
+        Optional<WrapperEntityStations> optionalWrapperEntities = this.wrapperStationsRepository.findById(stationCode);
         String modifiedBy = this.auditorAware.getCurrentAuditor().orElse(null);
+        Instant now = Instant.now();
 
+        if (optionalWrapperEntities.isEmpty()) {
+            WrapperEntityStation entityStation = new WrapperEntityStation(stationDetails);
+            entityStation.setCreatedAt(now);
+            entityStation.setModifiedAt(now);
+            entityStation.setModifiedBy(modifiedBy);
+            entityStation.setStatus(WrapperStatus.TO_CHECK_UPDATE);
+
+            WrapperEntityStations wrapperEntities = new WrapperEntityStations(entityStation);
+            wrapperEntities.setStatus(WrapperStatus.TO_CHECK_UPDATE);
+            wrapperEntities.setModifiedBy(modifiedBy);
+            wrapperEntities.setCreatedBy(modifiedBy);
+            wrapperEntities.setCreatedAt(now);
+            return this.wrapperStationsRepository.save(wrapperEntities);
+        }
+
+        WrapperEntityStations wrapperEntities = optionalWrapperEntities.get();
         WrapperEntityStation mostRecentEntity = getStationWrapperEntityOperationsSortedList(wrapperEntities).get(0);
         WrapperStatus newWrapperStatus = getNewWrapperStatusForUpdate(stationCode, mostRecentEntity.getStatus());
 
         WrapperEntityStation entityStation = new WrapperEntityStation(stationDetails);
-        entityStation.setModifiedAt(Instant.now());
+        entityStation.setModifiedAt(now);
         entityStation.setModifiedBy(modifiedBy);
         entityStation.setStatus(newWrapperStatus);
 
         wrapperEntities.setStatus(newWrapperStatus);
-        wrapperEntities.setModifiedAt(Instant.now());
+        wrapperEntities.setModifiedAt(now);
         wrapperEntities.setModifiedBy(modifiedBy);
         wrapperEntities.getEntities().add(entityStation);
         return this.wrapperStationsRepository.save(wrapperEntities);

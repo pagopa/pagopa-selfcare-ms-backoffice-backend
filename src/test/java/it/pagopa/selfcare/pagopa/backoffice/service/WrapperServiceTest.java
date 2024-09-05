@@ -337,17 +337,13 @@ class WrapperServiceTest {
     }
 
     @Test
-    void updateWrapperChannelFailNotFound() {
+    void updateWrapperChannelSuccessNotFoundCreateNewWrapper() {
         when(wrapperChannelsRepository.findById(CHANNEL_CODE)).thenReturn(Optional.empty());
 
-        ChannelDetails channelDetails = buildChannelDetails();
-        AppException e = assertThrows(AppException.class, () -> sut.updateWrapperChannel(CHANNEL_CODE, channelDetails));
+        assertDoesNotThrow(() -> sut.updateWrapperChannel(CHANNEL_CODE, buildChannelDetails()));
 
-        assertNotNull(e);
-        assertEquals(AppError.WRAPPER_CHANNEL_NOT_FOUND.httpStatus, e.getHttpStatus());
-        assertEquals(AppError.WRAPPER_CHANNEL_NOT_FOUND.title, e.getTitle());
-
-        verify(wrapperChannelsRepository, never()).save(any());
+        verify(wrapperChannelsRepository).save(argumentCaptorChannels.capture());
+        assertEquals(WrapperStatus.TO_CHECK_UPDATE, argumentCaptorChannels.getValue().getStatus());
     }
 
     @Test
@@ -401,17 +397,13 @@ class WrapperServiceTest {
     }
 
     @Test
-    void updateWrapperStationFailNotFound() {
+    void updateWrapperStationSuccessNotFoundCreateNewWrapper() {
         when(wrapperStationsRepository.findById(STATION_CODE)).thenReturn(Optional.empty());
 
-        StationDetails stationDetails = buildStationDetails();
-        AppException e = assertThrows(AppException.class, () -> sut.updateWrapperStation(STATION_CODE, stationDetails));
+        assertDoesNotThrow(() -> sut.updateWrapperStation(STATION_CODE, buildStationDetails()));
 
-        assertNotNull(e);
-        assertEquals(AppError.WRAPPER_STATION_NOT_FOUND.httpStatus, e.getHttpStatus());
-        assertEquals(AppError.WRAPPER_STATION_NOT_FOUND.title, e.getTitle());
-
-        verify(wrapperStationsRepository, never()).save(any());
+        verify(wrapperStationsRepository).save(argumentCaptorStations.capture());
+        assertEquals(WrapperStatus.TO_CHECK_UPDATE, argumentCaptorStations.getValue().getStatus());
     }
 
     @Test
