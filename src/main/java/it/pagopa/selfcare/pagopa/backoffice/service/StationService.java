@@ -180,7 +180,7 @@ public class StationService {
 
     public StationCodeResource getStationCode(String ecCode, Boolean v2) {
         if (Boolean.TRUE.equals(v2)) {
-            return new StationCodeResource(wrapperService.getFirstValidStationCodeV2(ecCode));
+            return new StationCodeResource(this.wrapperService.getFirstValidCodeV2(ecCode));
         } else {
             return new StationCodeResource(getFirstValidStationCodeAux(ecCode));
         }

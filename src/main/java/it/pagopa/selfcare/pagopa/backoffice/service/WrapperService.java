@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
@@ -16,15 +17,16 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperChannelList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperChannelsRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperStationsRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.AuditorAware;
@@ -47,6 +49,7 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.REGEX_GENERATE
 import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
 
 @Service
+@Slf4j
 public class WrapperService {
 
     private final ApiConfigClient apiConfigClient;
@@ -411,7 +414,7 @@ public class WrapperService {
         return this.wrapperChannelsRepository.findById(channelCode);
     }
 
-    public WrapperEntitiesList findByIdLikeOrTypeOrBrokerCode(
+    public WrapperChannelList findByIdLikeOrTypeOrBrokerCode(
             String idLike,
             WrapperType wrapperType,
             String brokerCode,
@@ -419,19 +422,19 @@ public class WrapperService {
             Integer size
     ) {
         Pageable paging = PageRequest.of(page, size);
-        Page<WrapperEntities<?>> response;
+        Page<WrapperEntityChannels> response;
 
         if (brokerCode == null && idLike == null) {
-            response = repository.findByType(wrapperType, paging);
+            response = this.wrapperChannelsRepository.findByType(wrapperType, paging);
         } else if (brokerCode == null) {
-            response = repository.findByIdLikeAndType(idLike, wrapperType, paging);
+            response = this.wrapperChannelsRepository.findByIdLikeAndType(idLike, wrapperType, paging);
         } else if (idLike == null) {
-            response = repository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
+            response = this.wrapperChannelsRepository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
         } else {
-            response = repository.findByIdLikeAndTypeAndBrokerCode(idLike, wrapperType, brokerCode, paging);
+            response = this.wrapperChannelsRepository.findByIdLikeAndTypeAndBrokerCode(idLike, wrapperType, brokerCode, paging);
         }
 
-        return WrapperEntitiesList.builder()
+        return WrapperChannelList.builder()
                 .wrapperEntities(response.getContent())
                 .pageInfo(PageInfo.builder()
                         .page(page)
@@ -454,13 +457,13 @@ public class WrapperService {
         Page<WrapperEntityStations> response;
 
         if (brokerCode == null && idLike == null) {
-            response = wrapperStationsRepository.findByType(wrapperType, paging);
+            response = this.wrapperStationsRepository.findByType(wrapperType, paging);
         } else if (brokerCode == null) {
-            response = wrapperStationsRepository.findByIdLikeAndType(idLike, wrapperType, paging);
+            response = this.wrapperStationsRepository.findByIdLikeAndType(idLike, wrapperType, paging);
         } else if (idLike == null) {
-            response = wrapperStationsRepository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
+            response = this.wrapperStationsRepository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
         } else {
-            response = wrapperStationsRepository.findByIdLikeAndTypeAndBrokerCode(idLike, wrapperType, brokerCode, paging);
+            response = this.wrapperStationsRepository.findByIdLikeAndTypeAndBrokerCode(idLike, wrapperType, brokerCode, paging);
         }
 
         return WrapperStationList.builder()
@@ -541,29 +544,32 @@ public class WrapperService {
                 .build();
     }
 
-    public String getFirstValidStationCodeV2(String taxCode) {
-        Stations stations = apiConfigClient.getStations(100, 0, "DESC", null, null, taxCode);
-        var stationMongoList = findStationByIdLikeOrTypeOrBrokerCode(taxCode, WrapperType.STATION, null, 0, 100);
-
-        List<String> stationCodes = new LinkedList<>();
-        stationCodes.addAll(stationMongoList.getWrapperEntities().stream().map(WrapperEntityStations::getId).toList());
-        stationCodes.addAll(stations.getStationsList().stream().map(Station::getStationCode).toList());
-
-        Set<String> validCodes = stationCodes.stream()
-                .filter(s -> s.matches(REGEX_GENERATE))
-                .collect(Collectors.toSet());
-        return generator(validCodes, taxCode);
-    }
-
-    public String getFirstValidChannelCodeV2(String taxCode) {
-        Channels channels = apiConfigClient.getChannels(null, taxCode, "DESC", 100, 0);
-        var channelMongoList = findByIdLikeOrTypeOrBrokerCode(null, WrapperType.CHANNEL, taxCode, 0, 100);
-
+    /**
+     * Compute the first available station/channel code.
+     * <p>
+     * Retrieves all station and channel from Api-Config and Wrapper collection and process the list by extracting the first
+     * valid code.
+     * @param taxCode tax code
+     * @return the first valid code
+     */
+    public String getFirstValidCodeV2(String taxCode) {
         List<String> channelCodes = new LinkedList<>();
-        channelCodes.addAll(channelMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).toList());
-        channelCodes.addAll(channels.getChannelList().stream().map(Channel::getChannelCode).toList());
+        try {
+            Stations stations = this.apiConfigClient.getStations(100, 0, Sort.Direction.DESC.name(), taxCode, null, null);
+            channelCodes.addAll(stations.getStationsList().parallelStream().map(Station::getStationCode).toList());
+        } catch (FeignException.NotFound e) {
+            log.warn("The provided tax code is not of a CI broker", e);
+        }
 
-        Set<String> validCodes = channelCodes.stream()
+        Channels channels = this.apiConfigClient.getChannels(null, taxCode, Sort.Direction.DESC.name(), 100, 0);
+        WrapperChannelList wrapperChannels = findByIdLikeOrTypeOrBrokerCode(null, WrapperType.CHANNEL, taxCode, 0, 100);
+        WrapperStationList wrapperStations = findStationByIdLikeOrTypeOrBrokerCode(null, WrapperType.STATION, taxCode, 0, 100);
+
+        channelCodes.addAll(channels.getChannelList().parallelStream().map(Channel::getChannelCode).toList());
+        channelCodes.addAll(wrapperStations.getWrapperEntities().parallelStream().map(WrapperEntityStations::getId).toList());
+        channelCodes.addAll(wrapperChannels.getWrapperEntities().parallelStream().map(WrapperEntityChannels::getId).toList());
+
+        Set<String> validCodes = channelCodes.parallelStream()
                 .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toSet());
         return generator(validCodes, taxCode);
