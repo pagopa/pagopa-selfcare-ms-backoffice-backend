@@ -290,7 +290,7 @@ class StationServiceTest {
 
         assertEquals(String.format("%s_01", EC_CODE), result.getStationCode());
 
-        verify(wrapperService, never()).getFirstValidStationCodeV2(EC_CODE);
+        verify(wrapperService, never()).getFirstValidCodeV2(EC_CODE);
     }
 
     @Test
@@ -323,13 +323,13 @@ class StationServiceTest {
 
         assertEquals(HttpStatus.CONFLICT, e.getHttpStatus());
 
-        verify(wrapperService, never()).getFirstValidStationCodeV2(EC_CODE);
+        verify(wrapperService, never()).getFirstValidCodeV2(EC_CODE);
         verify(apiConfigClient, never()).getStations(100, 0, SORTING_ASC, null, null, EC_CODE);
     }
 
     @Test
     void getStationCodeV2Success() {
-        when(wrapperService.getFirstValidStationCodeV2(EC_CODE)).thenReturn(STATION_CODE);
+        when(wrapperService.getFirstValidCodeV2(EC_CODE)).thenReturn(STATION_CODE);
 
         StationCodeResource result = assertDoesNotThrow(() -> service.getStationCode(EC_CODE, true));
 

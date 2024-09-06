@@ -553,23 +553,23 @@ public class WrapperService {
      * @return the first valid code
      */
     public String getFirstValidCodeV2(String taxCode) {
-        List<String> channelCodes = new LinkedList<>();
+        List<String> usedCodes = new LinkedList<>();
         try {
             Stations stations = this.apiConfigClient.getStations(100, 0, Sort.Direction.DESC.name(), taxCode, null, null);
-            channelCodes.addAll(stations.getStationsList().parallelStream().map(Station::getStationCode).toList());
+            WrapperStationList wrapperStations = findStationByIdLikeOrTypeOrBrokerCode(null, WrapperType.STATION, taxCode, 0, 100);
+            usedCodes.addAll(stations.getStationsList().parallelStream().map(Station::getStationCode).toList());
+            usedCodes.addAll(wrapperStations.getWrapperEntities().parallelStream().map(WrapperEntityStations::getId).toList());
         } catch (FeignException.NotFound e) {
             log.warn("The provided tax code is not of a CI broker", e);
         }
 
         Channels channels = this.apiConfigClient.getChannels(null, taxCode, Sort.Direction.DESC.name(), 100, 0);
         WrapperChannelList wrapperChannels = findByIdLikeOrTypeOrBrokerCode(null, WrapperType.CHANNEL, taxCode, 0, 100);
-        WrapperStationList wrapperStations = findStationByIdLikeOrTypeOrBrokerCode(null, WrapperType.STATION, taxCode, 0, 100);
 
-        channelCodes.addAll(channels.getChannelList().parallelStream().map(Channel::getChannelCode).toList());
-        channelCodes.addAll(wrapperStations.getWrapperEntities().parallelStream().map(WrapperEntityStations::getId).toList());
-        channelCodes.addAll(wrapperChannels.getWrapperEntities().parallelStream().map(WrapperEntityChannels::getId).toList());
+        usedCodes.addAll(channels.getChannelList().parallelStream().map(Channel::getChannelCode).toList());
+        usedCodes.addAll(wrapperChannels.getWrapperEntities().parallelStream().map(WrapperEntityChannels::getId).toList());
 
-        Set<String> validCodes = channelCodes.parallelStream()
+        Set<String> validCodes = usedCodes.parallelStream()
                 .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toSet());
         return generator(validCodes, taxCode);
