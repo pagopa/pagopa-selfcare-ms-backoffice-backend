@@ -152,6 +152,10 @@ public class PaymentServiceProviderService {
         }
     }
 
+    /**
+     * @deprecated this API invoke the old station code generation logic that can cause collision on wrapper data for PT
+     */
+    @Deprecated(forRemoval = true)
     private String getFirstValidChannelCodeAux(String taxCode) {
         Channels response = apiConfigClient.getChannels(null, taxCode, "DESC", 1, 0);
         List<Channel> codeList = response.getChannelList();
