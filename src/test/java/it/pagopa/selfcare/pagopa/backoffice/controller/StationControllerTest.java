@@ -77,7 +77,7 @@ class StationControllerTest {
 
     @Test
     void getStations() throws Exception {
-        when(stationService.getStations(any(), eq(null), anyString(), eq(null), anyInt()))
+        when(stationService.getStations(any(), eq(null), anyString(), any(), any(), any(), eq(null), anyInt()))
                 .thenReturn(new WrapperStationsResource());
         mvc.perform(get("/stations")
                         .param("status", "ACTIVE")

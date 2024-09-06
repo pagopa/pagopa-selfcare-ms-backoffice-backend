@@ -14,6 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperChannelList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationConnectionTypeFilter;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
@@ -102,16 +103,19 @@ class WrapperServiceTest {
 
     @Test
     void getWrapperStationsWithStationCodeSuccess() {
-        when(wrapperStationsRepository.findByIdLikeAndTypeAndBrokerCodeAndStatusNot(
+        when(wrapperStationsRepository.findByIdLikeAndTypeAndBrokerCodeAndStatusNotAndCreatedAtBetween(
                 eq(STATION_CODE),
                 eq(WrapperType.STATION),
                 eq(BROKER_CODE),
                 eq(WrapperStatus.APPROVED),
+                any(),
+                any(),
                 any())
         ).thenReturn(new PageImpl<>(Collections.singletonList(buildWrapperEntityStations(WrapperStatus.TO_CHECK))));
 
         WrapperStationList result = assertDoesNotThrow(() ->
-                sut.getWrapperStations(STATION_CODE, BROKER_CODE, LIMIT, PAGE));
+                sut.getWrapperStations(STATION_CODE, BROKER_CODE, null, null,
+                        StationConnectionTypeFilter.NONE, LIMIT, PAGE));
 
         assertNotNull(result);
         assertNotNull(result.getPageInfo());
@@ -130,15 +134,18 @@ class WrapperServiceTest {
 
     @Test
     void getWrapperStationsWithoutStationCodeSuccess() {
-        when(wrapperStationsRepository.findByTypeAndBrokerCodeAndStatusNot(
+        when(wrapperStationsRepository.findByTypeAndBrokerCodeAndStatusNotAndCreatedAtBetween(
                 eq(WrapperType.STATION),
                 eq(BROKER_CODE),
                 eq(WrapperStatus.APPROVED),
+                any(),
+                any(),
                 any())
         ).thenReturn(new PageImpl<>(Collections.singletonList(buildWrapperEntityStations(WrapperStatus.TO_CHECK))));
 
         WrapperStationList result = assertDoesNotThrow(() ->
-                sut.getWrapperStations(null, BROKER_CODE, LIMIT, PAGE));
+                sut.getWrapperStations(null, BROKER_CODE, null,
+                        null, StationConnectionTypeFilter.NONE, LIMIT, PAGE));
 
         assertNotNull(result);
         assertNotNull(result.getPageInfo());

@@ -128,4 +128,6 @@ public class StationDetails extends Station {
     @JsonProperty("target_path_pof")
     private String targetPathPof;
 
+
+
 }

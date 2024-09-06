@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationConnectionTypeFilter;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
@@ -24,6 +25,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationsResour
 import it.pagopa.selfcare.pagopa.backoffice.service.StationService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +42,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.time.OffsetDateTime;
 
 @RestController
 @RequestMapping(value = "/stations")
@@ -69,9 +72,15 @@ public class StationController {
             @Parameter(description = "Station's unique identifier") @RequestParam(required = false) String stationCode,
             @Parameter(description = "Broker's code") @RequestParam("brokerCode") String brokerCode,
             @Parameter(description = "Number of elements in one page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
+            @Parameter(description = "Used to retrieve all stations that where created after the provided date (yyyy-MM-dd'T'HH:mm:ss.SSSXXX)", example = "2024-04-01T10:00:00.000+02:00")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime createDateAfter,
+            @Parameter(description = "Used to retrieve all stations that where created before the provided date (yyyy-MM-dd'T'HH:mm:ss.SSSXXX)", example = "2024-04-01T13:00:00.000+02:00")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime createDateBefore,
+            @Parameter(description = "Connection type filter (NONE | SYNC| ASYNC)")
+            @RequestParam(required = false, defaultValue = "NONE") StationConnectionTypeFilter connectionTypeFilter,
             @Parameter(description = "Page number") @RequestParam(defaultValue = "0") @PositiveOrZero Integer page
     ) {
-        return this.stationService.getStations(status, stationCode, brokerCode, limit, page);
+        return this.stationService.getStations(status, stationCode, brokerCode, createDateAfter, createDateBefore, connectionTypeFilter, limit, page);
     }
 
     @GetMapping(value = "/{station-code}", produces = {MediaType.APPLICATION_JSON_VALUE})

@@ -11,12 +11,9 @@ import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.WrapperStationList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
@@ -125,12 +122,12 @@ class StationServiceTest {
     void getStationsActiveSuccessWithWrapperFound() {
         Stations stations = buildStations(STATION_CODE);
 
-        when(apiConfigClient.getStations(LIMIT, PAGE, SORTING_DESC, BROKER_CODE, null, STATION_CODE))
+        when(apiConfigClient.getStations(LIMIT, PAGE, SORTING_DESC, BROKER_CODE, null, STATION_CODE, null, null, StationConnectionTypeFilter.NONE))
                 .thenReturn(stations);
         when(wrapperService.findStationByIdOptional(STATION_CODE)).thenReturn(Optional.of(buildWrapperEntityStation(WrapperStatus.TO_CHECK)));
 
         WrapperStationsResource result =
-                assertDoesNotThrow(() -> service.getStations(ConfigurationStatus.ACTIVE, STATION_CODE, BROKER_CODE, LIMIT, PAGE));
+                assertDoesNotThrow(() -> service.getStations(ConfigurationStatus.ACTIVE, STATION_CODE, BROKER_CODE, null, null, StationConnectionTypeFilter.NONE, LIMIT, PAGE));
 
         assertNotNull(result);
         assertNotNull(result.getStationsList());
@@ -144,12 +141,12 @@ class StationServiceTest {
     void getStationsActiveSuccessWithWrapperNotFound() {
         Stations stations = buildStations(STATION_CODE);
 
-        when(apiConfigClient.getStations(LIMIT, PAGE, SORTING_DESC, BROKER_CODE, null, STATION_CODE))
+        when(apiConfigClient.getStations(LIMIT, PAGE, SORTING_DESC, BROKER_CODE, null, STATION_CODE, null, null, StationConnectionTypeFilter.NONE))
                 .thenReturn(stations);
         when(wrapperService.findStationByIdOptional(STATION_CODE)).thenReturn(Optional.empty());
 
         WrapperStationsResource result =
-                assertDoesNotThrow(() -> service.getStations(ConfigurationStatus.ACTIVE, STATION_CODE, BROKER_CODE, LIMIT, PAGE));
+                assertDoesNotThrow(() -> service.getStations(ConfigurationStatus.ACTIVE, STATION_CODE, BROKER_CODE, null, null, StationConnectionTypeFilter.NONE, LIMIT, PAGE));
 
         assertNotNull(result);
         assertNotNull(result.getStationsList());
@@ -163,11 +160,11 @@ class StationServiceTest {
     void getStationsToBeValidatedSuccess() {
         var wrapperEntitiesList = buildWrapperStationList();
 
-        when(wrapperService.getWrapperStations(STATION_CODE, BROKER_CODE, LIMIT, PAGE))
+        when(wrapperService.getWrapperStations(STATION_CODE, BROKER_CODE, null, null, StationConnectionTypeFilter.NONE, LIMIT, PAGE))
                 .thenReturn(wrapperEntitiesList);
 
         WrapperStationsResource result =
-                assertDoesNotThrow(() -> service.getStations(ConfigurationStatus.TO_BE_VALIDATED, STATION_CODE, BROKER_CODE, LIMIT, PAGE));
+                assertDoesNotThrow(() -> service.getStations(ConfigurationStatus.TO_BE_VALIDATED, STATION_CODE, BROKER_CODE, null, null, StationConnectionTypeFilter.NONE, LIMIT, PAGE));
 
         assertNotNull(result);
 
@@ -281,7 +278,7 @@ class StationServiceTest {
                 1,
                 SORTING_ASC)
         ).thenReturn(emptyEntitiesList);
-        when(apiConfigClient.getStations(100, 0, SORTING_ASC, null, null, EC_CODE))
+        when(apiConfigClient.getStations(100, 0, SORTING_ASC, null, null, EC_CODE, null, null, StationConnectionTypeFilter.NONE))
                 .thenReturn(buildStations(STATION_CODE));
 
         StationCodeResource result = assertDoesNotThrow(() -> service.getStationCode(EC_CODE, false));
@@ -324,7 +321,7 @@ class StationServiceTest {
         assertEquals(HttpStatus.CONFLICT, e.getHttpStatus());
 
         verify(wrapperService, never()).getFirstValidStationCodeV2(EC_CODE);
-        verify(apiConfigClient, never()).getStations(100, 0, SORTING_ASC, null, null, EC_CODE);
+        verify(apiConfigClient, never()).getStations(100, 0, SORTING_ASC, null, null, EC_CODE, null, null, StationConnectionTypeFilter.NONE);
     }
 
     @Test

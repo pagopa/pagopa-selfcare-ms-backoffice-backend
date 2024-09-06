@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.client;
 
 import feign.FeignException;
 import feign.RequestLine;
+import io.swagger.v3.oas.annotations.Parameter;
 import it.pagopa.selfcare.pagopa.backoffice.config.feign.ApiConfigFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.configuration.PaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.configuration.WfespPluginConfs;
@@ -18,10 +19,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPa
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.ApiConfigCreditorInstitutionsOrderBy;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStations;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.CreateStationMaintenance;
@@ -151,7 +149,13 @@ public interface ApiConfigClient {
             @RequestParam(required = false, name = "ordering", defaultValue = "DESC") String sort,
             @RequestParam(name = "brokercode", required = false) String brokerCode,
             @RequestParam(name = "creditorinstitutioncode", required = false) String creditorInstitutionCode,
-            @RequestParam(required = false) String code
+            @RequestParam(required = false) String code,
+            @Parameter(description = "Used to retrieve all stations that where created after the provided date (yyyy-MM-dd'T'HH:mm:ss.SSSXXX)", example = "2024-04-01T10:00:00.000+02:00")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime createDateAfter,
+            @Parameter(description = "Used to retrieve all stations that where created before the provided date (yyyy-MM-dd'T'HH:mm:ss.SSSXXX)", example = "2024-04-01T13:00:00.000+02:00")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime createDateBefore,
+            @Parameter(description = "Connection type filter (NONE | SYNC| ASYNC)")
+            @RequestParam(required = false, defaultValue = "NONE") StationConnectionTypeFilter connectionTypeFilter
     );
 
     @GetMapping(value = "/stations/{stationcode}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ForwarderClient;
@@ -13,10 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.StationMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.WrapperStationList;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
@@ -24,11 +22,14 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUs
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.thymeleaf.context.Context;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -144,15 +145,20 @@ public class StationService {
             ConfigurationStatus status,
             String stationCode,
             String brokerCode,
+            OffsetDateTime createDateAfter,
+            OffsetDateTime createDateBefore,
+            StationConnectionTypeFilter connectionTypeFilter,
             Integer limit,
             Integer page
     ) {
         WrapperStations response;
         if (status.equals(ConfigurationStatus.ACTIVE)) {
-            Stations stations = this.apiConfigClient.getStations(limit, page, "DESC", brokerCode, null, stationCode);
+            Stations stations = this.apiConfigClient.getStations(limit, page, "DESC", brokerCode,
+                    null, stationCode, createDateAfter, createDateBefore, connectionTypeFilter);
             response = buildEnrichedWrapperStations(stations);
         } else {
-            WrapperStationList wrapperStations = this.wrapperService.getWrapperStations(stationCode, brokerCode, limit, page);
+            WrapperStationList wrapperStations = this.wrapperService.getWrapperStations(
+                    stationCode, brokerCode, createDateAfter, createDateBefore, connectionTypeFilter, limit, page);
             response = this.stationMapper.toWrapperStations(wrapperStations);
         }
         return this.stationMapper.toWrapperStationsResource(response);
@@ -338,7 +344,9 @@ public class StationService {
     }
 
     private String generateStationCode(String ecCode) {
-        Stations stations = apiConfigClient.getStations(100, 0, "ASC", null, null, ecCode);
+        Stations stations = apiConfigClient.getStations(
+                100, 0, "ASC", null, null, ecCode,
+                null, null, StationConnectionTypeFilter.NONE);
         List<Station> stationsList = stations.getStationsList();
         Set<String> codes = stationsList.stream().map(Station::getStationCode)
                 .filter(s -> s.matches(REGEX_GENERATE))
@@ -356,7 +364,9 @@ public class StationService {
                             this.wrapperService.findStationByIdOptional(station.getStationCode());
                     if (optionalWrapperEntities.isPresent()) {
                         WrapperEntityStations wrapperEntities = optionalWrapperEntities.get();
-                        wrapperStation.setCreatedAt(wrapperEntities.getCreatedAt());
+                        wrapperStation.setCreatedAt(station.getCreatedAt() != null ?
+                                station.getCreateDate().toInstant() :
+                                wrapperEntities.getCreatedAt());
                     }
                     return wrapperStation;
                 }).toList();
@@ -377,7 +387,9 @@ public class StationService {
         Optional<WrapperEntityStations> optionalWrapperEntities = this.wrapperService.findStationByIdOptional(stationCode);
         if (optionalWrapperEntities.isPresent()) {
             WrapperEntityStations wrapperEntities = optionalWrapperEntities.get();
-            stationDetailResource.setCreatedAt(wrapperEntities.getCreatedAt());
+            stationDetailResource.setCreatedAt(stationDetails.getCreateDate() != null ?
+                    stationDetails.getCreateDate().toInstant() :
+                    wrapperEntities.getCreatedAt());
 
             WrapperEntityStation mostRecentEntity = getStationWrapperEntityOperationsSortedList(wrapperEntities).get(0);
             stationDetailResource.setPendingUpdate(!WrapperStatus.APPROVED.equals(mostRecentEntity.getStatus()));

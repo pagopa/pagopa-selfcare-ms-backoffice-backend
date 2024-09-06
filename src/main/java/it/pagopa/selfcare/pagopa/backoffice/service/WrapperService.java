@@ -16,10 +16,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperChannelList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.WrapperStationList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperChannelsRepository;
@@ -35,6 +32,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -517,16 +515,59 @@ public class WrapperService {
      * @param page        page number
      * @return the paginated list
      */
-    public WrapperStationList getWrapperStations(String stationCode, String brokerCode, Integer size, Integer page) {
+    public WrapperStationList getWrapperStations(String stationCode, String brokerCode,
+                                                 OffsetDateTime createDateAfter,
+                                                 OffsetDateTime createDateBefore,
+                                                 StationConnectionTypeFilter connectionTypeFilter,
+                                                 Integer size, Integer page) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+
+        if (createDateAfter == null) {
+            createDateAfter = OffsetDateTime.MAX;
+        }
+
+        if (createDateBefore == null) {
+            createDateBefore = OffsetDateTime.MIN;
+        }
 
         Page<WrapperEntityStations> response;
         if (stationCode == null) {
-            response = this.wrapperStationsRepository
-                    .findByTypeAndBrokerCodeAndStatusNot(WrapperType.STATION, brokerCode, WrapperStatus.APPROVED, paging);
+            if (connectionTypeFilter == null || connectionTypeFilter.equals(StationConnectionTypeFilter.NONE)) {
+                response = this.wrapperStationsRepository
+                        .findByTypeAndBrokerCodeAndStatusNotAndCreatedAtBetween(
+                                WrapperType.STATION, brokerCode, WrapperStatus.APPROVED,
+                                createDateAfter.toInstant(), createDateBefore.toInstant(), paging);
+            } else if (connectionTypeFilter.equals(StationConnectionTypeFilter.SYNC)) {
+                response = this.wrapperStationsRepository
+                        .findByTypeAndBrokerCodeAndStatusNotAndCreatedAtBetweenAndConnectionSync(
+                                WrapperType.STATION, brokerCode, WrapperStatus.APPROVED,
+                                createDateAfter.toInstant(), createDateBefore.toInstant(), paging);
+            } else {
+                response = this.wrapperStationsRepository
+                        .findByTypeAndBrokerCodeAndStatusNotAndCreatedAtBetweenAndConnectionAsync(
+                        WrapperType.STATION, brokerCode, WrapperStatus.APPROVED,
+                        createDateAfter.toInstant(), createDateBefore.toInstant(), paging);
+            }
         } else {
-            response = this.wrapperStationsRepository
-                    .findByIdLikeAndTypeAndBrokerCodeAndStatusNot(stationCode, WrapperType.STATION, brokerCode, WrapperStatus.APPROVED, paging);
+            if (connectionTypeFilter == null || connectionTypeFilter.equals(StationConnectionTypeFilter.NONE)) {
+                response = this.wrapperStationsRepository
+                        .findByIdLikeAndTypeAndBrokerCodeAndStatusNotAndCreatedAtBetween(
+                                stationCode, WrapperType.STATION,
+                                brokerCode, WrapperStatus.APPROVED,
+                                createDateAfter.toInstant(), createDateBefore.toInstant(), paging);
+            } else if (connectionTypeFilter.equals(StationConnectionTypeFilter.SYNC)) {
+                response = this.wrapperStationsRepository
+                        .findByIdLikeAndTypeAndBrokerCodeAndStatusNotAndCreatedAtBetweenAndConnectionSync(
+                                stationCode, WrapperType.STATION,
+                                brokerCode, WrapperStatus.APPROVED,
+                                createDateAfter.toInstant(), createDateBefore.toInstant(), paging);
+            } else {
+                response = this.wrapperStationsRepository
+                        .findByIdLikeAndTypeAndBrokerCodeAndStatusNotAndCreatedAtBetweenAndConnectionAsync(
+                                stationCode, WrapperType.STATION,
+                                brokerCode, WrapperStatus.APPROVED,
+                                createDateAfter.toInstant(), createDateBefore.toInstant(), paging);
+            }
         }
 
         return WrapperStationList.builder()
@@ -542,7 +583,7 @@ public class WrapperService {
     }
 
     public String getFirstValidStationCodeV2(String taxCode) {
-        Stations stations = apiConfigClient.getStations(100, 0, "DESC", null, null, taxCode);
+        Stations stations = apiConfigClient.getStations(100, 0, "DESC", null, null, taxCode, null, null, StationConnectionTypeFilter.NONE);
         var stationMongoList = findStationByIdLikeOrTypeOrBrokerCode(taxCode, WrapperType.STATION, null, 0, 100);
 
         List<String> stationCodes = new LinkedList<>();
