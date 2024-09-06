@@ -414,70 +414,6 @@ public class WrapperService {
         return this.wrapperChannelsRepository.findById(channelCode);
     }
 
-    public WrapperChannelList findByIdLikeOrTypeOrBrokerCode(
-            String idLike,
-            WrapperType wrapperType,
-            String brokerCode,
-            Integer page,
-            Integer size
-    ) {
-        Pageable paging = PageRequest.of(page, size);
-        Page<WrapperEntityChannels> response;
-
-        if (brokerCode == null && idLike == null) {
-            response = this.wrapperChannelsRepository.findByType(wrapperType, paging);
-        } else if (brokerCode == null) {
-            response = this.wrapperChannelsRepository.findByIdLikeAndType(idLike, wrapperType, paging);
-        } else if (idLike == null) {
-            response = this.wrapperChannelsRepository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
-        } else {
-            response = this.wrapperChannelsRepository.findByIdLikeAndTypeAndBrokerCode(idLike, wrapperType, brokerCode, paging);
-        }
-
-        return WrapperChannelList.builder()
-                .wrapperEntities(response.getContent())
-                .pageInfo(PageInfo.builder()
-                        .page(page)
-                        .limit(size)
-                        .totalItems(response.getTotalElements())
-                        .totalPages(response.getTotalPages())
-                        .itemsFound(response.getNumberOfElements())
-                        .build())
-                .build();
-    }
-
-    public WrapperStationList findStationByIdLikeOrTypeOrBrokerCode(
-            String idLike,
-            WrapperType wrapperType,
-            String brokerCode,
-            Integer page,
-            Integer size
-    ) {
-        Pageable paging = PageRequest.of(page, size);
-        Page<WrapperEntityStations> response;
-
-        if (brokerCode == null && idLike == null) {
-            response = this.wrapperStationsRepository.findByType(wrapperType, paging);
-        } else if (brokerCode == null) {
-            response = this.wrapperStationsRepository.findByIdLikeAndType(idLike, wrapperType, paging);
-        } else if (idLike == null) {
-            response = this.wrapperStationsRepository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
-        } else {
-            response = this.wrapperStationsRepository.findByIdLikeAndTypeAndBrokerCode(idLike, wrapperType, brokerCode, paging);
-        }
-
-        return WrapperStationList.builder()
-                .wrapperEntities(response.getContent())
-                .pageInfo(PageInfo.builder()
-                        .page(page)
-                        .limit(size)
-                        .totalItems(response.getTotalElements())
-                        .totalPages(response.getTotalPages())
-                        .itemsFound(response.getNumberOfElements())
-                        .build())
-                .build();
-    }
-
     /**
      * Retrieve a paginated list of wrapper channel filtered by broker's code and optionally by channel's code
      *
@@ -556,7 +492,7 @@ public class WrapperService {
         List<String> usedCodes = new LinkedList<>();
         try {
             Stations stations = this.apiConfigClient.getStations(100, 0, Sort.Direction.DESC.name(), taxCode, null, null);
-            WrapperStationList wrapperStations = findStationByIdLikeOrTypeOrBrokerCode(null, WrapperType.STATION, taxCode, 0, 100);
+            WrapperStationList wrapperStations = findStationByIdLikeOrTypeOrBrokerCode(taxCode, 0, 100);
             usedCodes.addAll(stations.getStationsList().parallelStream().map(Station::getStationCode).toList());
             usedCodes.addAll(wrapperStations.getWrapperEntities().parallelStream().map(WrapperEntityStations::getId).toList());
         } catch (FeignException.NotFound e) {
@@ -564,7 +500,7 @@ public class WrapperService {
         }
 
         Channels channels = this.apiConfigClient.getChannels(null, taxCode, Sort.Direction.DESC.name(), 100, 0);
-        WrapperChannelList wrapperChannels = findByIdLikeOrTypeOrBrokerCode(null, WrapperType.CHANNEL, taxCode, 0, 100);
+        WrapperChannelList wrapperChannels = findByIdLikeOrTypeOrBrokerCode(taxCode, 0, 100);
 
         usedCodes.addAll(channels.getChannelList().parallelStream().map(Channel::getChannelCode).toList());
         usedCodes.addAll(wrapperChannels.getWrapperEntities().parallelStream().map(WrapperEntityChannels::getId).toList());
@@ -671,5 +607,47 @@ public class WrapperService {
             throw new AppException(AppError.WRAPPER_STATION_INVALID_STATUS, stationCode);
         }
         return newWrapperStatus;
+    }
+
+    private WrapperChannelList findByIdLikeOrTypeOrBrokerCode(
+            String brokerCode,
+            Integer page,
+            Integer size
+    ) {
+        Pageable paging = PageRequest.of(page, size);
+        Page<WrapperEntityChannels> response =
+                this.wrapperChannelsRepository.findByTypeAndBrokerCode(WrapperType.CHANNEL, brokerCode, paging);
+
+        return WrapperChannelList.builder()
+                .wrapperEntities(response.getContent())
+                .pageInfo(PageInfo.builder()
+                        .page(page)
+                        .limit(size)
+                        .totalItems(response.getTotalElements())
+                        .totalPages(response.getTotalPages())
+                        .itemsFound(response.getNumberOfElements())
+                        .build())
+                .build();
+    }
+
+    private WrapperStationList findStationByIdLikeOrTypeOrBrokerCode(
+            String brokerCode,
+            Integer page,
+            Integer size
+    ) {
+        Pageable paging = PageRequest.of(page, size);
+        Page<WrapperEntityStations> response =
+                this.wrapperStationsRepository.findByTypeAndBrokerCode(WrapperType.STATION, brokerCode, paging);
+
+        return WrapperStationList.builder()
+                .wrapperEntities(response.getContent())
+                .pageInfo(PageInfo.builder()
+                        .page(page)
+                        .limit(size)
+                        .totalItems(response.getTotalElements())
+                        .totalPages(response.getTotalPages())
+                        .itemsFound(response.getNumberOfElements())
+                        .build())
+                .build();
     }
 }
