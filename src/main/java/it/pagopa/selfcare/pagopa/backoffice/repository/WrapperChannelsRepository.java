@@ -12,4 +12,12 @@ public interface WrapperChannelsRepository extends MongoRepository<WrapperEntity
     Page<WrapperEntityChannels> findByIdLikeAndTypeAndBrokerCodeAndStatusNot(String id, WrapperType wrapperType, String brokerCode, WrapperStatus status, Pageable pageable);
 
     Page<WrapperEntityChannels> findByTypeAndBrokerCodeAndStatusNot(WrapperType wrapperType, String brokerCode, WrapperStatus status, Pageable pageable);
+
+    Page<WrapperEntityChannels> findByType(WrapperType wrapperType, Pageable pageable);
+
+    Page<WrapperEntityChannels> findByIdLikeAndType(String idLike, WrapperType wrapperType, Pageable pageable);
+
+    Page<WrapperEntityChannels> findByTypeAndBrokerCode(WrapperType wrapperType, String brokerCode, Pageable pageable);
+
+    Page<WrapperEntityChannels> findByIdLikeAndTypeAndBrokerCode(String id, WrapperType wrapperType, String brokerCode, Pageable pageable);
 }
