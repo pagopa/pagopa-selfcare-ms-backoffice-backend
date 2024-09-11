@@ -14,6 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStati
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -27,10 +28,31 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationDetailResource toResource(StationDetails model) {
-        if(model == null) {
+        if (model == null) {
             return null;
         }
 
+        return mapBaseStationDetails(model);
+    }
+
+    @Override
+    public StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy, Instant createdAt, String note) {
+        if (model == null) {
+            return null;
+        }
+
+        StationDetailResource stationDetailResource = mapBaseStationDetails(model);
+
+        stationDetailResource.setCreatedBy(createdBy);
+        stationDetailResource.setModifiedBy(modifiedBy);
+        stationDetailResource.setCreatedAt(createdAt);
+        stationDetailResource.setNote(note);
+
+        return stationDetailResource;
+    }
+
+    @NotNull
+    private static StationDetailResource mapBaseStationDetails(StationDetails model) {
         StationDetailResource stationDetailResource = new StationDetailResource();
 
         stationDetailResource.setStationCode(model.getStationCode());
@@ -84,96 +106,19 @@ public class StationMapperImpl implements StationMapper {
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
         BrokerDetails brokerDetails = model.getIntermediarioPa();
-        if(brokerDetails != null) {
+        if (brokerDetails != null) {
             brokerDetailsResource.setBrokerDetails(brokerDetails.getBrokerDetails());
             brokerDetailsResource.setExtendedFaultBean(brokerDetails.getExtendedFaultBean());
             brokerDetailsResource.setEnabled(brokerDetails.getEnabled());
             brokerDetailsResource.setBrokerCode(brokerDetails.getBrokerCode());
             stationDetailResource.setBrokerDetails(brokerDetailsResource);
         }
-
-        return stationDetailResource;
-    }
-
-    @Override
-    public StationDetailResource toResource(StationDetails model, WrapperStatus status, String createdBy, String modifiedBy, Instant createdAt, String note) {
-        if(model == null) {
-            return null;
-        }
-
-        StationDetailResource stationDetailResource = new StationDetailResource();
-
-        stationDetailResource.setStationCode(model.getStationCode());
-        stationDetailResource.setEnabled(model.getEnabled());
-        stationDetailResource.setBrokerDescription(model.getBrokerDescription());
-        stationDetailResource.setVersion(model.getVersion());
-        stationDetailResource.setActivationDate(model.getActivationDate());
-        stationDetailResource.setCreatedAt(model.getCreatedAt());
-        stationDetailResource.setModifiedAt(model.getModifiedAt());
-        stationDetailResource.setAssociatedCreditorInstitutions(model.getAssociatedCreditorInstitutions());
-        stationDetailResource.setIp(model.getIp());
-        stationDetailResource.setNewPassword(model.getNewPassword());
-        stationDetailResource.setPassword(model.getPassword());
-        stationDetailResource.setPort(model.getPort());
-        stationDetailResource.setProtocol(model.getProtocol());
-        stationDetailResource.setRedirectIp(model.getRedirectIp());
-        stationDetailResource.setRedirectPath(model.getRedirectPath());
-        stationDetailResource.setRedirectPort(model.getRedirectPort());
-        stationDetailResource.setRedirectQueryString(model.getRedirectQueryString());
-        stationDetailResource.setRedirectProtocol(model.getRedirectProtocol());
-        stationDetailResource.setService(model.getService());
-        stationDetailResource.setPofService(model.getPofService());
-        stationDetailResource.setBrokerCode(model.getBrokerCode());
-        stationDetailResource.setProtocol4Mod(model.getProtocol4Mod());
-        stationDetailResource.setIp4Mod(model.getIp4Mod());
-        stationDetailResource.setPort4Mod(model.getPort4Mod());
-        stationDetailResource.setService4Mod(model.getService4Mod());
-        stationDetailResource.setProxyEnabled(model.getProxyEnabled());
-        stationDetailResource.setProxyHost(model.getProxyHost());
-        stationDetailResource.setProxyPort(model.getProxyPort());
-        stationDetailResource.setProxyUsername(model.getProxyUsername());
-        stationDetailResource.setProxyPassword(model.getProxyPassword());
-        stationDetailResource.setThreadNumber(model.getThreadNumber());
-        stationDetailResource.setTimeoutA(model.getTimeoutA());
-        stationDetailResource.setTimeoutB(model.getTimeoutB());
-        stationDetailResource.setTimeoutC(model.getTimeoutC());
-        stationDetailResource.setFlagOnline(model.getFlagOnline());
-        stationDetailResource.setBrokerObjId(model.getBrokerObjId());
-        stationDetailResource.setRtInstantaneousDispatch(model.getRtInstantaneousDispatch());
-        stationDetailResource.setTargetHost(model.getTargetHost());
-        stationDetailResource.setTargetPort(model.getTargetPort());
-        stationDetailResource.setTargetPath(model.getTargetPath());
-        stationDetailResource.setTargetHostPof(model.getTargetHostPof());
-        stationDetailResource.setTargetPortPof(model.getTargetPortPof());
-        stationDetailResource.setTargetPathPof(model.getTargetPathPof());
-        stationDetailResource.setPrimitiveVersion(model.getPrimitiveVersion());
-        stationDetailResource.setWrapperStatus(status);
-        stationDetailResource.setCreatedBy(createdBy);
-        stationDetailResource.setModifiedBy(modifiedBy);
-        stationDetailResource.setCreatedAt(createdAt);
-
-        stationDetailResource.setIsConnectionSync(model.getIsConnectionSync() != null ? model.getIsConnectionSync() : Utility.isConnectionSync(model));
-        stationDetailResource.setNote(note);
-
-        stationDetailResource.setRestEndpoint(model.getRestEndpoint());
-        stationDetailResource.setIsPaymentOptionsEnabled(model.getIsPaymentOptionsEnabled());
-
-        BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
-        BrokerDetails brokerDetails = model.getIntermediarioPa();
-        if(brokerDetails != null) {
-            brokerDetailsResource.setBrokerDetails(brokerDetails.getBrokerDetails());
-            brokerDetailsResource.setExtendedFaultBean(brokerDetails.getExtendedFaultBean());
-            brokerDetailsResource.setEnabled(brokerDetails.getEnabled());
-            brokerDetailsResource.setBrokerCode(brokerDetails.getBrokerCode());
-            stationDetailResource.setBrokerDetails(brokerDetailsResource);
-        }
-
         return stationDetailResource;
     }
 
     @Override
     public StationDetailResource toResource(WrapperEntityStations wrapperEntities) {
-        if(wrapperEntities == null) {
+        if (wrapperEntities == null) {
             return null;
         }
         WrapperEntityStation mostRecentEntity = getStationWrapperEntityOperationsSortedList(wrapperEntities).get(0);
@@ -191,7 +136,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationsResource toResource(Stations model) {
-        if(model == null) {
+        if (model == null) {
             return null;
         }
 
@@ -207,7 +152,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationResource toStationsResource(StationDetails model) {
-        if(model == null) {
+        if (model == null) {
             return null;
         }
 
@@ -228,7 +173,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public Station fromStationDetails(StationDetails stationDetails) {
-        if(stationDetails == null) {
+        if (stationDetails == null) {
             return null;
         }
 
@@ -246,7 +191,7 @@ public class StationMapperImpl implements StationMapper {
     @Override
     public Stations fromWrapperEntitiesList(WrapperEntitiesList wrapperEntitiesList) {
 
-        if(wrapperEntitiesList == null || wrapperEntitiesList.getWrapperEntities() == null) {
+        if (wrapperEntitiesList == null || wrapperEntitiesList.getWrapperEntities() == null) {
             return null;
         }
 
@@ -263,7 +208,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationDetailsResourceList fromStationDetailsList(StationDetailsList model) {
-        if(model == null) {
+        if (model == null) {
             return null;
         }
         StationDetailsResourceList resource = new StationDetailsResourceList();
@@ -274,7 +219,7 @@ public class StationMapperImpl implements StationMapper {
     }
 
     public WrapperStation toWrapperStation(Station model) {
-        if(model == null) {
+        if (model == null) {
             return null;
         }
 
@@ -295,7 +240,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public WrapperStations toWrapperStations(Stations model) {
-        if(model == null) {
+        if (model == null) {
             return null;
         }
 
@@ -311,7 +256,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public WrapperStations toWrapperStations(WrapperStationList wrapperEntitiesList) {
-        if(wrapperEntitiesList == null) {
+        if (wrapperEntitiesList == null) {
             return null;
         }
 
@@ -333,7 +278,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public WrapperStation toWrapperStation(WrapperEntityStation wrapperEntityOperations) {
-        if(wrapperEntityOperations == null) {
+        if (wrapperEntityOperations == null) {
             return null;
         }
 
@@ -357,7 +302,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public WrapperStationsResource toWrapperStationsResource(WrapperStations wrapperStations) {
-        if(wrapperStations == null) {
+        if (wrapperStations == null) {
             return null;
         }
 
@@ -373,7 +318,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public WrapperStationResource toWrapperStationResource(WrapperStation wrapperStation) {
-        if(wrapperStation == null) {
+        if (wrapperStation == null) {
             return null;
         }
 
@@ -396,7 +341,7 @@ public class StationMapperImpl implements StationMapper {
     @Override
     public List<StationResource> toResourceList(WrapperEntitiesList wrapperEntitiesList) {
 
-        if(wrapperEntitiesList == null || wrapperEntitiesList.getWrapperEntities() == null) {
+        if (wrapperEntitiesList == null || wrapperEntitiesList.getWrapperEntities() == null) {
             return null;
         }
 
@@ -414,7 +359,7 @@ public class StationMapperImpl implements StationMapper {
     @Override
     public List<StationResource> toResourceList(Stations stations) {
 
-        if(stations == null || stations.getStationsList() == null) {
+        if (stations == null || stations.getStationsList() == null) {
             return null;
         }
 
@@ -426,7 +371,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationResource toResource(Station model) {
-        if(model == null) {
+        if (model == null) {
             return null;
         }
 
@@ -446,7 +391,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationDetails fromDto(StationDetailsDto model) {
-        if(model == null) {
+        if (model == null) {
             return null;
         }
 
@@ -501,7 +446,7 @@ public class StationMapperImpl implements StationMapper {
 
     @Override
     public StationDetails fromWrapperStationDetailsDto(WrapperStationDetailsDto model) {
-        if(model == null) {
+        if (model == null) {
             return null;
         }
 
