@@ -30,7 +30,7 @@ public class StringUtils {
 
     public static String generator(Set<String> codes, String entityCode) {
         List<String> validCodes = new LinkedList<>();
-        IntStream.range(1, 100).forEach(i -> {
+        IntStream.range(1, 200).forEach(i -> {
             String newCode = entityCode.concat("_").concat(i <= 9 ? "0" + i : "" + i);
             if(!codes.contains(newCode)) {
                 validCodes.add(newCode);

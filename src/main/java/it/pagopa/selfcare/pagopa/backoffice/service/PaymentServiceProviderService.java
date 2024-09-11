@@ -146,12 +146,16 @@ public class PaymentServiceProviderService {
 
     public ChannelCodeResource getFirstValidChannelCode(String taxCode, Boolean v2) {
         if(Boolean.TRUE.equals(v2)) {
-            return new ChannelCodeResource(wrapperService.getFirstValidChannelCodeV2(taxCode));
+            return new ChannelCodeResource(this.wrapperService.getFirstValidCodeV2(taxCode));
         } else {
             return new ChannelCodeResource(getFirstValidChannelCodeAux(taxCode));
         }
     }
 
+    /**
+     * @deprecated this API invoke the old station code generation logic that can cause collision on wrapper data for PT
+     */
+    @Deprecated(forRemoval = true)
     private String getFirstValidChannelCodeAux(String taxCode) {
         Channels response = apiConfigClient.getChannels(null, taxCode, "DESC", 1, 0);
         List<Channel> codeList = response.getChannelList();

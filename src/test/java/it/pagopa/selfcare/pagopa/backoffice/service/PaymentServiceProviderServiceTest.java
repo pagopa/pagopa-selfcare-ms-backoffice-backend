@@ -3,49 +3,69 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
+import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
-import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.BrokerOrPspDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.ChannelCodeResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProviderDetailsDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProviderDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.PaymentServiceProvidersResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelPaymentTypesResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.channels.PspChannelsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.BrokerPspDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channel;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviderDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviders;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannels;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = {PaymentServiceProviderService.class, MappingsConfiguration.class})
 class PaymentServiceProviderServiceTest {
 
     public static final String BROKER_PSP_CODE = "broker-psp-code";
     public static final String TAX_CODE = "tax-code";
     public static final String CHANNEL_CODE = "channel-code";
     public static final String PSP_CODE = "psp-code";
-    @Mock
+
+    @MockBean
     private ApiConfigClient apiConfigClientMock;
 
-    @Mock
+    @MockBean
     private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClientMock;
 
-    @Mock
+    @MockBean
     private WrapperService wrapperServiceMock;
 
-    @Mock
+    @MockBean
     private LegacyPspCodeUtil legacyPspCodeUtil;
 
-    @Mock
-    private ModelMapper modelMapperMock;
-
-    @InjectMocks
+    @Autowired
     private PaymentServiceProviderService sut;
 
     @Test
@@ -90,7 +110,7 @@ class PaymentServiceProviderServiceTest {
     void updatePSP() {
         when(apiConfigClientMock.updatePSP(eq(PSP_CODE), any()))
                 .thenReturn(getPaymentServiceProviderDetails());
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,false)).thenReturn(PSP_CODE);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE, false)).thenReturn(PSP_CODE);
         PaymentServiceProviderDetailsResource result =
                 assertDoesNotThrow(() -> sut.updatePSP(TAX_CODE, new PaymentServiceProviderDetailsDto()));
 
@@ -118,7 +138,7 @@ class PaymentServiceProviderServiceTest {
         PaymentServiceProviderDetails paymentServiceProviderDetails = getPaymentServiceProviderDetails();
         when(apiConfigClientMock.getPSPDetails(anyString()))
                 .thenReturn(paymentServiceProviderDetails);
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,false)).thenReturn(BROKER_PSP_CODE);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE, false)).thenReturn(BROKER_PSP_CODE);
 
         BrokerOrPspDetailsResource result =
                 assertDoesNotThrow(() -> sut.getBrokerAndPspDetails(TAX_CODE));
@@ -138,7 +158,7 @@ class PaymentServiceProviderServiceTest {
         PaymentServiceProviderDetails paymentServiceProviderDetails = getPaymentServiceProviderDetails();
         when(apiConfigClientMock.getPSPDetails(anyString()))
                 .thenReturn(paymentServiceProviderDetails);
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,false)).thenReturn(BROKER_PSP_CODE);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE, false)).thenReturn(BROKER_PSP_CODE);
         BrokerOrPspDetailsResource result =
                 assertDoesNotThrow(() -> sut.getBrokerAndPspDetails(TAX_CODE));
 
@@ -156,7 +176,7 @@ class PaymentServiceProviderServiceTest {
                 .thenReturn(brokerPspDetails);
         when(apiConfigClientMock.getPSPDetails(anyString()))
                 .thenThrow(FeignException.NotFound.class);
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,false)).thenReturn(BROKER_PSP_CODE);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE, false)).thenReturn(BROKER_PSP_CODE);
         BrokerOrPspDetailsResource result =
                 assertDoesNotThrow(() -> sut.getBrokerAndPspDetails(TAX_CODE));
 
@@ -172,7 +192,7 @@ class PaymentServiceProviderServiceTest {
                 .thenThrow(FeignException.NotFound.class);
         when(apiConfigClientMock.getPSPDetails(anyString()))
                 .thenThrow(FeignException.NotFound.class);
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,false)).thenReturn(BROKER_PSP_CODE);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE, false)).thenReturn(BROKER_PSP_CODE);
         AppException e =
                 assertThrows(AppException.class, () -> sut.getBrokerAndPspDetails(TAX_CODE));
 
@@ -194,7 +214,7 @@ class PaymentServiceProviderServiceTest {
     void updatePSPChannel() {
         when(apiConfigClientMock.updatePaymentServiceProvidersChannels(anyString(), anyString(), any()))
                 .thenReturn(new PspChannelPaymentTypes(new ArrayList<>()));
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE,false)).thenReturn(PSP_CODE);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE, false)).thenReturn(PSP_CODE);
         PspChannelPaymentTypesResource result =
                 assertDoesNotThrow(() -> sut.updatePSPChannel(TAX_CODE, CHANNEL_CODE, new PspChannelPaymentTypes()));
 
@@ -209,14 +229,14 @@ class PaymentServiceProviderServiceTest {
     @Test
     void getFirstValidChannelCodeWithV2True() {
         String channelCodeV2 = "channel-code-v2";
-        when(wrapperServiceMock.getFirstValidChannelCodeV2(anyString()))
+        when(wrapperServiceMock.getFirstValidCodeV2(anyString()))
                 .thenReturn(channelCodeV2);
         ChannelCodeResource result =
                 assertDoesNotThrow(() -> sut.getFirstValidChannelCode(TAX_CODE, true));
 
         assertNotNull(result);
         assertEquals(channelCodeV2, result.getChannelCode());
-        verify(wrapperServiceMock).getFirstValidChannelCodeV2(anyString());
+        verify(wrapperServiceMock).getFirstValidCodeV2(anyString());
         verify(apiConfigClientMock, never()).getChannels(anyString(), eq(null), anyString(), anyInt(), anyInt());
     }
 
@@ -236,7 +256,7 @@ class PaymentServiceProviderServiceTest {
 
         assertNotNull(result);
         assertNotEquals(channelCode, result.getChannelCode());
-        verify(wrapperServiceMock, never()).getFirstValidChannelCodeV2(anyString());
+        verify(wrapperServiceMock, never()).getFirstValidCodeV2(anyString());
         verify(apiConfigClientMock).getChannels(eq(null), anyString(), anyString(), anyInt(), anyInt());
     }
 

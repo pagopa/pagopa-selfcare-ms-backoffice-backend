@@ -155,6 +155,10 @@ public class StationController {
         return this.stationService.createWrapperStationDetails(wrapperStationDetailsDto);
     }
 
+    /**
+     * @deprecated this API invoke the old station code generation logic that can cause collision on wrapper data for PT
+     */
+    @Deprecated(forRemoval = true)
     @GetMapping(value = "/station-code", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Generate a station code given the creditor institution's code", security = {@SecurityRequirement(name = "JWT")})
