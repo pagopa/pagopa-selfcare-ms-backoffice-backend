@@ -79,6 +79,9 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setPrimitiveVersion(model.getPrimitiveVersion());
         stationDetailResource.setIsConnectionSync(model.getIsConnectionSync());
 
+        stationDetailResource.setRestEndpoint(model.getRestEndpoint());
+        stationDetailResource.setIsPaymentOptionsEnabled(model.getIsPaymentOptionsEnabled());
+
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
         BrokerDetails brokerDetails = model.getIntermediarioPa();
         if(brokerDetails != null) {
@@ -151,6 +154,9 @@ public class StationMapperImpl implements StationMapper {
 
         stationDetailResource.setIsConnectionSync(model.getIsConnectionSync() != null ? model.getIsConnectionSync() : Utility.isConnectionSync(model));
         stationDetailResource.setNote(note);
+
+        stationDetailResource.setRestEndpoint(model.getRestEndpoint());
+        stationDetailResource.setIsPaymentOptionsEnabled(model.getIsPaymentOptionsEnabled());
 
         BrokerDetailsResource brokerDetailsResource = new BrokerDetailsResource();
         BrokerDetails brokerDetails = model.getIntermediarioPa();
@@ -487,6 +493,9 @@ public class StationMapperImpl implements StationMapper {
         stationDetails.setTargetPortPof(model.getTargetPortPof());
         stationDetails.setTargetHostPof(model.getTargetHostPof());
 
+        stationDetails.setRestEndpoint(model.getRestEndpoint());
+        stationDetails.setIsPaymentOptionsEnabled(model.getIsPaymentOptionsEnabled());
+
         return stationDetails;
     }
 
@@ -516,6 +525,9 @@ public class StationMapperImpl implements StationMapper {
         stationDetails.setEnabled(model.isEnabled());
         stationDetails.setVersion(model.getVersion());
         stationDetails.setBrokerDescription(model.getBrokerDescription());
+
+        stationDetails.setRestEndpoint(model.getRestEndpoint());
+        stationDetails.setIsPaymentOptionsEnabled(model.getIsPaymentOptionsEnabled());
 
         //default
         stationDetails.setTimeoutA(7L);
