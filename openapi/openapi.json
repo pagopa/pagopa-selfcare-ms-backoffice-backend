@@ -8037,6 +8037,24 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "description": "Broker's institution id",
+            "in": "query",
+            "name": "institutionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker's tax code",
+            "in": "query",
+            "name": "brokerTaxCode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -8353,6 +8371,24 @@
             "description": "Creditor institution's code",
             "in": "path",
             "name": "ci-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker's institution id",
+            "in": "query",
+            "name": "institutionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker's tax code",
+            "in": "query",
+            "name": "brokerTaxCode",
             "required": true,
             "schema": {
               "type": "string"
@@ -11278,6 +11314,7 @@
     },
     "/stations/station-code": {
       "get": {
+        "deprecated": true,
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId": "getStationCode",
         "parameters": [

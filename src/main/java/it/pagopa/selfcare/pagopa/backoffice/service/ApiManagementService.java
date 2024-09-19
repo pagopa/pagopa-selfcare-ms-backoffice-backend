@@ -13,7 +13,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationEnt
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationGenericKeyValue;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationMetadata;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationOwner;
-import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionStationSegregationCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionStationSegregationCodesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
@@ -314,13 +313,7 @@ public class ApiManagementService {
             DelegationInfo delegationInfoResponse = getDelegationInfo(institutionId, subscription.getAuthDelegations(), institution.getTaxCode());
 
             authorization.setAuthorizedEntities(getAuthorizationEntities(institution, delegationInfoResponse.delegationResponse));
-            AuthorizationMetadata authorizationMetadata = buildAuthorizationMetadata(delegationInfoResponse.ciSegregationCodes.getCiStationCodes());
-            if (authorization.getOtherMetadata() != null) {
-                authorization.getOtherMetadata().removeIf(metadata -> metadata.getShortKey().equals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY));
-                authorization.getOtherMetadata().add(authorizationMetadata);
-            } else {
-                authorization.setOtherMetadata(Collections.singletonList(authorizationMetadata));
-            }
+            authorization.setOtherMetadata(getAuthorizationMetadataList(delegationInfoResponse.ciSegregationCodes, authorization.getOtherMetadata()));
 
             this.authorizerConfigClient.deleteAuthorization(authorization.getId());
             this.authorizerConfigClient.createAuthorization(authorization);
@@ -330,6 +323,20 @@ public class ApiManagementService {
             createSubscriptionKeys(institutionId, subscription);
         }
 
+    }
+
+    private List<AuthorizationMetadata> getAuthorizationMetadataList(
+            CreditorInstitutionStationSegregationCodesList ciSegregationCodes,
+            List<AuthorizationMetadata> otherMetadata
+    ) {
+        AuthorizationMetadata authorizationMetadata = buildAuthorizationMetadata(ciSegregationCodes);
+        if (otherMetadata != null) {
+            List<AuthorizationMetadata> newOtherMetadata = new ArrayList<>(otherMetadata);
+            newOtherMetadata.removeIf(metadata -> metadata.getShortKey().equals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY));
+            newOtherMetadata.add(authorizationMetadata);
+            return newOtherMetadata;
+        }
+        return Collections.singletonList(authorizationMetadata);
     }
 
     private InstitutionResponse getInstitutionResponse(String institutionId) {
@@ -359,7 +366,7 @@ public class ApiManagementService {
                         .type(getOwnerType(institution))
                         .build())
                 .authorizedEntities(getAuthorizationEntities(institution, delegationInfo.delegationResponse))
-                .otherMetadata(Collections.singletonList(buildAuthorizationMetadata(delegationInfo.ciSegregationCodes.getCiStationCodes())))
+                .otherMetadata(Collections.singletonList(buildAuthorizationMetadata(delegationInfo.ciSegregationCodes)))
                 .build();
     }
 
@@ -424,8 +431,7 @@ public class ApiManagementService {
             String authorizationId = createAuthorizationId(prefixId, institutionId, isPrimaryKey);
             Authorization authorization = this.authorizerConfigClient.getAuthorization(authorizationId);
 
-            authorization.getOtherMetadata().removeIf(metadata -> metadata.getShortKey().equals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY));
-            authorization.getOtherMetadata().add(buildAuthorizationMetadata(ciSegregationCodes.getCiStationCodes()));
+            authorization.setOtherMetadata(getAuthorizationMetadataList(ciSegregationCodes, authorization.getOtherMetadata()));
 
             this.authorizerConfigClient.deleteAuthorization(authorization.getId());
             this.authorizerConfigClient.createAuthorization(authorization);
@@ -436,9 +442,9 @@ public class ApiManagementService {
         }
     }
 
-    private AuthorizationMetadata buildAuthorizationMetadata(List<CreditorInstitutionStationSegregationCodes> ciStationCodes) {
+    private AuthorizationMetadata buildAuthorizationMetadata(CreditorInstitutionStationSegregationCodesList ciStationCodesList) {
         List<AuthorizationGenericKeyValue> genericKeyValues =
-                ciStationCodes.parallelStream()
+                ciStationCodesList.getCiStationCodes().parallelStream()
                         .map(elem ->
                                 AuthorizationGenericKeyValue.builder()
                                         .key(elem.getCiTaxCode())
