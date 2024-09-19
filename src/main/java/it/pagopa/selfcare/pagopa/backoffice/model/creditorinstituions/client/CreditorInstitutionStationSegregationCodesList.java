@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -22,5 +23,6 @@ import java.util.List;
 public class CreditorInstitutionStationSegregationCodesList {
 
     @JsonProperty("ci_station_segregation_codes")
+    @NotNull
     private List<CreditorInstitutionStationSegregationCodes> ciStationCodes;
 }

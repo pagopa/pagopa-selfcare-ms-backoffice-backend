@@ -15,7 +15,18 @@ import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationMet
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationOwner;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionStationSegregationCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionStationSegregationCodesList;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetailResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionResponse;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.ProductResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
@@ -29,7 +40,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -57,14 +72,16 @@ public class ApiManagementService {
 
 
     @Autowired
-    public ApiManagementService(AzureApiManagerClient apimClient,
-                                ExternalApiClient externalApiClient,
-                                ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
-                                ModelMapper modelMapper,
-                                AuthorizerConfigClient authorizerConfigClient,
-                                FeatureManager featureManager,
-                                @Value("${institution.subscription.test-email}") String testEmail,
-                                @Value("${info.properties.environment}") String environment) {
+    public ApiManagementService(
+            AzureApiManagerClient apimClient,
+            ExternalApiClient externalApiClient,
+            ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
+            ModelMapper modelMapper,
+            AuthorizerConfigClient authorizerConfigClient,
+            FeatureManager featureManager,
+            @Value("${institution.subscription.test-email}") String testEmail,
+            @Value("${info.properties.environment}") String environment
+    ) {
         this.apimClient = apimClient;
         this.externalApiClient = externalApiClient;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
@@ -187,9 +204,7 @@ public class ApiManagementService {
         List<InstitutionApiKeys> apiSubscriptions = this.apimClient.getApiSubscriptions(institutionId);
 
         if (subscriptionCode.getAuthDomain() != null) {
-            List<DelegationExternal> delegationResponse = getDelegationResponse(institutionId, subscriptionCode);
-            CreditorInstitutionStationSegregationCodesList ciSegregationCodes =
-                    this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(institution.getTaxCode());
+            DelegationInfo delegationInfoResponse = getDelegationInfo(institutionId, subscriptionCode.getAuthDelegations(), institution.getTaxCode());
 
             InstitutionApiKeys apiKeys = apiSubscriptions.stream()
                     .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
@@ -197,26 +212,17 @@ public class ApiManagementService {
                     .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
 
             // configure primary key
-            Authorization authorizationPrimaryKey = buildAuthorization(subscriptionCode.getAuthDomain(), subscriptionCode.getPrefixId(), apiKeys.getPrimaryKey(), institution, true, delegationResponse, ciSegregationCodes);
+            Authorization authorizationPrimaryKey = buildAuthorization(subscriptionCode, apiKeys.getPrimaryKey(), institution, true, delegationInfoResponse);
             this.authorizerConfigClient.createAuthorization(authorizationPrimaryKey);
 
             // configure secondary key
-            Authorization authorizationSecondaryKey = buildAuthorization(subscriptionCode.getAuthDomain(), subscriptionCode.getPrefixId(), apiKeys.getSecondaryKey(), institution, false, delegationResponse, ciSegregationCodes);
+            Authorization authorizationSecondaryKey = buildAuthorization(subscriptionCode, apiKeys.getSecondaryKey(), institution, false, delegationInfoResponse);
             this.authorizerConfigClient.createAuthorization(authorizationSecondaryKey);
         }
 
         return InstitutionApiKeysResource.builder()
                 .institutionApiKeys(apiSubscriptions)
                 .build();
-    }
-
-
-    private List<DelegationExternal> getDelegationResponse(String institutionId, Subscription subscriptionCode) {
-        if (Boolean.TRUE.equals(subscriptionCode.getAuthDelegations())) {
-            return this.externalApiClient.getBrokerDelegation(
-                    null, institutionId, "prod-pagopa", "FULL", null);
-        }
-        return new ArrayList<>();
     }
 
     /**
@@ -255,12 +261,48 @@ public class ApiManagementService {
         }
     }
 
-    private void updateAuthorization(String institutionId, String subscriptionId, String subscriptionPrefixId, boolean isPrimaryKey) {
+    /**
+     * Updates authorizer config for all broker's API keys that require delegations configuration.
+     * Retrieves the updated list of creditor institution and the relative list of segregation codes associated to
+     * broker's station and use this list to update authorizer configuration.
+     *
+     * @param institutionId broker's institution id
+     * @param ciTaxCode     broker's tax code
+     */
+    public void updateBrokerAuthorizerSegregationCodesMetadata(
+            String institutionId,
+            String ciTaxCode
+    ) {
+        List<InstitutionApiKeys> apiKeys = this.apimClient.getApiSubscriptions(institutionId).stream()
+                .filter(institutionApiKeys -> {
+                    String prefixId = institutionApiKeys.getId().split("-")[0] + "-";
+                    return Subscription.fromPrefix(prefixId).getAuthDelegations();
+                }).toList();
+
+        CreditorInstitutionStationSegregationCodesList ciSegregationCodes =
+                this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(ciTaxCode);
+
+        apiKeys.forEach(
+                apiKey -> {
+                    String prefixId = apiKey.getId().split("-")[0] + "-";
+                    updateAuthorizerConfigMetadata(institutionId, prefixId, ciSegregationCodes, true);
+                    updateAuthorizerConfigMetadata(institutionId, prefixId, ciSegregationCodes, false);
+                }
+        );
+    }
+
+    private void updateAuthorization(
+            String institutionId,
+            String subscriptionId,
+            String subscriptionPrefixId,
+            boolean isPrimaryKey
+    ) {
         InstitutionApiKeys apiKeys = this.apimClient.getApiSubscriptions(institutionId).stream()
                 .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
                 .findFirst()
                 .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
 
+        Subscription subscription = Subscription.fromPrefix(subscriptionPrefixId);
         Authorization authorization;
         try {
             String authorizationId = createAuthorizationId(subscriptionPrefixId, institutionId, isPrimaryKey);
@@ -268,27 +310,30 @@ public class ApiManagementService {
 
             authorization.setSubscriptionKey(isPrimaryKey ? apiKeys.getPrimaryKey() : apiKeys.getSecondaryKey());
 
-            InstitutionResponse institution =
-                    getInstitutionResponse(institutionId);
-            List<DelegationExternal> delegationResponse = getDelegationResponse(institutionId, Subscription.fromPrefix(subscriptionPrefixId));
-            CreditorInstitutionStationSegregationCodesList ciSegregationCodes =
-                    this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(institution.getTaxCode());
+            InstitutionResponse institution = getInstitutionResponse(institutionId);
+            DelegationInfo delegationInfoResponse = getDelegationInfo(institutionId, subscription.getAuthDelegations(), institution.getTaxCode());
 
-            authorization.setAuthorizedEntities(getAuthorizationEntities(institution, delegationResponse));
-            authorization.getOtherMetadata().removeIf(metadata -> metadata.getShortKey().equals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY));
-            authorization.getOtherMetadata().add(buildAuthorizationMetadata(ciSegregationCodes.getCiStationCodes()));
+            authorization.setAuthorizedEntities(getAuthorizationEntities(institution, delegationInfoResponse.delegationResponse));
+            AuthorizationMetadata authorizationMetadata = buildAuthorizationMetadata(delegationInfoResponse.ciSegregationCodes.getCiStationCodes());
+            if (authorization.getOtherMetadata() != null) {
+                authorization.getOtherMetadata().removeIf(metadata -> metadata.getShortKey().equals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY));
+                authorization.getOtherMetadata().add(authorizationMetadata);
+            } else {
+                authorization.setOtherMetadata(Collections.singletonList(authorizationMetadata));
+            }
 
             this.authorizerConfigClient.deleteAuthorization(authorization.getId());
             this.authorizerConfigClient.createAuthorization(authorization);
         } catch (FeignException.NotFound e) {
-            createSubscriptionKeys(institutionId, Subscription.fromPrefix(subscriptionPrefixId));
+            log.error("An error occurred while updating API key authorizer configuration for institution {} and subscription {}, proceed to recreate the API key",
+                    institutionId, subscription.getDisplayName(), e);
+            createSubscriptionKeys(institutionId, subscription);
         }
 
     }
 
     private InstitutionResponse getInstitutionResponse(String institutionId) {
-        InstitutionResponse institution =
-                this.externalApiClient.getInstitution(institutionId);
+        InstitutionResponse institution = this.externalApiClient.getInstitution(institutionId);
         if (institution == null) {
             throw new AppException(AppError.APIM_USER_NOT_FOUND, institutionId);
         }
@@ -296,30 +341,32 @@ public class ApiManagementService {
     }
 
     private Authorization buildAuthorization(
-            String domain,
-            String subscriptionPrefixId,
+            Subscription subscription,
             String subscriptionKey,
             InstitutionResponse institution,
             boolean isPrimaryKey,
-            List<DelegationExternal> delegationResponse,
-            CreditorInstitutionStationSegregationCodesList ciSegregationCodes
+            DelegationInfo delegationInfo
     ) {
+        String authDomain = subscription.getAuthDomain();
         return Authorization.builder()
-                .id(createAuthorizationId(subscriptionPrefixId, institution.getId(), isPrimaryKey))
-                .domain(domain)
+                .id(createAuthorizationId(subscription.getPrefixId(), institution.getId(), isPrimaryKey))
+                .domain(authDomain)
                 .subscriptionKey(subscriptionKey)
-                .description(String.format("%s key configuration for %s", isPrimaryKey ? PRIMARY : SECONDARY, domain))
+                .description(String.format("%s key configuration for %s", isPrimaryKey ? PRIMARY : SECONDARY, authDomain))
                 .owner(AuthorizationOwner.builder()
                         .id(institution.getTaxCode())
                         .name(institution.getDescription())
                         .type(getOwnerType(institution))
                         .build())
-                .authorizedEntities(getAuthorizationEntities(institution, delegationResponse))
-                .otherMetadata(Collections.singletonList(buildAuthorizationMetadata(ciSegregationCodes.getCiStationCodes())))
+                .authorizedEntities(getAuthorizationEntities(institution, delegationInfo.delegationResponse))
+                .otherMetadata(Collections.singletonList(buildAuthorizationMetadata(delegationInfo.ciSegregationCodes.getCiStationCodes())))
                 .build();
     }
 
-    private List<AuthorizationEntity> getAuthorizationEntities(InstitutionResponse institution, List<DelegationExternal> delegationResponse) {
+    private List<AuthorizationEntity> getAuthorizationEntities(
+            InstitutionResponse institution,
+            List<DelegationExternal> delegationResponse
+    ) {
         List<AuthorizationEntity> authorizedEntities = new ArrayList<>();
 
         if (delegationResponse != null && !delegationResponse.isEmpty()) {
@@ -346,8 +393,10 @@ public class ApiManagementService {
         return String.format("%s%s_%s", subscriptionPrefixId, institutionId, isPrimaryKey ? PRIMARY : SECONDARY);
     }
 
-    private void createUserIfNotExist(String institutionId,
-                                      InstitutionResponse institution) {
+    private void createUserIfNotExist(
+            String institutionId,
+            InstitutionResponse institution
+    ) {
         try {
             this.apimClient.getInstitution(institutionId);
         } catch (IllegalArgumentException e) {
@@ -364,34 +413,13 @@ public class ApiManagementService {
         return environment.toLowerCase().charAt(0);
     }
 
-    public void updateBrokerAuthorizerSegregationCodesMetadata(
-            String institutionId,
-            String ciTaxCode
-    ) {
-        List<InstitutionApiKeys> apiKeys = this.apimClient.getApiSubscriptions(institutionId).stream()
-                .filter(institutionApiKeys -> {
-                    String prefixId = institutionApiKeys.getId().split("-")[0] + "-";
-                    return Subscription.fromPrefix(prefixId).getAuthDelegations();
-                }).toList();
-
-        CreditorInstitutionStationSegregationCodesList ciSegregationCodes =
-                this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(ciTaxCode);
-
-        apiKeys.forEach(
-                apiKey -> {
-                    String prefixId = apiKey.getId().split("-")[0] + "-";
-                    updateAuthorizerConfigMetadata(institutionId, prefixId, ciSegregationCodes, true);
-                    updateAuthorizerConfigMetadata(institutionId, prefixId, ciSegregationCodes, false);
-                }
-        );
-    }
-
     private void updateAuthorizerConfigMetadata(
             String institutionId,
             String prefixId,
             CreditorInstitutionStationSegregationCodesList ciSegregationCodes,
             boolean isPrimaryKey
     ) {
+        Subscription subscription = Subscription.fromPrefix(prefixId);
         try {
             String authorizationId = createAuthorizationId(prefixId, institutionId, isPrimaryKey);
             Authorization authorization = this.authorizerConfigClient.getAuthorization(authorizationId);
@@ -402,7 +430,9 @@ public class ApiManagementService {
             this.authorizerConfigClient.deleteAuthorization(authorization.getId());
             this.authorizerConfigClient.createAuthorization(authorization);
         } catch (FeignException.NotFound e) {
-            createSubscriptionKeys(institutionId, Subscription.fromPrefix(prefixId));
+            log.error("An error occurred while updating API key authorizer configuration for institution {} and subscription {}, proceed to recreate the API key",
+                    institutionId, subscription.getDisplayName(), e);
+            createSubscriptionKeys(institutionId, subscription);
         }
     }
 
@@ -422,6 +452,27 @@ public class ApiManagementService {
                 .shortKey(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY)
                 .content(genericKeyValues)
                 .build();
+    }
+
+    private DelegationInfo getDelegationInfo(
+            String institutionId,
+            Boolean hasAuthDelegations,
+            String institutionTaxCode
+    ) {
+        List<DelegationExternal> delegationResponse = new ArrayList<>();
+        CreditorInstitutionStationSegregationCodesList ciSegregationCodes = new CreditorInstitutionStationSegregationCodesList(new ArrayList<>());
+        if (Boolean.TRUE.equals(hasAuthDelegations)) {
+            delegationResponse = this.externalApiClient
+                    .getBrokerDelegation(null, institutionId, "prod-pagopa", "FULL", null);
+            ciSegregationCodes =
+                    this.apiConfigSelfcareIntegrationClient
+                            .getCreditorInstitutionsSegregationCodeAssociatedToBroker(institutionTaxCode);
+        }
+        return new DelegationInfo(delegationResponse, ciSegregationCodes);
+    }
+
+    private record DelegationInfo(List<DelegationExternal> delegationResponse,
+                                  CreditorInstitutionStationSegregationCodesList ciSegregationCodes) {
     }
 }
 
