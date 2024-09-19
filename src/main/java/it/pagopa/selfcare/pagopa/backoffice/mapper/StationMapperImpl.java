@@ -99,7 +99,8 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setTargetPortPof(model.getTargetPortPof());
         stationDetailResource.setTargetPathPof(model.getTargetPathPof());
         stationDetailResource.setPrimitiveVersion(model.getPrimitiveVersion());
-        stationDetailResource.setIsConnectionSync(model.getIsConnectionSync());
+
+        stationDetailResource.setIsConnectionSync(model.getIsConnectionSync() != null ? model.getIsConnectionSync() : Utility.isConnectionSync(model));
 
         stationDetailResource.setRestEndpoint(model.getRestEndpoint());
         stationDetailResource.setIsPaymentOptionsEnabled(model.getIsPaymentOptionsEnabled());
