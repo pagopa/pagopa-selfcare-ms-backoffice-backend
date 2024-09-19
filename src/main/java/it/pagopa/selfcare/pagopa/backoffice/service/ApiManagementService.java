@@ -45,6 +45,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.sanitizeLogParam;
+
 @Slf4j
 @Service
 public class ApiManagementService {
@@ -319,7 +321,7 @@ public class ApiManagementService {
             this.authorizerConfigClient.createAuthorization(authorization);
         } catch (FeignException.NotFound e) {
             log.error("An error occurred while updating API key authorizer configuration for institution {} and subscription {}, proceed to recreate the API key",
-                    institutionId, subscription.getDisplayName(), e);
+                    sanitizeLogParam(institutionId), sanitizeLogParam(subscription.getDisplayName()), e);
             createSubscriptionKeys(institutionId, subscription);
         }
 
@@ -437,7 +439,7 @@ public class ApiManagementService {
             this.authorizerConfigClient.createAuthorization(authorization);
         } catch (FeignException.NotFound e) {
             log.error("An error occurred while updating API key authorizer configuration for institution {} and subscription {}, proceed to recreate the API key",
-                    institutionId, subscription.getDisplayName(), e);
+                    sanitizeLogParam(institutionId), sanitizeLogParam(subscription.getDisplayName()), e);
             createSubscriptionKeys(institutionId, subscription);
         }
     }
