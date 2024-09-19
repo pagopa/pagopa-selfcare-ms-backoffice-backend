@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.model.connector.station;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import lombok.Data;
@@ -128,4 +129,10 @@ public class StationDetails extends Station {
     @JsonProperty("target_path_pof")
     private String targetPathPof;
 
+    @JsonProperty("is_payment_options_enabled")
+    @Schema(description = "Flag that enables EC's payment options service")
+    private Boolean isPaymentOptionsEnabled = false;
+    @JsonProperty("rest_endpoint")
+    @Schema(description = "Endpoint to all the API REST of the EC")
+    private String restEndpoint;
 }
