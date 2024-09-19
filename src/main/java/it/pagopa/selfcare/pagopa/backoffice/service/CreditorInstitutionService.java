@@ -64,18 +64,22 @@ public class CreditorInstitutionService {
 
     private final ModelMapper modelMapper;
 
+    private final ApiManagementService apiManagementService;
+
     @Autowired
     public CreditorInstitutionService(
             ApiConfigClient apiConfigClient,
             ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
             TavoloOpRepository operativeTableRepository,
-            ExternalApiClient externalApiClient, ModelMapper modelMapper
+            ExternalApiClient externalApiClient, ModelMapper modelMapper,
+            ApiManagementService apiManagementService
     ) {
         this.apiConfigClient = apiConfigClient;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
         this.operativeTableRepository = operativeTableRepository;
         this.externalApiClient = externalApiClient;
         this.modelMapper = modelMapper;
+        this.apiManagementService = apiManagementService;
     }
 
     /**
@@ -120,36 +124,69 @@ public class CreditorInstitutionService {
         return this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(ciTaxCode, targetCITaxCode);
     }
 
+    /**
+     * Associate the provided creditor institution to the given station.
+     * <p>
+     * Check if the provided tax code is a creditor institution tax code and if so, associates it to the given station and
+     * updates the authorizer config for each broker's api keys by adding the specified segregation code
+     *
+     * @param ciTaxCode creditor institution's tax code
+     * @param institutionId broker's institution id
+     * @param brokerTaxCode broker's tax code
+     * @param dto creditor institution - station association info
+     * @return the creditor institution - station association info
+     */
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(
-            String ecCode,
+            String ciTaxCode,
+            String institutionId,
+            String brokerTaxCode,
             @NotNull CreditorInstitutionStationDto dto
     ) {
-        try {
-            apiConfigClient.getCreditorInstitutionDetails(ecCode);
-        } catch (FeignException e) {
-            throw new AppException(AppError.CREDITOR_INSTITUTION_NOT_FOUND, ecCode);
-        }
-        CreditorInstitutionStationEdit station = mapper.fromDto(dto);
-        CreditorInstitutionStationEdit ecStation = apiConfigClient.createCreditorInstitutionStationRelationship(ecCode, station);
-        return mapper.toResource(ecStation);
+        checkIfIsCITaxCodeFailOtherwise(ciTaxCode);
+        CreditorInstitutionStationEdit station = this.mapper.fromDto(dto);
+        CreditorInstitutionStationEdit ecStation = this.apiConfigClient.createCreditorInstitutionStationRelationship(ciTaxCode, station);
+        this.apiManagementService.updateBrokerAuthorizerSegregationCodesMetadata(institutionId, brokerTaxCode);
+        return this.mapper.toResource(ecStation);
     }
 
+    /**
+     * Updates the association between creditor institution and station.
+     * <p>
+     * Check if the provided tax code is a creditor institution tax code and if so, updates the association to the given
+     * station with the provided info
+     *
+     * @param ciTaxCode creditor institution's tax code
+     * @param dto creditor institution - station association info
+     * @return the updated creditor institution - station association info
+     */
     public CreditorInstitutionStationEditResource updateStationAssociationToCreditorInstitution(
-            String ecCode,
+            String ciTaxCode,
             @NotNull CreditorInstitutionStationDto dto
     ) {
-        try {
-            apiConfigClient.getCreditorInstitutionDetails(ecCode);
-        } catch (FeignException e) {
-            throw new AppException(AppError.CREDITOR_INSTITUTION_NOT_FOUND, ecCode);
-        }
-        CreditorInstitutionStationEdit station = mapper.fromDto(dto);
-        CreditorInstitutionStationEdit ecStation = apiConfigClient.updateCreditorInstitutionStationRelationship(ecCode, station.getStationCode(), station);
-        return mapper.toResource(ecStation);
+        checkIfIsCITaxCodeFailOtherwise(ciTaxCode);
+        CreditorInstitutionStationEdit station = this.mapper.fromDto(dto);
+        CreditorInstitutionStationEdit ecStation = this.apiConfigClient.updateCreditorInstitutionStationRelationship(ciTaxCode, station.getStationCode(), station);
+        return this.mapper.toResource(ecStation);
     }
 
-    public void deleteCreditorInstitutionStationRelationship(String ecCode, String stationCode) {
-        apiConfigClient.deleteCreditorInstitutionStationRelationship(ecCode, stationCode);
+    /**
+     * Removes the association between creditor institution and station.
+     * <p>
+     * Removes the association and updates the authorizer config for each broker's api keys by removing
+     * the segregation code of the association
+     *
+     * @param ciTaxCode creditor institution's tax code
+     * @param institutionId broker's institution id
+     * @param brokerTaxCode broker's tax code
+     */
+    public void deleteCreditorInstitutionStationRelationship(
+            String ciTaxCode,
+            String stationCode,
+            String institutionId,
+            String brokerTaxCode
+    ) {
+        this.apiConfigClient.deleteCreditorInstitutionStationRelationship(ciTaxCode, stationCode);
+        this.apiManagementService.updateBrokerAuthorizerSegregationCodesMetadata(institutionId, brokerTaxCode);
     }
 
 
@@ -327,4 +364,11 @@ public class CreditorInstitutionService {
                 && delegationExternals.stream().noneMatch(delegationExternal -> delegationExternal.getTaxCode().equals(broker.getTaxCode()));
     }
 
+    private void checkIfIsCITaxCodeFailOtherwise(String ciTaxCode) {
+        try {
+            this.apiConfigClient.getCreditorInstitutionDetails(ciTaxCode);
+        } catch (FeignException e) {
+            throw new AppException(AppError.CREDITOR_INSTITUTION_NOT_FOUND, ciTaxCode);
+        }
+    }
 }

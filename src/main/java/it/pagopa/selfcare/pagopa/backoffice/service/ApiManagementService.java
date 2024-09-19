@@ -364,7 +364,7 @@ public class ApiManagementService {
         return environment.toLowerCase().charAt(0);
     }
 
-    public void updateAuthorizerSegregationCodesMetadata(
+    public void updateBrokerAuthorizerSegregationCodesMetadata(
             String institutionId,
             String ciTaxCode
     ) {
