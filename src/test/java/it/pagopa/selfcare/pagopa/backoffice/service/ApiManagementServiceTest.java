@@ -408,7 +408,7 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void updateBrokerAuthorizerSegregationCodesMetadataSuccess() throws IOException {
+    void updateBrokerAuthorizerSegregationCodesMetadataSuccess() {
         String subscriptionId = String.format("%s%s", Subscription.GPD.getPrefixId(), CI_TAX_CODE);
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
