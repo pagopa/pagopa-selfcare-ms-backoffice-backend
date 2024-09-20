@@ -274,22 +274,29 @@ public class ApiManagementService {
             String institutionId,
             String ciTaxCode
     ) {
-        List<InstitutionApiKeys> apiKeys = this.apimClient.getApiSubscriptions(institutionId).stream()
-                .filter(institutionApiKeys -> {
-                    String prefixId = institutionApiKeys.getId().split("-")[0] + "-";
-                    return Subscription.fromPrefix(prefixId).getAuthDelegations();
-                }).toList();
+        List<InstitutionApiKeys> apiKeys = this.apimClient.getApiSubscriptions(institutionId).parallelStream()
+                .filter(this::checkIfAPIKeyHasAuthDelegations)
+                .toList();
 
         CreditorInstitutionStationSegregationCodesList ciSegregationCodes =
                 this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(ciTaxCode);
 
-        apiKeys.forEach(
+        apiKeys.parallelStream().forEach(
                 apiKey -> {
                     String prefixId = apiKey.getId().split("-")[0] + "-";
                     updateAuthorizerConfigMetadata(institutionId, prefixId, ciSegregationCodes, true);
                     updateAuthorizerConfigMetadata(institutionId, prefixId, ciSegregationCodes, false);
                 }
         );
+    }
+
+    private boolean checkIfAPIKeyHasAuthDelegations(InstitutionApiKeys institutionApiKeys) {
+        try {
+            String prefixId = institutionApiKeys.getId().split("-")[0] + "-";
+            return Subscription.fromPrefix(prefixId).getAuthDelegations();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private void updateAuthorization(

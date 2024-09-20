@@ -410,9 +410,10 @@ class ApiManagementServiceTest {
     @Test
     void updateBrokerAuthorizerSegregationCodesMetadataSuccess() {
         String subscriptionId = String.format("%s%s", Subscription.GPD.getPrefixId(), CI_TAX_CODE);
-        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
+        InstitutionApiKeys institutionApiKeys1 = buildInstitutionApiKeys(subscriptionId);
+        InstitutionApiKeys institutionApiKeys2 = buildInstitutionApiKeys("not from BO API key");
 
-        when(apimClient.getApiSubscriptions(INSTITUTION_ID)).thenReturn(Collections.singletonList(institutionApiKeys));
+        when(apimClient.getApiSubscriptions(INSTITUTION_ID)).thenReturn(List.of(institutionApiKeys1, institutionApiKeys2));
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString()))
                 .thenReturn(buildCreditorInstitutionStationSegregationCodesList());
         when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(
