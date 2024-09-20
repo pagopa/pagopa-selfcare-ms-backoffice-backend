@@ -120,4 +120,8 @@ public class StationDetailsDto {
     @JsonProperty(required = true)
     @Schema(description = "Url jira for StationDetail validation")
     private String validationUrl;
+    @Schema(description = "Flag that enables EC's payment options service")
+    private Boolean isPaymentOptionsEnabled = false;
+    @Schema(description = "Endpoint to all the API REST of the EC")
+    private String restEndpoint;
 }
