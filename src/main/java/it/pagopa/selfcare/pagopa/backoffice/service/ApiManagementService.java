@@ -265,7 +265,7 @@ public class ApiManagementService {
     /**
      * Updates authorizer config for all broker's API keys that require delegations configuration.
      * Retrieves the updated list of creditor institution and the relative list of segregation codes associated to
-     * broker's station and use this list to update authorizer configuration.
+     * broker's station and use this list to update segregation codes metadata in authorizer configuration.
      *
      * @param institutionId broker's institution id
      * @param ciTaxCode     broker's tax code

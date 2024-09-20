@@ -145,7 +145,13 @@ public class CreditorInstitutionService {
         checkIfIsCITaxCodeFailOtherwise(ciTaxCode);
         CreditorInstitutionStationEdit station = this.mapper.fromDto(dto);
         CreditorInstitutionStationEdit ecStation = this.apiConfigClient.createCreditorInstitutionStationRelationship(ciTaxCode, station);
-        this.apiManagementService.updateBrokerAuthorizerSegregationCodesMetadata(institutionId, brokerTaxCode);
+        try {
+            this.apiManagementService.updateBrokerAuthorizerSegregationCodesMetadata(institutionId, brokerTaxCode);
+        } catch (Exception e) {
+            log.error("Failed to update broker API key authorizations, revert associate station to CI operation");
+            this.apiConfigClient.deleteCreditorInstitutionStationRelationship(ciTaxCode, ecStation.getStationCode());
+            throw e;
+        }
         return this.mapper.toResource(ecStation);
     }
 
@@ -186,7 +192,18 @@ public class CreditorInstitutionService {
             String brokerTaxCode
     ) {
         this.apiConfigClient.deleteCreditorInstitutionStationRelationship(ciTaxCode, stationCode);
-        this.apiManagementService.updateBrokerAuthorizerSegregationCodesMetadata(institutionId, brokerTaxCode);
+        try {
+            this.apiManagementService.updateBrokerAuthorizerSegregationCodesMetadata(institutionId, brokerTaxCode);
+        } catch (Exception e) {
+            log.error("Failed to update broker API key authorizations, revert dissociate station to CI operation");
+            CreditorInstitutions creditorInstitutions =
+                    this.apiConfigClient.getCreditorInstitutionsByStation(stationCode, 1, 0, ciTaxCode);
+            CreditorInstitutionStationEdit dto =
+                    this.modelMapper.map(creditorInstitutions.getCreditorInstitutionList().get(0), CreditorInstitutionStationEdit.class);
+            dto.setStationCode(stationCode);
+             this.apiConfigClient.createCreditorInstitutionStationRelationship(ciTaxCode, dto);
+            throw e;
+        }
     }
 
 

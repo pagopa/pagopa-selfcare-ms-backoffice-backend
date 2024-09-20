@@ -12,6 +12,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.ApiConfigCreditorInstitutionsOrderBy;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.AvailableCodes;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
@@ -61,7 +62,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -79,6 +79,7 @@ class CreditorInstitutionServiceTest {
     private static final String INSTITUTION_ID = "institutionId";
     private static final String BROKER_TAX_CODE = "brokerTaxCode";
     private static final String CI_TAX_CODE = "12345678900";
+    private static final String STATION_CODE1 = "00000000000_01";
 
     @MockBean
     private ApiConfigClient apiConfigClient;
@@ -221,14 +222,32 @@ class CreditorInstitutionServiceTest {
 
     @Test
     void associateStationToCreditorInstitution_ko() throws IOException {
-        FeignException feignException = mock(FeignException.InternalServerError.class);
-        when(apiConfigClient.getCreditorInstitutionDetails(anyString())).thenThrow(feignException);
+        when(apiConfigClient.getCreditorInstitutionDetails(anyString())).thenThrow(FeignException.InternalServerError.class);
 
         CreditorInstitutionStationDto dto = TestUtil.fileToObject("request/post_creditor_institution_station_association.json", CreditorInstitutionStationDto.class);
         assertThrows(AppException.class, () -> service.associateStationToCreditorInstitution(CI_TAX_CODE, INSTITUTION_ID, BROKER_TAX_CODE, dto));
 
         verify(apiConfigClient, never()).createCreditorInstitutionStationRelationship(anyString(), any(CreditorInstitutionStationEdit.class));
         verify(apiManagementService, never()).updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, BROKER_TAX_CODE);
+    }
+
+    @Test
+    void associateStationToCreditorInstitutionFailOnAuthorizerUpdateExpectRollback() throws IOException {
+        when(apiConfigClient.getCreditorInstitutionDetails(anyString())).thenReturn(new CreditorInstitutionDetails());
+        when(apiConfigClient.createCreditorInstitutionStationRelationship(anyString(), any(CreditorInstitutionStationEdit.class)))
+                .thenReturn(
+                        TestUtil.fileToObject(
+                                "response/apiconfig/post_creditor_institution_station_association_ok.json",
+                                CreditorInstitutionStationEdit.class)
+                );
+        doThrow(AppException.class).when(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(anyString(), anyString());
+
+        CreditorInstitutionStationDto dto =
+                TestUtil.fileToObject("request/post_creditor_institution_station_association.json", CreditorInstitutionStationDto.class);
+        assertThrows(AppException.class, () -> service.associateStationToCreditorInstitution(CI_TAX_CODE, INSTITUTION_ID, BROKER_TAX_CODE, dto));
+
+        verify(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, BROKER_TAX_CODE);
+        verify(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
     }
 
     @Test
@@ -255,19 +274,31 @@ class CreditorInstitutionServiceTest {
 
     @Test
     void deleteCreditorInstitutionStationRelationship_ok() {
-        doNothing().when(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
+        assertDoesNotThrow(() -> service.deleteCreditorInstitutionStationRelationship(CI_TAX_CODE, STATION_CODE1, INSTITUTION_ID, BROKER_TAX_CODE));
 
-        assertDoesNotThrow(() -> service.deleteCreditorInstitutionStationRelationship(CI_TAX_CODE, "00000000000_01", INSTITUTION_ID, BROKER_TAX_CODE));
-
+        verify(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
         verify(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, BROKER_TAX_CODE);
     }
 
     @Test
     void deleteCreditorInstitutionStationRelationship_ko() {
-        FeignException feignException = mock(FeignException.InternalServerError.class);
-        doThrow(feignException).when(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
+        doThrow(FeignException.InternalServerError.class).when(apiConfigClient)
+                .deleteCreditorInstitutionStationRelationship(anyString(), anyString());
 
-        assertThrows(FeignException.class, () -> service.deleteCreditorInstitutionStationRelationship(CI_TAX_CODE, "00000000000_01", INSTITUTION_ID, BROKER_TAX_CODE));
+        assertThrows(FeignException.class, () ->
+                service.deleteCreditorInstitutionStationRelationship(CI_TAX_CODE, STATION_CODE1, INSTITUTION_ID, BROKER_TAX_CODE));
+    }
+
+    @Test
+    void deleteCreditorInstitutionStationRelationshipFailOnAuthorizerUpdateExpectRollback() {
+        doThrow(AppException.class).when(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(anyString(), anyString());
+        when(apiConfigClient.getCreditorInstitutionsByStation(STATION_CODE1, 1, 0, CI_TAX_CODE))
+                .thenReturn(buildCreditorInstitutions());
+        assertThrows(AppException.class, () ->
+                service.deleteCreditorInstitutionStationRelationship(CI_TAX_CODE, STATION_CODE1, INSTITUTION_ID, BROKER_TAX_CODE));
+
+        verify(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
+        verify(apiConfigClient).createCreditorInstitutionStationRelationship(anyString(), any());
     }
 
     @Test
@@ -688,5 +719,24 @@ class CreditorInstitutionServiceTest {
 
     private InstitutionResponse buildInstitutionResponse(InstitutionType institutionType, String taxCode) {
         return InstitutionResponse.builder().description("Broker").taxCode(taxCode).institutionType(institutionType).build();
+    }
+
+    private CreditorInstitutions buildCreditorInstitutions() {
+        return CreditorInstitutions.builder()
+                .creditorInstitutionList(Collections.singletonList(
+                        CreditorInstitution.builder()
+                                .aca(true)
+                                .standIn(true)
+                                .creditorInstitutionCode(CI_TAX_CODE)
+                                .mod4(false)
+                                .applicationCode(null)
+                                .segregationCode(2L)
+                                .auxDigit(null)
+                                .broadcast(false)
+                                .enabled(true)
+                                .cbillCode("cbill")
+                                .build()
+                ))
+                .build();
     }
 }
