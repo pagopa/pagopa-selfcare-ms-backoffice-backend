@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.24.5-2-next"
+    "version": "2.25.0-next"
   },
   "servers": [
     {
@@ -8037,6 +8037,24 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "description": "Broker's institution id",
+            "in": "query",
+            "name": "institutionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker's tax code",
+            "in": "query",
+            "name": "brokerTaxCode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -8353,6 +8371,24 @@
             "description": "Creditor institution's code",
             "in": "path",
             "name": "ci-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker's institution id",
+            "in": "query",
+            "name": "institutionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker's tax code",
+            "in": "query",
+            "name": "brokerTaxCode",
             "required": true,
             "schema": {
               "type": "string"
