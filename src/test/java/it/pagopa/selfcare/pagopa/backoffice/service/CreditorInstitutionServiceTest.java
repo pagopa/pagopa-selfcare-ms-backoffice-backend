@@ -12,6 +12,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.ApiConfigCreditorInstitutionsOrderBy;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.AvailableCodes;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.CreditorInstitutionStationEdit;
@@ -61,7 +62,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -76,6 +76,10 @@ class CreditorInstitutionServiceTest {
     private static final String STATION_CODE = "stationCode";
     private static final String CI_TAX_CODE_1 = "12345677";
     private static final String CI_TAX_CODE_2 = "12345666";
+    private static final String INSTITUTION_ID = "institutionId";
+    private static final String BROKER_TAX_CODE = "brokerTaxCode";
+    private static final String CI_TAX_CODE = "12345678900";
+    private static final String STATION_CODE1 = "00000000000_01";
 
     @MockBean
     private ApiConfigClient apiConfigClient;
@@ -88,6 +92,9 @@ class CreditorInstitutionServiceTest {
 
     @MockBean
     private ExternalApiClient externalApiClient;
+
+    @MockBean
+    private ApiManagementService apiManagementService;
 
     @Autowired
     private CreditorInstitutionService service;
@@ -168,7 +175,7 @@ class CreditorInstitutionServiceTest {
         when(apiConfigClient.getCreditorInstitutionDetails(anyString()))
                 .thenReturn(TestUtil.fileToObject("response/apiconfig/get_creditor_institution_details_ok.json", CreditorInstitutionDetails.class));
 
-        CreditorInstitutionDetailsResource result = service.getCreditorInstitutionDetails("12345678900");
+        CreditorInstitutionDetailsResource result = service.getCreditorInstitutionDetails(CI_TAX_CODE);
 
         assertNotNull(result);
     }
@@ -178,7 +185,7 @@ class CreditorInstitutionServiceTest {
         FeignException feignException = mock(FeignException.InternalServerError.class);
         when(apiConfigClient.getCreditorInstitutionDetails(anyString())).thenThrow(feignException);
 
-        assertThrows(FeignException.class, () -> service.getCreditorInstitutionDetails("12345678900"));
+        assertThrows(FeignException.class, () -> service.getCreditorInstitutionDetails(CI_TAX_CODE));
     }
 
     @Test
@@ -186,7 +193,7 @@ class CreditorInstitutionServiceTest {
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(anyString(), anyString()))
                 .thenReturn(AvailableCodes.builder().availableCodeList(Collections.singletonList("2")).build());
 
-        AvailableCodes result = assertDoesNotThrow(() -> service.getCreditorInstitutionSegregationCodes("12345678900", "111111"));
+        AvailableCodes result = assertDoesNotThrow(() -> service.getCreditorInstitutionSegregationCodes(CI_TAX_CODE, "111111"));
 
         assertNotNull(result);
     }
@@ -196,7 +203,7 @@ class CreditorInstitutionServiceTest {
         FeignException feignException = mock(FeignException.InternalServerError.class);
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionSegregationCodes(anyString(), anyString())).thenThrow(feignException);
 
-        assertThrows(FeignException.class, () -> service.getCreditorInstitutionSegregationCodes("12345678900", "111111"));
+        assertThrows(FeignException.class, () -> service.getCreditorInstitutionSegregationCodes(CI_TAX_CODE, "111111"));
     }
 
     @Test
@@ -206,19 +213,41 @@ class CreditorInstitutionServiceTest {
                 .thenReturn(TestUtil.fileToObject("response/apiconfig/post_creditor_institution_station_association_ok.json", CreditorInstitutionStationEdit.class));
 
         CreditorInstitutionStationDto dto = TestUtil.fileToObject("request/post_creditor_institution_station_association.json", CreditorInstitutionStationDto.class);
-        CreditorInstitutionStationEditResource result = service.associateStationToCreditorInstitution("12345678900", dto);
+        CreditorInstitutionStationEditResource result = service.associateStationToCreditorInstitution(CI_TAX_CODE, INSTITUTION_ID, BROKER_TAX_CODE, dto);
 
         assertNotNull(result);
+
+        verify(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, BROKER_TAX_CODE);
     }
 
     @Test
     void associateStationToCreditorInstitution_ko() throws IOException {
-        FeignException feignException = mock(FeignException.InternalServerError.class);
-        when(apiConfigClient.getCreditorInstitutionDetails(anyString())).thenThrow(feignException);
+        when(apiConfigClient.getCreditorInstitutionDetails(anyString())).thenThrow(FeignException.InternalServerError.class);
 
         CreditorInstitutionStationDto dto = TestUtil.fileToObject("request/post_creditor_institution_station_association.json", CreditorInstitutionStationDto.class);
-        assertThrows(AppException.class, () -> service.associateStationToCreditorInstitution("12345678900", dto));
-        verify(apiConfigClient, times(0)).createCreditorInstitutionStationRelationship(anyString(), any(CreditorInstitutionStationEdit.class));
+        assertThrows(AppException.class, () -> service.associateStationToCreditorInstitution(CI_TAX_CODE, INSTITUTION_ID, BROKER_TAX_CODE, dto));
+
+        verify(apiConfigClient, never()).createCreditorInstitutionStationRelationship(anyString(), any(CreditorInstitutionStationEdit.class));
+        verify(apiManagementService, never()).updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, BROKER_TAX_CODE);
+    }
+
+    @Test
+    void associateStationToCreditorInstitutionFailOnAuthorizerUpdateExpectRollback() throws IOException {
+        when(apiConfigClient.getCreditorInstitutionDetails(anyString())).thenReturn(new CreditorInstitutionDetails());
+        when(apiConfigClient.createCreditorInstitutionStationRelationship(anyString(), any(CreditorInstitutionStationEdit.class)))
+                .thenReturn(
+                        TestUtil.fileToObject(
+                                "response/apiconfig/post_creditor_institution_station_association_ok.json",
+                                CreditorInstitutionStationEdit.class)
+                );
+        doThrow(AppException.class).when(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(anyString(), anyString());
+
+        CreditorInstitutionStationDto dto =
+                TestUtil.fileToObject("request/post_creditor_institution_station_association.json", CreditorInstitutionStationDto.class);
+        assertThrows(AppException.class, () -> service.associateStationToCreditorInstitution(CI_TAX_CODE, INSTITUTION_ID, BROKER_TAX_CODE, dto));
+
+        verify(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, BROKER_TAX_CODE);
+        verify(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
     }
 
     @Test
@@ -228,34 +257,48 @@ class CreditorInstitutionServiceTest {
                 .thenReturn(TestUtil.fileToObject("response/apiconfig/post_creditor_institution_station_association_ok.json", CreditorInstitutionStationEdit.class));
 
         CreditorInstitutionStationDto dto = TestUtil.fileToObject("request/post_creditor_institution_station_association.json", CreditorInstitutionStationDto.class);
-        CreditorInstitutionStationEditResource result = service.updateStationAssociationToCreditorInstitution("12345678900", dto);
+        CreditorInstitutionStationEditResource result = service.updateStationAssociationToCreditorInstitution(CI_TAX_CODE, dto);
 
         assertNotNull(result);
     }
 
     @Test
-    void updateStationAssociationToCreditorInstitutio_ko() throws IOException {
+    void updateStationAssociationToCreditorInstitution_ko() throws IOException {
         FeignException feignException = mock(FeignException.InternalServerError.class);
         when(apiConfigClient.getCreditorInstitutionDetails(anyString())).thenThrow(feignException);
 
         CreditorInstitutionStationDto dto = TestUtil.fileToObject("request/post_creditor_institution_station_association.json", CreditorInstitutionStationDto.class);
-        assertThrows(AppException.class, () -> service.updateStationAssociationToCreditorInstitution("12345678900", dto));
+        assertThrows(AppException.class, () -> service.updateStationAssociationToCreditorInstitution(CI_TAX_CODE, dto));
         verify(apiConfigClient, times(0)).updateCreditorInstitutionStationRelationship(anyString(), anyString(),any(CreditorInstitutionStationEdit.class));
     }
 
     @Test
     void deleteCreditorInstitutionStationRelationship_ok() {
-        doNothing().when(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
+        assertDoesNotThrow(() -> service.deleteCreditorInstitutionStationRelationship(CI_TAX_CODE, STATION_CODE1, INSTITUTION_ID, BROKER_TAX_CODE));
 
-        assertDoesNotThrow(() -> service.deleteCreditorInstitutionStationRelationship("12345678900", "00000000000_01"));
+        verify(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
+        verify(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, BROKER_TAX_CODE);
     }
 
     @Test
     void deleteCreditorInstitutionStationRelationship_ko() {
-        FeignException feignException = mock(FeignException.InternalServerError.class);
-        doThrow(feignException).when(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
+        doThrow(FeignException.InternalServerError.class).when(apiConfigClient)
+                .deleteCreditorInstitutionStationRelationship(anyString(), anyString());
 
-        assertThrows(FeignException.class, () -> service.deleteCreditorInstitutionStationRelationship("12345678900", "00000000000_01"));
+        assertThrows(FeignException.class, () ->
+                service.deleteCreditorInstitutionStationRelationship(CI_TAX_CODE, STATION_CODE1, INSTITUTION_ID, BROKER_TAX_CODE));
+    }
+
+    @Test
+    void deleteCreditorInstitutionStationRelationshipFailOnAuthorizerUpdateExpectRollback() {
+        doThrow(AppException.class).when(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(anyString(), anyString());
+        when(apiConfigClient.getCreditorInstitutionsByStation(STATION_CODE1, 1, 0, CI_TAX_CODE))
+                .thenReturn(buildCreditorInstitutions());
+        assertThrows(AppException.class, () ->
+                service.deleteCreditorInstitutionStationRelationship(CI_TAX_CODE, STATION_CODE1, INSTITUTION_ID, BROKER_TAX_CODE));
+
+        verify(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
+        verify(apiConfigClient).createCreditorInstitutionStationRelationship(anyString(), any());
     }
 
     @Test
@@ -307,7 +350,7 @@ class CreditorInstitutionServiceTest {
                 .thenReturn(TestUtil.fileToObject("response/apiconfig/post_creditor_institution_ok.json", CreditorInstitutionDetails.class));
 
         UpdateCreditorInstitutionDto dto = TestUtil.fileToObject("request/post_creditor_institution.json", UpdateCreditorInstitutionDto.class);
-        CreditorInstitutionDetailsResource result = service.updateCreditorInstitutionDetails("12345678900", dto);
+        CreditorInstitutionDetailsResource result = service.updateCreditorInstitutionDetails(CI_TAX_CODE, dto);
 
         assertNotNull(result);
     }
@@ -318,7 +361,7 @@ class CreditorInstitutionServiceTest {
         when(apiConfigClient.updateCreditorInstitutionDetails(anyString(), any(CreditorInstitutionDetails.class))).thenThrow(feignException);
 
         UpdateCreditorInstitutionDto dto = TestUtil.fileToObject("request/post_creditor_institution.json", UpdateCreditorInstitutionDto.class);
-        assertThrows(FeignException.class, () -> service.updateCreditorInstitutionDetails("12345678900", dto));
+        assertThrows(FeignException.class, () -> service.updateCreditorInstitutionDetails(CI_TAX_CODE, dto));
     }
 
     @ParameterizedTest
@@ -331,7 +374,7 @@ class CreditorInstitutionServiceTest {
         FeignException feignException = mock(FeignException.NotFound.class);
         boolean isBrokerExistent = "true".equals(existsBroker);
         boolean isCIExistent = "true".equals(existsCI);
-        String brokerCode = "12345678900";
+        String brokerCode = CI_TAX_CODE;
 
         if (isBrokerExistent) {
             when(apiConfigClient.getBrokersEC(1, 0, brokerCode, null, null, "ASC"))
@@ -346,7 +389,7 @@ class CreditorInstitutionServiceTest {
             when(apiConfigClient.getCreditorInstitutionDetails(anyString())).thenThrow(feignException);
         }
 
-        BrokerAndEcDetailsResource result = service.getBrokerAndEcDetails("12345678900");
+        BrokerAndEcDetailsResource result = service.getBrokerAndEcDetails(CI_TAX_CODE);
 
         assertNotNull(result);
         if (isBrokerExistent) {
@@ -367,7 +410,7 @@ class CreditorInstitutionServiceTest {
         when(apiConfigClient.getBrokersEC(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString())).thenThrow(feignException);
         when(apiConfigClient.getCreditorInstitutionDetails(anyString())).thenThrow(feignException);
 
-        assertThrows(AppException.class, () -> service.getBrokerAndEcDetails("12345678900"));
+        assertThrows(AppException.class, () -> service.getBrokerAndEcDetails(CI_TAX_CODE));
     }
 
     @Test
@@ -376,14 +419,14 @@ class CreditorInstitutionServiceTest {
         InstitutionProductUsers users = buildInstitutionProductUsers();
         when(operativeTableRepository.findByTaxCode("ciTaxCode")).thenReturn(Optional.of(entity));
         when(externalApiClient.getInstitutionProductUsers(
-                "institutionId",
+                INSTITUTION_ID,
                 null,
                 null,
                 Collections.singletonList(SelfcareProductUser.ADMIN.getProductUser()))
         ).thenReturn(Collections.singletonList(users));
 
         CreditorInstitutionContactsResource result = assertDoesNotThrow(() ->
-                service.getCreditorInstitutionContacts("ciTaxCode", "institutionId"));
+                service.getCreditorInstitutionContacts("ciTaxCode", INSTITUTION_ID));
 
         assertNotNull(result);
         assertNotNull(result.getOperativeTable());
@@ -405,14 +448,14 @@ class CreditorInstitutionServiceTest {
         InstitutionProductUsers users = buildInstitutionProductUsers();
         when(operativeTableRepository.findByTaxCode("ciTaxCode")).thenReturn(Optional.empty());
         when(externalApiClient.getInstitutionProductUsers(
-                "institutionId",
+                INSTITUTION_ID,
                 null,
                 null,
                 Collections.singletonList(SelfcareProductUser.ADMIN.getProductUser()))
         ).thenReturn(Collections.singletonList(users));
 
         CreditorInstitutionContactsResource result = assertDoesNotThrow(() ->
-                service.getCreditorInstitutionContacts("ciTaxCode", "institutionId"));
+                service.getCreditorInstitutionContacts("ciTaxCode", INSTITUTION_ID));
 
         assertNotNull(result);
         assertNull(result.getOperativeTable());
@@ -676,5 +719,24 @@ class CreditorInstitutionServiceTest {
 
     private InstitutionResponse buildInstitutionResponse(InstitutionType institutionType, String taxCode) {
         return InstitutionResponse.builder().description("Broker").taxCode(taxCode).institutionType(institutionType).build();
+    }
+
+    private CreditorInstitutions buildCreditorInstitutions() {
+        return CreditorInstitutions.builder()
+                .creditorInstitutionList(Collections.singletonList(
+                        CreditorInstitution.builder()
+                                .aca(true)
+                                .standIn(true)
+                                .creditorInstitutionCode(CI_TAX_CODE)
+                                .mod4(false)
+                                .applicationCode(null)
+                                .segregationCode(2L)
+                                .auxDigit(null)
+                                .broadcast(false)
+                                .enabled(true)
+                                .cbillCode("cbill")
+                                .build()
+                ))
+                .build();
     }
 }

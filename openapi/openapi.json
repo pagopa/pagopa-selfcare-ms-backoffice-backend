@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.24.5"
+    "version": "2.24.5-1-next"
   },
   "servers": [
     {
@@ -8037,6 +8037,24 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "description": "Broker's institution id",
+            "in": "query",
+            "name": "institutionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker's tax code",
+            "in": "query",
+            "name": "brokerTaxCode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -8353,6 +8371,24 @@
             "description": "Creditor institution's code",
             "in": "path",
             "name": "ci-tax-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker's institution id",
+            "in": "query",
+            "name": "institutionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Broker's tax code",
+            "in": "query",
+            "name": "brokerTaxCode",
             "required": true,
             "schema": {
               "type": "string"
@@ -11278,6 +11314,7 @@
     },
     "/stations/station-code": {
       "get": {
+        "deprecated": true,
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
         "operationId": "getStationCode",
         "parameters": [
@@ -15298,6 +15335,10 @@
             "type": "boolean",
             "description": "Describe the station connection's type, true synchronous, false asynchronous"
           },
+          "isPaymentOptionsEnabled": {
+            "type": "boolean",
+            "description": "Flag that enables EC's payment options service"
+          },
           "modifiedAt": {
             "type": "string",
             "description": "Station's last modified date",
@@ -15403,6 +15444,10 @@
           "redirectQueryString": {
             "type": "string",
             "description": "Station's redirect query string"
+          },
+          "restEndpoint": {
+            "type": "string",
+            "description": "Endpoint to all the API REST of the EC"
           },
           "rtInstantaneousDispatch": {
             "type": "boolean",
@@ -15532,6 +15577,10 @@
             "type": "string",
             "description": "Station's ip v4"
           },
+          "isPaymentOptionsEnabled": {
+            "type": "boolean",
+            "description": "Flag that enables EC's payment options service"
+          },
           "newPassword": {
             "type": "string",
             "description": "Station's new password"
@@ -15626,6 +15675,10 @@
           "redirectQueryString": {
             "type": "string",
             "description": "Station's redirect query string"
+          },
+          "restEndpoint": {
+            "type": "string",
+            "description": "Endpoint to all the API REST of the EC"
           },
           "rtInstantaneousDispatch": {
             "type": "boolean",
@@ -16617,6 +16670,10 @@
             "type": "boolean",
             "description": "Station's activation state"
           },
+          "isPaymentOptionsEnabled": {
+            "type": "boolean",
+            "description": "Flag that enables EC's payment options service"
+          },
           "note": {
             "type": "string",
             "description": "station note description by operation team"
@@ -16656,6 +16713,10 @@
           "redirectQueryString": {
             "type": "string",
             "description": "Station's redirect query string"
+          },
+          "restEndpoint": {
+            "type": "string",
+            "description": "Endpoint to all the API REST of the EC"
           },
           "service": {
             "type": "string",
@@ -16750,6 +16811,10 @@
             "type": "boolean",
             "description": "Describe the station connection's type, true synchronous, false asynchronous"
           },
+          "isPaymentOptionsEnabled": {
+            "type": "boolean",
+            "description": "Flag that enables EC's payment options service"
+          },
           "modifiedAt": {
             "type": "string",
             "description": "Station's last modified date",
@@ -16758,6 +16823,10 @@
           "pofService": {
             "type": "string",
             "description": "Station's pof service"
+          },
+          "restEndpoint": {
+            "type": "string",
+            "description": "Endpoint to all the API REST of the EC"
           },
           "service": {
             "type": "string",

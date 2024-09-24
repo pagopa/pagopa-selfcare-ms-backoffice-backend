@@ -27,21 +27,6 @@ jobs:
         with:
           configuration-path: '.github/auto_assign.yml'
 
-  check_source_branch:
-    name: Check Source Branches
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4 # required to make the script available for next step
-      - name: Check Source Branches
-        uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const script = require('./.github/workflows/github_scripts/check_source_branch.js')
-            script({github, context, core})
-  
-  
   check_labels:
     name: Check Required Labels
     runs-on: ubuntu-latest

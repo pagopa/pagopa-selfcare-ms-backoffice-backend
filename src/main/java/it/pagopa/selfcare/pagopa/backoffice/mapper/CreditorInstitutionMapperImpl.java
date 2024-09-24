@@ -175,10 +175,10 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         creditorInstitutionResource.setCbillCode(model.getCbillCode());
         creditorInstitutionResource.setEnabled(model.getEnabled());
         creditorInstitutionResource.setBroadcast(model.getBroadcast());
-        creditorInstitutionResource.setMod4(model.getMod4());
-        creditorInstitutionResource.setApplicationCode(model.getApplicationCode());
-        creditorInstitutionResource.setAuxDigit(model.getAuxDigit());
-        creditorInstitutionResource.setSegregationCode(model.getSegregationCode());
+        creditorInstitutionResource.setMod4(String.valueOf(model.getMod4()));
+        creditorInstitutionResource.setApplicationCode(String.valueOf(model.getApplicationCode()));
+        creditorInstitutionResource.setAuxDigit(String.valueOf(model.getAuxDigit()));
+        creditorInstitutionResource.setSegregationCode(String.valueOf(model.getSegregationCode()));
         creditorInstitutionResource.setAca(model.getAca());
         creditorInstitutionResource.setStandIn(model.getStandIn());
 
