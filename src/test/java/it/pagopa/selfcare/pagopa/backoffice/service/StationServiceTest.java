@@ -189,6 +189,7 @@ class StationServiceTest {
         assertEquals(STATION_CODE, result.getStationCode());
         assertTrue(result.getEnabled());
         assertEquals(1L, result.getVersion());
+        assertEquals(WrapperStatus.TO_CHECK, result.getWrapperStatus());
 
         verify(apiConfigClient, never()).getStation(STATION_CODE);
         verify(wrapperService, never()).findStationByIdOptional(STATION_CODE);
@@ -209,6 +210,7 @@ class StationServiceTest {
         assertTrue(result.getEnabled());
         assertEquals(1L, result.getVersion());
         assertFalse(result.getPendingUpdate());
+        assertEquals(WrapperStatus.APPROVED, result.getWrapperStatus());
     }
 
     @Test
@@ -224,6 +226,7 @@ class StationServiceTest {
         assertTrue(result.getEnabled());
         assertEquals(1L, result.getVersion());
         assertFalse(result.getPendingUpdate());
+        assertEquals(WrapperStatus.APPROVED, result.getWrapperStatus());
     }
 
     @Test
@@ -240,6 +243,7 @@ class StationServiceTest {
         assertTrue(result.getEnabled());
         assertEquals(1L, result.getVersion());
         assertFalse(result.getPendingUpdate());
+        assertEquals(WrapperStatus.APPROVED, result.getWrapperStatus());
     }
 
     @Test
@@ -256,6 +260,7 @@ class StationServiceTest {
         assertTrue(result.getEnabled());
         assertEquals(1L, result.getVersion());
         assertTrue(result.getPendingUpdate());
+        assertEquals(WrapperStatus.APPROVED, result.getWrapperStatus());
     }
 
     @Test
@@ -510,6 +515,7 @@ class StationServiceTest {
         WrapperEntityStations entities = new WrapperEntityStations();
         entities.setCreatedAt(Instant.now());
         entities.setEntities(Collections.singletonList(entity));
+        entities.setStatus(wrapperStatus);
         return entities;
     }
 
