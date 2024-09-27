@@ -43,6 +43,7 @@ public class StationMapperImpl implements StationMapper {
 
         StationDetailResource stationDetailResource = mapBaseStationDetails(model);
 
+        stationDetailResource.setWrapperStatus(status);
         stationDetailResource.setCreatedBy(createdBy);
         stationDetailResource.setModifiedBy(modifiedBy);
         stationDetailResource.setCreatedAt(createdAt);
