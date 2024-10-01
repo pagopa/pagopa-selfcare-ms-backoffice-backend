@@ -192,7 +192,7 @@ public class ApiManagementService {
         InstitutionResponse institution = getInstitutionResponse(institutionId);
 
         String subscriptionId = String.format("%s%s", subscriptionCode.getPrefixId(), institution.getTaxCode());
-        String subscriptionName = String.format("%s %s", subscriptionCode.getDisplayName(), institution.getDescription());
+        String subscriptionName = buildSubscriptionName(subscriptionCode, institution);
         String subscriptionScope = String.format(subscriptionCode.getScope(), getEnvironment());
         createUserIfNotExist(institutionId, institution);
         this.apimClient.createInstitutionSubscription(
@@ -488,6 +488,17 @@ public class ApiManagementService {
 
     private record DelegationInfo(List<DelegationExternal> delegationResponse,
                                   CreditorInstitutionStationSegregationCodesList ciSegregationCodes) {
+
+    }
+    private String buildSubscriptionName(
+            Subscription subscriptionCode,
+            InstitutionResponse institution
+    ) {
+        String subscriptionName = String.format("%s %s", subscriptionCode.getDisplayName(), institution.getDescription());
+        if (subscriptionName.length() >= 100) {
+            return subscriptionName.substring(0, 99);
+        }
+        return subscriptionName;
     }
 }
 
