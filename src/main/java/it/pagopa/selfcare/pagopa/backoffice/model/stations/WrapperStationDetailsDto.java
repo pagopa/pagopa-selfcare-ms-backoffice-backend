@@ -70,7 +70,7 @@ public class WrapperStationDetailsDto {
     @Schema(description = "Url jira for StationDetail validation")
     private String validationUrl;
     @Schema(description = "Represents the authorization to use the standin mode with this station")
-    private Boolean flagStandin;
+    private Boolean flagStandin = false;
     @Schema(description = "Flag that enables EC's payment options service")
     private Boolean isPaymentOptionsEnabled = false;
     @Schema(description = "Endpoint to all the API REST of the EC")

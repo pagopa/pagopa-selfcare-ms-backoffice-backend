@@ -57,7 +57,7 @@ public class WrapperStationResource {
     @Schema(description = "Describe the station connection's type, true synchronous, false asynchronous")
     private Boolean isConnectionSync = true;
     @Schema(description = "Represents the authorization to use the standin mode with this station")
-    private Boolean flagStandin;
+    private Boolean flagStandin = false;
     @Schema(description = "Flag that enables EC's payment options service")
     private Boolean isPaymentOptionsEnabled = false;
     @Schema(description = "Endpoint to all the API REST of the EC")

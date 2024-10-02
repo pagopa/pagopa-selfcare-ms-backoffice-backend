@@ -5,12 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentModel;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
@@ -207,6 +202,7 @@ public class ChannelDetailsResource extends ChannelResource {
     private Boolean pendingUpdate;
 
     @Schema(description = "Represents the authorization to use the standin mode with this station")
-    private Boolean flagStandin;
+    @Builder.Default
+    private Boolean flagStandin = false;
 
 }
