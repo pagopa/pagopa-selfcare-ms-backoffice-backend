@@ -91,4 +91,10 @@ public class WrapperChannelDetailsDto {
     @NotBlank
     @Schema(description = "Url jira for ChannelDetail validation")
     private String validationUrl;
+
+    @JsonProperty("flag_standin")
+    @Schema(description = "Represents the authorization to use the standin mode with this station")
+    @NotNull
+    private Boolean flagStandin;
+
 }

@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 
 @Data
 public class StationDetailResource extends StationResource {
@@ -94,6 +96,8 @@ public class StationDetailResource extends StationResource {
     private String note;
     @Schema(description = "Flag that describe if there is a pending update for the station")
     private Boolean pendingUpdate;
+    @Schema(description = "Represents the authorization to use the standin mode with this station")
+    private Boolean flagStandin;
     @Schema(description = "Flag that enables EC's payment options service")
     private Boolean isPaymentOptionsEnabled = false;
     @Schema(description = "Endpoint to all the API REST of the EC")

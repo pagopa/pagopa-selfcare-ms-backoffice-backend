@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -37,6 +38,8 @@ public class WrapperStation {
     @JsonProperty(required = true)
     @NotNull
     private WrapperStatus wrapperStatus;
+
+    private Boolean flagStandin;
 
     private Boolean isConnectionSync;
 }

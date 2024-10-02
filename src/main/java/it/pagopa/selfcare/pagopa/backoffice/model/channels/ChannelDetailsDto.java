@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
@@ -202,4 +203,10 @@ public class ChannelDetailsDto {
 
     @Schema(description = "Represents the authorization to carry out the transfer of the information present in additional payment information in the tags relating to payment by card for the PA in V1")
     private Boolean flagPspCp = false;
+
+    @JsonProperty("flag_standin")
+    @Schema(description = "Represents the authorization to use the standin mode with this station")
+    @NotNull
+    private Boolean flagStandin;
+
 }

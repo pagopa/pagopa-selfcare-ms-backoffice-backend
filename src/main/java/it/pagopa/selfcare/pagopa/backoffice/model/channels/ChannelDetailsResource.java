@@ -205,4 +205,8 @@ public class ChannelDetailsResource extends ChannelResource {
 
     @Schema(description = "Flag that describe if there is a pending update for the channel")
     private Boolean pendingUpdate;
+
+    @Schema(description = "Represents the authorization to use the standin mode with this station")
+    private Boolean flagStandin;
+
 }

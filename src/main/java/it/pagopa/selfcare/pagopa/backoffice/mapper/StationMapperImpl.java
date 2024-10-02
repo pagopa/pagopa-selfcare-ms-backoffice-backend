@@ -102,6 +102,7 @@ public class StationMapperImpl implements StationMapper {
         stationDetailResource.setPrimitiveVersion(model.getPrimitiveVersion());
 
         stationDetailResource.setIsConnectionSync(model.getIsConnectionSync() != null ? model.getIsConnectionSync() : Utility.isConnectionSync(model));
+        stationDetailResource.setFlagStandin(model.getFlagStandin());
 
         stationDetailResource.setRestEndpoint(model.getRestEndpoint());
         stationDetailResource.setIsPaymentOptionsEnabled(model.getIsPaymentOptionsEnabled());
@@ -294,6 +295,8 @@ public class StationMapperImpl implements StationMapper {
         wrapperStation.setAssociatedCreditorInstitutions(wrapperEntityOperations.getEntity().getAssociatedCreditorInstitutions());
         wrapperStation.setIsConnectionSync(Utility.isConnectionSync(wrapperEntityOperations.getEntity()));
 
+        wrapperStation.setFlagStandin(wrapperEntityOperations.getEntity().getFlagStandin());
+
         wrapperStation.setWrapperStatus(wrapperEntityOperations.getStatus());
         wrapperStation.setCreatedAt(wrapperEntityOperations.getCreatedAt());
         wrapperStation.setModifiedAt(wrapperEntityOperations.getModifiedAt());
@@ -336,6 +339,7 @@ public class StationMapperImpl implements StationMapper {
         wrapperStationResource.setCreatedAt(wrapperStation.getCreatedAt());
         wrapperStationResource.setModifiedAt(wrapperStation.getModifiedAt());
         wrapperStationResource.setIsConnectionSync(wrapperStation.getIsConnectionSync());
+        wrapperStationResource.setFlagStandin(wrapperStation.getFlagStandin());
 
         return wrapperStationResource;
     }
@@ -440,6 +444,8 @@ public class StationMapperImpl implements StationMapper {
         stationDetails.setTargetPortPof(model.getTargetPortPof());
         stationDetails.setTargetHostPof(model.getTargetHostPof());
 
+        stationDetails.setFlagStandin(model.getFlagStandin());
+
         stationDetails.setRestEndpoint(model.getRestEndpoint());
         stationDetails.setIsPaymentOptionsEnabled(model.getIsPaymentOptionsEnabled());
 
@@ -472,6 +478,8 @@ public class StationMapperImpl implements StationMapper {
         stationDetails.setEnabled(model.isEnabled());
         stationDetails.setVersion(model.getVersion());
         stationDetails.setBrokerDescription(model.getBrokerDescription());
+
+        stationDetails.setFlagStandin(model.getFlagStandin());
 
         stationDetails.setRestEndpoint(model.getRestEndpoint());
         stationDetails.setIsPaymentOptionsEnabled(model.getIsPaymentOptionsEnabled());
