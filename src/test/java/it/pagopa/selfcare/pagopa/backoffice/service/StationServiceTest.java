@@ -99,6 +99,7 @@ class StationServiceTest {
         StationDetailResource result = assertDoesNotThrow(() -> service.createStation(buildStationDetailsDto()));
 
         assertNotNull(result);
+        assertTrue(result.getFlagStandin());
 
         verify(apiConfigClient).createStation(any());
         verify(awsSesClient).sendEmail(any());
@@ -106,17 +107,14 @@ class StationServiceTest {
 
     @Test
     void createWrapperStationDetailsSuccess() {
-        WrapperEntity<StationDetails> entity = new WrapperEntity<>();
-        WrapperEntities<StationDetails> entities = new WrapperEntities<>();
-        entities.setEntities(Collections.singletonList(entity));
-
         when(wrapperService.createWrapperStation(any(StationDetails.class), any()))
-                .thenReturn(entities);
+                .thenReturn(buildStationDetailsWrapperEntities());
 
         WrapperEntities<StationDetails> result =
                 assertDoesNotThrow(() -> service.createWrapperStationDetails(buildWrapperStationDetailsDto()));
 
         assertNotNull(result);
+        assertTrue(result.getEntities().get(0).getEntity().getFlagStandin());
 
         verify(jiraServiceManagerClient).createTicket(anyString(), anyString());
     }
@@ -190,6 +188,7 @@ class StationServiceTest {
         assertTrue(result.getEnabled());
         assertEquals(1L, result.getVersion());
         assertEquals(WrapperStatus.TO_CHECK, result.getWrapperStatus());
+        assertTrue(result.getFlagStandin());
 
         verify(apiConfigClient, never()).getStation(STATION_CODE);
         verify(wrapperService, never()).findStationByIdOptional(STATION_CODE);
@@ -211,6 +210,7 @@ class StationServiceTest {
         assertEquals(1L, result.getVersion());
         assertFalse(result.getPendingUpdate());
         assertEquals(WrapperStatus.APPROVED, result.getWrapperStatus());
+        assertTrue(result.getFlagStandin());
     }
 
     @Test
@@ -227,6 +227,7 @@ class StationServiceTest {
         assertEquals(1L, result.getVersion());
         assertFalse(result.getPendingUpdate());
         assertEquals(WrapperStatus.APPROVED, result.getWrapperStatus());
+        assertTrue(result.getFlagStandin());
     }
 
     @Test
@@ -244,6 +245,7 @@ class StationServiceTest {
         assertEquals(1L, result.getVersion());
         assertFalse(result.getPendingUpdate());
         assertEquals(WrapperStatus.APPROVED, result.getWrapperStatus());
+        assertTrue(result.getFlagStandin());
     }
 
     @Test
@@ -261,6 +263,7 @@ class StationServiceTest {
         assertEquals(1L, result.getVersion());
         assertTrue(result.getPendingUpdate());
         assertEquals(WrapperStatus.APPROVED, result.getWrapperStatus());
+        assertTrue(result.getFlagStandin());
     }
 
     @Test
@@ -350,6 +353,7 @@ class StationServiceTest {
         StationDetailResource result = assertDoesNotThrow(() -> service.updateWrapperStationDetails(STATION_CODE, buildStationDetailsDto()));
 
         assertNotNull(result);
+        assertTrue(result.getFlagStandin());
 
         verify(jiraServiceManagerClient).createTicket(anyString(), anyString());
     }
@@ -362,6 +366,7 @@ class StationServiceTest {
         StationDetailResource result = assertDoesNotThrow(() -> service.updateWrapperStationWithOperatorReview(STATION_CODE, BROKER_CODE, "nota"));
 
         assertNotNull(result);
+        assertTrue(result.getFlagStandin());
 
         verify(awsSesClient).sendEmail(any());
     }
@@ -413,6 +418,7 @@ class StationServiceTest {
         assertEquals(stationDetails.getStationCode(), result.getStationCode());
         assertEquals(stationDetails.getEnabled(), result.getEnabled());
         assertEquals(stationDetails.getVersion(), result.getVersion());
+        assertTrue(result.getFlagStandin());
 
         verify(wrapperService).update(any(StationDetails.class), anyString(), anyString(), eq(null));
         verify(awsSesClient).sendEmail(any());
@@ -525,6 +531,7 @@ class StationServiceTest {
         stationDetails.setEnabled(true);
         stationDetails.setVersion(1L);
         stationDetails.setService("service");
+        stationDetails.setFlagStandin(true);
         return stationDetails;
     }
 
