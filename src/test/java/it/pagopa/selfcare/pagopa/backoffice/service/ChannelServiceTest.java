@@ -79,6 +79,7 @@ class ChannelServiceTest {
                 sut.createChannelToBeValidated(buildWrapperChannelDetailsDto()));
 
         assertNotNull(result);
+        assertTrue(result.getEntities().get(0).getEntity().getFlagStandin());
 
         verify(jsmClient).createTicket(anyString(), anyString());
     }
@@ -92,6 +93,7 @@ class ChannelServiceTest {
                 sut.updateChannelToBeValidated(CHANNEL_CODE, buildChannelDetailsDto()));
 
         assertNotNull(result);
+        assertTrue(result.getFlagStandin());
 
         verify(jsmClient).createTicket(anyString(), anyString());
     }
@@ -116,6 +118,7 @@ class ChannelServiceTest {
         assertEquals(expected.getTimeoutB(), result.getTimeoutB());
         assertEquals(expected.getTimeoutC(), result.getTimeoutC());
         assertEquals(expected.getProtocol(), result.getProtocol());
+        assertTrue(result.getFlagStandin());
 
         verify(apiConfigClient).createChannel(any());
         verify(awsSesClient).sendEmail(any());
@@ -140,6 +143,7 @@ class ChannelServiceTest {
         assertEquals(expected.getTimeoutB(), result.getTimeoutB());
         assertEquals(expected.getTimeoutC(), result.getTimeoutC());
         assertEquals(expected.getProtocol(), result.getProtocol());
+        assertTrue(result.getFlagStandin());
 
         verify(wrapperService).update(any(ChannelDetails.class), anyString(), anyString(), eq(null));
         verify(awsSesClient).sendEmail(any());
@@ -230,6 +234,7 @@ class ChannelServiceTest {
         assertEquals(expected.getTimeoutB(), result.getTimeoutB());
         assertEquals(expected.getTimeoutC(), result.getTimeoutC());
         assertEquals(expected.getProtocol(), result.getProtocol());
+        assertTrue(result.getFlagStandin());
 
         verify(apiConfigClient, never()).getChannelDetails(CHANNEL_CODE);
         verify(apiConfigClient, never()).getChannelPaymentTypes(CHANNEL_CODE);
@@ -257,6 +262,7 @@ class ChannelServiceTest {
         assertEquals(expected.getTimeoutC(), result.getTimeoutC());
         assertEquals(expected.getProtocol(), result.getProtocol());
         assertFalse(result.getPendingUpdate());
+        assertTrue(result.getFlagStandin());
     }
 
     @Test
@@ -278,6 +284,7 @@ class ChannelServiceTest {
         assertEquals(expected.getTimeoutC(), result.getTimeoutC());
         assertEquals(expected.getProtocol(), result.getProtocol());
         assertFalse(result.getPendingUpdate());
+        assertTrue(result.getFlagStandin());
     }
 
     @Test
@@ -300,6 +307,7 @@ class ChannelServiceTest {
         assertEquals(expected.getTimeoutC(), result.getTimeoutC());
         assertEquals(expected.getProtocol(), result.getProtocol());
         assertFalse(result.getPendingUpdate());
+        assertTrue(result.getFlagStandin());
     }
 
     @Test
@@ -322,6 +330,7 @@ class ChannelServiceTest {
         assertEquals(expected.getTimeoutC(), result.getTimeoutC());
         assertEquals(expected.getProtocol(), result.getProtocol());
         assertTrue(result.getPendingUpdate());
+        assertTrue(result.getFlagStandin());
     }
 
     @Test
@@ -485,6 +494,7 @@ class ChannelServiceTest {
         channelDetails.setTimeoutB(28L);
         channelDetails.setTimeoutC(10L);
         channelDetails.setRedirectPort(6666L);
+        channelDetails.setFlagStandin(true);
         return channelDetails;
     }
 

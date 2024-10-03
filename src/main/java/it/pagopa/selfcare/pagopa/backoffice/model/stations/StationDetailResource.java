@@ -94,6 +94,8 @@ public class StationDetailResource extends StationResource {
     private String note;
     @Schema(description = "Flag that describe if there is a pending update for the station")
     private Boolean pendingUpdate;
+    @Schema(description = "Represents the authorization to use the standin mode with this station")
+    private Boolean flagStandin = false;
     @Schema(description = "Flag that enables EC's payment options service")
     private Boolean isPaymentOptionsEnabled = false;
     @Schema(description = "Endpoint to all the API REST of the EC")

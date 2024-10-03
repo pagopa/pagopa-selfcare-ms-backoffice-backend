@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.25.2"
+    "version": "2.25.0-5-next"
   },
   "servers": [
     {
@@ -13135,6 +13135,7 @@
       },
       "ChannelDetailsDto": {
         "required": [
+          "flag_standin",
           "validationUrl"
         ],
         "type": "object",
@@ -13173,6 +13174,10 @@
           "flag_io": {
             "type": "boolean",
             "description": " flag io"
+          },
+          "flag_standin": {
+            "type": "boolean",
+            "description": "Represents the authorization to use the standin mode with this station"
           },
           "ip": {
             "type": "string",
@@ -13395,6 +13400,10 @@
           },
           "enabled": {
             "type": "boolean"
+          },
+          "flagStandin": {
+            "type": "boolean",
+            "description": "Represents the authorization to use the standin mode with this station"
           },
           "flag_io": {
             "type": "boolean",
@@ -15323,6 +15332,10 @@
             "type": "boolean",
             "description": "Station's online flag"
           },
+          "flagStandin": {
+            "type": "boolean",
+            "description": "Represents the authorization to use the standin mode with this station"
+          },
           "ip": {
             "type": "string",
             "description": "Station's ip address"
@@ -15532,6 +15545,7 @@
       "StationDetailsDto": {
         "required": [
           "brokerCode",
+          "flagStandin",
           "primitiveVersion",
           "redirectIp",
           "redirectPath",
@@ -15568,6 +15582,9 @@
           "flagOnline": {
             "type": "boolean",
             "description": "Station's online flag"
+          },
+          "flagStandin": {
+            "type": "boolean"
           },
           "ip": {
             "type": "string",
@@ -16315,6 +16332,7 @@
           "broker_description",
           "broker_psp_code",
           "channel_code",
+          "flag_standin",
           "payment_types",
           "redirect_protocol",
           "target_host",
@@ -16335,6 +16353,10 @@
           "channel_code": {
             "type": "string",
             "description": "Channel code"
+          },
+          "flag_standin": {
+            "type": "boolean",
+            "description": "Represents the authorization to use the standin mode with this station"
           },
           "note": {
             "type": "string",
@@ -16425,6 +16447,10 @@
           },
           "enabled": {
             "type": "boolean"
+          },
+          "flagStandin": {
+            "type": "boolean",
+            "description": "Represents the authorization to use the standin mode with this station"
           },
           "modifiedAt": {
             "type": "string",
@@ -16670,6 +16696,10 @@
             "type": "boolean",
             "description": "Station's activation state"
           },
+          "flagStandin": {
+            "type": "boolean",
+            "description": "Represents the authorization to use the standin mode with this station"
+          },
           "isPaymentOptionsEnabled": {
             "type": "boolean",
             "description": "Flag that enables EC's payment options service"
@@ -16806,6 +16836,10 @@
           "enabled": {
             "type": "boolean",
             "description": "Describe if the station is active"
+          },
+          "flagStandin": {
+            "type": "boolean",
+            "description": "Represents the authorization to use the standin mode with this station"
           },
           "isConnectionSync": {
             "type": "boolean",

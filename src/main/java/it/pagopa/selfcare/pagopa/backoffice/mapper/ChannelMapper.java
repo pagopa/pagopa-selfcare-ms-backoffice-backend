@@ -126,6 +126,7 @@ public class ChannelMapper {
             resource.setModifiedBy(wrapperModel.getModifiedBy());
             resource.setModifiedByOpt(wrapperModel.getModifiedByOpt());
             resource.setNote(wrapperModel.getNote());
+            resource.setFlagStandin(model.getFlagStandin());
         }
         return resource;
     }
@@ -177,6 +178,7 @@ public class ChannelMapper {
             resource.setTargetPortNmp(model.getTargetPortNmp());
             resource.setTargetPathNmp(model.getTargetPathNmp());
             resource.setPaymentTypeList(listModel != null ? listModel.getPaymentTypeList() : new ArrayList<>());
+            resource.setFlagStandin(model.getFlagStandin());
         }
         return resource;
     }
@@ -237,6 +239,7 @@ public class ChannelMapper {
             resource.setModifiedAt(model.getModifiedAt());
             resource.setCreatedAt(model.getCreatedAt());
             resource.setNote(note);
+            resource.setFlagStandin(model.getFlagStandin());
         }
         return resource;
     }
@@ -307,6 +310,7 @@ public class ChannelMapper {
             resource.setTargetHostNmp(model.getTargetHostNmp());
             resource.setTargetPortNmp(model.getTargetPortNmp());
             resource.setTargetPathNmp(model.getTargetPathNmp());
+            resource.setFlagStandin(model.getFlagStandin());
         }
         return resource;
     }
@@ -356,6 +360,7 @@ public class ChannelMapper {
             resource.setPrimitiveVersion(model.getPrimitiveVersion());
             resource.setFlagPspCp(model.getFlagPspCp());
             resource.setPaymentTypeList(model.getPaymentTypeList());
+            resource.setFlagStandin(model.getFlagStandin());
         }
         return resource;
     }
@@ -376,6 +381,7 @@ public class ChannelMapper {
             resource.setBrokerDescription(model.getBrokerDescription());
             resource.setChannelCode(model.getChannelCode());
             resource.setPaymentTypeList(model.getPaymentTypeList());
+            resource.setFlagStandin(model.getFlagStandin());
             //default
             resource.setThreadNumber(1L);
             resource.setTimeoutA(15L);
@@ -603,6 +609,8 @@ public class ChannelMapper {
         wrapperChannel.setEnabled(wrapperEntityChannel.getEntity().getEnabled());
         wrapperChannel.setBrokerDescription(wrapperEntityChannel.getEntity().getBrokerDescription());
 
+        wrapperChannel.setFlagStandin(wrapperEntityChannel.getEntity().getFlagStandin());
+
         wrapperChannel.setWrapperStatus(wrapperEntityChannel.getStatus());
         wrapperChannel.setCreatedAt(wrapperEntityChannel.getCreatedAt());
         wrapperChannel.setModifiedAt(wrapperEntityChannel.getModifiedAt());
@@ -657,6 +665,7 @@ public class ChannelMapper {
         wrapperChannelResource.setModifiedAt(wrapperChannel.getModifiedAt());
         wrapperChannelResource.setCreatedAt(wrapperChannel.getCreatedAt());
         wrapperChannelResource.setPrimitiveVersion(wrapperChannel.getPrimitiveVersion());
+        wrapperChannelResource.setFlagStandin(wrapperChannel.getFlagStandin());
 
         return wrapperChannelResource;
 
