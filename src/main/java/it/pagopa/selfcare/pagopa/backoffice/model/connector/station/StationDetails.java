@@ -129,6 +129,11 @@ public class StationDetails extends Station {
     @JsonProperty("target_path_pof")
     private String targetPathPof;
 
+    @JsonProperty("flag_standin")
+    @Schema(description = "Represents the authorization to use the standin mode with this station")
+    @NotNull
+    private Boolean flagStandin;
+
     @JsonProperty("is_payment_options_enabled")
     @Schema(description = "Flag that enables EC's payment options service")
     private Boolean isPaymentOptionsEnabled = false;

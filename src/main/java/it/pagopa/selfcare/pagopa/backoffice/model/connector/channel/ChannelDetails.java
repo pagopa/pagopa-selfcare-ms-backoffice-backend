@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.connector.channel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.ToString;
 
@@ -161,5 +162,9 @@ public class ChannelDetails extends Channel {
     @JsonProperty("target_path_nmp")
     private String targetPathNmp;
 
+    @JsonProperty("flag_standin")
+    @Schema(description = "Represents the authorization to use the standin mode with this station")
+    @NotNull
+    private Boolean flagStandin;
 
 }

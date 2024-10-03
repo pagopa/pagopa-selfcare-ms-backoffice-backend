@@ -28,4 +28,7 @@ public class WrapperChannel {
 
     @JsonProperty("primitive_version")
     private Integer primitiveVersion;
+
+    private Boolean flagStandin;
+
 }
