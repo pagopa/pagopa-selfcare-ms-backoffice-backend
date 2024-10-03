@@ -5,8 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Protocol;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
-
 
 @Data
 public class StationDetailResource extends StationResource {
