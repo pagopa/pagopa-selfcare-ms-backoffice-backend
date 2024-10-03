@@ -130,10 +130,10 @@ public class CreditorInstitutionService {
      * Check if the provided tax code is a creditor institution tax code and if so, associates it to the given station and
      * updates the authorizer config for each broker's api keys by adding the specified segregation code
      *
-     * @param ciTaxCode creditor institution's tax code
+     * @param ciTaxCode     creditor institution's tax code
      * @param institutionId broker's institution id
      * @param brokerTaxCode broker's tax code
-     * @param dto creditor institution - station association info
+     * @param dto           creditor institution - station association info
      * @return the creditor institution - station association info
      */
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(
@@ -162,7 +162,7 @@ public class CreditorInstitutionService {
      * station with the provided info
      *
      * @param ciTaxCode creditor institution's tax code
-     * @param dto creditor institution - station association info
+     * @param dto       creditor institution - station association info
      * @return the updated creditor institution - station association info
      */
     public CreditorInstitutionStationEditResource updateStationAssociationToCreditorInstitution(
@@ -181,7 +181,7 @@ public class CreditorInstitutionService {
      * Removes the association and updates the authorizer config for each broker's api keys by removing
      * the segregation code of the association
      *
-     * @param ciTaxCode creditor institution's tax code
+     * @param ciTaxCode     creditor institution's tax code
      * @param institutionId broker's institution id
      * @param brokerTaxCode broker's tax code
      */
@@ -201,7 +201,7 @@ public class CreditorInstitutionService {
             CreditorInstitutionStationEdit dto =
                     this.modelMapper.map(creditorInstitutions.getCreditorInstitutionList().get(0), CreditorInstitutionStationEdit.class);
             dto.setStationCode(stationCode);
-             this.apiConfigClient.createCreditorInstitutionStationRelationship(ciTaxCode, dto);
+            this.apiConfigClient.createCreditorInstitutionStationRelationship(ciTaxCode, dto);
             throw e;
         }
     }
@@ -364,7 +364,7 @@ public class CreditorInstitutionService {
                     .taxCode(broker.getTaxCode())
                     .institutionName(broker.getDescription())
                     .institutionType(broker.getInstitutionType().toString())
-                            .brokerId(brokerId)
+                    .brokerId(brokerId)
                     .build()
             );
         }
@@ -378,7 +378,7 @@ public class CreditorInstitutionService {
     ) {
         return (
                 RoleType.CI.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType().name()))
-                || RoleType.PT.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType().name()))
+                        || RoleType.PT.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType().name()))
         )
                 && (StringUtils.isBlank(ciNameFilter) || broker.getDescription().toLowerCase().contains(ciNameFilter.toLowerCase()))
                 && delegationExternals.parallelStream().noneMatch(delegationExternal -> delegationExternal.getTaxCode().equals(broker.getTaxCode()));
