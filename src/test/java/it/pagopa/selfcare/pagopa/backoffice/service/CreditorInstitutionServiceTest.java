@@ -541,6 +541,42 @@ class CreditorInstitutionServiceTest {
     }
 
     @Test
+    void getAvailableCreditorInstitutionsForStationSuccessWithAddingItselfPTToDelegationsAndPSPDelegationFiltered() {
+        DelegationExternal expectedCI = buildDelegation("PA", CI_TAX_CODE_2);
+        List<DelegationExternal> delegations = new ArrayList<>();
+        delegations.add(buildDelegation("PSP", "12345678"));
+        delegations.add(expectedCI);
+        InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.PT, "1234");
+
+        when(externalApiClient.getBrokerDelegation(
+                null,
+                BROKER_ID,
+                "prod-pagopa",
+                "FULL",
+                null)
+        ).thenReturn(delegations);
+        when(externalApiClient.getInstitution(BROKER_ID)).thenReturn(institutionResponse);
+        when(apiConfigSelfcareIntegrationClient.getStationCreditorInstitutions(eq(STATION_CODE), anyList()))
+                .thenReturn(List.of(
+                        CreditorInstitutionInfo.builder()
+                                .ciTaxCode(expectedCI.getTaxCode())
+                                .businessName(expectedCI.getInstitutionName())
+                                .build(),
+                        CreditorInstitutionInfo.builder()
+                                .ciTaxCode(institutionResponse.getTaxCode())
+                                .businessName(institutionResponse.getDescription())
+                                .build())
+                );
+
+        CreditorInstitutionInfoResource result = assertDoesNotThrow(() ->
+                service.getAvailableCreditorInstitutionsForStation(STATION_CODE, BROKER_ID, null));
+
+        assertNotNull(result);
+        assertNotNull(result.getCreditorInstitutionInfos());
+        assertEquals(2, result.getCreditorInstitutionInfos().size());
+    }
+
+    @Test
     void getAvailableCreditorInstitutionsForStationSuccessOnlyWithAddItselfToDelegations() {
         InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.PA, "1234");
 

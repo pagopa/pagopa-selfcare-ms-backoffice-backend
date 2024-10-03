@@ -313,8 +313,7 @@ public class CreditorInstitutionService {
     ) {
         List<CreditorInstitutionInfo> infoList = new ArrayList<>();
         List<String> delegations = getDelegationExternals(brokerId, ciName).parallelStream()
-                .filter(Objects::nonNull)
-                .filter(delegation -> RoleType.CI.equals(RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType())))
+                .filter(delegation -> isCIDelegation(brokerId, delegation))
                 .map(DelegationExternal::getTaxCode)
                 .toList();
 
@@ -365,6 +364,7 @@ public class CreditorInstitutionService {
                     .taxCode(broker.getTaxCode())
                     .institutionName(broker.getDescription())
                     .institutionType(broker.getInstitutionType().toString())
+                            .brokerId(brokerId)
                     .build()
             );
         }
@@ -376,9 +376,12 @@ public class CreditorInstitutionService {
             InstitutionResponse broker,
             String ciNameFilter
     ) {
-        return RoleType.CI.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType().name()))
+        return (
+                RoleType.CI.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType().name()))
+                || RoleType.PT.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType().name()))
+        )
                 && (StringUtils.isBlank(ciNameFilter) || broker.getDescription().toLowerCase().contains(ciNameFilter.toLowerCase()))
-                && delegationExternals.stream().noneMatch(delegationExternal -> delegationExternal.getTaxCode().equals(broker.getTaxCode()));
+                && delegationExternals.parallelStream().noneMatch(delegationExternal -> delegationExternal.getTaxCode().equals(broker.getTaxCode()));
     }
 
     private void checkIfIsCITaxCodeFailOtherwise(String ciTaxCode) {
@@ -387,5 +390,16 @@ public class CreditorInstitutionService {
         } catch (FeignException e) {
             throw new AppException(AppError.CREDITOR_INSTITUTION_NOT_FOUND, ciTaxCode);
         }
+    }
+
+    private boolean isCIDelegation(String brokerId, DelegationExternal delegation) {
+        return delegation != null
+                && (
+                RoleType.CI.equals(RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType()))
+                        || (
+                        delegation.getBrokerId().equals(brokerId)
+                                && RoleType.PT.equals(RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType()))
+                )
+        );
     }
 }
