@@ -1,9 +1,15 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreditorInstitution {
     @JsonProperty("creditor_institution_code")
     private String creditorInstitutionCode;
@@ -18,16 +24,16 @@ public class CreditorInstitution {
     private String cbillCode;
 
     @JsonProperty("application_code")
-    private String applicationCode;
+    private Long applicationCode;
 
     @JsonProperty("aux_digit")
-    private String auxDigit;
+    private Long auxDigit;
 
     @JsonProperty("segregation_code")
-    private String segregationCode;
+    private Long segregationCode;
 
     @JsonProperty("mod4")
-    private String mod4;
+    private Boolean mod4;
 
     @JsonProperty("broadcast")
     private Boolean broadcast;

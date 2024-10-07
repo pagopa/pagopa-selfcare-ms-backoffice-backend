@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntity;
@@ -16,15 +17,16 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.Channels;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperChannelList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.WrapperEntitiesList;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Station;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.Stations;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.WrapperStationList;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperChannelsRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperStationsRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.AuditorAware;
@@ -47,6 +49,7 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.REGEX_GENERATE
 import static it.pagopa.selfcare.pagopa.backoffice.util.StringUtils.generator;
 
 @Service
+@Slf4j
 public class WrapperService {
 
     private final ApiConfigClient apiConfigClient;
@@ -151,11 +154,13 @@ public class WrapperService {
             String createdBy
     ) {
         String channelCode = channelDetails.getChannelCode();
-        Optional<WrapperEntities> opt = repository.findById(channelCode);
-        if (opt.isEmpty()) {
-            throw new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode);
+        Optional<WrapperEntities> optionalWrapperEntities = repository.findById(channelCode);
+
+        if (optionalWrapperEntities.isEmpty()) {
+            return createWrapperChannel(channelDetails, WrapperStatus.valueOf(status));
         }
-        WrapperEntities<ChannelDetails> wrapperEntities = (WrapperEntities) opt.get();
+
+        WrapperEntities<ChannelDetails> wrapperEntities = optionalWrapperEntities.get();
         wrapperEntities.setModifiedBy(auditorAware.getCurrentAuditor().orElse(null));
         WrapperEntity<ChannelDetails> wrapperEntity = new WrapperEntity<>(channelDetails);
         wrapperEntity.setNote(note);
@@ -177,19 +182,37 @@ public class WrapperService {
      */
     public WrapperEntityChannels updateWrapperChannel(String channelCode, ChannelDetails channelDetails) {
         String modifiedBy = this.auditorAware.getCurrentAuditor().orElse(null);
+        Instant now = Instant.now();
 
-        WrapperEntityChannels wrapperEntities = this.wrapperChannelsRepository.findById(channelCode)
-                .orElseThrow(() -> new AppException(AppError.WRAPPER_CHANNEL_NOT_FOUND, channelCode));
+        Optional<WrapperEntityChannels> optionalWrapperEntities = this.wrapperChannelsRepository.findById(channelCode);
 
+        if (optionalWrapperEntities.isEmpty()) {
+            WrapperEntityChannel entityChannel = new WrapperEntityChannel(channelDetails);
+            entityChannel.setCreatedAt(now);
+            entityChannel.setModifiedAt(now);
+            entityChannel.setModifiedBy(modifiedBy);
+            entityChannel.setStatus(WrapperStatus.TO_CHECK_UPDATE);
+
+            WrapperEntityChannels wrapperEntities = new WrapperEntityChannels(entityChannel);
+            wrapperEntities.setStatus(WrapperStatus.TO_CHECK_UPDATE);
+            wrapperEntities.setModifiedBy(modifiedBy);
+            wrapperEntities.setCreatedBy(modifiedBy);
+            wrapperEntities.setCreatedAt(now);
+            return this.wrapperChannelsRepository.save(wrapperEntities);
+        }
+
+        WrapperEntityChannels wrapperEntities = optionalWrapperEntities.get();
         WrapperEntityChannel wrapper = getChannelWrapperEntityOperationsSortedList(wrapperEntities).get(0);
         WrapperStatus newWrapperStatus = getNewWrapperStatusForUpdate(channelCode, wrapper.getStatus());
 
         wrapperEntities.setModifiedBy(modifiedBy);
+        wrapperEntities.setModifiedAt(now);
         wrapperEntities.setStatus(newWrapperStatus);
 
         WrapperEntityChannel wrapperEntity = new WrapperEntityChannel(channelDetails);
         wrapperEntity.setStatus(newWrapperStatus);
         wrapperEntity.setModifiedBy(modifiedBy);
+        wrapperEntity.setModifiedAt(now);
         wrapperEntities.getEntities().add(wrapperEntity);
         return this.wrapperChannelsRepository.save(wrapperEntities);
     }
@@ -282,9 +305,13 @@ public class WrapperService {
             String createdBy
     ) {
         String stationCode = stationDetails.getStationCode();
-        WrapperEntities<StationDetails> wrapperEntities = this.repository.findById(stationCode)
-                .orElseThrow(() -> new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode));
+        Optional<WrapperEntities> optionalWrapperEntities = this.repository.findById(stationCode);
 
+        if (optionalWrapperEntities.isEmpty()) {
+            return createWrapperStation(stationDetails, WrapperStatus.valueOf(status));
+        }
+
+        WrapperEntities<StationDetails> wrapperEntities = optionalWrapperEntities.get();
         WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetails);
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
@@ -387,70 +414,6 @@ public class WrapperService {
         return this.wrapperChannelsRepository.findById(channelCode);
     }
 
-    public WrapperEntitiesList findByIdLikeOrTypeOrBrokerCode(
-            String idLike,
-            WrapperType wrapperType,
-            String brokerCode,
-            Integer page,
-            Integer size
-    ) {
-        Pageable paging = PageRequest.of(page, size);
-        Page<WrapperEntities<?>> response;
-
-        if (brokerCode == null && idLike == null) {
-            response = repository.findByType(wrapperType, paging);
-        } else if (brokerCode == null) {
-            response = repository.findByIdLikeAndType(idLike, wrapperType, paging);
-        } else if (idLike == null) {
-            response = repository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
-        } else {
-            response = repository.findByIdLikeAndTypeAndBrokerCode(idLike, wrapperType, brokerCode, paging);
-        }
-
-        return WrapperEntitiesList.builder()
-                .wrapperEntities(response.getContent())
-                .pageInfo(PageInfo.builder()
-                        .page(page)
-                        .limit(size)
-                        .totalItems(response.getTotalElements())
-                        .totalPages(response.getTotalPages())
-                        .itemsFound(response.getNumberOfElements())
-                        .build())
-                .build();
-    }
-
-    public WrapperStationList findStationByIdLikeOrTypeOrBrokerCode(
-            String idLike,
-            WrapperType wrapperType,
-            String brokerCode,
-            Integer page,
-            Integer size
-    ) {
-        Pageable paging = PageRequest.of(page, size);
-        Page<WrapperEntityStations> response;
-
-        if (brokerCode == null && idLike == null) {
-            response = wrapperStationsRepository.findByType(wrapperType, paging);
-        } else if (brokerCode == null) {
-            response = wrapperStationsRepository.findByIdLikeAndType(idLike, wrapperType, paging);
-        } else if (idLike == null) {
-            response = wrapperStationsRepository.findByTypeAndBrokerCode(wrapperType, brokerCode, paging);
-        } else {
-            response = wrapperStationsRepository.findByIdLikeAndTypeAndBrokerCode(idLike, wrapperType, brokerCode, paging);
-        }
-
-        return WrapperStationList.builder()
-                .wrapperEntities(response.getContent())
-                .pageInfo(PageInfo.builder()
-                        .page(page)
-                        .limit(size)
-                        .totalItems(response.getTotalElements())
-                        .totalPages(response.getTotalPages())
-                        .itemsFound(response.getNumberOfElements())
-                        .build())
-                .build();
-    }
-
     /**
      * Retrieve a paginated list of wrapper channel filtered by broker's code and optionally by channel's code
      *
@@ -517,29 +480,32 @@ public class WrapperService {
                 .build();
     }
 
-    public String getFirstValidStationCodeV2(String taxCode) {
-        Stations stations = apiConfigClient.getStations(100, 0, "DESC", null, null, taxCode);
-        var stationMongoList = findStationByIdLikeOrTypeOrBrokerCode(taxCode, WrapperType.STATION, null, 0, 100);
+    /**
+     * Compute the first available station/channel code.
+     * <p>
+     * Retrieves all station and channel from Api-Config and Wrapper collection and process the list by extracting the first
+     * valid code.
+     * @param taxCode tax code
+     * @return the first valid code
+     */
+    public String getFirstValidCodeV2(String taxCode) {
+        List<String> usedCodes = new LinkedList<>();
+        try {
+            Stations stations = this.apiConfigClient.getStations(100, 0, Sort.Direction.DESC.name(), taxCode, null, null);
+            WrapperStationList wrapperStations = findStationByIdLikeOrTypeOrBrokerCode(taxCode, 0, 100);
+            usedCodes.addAll(stations.getStationsList().parallelStream().map(Station::getStationCode).toList());
+            usedCodes.addAll(wrapperStations.getWrapperEntities().parallelStream().map(WrapperEntityStations::getId).toList());
+        } catch (FeignException.NotFound e) {
+            log.warn("The provided tax code is not of a CI broker", e);
+        }
 
-        List<String> stationCodes = new LinkedList<>();
-        stationCodes.addAll(stationMongoList.getWrapperEntities().stream().map(WrapperEntityStations::getId).toList());
-        stationCodes.addAll(stations.getStationsList().stream().map(Station::getStationCode).toList());
+        Channels channels = this.apiConfigClient.getChannels(null, taxCode, Sort.Direction.DESC.name(), 100, 0);
+        WrapperChannelList wrapperChannels = findByIdLikeOrTypeOrBrokerCode(taxCode, 0, 100);
 
-        Set<String> validCodes = stationCodes.stream()
-                .filter(s -> s.matches(REGEX_GENERATE))
-                .collect(Collectors.toSet());
-        return generator(validCodes, taxCode);
-    }
+        usedCodes.addAll(channels.getChannelList().parallelStream().map(Channel::getChannelCode).toList());
+        usedCodes.addAll(wrapperChannels.getWrapperEntities().parallelStream().map(WrapperEntityChannels::getId).toList());
 
-    public String getFirstValidChannelCodeV2(String taxCode) {
-        Channels channels = apiConfigClient.getChannels(null, taxCode, "DESC", 100, 0);
-        var channelMongoList = findByIdLikeOrTypeOrBrokerCode(null, WrapperType.CHANNEL, taxCode, 0, 100);
-
-        List<String> channelCodes = new LinkedList<>();
-        channelCodes.addAll(channelMongoList.getWrapperEntities().stream().map(WrapperEntities::getId).toList());
-        channelCodes.addAll(channels.getChannelList().stream().map(Channel::getChannelCode).toList());
-
-        Set<String> validCodes = channelCodes.stream()
+        Set<String> validCodes = usedCodes.parallelStream()
                 .filter(s -> s.matches(REGEX_GENERATE))
                 .collect(Collectors.toSet());
         return generator(validCodes, taxCode);
@@ -553,20 +519,36 @@ public class WrapperService {
      * @return the updated wrapper station
      */
     public WrapperEntityStations updateWrapperStation(String stationCode, StationDetails stationDetails) {
-        WrapperEntityStations wrapperEntities = this.wrapperStationsRepository.findById(stationCode)
-                .orElseThrow(() -> new AppException(AppError.WRAPPER_STATION_NOT_FOUND, stationCode));
+        Optional<WrapperEntityStations> optionalWrapperEntities = this.wrapperStationsRepository.findById(stationCode);
         String modifiedBy = this.auditorAware.getCurrentAuditor().orElse(null);
+        Instant now = Instant.now();
 
+        if (optionalWrapperEntities.isEmpty()) {
+            WrapperEntityStation entityStation = new WrapperEntityStation(stationDetails);
+            entityStation.setCreatedAt(now);
+            entityStation.setModifiedAt(now);
+            entityStation.setModifiedBy(modifiedBy);
+            entityStation.setStatus(WrapperStatus.TO_CHECK_UPDATE);
+
+            WrapperEntityStations wrapperEntities = new WrapperEntityStations(entityStation);
+            wrapperEntities.setStatus(WrapperStatus.TO_CHECK_UPDATE);
+            wrapperEntities.setModifiedBy(modifiedBy);
+            wrapperEntities.setCreatedBy(modifiedBy);
+            wrapperEntities.setCreatedAt(now);
+            return this.wrapperStationsRepository.save(wrapperEntities);
+        }
+
+        WrapperEntityStations wrapperEntities = optionalWrapperEntities.get();
         WrapperEntityStation mostRecentEntity = getStationWrapperEntityOperationsSortedList(wrapperEntities).get(0);
         WrapperStatus newWrapperStatus = getNewWrapperStatusForUpdate(stationCode, mostRecentEntity.getStatus());
 
         WrapperEntityStation entityStation = new WrapperEntityStation(stationDetails);
-        entityStation.setModifiedAt(Instant.now());
+        entityStation.setModifiedAt(now);
         entityStation.setModifiedBy(modifiedBy);
         entityStation.setStatus(newWrapperStatus);
 
         wrapperEntities.setStatus(newWrapperStatus);
-        wrapperEntities.setModifiedAt(Instant.now());
+        wrapperEntities.setModifiedAt(now);
         wrapperEntities.setModifiedBy(modifiedBy);
         wrapperEntities.getEntities().add(entityStation);
         return this.wrapperStationsRepository.save(wrapperEntities);
@@ -625,5 +607,47 @@ public class WrapperService {
             throw new AppException(AppError.WRAPPER_STATION_INVALID_STATUS, stationCode);
         }
         return newWrapperStatus;
+    }
+
+    private WrapperChannelList findByIdLikeOrTypeOrBrokerCode(
+            String brokerCode,
+            Integer page,
+            Integer size
+    ) {
+        Pageable paging = PageRequest.of(page, size);
+        Page<WrapperEntityChannels> response =
+                this.wrapperChannelsRepository.findByTypeAndBrokerCode(WrapperType.CHANNEL, brokerCode, paging);
+
+        return WrapperChannelList.builder()
+                .wrapperEntities(response.getContent())
+                .pageInfo(PageInfo.builder()
+                        .page(page)
+                        .limit(size)
+                        .totalItems(response.getTotalElements())
+                        .totalPages(response.getTotalPages())
+                        .itemsFound(response.getNumberOfElements())
+                        .build())
+                .build();
+    }
+
+    private WrapperStationList findStationByIdLikeOrTypeOrBrokerCode(
+            String brokerCode,
+            Integer page,
+            Integer size
+    ) {
+        Pageable paging = PageRequest.of(page, size);
+        Page<WrapperEntityStations> response =
+                this.wrapperStationsRepository.findByTypeAndBrokerCode(WrapperType.STATION, brokerCode, paging);
+
+        return WrapperStationList.builder()
+                .wrapperEntities(response.getContent())
+                .pageInfo(PageInfo.builder()
+                        .page(page)
+                        .limit(size)
+                        .totalItems(response.getTotalElements())
+                        .totalPages(response.getTotalPages())
+                        .itemsFound(response.getNumberOfElements())
+                        .build())
+                .build();
     }
 }

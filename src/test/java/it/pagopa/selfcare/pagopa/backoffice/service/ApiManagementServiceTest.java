@@ -1,13 +1,19 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import com.azure.spring.cloud.feature.management.FeatureManager;
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
+import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AuthorizerConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.component.ApiManagementComponent;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
+import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationGenericKeyValue;
+import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationMetadata;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionStationSegregationCodes;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionStationSegregationCodesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
@@ -23,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,6 +44,7 @@ class ApiManagementServiceTest {
     private final String INSTITUTION_ID = "INSTITUTION_ID";
     private final String SUBSCRIPTION_ID = "SUBSCRIPTION_ID";
     private final String BROKER_ID = "BROKER_ID";
+    private static final String CI_TAX_CODE = "ciTaxCode";
 
     @MockBean
     private AzureApiManagerClient apimClient;
@@ -52,6 +60,9 @@ class ApiManagementServiceTest {
 
     @MockBean
     private AuthorizerConfigClient authorizerConfigClient;
+
+    @MockBean
+    private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
     @Autowired
     private ApiManagementService service;
@@ -178,6 +189,8 @@ class ApiManagementServiceTest {
         verify(apimClient).createInstitutionSubscription(any(), any(), any(), any(), any());
         verify(externalApiClient).getInstitution(INSTITUTION_ID);
         verify(authorizerConfigClient, never()).createAuthorization(any());
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
     }
 
     @Test
@@ -200,6 +213,8 @@ class ApiManagementServiceTest {
         verify(apimClient).createInstitutionSubscription(any(), any(), any(), any(), any());
         verify(externalApiClient).getInstitution(INSTITUTION_ID);
         verify(authorizerConfigClient, never()).createAuthorization(any());
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
     }
 
     @Test
@@ -224,6 +239,8 @@ class ApiManagementServiceTest {
         verify(apimClient).createInstitutionSubscription(any(), any(), any(), any(), any());
         verify(externalApiClient).getInstitution(INSTITUTION_ID);
         verify(authorizerConfigClient, times(2)).createAuthorization(any());
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
     }
 
     @Test
@@ -236,6 +253,10 @@ class ApiManagementServiceTest {
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
+        when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
+                .thenReturn(createDelegations());
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString()))
+                .thenReturn(buildCreditorInstitutionStationSegregationCodesList());
 
         InstitutionApiKeysResource result = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.FDR_PSP);
 
@@ -251,12 +272,19 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void regeneratePrimaryKey() {
+    void regeneratePrimaryKey() throws IOException {
+        InstitutionResponse institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json", InstitutionResponse.class);
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys("gdp-123456");
         when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
         when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder()
                 .id("auth-id")
                 .build());
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
+        when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
+                .thenReturn(createDelegations());
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString()))
+                .thenReturn(buildCreditorInstitutionStationSegregationCodesList());
 
         assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, "gdp-123456"));
 
@@ -264,6 +292,34 @@ class ApiManagementServiceTest {
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient).deleteAuthorization("auth-id");
         verify(authorizerConfigClient).createAuthorization(any());
+    }
+
+    @Test
+    void regeneratePrimaryKeyFailOnAuthorizerConfigUpdateTriggerAPIKeyRecreation() throws IOException {
+        InstitutionResponse institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys("gdp-aTaxCode");
+        when(apimClient.getApiSubscriptions(anyString()))
+                .thenReturn(Collections.singletonList(institutionApiKeys))
+                .thenReturn(Collections.singletonList(institutionApiKeys));
+        when(authorizerConfigClient.getAuthorization(anyString()))
+                .thenThrow(FeignException.NotFound.class)
+                .thenReturn(Authorization.builder().id("auth-id").build());
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
+        when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
+                .thenReturn(createDelegations());
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString()))
+                .thenReturn(buildCreditorInstitutionStationSegregationCodesList());
+
+        assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, "gdp-aTaxCode"));
+
+        verify(apimClient).regeneratePrimaryKey("gdp-aTaxCode");
+        verify(apimClient, times(2)).getApiSubscriptions(INSTITUTION_ID);
+        verify(apimClient).getInstitution(INSTITUTION_ID);
+        verify(apimClient, never()).createInstitution(anyString(), any());
+        verify(apimClient).createInstitutionSubscription(any(), any(), any(), any(), any());
+        verify(authorizerConfigClient, times(2)).createAuthorization(any());
+        verify(authorizerConfigClient, never()).deleteAuthorization(anyString());
     }
 
     @Test
@@ -284,6 +340,8 @@ class ApiManagementServiceTest {
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient).deleteAuthorization(anyString());
         verify(authorizerConfigClient).createAuthorization(any());
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
     }
 
     @Test
@@ -304,15 +362,25 @@ class ApiManagementServiceTest {
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient).deleteAuthorization(anyString());
         verify(authorizerConfigClient).createAuthorization(any());
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
     }
 
     @Test
-    void regenerateSecondaryKey() {
+    void regenerateSecondaryKey() throws IOException {
+        InstitutionResponse institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json", InstitutionResponse.class);
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys("gdp-123456");
+
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
         when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder()
                 .id("auth-id")
                 .build());
+        when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
+                .thenReturn(createDelegations());
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString()))
+                .thenReturn(buildCreditorInstitutionStationSegregationCodesList());
 
         assertDoesNotThrow(() -> service.regenerateSecondaryKey(INSTITUTION_ID, "gdp-123456"));
 
@@ -340,6 +408,8 @@ class ApiManagementServiceTest {
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient).deleteAuthorization(anyString());
         verify(authorizerConfigClient).createAuthorization(any());
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
     }
 
     @Test
@@ -360,6 +430,48 @@ class ApiManagementServiceTest {
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient).deleteAuthorization(anyString());
         verify(authorizerConfigClient).createAuthorization(any());
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+    }
+
+    @Test
+    void updateBrokerAuthorizerSegregationCodesMetadataSuccess() {
+        String subscriptionId = String.format("%s%s", Subscription.GPD.getPrefixId(), CI_TAX_CODE);
+        InstitutionApiKeys institutionApiKeys1 = buildInstitutionApiKeys(subscriptionId);
+        InstitutionApiKeys institutionApiKeys2 = buildInstitutionApiKeys("not from BO API key");
+
+        when(apimClient.getApiSubscriptions(INSTITUTION_ID)).thenReturn(List.of(institutionApiKeys1, institutionApiKeys2));
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString()))
+                .thenReturn(buildCreditorInstitutionStationSegregationCodesList());
+        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(
+                buildAuthorizationWithSegregationCodes(CI_TAX_CODE),
+                buildAuthorizationWithSegregationCodes("pippo")
+        );
+
+        assertDoesNotThrow(() -> service.updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, CI_TAX_CODE));
+
+        verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
+        verify(authorizerConfigClient, times(2)).deleteAuthorization(anyString());
+        verify(authorizerConfigClient, times(2)).createAuthorization(any());
+    }
+
+    private Authorization buildAuthorizationWithSegregationCodes(String ciTaxCode) {
+        List<AuthorizationGenericKeyValue> keyValues = new ArrayList<>();
+        keyValues.add(
+                AuthorizationGenericKeyValue.builder()
+                        .key(ciTaxCode)
+                        .values(Collections.singletonList("02"))
+                        .build());
+        List<AuthorizationMetadata> metadata = new ArrayList<>();
+        metadata.add(AuthorizationMetadata.builder()
+                .name("Segregation codes")
+                .shortKey("_seg")
+                .content(keyValues)
+                .build());
+        return Authorization.builder()
+                .id("auth-id")
+                .otherMetadata(metadata)
+                .build();
     }
 
     private InstitutionApiKeys buildInstitutionApiKeys(String subscriptionId) {
@@ -403,4 +515,14 @@ class ApiManagementServiceTest {
         return delegationExternals;
     }
 
+    private CreditorInstitutionStationSegregationCodesList buildCreditorInstitutionStationSegregationCodesList() {
+        return CreditorInstitutionStationSegregationCodesList.builder()
+                .ciStationCodes(Arrays.asList(
+                        CreditorInstitutionStationSegregationCodes.builder()
+                                .ciTaxCode(CI_TAX_CODE)
+                                .segregationCodes(List.of("01", "14"))
+                                .build()
+                ))
+                .build();
+    }
 }

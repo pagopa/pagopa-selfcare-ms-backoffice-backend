@@ -38,5 +38,7 @@ public class WrapperStation {
     @NotNull
     private WrapperStatus wrapperStatus;
 
+    private Boolean flagStandin;
+
     private Boolean isConnectionSync;
 }

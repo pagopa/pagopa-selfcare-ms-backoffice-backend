@@ -83,9 +83,11 @@ class CreditorInstitutionControllerTest {
     @Test
     void associateStationToCreditorInstitution() throws Exception {
         String url = "/creditor-institutions/12345678900/station";
-        when(ciService.associateStationToCreditorInstitution(anyString(), any(CreditorInstitutionStationDto.class)))
+        when(ciService.associateStationToCreditorInstitution(anyString(), anyString(), anyString(), any(CreditorInstitutionStationDto.class)))
                 .thenReturn(TestUtil.fileToObject("response/service/post_creditor_institution_station_association_ok.json", CreditorInstitutionStationEditResource.class));
         mvc.perform(post(url)
+                        .param("institutionId", "institutionId")
+                        .param("brokerTaxCode", "brokerTaxCode")
                         .content(TestUtil.readJsonFromFile("request/post_creditor_institution_station_association.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -107,8 +109,10 @@ class CreditorInstitutionControllerTest {
     @Test
     void deleteCreditorInstitutionStationRelationship() throws Exception {
         String url = "/creditor-institutions/12345678900/station/00000000000_01";
-        doNothing().when(ciService).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
-        mvc.perform(delete(url).contentType(MediaType.APPLICATION_JSON))
+        doNothing().when(ciService).deleteCreditorInstitutionStationRelationship(anyString(), anyString(), anyString(), anyString());
+        mvc.perform(delete(url).contentType(MediaType.APPLICATION_JSON)
+                        .param("institutionId", "institutionId")
+                        .param("brokerTaxCode", "brokerTaxCode"))
                 .andExpect(status().isOk());
     }
 

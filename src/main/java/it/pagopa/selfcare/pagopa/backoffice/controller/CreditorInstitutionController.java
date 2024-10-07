@@ -136,9 +136,11 @@ public class CreditorInstitutionController {
     @OpenApiTableMetadata
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(
             @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
+            @Parameter(description = "Broker's institution id") @RequestParam("institutionId") String institutionId,
+            @Parameter(description = "Broker's tax code") @RequestParam("brokerTaxCode") String brokerTaxCode,
             @RequestBody @NotNull CreditorInstitutionStationDto dto
     ) {
-        return ciService.associateStationToCreditorInstitution(ciTaxCode, dto);
+        return this.ciService.associateStationToCreditorInstitution(ciTaxCode, institutionId, brokerTaxCode, dto);
     }
 
     @PutMapping(value = "/{ci-tax-code}/station", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -159,7 +161,7 @@ public class CreditorInstitutionController {
             @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
             @RequestBody @NotNull CreditorInstitutionStationDto dto
     ) {
-        return ciService.updateStationAssociationToCreditorInstitution(ciTaxCode, dto);
+        return this.ciService.updateStationAssociationToCreditorInstitution(ciTaxCode, dto);
     }
 
 
@@ -179,9 +181,11 @@ public class CreditorInstitutionController {
     @OpenApiTableMetadata
     public void deleteCreditorInstitutionStationRelationship(
             @Parameter(description = "Creditor institution's code") @PathVariable("ci-tax-code") String ciTaxCode,
+            @Parameter(description = "Broker's institution id") @RequestParam("institutionId") String institutionId,
+            @Parameter(description = "Broker's tax code") @RequestParam("brokerTaxCode") String brokerTaxCode,
             @Parameter(description = "Station's code") @PathVariable("station-code") String stationCode
     ) {
-        ciService.deleteCreditorInstitutionStationRelationship(ciTaxCode, stationCode);
+        this.ciService.deleteCreditorInstitutionStationRelationship(ciTaxCode, stationCode, institutionId, brokerTaxCode);
     }
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -7,6 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.BrokerCreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionStationSegregationCodesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -91,4 +92,11 @@ public interface ApiConfigSelfcareIntegrationClient {
     @Valid
     Ibans getCreditorInstitutionIbans(@PathVariable("creditorinstitutioncode") String creditorInstitutionCode,
                                       @RequestParam String label);
+
+    @GetMapping(value = "/brokers/{broker-tax-code}/creditor-institutions/segregation-codes", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    @Valid
+    CreditorInstitutionStationSegregationCodesList getCreditorInstitutionsSegregationCodeAssociatedToBroker(
+            @PathVariable("broker-tax-code") String brokerCode
+    );
 }

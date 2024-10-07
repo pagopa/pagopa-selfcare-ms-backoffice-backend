@@ -22,6 +22,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Public
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.PublicBundleRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.TouchpointsDTO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -36,6 +38,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.List;
 
 @FeignClient(name = "gec", url = "${rest-client.gec.base-url}", configuration = GecFeignConfig.class)
@@ -67,6 +70,13 @@ public interface GecClient {
             @PathVariable("psp-code") String pspCode,
             @RequestParam(required = false) List<BundleType> types,
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) Sort.Direction maxPaymentAmountOrder,
+            @RequestParam(required = false) Long paymentAmountMinRange,
+            @RequestParam(required = false) Long paymentAmountMaxRange,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate validBefore,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate validAfter,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expireBefore,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expireAfter,
             @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) Integer page
     );

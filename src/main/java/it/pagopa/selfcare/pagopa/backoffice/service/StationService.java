@@ -180,7 +180,7 @@ public class StationService {
 
     public StationCodeResource getStationCode(String ecCode, Boolean v2) {
         if (Boolean.TRUE.equals(v2)) {
-            return new StationCodeResource(wrapperService.getFirstValidStationCodeV2(ecCode));
+            return new StationCodeResource(this.wrapperService.getFirstValidCodeV2(ecCode));
         } else {
             return new StationCodeResource(getFirstValidStationCodeAux(ecCode));
         }
@@ -329,6 +329,10 @@ public class StationService {
         return context;
     }
 
+    /**
+     * @deprecated this API invoke the old station code generation logic that can cause collision on wrapper data for PT
+     */
+    @Deprecated(forRemoval = true)
     private String getFirstValidStationCodeAux(String ecCode) {
         WrapperEntitiesList entitiesList = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_CHECK, WrapperType.STATION, null, ecCode, 0, 1, "ASC");
         WrapperEntitiesList entitiesList2 = wrapperService.findByStatusAndTypeAndBrokerCodeAndIdLike(WrapperStatus.TO_FIX, WrapperType.STATION, null, ecCode, 0, 1, "ASC");

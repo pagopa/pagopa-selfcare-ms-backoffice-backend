@@ -33,6 +33,9 @@ public class WrapperChannelResource {
     @NotNull
     private WrapperStatus wrapperStatus;
 
+    @Schema(description = "Represents the authorization to use the standin mode with this station")
+    private Boolean flagStandin = false;
+
     @Schema(description = "Primitive number version")
     @JsonProperty("primitive_version")
     private Integer primitiveVersion;

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * Model that represent the authorization metadata
  */
@@ -20,5 +22,5 @@ public class AuthorizationMetadata {
     @JsonProperty("short_key")
     private String shortKey;
 
-    private AuthorizationGenericKeyValue content;
+    private List<AuthorizationGenericKeyValue> content;
 }

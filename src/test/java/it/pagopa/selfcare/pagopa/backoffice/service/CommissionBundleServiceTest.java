@@ -12,16 +12,19 @@ import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.taxonomies.Taxonomy;
+import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.BundleAllPages;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -35,6 +38,7 @@ class CommissionBundleServiceTest {
     private static final String PSP_CODE = "pspCode";
     private static final String PSP_TAX_CODE = "pspTaxCode";
     private static final String CI_TAX_CODE = "ciTaxCode";
+    private static final String CI_TAX_CODE_2 = "ciTaxCode2";
     private static final String PSP_NAME = "pspName";
     private static final int LIMIT = 50;
     private static final int PAGE = 0;
@@ -70,6 +74,12 @@ class CommissionBundleServiceTest {
     @MockBean
     private AsyncNotificationService asyncNotificationService;
 
+    @MockBean
+    private ExportService exportService;
+
+    @MockBean
+    private BundleAllPages bundleAllPages;
+
     @Test
     void getBundlesPaymentTypes() {
         when(gecClient.getPaymenttypes(LIMIT, PAGE)).thenReturn(
@@ -93,7 +103,7 @@ class CommissionBundleServiceTest {
     @Test
     void getBundlesByPSP() {
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
-        when(gecClient.getBundlesByPSP(any(), any(), any(), any(), any())).thenReturn(
+        when(gecClient.getBundlesByPSP(any(), any(), any(), any(), any(),any(), any(), any(), any(), any(), any(), any())).thenReturn(
                 Bundles.builder().bundleList(Collections.singletonList(
                         Bundle.builder().transferCategoryList(Collections.singletonList("test")).build())).build()
         );
@@ -101,9 +111,9 @@ class CommissionBundleServiceTest {
                 Collections.singletonList(Taxonomy.builder().ecTypeCode("ecTypeCode").ecType("ecType").build()));
         List<BundleType> bundleTypeList = Collections.singletonList(BundleType.GLOBAL);
         assertDoesNotThrow(
-                () -> sut.getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, PSP_NAME, LIMIT, PAGE)
+                () -> sut.getBundlesByPSP(PSP_TAX_CODE, bundleTypeList, PSP_NAME, Sort.Direction.ASC, 0L, 0L, LocalDate.now(), LocalDate.now(), LocalDate.now(), LocalDate.now(), LIMIT, PAGE)
         );
-        verify(gecClient).getBundlesByPSP(PSP_CODE, bundleTypeList, PSP_NAME, LIMIT, PAGE);
+        verify(gecClient).getBundlesByPSP(PSP_CODE, bundleTypeList, PSP_NAME, Sort.Direction.ASC, 0L, 0L, LocalDate.now(), LocalDate.now(), LocalDate.now(), LocalDate.now(), LIMIT, PAGE);
     }
 
     @Test
@@ -147,13 +157,17 @@ class CommissionBundleServiceTest {
 
     @Test
     void deletePSPBundleSuccess() {
+        Set<String> ciTaxCodes = Set.of(CI_TAX_CODE, CI_TAX_CODE_2);
+
         when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+        when(bundleAllPages.getAllCITaxCodesAssociatedToABundle(ID_BUNDLE, BundleType.GLOBAL, PSP_CODE))
+                .thenReturn(ciTaxCodes);
 
         assertDoesNotThrow(
                 () -> sut.deletePSPBundle(PSP_TAX_CODE, ID_BUNDLE, BUNDLE_NAME, PSP_NAME, BundleType.GLOBAL)
         );
 
-        verify(asyncNotificationService).notifyDeletePSPBundleAsync(PSP_CODE, ID_BUNDLE, BUNDLE_NAME, PSP_NAME, BundleType.GLOBAL);
+        verify(asyncNotificationService).notifyDeletePSPBundleAsync(ciTaxCodes, BUNDLE_NAME, PSP_NAME);
         verify(gecClient).deletePSPBundle(PSP_CODE, ID_BUNDLE);
     }
 
@@ -1017,6 +1031,16 @@ class CommissionBundleServiceTest {
 
         verify(gecClient).rejectPrivateBundleOffer(CI_TAX_CODE, ID_BUNDLE_OFFER);
         verify(awsSesClient).sendEmail(any());
+    }
+
+    @Test
+    void exportPSPBundleListSuccess() {
+        when(legacyPspCodeUtilMock.retrievePspCode(PSP_TAX_CODE, true)).thenReturn(PSP_CODE);
+
+        List<BundleType> bundleTypeList = Collections.singletonList(BundleType.GLOBAL);
+        assertDoesNotThrow(() -> sut.exportPSPBundleList(PSP_TAX_CODE, bundleTypeList));
+
+        verify(exportService).exportPSPBundlesToCsv(PSP_CODE, bundleTypeList);
     }
 
 
