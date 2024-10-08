@@ -27,8 +27,8 @@ public class InstitutionBase {
     @NotBlank
     private String description;
 
-    @Schema(description = "Logged user's roles on product", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = "admin, operator")
+    @Schema(description = "Logged user's roles on product", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "user_product_roles", required = true)
-    private List<@NotBlank @Pattern(regexp = "admin|operator", flags = Pattern.Flag.CASE_INSENSITIVE) UserProductRole> userProductRoles;
+    private List<UserProductRole> userProductRoles;
 
 }

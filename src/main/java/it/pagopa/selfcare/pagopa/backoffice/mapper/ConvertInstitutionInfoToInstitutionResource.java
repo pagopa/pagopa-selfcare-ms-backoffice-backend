@@ -71,7 +71,10 @@ public class ConvertInstitutionInfoToInstitutionResource implements Converter<In
             resource.setOrigin(model.getOrigin());
             resource.setOriginId(model.getOriginId());
             resource.setTaxCode(model.getTaxCode());
-            resource.setUserProductRoles(Optional.ofNullable(model.getUserProductRoles()).orElse(new ArrayList<>()).stream()
+            resource.setUserProductRoles(Optional.of(model.getUserProductRoles().stream().map(item ->
+                        UserProductRole.builder().productRole(item).build()
+                    ).toList())
+                    .orElse(new ArrayList<>()).stream()
                     .filter(Objects::nonNull)
                     .toList());
             if(model.getBilling() != null) {

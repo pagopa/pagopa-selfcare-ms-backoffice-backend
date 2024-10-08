@@ -13244,8 +13244,7 @@
             "description" : "Logged user's roles on product",
             "items" : {
               "$ref" : "#/components/schemas/UserProductRole"
-            },
-            "enum" : [ "admin, operator" ]
+            }
           }
         }
       },
@@ -13325,11 +13324,8 @@
             "type" : "array",
             "description" : "Logged user's roles on product",
             "items" : {
-              "type" : "string",
-              "description" : "Logged user's roles on product",
-              "enum" : [ "admin, operator" ]
-            },
-            "enum" : [ "admin, operator" ]
+              "$ref" : "#/components/schemas/UserProductRole"
+            }
           }
         }
       },
@@ -14850,17 +14846,21 @@
         }
       },
       "UserProductRole" : {
+        "required" : [ "product_role" ],
         "type" : "object",
         "properties" : {
-          "productRole" : {
-            "type" : "string"
+          "product_role" : {
+            "pattern" : "admin|operator|admin-psp|operator-psp",
+            "type" : "string",
+            "description" : "Logged user role on product",
+            "enum" : [ "admin, operator" ]
           },
-          "productRoleLabel" : {
-            "type" : "string"
+          "product_role_label" : {
+            "type" : "string",
+            "description" : "Logged user role label"
           }
         },
-        "description" : "Logged user's roles on product",
-        "enum" : [ "admin, operator" ]
+        "description" : "Logged user's roles on product"
       },
       "WfespPluginConf" : {
         "required" : [ "id_serv_plugin" ],
