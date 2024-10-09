@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.sanitizeLogParam;
+
 @Slf4j
 @Service
 public class CreditorInstitutionService {
@@ -148,7 +150,8 @@ public class CreditorInstitutionService {
         try {
             this.apiManagementService.updateBrokerAuthorizerSegregationCodesMetadata(institutionId, brokerTaxCode);
         } catch (Exception e) {
-            log.error("Failed to update broker API key authorizations, revert associate station to CI operation");
+            log.error("Failed to update broker {} API key authorizations, revert associate station to CI operation",
+                    sanitizeLogParam(brokerTaxCode), e);
             this.apiConfigClient.deleteCreditorInstitutionStationRelationship(ciTaxCode, ecStation.getStationCode());
             throw e;
         }
@@ -195,7 +198,8 @@ public class CreditorInstitutionService {
         try {
             this.apiManagementService.updateBrokerAuthorizerSegregationCodesMetadata(institutionId, brokerTaxCode);
         } catch (Exception e) {
-            log.error("Failed to update broker API key authorizations, revert dissociate station to CI operation");
+            log.error("Failed to update broker {} API key authorizations, revert dissociate station to CI operation",
+                    sanitizeLogParam(brokerTaxCode), e);
             CreditorInstitutions creditorInstitutions =
                     this.apiConfigClient.getCreditorInstitutionsByStation(stationCode, 1, 0, ciTaxCode);
             CreditorInstitutionStationEdit dto =
