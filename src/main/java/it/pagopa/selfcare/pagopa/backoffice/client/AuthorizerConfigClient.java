@@ -24,4 +24,11 @@ public interface AuthorizerConfigClient {
 
     @DeleteMapping(value = "/authorizations/{authorization-id}")
     void deleteAuthorization(@PathVariable("authorization-id") String authorizationId);
+
+    @PutMapping(value = "/authorizations/{authorization-id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
+    Authorization updateAuthorization(
+            @PathVariable("authorization-id") String authorizationId,
+            @RequestBody Authorization authorization
+    );
 }

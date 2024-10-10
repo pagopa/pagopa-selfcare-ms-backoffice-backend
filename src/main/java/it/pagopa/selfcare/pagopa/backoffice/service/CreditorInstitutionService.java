@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.sanitizeLogParam;
+
 @Slf4j
 @Service
 public class CreditorInstitutionService {
@@ -130,10 +132,10 @@ public class CreditorInstitutionService {
      * Check if the provided tax code is a creditor institution tax code and if so, associates it to the given station and
      * updates the authorizer config for each broker's api keys by adding the specified segregation code
      *
-     * @param ciTaxCode creditor institution's tax code
+     * @param ciTaxCode     creditor institution's tax code
      * @param institutionId broker's institution id
      * @param brokerTaxCode broker's tax code
-     * @param dto creditor institution - station association info
+     * @param dto           creditor institution - station association info
      * @return the creditor institution - station association info
      */
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(
@@ -148,7 +150,8 @@ public class CreditorInstitutionService {
         try {
             this.apiManagementService.updateBrokerAuthorizerSegregationCodesMetadata(institutionId, brokerTaxCode);
         } catch (Exception e) {
-            log.error("Failed to update broker API key authorizations, revert associate station to CI operation");
+            log.error("Failed to update broker {} API key authorizations, revert associate station to CI operation",
+                    sanitizeLogParam(brokerTaxCode), e);
             this.apiConfigClient.deleteCreditorInstitutionStationRelationship(ciTaxCode, ecStation.getStationCode());
             throw e;
         }
@@ -162,7 +165,7 @@ public class CreditorInstitutionService {
      * station with the provided info
      *
      * @param ciTaxCode creditor institution's tax code
-     * @param dto creditor institution - station association info
+     * @param dto       creditor institution - station association info
      * @return the updated creditor institution - station association info
      */
     public CreditorInstitutionStationEditResource updateStationAssociationToCreditorInstitution(
@@ -181,7 +184,7 @@ public class CreditorInstitutionService {
      * Removes the association and updates the authorizer config for each broker's api keys by removing
      * the segregation code of the association
      *
-     * @param ciTaxCode creditor institution's tax code
+     * @param ciTaxCode     creditor institution's tax code
      * @param institutionId broker's institution id
      * @param brokerTaxCode broker's tax code
      */
@@ -191,17 +194,24 @@ public class CreditorInstitutionService {
             String institutionId,
             String brokerTaxCode
     ) {
+        CreditorInstitutions ciForRollback =
+                this.apiConfigClient.getCreditorInstitutionsByStation(stationCode, 1, 0, ciTaxCode);
         this.apiConfigClient.deleteCreditorInstitutionStationRelationship(ciTaxCode, stationCode);
         try {
             this.apiManagementService.updateBrokerAuthorizerSegregationCodesMetadata(institutionId, brokerTaxCode);
         } catch (Exception e) {
-            log.error("Failed to update broker API key authorizations, revert dissociate station to CI operation");
-            CreditorInstitutions creditorInstitutions =
-                    this.apiConfigClient.getCreditorInstitutionsByStation(stationCode, 1, 0, ciTaxCode);
-            CreditorInstitutionStationEdit dto =
-                    this.modelMapper.map(creditorInstitutions.getCreditorInstitutionList().get(0), CreditorInstitutionStationEdit.class);
-            dto.setStationCode(stationCode);
-             this.apiConfigClient.createCreditorInstitutionStationRelationship(ciTaxCode, dto);
+            log.error("Failed to update broker {} API key authorizations, revert dissociate station to CI operation",
+                    sanitizeLogParam(brokerTaxCode), e);
+            if (ciForRollback != null && ciForRollback.getCreditorInstitutionList() != null && ciForRollback.getCreditorInstitutionList().size() == 1) {
+                CreditorInstitutionStationEdit dto =
+                        this.modelMapper.map(ciForRollback.getCreditorInstitutionList().get(0), CreditorInstitutionStationEdit.class);
+                dto.setStationCode(stationCode);
+                dto.setAuxDigit(dto.getAuxDigit() == null ? 3L : dto.getAuxDigit());
+                this.apiConfigClient.createCreditorInstitutionStationRelationship(ciTaxCode, dto);
+            } else {
+                log.error("Unable to rollback dissociate station ({}) to CI ({}) operation",
+                        sanitizeLogParam(stationCode), sanitizeLogParam(ciTaxCode));
+            }
             throw e;
         }
     }
@@ -313,8 +323,7 @@ public class CreditorInstitutionService {
     ) {
         List<CreditorInstitutionInfo> infoList = new ArrayList<>();
         List<String> delegations = getDelegationExternals(brokerId, ciName).parallelStream()
-                .filter(Objects::nonNull)
-                .filter(delegation -> RoleType.CI.equals(RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType())))
+                .filter(delegation -> isCIDelegation(brokerId, delegation))
                 .map(DelegationExternal::getTaxCode)
                 .toList();
 
@@ -365,6 +374,7 @@ public class CreditorInstitutionService {
                     .taxCode(broker.getTaxCode())
                     .institutionName(broker.getDescription())
                     .institutionType(broker.getInstitutionType().toString())
+                    .brokerId(brokerId)
                     .build()
             );
         }
@@ -376,9 +386,12 @@ public class CreditorInstitutionService {
             InstitutionResponse broker,
             String ciNameFilter
     ) {
-        return RoleType.CI.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType().name()))
+        return (
+                RoleType.CI.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType().name()))
+                        || RoleType.PT.equals(RoleType.fromSelfcareRole(broker.getTaxCode(), broker.getInstitutionType().name()))
+        )
                 && (StringUtils.isBlank(ciNameFilter) || broker.getDescription().toLowerCase().contains(ciNameFilter.toLowerCase()))
-                && delegationExternals.stream().noneMatch(delegationExternal -> delegationExternal.getTaxCode().equals(broker.getTaxCode()));
+                && delegationExternals.parallelStream().noneMatch(delegationExternal -> delegationExternal.getTaxCode().equals(broker.getTaxCode()));
     }
 
     private void checkIfIsCITaxCodeFailOtherwise(String ciTaxCode) {
@@ -387,5 +400,16 @@ public class CreditorInstitutionService {
         } catch (FeignException e) {
             throw new AppException(AppError.CREDITOR_INSTITUTION_NOT_FOUND, ciTaxCode);
         }
+    }
+
+    private boolean isCIDelegation(String brokerId, DelegationExternal delegation) {
+        return delegation != null
+                && (
+                RoleType.CI.equals(RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType()))
+                        || (
+                        delegation.getBrokerId().equals(brokerId)
+                                && RoleType.PT.equals(RoleType.fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType()))
+                )
+        );
     }
 }
