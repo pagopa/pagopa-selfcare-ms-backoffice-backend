@@ -47,7 +47,13 @@ public class TaxonomyService {
                         codes.stream().map(code -> Pattern.compile(code.contains("/") ?
                                         "^"+code+"$" : "^[0-9]/"+code+"/$"))
                         .toList() : new ArrayList<>()).stream()
-                .map(elem -> modelMapper.map(elem, Taxonomy.class)).collect(Collectors.toList());
+                .map(elem -> {
+                    Taxonomy taxonomy = modelMapper.map(elem, Taxonomy.class);
+                    taxonomy.setSpecificBuiltInData(taxonomy.getSpecificBuiltInData().contains("/") ?
+                        taxonomy.getSpecificBuiltInData().split("/")[1] : taxonomy.getSpecificBuiltInData()
+                    );
+                    return taxonomy;
+                }).collect(Collectors.toList());
     }
 
     /**
