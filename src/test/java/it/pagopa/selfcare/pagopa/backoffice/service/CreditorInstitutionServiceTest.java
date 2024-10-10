@@ -278,6 +278,8 @@ class CreditorInstitutionServiceTest {
 
         verify(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
         verify(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, BROKER_TAX_CODE);
+        verify(apiConfigClient).getCreditorInstitutionsByStation(STATION_CODE1, 1, 0, CI_TAX_CODE);
+        verify(apiConfigClient, never()).createCreditorInstitutionStationRelationship(anyString(), any());
     }
 
     @Test
@@ -287,6 +289,9 @@ class CreditorInstitutionServiceTest {
 
         assertThrows(FeignException.class, () ->
                 service.deleteCreditorInstitutionStationRelationship(CI_TAX_CODE, STATION_CODE1, INSTITUTION_ID, BROKER_TAX_CODE));
+
+        verify(apiConfigClient).getCreditorInstitutionsByStation(STATION_CODE1, 1, 0, CI_TAX_CODE);
+        verify(apiConfigClient, never()).createCreditorInstitutionStationRelationship(anyString(), any());
     }
 
     @Test
@@ -299,6 +304,16 @@ class CreditorInstitutionServiceTest {
 
         verify(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
         verify(apiConfigClient).createCreditorInstitutionStationRelationship(anyString(), any());
+    }
+
+    @Test
+    void deleteCreditorInstitutionStationRelationshipFailOnAuthorizerUpdateNoRollback() {
+        doThrow(AppException.class).when(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(anyString(), anyString());
+        assertThrows(AppException.class, () ->
+                service.deleteCreditorInstitutionStationRelationship(CI_TAX_CODE, STATION_CODE1, INSTITUTION_ID, BROKER_TAX_CODE));
+
+        verify(apiConfigClient).getCreditorInstitutionsByStation(STATION_CODE1, 1, 0, CI_TAX_CODE);
+        verify(apiConfigClient, never()).createCreditorInstitutionStationRelationship(anyString(), any());
     }
 
     @Test

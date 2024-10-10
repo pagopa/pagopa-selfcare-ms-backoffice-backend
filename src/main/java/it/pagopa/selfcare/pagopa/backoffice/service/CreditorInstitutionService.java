@@ -194,18 +194,24 @@ public class CreditorInstitutionService {
             String institutionId,
             String brokerTaxCode
     ) {
+        CreditorInstitutions ciForRollback =
+                this.apiConfigClient.getCreditorInstitutionsByStation(stationCode, 1, 0, ciTaxCode);
         this.apiConfigClient.deleteCreditorInstitutionStationRelationship(ciTaxCode, stationCode);
         try {
             this.apiManagementService.updateBrokerAuthorizerSegregationCodesMetadata(institutionId, brokerTaxCode);
         } catch (Exception e) {
             log.error("Failed to update broker {} API key authorizations, revert dissociate station to CI operation",
                     sanitizeLogParam(brokerTaxCode), e);
-            CreditorInstitutions creditorInstitutions =
-                    this.apiConfigClient.getCreditorInstitutionsByStation(stationCode, 1, 0, ciTaxCode);
-            CreditorInstitutionStationEdit dto =
-                    this.modelMapper.map(creditorInstitutions.getCreditorInstitutionList().get(0), CreditorInstitutionStationEdit.class);
-            dto.setStationCode(stationCode);
-            this.apiConfigClient.createCreditorInstitutionStationRelationship(ciTaxCode, dto);
+            if (ciForRollback != null && ciForRollback.getCreditorInstitutionList() != null && ciForRollback.getCreditorInstitutionList().size() == 1) {
+                CreditorInstitutionStationEdit dto =
+                        this.modelMapper.map(ciForRollback.getCreditorInstitutionList().get(0), CreditorInstitutionStationEdit.class);
+                dto.setStationCode(stationCode);
+                dto.setAuxDigit(dto.getAuxDigit() == null ? 3L : dto.getAuxDigit());
+                this.apiConfigClient.createCreditorInstitutionStationRelationship(ciTaxCode, dto);
+            } else {
+                log.error("Unable to rollback dissociate station ({}) to CI ({}) operation",
+                        sanitizeLogParam(stationCode), sanitizeLogParam(ciTaxCode));
+            }
             throw e;
         }
     }
