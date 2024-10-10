@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public interface TaxonomyRepository extends MongoRepository<TaxonomyEntity, String> {
 
@@ -17,7 +18,7 @@ public interface TaxonomyRepository extends MongoRepository<TaxonomyEntity, Stri
             " ]}")
     List<TaxonomyEntity> searchTaxonomies(String ec, String macroArea, String code, Boolean valid, Instant now);
 
-    List<TaxonomyEntity> findBySpecificBuiltInDataIn(List<String> codes);
+    List<TaxonomyEntity> findBySpecificBuiltInDataIn(List<Pattern> codes);
   
 
 }
