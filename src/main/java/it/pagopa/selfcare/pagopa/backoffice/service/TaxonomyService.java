@@ -31,7 +31,7 @@ public class TaxonomyService {
 
     public Taxonomies getTaxonomies(String code, String ec, String macroArea, Boolean onlyValid) {
         List<Taxonomy> taxonomies = taxonomyRepository.searchTaxonomies(
-                ec, macroArea, code != null ? ".*".concat(code).concat(".*") : null, onlyValid, Instant.now())
+                ec, macroArea, code != null ? "^[0-9]/.*".concat(code).concat(".*/$") : null, onlyValid, Instant.now())
                 .stream()
                 .map(elem -> modelMapper.map(elem, Taxonomy.class))
                 .toList();
