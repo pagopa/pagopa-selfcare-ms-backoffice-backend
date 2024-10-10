@@ -208,7 +208,8 @@ public class CreditorInstitutionService {
                 dto.setStationCode(stationCode);
                 this.apiConfigClient.createCreditorInstitutionStationRelationship(ciTaxCode, dto);
             } else {
-                log.error("Unable to rollback dissociate station ({}) to CI ({}) operation", stationCode, ciTaxCode);
+                log.error("Unable to rollback dissociate station ({}) to CI ({}) operation",
+                        sanitizeLogParam(stationCode), sanitizeLogParam(ciTaxCode));
             }
             throw e;
         }
