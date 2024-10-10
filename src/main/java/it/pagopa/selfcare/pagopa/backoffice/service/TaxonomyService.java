@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -42,9 +43,17 @@ public class TaxonomyService {
 
     public List<Taxonomy> getTaxonomiesByCodes(List<String> codes) {
         return taxonomyRepository.findBySpecificBuiltInDataIn(
-                codes.stream().map(code -> Pattern.compile(code.contains("/") ? "^"+code+"$" : "^[0-9]/"+code+"/$"))
-                        .toList()).stream()
-                .map(elem -> modelMapper.map(elem, Taxonomy.class)).collect(Collectors.toList());
+                codes != null ?
+                        codes.stream().map(code -> Pattern.compile(code.contains("/") ?
+                                        "^"+code+"$" : "^[0-9]/"+code+"/$"))
+                        .toList() : new ArrayList<>()).stream()
+                .map(elem -> {
+                    Taxonomy taxonomy = modelMapper.map(elem, Taxonomy.class);
+                    taxonomy.setSpecificBuiltInData(taxonomy.getSpecificBuiltInData().contains("/") ?
+                        taxonomy.getSpecificBuiltInData().split("/")[1] : taxonomy.getSpecificBuiltInData()
+                    );
+                    return taxonomy;
+                }).collect(Collectors.toList());
     }
 
     /**
