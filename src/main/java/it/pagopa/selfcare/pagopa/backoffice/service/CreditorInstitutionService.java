@@ -206,6 +206,7 @@ public class CreditorInstitutionService {
                 CreditorInstitutionStationEdit dto =
                         this.modelMapper.map(ciForRollback.getCreditorInstitutionList().get(0), CreditorInstitutionStationEdit.class);
                 dto.setStationCode(stationCode);
+                dto.setAuxDigit(dto.getAuxDigit() == null ? 3L : dto.getAuxDigit());
                 this.apiConfigClient.createCreditorInstitutionStationRelationship(ciTaxCode, dto);
             } else {
                 log.error("Unable to rollback dissociate station ({}) to CI ({}) operation",
