@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -44,8 +45,12 @@ public class TaxonomyService {
     public List<Taxonomy> getTaxonomiesByCodes(List<String> codes) {
         return taxonomyRepository.findBySpecificBuiltInDataIn(
                 codes != null ?
-                        codes.stream().map(code -> Pattern.compile(code.contains("/") ?
-                                        "^"+code+"$" : "^[0-9]/"+code+"/$"))
+                        codes.stream().filter(Objects::nonNull).map(code -> {
+                            if (code.contains("/")) {
+                                return Pattern.compile( "^"+code+"$");
+                            }
+                            return Pattern.compile("^[0-9]/"+code+"/$");
+                         })
                         .toList() : new ArrayList<>()).stream()
                 .map(elem -> {
                     Taxonomy taxonomy = modelMapper.map(elem, Taxonomy.class);
