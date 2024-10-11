@@ -260,8 +260,8 @@ public class ApiManagementService {
         apiKeys.parallelStream().forEach(
                 apiKey -> {
                     String prefixId = apiKey.getId().split("-")[0] + "-";
-                    updateAuthorizerConfigMetadata(institutionId, prefixId, ciSegregationCodes, true);
-                    updateAuthorizerConfigMetadata(institutionId, prefixId, ciSegregationCodes, false);
+                    updateAuthorizerConfigMetadata(institutionId, prefixId, ciSegregationCodes, true, apiKey.getPrimaryKey());
+                    updateAuthorizerConfigMetadata(institutionId, prefixId, ciSegregationCodes, false, apiKey.getSecondaryKey());
                 }
         );
     }
@@ -287,25 +287,28 @@ public class ApiManagementService {
                 .orElseThrow(() -> new AppException(AppError.APIM_KEY_NOT_FOUND, institutionId));
 
         Subscription subscription = Subscription.fromPrefix(subscriptionPrefixId);
+        InstitutionResponse institution = getInstitutionResponse(institutionId);
+        DelegationInfo delegationInfoResponse = getDelegationInfo(institutionId, subscription.getAuthDelegations(), institution.getTaxCode());
+        String subKey = isPrimaryKey ? apiKeys.getPrimaryKey() : apiKeys.getSecondaryKey();
         Authorization authorization;
         try {
             String authorizationId = createAuthorizationId(subscriptionPrefixId, institutionId, isPrimaryKey);
             authorization = this.authorizerConfigClient.getAuthorization(authorizationId);
 
-            authorization.setSubscriptionKey(isPrimaryKey ? apiKeys.getPrimaryKey() : apiKeys.getSecondaryKey());
-
-            InstitutionResponse institution = getInstitutionResponse(institutionId);
-            DelegationInfo delegationInfoResponse = getDelegationInfo(institutionId, subscription.getAuthDelegations(), institution.getTaxCode());
-
+            authorization.setSubscriptionKey(subKey);
             authorization.setAuthorizedEntities(getAuthorizationEntities(institution, delegationInfoResponse.delegationResponse));
             authorization.setOtherMetadata(getAuthorizationMetadataList(delegationInfoResponse.ciSegregationCodes, authorization.getOtherMetadata()));
 
             this.authorizerConfigClient.deleteAuthorization(authorization.getId());
             this.authorizerConfigClient.createAuthorization(authorization);
         } catch (FeignException.NotFound e) {
-            log.error("An error occurred while updating API key authorizer configuration for institution {} and subscription {}, proceed to recreate the API key",
-                    sanitizeLogParam(institutionId), sanitizeLogParam(subscription.getDisplayName()), e);
-            createSubscriptionKeys(institutionId, subscription);
+            log.error("{} key authorizer configuration for institution {} and subscription {} not found, proceed to recreate the configuration",
+                    isPrimaryKey ? PRIMARY : SECONDARY,
+                    sanitizeLogParam(institutionId),
+                    sanitizeLogParam(subscription.getDisplayName()),
+                    e);
+            authorization = buildAuthorization(subscription, subKey, institution, isPrimaryKey, delegationInfoResponse);
+            this.authorizerConfigClient.createAuthorization(authorization);
         }
 
     }
@@ -409,21 +412,26 @@ public class ApiManagementService {
             String institutionId,
             String prefixId,
             CreditorInstitutionStationSegregationCodesList ciSegregationCodes,
-            boolean isPrimaryKey
+            boolean isPrimaryKey,
+            String subKey
     ) {
         Subscription subscription = Subscription.fromPrefix(prefixId);
+        Authorization authorization;
+        String authorizationId = createAuthorizationId(prefixId, institutionId, isPrimaryKey);
         try {
-            String authorizationId = createAuthorizationId(prefixId, institutionId, isPrimaryKey);
-            Authorization authorization = this.authorizerConfigClient.getAuthorization(authorizationId);
-
+            authorization = this.authorizerConfigClient.getAuthorization(authorizationId);
             authorization.setOtherMetadata(getAuthorizationMetadataList(ciSegregationCodes, authorization.getOtherMetadata()));
-
-            this.authorizerConfigClient.deleteAuthorization(authorization.getId());
-            this.authorizerConfigClient.createAuthorization(authorization);
+            this.authorizerConfigClient.updateAuthorization(authorizationId, authorization);
         } catch (FeignException.NotFound e) {
-            log.error("An error occurred while updating API key authorizer configuration for institution {} and subscription {}, proceed to recreate the API key",
-                    sanitizeLogParam(institutionId), sanitizeLogParam(subscription.getDisplayName()), e);
-            createSubscriptionKeys(institutionId, subscription);
+            log.error("{} key authorizer configuration for institution {} and subscription {} not found, proceed to recreate the configuration",
+                    isPrimaryKey ? PRIMARY : SECONDARY,
+                    sanitizeLogParam(institutionId),
+                    sanitizeLogParam(subscription.getDisplayName()),
+                    e);
+            InstitutionResponse institution = getInstitutionResponse(institutionId);
+            DelegationInfo delegationInfoResponse = getDelegationInfo(institutionId, subscription.getAuthDelegations(), institution.getTaxCode());
+            authorization = buildAuthorization(subscription, subKey, institution, isPrimaryKey, delegationInfoResponse);
+            this.authorizerConfigClient.createAuthorization(authorization);
         }
     }
 
