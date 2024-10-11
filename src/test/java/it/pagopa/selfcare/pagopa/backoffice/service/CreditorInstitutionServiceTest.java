@@ -562,7 +562,7 @@ class CreditorInstitutionServiceTest {
         List<DelegationExternal> delegations = new ArrayList<>();
         delegations.add(buildDelegation("PSP", "12345678"));
         delegations.add(expectedCI);
-        InstitutionResponse institutionResponse = buildInstitutionResponse(InstitutionType.PT, "1234");
+        Institution institutionResponse = buildInstitutionResponse(InstitutionType.PT, "1234");
 
         when(externalApiClient.getBrokerDelegation(
                 null,

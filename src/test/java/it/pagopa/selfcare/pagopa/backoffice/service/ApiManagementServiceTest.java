@@ -455,8 +455,8 @@ class ApiManagementServiceTest {
 
     @Test
     void updateBrokerAuthorizerSegregationCodesMetadataFailOnPrimary() throws IOException {
-        InstitutionResponse institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json", it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
         String subscriptionId = String.format("%s%s", Subscription.GPD.getPrefixId(), CI_TAX_CODE);
         InstitutionApiKeys institutionApiKeys1 = buildInstitutionApiKeys(subscriptionId);
 
