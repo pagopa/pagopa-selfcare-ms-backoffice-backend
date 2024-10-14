@@ -15,6 +15,7 @@ public class UserInstitutionProduct {
     private String tokenId;
     private String status;
     private String productRole;
+    private String productRoleLabel;
     private String role;
     private String env;
     private String createdAt;

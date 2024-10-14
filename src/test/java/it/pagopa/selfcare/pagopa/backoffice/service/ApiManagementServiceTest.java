@@ -7,6 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationC
 import it.pagopa.selfcare.pagopa.backoffice.client.AuthorizerConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
+import it.pagopa.selfcare.pagopa.backoffice.component.ApiManagementComponent;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationGenericKeyValue;
@@ -17,10 +18,14 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
+import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,6 +52,9 @@ class ApiManagementServiceTest {
     @MockBean
     private ExternalApiClient externalApiClient;
 
+    @SpyBean
+    private ApiManagementComponent apiManagementComponent;
+
     @MockBean
     private FeatureManager featureManager;
 
@@ -61,20 +69,21 @@ class ApiManagementServiceTest {
 
     @Test
     void getInstitutions() {
-        when(externalApiClient.getInstitutions(any()))
-                .thenReturn(Collections.singletonList(InstitutionInfo.builder()
-                        .userProductRoles(List.of("admin"))
+        when(externalApiClient.getUserInstitution(any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(Collections.singletonList(UserInstitution.builder()
+                        .institutionId("test").institutionDescription("test").products(Collections.emptyList())
                         .build()));
-        InstitutionDetailResource institutions = service.getInstitutions(null);
+        InstitutionBaseResources institutions = service.getInstitutions(null);
         assertNotNull(institutions);
-        assertNotNull(institutions.getInstitutionDetails());
-        assertFalse(institutions.getInstitutionDetails().isEmpty());
-        verify(externalApiClient).getInstitutions(any());
+        assertNotNull(institutions.getInstitutions());
+        assertFalse(institutions.getInstitutions().isEmpty());
+        verify(externalApiClient).getUserInstitution(any(), any(), any(), any(), any(), any(), any());
     }
 
     @Test
     void getInstitutionsFilteredByName() {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution elem = it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.builder()
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution elem =
+                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.builder()
                 .id("1")
                 .institutionType("PA")
                 .build();
@@ -84,10 +93,10 @@ class ApiManagementServiceTest {
         when(externalApiClient.getInstitutionsFiltered(any()))
                 .thenReturn(body);
         when(featureManager.isEnabled(anyString())).thenReturn(true);
-        InstitutionDetailResource institutions = service.getInstitutions("123BCS");
+        InstitutionBaseResources institutions = service.getInstitutions("123BCS");
         assertNotNull(institutions);
-        assertNotNull(institutions.getInstitutionDetails());
-        assertFalse(institutions.getInstitutionDetails().isEmpty());
+        assertNotNull(institutions.getInstitutions());
+        assertFalse(institutions.getInstitutions().isEmpty());
         verify(externalApiClient, never()).getInstitutions(any());
     }
 
@@ -95,10 +104,21 @@ class ApiManagementServiceTest {
     void getInstitution() throws IOException {
         when(externalApiClient.getInstitution(any()))
                 .thenReturn(TestUtil.fileToObject(
-                        "response/externalapi/institution_response.json", InstitutionResponse.class));
+                        "response/externalapi/institution_response.json",
+                        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class));
         Institution institution = service.getInstitution(INSTITUTION_ID);
         assertNotNull(institution);
         verify(externalApiClient).getInstitution(any());
+    }
+
+    @SneakyThrows
+    @Test
+    void getInstitutionFullDetail() {
+        when(externalApiClient.getInstitution(any())).thenReturn(TestUtil.fileToObject(
+                "response/externalapi/institution_response.json",
+                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class));
+        InstitutionDetail institutionDetail = service.getInstitutionFullDetail(any());
+        assertNotNull(institutionDetail);
     }
 
     @Test
@@ -155,7 +175,8 @@ class ApiManagementServiceTest {
     void createSubscriptionKeys() throws IOException {
         when(externalApiClient.getInstitution(any()))
                 .thenReturn(TestUtil.fileToObject(
-                        "response/externalapi/institution_response.json", InstitutionResponse.class));
+                        "response/externalapi/institution_response.json",
+                        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class));
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(new InstitutionApiKeys()));
 
         InstitutionApiKeysResource institutionApiKeys = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.BIZ);
@@ -178,7 +199,8 @@ class ApiManagementServiceTest {
         when(apimClient.getInstitution(INSTITUTION_ID)).thenThrow(IllegalArgumentException.class);
         when(externalApiClient.getInstitution(any()))
                 .thenReturn(TestUtil.fileToObject(
-                        "response/externalapi/institution_response.json", InstitutionResponse.class));
+                        "response/externalapi/institution_response.json",
+                        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class));
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(new InstitutionApiKeys()));
 
         InstitutionApiKeysResource institutionApiKeys = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.BIZ);
@@ -198,8 +220,9 @@ class ApiManagementServiceTest {
 
     @Test
     void createSubscriptionKeysForBOExtEC() throws IOException {
-        InstitutionResponse institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json",
+                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
         InstitutionApiKeys institutionApiKeys =
                 buildInstitutionApiKeys(String.format("%s%s", Subscription.BO_EXT_EC.getPrefixId(), institutionResponse.getTaxCode()));
 
@@ -223,8 +246,9 @@ class ApiManagementServiceTest {
 
     @Test
     void createSubscriptionKeysForFdrPsp() throws IOException {
-        InstitutionResponse institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json",
+                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
         InstitutionApiKeys institutionApiKeys =
                 buildInstitutionApiKeys(String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode()));
 
@@ -250,8 +274,9 @@ class ApiManagementServiceTest {
 
     @Test
     void regeneratePrimaryKey() throws IOException {
-        InstitutionResponse institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json",
+                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys("gdp-123456");
         when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
         when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder()
@@ -273,8 +298,8 @@ class ApiManagementServiceTest {
 
     @Test
     void regeneratePrimaryKeyFailOnAuthorizerConfigUpdateTriggerAPIKeyRecreation() throws IOException {
-        InstitutionResponse institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json", it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys("gdp-aTaxCode");
         when(apimClient.getApiSubscriptions(anyString()))
                 .thenReturn(Collections.singletonList(institutionApiKeys))
@@ -298,8 +323,9 @@ class ApiManagementServiceTest {
 
     @Test
     void regeneratePrimaryKeyForBOExtEC() throws IOException {
-        InstitutionResponse institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json",
+                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
         String subscriptionId = String.format("%s%s", Subscription.BO_EXT_EC.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
@@ -319,8 +345,9 @@ class ApiManagementServiceTest {
 
     @Test
     void regeneratePrimaryKeyForBOExtPSP() throws IOException {
-        InstitutionResponse institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json",
+                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
         String subscriptionId = String.format("%s%s", Subscription.BO_EXT_PSP.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
@@ -340,8 +367,8 @@ class ApiManagementServiceTest {
 
     @Test
     void regenerateSecondaryKey() throws IOException {
-        InstitutionResponse institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json", it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys("gdp-123456");
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
@@ -364,8 +391,9 @@ class ApiManagementServiceTest {
 
     @Test
     void regenerateSecondaryKeyForBOExtEC() throws IOException {
-        InstitutionResponse institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json",
+                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
         String subscriptionId = String.format("%s%s", Subscription.BO_EXT_EC.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
@@ -385,8 +413,9 @@ class ApiManagementServiceTest {
 
     @Test
     void regenerateSecondaryKeyForBOExtPSP() throws IOException {
-        InstitutionResponse institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json",
+                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
         String subscriptionId = String.format("%s%s", Subscription.BO_EXT_PSP.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
@@ -426,8 +455,8 @@ class ApiManagementServiceTest {
 
     @Test
     void updateBrokerAuthorizerSegregationCodesMetadataFailOnPrimary() throws IOException {
-        InstitutionResponse institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json", InstitutionResponse.class);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
+                "response/externalapi/institution_response.json", it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
         String subscriptionId = String.format("%s%s", Subscription.GPD.getPrefixId(), CI_TAX_CODE);
         InstitutionApiKeys institutionApiKeys1 = buildInstitutionApiKeys(subscriptionId);
 

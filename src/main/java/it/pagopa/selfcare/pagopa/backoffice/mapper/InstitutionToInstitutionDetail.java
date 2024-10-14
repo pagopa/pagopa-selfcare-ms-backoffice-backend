@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.mapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.AssistanceContact;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.PspData;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.UserProductRole;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
 import org.modelmapper.Converter;
@@ -35,7 +36,7 @@ public class InstitutionToInstitutionDetail implements Converter<Institution, In
                 .digitalAddress(elem.getDigitalAddress())
                 .address(elem.getAddress())
                 .taxCode(elem.getTaxCode())
-                .userProductRoles(List.of("admin"))
+                .userProductRoles(List.of(UserProductRole.builder().productRole("admin").build()))
                 .status("ACTIVE")
                 .origin(elem.getOrigin())
                 .externalId(elem.getExternalId())
