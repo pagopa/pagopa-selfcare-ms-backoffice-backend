@@ -29,6 +29,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -205,7 +206,7 @@ public class ApiManagementService {
         List<InstitutionApiKeys> apiSubscriptions = this.apimClient.getApiSubscriptions(institutionId);
 
         if (subscriptionCode.getAuthDomain() != null) {
-            DelegationInfo delegationInfoResponse = getDelegationInfo(institutionId, subscriptionCode.getAuthDelegations(), institution.getTaxCode());
+            DelegationInfo delegationInfoResponse = getDelegationInfo(institutionId, subscriptionCode.getAuthDelegations(), institution.getTaxCode(), institution.getInstitutionType());
 
             InstitutionApiKeys apiKeys = apiSubscriptions.stream()
                     .filter(institutionApiKeys -> institutionApiKeys.getId().equals(subscriptionId))
@@ -312,7 +313,7 @@ public class ApiManagementService {
 
         Subscription subscription = Subscription.fromPrefix(subscriptionPrefixId);
         InstitutionResponse institution = getInstitutionResponse(institutionId);
-        DelegationInfo delegationInfoResponse = getDelegationInfo(institutionId, subscription.getAuthDelegations(), institution.getTaxCode());
+        DelegationInfo delegationInfoResponse = getDelegationInfo(institutionId, subscription.getAuthDelegations(), institution.getTaxCode(), institution.getInstitutionType());
         String subKey = isPrimaryKey ? apiKeys.getPrimaryKey() : apiKeys.getSecondaryKey();
         Authorization authorization;
         try {
@@ -453,7 +454,7 @@ public class ApiManagementService {
                     sanitizeLogParam(subscription.getDisplayName()),
                     e);
             InstitutionResponse institution = getInstitutionResponse(institutionId);
-            DelegationInfo delegationInfoResponse = getDelegationInfo(institutionId, subscription.getAuthDelegations(), institution.getTaxCode());
+            DelegationInfo delegationInfoResponse = getDelegationInfo(institutionId, subscription.getAuthDelegations(), institution.getTaxCode(), institution.getInstitutionType());
             authorization = buildAuthorization(subscription, subKey, institution, isPrimaryKey, delegationInfoResponse);
             this.authorizerConfigClient.createAuthorization(authorization);
         }
@@ -480,16 +481,19 @@ public class ApiManagementService {
     private DelegationInfo getDelegationInfo(
             String institutionId,
             Boolean hasAuthDelegations,
-            String institutionTaxCode
+            String institutionTaxCode,
+            InstitutionType institutionType
     ) {
         List<DelegationExternal> delegationResponse = new ArrayList<>();
         CreditorInstitutionStationSegregationCodesList ciSegregationCodes = new CreditorInstitutionStationSegregationCodesList(new ArrayList<>());
         if (Boolean.TRUE.equals(hasAuthDelegations)) {
             delegationResponse = this.externalApiClient
                     .getBrokerDelegation(null, institutionId, "prod-pagopa", "FULL", null);
-            ciSegregationCodes =
-                    this.apiConfigSelfcareIntegrationClient
-                            .getCreditorInstitutionsSegregationCodeAssociatedToBroker(institutionTaxCode);
+            if (!institutionType.equals(InstitutionType.PSP)) {
+                ciSegregationCodes =
+                        this.apiConfigSelfcareIntegrationClient
+                                .getCreditorInstitutionsSegregationCodeAssociatedToBroker(institutionTaxCode);
+            }
         }
         return new DelegationInfo(delegationResponse, ciSegregationCodes);
     }
