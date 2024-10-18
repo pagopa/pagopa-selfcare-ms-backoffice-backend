@@ -453,6 +453,7 @@ public class ApiManagementService {
                 .build();
     }
 
+
     private DelegationInfo getDelegationInfo(
             String institutionId,
             Boolean hasAuthDelegations,
