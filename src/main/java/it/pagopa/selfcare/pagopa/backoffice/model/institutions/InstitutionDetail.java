@@ -69,9 +69,9 @@ public class InstitutionDetail {
     @JsonProperty(value = "recipient_code")
     private String recipientCode;
 
-    @Schema(description = "Logged user's roles on product", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = "admin, operator")
+    @Schema(description = "Logged user's roles on product", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "user_product_roles", required = true)
-    private List<@NotBlank @Pattern(regexp = "admin|operator", flags = Pattern.Flag.CASE_INSENSITIVE) String> userProductRoles;
+    private List<UserProductRole> userProductRoles;
 
     @Schema(description = "GPS, SCP, PT optional data")
     @JsonProperty(value = "company_informations")

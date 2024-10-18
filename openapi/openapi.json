@@ -8707,7 +8707,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/InstitutionDetailResource"
+                  "$ref": "#/components/schemas/InstitutionBaseResources"
                 }
               }
             },
@@ -9119,6 +9119,62 @@
           "Institutions"
         ]
       }
+    },
+    "/institutions/{institution-id}/full-detail": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "getInstitutionFullDetail",
+        "parameters": [
+          {
+            "description": "Institution's unique internal identifier",
+            "in": "path",
+            "name": "institution-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstitutionDetail"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Retrieves the full detail of an institution",
+        "tags": [
+          "Institutions"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
     },
     "/institutions/{institution-id}/products": {
       "get": {
@@ -14464,6 +14520,42 @@
           }
         }
       },
+      "InstitutionBase": {
+        "required": [
+          "id",
+          "name",
+          "user_product_roles"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Institution's unique internal identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Institution's name"
+          },
+          "user_product_roles": {
+            "type": "array",
+            "description": "Logged user's roles on product",
+            "items": {
+              "$ref": "#/components/schemas/UserProductRole"
+            }
+          }
+        }
+      },
+      "InstitutionBaseResources": {
+        "type": "object",
+        "properties": {
+          "institution_base_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InstitutionBase"
+            }
+          }
+        }
+      },
       "InstitutionDetail": {
         "required": [
           "address",
@@ -14548,25 +14640,7 @@
             "type": "array",
             "description": "Logged user's roles on product",
             "items": {
-              "type": "string",
-              "description": "Logged user's roles on product",
-              "enum": [
-                "admin, operator"
-              ]
-            },
-            "enum": [
-              "admin, operator"
-            ]
-          }
-        }
-      },
-      "InstitutionDetailResource": {
-        "type": "object",
-        "properties": {
-          "institution_detail_list": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/InstitutionDetail"
+              "$ref": "#/components/schemas/UserProductRole"
             }
           }
         }
@@ -16279,6 +16353,27 @@
             "example": "2024-04-01T13:00:00+02:00"
           }
         }
+      },
+      "UserProductRole": {
+        "required": [
+          "product_role"
+        ],
+        "type": "object",
+        "properties": {
+          "product_role": {
+            "pattern": "admin|operator|admin-psp|operator-psp",
+            "type": "string",
+            "description": "Logged user role on product",
+            "enum": [
+              "admin, operator"
+            ]
+          },
+          "product_role_label": {
+            "type": "string",
+            "description": "Logged user role label"
+          }
+        },
+        "description": "Logged user's roles on product"
       },
       "WfespPluginConf": {
         "required": [

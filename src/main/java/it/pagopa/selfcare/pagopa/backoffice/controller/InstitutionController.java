@@ -4,13 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetailResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.ProductResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.service.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +43,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieves all the onboarded institutions related to the logged user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    public @Valid InstitutionDetailResource getInstitutions(
+    public @Valid InstitutionBaseResources getInstitutions(
             @Parameter(description = "filter by the tax code of the Creditor Institution") @RequestParam(required = false, value = "tax-code") String taxCode
     ) {
         return this.apiManagementService.getInstitutions(taxCode);
@@ -75,6 +69,16 @@ public class InstitutionController {
             @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId
     ) {
         return this.apiManagementService.getInstitution(institutionId);
+    }
+
+    @GetMapping("/{institution-id}/full-detail")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Retrieves the full detail of an institution", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    public InstitutionDetail getInstitutionFullDetail(
+            @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId
+    ) {
+        return this.apiManagementService.getInstitutionFullDetail(institutionId);
     }
 
     @GetMapping("/{institution-id}/products")
