@@ -368,7 +368,7 @@ public class CreditorInstitutionService {
                 );
 
         List<DelegationExternal> delegationExternals = new ArrayList<>(response);
-        InstitutionResponse broker = this.externalApiClient.getInstitution(brokerId);
+        InstitutionResponse broker = modelMapper.map(this.externalApiClient.getInstitution(brokerId), InstitutionResponse.class);
         if (brokerCanBeAddedToDelegation(delegationExternals, broker, ciName)) {
             delegationExternals.add(DelegationExternal.builder()
                     .taxCode(broker.getTaxCode())
