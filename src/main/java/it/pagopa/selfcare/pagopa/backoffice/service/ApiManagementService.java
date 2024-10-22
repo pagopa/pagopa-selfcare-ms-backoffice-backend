@@ -14,7 +14,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationEnt
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationGenericKeyValue;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationMetadata;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationOwner;
-import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionStationSegregationCodesList;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CIStationSegregationCodesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationResource;
@@ -263,7 +263,7 @@ public class ApiManagementService {
                 .filter(this::checkIfAPIKeyHasAuthDelegations)
                 .toList();
 
-        CreditorInstitutionStationSegregationCodesList ciSegregationCodes =
+        CIStationSegregationCodesList ciSegregationCodes =
                 this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(ciTaxCode);
 
         apiKeys.parallelStream().forEach(
@@ -323,7 +323,7 @@ public class ApiManagementService {
     }
 
     private List<AuthorizationMetadata> getAuthorizationMetadataList(
-            CreditorInstitutionStationSegregationCodesList ciSegregationCodes,
+            CIStationSegregationCodesList ciSegregationCodes,
             List<AuthorizationMetadata> otherMetadata
     ) {
         AuthorizationMetadata authorizationMetadata = buildAuthorizationMetadata(ciSegregationCodes);
@@ -420,7 +420,7 @@ public class ApiManagementService {
     private void updateAuthorizerConfigMetadata(
             String institutionId,
             String prefixId,
-            CreditorInstitutionStationSegregationCodesList ciSegregationCodes,
+            CIStationSegregationCodesList ciSegregationCodes,
             boolean isPrimaryKey,
             String subKey
     ) {
@@ -444,9 +444,9 @@ public class ApiManagementService {
         }
     }
 
-    private AuthorizationMetadata buildAuthorizationMetadata(CreditorInstitutionStationSegregationCodesList ciStationCodesList) {
+    private AuthorizationMetadata buildAuthorizationMetadata(CIStationSegregationCodesList codesList) {
         List<AuthorizationGenericKeyValue> genericKeyValues =
-                ciStationCodesList.getCiStationCodes().parallelStream()
+                codesList.getCiStationCodes().parallelStream()
                         .map(elem ->
                                 AuthorizationGenericKeyValue.builder()
                                         .key(elem.getCiTaxCode())
@@ -470,7 +470,7 @@ public class ApiManagementService {
             InstitutionType institutionType
     ) {
         List<DelegationExternal> delegationResponse = new ArrayList<>();
-        CreditorInstitutionStationSegregationCodesList ciSegregationCodes = new CreditorInstitutionStationSegregationCodesList(new ArrayList<>());
+        CIStationSegregationCodesList ciSegregationCodes = new CIStationSegregationCodesList(new ArrayList<>());
         if (Boolean.TRUE.equals(hasAuthDelegations)) {
             delegationResponse = this.externalApiClient
                     .getBrokerDelegation(null, institutionId, "prod-pagopa", "FULL", null);
@@ -484,7 +484,8 @@ public class ApiManagementService {
     }
 
     private record DelegationInfo(List<DelegationExternal> delegationResponse,
-                                  CreditorInstitutionStationSegregationCodesList ciSegregationCodes) {
+                                  CIStationSegregationCodesList ciSegregationCodes) {
+    }
 
     }
     private String buildSubscriptionName(
