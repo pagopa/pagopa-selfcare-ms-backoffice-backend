@@ -58,6 +58,8 @@ public enum AppError {
 
     STATION_MAINTENANCE_NOT_IN_PROGRESS(HttpStatus.INTERNAL_SERVER_ERROR, "Station maintenance not in progress", "Station maintenance must be in progress in order to finish it"),
 
+    PSP_APIM_KEY_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error with PSP APIM key", "The %s product APIM key require that the PSP code is configured but the PSP code for institution %s is missing"),
+
     UNKNOWN(null, null, null);
 
     public final HttpStatus httpStatus;
