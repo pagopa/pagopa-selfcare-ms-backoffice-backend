@@ -40,6 +40,7 @@ public enum AppError {
     INVALID_GET_PRIVATE_CI_BUNDLES_REQUEST(HttpStatus.BAD_REQUEST, "Invalid get CI bundles request", "Creditor institution's tax code (%s) and subscription status (%s) are required to retrieve creditor institution's private bundles"),
     BUNDLE_SUBSCRIPTION_BAD_REQUEST(HttpStatus.BAD_REQUEST, "Invalid bundle type requested", "Global bundle do not have bundle subscription"),
     BUNDLE_SUBSCRIPTION_TYPE_NULL_BAD_REQUEST(HttpStatus.BAD_REQUEST, "Invalid bundle type requested", "Bundle type is required to retrieve bundle subscription"),
+    INSTITUTION_TYPE_NOT_ALLOWED_ON_SUBSCRIPTION_BAD_REQUEST(HttpStatus.BAD_REQUEST, "Subscription not allowed for institution", "Institution %s of type %s can not operate on the requested subscription %s"),
 
     STATION_CONFLICT(HttpStatus.CONFLICT, "Station Conflict", "There is a Station not completed."),
 

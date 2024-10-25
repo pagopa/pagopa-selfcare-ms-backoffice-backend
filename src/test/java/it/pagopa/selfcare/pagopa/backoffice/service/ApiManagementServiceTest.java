@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import com.azure.spring.cloud.feature.management.FeatureManager;
 import feign.FeignException;
+import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AuthorizerConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
@@ -41,7 +42,6 @@ import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -96,6 +96,9 @@ class ApiManagementServiceTest {
     @MockBean
     private LegacyPspCodeUtil legacyPspCodeUtil;
 
+    @MockBean
+    private ApiConfigClient apiConfigClient;
+
     @Captor
     private ArgumentCaptor<Authorization> authorizationCaptor;
 
@@ -136,7 +139,7 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void getInstitution() throws IOException {
+    void getInstitution() {
         when(externalApiClient.getInstitution(any()))
                 .thenReturn(buildInstitutionResponse(InstitutionType.PA));
         Institution institution = service.getInstitution(INSTITUTION_ID);
@@ -306,9 +309,8 @@ class ApiManagementServiceTest {
         assertNotNull(captorValue.getOwner());
         assertEquals(INSTITUTION_TAX_CODE, captorValue.getOwner().getId());
         assertNotNull(captorValue.getAuthorizedEntities());
-        assertEquals(3, captorValue.getAuthorizedEntities().size());
+        assertEquals(2, captorValue.getAuthorizedEntities().size());
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> INSTITUTION_TAX_CODE.equals(elem.getValue())));
-        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> TAX_CODE_1.equals(elem.getValue())));
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> TAX_CODE_2.equals(elem.getValue())));
         assertNotNull(captorValue.getOtherMetadata());
         assertEquals(1, captorValue.getOtherMetadata().size());
@@ -351,8 +353,7 @@ class ApiManagementServiceTest {
         when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
                 .thenReturn(delegations);
         when(legacyPspCodeUtil.retrievePspCode(INSTITUTION_TAX_CODE, false)).thenReturn(PSP_CODE_1, PSP_CODE_1);
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE_1, false)).thenReturn(PSP_CODE_2);
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE_2, false)).thenThrow(AppException.class);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE_1, false)).thenThrow(AppException.class);
 
         InstitutionApiKeysResource result = assertDoesNotThrow(() ->
                 service.createSubscriptionKeys(INSTITUTION_ID, Subscription.FDR_PSP));
@@ -365,7 +366,7 @@ class ApiManagementServiceTest {
         verify(apimClient, never()).createInstitution(anyString(), any());
         verify(apimClient).createInstitutionSubscription(any(), any(), any(), any(), any());
         verify(externalApiClient).getInstitution(INSTITUTION_ID);
-        verify(legacyPspCodeUtil, times(4)).retrievePspCode(anyString(), anyBoolean());
+        verify(legacyPspCodeUtil, times(3)).retrievePspCode(anyString(), anyBoolean());
         verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
         verify(authorizerConfigClient, times(2)).createAuthorization(authorizationCaptor.capture());
 
@@ -374,9 +375,8 @@ class ApiManagementServiceTest {
         assertNotNull(captorValue.getOwner());
         assertEquals(INSTITUTION_TAX_CODE, captorValue.getOwner().getId());
         assertNotNull(captorValue.getAuthorizedEntities());
-        assertEquals(2, captorValue.getAuthorizedEntities().size());
+        assertEquals(1, captorValue.getAuthorizedEntities().size());
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_1.equals(elem.getValue())));
-        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_2.equals(elem.getValue())));
         assertNotNull(captorValue.getOtherMetadata());
         assertTrue(captorValue.getOtherMetadata().isEmpty());
     }
@@ -425,9 +425,8 @@ class ApiManagementServiceTest {
         Authorization captorValue = authorizationCaptor.getValue();
         assertNotNull(captorValue);
         assertNotNull(captorValue.getAuthorizedEntities());
-        assertEquals(3, captorValue.getAuthorizedEntities().size());
+        assertEquals(2, captorValue.getAuthorizedEntities().size());
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> INSTITUTION_TAX_CODE.equals(elem.getValue())));
-        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> TAX_CODE_1.equals(elem.getValue())));
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> TAX_CODE_2.equals(elem.getValue())));
         assertNotNull(captorValue.getOtherMetadata());
         assertEquals(1, captorValue.getOtherMetadata().size());
@@ -460,7 +459,6 @@ class ApiManagementServiceTest {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
         String subscriptionId = String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
-        String pspCode3 = "PSP_CODE3";
 
         when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
         when(authorizerConfigClient.getAuthorization(anyString()))
@@ -468,7 +466,6 @@ class ApiManagementServiceTest {
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(legacyPspCodeUtil.retrievePspCode(INSTITUTION_TAX_CODE, false)).thenReturn(PSP_CODE_1, PSP_CODE_1);
         when(legacyPspCodeUtil.retrievePspCode(TAX_CODE_1, false)).thenReturn(PSP_CODE_2);
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE_2, false)).thenReturn(pspCode3);
         when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
                 .thenReturn(createDelegations());
 
@@ -483,10 +480,9 @@ class ApiManagementServiceTest {
         Authorization captorValue = authorizationCaptor.getValue();
         assertNotNull(captorValue);
         assertNotNull(captorValue.getAuthorizedEntities());
-        assertEquals(3, captorValue.getAuthorizedEntities().size());
+        assertEquals(2, captorValue.getAuthorizedEntities().size());
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_1.equals(elem.getValue())));
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_2.equals(elem.getValue())));
-        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> pspCode3.equals(elem.getValue())));
         assertNotNull(captorValue.getOtherMetadata());
         assertTrue(captorValue.getOtherMetadata().isEmpty());
     }
@@ -541,7 +537,7 @@ class ApiManagementServiceTest {
 
     @Test
     void regeneratePrimaryKeyForBOExtPSP() {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
         String subscriptionId = String.format("%s%s", Subscription.BO_EXT_PSP.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
@@ -587,9 +583,8 @@ class ApiManagementServiceTest {
         Authorization captorValue = authorizationCaptor.getValue();
         assertNotNull(captorValue);
         assertNotNull(captorValue.getAuthorizedEntities());
-        assertEquals(3, captorValue.getAuthorizedEntities().size());
+        assertEquals(2, captorValue.getAuthorizedEntities().size());
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> INSTITUTION_TAX_CODE.equals(elem.getValue())));
-        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> TAX_CODE_1.equals(elem.getValue())));
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> TAX_CODE_2.equals(elem.getValue())));
         assertNotNull(captorValue.getOtherMetadata());
         assertEquals(1, captorValue.getOtherMetadata().size());
@@ -622,7 +617,6 @@ class ApiManagementServiceTest {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
         String subscriptionId = String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
-        String pspCode3 = "PSP_CODE3";
 
         when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
         when(authorizerConfigClient.getAuthorization(anyString()))
@@ -630,7 +624,6 @@ class ApiManagementServiceTest {
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(legacyPspCodeUtil.retrievePspCode(INSTITUTION_TAX_CODE, false)).thenReturn(PSP_CODE_1, PSP_CODE_1);
         when(legacyPspCodeUtil.retrievePspCode(TAX_CODE_1, false)).thenReturn(PSP_CODE_2);
-        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE_2, false)).thenReturn(pspCode3);
         when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
                 .thenReturn(createDelegations());
 
@@ -645,10 +638,9 @@ class ApiManagementServiceTest {
         Authorization captorValue = authorizationCaptor.getValue();
         assertNotNull(captorValue);
         assertNotNull(captorValue.getAuthorizedEntities());
-        assertEquals(3, captorValue.getAuthorizedEntities().size());
+        assertEquals(2, captorValue.getAuthorizedEntities().size());
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_1.equals(elem.getValue())));
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_2.equals(elem.getValue())));
-        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> pspCode3.equals(elem.getValue())));
         assertNotNull(captorValue.getOtherMetadata());
         assertTrue(captorValue.getOtherMetadata().isEmpty());
     }
@@ -676,7 +668,7 @@ class ApiManagementServiceTest {
 
     @Test
     void regenerateSecondaryKeyForBOExtPSP() {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
         String subscriptionId = String.format("%s%s", Subscription.BO_EXT_PSP.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
@@ -805,7 +797,7 @@ class ApiManagementServiceTest {
 
     private CIStationSegregationCodesList buildCreditorInstitutionStationSegregationCodesList() {
         return CIStationSegregationCodesList.builder()
-                .ciStationCodes(Arrays.asList(
+                .ciStationCodes(Collections.singletonList(
                         CreditorInstitutionStationSegregationCodes.builder()
                                 .ciTaxCode(CI_TAX_CODE)
                                 .segregationCodes(List.of("01", "14"))

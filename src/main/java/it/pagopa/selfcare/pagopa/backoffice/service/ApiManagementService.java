@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import com.azure.spring.cloud.feature.management.FeatureManager;
 import feign.FeignException;
+import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AuthorizerConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
@@ -30,7 +31,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +47,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType.fromSelfcareRole;
 import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.sanitizeLogParam;
 
 @Slf4j
@@ -77,6 +78,8 @@ public class ApiManagementService {
 
     private final LegacyPspCodeUtil legacyPspCodeUtil;
 
+    private final ApiConfigClient apiConfigClient;
+
     @Autowired
     public ApiManagementService(
             AzureApiManagerClient apimClient,
@@ -88,7 +91,8 @@ public class ApiManagementService {
             @Value("${institution.subscription.test-email}") String testEmail,
             @Value("${info.properties.environment}") String environment,
             ApiManagementComponent apiManagementComponent,
-            LegacyPspCodeUtil legacyPspCodeUtil
+            LegacyPspCodeUtil legacyPspCodeUtil,
+            ApiConfigClient apiConfigClient
     ) {
         this.apimClient = apimClient;
         this.externalApiClient = externalApiClient;
@@ -100,6 +104,7 @@ public class ApiManagementService {
         this.featureManager = featureManager;
         this.apiManagementComponent = apiManagementComponent;
         this.legacyPspCodeUtil = legacyPspCodeUtil;
+        this.apiConfigClient = apiConfigClient;
     }
 
     public InstitutionBaseResources getInstitutions(String taxCode) {
@@ -151,8 +156,7 @@ public class ApiManagementService {
                     .filter(Objects::nonNull)
                     .filter(delegation -> {
                         log.info(delegation.toString());
-                        RoleType roleType = RoleType.fromSelfcareRole(
-                                delegation.getTaxCode(), delegation.getInstitutionType());
+                        RoleType roleType = fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType());
                         return roles.contains(roleType);
                     })
                     .toList();
@@ -181,6 +185,7 @@ public class ApiManagementService {
      */
     public InstitutionApiKeysResource createSubscriptionKeys(String institutionId, Subscription subscriptionCode) {
         InstitutionResponse institution = getInstitutionResponse(institutionId);
+        checkIfInstitutionCanOperateOnSubscriptionOtherwiseThrowException(institution, subscriptionCode);
         if (subscriptionCode.equals(Subscription.FDR_PSP)) {
             checkIfPSPCodeIsAvailableOtherwiseThrowException(institution, subscriptionCode);
         }
@@ -233,6 +238,7 @@ public class ApiManagementService {
         InstitutionResponse institution = getInstitutionResponse(institutionId);
         var prefix = subscriptionId.split("-")[0] + "-";
         Subscription subscription = Subscription.fromPrefix(prefix);
+        checkIfInstitutionCanOperateOnSubscriptionOtherwiseThrowException(institution, subscription);
         if (subscription.equals(Subscription.FDR_PSP)) {
             checkIfPSPCodeIsAvailableOtherwiseThrowException(institution, subscription);
         }
@@ -256,6 +262,7 @@ public class ApiManagementService {
         InstitutionResponse institution = getInstitutionResponse(institutionId);
         var prefix = subscriptionId.split("-")[0] + "-";
         Subscription subscription = Subscription.fromPrefix(prefix);
+        checkIfInstitutionCanOperateOnSubscriptionOtherwiseThrowException(institution, subscription);
         if (subscription.equals(Subscription.FDR_PSP)) {
             checkIfPSPCodeIsAvailableOtherwiseThrowException(institution, subscription);
         }
@@ -294,10 +301,44 @@ public class ApiManagementService {
         );
     }
 
+    private void checkIfInstitutionCanOperateOnSubscriptionOtherwiseThrowException(
+            InstitutionResponse institution,
+            Subscription subscription
+    ) {
+        if (subscription.equals(Subscription.NODOAUTH)) {
+            return;
+        }
+
+        RoleType institutionRoleType = fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType().name());
+        if (institutionRoleType.equals(RoleType.PT)) {
+            if (subscription.getAllowedInstitutionType().equals(RoleType.CI)) {
+                try {
+                    this.apiConfigClient.getBroker(institution.getTaxCode());
+                } catch (FeignException.NotFound e) {
+                    throw new AppException(AppError.INSTITUTION_TYPE_NOT_ALLOWED_ON_SUBSCRIPTION_BAD_REQUEST,
+                            institution.getTaxCode(), institutionRoleType, subscription.getDisplayName());
+                }
+            } else {
+                try {
+                    this.apiConfigClient.getBrokerPsp(institution.getTaxCode());
+                } catch (FeignException.NotFound e) {
+                    throw new AppException(AppError.INSTITUTION_TYPE_NOT_ALLOWED_ON_SUBSCRIPTION_BAD_REQUEST,
+                            institution.getTaxCode(), institutionRoleType, subscription.getDisplayName());
+                }
+            }
+            return;
+        }
+
+        if (!subscription.getAllowedInstitutionType().equals(institutionRoleType)) {
+            throw new AppException(AppError.INSTITUTION_TYPE_NOT_ALLOWED_ON_SUBSCRIPTION_BAD_REQUEST,
+                    institution.getTaxCode(), institutionRoleType, subscription.getDisplayName());
+        }
+    }
+
     private boolean checkIfAPIKeyHasAuthDelegations(InstitutionApiKeys institutionApiKeys) {
         try {
             String prefixId = institutionApiKeys.getId().split("-")[0] + "-";
-            return Subscription.fromPrefix(prefixId).getAuthDelegations();
+            return Subscription.fromPrefix(prefixId).isAuthDelegationConfigRequired();
         } catch (Exception e) {
             return false;
         }
@@ -389,13 +430,17 @@ public class ApiManagementService {
 
     private List<AuthorizationEntity> getAuthorizationEntities(
             InstitutionResponse institution,
-            Subscription subscription,
-            List<DelegationExternal> delegationResponse
+            Subscription subscription
     ) {
         List<AuthorizationEntity> authorizedEntities = new ArrayList<>();
         authorizedEntities.add(getAuthorizationEntity(subscription, institution.getDescription(), institution.getTaxCode()));
 
-        if (delegationResponse != null && !delegationResponse.isEmpty()) {
+        List<DelegationExternal> delegationResponse = this.externalApiClient
+                .getBrokerDelegation(null, institution.getId(), "prod-pagopa", "FULL", null)
+                .parallelStream()
+                .filter(delegation -> subscription.getAllowedInstitutionType().equals(fromSelfcareRole(delegation.getTaxCode(), delegation.getInstitutionType())))
+                .toList();
+        if (!delegationResponse.isEmpty()) {
             authorizedEntities.addAll(delegationResponse.parallelStream()
                     .map(elem -> getAuthorizationEntity(subscription, elem.getInstitutionName(), elem.getTaxCode()))
                     .filter(Objects::nonNull)
@@ -427,7 +472,7 @@ public class ApiManagementService {
     }
 
     private String getOwnerType(InstitutionResponse institution) {
-        RoleType type = RoleType.fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType().name());
+        RoleType type = fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType().name());
         return RoleType.PT.equals(type) ? "BROKER" : type.name();
     }
 
@@ -496,18 +541,17 @@ public class ApiManagementService {
                 .build());
     }
 
-
     private AuthorizationConfig getAuthorizationConfig(
             Subscription subscription,
             InstitutionResponse institution
     ) {
-        List<AuthorizationEntity> authorizationEntities = new ArrayList<>();
         List<AuthorizationMetadata> authorizationMetadata = new ArrayList<>();
-        if (Boolean.TRUE.equals(subscription.getAuthDelegations())) {
-            List<DelegationExternal> delegationResponse = this.externalApiClient
-                    .getBrokerDelegation(null, institution.getId(), "prod-pagopa", "FULL", null);
-            authorizationEntities = getAuthorizationEntities(institution, subscription, delegationResponse);
-            if (!institution.getInstitutionType().equals(InstitutionType.PSP)) {
+        List<AuthorizationEntity> authorizationEntities = new ArrayList<>();
+
+        if (subscription.isAuthDelegationConfigRequired()) {
+            authorizationEntities = getAuthorizationEntities(institution, subscription);
+
+            if (RoleType.CI.equals(subscription.getAllowedInstitutionType())) {
                 CIStationSegregationCodesList ciSegregationCodes = this.apiConfigSelfcareIntegrationClient
                         .getCreditorInstitutionsSegregationCodeAssociatedToBroker(institution.getTaxCode());
                 authorizationMetadata = buildAuthorizationMetadata(ciSegregationCodes);
@@ -516,10 +560,6 @@ public class ApiManagementService {
         return new AuthorizationConfig(authorizationEntities, authorizationMetadata);
     }
 
-    private record AuthorizationConfig(List<AuthorizationEntity> authorizationEntities,
-                                       List<AuthorizationMetadata> authorizationMetadata) {
-
-    }
     private String buildSubscriptionName(
             Subscription subscriptionCode,
             InstitutionResponse institution
@@ -545,5 +585,9 @@ public class ApiManagementService {
     private char getEnvironment() {
         return environment.toLowerCase().charAt(0);
     }
-}
 
+    private record AuthorizationConfig(List<AuthorizationEntity> authorizationEntities,
+                                       List<AuthorizationMetadata> authorizationMetadata) {
+
+    }
+}

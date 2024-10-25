@@ -253,9 +253,9 @@ public interface ApiConfigClient {
             @RequestBody CreditorInstitutionDetails request
     );
 
-    @GetMapping(value = "/brokers/{brokercode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/brokers/{broker-code}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid
-    BrokerDetails getBroker(@RequestParam(required = false, name = "brokercode") String brokerCode);
+    BrokerDetails getBroker(@PathVariable("broker-code") String brokerCode);
 
     @PostMapping(value = "/brokers", produces = MediaType.APPLICATION_JSON_VALUE)
     @Valid
