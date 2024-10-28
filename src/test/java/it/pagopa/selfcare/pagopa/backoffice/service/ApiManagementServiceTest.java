@@ -816,7 +816,7 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void updateBrokerAuthorizerSegregationCodesMetadataFailOnPrimary() throws IOException {
+    void updateBrokerAuthorizerSegregationCodesMetadataFailOnPrimary() {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
         String subscriptionId = String.format("%s%s", Subscription.GPD.getPrefixId(), CI_TAX_CODE);
         InstitutionApiKeys institutionApiKeys1 = buildInstitutionApiKeys(subscriptionId);
