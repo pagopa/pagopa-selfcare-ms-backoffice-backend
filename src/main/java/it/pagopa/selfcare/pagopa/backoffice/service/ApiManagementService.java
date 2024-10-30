@@ -31,6 +31,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.CreateInstitutionApiKeyDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
@@ -186,7 +187,7 @@ public class ApiManagementService {
     public InstitutionApiKeysResource createSubscriptionKeys(String institutionId, Subscription subscriptionCode) {
         InstitutionResponse institution = getInstitutionResponse(institutionId);
         checkIfInstitutionCanOperateOnSubscriptionOtherwiseThrowException(institution, subscriptionCode);
-        if (subscriptionCode.equals(Subscription.FDR_PSP)) {
+        if (subscriptionCode.equals(Subscription.FDR_PSP) && !InstitutionType.PT.equals(institution.getInstitutionType())) {
             checkIfPSPCodeIsAvailableOtherwiseThrowException(institution, subscriptionCode);
         }
 
@@ -239,7 +240,7 @@ public class ApiManagementService {
         var prefix = subscriptionId.split("-")[0] + "-";
         Subscription subscription = Subscription.fromPrefix(prefix);
         checkIfInstitutionCanOperateOnSubscriptionOtherwiseThrowException(institution, subscription);
-        if (subscription.equals(Subscription.FDR_PSP)) {
+        if (subscription.equals(Subscription.FDR_PSP) && !InstitutionType.PT.equals(institution.getInstitutionType())) {
             checkIfPSPCodeIsAvailableOtherwiseThrowException(institution, subscription);
         }
         this.apimClient.regeneratePrimaryKey(subscriptionId);
@@ -263,7 +264,7 @@ public class ApiManagementService {
         var prefix = subscriptionId.split("-")[0] + "-";
         Subscription subscription = Subscription.fromPrefix(prefix);
         checkIfInstitutionCanOperateOnSubscriptionOtherwiseThrowException(institution, subscription);
-        if (subscription.equals(Subscription.FDR_PSP)) {
+        if (subscription.equals(Subscription.FDR_PSP) && !InstitutionType.PT.equals(institution.getInstitutionType())) {
             checkIfPSPCodeIsAvailableOtherwiseThrowException(institution, subscription);
         }
         this.apimClient.regenerateSecondaryKey(subscriptionId);
@@ -433,7 +434,9 @@ public class ApiManagementService {
             Subscription subscription
     ) {
         List<AuthorizationEntity> authorizedEntities = new ArrayList<>();
-        authorizedEntities.add(getAuthorizationEntity(subscription, institution.getDescription(), institution.getTaxCode()));
+       if (!InstitutionType.PT.equals(institution.getInstitutionType())) {
+           authorizedEntities.add(getAuthorizationEntity(subscription, institution.getDescription(), institution.getTaxCode()));
+       }
 
         List<DelegationExternal> delegationResponse = this.externalApiClient
                 .getBrokerDelegation(null, institution.getId(), "prod-pagopa", "FULL", null)
