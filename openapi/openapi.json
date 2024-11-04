@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.28.0-1-next"
+    "version": "2.29.1"
   },
   "servers": [
     {
@@ -16365,7 +16365,7 @@
             "type": "string",
             "description": "Logged user role on product",
             "enum": [
-              "admin, operator"
+              "admin, operator, admin-psp, operator-psp"
             ]
           },
           "product_role_label": {

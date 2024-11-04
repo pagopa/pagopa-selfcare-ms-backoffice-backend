@@ -2,49 +2,78 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import com.azure.spring.cloud.feature.management.FeatureManager;
 import feign.FeignException;
-import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
+import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AuthorizerConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AzureApiManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.component.ApiManagementComponent;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.Authorization;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationGenericKeyValue;
 import it.pagopa.selfcare.pagopa.backoffice.model.authorization.AuthorizationMetadata;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CIStationSegregationCodesList;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionStationSegregationCodes;
-import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionStationSegregationCodesList;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionBaseResources;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.ProductResource;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Subscription;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
+import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {MappingsConfiguration.class, ApiManagementService.class})
 class ApiManagementServiceTest {
 
-    private final String INSTITUTION_ID = "INSTITUTION_ID";
-    private final String SUBSCRIPTION_ID = "SUBSCRIPTION_ID";
-    private final String BROKER_ID = "BROKER_ID";
+    private static final String TAX_CODE_1 = "taxCode1";
+    private static final String TAX_CODE_2 = "taxCode2";
+    private static final String PSP_CODE_1 = "PSPCode1";
+    private static final String PSP_CODE_2 = "PSPCode2";
+    private static final String INSTITUTION_TAX_CODE = "aTaxCode";
+    private static final String INSTITUTION_ID = "INSTITUTION_ID";
+    private static final String BROKER_ID = "BROKER_ID";
     private static final String CI_TAX_CODE = "ciTaxCode";
+
+    private static final String AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY = "_seg";
+    private static final String AUTH_ID = "auth-id";
 
     @MockBean
     private AzureApiManagerClient apimClient;
@@ -63,6 +92,15 @@ class ApiManagementServiceTest {
 
     @MockBean
     private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
+
+    @MockBean
+    private LegacyPspCodeUtil legacyPspCodeUtil;
+
+    @MockBean
+    private ApiConfigClient apiConfigClient;
+
+    @Captor
+    private ArgumentCaptor<Authorization> authorizationCaptor;
 
     @Autowired
     private ApiManagementService service;
@@ -84,9 +122,9 @@ class ApiManagementServiceTest {
     void getInstitutionsFilteredByName() {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution elem =
                 it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.builder()
-                .id("1")
-                .institutionType("PA")
-                .build();
+                        .id("1")
+                        .institutionType("PA")
+                        .build();
         Institutions body = Institutions.builder()
                 .institutions(Collections.singletonList(elem))
                 .build();
@@ -101,11 +139,9 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void getInstitution() throws IOException {
+    void getInstitution() {
         when(externalApiClient.getInstitution(any()))
-                .thenReturn(TestUtil.fileToObject(
-                        "response/externalapi/institution_response.json",
-                        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class));
+                .thenReturn(buildInstitutionResponse(InstitutionType.PA));
         Institution institution = service.getInstitution(INSTITUTION_ID);
         assertNotNull(institution);
         verify(externalApiClient).getInstitution(any());
@@ -114,9 +150,7 @@ class ApiManagementServiceTest {
     @SneakyThrows
     @Test
     void getInstitutionFullDetail() {
-        when(externalApiClient.getInstitution(any())).thenReturn(TestUtil.fileToObject(
-                "response/externalapi/institution_response.json",
-                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class));
+        when(externalApiClient.getInstitution(any())).thenReturn(buildInstitutionResponse(InstitutionType.PA));
         InstitutionDetail institutionDetail = service.getInstitutionFullDetail(any());
         assertNotNull(institutionDetail);
     }
@@ -172,17 +206,15 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void createSubscriptionKeys() throws IOException {
-        when(externalApiClient.getInstitution(any()))
-                .thenReturn(TestUtil.fileToObject(
-                        "response/externalapi/institution_response.json",
-                        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class));
+    void createSubscriptionKeySuccessForNodeAuth() {
+        when(externalApiClient.getInstitution(any())).thenReturn(buildInstitutionResponse(InstitutionType.PA));
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(new InstitutionApiKeys()));
 
-        InstitutionApiKeysResource institutionApiKeys = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.BIZ);
+        InstitutionApiKeysResource result = assertDoesNotThrow(() ->
+                service.createSubscriptionKeys(INSTITUTION_ID, Subscription.NODOAUTH));
 
-        assertNotNull(institutionApiKeys);
-        assertNotNull(institutionApiKeys.getInstitutionApiKeys());
+        assertNotNull(result);
+        assertNotNull(result.getInstitutionApiKeys());
 
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(apimClient).getInstitution(INSTITUTION_ID);
@@ -192,21 +224,128 @@ class ApiManagementServiceTest {
         verify(authorizerConfigClient, never()).createAuthorization(any());
         verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
         verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
     }
 
     @Test
-    void createSubscriptionKeysWithoutAPIMUser() throws IOException {
-        when(apimClient.getInstitution(INSTITUTION_ID)).thenThrow(IllegalArgumentException.class);
-        when(externalApiClient.getInstitution(any()))
-                .thenReturn(TestUtil.fileToObject(
-                        "response/externalapi/institution_response.json",
-                        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class));
+    void createSubscriptionKeyFailPSPRequestCISubscription() {
+        when(externalApiClient.getInstitution(any())).thenReturn(buildInstitutionResponse(InstitutionType.PSP));
+
+        AppException e = assertThrows(AppException.class, () ->
+                service.createSubscriptionKeys(INSTITUTION_ID, Subscription.GPD));
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.BAD_REQUEST, e.getHttpStatus());
+
+        verify(apimClient, never()).getApiSubscriptions(INSTITUTION_ID);
+        verify(apimClient, never()).getInstitution(INSTITUTION_ID);
+        verify(apimClient, never()).createInstitution(anyString(), any());
+        verify(apimClient, never()).createInstitutionSubscription(any(), any(), any(), any(), any());
+        verify(externalApiClient).getInstitution(INSTITUTION_ID);
+        verify(authorizerConfigClient, never()).createAuthorization(any());
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
+    }
+
+    @Test
+    void createSubscriptionKeyFailCIRequestPSPSubscription() {
+        when(externalApiClient.getInstitution(any())).thenReturn(buildInstitutionResponse(InstitutionType.PA));
+
+        AppException e = assertThrows(AppException.class, () ->
+                service.createSubscriptionKeys(INSTITUTION_ID, Subscription.FDR_PSP));
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.BAD_REQUEST, e.getHttpStatus());
+
+        verify(apimClient, never()).getApiSubscriptions(INSTITUTION_ID);
+        verify(apimClient, never()).getInstitution(INSTITUTION_ID);
+        verify(apimClient, never()).createInstitution(anyString(), any());
+        verify(apimClient, never()).createInstitutionSubscription(any(), any(), any(), any(), any());
+        verify(externalApiClient).getInstitution(INSTITUTION_ID);
+        verify(authorizerConfigClient, never()).createAuthorization(any());
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
+    }
+
+    @Test
+    void createSubscriptionKeyFailPTCIRequestPSPSubscription() {
+        when(externalApiClient.getInstitution(any())).thenReturn(buildInstitutionResponse(InstitutionType.PT));
+        when(apiConfigClient.getBrokerPsp(anyString())).thenThrow(FeignException.NotFound.class);
+
+        AppException e = assertThrows(AppException.class, () ->
+                service.createSubscriptionKeys(INSTITUTION_ID, Subscription.FDR_PSP));
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.BAD_REQUEST, e.getHttpStatus());
+
+        verify(apimClient, never()).getApiSubscriptions(INSTITUTION_ID);
+        verify(apimClient, never()).getInstitution(INSTITUTION_ID);
+        verify(apimClient, never()).createInstitution(anyString(), any());
+        verify(apimClient, never()).createInstitutionSubscription(any(), any(), any(), any(), any());
+        verify(externalApiClient).getInstitution(INSTITUTION_ID);
+        verify(authorizerConfigClient, never()).createAuthorization(any());
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
+    }
+
+    @Test
+    void createSubscriptionKeyFailPTPSPRequestCISubscription() {
+        when(externalApiClient.getInstitution(any())).thenReturn(buildInstitutionResponse(InstitutionType.PT));
+        when(apiConfigClient.getBroker(anyString())).thenThrow(FeignException.NotFound.class);
+
+        AppException e = assertThrows(AppException.class, () ->
+                service.createSubscriptionKeys(INSTITUTION_ID, Subscription.GPD));
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.BAD_REQUEST, e.getHttpStatus());
+
+        verify(apimClient, never()).getApiSubscriptions(INSTITUTION_ID);
+        verify(apimClient, never()).getInstitution(INSTITUTION_ID);
+        verify(apimClient, never()).createInstitution(anyString(), any());
+        verify(apimClient, never()).createInstitutionSubscription(any(), any(), any(), any(), any());
+        verify(externalApiClient).getInstitution(INSTITUTION_ID);
+        verify(authorizerConfigClient, never()).createAuthorization(any());
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
+    }
+
+    @Test
+    void createSubscriptionKeys() {
+        when(externalApiClient.getInstitution(any())).thenReturn(buildInstitutionResponse(InstitutionType.PA));
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(new InstitutionApiKeys()));
 
-        InstitutionApiKeysResource institutionApiKeys = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.BIZ);
+        InstitutionApiKeysResource result = assertDoesNotThrow(() ->
+                service.createSubscriptionKeys(INSTITUTION_ID, Subscription.BIZ));
 
-        assertNotNull(institutionApiKeys);
-        assertNotNull(institutionApiKeys.getInstitutionApiKeys());
+        assertNotNull(result);
+        assertNotNull(result.getInstitutionApiKeys());
+
+        verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
+        verify(apimClient).getInstitution(INSTITUTION_ID);
+        verify(apimClient, never()).createInstitution(anyString(), any());
+        verify(apimClient).createInstitutionSubscription(any(), any(), any(), any(), any());
+        verify(externalApiClient).getInstitution(INSTITUTION_ID);
+        verify(authorizerConfigClient, never()).createAuthorization(any());
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
+    }
+
+    @Test
+    void createSubscriptionKeysWithoutAPIMUser() {
+        when(apimClient.getInstitution(INSTITUTION_ID)).thenThrow(IllegalArgumentException.class);
+        when(externalApiClient.getInstitution(any())).thenReturn(buildInstitutionResponse(InstitutionType.PA));
+        when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(new InstitutionApiKeys()));
+
+        InstitutionApiKeysResource result = assertDoesNotThrow(() ->
+                service.createSubscriptionKeys(INSTITUTION_ID, Subscription.BIZ));
+
+        assertNotNull(result);
+        assertNotNull(result.getInstitutionApiKeys());
 
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(apimClient).getInstitution(INSTITUTION_ID);
@@ -216,20 +355,20 @@ class ApiManagementServiceTest {
         verify(authorizerConfigClient, never()).createAuthorization(any());
         verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
         verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
     }
 
     @Test
-    void createSubscriptionKeysForBOExtEC() throws IOException {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json",
-                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
+    void createSubscriptionKeysForBOExtEC() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
         InstitutionApiKeys institutionApiKeys =
                 buildInstitutionApiKeys(String.format("%s%s", Subscription.BO_EXT_EC.getPrefixId(), institutionResponse.getTaxCode()));
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
 
-        InstitutionApiKeysResource result = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.BO_EXT_EC);
+        InstitutionApiKeysResource result = assertDoesNotThrow(() ->
+                service.createSubscriptionKeys(INSTITUTION_ID, Subscription.BO_EXT_EC));
 
         assertNotNull(result);
         assertNotNull(result.getInstitutionApiKeys());
@@ -242,24 +381,25 @@ class ApiManagementServiceTest {
         verify(authorizerConfigClient, times(2)).createAuthorization(any());
         verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
         verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
     }
 
     @Test
-    void createSubscriptionKeysForFdrPsp() throws IOException {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json",
-                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
+    void createSubscriptionKeysForGPDSuccess() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
         InstitutionApiKeys institutionApiKeys =
-                buildInstitutionApiKeys(String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode()));
+                buildInstitutionApiKeys(String.format("%s%s", Subscription.GPD.getPrefixId(), institutionResponse.getTaxCode()));
+        List<DelegationExternal> delegations = createDelegations();
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
         when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
-                .thenReturn(createDelegations());
+                .thenReturn(delegations);
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString()))
                 .thenReturn(buildCreditorInstitutionStationSegregationCodesList());
 
-        InstitutionApiKeysResource result = service.createSubscriptionKeys(INSTITUTION_ID, Subscription.FDR_PSP);
+        InstitutionApiKeysResource result = assertDoesNotThrow(() ->
+                service.createSubscriptionKeys(INSTITUTION_ID, Subscription.GPD));
 
         assertNotNull(result);
         assertNotNull(result.getInstitutionApiKeys());
@@ -269,74 +409,234 @@ class ApiManagementServiceTest {
         verify(apimClient, never()).createInstitution(anyString(), any());
         verify(apimClient).createInstitutionSubscription(any(), any(), any(), any(), any());
         verify(externalApiClient).getInstitution(INSTITUTION_ID);
-        verify(authorizerConfigClient, times(2)).createAuthorization(any());
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
+        verify(authorizerConfigClient, times(2)).createAuthorization(authorizationCaptor.capture());
+
+        Authorization captorValue = authorizationCaptor.getValue();
+        assertNotNull(captorValue);
+        assertNotNull(captorValue.getOwner());
+        assertEquals(INSTITUTION_TAX_CODE, captorValue.getOwner().getId());
+        assertNotNull(captorValue.getAuthorizedEntities());
+        assertEquals(2, captorValue.getAuthorizedEntities().size());
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> INSTITUTION_TAX_CODE.equals(elem.getValue())));
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> TAX_CODE_2.equals(elem.getValue())));
+        assertNotNull(captorValue.getOtherMetadata());
+        assertEquals(1, captorValue.getOtherMetadata().size());
+        assertEquals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY, captorValue.getOtherMetadata().get(0).getShortKey());
     }
 
     @Test
-    void regeneratePrimaryKey() throws IOException {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json",
-                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
-        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys("gdp-123456");
+    void createSubscriptionKeysForFdrPspFailNoPSPCode() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
+
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
+        when(legacyPspCodeUtil.retrievePspCode(INSTITUTION_TAX_CODE, false)).thenThrow(AppException.class);
+
+        AppException e = assertThrows(AppException.class, () ->
+                service.createSubscriptionKeys(INSTITUTION_ID, Subscription.FDR_PSP));
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus());
+
+        verify(apimClient, never()).getApiSubscriptions(INSTITUTION_ID);
+        verify(apimClient, never()).getInstitution(INSTITUTION_ID);
+        verify(apimClient, never()).createInstitution(anyString(), any());
+        verify(apimClient, never()).createInstitutionSubscription(any(), any(), any(), any(), any());
+        verify(externalApiClient).getInstitution(INSTITUTION_ID);
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(legacyPspCodeUtil, times(1)).retrievePspCode(anyString(), anyBoolean());
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(authorizerConfigClient, never()).createAuthorization(any());
+    }
+
+    @Test
+    void createSubscriptionKeysForFdrPspSuccessWithOneDelegationExcludedForNoPSPCode() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
+        InstitutionApiKeys institutionApiKeys =
+                buildInstitutionApiKeys(String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode()));
+        List<DelegationExternal> delegations = createDelegations();
+
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
+        when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
+        when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
+                .thenReturn(delegations);
+        when(legacyPspCodeUtil.retrievePspCode(INSTITUTION_TAX_CODE, false)).thenReturn(PSP_CODE_1, PSP_CODE_1);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE_1, false)).thenThrow(AppException.class);
+
+        InstitutionApiKeysResource result = assertDoesNotThrow(() ->
+                service.createSubscriptionKeys(INSTITUTION_ID, Subscription.FDR_PSP));
+
+        assertNotNull(result);
+        assertNotNull(result.getInstitutionApiKeys());
+
+        verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
+        verify(apimClient).getInstitution(INSTITUTION_ID);
+        verify(apimClient, never()).createInstitution(anyString(), any());
+        verify(apimClient).createInstitutionSubscription(any(), any(), any(), any(), any());
+        verify(externalApiClient).getInstitution(INSTITUTION_ID);
+        verify(legacyPspCodeUtil, times(3)).retrievePspCode(anyString(), anyBoolean());
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(authorizerConfigClient, times(2)).createAuthorization(authorizationCaptor.capture());
+
+        Authorization captorValue = authorizationCaptor.getValue();
+        assertNotNull(captorValue);
+        assertNotNull(captorValue.getOwner());
+        assertEquals(INSTITUTION_TAX_CODE, captorValue.getOwner().getId());
+        assertNotNull(captorValue.getAuthorizedEntities());
+        assertEquals(1, captorValue.getAuthorizedEntities().size());
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_1.equals(elem.getValue())));
+        assertNotNull(captorValue.getOtherMetadata());
+        assertTrue(captorValue.getOtherMetadata().isEmpty());
+    }
+
+    @Test
+    void regeneratePrimaryKeyForNoAuthSubscription() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
+        String subscriptionId = String.format("%s%s", Subscription.BIZ.getPrefixId(), institutionResponse.getTaxCode());
+
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
+
+        assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, subscriptionId));
+
+        verify(apimClient).regeneratePrimaryKey(subscriptionId);
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(apimClient, never()).getApiSubscriptions(INSTITUTION_ID);
+        verify(authorizerConfigClient, never()).deleteAuthorization(AUTH_ID);
+        verify(authorizerConfigClient, never()).createAuthorization(any());
+    }
+
+    @Test
+    void regeneratePrimaryKeyForGPDSuccess() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
+        String subscriptionId = String.format("%s%s", Subscription.GPD.getPrefixId(), institutionResponse.getTaxCode());
+        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
+
         when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
-        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder()
-                .id("auth-id")
-                .build());
+        when(authorizerConfigClient.getAuthorization(anyString()))
+                .thenReturn(buildAuthorizationWithSegregationCodes(CI_TAX_CODE));
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
                 .thenReturn(createDelegations());
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString()))
                 .thenReturn(buildCreditorInstitutionStationSegregationCodesList());
 
-        assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, "gdp-123456"));
+        assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, subscriptionId));
 
-        verify(apimClient).regeneratePrimaryKey("gdp-123456");
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
+        verify(apimClient).regeneratePrimaryKey(subscriptionId);
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
-        verify(authorizerConfigClient).deleteAuthorization("auth-id");
-        verify(authorizerConfigClient).createAuthorization(any());
+        verify(authorizerConfigClient).deleteAuthorization(AUTH_ID);
+        verify(authorizerConfigClient).createAuthorization(authorizationCaptor.capture());
+
+        Authorization captorValue = authorizationCaptor.getValue();
+        assertNotNull(captorValue);
+        assertNotNull(captorValue.getAuthorizedEntities());
+        assertEquals(2, captorValue.getAuthorizedEntities().size());
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> INSTITUTION_TAX_CODE.equals(elem.getValue())));
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> TAX_CODE_2.equals(elem.getValue())));
+        assertNotNull(captorValue.getOtherMetadata());
+        assertEquals(1, captorValue.getOtherMetadata().size());
+        assertEquals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY, captorValue.getOtherMetadata().get(0).getShortKey());
     }
 
     @Test
-    void regeneratePrimaryKeyFailOnAuthorizerConfigUpdateTriggerAPIKeyRecreation() throws IOException {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json", it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
-        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys("gdp-aTaxCode");
+    void regeneratePrimaryKeyForFDRPSPFailNoPSPCode() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
+        String subscriptionId = String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode());
+
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
+        when(legacyPspCodeUtil.retrievePspCode(INSTITUTION_TAX_CODE, false)).thenThrow(AppException.class);
+
+        AppException e = assertThrows(AppException.class, () -> service.regeneratePrimaryKey(INSTITUTION_ID, subscriptionId));
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus());
+
+        verify(apimClient, never()).regeneratePrimaryKey(subscriptionId);
+        verify(apimClient, never()).getApiSubscriptions(INSTITUTION_ID);
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(authorizerConfigClient, never()).deleteAuthorization(AUTH_ID);
+        verify(authorizerConfigClient, never()).createAuthorization(any());
+    }
+
+    @Test
+    void regeneratePrimaryKeyForFDRPSPSuccess() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
+        String subscriptionId = String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode());
+        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
+
+        when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
+        when(authorizerConfigClient.getAuthorization(anyString()))
+                .thenReturn(buildAuthorizationWithSegregationCodes(CI_TAX_CODE));
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
+        when(legacyPspCodeUtil.retrievePspCode(INSTITUTION_TAX_CODE, false)).thenReturn(PSP_CODE_1, PSP_CODE_1);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE_1, false)).thenReturn(PSP_CODE_2);
+        when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
+                .thenReturn(createDelegations());
+
+        assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, subscriptionId));
+
+        verify(apimClient).regeneratePrimaryKey(subscriptionId);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
+        verify(authorizerConfigClient).deleteAuthorization(AUTH_ID);
+        verify(authorizerConfigClient).createAuthorization(authorizationCaptor.capture());
+
+        Authorization captorValue = authorizationCaptor.getValue();
+        assertNotNull(captorValue);
+        assertNotNull(captorValue.getAuthorizedEntities());
+        assertEquals(2, captorValue.getAuthorizedEntities().size());
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_1.equals(elem.getValue())));
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_2.equals(elem.getValue())));
+        assertNotNull(captorValue.getOtherMetadata());
+        assertTrue(captorValue.getOtherMetadata().isEmpty());
+    }
+
+    @Test
+    void regeneratePrimaryKeyFailOnAuthorizerConfigUpdateTriggerAPIKeyRecreation() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
+        String subscriptionId = String.format("%s%s", Subscription.GPD.getPrefixId(), institutionResponse.getTaxCode());
+        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
+
         when(apimClient.getApiSubscriptions(anyString()))
                 .thenReturn(Collections.singletonList(institutionApiKeys))
                 .thenReturn(Collections.singletonList(institutionApiKeys));
         when(authorizerConfigClient.getAuthorization(anyString()))
                 .thenThrow(FeignException.NotFound.class)
-                .thenReturn(Authorization.builder().id("auth-id").build());
+                .thenReturn(Authorization.builder().id(AUTH_ID).build());
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
                 .thenReturn(createDelegations());
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString()))
                 .thenReturn(buildCreditorInstitutionStationSegregationCodesList());
 
-        assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, "gdp-aTaxCode"));
+        assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, subscriptionId));
 
-        verify(apimClient).regeneratePrimaryKey("gdp-aTaxCode");
+        verify(apimClient).regeneratePrimaryKey(subscriptionId);
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
         verify(authorizerConfigClient).createAuthorization(any());
         verify(authorizerConfigClient, never()).deleteAuthorization(anyString());
     }
 
     @Test
-    void regeneratePrimaryKeyForBOExtEC() throws IOException {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json",
-                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
+    void regeneratePrimaryKeyForBOExtEC() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
         String subscriptionId = String.format("%s%s", Subscription.BO_EXT_EC.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
-        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder().id("auth-id").build());
+        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder().id(AUTH_ID).build());
 
         assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, subscriptionId));
 
         verify(apimClient).regeneratePrimaryKey(subscriptionId);
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
         verify(authorizerConfigClient).deleteAuthorization(anyString());
         verify(authorizerConfigClient).createAuthorization(any());
         verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
@@ -344,21 +644,20 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void regeneratePrimaryKeyForBOExtPSP() throws IOException {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json",
-                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
+    void regeneratePrimaryKeyForBOExtPSP() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
         String subscriptionId = String.format("%s%s", Subscription.BO_EXT_PSP.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
-        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder().id("auth-id").build());
+        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder().id(AUTH_ID).build());
 
         assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, subscriptionId));
 
         verify(apimClient).regeneratePrimaryKey(subscriptionId);
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
         verify(authorizerConfigClient).deleteAuthorization(anyString());
         verify(authorizerConfigClient).createAuthorization(any());
         verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
@@ -366,43 +665,107 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void regenerateSecondaryKey() throws IOException {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json", it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
-        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys("gdp-123456");
+    void regenerateSecondaryKeyForGPDSuccess() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
+        String subscriptionId = String.format("%s%s", Subscription.GPD.getPrefixId(), institutionResponse.getTaxCode());
+        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
         when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder()
-                .id("auth-id")
+                .id(AUTH_ID)
                 .build());
         when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
                 .thenReturn(createDelegations());
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString()))
                 .thenReturn(buildCreditorInstitutionStationSegregationCodesList());
 
-        assertDoesNotThrow(() -> service.regenerateSecondaryKey(INSTITUTION_ID, "gdp-123456"));
+        assertDoesNotThrow(() -> service.regenerateSecondaryKey(INSTITUTION_ID, subscriptionId));
 
-        verify(apimClient).regenerateSecondaryKey("gdp-123456");
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
+        verify(apimClient).regenerateSecondaryKey(subscriptionId);
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
-        verify(authorizerConfigClient).deleteAuthorization("auth-id");
-        verify(authorizerConfigClient).createAuthorization(any());
+        verify(authorizerConfigClient).deleteAuthorization(AUTH_ID);
+        verify(authorizerConfigClient).createAuthorization(authorizationCaptor.capture());
+
+        Authorization captorValue = authorizationCaptor.getValue();
+        assertNotNull(captorValue);
+        assertNotNull(captorValue.getAuthorizedEntities());
+        assertEquals(2, captorValue.getAuthorizedEntities().size());
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> INSTITUTION_TAX_CODE.equals(elem.getValue())));
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> TAX_CODE_2.equals(elem.getValue())));
+        assertNotNull(captorValue.getOtherMetadata());
+        assertEquals(1, captorValue.getOtherMetadata().size());
+        assertEquals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY, captorValue.getOtherMetadata().get(0).getShortKey());
     }
 
     @Test
-    void regenerateSecondaryKeyForBOExtEC() throws IOException {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json",
-                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
+    void regenerateSecondaryKeyForFDRPSPFailNoPSPCode() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
+        String subscriptionId = String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode());
+
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
+        when(legacyPspCodeUtil.retrievePspCode(INSTITUTION_TAX_CODE, false)).thenThrow(AppException.class);
+
+        AppException e = assertThrows(AppException.class, () -> service.regenerateSecondaryKey(INSTITUTION_ID, subscriptionId));
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus());
+
+        verify(apimClient, never()).regenerateSecondaryKey(subscriptionId);
+        verify(apimClient, never()).getApiSubscriptions(INSTITUTION_ID);
+        verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(authorizerConfigClient, never()).deleteAuthorization(AUTH_ID);
+        verify(authorizerConfigClient, never()).createAuthorization(any());
+    }
+
+    @Test
+    void regenerateSecondaryKeyForFDRPSPSuccess() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
+        String subscriptionId = String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode());
+        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
+
+        when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
+        when(authorizerConfigClient.getAuthorization(anyString()))
+                .thenReturn(buildAuthorizationWithSegregationCodes(CI_TAX_CODE));
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
+        when(legacyPspCodeUtil.retrievePspCode(INSTITUTION_TAX_CODE, false)).thenReturn(PSP_CODE_1, PSP_CODE_1);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE_1, false)).thenReturn(PSP_CODE_2);
+        when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
+                .thenReturn(createDelegations());
+
+        assertDoesNotThrow(() -> service.regenerateSecondaryKey(INSTITUTION_ID, subscriptionId));
+
+        verify(apimClient).regenerateSecondaryKey(subscriptionId);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
+        verify(authorizerConfigClient).deleteAuthorization(AUTH_ID);
+        verify(authorizerConfigClient).createAuthorization(authorizationCaptor.capture());
+
+        Authorization captorValue = authorizationCaptor.getValue();
+        assertNotNull(captorValue);
+        assertNotNull(captorValue.getAuthorizedEntities());
+        assertEquals(2, captorValue.getAuthorizedEntities().size());
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_1.equals(elem.getValue())));
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_2.equals(elem.getValue())));
+        assertNotNull(captorValue.getOtherMetadata());
+        assertTrue(captorValue.getOtherMetadata().isEmpty());
+    }
+
+    @Test
+    void regenerateSecondaryKeyForBOExtEC() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
         String subscriptionId = String.format("%s%s", Subscription.BO_EXT_EC.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
-        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder().id("auth-id").build());
+        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder().id(AUTH_ID).build());
 
         assertDoesNotThrow(() -> service.regenerateSecondaryKey(INSTITUTION_ID, subscriptionId));
 
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
         verify(apimClient).regenerateSecondaryKey(subscriptionId);
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient).deleteAuthorization(anyString());
@@ -412,19 +775,18 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void regenerateSecondaryKeyForBOExtPSP() throws IOException {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json",
-                it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
+    void regenerateSecondaryKeyForBOExtPSP() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
         String subscriptionId = String.format("%s%s", Subscription.BO_EXT_PSP.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apimClient.getApiSubscriptions(any())).thenReturn(Collections.singletonList(institutionApiKeys));
-        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder().id("auth-id").build());
+        when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(Authorization.builder().id(AUTH_ID).build());
 
         assertDoesNotThrow(() -> service.regenerateSecondaryKey(INSTITUTION_ID, subscriptionId));
 
+        verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
         verify(apimClient).regenerateSecondaryKey(subscriptionId);
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient).deleteAuthorization(anyString());
@@ -454,9 +816,8 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void updateBrokerAuthorizerSegregationCodesMetadataFailOnPrimary() throws IOException {
-        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = TestUtil.fileToObject(
-                "response/externalapi/institution_response.json", it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.class);
+    void updateBrokerAuthorizerSegregationCodesMetadataFailOnPrimary() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
         String subscriptionId = String.format("%s%s", Subscription.GPD.getPrefixId(), CI_TAX_CODE);
         InstitutionApiKeys institutionApiKeys1 = buildInstitutionApiKeys(subscriptionId);
 
@@ -490,11 +851,11 @@ class ApiManagementServiceTest {
         List<AuthorizationMetadata> metadata = new ArrayList<>();
         metadata.add(AuthorizationMetadata.builder()
                 .name("Segregation codes")
-                .shortKey("_seg")
+                .shortKey(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY)
                 .content(keyValues)
                 .build());
         return Authorization.builder()
-                .id("auth-id")
+                .id(AUTH_ID)
                 .otherMetadata(metadata)
                 .build();
     }
@@ -521,6 +882,7 @@ class ApiManagementServiceTest {
                         .institutionName("Institution Psp 1")
                         .institutionRootName("Institution Root Name Psp 1")
                         .institutionType("PSP")
+                        .taxCode(TAX_CODE_1)
                         .build()
         );
         delegationExternals.add(
@@ -535,19 +897,37 @@ class ApiManagementServiceTest {
                         .institutionName("Institution EC 1")
                         .institutionRootName("Institution Root Name EC 1")
                         .institutionType("SCP")
+                        .taxCode(TAX_CODE_2)
                         .build()
         );
         return delegationExternals;
     }
 
-    private CreditorInstitutionStationSegregationCodesList buildCreditorInstitutionStationSegregationCodesList() {
-        return CreditorInstitutionStationSegregationCodesList.builder()
-                .ciStationCodes(Arrays.asList(
+    private CIStationSegregationCodesList buildCreditorInstitutionStationSegregationCodesList() {
+        return CIStationSegregationCodesList.builder()
+                .ciStationCodes(Collections.singletonList(
                         CreditorInstitutionStationSegregationCodes.builder()
                                 .ciTaxCode(CI_TAX_CODE)
                                 .segregationCodes(List.of("01", "14"))
                                 .build()
                 ))
+                .build();
+    }
+
+    private it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution buildInstitutionResponse(
+            InstitutionType institutionType
+    ) {
+        return it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution.builder()
+                .id(INSTITUTION_ID)
+                .externalId("000001")
+                .origin("anOrigin")
+                .institutionType(institutionType.name())
+                .taxCode(INSTITUTION_TAX_CODE)
+                .description("aDescription")
+                .address("aAddress")
+                .originId("123")
+                .zipCode("aZipCode")
+                .digitalAddress("aDigitalAddress")
                 .build();
     }
 }

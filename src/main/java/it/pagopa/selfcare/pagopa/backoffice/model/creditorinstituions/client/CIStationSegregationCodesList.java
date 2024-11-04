@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CreditorInstitutionStationSegregationCodesList {
+public class CIStationSegregationCodesList {
 
     @JsonProperty("ci_station_segregation_codes")
     @NotNull

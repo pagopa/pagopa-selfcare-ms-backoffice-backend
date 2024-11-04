@@ -17,7 +17,7 @@ import javax.validation.constraints.Pattern;
 public class UserProductRole {
 
     @Schema(description = "Logged user role on product", requiredMode = Schema.RequiredMode.REQUIRED,
-            allowableValues = "admin, operator")
+            allowableValues = "admin, operator, admin-psp, operator-psp")
     @JsonProperty(value = "product_role", required = true)
     @NotBlank
     @Pattern(regexp = "admin|operator|admin-psp|operator-psp", flags = Pattern.Flag.CASE_INSENSITIVE)
