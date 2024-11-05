@@ -21,6 +21,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,7 +63,7 @@ public class AllPages {
                 getBrokersPageLimit, null);
     }
 
-    public CompletableFuture<Void> getCreditorInstitutionsAssociatedToBroker(String brokerCode) {
+    public void getCreditorInstitutionsAssociatedToBroker(String brokerCode) {
         Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
         int numberOfPages = this.getCreditorInstitutionsAssociatedToBrokerPages.search(1, 0, brokerCode);
 
@@ -73,7 +74,8 @@ public class AllPages {
 
         // create parallel calls
         log.debug("[Export-CI] retrieve new data for the broker {} and updates its document", brokerCode);
-        return CompletableFuture.runAsync(() -> {
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
             if (mdcContextMap != null) {
                 MDC.setContextMap(mdcContextMap);
             }
@@ -85,6 +87,8 @@ public class AllPages {
                             .toList())
                     .forEach(institutions -> this.brokerInstitutionsRepository.updateBrokerInstitutionsList(brokerCode, institutions));
         });
+        futures.add(future);
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
 
     /**

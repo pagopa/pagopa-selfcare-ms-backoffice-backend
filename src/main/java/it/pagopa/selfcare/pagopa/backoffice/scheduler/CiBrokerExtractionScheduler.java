@@ -56,12 +56,10 @@ public class CiBrokerExtractionScheduler {
             Set<String> allBrokers = this.allPages.getAllBrokers();
 
             int index = 0;
-            List<CompletableFuture<Void>> futures = new ArrayList<>();
             for (String brokerCode : allBrokers) {
                 log.debug("[Export-CI] analyzing broker {} ({}/{})", brokerCode, index++, allBrokers.size());
-                futures.add(this.allPages.getCreditorInstitutionsAssociatedToBroker(brokerCode));
+                this.allPages.getCreditorInstitutionsAssociatedToBroker(brokerCode);
             }
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
             // delete the old entities
             this.brokerInstitutionsRepository.deleteAllByCreatedAtBefore(Instant.now().minus(Duration.ofDays(olderThanDays)));
