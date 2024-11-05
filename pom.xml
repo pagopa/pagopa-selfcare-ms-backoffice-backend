@@ -155,14 +155,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.konghq/unirest-java -->
-        <dependency>
-            <groupId>com.konghq</groupId>
-            <artifactId>unirest-java</artifactId>
-            <version>3.14.5</version>
-        </dependency>
-
-
         <!-- MongoDB -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
