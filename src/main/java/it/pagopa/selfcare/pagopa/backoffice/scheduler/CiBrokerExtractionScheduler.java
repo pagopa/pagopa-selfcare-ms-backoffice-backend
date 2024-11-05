@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.pagopa.backoffice.scheduler;
 
-import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionsEntity;
 import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerInstitutionsRepository;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.AllPages;
 import lombok.extern.slf4j.Slf4j;
@@ -15,22 +14,35 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
-import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.*;
+import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCError;
+import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCForEndExecution;
+import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCForStartExecution;
 
 @Component
 @Slf4j
 public class CiBrokerExtractionScheduler {
 
-    @Autowired
-    private AllPages allPages;
+    private final AllPages allPages;
+
+    private final BrokerInstitutionsRepository brokerInstitutionsRepository;
+
+    private final Integer olderThanDays;
 
     @Autowired
-    private BrokerInstitutionsRepository brokerInstitutionsRepository;
-
-    @Value("${extraction.ibans.clean.olderThanDays}")
-    private Integer olderThanDays;
+    public CiBrokerExtractionScheduler(
+            AllPages allPages,
+            BrokerInstitutionsRepository brokerInstitutionsRepository,
+            @Value("${extraction.ibans.clean.olderThanDays}") Integer olderThanDays
+    ) {
+        this.allPages = allPages;
+        this.brokerInstitutionsRepository = brokerInstitutionsRepository;
+        this.olderThanDays = olderThanDays;
+    }
 
     @Scheduled(cron = "${cron.job.schedule.expression.ci-export}")
     @SchedulerLock(name = "brokerCiExport", lockAtMostFor = "180m", lockAtLeastFor = "15m")
@@ -41,15 +53,18 @@ public class CiBrokerExtractionScheduler {
         updateMDCForStartExecution("brokerCiExport", "");
         log.info("[Export-CI] export starting...");
         try {
-            Set<String> allBrokers = allPages.getAllBrokers();
+            Set<String> allBrokers = this.allPages.getAllBrokers();
+
             int index = 0;
+            List<CompletableFuture<Void>> futures = new ArrayList<>();
             for (String brokerCode : allBrokers) {
-                log.debug("[Export-CI] analyzing broker " + brokerCode + " (" + index++ + "/" + allBrokers.size() + ")");
-                upsertBrokerInstitution(brokerCode);
+                log.debug("[Export-CI] analyzing broker {} ({}/{})", brokerCode, index++, allBrokers.size());
+                futures.add(this.allPages.getCreditorInstitutionsAssociatedToBroker(brokerCode));
             }
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
             // delete the old entities
-            brokerInstitutionsRepository.deleteAllByCreatedAtBefore(Instant.now().minus(Duration.ofDays(olderThanDays)));
+            this.brokerInstitutionsRepository.deleteAllByCreatedAtBefore(Instant.now().minus(Duration.ofDays(olderThanDays)));
             // just a success print
             updateMDCForEndExecution();
             log.info("[Export-CI] export complete!");
@@ -61,24 +76,4 @@ public class CiBrokerExtractionScheduler {
             MDC.clear();
         }
     }
-
-    public void upsertBrokerInstitution(String brokerCode) {
-        // delete old entity if it exists
-        log.debug("[Export-CI] delete old table");
-        brokerInstitutionsRepository.findByBrokerCode(brokerCode)
-                .ifPresent(brokerInstitutionsRepository::delete);
-        // retrieve new data
-        log.debug("[Export-CI] retrieve new data for the broker {}", brokerCode);
-        var institutions = allPages.getCreditorInstitutionsAssociatedToBroker(brokerCode).stream().toList();
-        // build new entity
-        var entity = BrokerInstitutionsEntity.builder()
-                .brokerCode(brokerCode)
-                .institutions(institutions)
-                .build();
-        // save new entity
-        log.debug("[Export-CI] save " + institutions.size() + " items for the broker " + brokerCode);
-        brokerInstitutionsRepository.save(entity);
-    }
-
-
 }
