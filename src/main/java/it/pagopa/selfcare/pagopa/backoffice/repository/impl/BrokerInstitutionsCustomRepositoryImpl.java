@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Update;
 
+import java.util.List;
+
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -20,17 +22,17 @@ public class BrokerInstitutionsCustomRepositoryImpl implements BrokerInstitution
     }
 
     /**
-     * Updates the BrokerInstitutionsEntity with the specified broker code by adding the provided institution to the
+     * Updates the BrokerInstitutionsEntity with the specified broker code by adding the provided list of institutions to the
      * institutions list.
      *
      * @param brokerCode  the broker tax code
-     * @param institution the creditor institutions
+     * @param institutions the list creditor institutions
      */
     @Override
-    public void updateBrokerInstitutionsList(String brokerCode, BrokerInstitutionEntity institution) {
+    public void updateBrokerInstitutionsList(String brokerCode, List<BrokerInstitutionEntity> institutions) {
         this.mongoTemplate.updateFirst(
                 query(where("brokerCode").is(brokerCode)),
-                new Update().push("institutions", institution),
+                new Update().push("institutions").each(institutions),
                 BrokerInstitutionsEntity.class
         );
     }

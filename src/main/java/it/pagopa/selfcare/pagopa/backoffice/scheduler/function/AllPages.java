@@ -80,11 +80,10 @@ public class AllPages {
             IntStream.rangeClosed(0, numberOfPages)
                     .parallel()
                     .mapToObj(page -> this.getCreditorInstitutionsAssociatedToBroker.search(this.getCIByBrokerPageLimit, page, brokerCode))
-                    .flatMap(response -> response.getCreditorInstitutions().stream())
-                    .forEach(ci -> {
-                        BrokerInstitutionEntity institution = convertCreditorInstitutionDetailToBrokerInstitutionEntity(ci);
-                        this.brokerInstitutionsRepository.updateBrokerInstitutionsList(brokerCode, institution);
-                    });
+                    .map(response -> response.getCreditorInstitutions().parallelStream()
+                            .map(this::convertCreditorInstitutionDetailToBrokerInstitutionEntity)
+                            .toList())
+                    .forEach(institutions -> this.brokerInstitutionsRepository.updateBrokerInstitutionsList(brokerCode, institutions));
         });
     }
 
