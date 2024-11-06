@@ -46,29 +46,33 @@ public class CiBrokerExtractionScheduler {
     @Async
     @Transactional
     public void extractCI() {
-        // just a start print
         updateMDCForStartExecution("brokerCiExport", "");
         log.info("[Export-CI] export starting...");
-        try {
-            Set<String> allBrokers = this.allPages.getAllBrokers();
+        Set<String> allBrokers = this.allPages.getAllBrokers();
 
-            int index = 0;
-            for (String brokerCode : allBrokers) {
-                log.debug("[Export-CI] analyzing broker {} ({}/{})", brokerCode, index++, allBrokers.size());
+        int index = 0;
+        boolean extractionSuccess = true;
+        for (String brokerCode : allBrokers) {
+            log.debug("[Export-CI] analyzing broker {} ({}/{})", brokerCode, index++, allBrokers.size());
+            try {
                 this.allPages.upsertCreditorInstitutionsAssociatedToBroker(brokerCode);
+            } catch (Exception e) {
+                log.warn("[Export-CI] An error occurred while updating CI associated to broker [{}]: the extraction will not be updated for this broker!",
+                        brokerCode, e);
+                extractionSuccess = false;
             }
+        }
 
-            // delete the old entities
-            this.brokerInstitutionsRepository.deleteAllByCreatedAtBefore(Instant.now().minus(Duration.ofDays(olderThanDays)));
-            // just a success print
+        // delete the old entities
+        this.brokerInstitutionsRepository.deleteAllByCreatedAtBefore(Instant.now().minus(Duration.ofDays(olderThanDays)));
+
+        if (extractionSuccess) {
             updateMDCForEndExecution();
             log.info("[Export-CI] export complete!");
-        } catch (Exception e) {
-            updateMDCError(e, "Export CI Broker");
-            log.error("[Export-CI] an error occurred during the export creation", e);
-            throw e;
-        } finally {
-            MDC.clear();
+        } else {
+            updateMDCError("Export CI Broker");
+            log.error("[Export-CI] An error occurred during the export creation, not all broker CI were extracted successfully");
         }
+        MDC.clear();
     }
 }

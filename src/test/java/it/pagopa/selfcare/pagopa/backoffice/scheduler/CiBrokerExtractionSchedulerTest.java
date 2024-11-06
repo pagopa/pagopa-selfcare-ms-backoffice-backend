@@ -8,10 +8,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = CiBrokerExtractionScheduler.class)
@@ -31,15 +33,19 @@ class CiBrokerExtractionSchedulerTest {
     @Test
     void extractCiSuccess() {
         when(allPages.getAllBrokers()).thenReturn(Set.of(BROKER_CODE));
-        when(allPages.getCreditorInstitutionsAssociatedToBroker(BROKER_CODE))
-                .thenReturn(CompletableFuture.runAsync(() -> CompletableFuture.completedFuture("test")));
-        assertDoesNotThrow(() -> scheduler.extractCi());
+
+        assertDoesNotThrow(() -> scheduler.extractCI());
+
+        verify(allPages, times(2)).upsertCreditorInstitutionsAssociatedToBroker(anyString());
     }
 
     @Test
     void extractCiFail() {
-        when(allPages.getAllBrokers()).thenReturn(Set.of(BROKER_CODE));
-        when(allPages.getCreditorInstitutionsAssociatedToBroker(BROKER_CODE)).thenThrow(RuntimeException.class);
-        assertThrows(RuntimeException.class, () -> scheduler.extractCi());
+        when(allPages.getAllBrokers()).thenReturn(Set.of(BROKER_CODE, "broker2"));
+        doThrow(RuntimeException.class).when(allPages).upsertCreditorInstitutionsAssociatedToBroker(BROKER_CODE);
+
+        assertDoesNotThrow(() -> scheduler.extractCI());
+
+        verify(allPages).upsertCreditorInstitutionsAssociatedToBroker(anyString());
     }
 }

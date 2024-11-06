@@ -28,7 +28,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -43,77 +42,99 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCError;
 import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCForEndExecution;
 import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCForStartExecution;
-
 
 @Slf4j
 @Component
 public class IbanByBrokerExtractionScheduler {
 
-    @Autowired
     private ApiConfigClient apiConfigClient;
 
-    @Autowired
     private ApiConfigSelfcareIntegrationClient apiConfigSCIntClient;
 
-    @Autowired
-    private AllPages allPages;
+    private final AllPages allPages;
 
-    @Autowired
-    private BrokerIbansRepository brokerIbansRepository;
+    private final BrokerIbansRepository brokerIbansRepository;
 
-    @Autowired
-    private CreditorInstitutionsIbansRepository creditorInstitutionsIbansRepository;
+    private final CreditorInstitutionsIbansRepository creditorInstitutionsIbansRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Value("${extraction.ibans.getBrokers.pageLimit}")
-    private Integer getBrokersPageLimit;
-
-    @Value("${extraction.ibans.getIbans.pageLimit}")
     private Integer getIbansPageLimit;
 
-    @Value("${extraction.ibans.getCIByBroker.pageLimit}")
     private Integer getCIByBrokerPageLimit;
 
-    @Value("${extraction.ibans.clean.olderThanDays}")
-    private Integer olderThanDays;
+    private final Integer olderThanDays;
 
-    @Value("${extraction.ibans.exportAgainAfterHours}")
-    private Integer exportAgainAfterHours;
+    private final Integer exportAgainAfterHours;
 
-    @Value("${extraction.ibans.avoidExportPagoPABroker}")
-    private boolean avoidExportPagoPABroker;
+    private final boolean avoidExportPagoPABroker;
 
+    @Autowired
+    public IbanByBrokerExtractionScheduler(
+            ApiConfigClient apiConfigClient,
+            ApiConfigSelfcareIntegrationClient apiConfigSCIntClient,
+            AllPages allPages,
+            BrokerIbansRepository brokerIbansRepository,
+            CreditorInstitutionsIbansRepository creditorInstitutionsIbansRepository,
+            ModelMapper modelMapper,
+            @Value("${extraction.ibans.getIbans.pageLimit}") Integer getIbansPageLimit,
+            @Value("${extraction.ibans.getCIByBroker.pageLimit}") Integer getCIByBrokerPageLimit,
+            @Value("${extraction.ibans.clean.olderThanDays}") Integer olderThanDays,
+            @Value("${extraction.ibans.exportAgainAfterHours}") Integer exportAgainAfterHours,
+            @Value("${extraction.ibans.avoidExportPagoPABroker}") boolean avoidExportPagoPABroker
+    ) {
+        this.apiConfigClient = apiConfigClient;
+        this.apiConfigSCIntClient = apiConfigSCIntClient;
+        this.allPages = allPages;
+        this.brokerIbansRepository = brokerIbansRepository;
+        this.creditorInstitutionsIbansRepository = creditorInstitutionsIbansRepository;
+        this.modelMapper = modelMapper;
+        this.getIbansPageLimit = getIbansPageLimit;
+        this.getCIByBrokerPageLimit = getCIByBrokerPageLimit;
+        this.olderThanDays = olderThanDays;
+        this.exportAgainAfterHours = exportAgainAfterHours;
+        this.avoidExportPagoPABroker = avoidExportPagoPABroker;
+    }
 
     @Scheduled(cron = "${cron.job.schedule.expression.iban-export}")
     @SchedulerLock(name = "brokerIbansExport", lockAtMostFor = "180m", lockAtLeastFor = "15m")
     @Async
     @Transactional
-    public void extract() throws IOException {
+    public void extract() {
         updateMDCForStartExecution("brokerIbansExport", "");
         log.info("[Export IBANs] - Starting IBAN extraction process...");
 
         // get all brokers registered in pagoPA platform
         Set<String> allBrokers = getAllBrokers();
 
-        int numberOfRetrievedBrokers = allBrokers.size();
         int brokerIndex = 0;
+        boolean extractionSuccess = true;
         // retrieve and save all IBANs for all CIs delegated by retrieved brokers
         for (String brokerCode : allBrokers) {
             long brokerExportStartTime = Calendar.getInstance().getTimeInMillis();
-            log.info("[Export IBANs] - [{}/{}] Analyzing broker with code [{}]...", ++brokerIndex, numberOfRetrievedBrokers, brokerCode);
-            upsertIbanForCIsDelegatedByBroker(brokerCode);
+            log.info("[Export IBANs] - [{}/{}] Analyzing broker with code [{}]...", ++brokerIndex, allBrokers.size(), brokerCode);
+            try {
+                upsertIbanForCIsDelegatedByBroker(brokerCode);
+            } catch (Exception e) {
+                log.warn("[Export IBANs] - An error occurred while updating IBANs for CI associated to broker [{}]: the extraction will not be updated for this broker!",
+                        brokerCode, e);
+                extractionSuccess = false;
+            }
             log.info("[Export IBANs] - Analysis of broker with code [{}] completed in [{}] ms!.", brokerCode, Utility.getTimelapse(brokerExportStartTime));
         }
 
         // clean files older than N days
         this.brokerIbansRepository.deleteAllByCreatedAtBefore(Instant.now().minus(this.olderThanDays, ChronoUnit.DAYS));
-        // log process end
-        updateMDCForEndExecution();
-        log.info("[Export IBANs] - IBAN extraction completed successfully");
+        if (extractionSuccess) {
+            updateMDCForEndExecution();
+            log.info("[Export IBANs] - IBAN extraction completed successfully");
+        } else {
+            updateMDCError("Export Broker IBAN");
+            log.error("[Export IBANs] - An error occurred during the export creation, not all broker IBAN were extracted successfully");
+        }
         MDC.clear();
     }
 
@@ -141,34 +162,29 @@ public class IbanByBrokerExtractionScheduler {
     }
 
     private void upsertIbanForCIsDelegatedByBroker(String brokerCode) {
-        try {
-            // gets all CIs delegated by broker
-            Set<String> delegatedCITaxCodes = getDelegatedCreditorInstitutions(brokerCode);
+        // gets all CIs delegated by broker
+        Set<String> delegatedCITaxCodes = getDelegatedCreditorInstitutions(brokerCode);
 
-            Set<IbanEntity> ibans = new HashSet<>();
-            if (!delegatedCITaxCodes.isEmpty()) {
-                // gets all IBANs related to the CIs
-                ibans = getIban(delegatedCITaxCodes, brokerCode);
+        Set<IbanEntity> ibans = new HashSet<>();
+        if (!delegatedCITaxCodes.isEmpty()) {
+            // gets all IBANs related to the CIs
+            ibans = getIban(delegatedCITaxCodes, brokerCode);
 
-                // save all IBANs in creditorInstitutionIbans Collection in Mongo DB
-                List<CreditorInstitutionIbansEntity> ibanEntities = ibans.parallelStream()
-                        .map(elem -> this.modelMapper.map(elem, CreditorInstitutionIbansEntity.class))
-                        .toList();
-                this.creditorInstitutionsIbansRepository.saveAll(ibanEntities);
-                log.debug("[Export IBANs] - Upsert completed of a batch of {} IBANs in Creditor-Institution Collection", ibanEntities.size());
-            }
-            // map retrieved data into new entity
-            BrokerIbansEntity ibanEntity = BrokerIbansEntity.builder()
-                    .brokerCode(brokerCode)
-                    .createdAt(Instant.now())
-                    .ibans(new ArrayList<>(ibans))
-                    .build();
-            this.brokerIbansRepository.findByBrokerCode(brokerCode).ifPresent(this.brokerIbansRepository::delete);
-            this.brokerIbansRepository.save(ibanEntity);
-        } catch (Exception e) {
-            log.warn("[Export IBANs] - An error occurred while retrieving IBANs for CI associated to broker [{}]: the extraction will not be updated for this broker!",
-                    brokerCode, e);
+            // save all IBANs in creditorInstitutionIbans Collection in Mongo DB
+            List<CreditorInstitutionIbansEntity> ibanEntities = ibans.parallelStream()
+                    .map(elem -> this.modelMapper.map(elem, CreditorInstitutionIbansEntity.class))
+                    .toList();
+            this.creditorInstitutionsIbansRepository.saveAll(ibanEntities);
+            log.debug("[Export IBANs] - Upsert completed of a batch of {} IBANs in Creditor-Institution Collection", ibanEntities.size());
         }
+        // map retrieved data into new entity
+        BrokerIbansEntity ibanEntity = BrokerIbansEntity.builder()
+                .brokerCode(brokerCode)
+                .createdAt(Instant.now())
+                .ibans(new ArrayList<>(ibans))
+                .build();
+        this.brokerIbansRepository.findByBrokerCode(brokerCode).ifPresent(this.brokerIbansRepository::delete);
+        this.brokerIbansRepository.save(ibanEntity);
     }
 
     private Set<String> getDelegatedCreditorInstitutions(String brokerCode) {

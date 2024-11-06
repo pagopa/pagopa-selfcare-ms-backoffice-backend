@@ -35,23 +35,34 @@ import java.util.stream.IntStream;
 @Slf4j
 public class AllPages {
 
-    @Autowired
     private ApiConfigClient apiConfigClient;
 
-    @Autowired
     private ApiConfigSelfcareIntegrationClient apiConfigSCIntClient;
 
-    @Autowired
-    private WrapperStationsRepository wrapperStationsRepository;
+    private final WrapperStationsRepository wrapperStationsRepository;
 
-    @Autowired
-    private BrokerInstitutionsRepository brokerInstitutionsRepository;
+    private final BrokerInstitutionsRepository brokerInstitutionsRepository;
 
-    @Value("${extraction.ibans.getBrokers.pageLimit}")
     private Integer getBrokersPageLimit;
 
-    @Value("${extraction.ibans.getCIByBroker.pageLimit}")
-    private Integer getCIByBrokerPageLimit;
+    private final Integer getCIByBrokerPageLimit;
+
+    @Autowired
+    public AllPages(
+            ApiConfigClient apiConfigClient,
+            ApiConfigSelfcareIntegrationClient apiConfigSCIntClient,
+            WrapperStationsRepository wrapperStationsRepository,
+            BrokerInstitutionsRepository brokerInstitutionsRepository,
+            @Value("${extraction.ibans.getBrokers.pageLimit}") Integer getBrokersPageLimit,
+            @Value("${extraction.ibans.getCIByBroker.pageLimit}") Integer getCIByBrokerPageLimit
+    ) {
+        this.apiConfigClient = apiConfigClient;
+        this.apiConfigSCIntClient = apiConfigSCIntClient;
+        this.wrapperStationsRepository = wrapperStationsRepository;
+        this.brokerInstitutionsRepository = brokerInstitutionsRepository;
+        this.getBrokersPageLimit = getBrokersPageLimit;
+        this.getCIByBrokerPageLimit = getCIByBrokerPageLimit;
+    }
 
     /**
      * @return the set of all brokers in pagoPA platform
