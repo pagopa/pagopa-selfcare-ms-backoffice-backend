@@ -5,37 +5,46 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationC
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.CreditorInstitutionIbansEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.IbanEntity;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Broker;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionView;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanLabel;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
+import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerIbansRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.CreditorInstitutionsIbansRepository;
-import it.pagopa.selfcare.pagopa.backoffice.repository.TransactionalBulkDAO;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.AllPages;
-import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.MapInRequiredClass;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.NumberOfTotalPagesSearch;
+import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.NumberOfTotalPagesSearchWithListParam;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.PaginatedSearch;
+import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.PaginatedSearchWithListParam;
 import it.pagopa.selfcare.pagopa.backoffice.util.Constants;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.modelmapper.ModelMapper;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.*;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import static it.pagopa.selfcare.pagopa.backoffice.config.LoggingAspect.*;
+import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCForEndExecution;
+import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCForStartExecution;
 
 
 @Slf4j
@@ -52,10 +61,13 @@ public class IbanByBrokerExtractionScheduler {
     private AllPages allPages;
 
     @Autowired
-    private TransactionalBulkDAO dao;
+    private BrokerIbansRepository brokerIbansRepository;
 
     @Autowired
     private CreditorInstitutionsIbansRepository creditorInstitutionsIbansRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Value("${extraction.ibans.getBrokers.pageLimit}")
     private Integer getBrokersPageLimit;
@@ -76,76 +88,32 @@ public class IbanByBrokerExtractionScheduler {
     private boolean avoidExportPagoPABroker;
 
 
-    private final PaginatedSearch<Brokers> getBrokerECCallback = (int limit, int page, String code) ->
-            apiConfigClient.getBrokersEC(limit, page, code, null, null, null);
-
-    private final PaginatedSearch<IbansList> getIbansByBrokerCallback = (int limit, int page, String code) -> {
-        List<String> codes = List.of(code.split(","));
-        return apiConfigSCIntClient.getIbans(limit, page, codes);
-    };
-
-    private final PaginatedSearch<CreditorInstitutionsView> getCIsByBrokerCallback = (int limit, int page, String code) ->
-            apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, true, null, null, null, null);
-
-    private final NumberOfTotalPagesSearch getNumberOfBrokerECPagesCallback = (int limit, int page, String code) -> {
-        Brokers response = apiConfigClient.getBrokersEC(limit, page, null, null, null, null);
-        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getBrokersPageLimit);
-    };
-
-    private final NumberOfTotalPagesSearch getNumberOfIbansByBrokerPagesCallback = (int limit, int page, String code) -> {
-        List<String> codes = List.of(code.split(","));
-        IbansList response = apiConfigSCIntClient.getIbans(limit, page, codes);
-        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getIbansPageLimit);
-    };
-
-    private final NumberOfTotalPagesSearch getNumberOfCIsByBrokerCallback = (int limit, int page, String code) -> {
-        CreditorInstitutionsView response = apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, true, null, null, null, null);
-        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getCIByBrokerPageLimit);
-    };
-
-    private final MapInRequiredClass<IbanDetails, IbanEntity> convertIbanDetailsToBrokerIbanEntity = (IbanDetails elem) ->
-            IbanEntity.builder()
-                    .ciName(elem.getCiName())
-                    .ciFiscalCode(elem.getCiFiscalCode())
-                    .iban(elem.getIban())
-                    .status(OffsetDateTime.now().isAfter(elem.getValidityDate()) ? "ATTIVO" : "DISATTIVO")
-                    .validityDate(elem.getValidityDate().toInstant())
-                    .description(elem.getDescription())
-                    .label(elem.getLabels().stream()
-                            .map(IbanLabel::getName)
-                            .collect(Collectors.joining(" - ")))
-                    .build();
-
     @Scheduled(cron = "${cron.job.schedule.expression.iban-export}")
     @SchedulerLock(name = "brokerIbansExport", lockAtMostFor = "180m", lockAtLeastFor = "15m")
     @Async
+    @Transactional
     public void extract() throws IOException {
+        updateMDCForStartExecution("brokerIbansExport", "");
         log.info("[Export IBANs] - Starting IBAN extraction process...");
-        // log process start
-        this.dao.init();
-        long startTime = Calendar.getInstance().getTimeInMillis();
-        updateMDCForStartExecution(startTime);
+
         // get all brokers registered in pagoPA platform
         Set<String> allBrokers = getAllBrokers();
+
         int numberOfRetrievedBrokers = allBrokers.size();
         int brokerIndex = 0;
         // retrieve and save all IBANs for all CIs delegated by retrieved brokers
         for (String brokerCode : allBrokers) {
             long brokerExportStartTime = Calendar.getInstance().getTimeInMillis();
-            log.info(String.format("[Export IBANs] - [%d/%d] Analyzing broker with code [%s]...", ++brokerIndex, numberOfRetrievedBrokers, brokerCode));
-            Optional<BrokerIbansEntity> brokerIbansEntity = getIbanForCIsDelegatedByBroker(brokerCode);
-            brokerIbansEntity.ifPresent(this.dao::save);
-            log.info(String.format("[Export IBANs] - Analysis of broker with code [%s] completed in [%d] ms!.", brokerCode, Utility.getTimelapse(brokerExportStartTime)));
+            log.info("[Export IBANs] - [{}/{}] Analyzing broker with code [{}]...", ++brokerIndex, numberOfRetrievedBrokers, brokerCode);
+            upsertIbanForCIsDelegatedByBroker(brokerCode);
+            log.info("[Export IBANs] - Analysis of broker with code [{}] completed in [{}] ms!.", brokerCode, Utility.getTimelapse(brokerExportStartTime));
         }
+
         // clean files older than N days
-        Calendar olderThan = Calendar.getInstance();
-        olderThan.add(Calendar.DAY_OF_MONTH, olderThanDays * (-1));
-        this.dao.clean(olderThan.getTime());
-        this.dao.close();
+        this.brokerIbansRepository.deleteAllByCreatedAtBefore(Instant.now().minus(this.olderThanDays, ChronoUnit.DAYS));
         // log process end
-        long timelapse = Utility.getTimelapse(startTime);
-        updateMDCForEndExecution(timelapse);
-        log.info(String.format("[Export IBANs] - IBAN extraction completed successfully in [%d] ms!.", timelapse));
+        updateMDCForEndExecution();
+        log.info("[Export IBANs] - IBAN extraction completed successfully");
         MDC.clear();
     }
 
@@ -154,111 +122,116 @@ public class IbanByBrokerExtractionScheduler {
         long startTime = Calendar.getInstance().getTimeInMillis();
 
         // retrieved the list of all brokers in pagoPA platform
-        Set<String> brokerCodes = allPages.executeParallelClientCalls(getBrokerECCallback, getNumberOfBrokerECPagesCallback,
-                Brokers::getBrokerList, Broker::getBrokerCode,
-                getBrokersPageLimit, null);
+        Set<String> brokerCodes = this.allPages.getAllBrokers();
         int totalRetrievedBrokerCodes = brokerCodes.size();
+
         // exclude all brokers which export was executed not too much time ago
-        Calendar olderThan = Calendar.getInstance();
-        olderThan.add(Calendar.HOUR, exportAgainAfterHours * (-1));
-        Set<String> brokerCodeToBeExcluded = dao.getAllBrokerCodeGreaterThan(olderThan.getTime());
-        if(avoidExportPagoPABroker) {
+        Set<String> brokerCodeToBeExcluded =
+                this.brokerIbansRepository.findProjectedByCreatedAtGreaterThen(Instant.now().minus(this.exportAgainAfterHours, ChronoUnit.HOURS));
+        if (this.avoidExportPagoPABroker) {
             brokerCodeToBeExcluded.add(Constants.PAGOPA_BROKER_CODE);
         }
         brokerCodes.removeAll(brokerCodeToBeExcluded);
-        log.debug(String.format("[Export IBANs] - Excluded [%d] of [%d] brokers because they were recently exported or are excluded a priori.", brokerCodeToBeExcluded.size(), totalRetrievedBrokerCodes));
 
-        log.info(String.format("[Export IBANs] - Retrieve of brokers completed successfully! Extracted [%d] broker codes in [%d] ms.", brokerCodes.size(), Utility.getTimelapse(startTime)));
+        log.debug("[Export IBANs] - Excluded [{}}] of [{}] brokers because they were recently exported or are excluded a priori.",
+                brokerCodeToBeExcluded.size(), totalRetrievedBrokerCodes);
+        log.debug("[Export IBANs] - Retrieve of brokers completed successfully! Extracted [{}] broker codes in [{}] ms.",
+                brokerCodes.size(), Utility.getTimelapse(startTime));
         return brokerCodes;
     }
 
-    private Optional<BrokerIbansEntity> getIbanForCIsDelegatedByBroker(String brokerCode) {
-        Optional<BrokerIbansEntity> brokerIbansEntity;
+    private void upsertIbanForCIsDelegatedByBroker(String brokerCode) {
         try {
             // gets all CIs delegated by broker
             Set<String> delegatedCITaxCodes = getDelegatedCreditorInstitutions(brokerCode);
-            // gets all IBANs related to the CIs
-            Set<IbanEntity> ibans = getIbans(delegatedCITaxCodes, brokerCode);
 
-            // save all IBANs in creditorInstitutionIbans Collection in Mongo DB
-            List<CreditorInstitutionIbansEntity> ibanEntities = ibans.stream()
-                    .map(elem -> (CreditorInstitutionIbansEntity) CreditorInstitutionIbansEntity.builder()
-                            .id(elem.getIban())
-                            .iban(elem.getIban())
-                            .label(elem.getLabel())
-                            .ciName(elem.getCiName())
-                            .status(elem.getStatus())
-                            .validityDate(elem.getValidityDate())
-                            .description(elem.getDescription())
-                            .ciFiscalCode(elem.getCiFiscalCode())
-                            .build())
-                    .toList();
-            creditorInstitutionsIbansRepository.saveAll(ibanEntities);
-            log.info("[Export IBANs] - Upsert completed of a batch of {} IBANs in Creditor-Institution Collection", ibanEntities.size());
+            Set<IbanEntity> ibans = new HashSet<>();
+            if (!delegatedCITaxCodes.isEmpty()) {
+                // gets all IBANs related to the CIs
+                ibans = getIban(delegatedCITaxCodes, brokerCode);
 
+                // save all IBANs in creditorInstitutionIbans Collection in Mongo DB
+                List<CreditorInstitutionIbansEntity> ibanEntities = ibans.parallelStream()
+                        .map(elem -> this.modelMapper.map(elem, CreditorInstitutionIbansEntity.class))
+                        .toList();
+                this.creditorInstitutionsIbansRepository.saveAll(ibanEntities);
+                log.debug("[Export IBANs] - Upsert completed of a batch of {} IBANs in Creditor-Institution Collection", ibanEntities.size());
+            }
             // map retrieved data into new entity
-            brokerIbansEntity = Optional.of(BrokerIbansEntity.builder()
+            BrokerIbansEntity ibanEntity = BrokerIbansEntity.builder()
                     .brokerCode(brokerCode)
                     .createdAt(Instant.now())
                     .ibans(new ArrayList<>(ibans))
-                    .build());
+                    .build();
+            this.brokerIbansRepository.findByBrokerCode(brokerCode).ifPresent(this.brokerIbansRepository::delete);
+            this.brokerIbansRepository.save(ibanEntity);
         } catch (Exception e) {
-            log.warn(String.format("[Export IBANs] - An error occurred while retrieving IBANs for CI associated to broker [%s]: the extraction will not be updated for this broker! Exception:", brokerCode), e);
-            brokerIbansEntity = Optional.empty();
+            log.warn("[Export IBANs] - An error occurred while retrieving IBANs for CI associated to broker [{}]: the extraction will not be updated for this broker!",
+                    brokerCode, e);
         }
-        return brokerIbansEntity;
     }
 
     private Set<String> getDelegatedCreditorInstitutions(String brokerCode) {
-        log.debug(String.format("[Export IBANs] - Retrieving the list of all creditor institutions associated to broker [%s]...", brokerCode));
+        log.debug("[Export IBANs] - Retrieving the list of all creditor institutions associated to broker [{}}]...", brokerCode);
         long startTime = Calendar.getInstance().getTimeInMillis();
 
-        Set<String> delegatedCreditorInstitutions = allPages.executeParallelClientCalls(getCIsByBrokerCallback, getNumberOfCIsByBrokerCallback,
+        Set<String> delegatedCreditorInstitutions = this.allPages.executeParallelClientCalls(getCIsByBrokerCallback, getNumberOfCIsByBrokerCallback,
                 CreditorInstitutionsView::getCreditorInstitutionList, CreditorInstitutionView::getIdDominio,
                 getCIByBrokerPageLimit, brokerCode);
 
-        log.info(String.format("[Export IBANs] - Retrieve of creditor institutions associated to broker [%s] completed successfully! Extracted [%d] creditor institutions in [%d] ms.", brokerCode, delegatedCreditorInstitutions.size(), Utility.getTimelapse(startTime)));
+        log.debug("[Export IBANs] - Retrieve of creditor institutions associated to broker [{}] completed successfully! Extracted [{}] creditor institutions in [{}] ms.",
+                brokerCode, delegatedCreditorInstitutions.size(), Utility.getTimelapse(startTime));
         return delegatedCreditorInstitutions;
     }
 
-    private Set<IbanEntity> getIbans(Set<String> ciCodes, String brokerCode) {
-        Set<IbanEntity> brokerIbanEntities = new HashSet<>();
-        if(!ciCodes.isEmpty()) {
-            log.debug(String.format("[Export IBANs] - Retrieving the list of all IBANs for [%d] creditor institutions related to broker [%s]...", ciCodes.size(), brokerCode));
-            long startTime = Calendar.getInstance().getTimeInMillis();
+    private Set<IbanEntity> getIban(Set<String> ciCodes, String brokerCode) {
+        log.debug("[Export IBANs] - Retrieving the list of all IBANs for [{}] creditor institutions related to broker [{}]...", ciCodes.size(), brokerCode);
+        long startTime = Calendar.getInstance().getTimeInMillis();
+        Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
+        ArrayList<String> filterCodes = new ArrayList<>(ciCodes);
 
-            int limit = 100;
-            int totalSize = ciCodes.size();
-            List<String> ciCodesAsList = new ArrayList<>(ciCodes);
-            for (int i = 0; i < totalSize; i += limit) {
-                List<String> partition = ciCodesAsList.subList(i, Math.min(i + limit, totalSize));
-                String stringifiedCiCodesPartition = String.join(",", partition);
-                Set<IbanEntity> partitionedBrokerIbanEntities = allPages.executeParallelClientCalls(getIbansByBrokerCallback, getNumberOfIbansByBrokerPagesCallback,
-                        IbansList::getIbans, convertIbanDetailsToBrokerIbanEntity,
-                        getIbansPageLimit, stringifiedCiCodesPartition);
-                brokerIbanEntities.addAll(partitionedBrokerIbanEntities);
+        int numberOfPages = getNumberOfIbansByBrokerPagesCallback.search(1, 0, filterCodes);
+
+        // create parallel calls
+        List<CompletableFuture<Set<IbanEntity>>> futures = new LinkedList<>();
+        CompletableFuture<Set<IbanEntity>> future = CompletableFuture.supplyAsync(() -> {
+            if (mdcContextMap != null) {
+                MDC.setContextMap(mdcContextMap);
             }
+            return IntStream.rangeClosed(0, numberOfPages)
+                    .parallel()
+                    .mapToObj(page -> getIbansByBrokerCallback.search(getIbansPageLimit, page, filterCodes))
+                    .flatMap(response -> response.getIbans().stream())
+                    .map(iban -> this.modelMapper.map(iban, IbanEntity.class))
+                    .collect(Collectors.toSet());
+        });
+        futures.add(future);
 
-            log.info(String.format("[Export IBANs] - Retrieve of IBANs completed successfully! Extracted [%d] IBANs in [%d] ms.", brokerIbanEntities.size(), Utility.getTimelapse(startTime)));
-        } else {
-            log.info(String.format("[Export IBANs] - No creditor institution related to broker [%s] was found. Skipping it!", brokerCode));
-        }
+        // join parallel calls
+        Set<IbanEntity> brokerIbanEntities = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(e -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toSet()))
+                .join();
+
+        log.info("[Export IBANs] - Retrieve of IBANs completed successfully! Extracted [{}] IBANs in [{}] ms.", brokerIbanEntities.size(), Utility.getTimelapse(startTime));
         return brokerIbanEntities;
     }
 
+    private final PaginatedSearchWithListParam<IbansList> getIbansByBrokerCallback = (int limit, int page, List<String> codes) ->
+            apiConfigSCIntClient.getIbans(limit, page, codes);
 
-    private void updateMDCForStartExecution(long startTime) {
-        MDC.put(METHOD, "brokerIbansExport");
-        MDC.put(START_TIME, String.valueOf(startTime));
-        MDC.put(REQUEST_ID, UUID.randomUUID().toString());
-        MDC.put(OPERATION_ID, UUID.randomUUID().toString());
-        MDC.put(ARGS, "");
-    }
+    private final PaginatedSearch<CreditorInstitutionsView> getCIsByBrokerCallback = (int limit, int page, String code) ->
+            apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, true, null, null, null, null);
 
-    private void updateMDCForEndExecution(long timelapse) {
-        MDC.put(STATUS, "OK");
-        MDC.put(CODE, "201");
-        MDC.put(RESPONSE_TIME, String.valueOf(timelapse));
-    }
+    private final NumberOfTotalPagesSearchWithListParam getNumberOfIbansByBrokerPagesCallback = (int limit, int page, List<String> codes) -> {
+        IbansList response = apiConfigSCIntClient.getIbans(limit, page, codes);
+        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getIbansPageLimit);
+    };
 
+    private final NumberOfTotalPagesSearch getNumberOfCIsByBrokerCallback = (int limit, int page, String code) -> {
+        CreditorInstitutionsView response = apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, true, null, null, null, null);
+        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getCIByBrokerPageLimit);
+    };
 }
