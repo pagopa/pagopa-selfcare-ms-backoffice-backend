@@ -14,10 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCError;
 import static it.pagopa.selfcare.pagopa.backoffice.scheduler.utils.SchedulerUtils.updateMDCForEndExecution;
@@ -48,7 +45,7 @@ public class CiBrokerExtractionScheduler {
     @SchedulerLock(name = "brokerCiExport", lockAtMostFor = "180m", lockAtLeastFor = "15m")
     @Async
     @Transactional
-    public void extractCi() {
+    public void extractCI() {
         // just a start print
         updateMDCForStartExecution("brokerCiExport", "");
         log.info("[Export-CI] export starting...");
@@ -58,7 +55,7 @@ public class CiBrokerExtractionScheduler {
             int index = 0;
             for (String brokerCode : allBrokers) {
                 log.debug("[Export-CI] analyzing broker {} ({}/{})", brokerCode, index++, allBrokers.size());
-                this.allPages.getCreditorInstitutionsAssociatedToBroker(brokerCode);
+                this.allPages.upsertCreditorInstitutionsAssociatedToBroker(brokerCode);
             }
 
             // delete the old entities

@@ -63,7 +63,7 @@ public class AllPages {
                 getBrokersPageLimit, null);
     }
 
-    public void getCreditorInstitutionsAssociatedToBroker(String brokerCode) {
+    public void upsertCreditorInstitutionsAssociatedToBroker(String brokerCode) {
         Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
         int numberOfPages = this.getCreditorInstitutionsAssociatedToBrokerPages.search(1, 0, brokerCode);
 
