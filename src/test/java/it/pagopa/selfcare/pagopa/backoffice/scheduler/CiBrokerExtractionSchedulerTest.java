@@ -32,7 +32,7 @@ class CiBrokerExtractionSchedulerTest {
 
     @Test
     void extractCiSuccess() {
-        when(allPages.getAllBrokers()).thenReturn(Set.of(BROKER_CODE));
+        when(allPages.getAllBrokers()).thenReturn(Set.of(BROKER_CODE, "broker2"));
 
         assertDoesNotThrow(() -> scheduler.extractCI());
 
@@ -46,6 +46,6 @@ class CiBrokerExtractionSchedulerTest {
 
         assertDoesNotThrow(() -> scheduler.extractCI());
 
-        verify(allPages).upsertCreditorInstitutionsAssociatedToBroker(anyString());
+        verify(allPages, times(2)).upsertCreditorInstitutionsAssociatedToBroker(anyString());
     }
 }
