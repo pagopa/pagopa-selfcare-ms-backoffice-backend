@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.29.1-7-PPANTT-178-bo-improve-iban-and-ci-cron-job" #improve
+    tag: "2.29.1-8-PPANTT-178-bo-improve-iban-and-ci-cron-job" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
