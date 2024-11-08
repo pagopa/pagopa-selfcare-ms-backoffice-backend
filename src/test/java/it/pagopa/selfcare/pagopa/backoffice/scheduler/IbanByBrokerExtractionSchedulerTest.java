@@ -12,9 +12,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
 import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerIbansRepository;
-import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerInstitutionsRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.CreditorInstitutionsIbansRepository;
-import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperStationsRepository;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.AllPages;
 import it.pagopa.selfcare.pagopa.backoffice.util.Constants;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -52,13 +50,7 @@ class IbanByBrokerExtractionSchedulerTest {
     private ApiConfigSelfcareIntegrationClient apiConfigSCIntClient;
 
     @MockBean
-    private WrapperStationsRepository wrapperRepository;
-
-    @MockBean
     private BrokerIbansRepository brokerIbansRepository;
-
-    @MockBean
-    private BrokerInstitutionsRepository brokerInstitutionsRepository;
 
     @MockBean
     private CreditorInstitutionsIbansRepository creditorInstitutionsIbansRepository;

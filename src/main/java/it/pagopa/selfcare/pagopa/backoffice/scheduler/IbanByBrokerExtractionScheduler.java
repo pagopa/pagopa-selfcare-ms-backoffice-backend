@@ -191,9 +191,13 @@ public class IbanByBrokerExtractionScheduler {
         log.debug("[Export IBANs] - Retrieving the list of all creditor institutions associated to broker [{}}]...", brokerCode);
         long startTime = Calendar.getInstance().getTimeInMillis();
 
-        Set<String> delegatedCreditorInstitutions = this.allPages.executeParallelClientCalls(getCIsByBrokerCallback, getNumberOfCIsByBrokerCallback,
-                CreditorInstitutionsView::getCreditorInstitutionList, CreditorInstitutionView::getIdDominio,
-                getCIByBrokerPageLimit, brokerCode);
+        Set<String> delegatedCreditorInstitutions = this.allPages.executeParallelClientCalls(
+                this.getCIsByBrokerCallback,
+                this.getNumberOfCIsByBrokerCallback,
+                CreditorInstitutionsView::getCreditorInstitutionList,
+                CreditorInstitutionView::getIdDominio,
+                this.getCIByBrokerPageLimit, brokerCode
+        );
 
         log.debug("[Export IBANs] - Retrieve of creditor institutions associated to broker [{}] completed successfully! Extracted [{}] creditor institutions in [{}] ms.",
                 brokerCode, delegatedCreditorInstitutions.size(), Utility.getTimelapse(startTime));
@@ -206,7 +210,7 @@ public class IbanByBrokerExtractionScheduler {
         Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
         ArrayList<String> filterCodes = new ArrayList<>(ciCodes);
 
-        int numberOfPages = getNumberOfIbansByBrokerPagesCallback.search(1, 0, filterCodes);
+        int numberOfPages = this.getNumberOfIbansByBrokerPagesCallback.search(1, 0, filterCodes);
 
         // create parallel calls
         List<CompletableFuture<Set<IbanEntity>>> futures = new LinkedList<>();
@@ -216,7 +220,7 @@ public class IbanByBrokerExtractionScheduler {
             }
             return IntStream.rangeClosed(0, numberOfPages)
                     .parallel()
-                    .mapToObj(page -> getIbansByBrokerCallback.search(getIbansPageLimit, page, filterCodes))
+                    .mapToObj(page -> this.getIbansByBrokerCallback.search(this.getIbansPageLimit, page, filterCodes))
                     .flatMap(response -> response.getIbans().stream())
                     .map(iban -> this.modelMapper.map(iban, IbanEntity.class))
                     .collect(Collectors.toSet());
@@ -236,18 +240,18 @@ public class IbanByBrokerExtractionScheduler {
     }
 
     private final PaginatedSearchWithListParam<IbansList> getIbansByBrokerCallback = (int limit, int page, List<String> codes) ->
-            apiConfigSCIntClient.getIbans(limit, page, codes);
+            this.apiConfigSCIntClient.getIbans(limit, page, codes);
 
     private final PaginatedSearch<CreditorInstitutionsView> getCIsByBrokerCallback = (int limit, int page, String code) ->
-            apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, true, null, null, null, null);
+            this.apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, true, null, null, null, null);
 
     private final NumberOfTotalPagesSearchWithListParam getNumberOfIbansByBrokerPagesCallback = (int limit, int page, List<String> codes) -> {
-        IbansList response = apiConfigSCIntClient.getIbans(limit, page, codes);
-        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getIbansPageLimit);
+        IbansList response = this.apiConfigSCIntClient.getIbans(limit, page, codes);
+        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / this.getIbansPageLimit);
     };
 
     private final NumberOfTotalPagesSearch getNumberOfCIsByBrokerCallback = (int limit, int page, String code) -> {
-        CreditorInstitutionsView response = apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, true, null, null, null, null);
-        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getCIByBrokerPageLimit);
+        CreditorInstitutionsView response = this.apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, true, null, null, null, null);
+        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / this.getCIByBrokerPageLimit);
     };
 }
