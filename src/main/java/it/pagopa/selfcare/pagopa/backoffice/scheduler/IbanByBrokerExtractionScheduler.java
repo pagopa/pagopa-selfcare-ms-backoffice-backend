@@ -111,29 +111,29 @@ public class IbanByBrokerExtractionScheduler {
         Set<String> allBrokers = getAllBrokers();
 
         int brokerIndex = 0;
-        boolean extractionSuccess = true;
+        List<String> failedBrokers = new ArrayList<>();
         // retrieve and save all IBANs for all CIs delegated by retrieved brokers
         for (String brokerCode : allBrokers) {
             long brokerExportStartTime = Calendar.getInstance().getTimeInMillis();
-            log.info("[Export IBANs] - [{}/{}] Analyzing broker with code [{}]...", ++brokerIndex, allBrokers.size(), brokerCode);
+            log.info("[Export IBANs] - [{}/{}] Process broker with code [{}]...", ++brokerIndex, allBrokers.size(), brokerCode);
             try {
                 upsertIbanForCIsDelegatedByBroker(brokerCode);
             } catch (Exception e) {
                 log.warn("[Export IBANs] - An error occurred while updating IBANs for CI associated to broker [{}]: the extraction will not be updated for this broker!",
                         brokerCode, e);
-                extractionSuccess = false;
+                failedBrokers.add(brokerCode);
             }
-            log.info("[Export IBANs] - Analysis of broker with code [{}] completed in [{}] ms!.", brokerCode, Utility.getTimelapse(brokerExportStartTime));
+            log.info("[Export IBANs] - Process of broker with code [{}] completed in [{}] ms!.", brokerCode, Utility.getTimelapse(brokerExportStartTime));
         }
 
         // clean files older than N days
         this.brokerIbansRepository.deleteAllByCreatedAtBefore(Instant.now().minus(this.olderThanDays, ChronoUnit.DAYS));
-        if (extractionSuccess) {
+        if (failedBrokers.isEmpty()) {
             updateMDCForEndExecution();
             log.info("[Export IBANs] - IBAN extraction completed successfully");
         } else {
             updateMDCError("Export Broker IBAN");
-            log.error("[Export IBANs] - An error occurred during the export creation, not all broker IBAN were extracted successfully");
+            log.error("[Export IBANs] - Error during brokerIbansExport, process partially completed, the following brokers were not extracted/updated successfully: {}", failedBrokers);
         }
         MDC.clear();
     }

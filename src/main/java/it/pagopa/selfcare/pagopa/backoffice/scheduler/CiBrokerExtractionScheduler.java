@@ -74,31 +74,31 @@ public class CiBrokerExtractionScheduler {
     @Transactional
     public void extractCI() {
         updateMDCForStartExecution("brokerCiExport", "");
-        log.info("[Export-CI] export starting...");
+        log.info("[Export-CI] - Starting CI broker export...");
         Set<String> allBrokers = this.allPages.getAllBrokers();
 
         int index = 0;
-        boolean extractionSuccess = true;
+        List<String> failedBrokers = new ArrayList<>();
         for (String brokerCode : allBrokers) {
-            log.debug("[Export-CI] analyzing broker {} ({}/{})", brokerCode, index++, allBrokers.size());
+            log.debug("[Export-CI] - Analyzing broker {} ({}/{})", brokerCode, index++, allBrokers.size());
             try {
                 upsertCreditorInstitutionsAssociatedToBroker(brokerCode);
             } catch (Exception e) {
-                log.warn("[Export-CI] An error occurred while updating CI associated to broker [{}]: the extraction will not be updated for this broker!",
+                log.warn("[Export-CI] - An error occurred while updating CI associated to broker [{}]: the extraction will not be updated for this broker!",
                         brokerCode, e);
-                extractionSuccess = false;
+                failedBrokers.add(brokerCode);
             }
         }
 
         // delete the old entities
         this.brokerInstitutionsRepository.deleteAllByCreatedAtBefore(Instant.now().minus(Duration.ofDays(olderThanDays)));
 
-        if (extractionSuccess) {
+        if (failedBrokers.isEmpty()) {
             updateMDCForEndExecution();
-            log.info("[Export-CI] export complete!");
+            log.info("[Export-CI] - Export complete successfully!");
         } else {
             updateMDCError("Export CI Broker");
-            log.error("[Export-CI] An error occurred during the export creation, not all broker CI were extracted successfully");
+            log.error("[Export-CI] Error during brokerCiExport, process partially completed, the following brokers were not extracted/updated successfully: {}", failedBrokers);
         }
         MDC.clear();
     }
@@ -107,13 +107,13 @@ public class CiBrokerExtractionScheduler {
         Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
         int numberOfPages = this.getCreditorInstitutionsAssociatedToBrokerPages.search(1, 0, brokerCode);
 
-        log.debug("[Export-CI] delete old document");
+        log.debug("[Export-CI] - Delete old document");
         this.brokerInstitutionsRepository.findByBrokerCode(brokerCode).ifPresent(this.brokerInstitutionsRepository::delete);
-        log.debug("[Export-CI] create new document for broker {}", brokerCode);
+        log.debug("[Export-CI] - Create new document for broker {}", brokerCode);
         this.brokerInstitutionsRepository.save(BrokerInstitutionsEntity.builder().brokerCode(brokerCode).build());
 
         // create parallel calls
-        log.debug("[Export-CI] retrieve new data for the broker {} and updates its document", brokerCode);
+        log.debug("[Export-CI] - Retrieve new data for the broker {} and updates its document", brokerCode);
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
             if (mdcContextMap != null) {

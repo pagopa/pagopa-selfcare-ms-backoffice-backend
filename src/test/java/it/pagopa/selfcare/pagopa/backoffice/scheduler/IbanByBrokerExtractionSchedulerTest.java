@@ -77,7 +77,7 @@ class IbanByBrokerExtractionSchedulerTest {
             int totalCIsPerBroker,
             int totalIbansPerCI,
             String excludePagoPA
-    ) throws IOException {
+    ) {
 
         // setting runtime variables
         int startId = 2;
@@ -112,7 +112,7 @@ class IbanByBrokerExtractionSchedulerTest {
             "true",
             "false"
     })
-    void extract_ko(String excludePagoPA) throws IOException {
+    void extract_ko(String excludePagoPA) {
 
         // setting runtime variables
         int totalBrokers = 7;
