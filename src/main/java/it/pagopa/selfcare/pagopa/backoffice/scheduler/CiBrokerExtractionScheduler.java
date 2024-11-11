@@ -84,7 +84,7 @@ public class CiBrokerExtractionScheduler {
             try {
                 upsertCreditorInstitutionsAssociatedToBroker(brokerCode);
             } catch (Exception e) {
-                log.warn("[Export-CI] - An error occurred while updating CI associated to broker [{}]: the extraction will not be updated for this broker!",
+                log.error("[Export-CI] - An error occurred while updating CI associated to broker [{}]: the extraction will not be updated for this broker!",
                         brokerCode, e);
                 failedBrokers.add(brokerCode);
             }

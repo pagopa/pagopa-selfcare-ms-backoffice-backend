@@ -119,7 +119,7 @@ public class IbanByBrokerExtractionScheduler {
             try {
                 upsertIbanForCIsDelegatedByBroker(brokerCode);
             } catch (Exception e) {
-                log.warn("[Export IBANs] - An error occurred while updating IBANs for CI associated to broker [{}]: the extraction will not be updated for this broker!",
+                log.error("[Export IBANs] - An error occurred while updating IBANs for CI associated to broker [{}]: the extraction will not be updated for this broker!",
                         brokerCode, e);
                 failedBrokers.add(brokerCode);
             }
