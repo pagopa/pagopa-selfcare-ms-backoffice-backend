@@ -14461,7 +14461,9 @@
               "PG",
               "SCP",
               "PSP",
-              "SA"
+              "SA",
+              "GPU",
+              "PRV"
             ]
           },
           "origin": {
@@ -14602,7 +14604,9 @@
               "PG",
               "SCP",
               "PSP",
-              "SA"
+              "SA",
+              "GPU",
+              "PRV"
             ]
           },
           "mail_address": {
@@ -16365,7 +16369,7 @@
             "type": "string",
             "description": "Logged user role on product",
             "enum": [
-              "admin, operator"
+              "admin, operator, admin-psp, operator-psp"
             ]
           },
           "product_role_label": {
