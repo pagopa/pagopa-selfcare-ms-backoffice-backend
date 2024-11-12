@@ -2,15 +2,8 @@ package it.pagopa.selfcare.pagopa.backoffice.scheduler.function;
 
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
-import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
-import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionEntity;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Broker;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.BrokerCreditorInstitutionDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetail;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperType;
-import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperStationsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -28,20 +24,18 @@ import java.util.stream.IntStream;
 @Slf4j
 public class AllPages {
 
-    @Autowired
     private ApiConfigClient apiConfigClient;
 
-    @Autowired
-    private ApiConfigSelfcareIntegrationClient apiConfigSCIntClient;
-
-    @Autowired
-    private WrapperStationsRepository wrapperStationsRepository;
-
-    @Value("${extraction.ibans.getBrokers.pageLimit}")
     private Integer getBrokersPageLimit;
 
-    @Value("${extraction.ibans.getCIByBroker.pageLimit}")
-    private Integer getCIByBrokerPageLimit;
+    @Autowired
+    public AllPages(
+            ApiConfigClient apiConfigClient,
+            @Value("${extraction.ibans.getBrokers.pageLimit}") Integer getBrokersPageLimit
+    ) {
+        this.apiConfigClient = apiConfigClient;
+        this.getBrokersPageLimit = getBrokersPageLimit;
+    }
 
     /**
      * @return the set of all brokers in pagoPA platform
@@ -53,54 +47,25 @@ public class AllPages {
                 getBrokersPageLimit, null);
     }
 
-    @Cacheable(value = "getCreditorInstitutionsAssociatedToBroker")
-    public Set<BrokerInstitutionEntity> getCreditorInstitutionsAssociatedToBroker(String brokerCode) {
-        Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
-        int numberOfPages = getCreditorInstitutionsAssociatedToBrokerPages.search(1, 0, brokerCode);
-
-        List<CompletableFuture<Set<BrokerInstitutionEntity>>> futures = new LinkedList<>();
-
-        // create parallel calls
-        CompletableFuture<Set<BrokerInstitutionEntity>> future = CompletableFuture.supplyAsync(() -> {
-            if(mdcContextMap != null) {
-                MDC.setContextMap(mdcContextMap);
-            }
-            return IntStream.rangeClosed(0, numberOfPages)
-                    .parallel()
-                    .mapToObj(page -> getCreditorInstitutionsAssociatedToBroker.search(getCIByBrokerPageLimit, page, brokerCode))
-                    .flatMap(response -> response.getCreditorInstitutions().stream())
-                    .map(this::convertCreditorInstitutionDetailToBrokerInstitutionEntity)
-                    .collect(Collectors.toSet());
-        });
-        futures.add(future);
-
-        // join parallel calls
-        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
-                .thenApply(e -> futures.stream()
-                        .map(CompletableFuture::join)
-                        .flatMap(Collection::stream)
-                        .collect(Collectors.toSet()))
-                .join();
-    }
-
-
     /**
      * ...
      *
-     * @param paginatedSearch
-     * @param pageNumberSearch
-     * @param getResultList
-     * @param mapInRequiredClass
-     * @param limit
-     * @param filterCode
+     * @param paginatedSearch    function to invoke paginated search
+     * @param pageNumberSearch   function to retrieve search page number
+     * @param getResultList      function to extract result from paginated search
+     * @param mapInRequiredClass mapping function
+     * @param limit              chunk size for paginated search
+     * @param filterCode         search filter parameter
      * @param <M>                the main type retrieved from main search, i.e. the type that contains the list of results and the PageInfo detail
      * @param <N>                the type of the nested object retreived from main search, i.e. the type related to the list of results
      * @param <R>                the type of the final result list generated by the 'mapInRequiredClass' callback
      * @return the set of object in type 'R', mapped by <code>mapInRequiredClass</code> callback.
      */
-    public <M, N, R> Set<R> executeParallelClientCalls(PaginatedSearch<M> paginatedSearch, NumberOfTotalPagesSearch pageNumberSearch,
-                                                       GetResultList<M, N> getResultList, MapInRequiredClass<N, R> mapInRequiredClass,
-                                                       int limit, String filterCode) {
+    public <M, N, R> Set<R> executeParallelClientCalls(
+            PaginatedSearch<M> paginatedSearch, NumberOfTotalPagesSearch pageNumberSearch,
+            GetResultList<M, N> getResultList, MapInRequiredClass<N, R> mapInRequiredClass,
+            int limit, String filterCode
+    ) {
 
         Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
         int numberOfPages = pageNumberSearch.search(1, 0, filterCode);
@@ -109,7 +74,7 @@ public class AllPages {
 
         // create parallel calls
         CompletableFuture<Set<R>> future = CompletableFuture.supplyAsync(() -> {
-            if(mdcContextMap != null) {
+            if (mdcContextMap != null) {
                 MDC.setContextMap(mdcContextMap);
             }
             return IntStream.rangeClosed(0, numberOfPages)
@@ -134,75 +99,8 @@ public class AllPages {
     private final PaginatedSearch<Brokers> getBrokerECCallback = (int limit, int page, String code) ->
             apiConfigClient.getBrokersEC(limit, page, code, null, null, null);
 
-    private final PaginatedSearch<BrokerCreditorInstitutionDetails> getCreditorInstitutionsAssociatedToBroker = (int limit, int page, String code) ->
-            apiConfigSCIntClient.getCreditorInstitutionsAssociatedToBroker(limit, page, true, code);
-
-    private final NumberOfTotalPagesSearch getCreditorInstitutionsAssociatedToBrokerPages = (int limit, int page, String code) -> {
-        var response = apiConfigSCIntClient.getCreditorInstitutionsAssociatedToBroker(limit, page, true, code);
-        return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getBrokersPageLimit);
-    };
-
     private final NumberOfTotalPagesSearch getNumberOfBrokerECPagesCallback = (int limit, int page, String code) -> {
         Brokers response = apiConfigClient.getBrokersEC(limit, page, null, null, null, null);
         return (int) Math.floor((double) response.getPageInfo().getTotalItems() / getBrokersPageLimit);
     };
-
-    private BrokerInstitutionEntity convertCreditorInstitutionDetailToBrokerInstitutionEntity(CreditorInstitutionDetail ci) {
-        Instant activationDate = null;
-        var wrapper = wrapperStationsRepository.findByIdAndType(ci.getStationCode(), WrapperType.STATION);
-        if(wrapper.isPresent() && wrapper.get().getEntities() != null && wrapper.get().getEntities().get(0) != null) {
-            StationDetails station = (wrapper.get().getEntities().get(0)).getEntity();
-            activationDate = station.getActivationDate();
-        }
-
-        return BrokerInstitutionEntity.builder()
-                .companyName(ci.getBusinessName())
-                .taxCode(ci.getCreditorInstitutionCode())
-                .intermediated(!ci.getBrokerCode().equals(ci.getCreditorInstitutionCode()))
-                .brokerCompanyName(ci.getBrokerBusinessName())
-                .brokerTaxCode(ci.getBrokerCode())
-                .model(3)
-                .auxDigit(getAuxDigit(ci))
-                .segregationCode(ci.getSegregationCode())
-                .applicationCode(ci.getApplicationCode())
-                .cbillCode(ci.getCbillCode())
-                .stationId(ci.getStationCode())
-                .stationState(ci.getStationEnabled() ? "ENABLED" : "DISABLED")
-                .endpointRT(ci.getEndpointRT())
-                .endpointRedirect(ci.getEndpointRedirect())
-                .endpointMU(ci.getEndpointMU())
-                .primitiveVersion(ci.getVersionePrimitive())
-                .ciStatus(ci.getCiStatus())
-                .activationDate(activationDate)
-                .version(String.valueOf(ci.getStationVersion()))
-                .broadcast(ci.getBroadcast())
-                .pspPayment(ci.getPspPayment())
-                .build();
-    }
-
-    private static String getAuxDigit(CreditorInstitutionDetail ci) {
-        /* if aux digit is null we use this table to calculate it.
-
-          aux | segregation | application
-          0   |     null    |   value
-          3   |    value    |    null
-          0/3 |    value    |   value
-
-        */
-        if(ci.getAuxDigit() == null) {
-            if(ci.getSegregationCode() == null && ci.getApplicationCode() != null) {
-                return "0";
-            }
-            if(ci.getSegregationCode() != null && ci.getApplicationCode() == null) {
-                return "3";
-            }
-            if(ci.getSegregationCode() != null && ci.getApplicationCode() != null) {
-                return "0/3";
-            }
-            return "";
-
-        } else {
-            return String.valueOf(Math.toIntExact(ci.getAuxDigit()));
-        }
-    }
 }

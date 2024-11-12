@@ -31,4 +31,13 @@ public class SchedulerUtils {
         MDC.put(FAULT_DETAIL, e.getMessage());
     }
 
+    public static void updateMDCError(String method) {
+        MDC.put(STATUS, "KO");
+        MDC.put(CODE, "500");
+        MDC.put(RESPONSE_TIME, getExecutionTime());
+        MDC.put(FAULT_CODE, method);
+    }
+
+    private SchedulerUtils() {
+    }
 }

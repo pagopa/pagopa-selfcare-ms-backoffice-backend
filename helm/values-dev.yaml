@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.29.1-2-scheduler-helm-values"
+    tag: "2.30.0"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -98,8 +98,8 @@ microservice-chart:
     OTEL_TRACES_SAMPLER: "always_on"
     CRONJOB_SCHEDULE_ENABLED: 'true'
     CRONJOB_SCHEDULE_TAXONOMYEXPORT: "0 0 7 * * *"
-    CRONJOB_SCHEDULE_IBANEXPORT: "0 0 2 * * *"
-    CRONJOB_SCHEDULE_CIEXPORT: "0 0 2 * * *"
+    CRONJOB_SCHEDULE_IBANEXPORT: "0 0 1 * * *"
+    CRONJOB_SCHEDULE_CIEXPORT: "0 0 3 * * *"
     EXTRACTION_IBANS_GETBROKERS_LIMIT: '200'
     EXTRACTION_IBANS_GETIBANS_LIMIT: '500'
     EXTRACTION_IBANS_GETCIBYBROKER_LIMIT: '1000'

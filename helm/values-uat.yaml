@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.29.1-2-scheduler-helm-values" #improve
+    tag: "2.30.0" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:

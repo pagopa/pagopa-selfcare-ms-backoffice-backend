@@ -3,7 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.scheduler.function;
 import java.util.List;
 
 @FunctionalInterface
-public interface GetResultList<I, O> {
+public interface PaginatedSearchWithListParam<T> {
 
-    List<O> get(I input);
+    T search(int limit, int page, List<String> filter);
 }

@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 @Repository
-public interface BrokerInstitutionsRepository extends MongoRepository<BrokerInstitutionsEntity, String> {
+public interface BrokerInstitutionsRepository extends MongoRepository<BrokerInstitutionsEntity, String>, BrokerInstitutionsCustomRepository {
 
     Optional<BrokerInstitutionsEntity> findByBrokerCode(String brokerCode);
 
