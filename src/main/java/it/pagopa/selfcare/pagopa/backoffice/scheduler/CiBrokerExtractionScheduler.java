@@ -75,7 +75,7 @@ public class CiBrokerExtractionScheduler {
     public void extractCI() {
         updateMDCForStartExecution("brokerCiExport", "");
         log.info("[Export-CI] - Starting CI broker export...");
-        Set<String> allBrokers = this.allPages.getAllBrokers();
+        Set<String> allBrokers = getAllBrokersOrThrowException();
 
         int index = 0;
         List<String> failedBrokers = new ArrayList<>();
@@ -101,6 +101,16 @@ public class CiBrokerExtractionScheduler {
             log.error("[Export-CI] Error during brokerCiExport, process partially completed, the following brokers were not extracted/updated successfully: {}", failedBrokers);
         }
         MDC.clear();
+    }
+
+    private Set<String> getAllBrokersOrThrowException() {
+        try {
+            return this.allPages.getAllBrokers();
+        } catch (Exception e) {
+            updateMDCError(e, "Export CI Broker");
+            log.error("[Export-CI] - An error occurred while extracting broker list, export aborted", e);
+            throw e;
+        }
     }
 
     private void upsertCreditorInstitutionsAssociatedToBroker(String brokerCode) {

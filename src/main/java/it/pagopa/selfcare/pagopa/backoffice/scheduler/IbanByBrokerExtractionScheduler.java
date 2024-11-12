@@ -108,7 +108,7 @@ public class IbanByBrokerExtractionScheduler {
         log.info("[Export IBANs] - Starting IBAN extraction process...");
 
         // get all brokers registered in pagoPA platform
-        Set<String> allBrokers = getAllBrokers();
+        Set<String> allBrokers = getAllBrokersOrThrowException();
 
         int brokerIndex = 0;
         List<String> failedBrokers = new ArrayList<>();
@@ -138,27 +138,33 @@ public class IbanByBrokerExtractionScheduler {
         MDC.clear();
     }
 
-    private Set<String> getAllBrokers() {
-        log.debug("[Export IBANs] - Retrieving the list of all brokers...");
-        long startTime = Calendar.getInstance().getTimeInMillis();
+    private Set<String> getAllBrokersOrThrowException() {
+        try {
+            log.debug("[Export IBANs] - Retrieving the list of all brokers...");
+            long startTime = Calendar.getInstance().getTimeInMillis();
 
-        // retrieved the list of all brokers in pagoPA platform
-        Set<String> brokerCodes = this.allPages.getAllBrokers();
-        int totalRetrievedBrokerCodes = brokerCodes.size();
+            // retrieved the list of all brokers in pagoPA platform
+            Set<String> brokerCodes = this.allPages.getAllBrokers();
+            int totalRetrievedBrokerCodes = brokerCodes.size();
 
-        // exclude all brokers which export was executed not too much time ago
-        Set<String> brokerCodeToBeExcluded =
-                this.brokerIbansRepository.findProjectedByCreatedAtGreaterThen(Instant.now().minus(this.exportAgainAfterHours, ChronoUnit.HOURS));
-        if (this.avoidExportPagoPABroker) {
-            brokerCodeToBeExcluded.add(Constants.PAGOPA_BROKER_CODE);
+            // exclude all brokers which export was executed not too much time ago
+            Set<String> brokerCodeToBeExcluded =
+                    this.brokerIbansRepository.findProjectedByCreatedAtGreaterThen(Instant.now().minus(this.exportAgainAfterHours, ChronoUnit.HOURS));
+            if (this.avoidExportPagoPABroker) {
+                brokerCodeToBeExcluded.add(Constants.PAGOPA_BROKER_CODE);
+            }
+            brokerCodes.removeAll(brokerCodeToBeExcluded);
+
+            log.debug("[Export IBANs] - Excluded [{}}] of [{}] brokers because they were recently exported or are excluded a priori.",
+                    brokerCodeToBeExcluded.size(), totalRetrievedBrokerCodes);
+            log.debug("[Export IBANs] - Retrieve of brokers completed successfully! Extracted [{}] broker codes in [{}] ms.",
+                    brokerCodes.size(), Utility.getTimelapse(startTime));
+            return brokerCodes;
+        } catch (Exception e) {
+            updateMDCError(e, "Export Broker IBAN");
+            log.error("[Export IBANs] - An error occurred while extracting broker list, export aborted", e);
+            throw e;
         }
-        brokerCodes.removeAll(brokerCodeToBeExcluded);
-
-        log.debug("[Export IBANs] - Excluded [{}}] of [{}] brokers because they were recently exported or are excluded a priori.",
-                brokerCodeToBeExcluded.size(), totalRetrievedBrokerCodes);
-        log.debug("[Export IBANs] - Retrieve of brokers completed successfully! Extracted [{}] broker codes in [{}] ms.",
-                brokerCodes.size(), Utility.getTimelapse(startTime));
-        return brokerCodes;
     }
 
     private void upsertIbanForCIsDelegatedByBroker(String brokerCode) {

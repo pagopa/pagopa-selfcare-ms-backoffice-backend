@@ -27,12 +27,14 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -123,6 +125,20 @@ class CiBrokerExtractionSchedulerTest {
         verify(brokerInstitutionsRepository, times(2)).save(any());
         verify(brokerInstitutionsRepository, times(2)).updateBrokerInstitutionsList(anyString(), anyList());
         verify(brokerInstitutionsRepository).deleteAllByCreatedAtBefore(any());
+    }
+
+    @Test
+    void extractCiFailOnGetBrokers() {
+        when(allPages.getAllBrokers()).thenThrow(RuntimeException.class);
+
+        assertThrows(Exception.class, () -> scheduler.extractCI());
+
+        verify(brokerInstitutionsRepository,never()).delete(any());
+        verify(brokerInstitutionsRepository, never()).save(any());
+        verify(brokerInstitutionsRepository, never()).updateBrokerInstitutionsList(anyString(), anyList());
+        verify(brokerInstitutionsRepository, never()).deleteAllByCreatedAtBefore(any());
+        verify(wrapperStationsRepository, never()).findByIdAndType(anyString(), any());
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsAssociatedToBroker(anyInt(), anyInt(), eq(true), anyString());
     }
 
     private Optional<WrapperEntityStations> buildOptionalWrapperEntityStations() {

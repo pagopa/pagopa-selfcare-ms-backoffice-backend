@@ -15,6 +15,8 @@ import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerIbansRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.CreditorInstitutionsIbansRepository;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.AllPages;
 import it.pagopa.selfcare.pagopa.backoffice.util.Constants;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.modelmapper.ModelMapper;
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -133,6 +136,16 @@ class IbanByBrokerExtractionSchedulerTest {
 
         // execute assertions
         verify(brokerIbansRepository, times(0)).save(any(BrokerIbansEntity.class));
+    }
+
+    @Test
+    void extract_ko_on_get_brokers() {
+        when(apiConfigClient.getBrokersEC(1, 0, null, null, null, null)).thenThrow(RuntimeException.class);
+
+        Assertions.assertThrows(Exception.class, () -> scheduler.extract());
+
+        // execute assertions
+        verify(brokerIbansRepository, never()).save(any(BrokerIbansEntity.class));
     }
 
     private Set<String> mockGetBrokersEC(int totalBrokers) {
