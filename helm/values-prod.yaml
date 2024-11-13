@@ -95,10 +95,6 @@ microservice-chart:
     REST_CLIENT_LOGGER_LEVEL: 'NONE'
     AWS_REGION: 'eu-south-1'
     OTEL_SERVICE_NAME: "pagopa-selfcare-backoffice-backend"
-    OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=prod"
-    OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
-    OTEL_LOGS_EXPORTER: none
-    OTEL_TRACES_SAMPLER: "always_on"
     CRONJOB_SCHEDULE_ENABLED: 'true'
     CRONJOB_SCHEDULE_TAXONOMYEXPORT: "0 0 7 * * *"
     CRONJOB_SCHEDULE_IBANEXPORT: "0 0 1 * * *"
