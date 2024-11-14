@@ -101,9 +101,9 @@ public class CiBrokerExtractionScheduler {
                 log.info("[Export-CI] - Export complete successfully!");
             } else {
                 updateMDCError("Export CI Broker");
-                String errMsg = "[Export-CI] Error during brokerCiExport, process partially completed, the following brokers were not extracted/updated successfully";
-                log.error("{} : {}", errMsg, failedBrokers);
-                throw new AppException(AppError.INTERNAL_SERVER_ERROR, errMsg);
+                String errMsg = "[Export-CI] - Error during brokerCiExport, process partially completed, the following brokers were not extracted/updated successfully";
+                log.error("{}: {}", errMsg, failedBrokers);
+                throw new AppException(AppError.BROKER_CI_EXPORT_SCHEDULER_ERROR, errMsg);
             }
         } finally {
             MDC.clear();
@@ -118,7 +118,7 @@ public class CiBrokerExtractionScheduler {
             updateMDCError(e, "Export CI Broker");
             String errMsg = "[Export-CI] - An error occurred while extracting broker list, export aborted";
             log.error(errMsg, e);
-            throw new AppException(AppError.INTERNAL_SERVER_ERROR, errMsg, e);
+            throw new AppException(AppError.BROKER_CI_EXPORT_SCHEDULER_SETUP_ERROR, e, errMsg);
         } finally {
             MDC.clear();
         }
