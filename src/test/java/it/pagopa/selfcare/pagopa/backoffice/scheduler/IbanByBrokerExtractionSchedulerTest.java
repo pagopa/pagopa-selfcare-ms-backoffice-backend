@@ -4,6 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Broker;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
@@ -23,6 +24,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
@@ -34,6 +36,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -132,7 +137,10 @@ class IbanByBrokerExtractionSchedulerTest {
         mockGetIbans(totalCIsPerBroker, PAGE_LIMIT, brokerECMockMerged, true);
 
         // executing main logic
-        scheduler.extract();
+        AppException e = assertThrows(AppException.class, () -> scheduler.extract());
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus());
 
         // execute assertions
         verify(brokerIbansRepository, times(0)).save(any(BrokerIbansEntity.class));
@@ -142,7 +150,10 @@ class IbanByBrokerExtractionSchedulerTest {
     void extract_ko_on_get_brokers() {
         when(apiConfigClient.getBrokersEC(1, 0, null, null, null, null)).thenThrow(RuntimeException.class);
 
-        Assertions.assertThrows(Exception.class, () -> scheduler.extract());
+        AppException e = assertThrows(AppException.class, () -> scheduler.extract());
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus());
 
         // execute assertions
         verify(brokerIbansRepository, never()).save(any(BrokerIbansEntity.class));
