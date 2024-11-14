@@ -2,8 +2,8 @@ apiVersion: v2
 name: pagopa-selfcare-ms-backoffice
 description: Microservice that manage api keys for pagopa product from selfcare
 type: application
-version: 0.426.0
-appVersion: "2.30.0-3-remove-opentelemetry-agent"
+version: 0.427.0
+appVersion: "2.30.0-4-remove-opentelemetry-agent"
 dependencies:
   - name: microservice-chart
     version: 2.4.0

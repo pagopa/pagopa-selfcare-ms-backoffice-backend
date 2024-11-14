@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.30.0-3-remove-opentelemetry-agent"
+    tag: "2.30.0-4-remove-opentelemetry-agent"
     pullPolicy: Always
   livenessProbe:
     httpGet:
