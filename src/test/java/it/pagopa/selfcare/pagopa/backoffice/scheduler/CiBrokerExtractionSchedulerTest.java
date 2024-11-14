@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionsEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStation;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.BrokerCreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetail;
@@ -19,6 +20,7 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 
 import java.time.Instant;
 import java.util.List;
@@ -27,6 +29,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -119,7 +123,10 @@ class CiBrokerExtractionSchedulerTest {
         doThrow(RuntimeException.class)
                 .when(brokerInstitutionsRepository).updateBrokerInstitutionsList(eq(BROKER_CODE_2), anyList());
 
-        assertDoesNotThrow(() -> scheduler.extractCI());
+        AppException e = assertThrows(AppException.class, () -> scheduler.extractCI());
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus());
 
         verify(brokerInstitutionsRepository, times(2)).delete(any());
         verify(brokerInstitutionsRepository, times(2)).save(any());

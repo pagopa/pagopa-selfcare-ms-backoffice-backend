@@ -112,8 +112,7 @@ public class CiBrokerExtractionScheduler {
 
     private Set<String> getAllBrokersOrThrowException() {
         try {
-//            return this.allPages.getAllBrokers();
-            throw new RuntimeException();
+            return this.allPages.getAllBrokers();
         } catch (Exception e) {
             updateMDCError(e, "Export CI Broker");
             String errMsg = "[Export-CI] - An error occurred while extracting broker list, export aborted";
