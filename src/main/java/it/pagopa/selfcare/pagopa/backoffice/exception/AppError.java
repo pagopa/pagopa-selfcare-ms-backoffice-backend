@@ -61,6 +61,11 @@ public enum AppError {
 
     PSP_APIM_KEY_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error with PSP APIM key", "The %s product APIM key require that the PSP code is configured but the PSP code for institution %s is missing"),
 
+    BROKER_CI_EXPORT_SCHEDULER_SETUP_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error in brokerCiExport cron setup", "%s"),
+    BROKER_CI_EXPORT_SCHEDULER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error during brokerCiExport cron execution", "%s"),
+    BROKER_IBAN_EXPORT_SCHEDULER_SETUP_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error in brokerIbansExport cron setup", "%s"),
+    BROKER_IBAN_EXPORT_SCHEDULER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error during brokerIbansExport cron execution", "%s"),
+
     UNKNOWN(null, null, null);
 
     public final HttpStatus httpStatus;

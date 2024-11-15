@@ -8,5 +8,7 @@ public enum InstitutionType {
     PG,
     SCP,
     PSP,
-    SA
+    SA,
+    GPU,
+    PRV
 }

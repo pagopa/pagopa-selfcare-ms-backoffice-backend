@@ -12,7 +12,7 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.deNull;
 @AllArgsConstructor
 public enum RoleType {
 
-    CI("Ente Creditore", List.of("PA", "GSP", "SCP", "PG")),
+    CI("Ente Creditore", List.of("PA", "GSP", "SCP", "PG", "GPU", "PRV")),
     PSP("Payment Service Provider", List.of("PSP")),
     PT("Partner Tecnologico", List.of("PT")),
     OTHER("Ignored Role Types", List.of("AS", "SA", "REC", "CON"));

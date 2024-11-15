@@ -2,7 +2,9 @@ package it.pagopa.selfcare.pagopa.backoffice.scheduler;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
+import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Broker;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
@@ -10,28 +12,39 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
+import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerIbansRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.CreditorInstitutionsIbansRepository;
-import it.pagopa.selfcare.pagopa.backoffice.repository.TransactionalBulkDAO;
-import it.pagopa.selfcare.pagopa.backoffice.repository.WrapperStationsRepository;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.AllPages;
 import it.pagopa.selfcare.pagopa.backoffice.util.Constants;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.io.IOException;
+import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {IbanByBrokerExtractionScheduler.class, AllPages.class})
+@SpringBootTest(classes = {IbanByBrokerExtractionScheduler.class, AllPages.class, MappingsConfiguration.class})
 class IbanByBrokerExtractionSchedulerTest {
 
     private static final int PAGE_LIMIT = 5;
@@ -43,16 +56,16 @@ class IbanByBrokerExtractionSchedulerTest {
     private ApiConfigSelfcareIntegrationClient apiConfigSCIntClient;
 
     @MockBean
-    private TransactionalBulkDAO dao;
-
-    @MockBean
-    private WrapperStationsRepository wrapperRepository;
+    private BrokerIbansRepository brokerIbansRepository;
 
     @MockBean
     private CreditorInstitutionsIbansRepository creditorInstitutionsIbansRepository;
 
     @Autowired
     private AllPages allPages;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Autowired
     private IbanByBrokerExtractionScheduler scheduler;
@@ -65,7 +78,12 @@ class IbanByBrokerExtractionSchedulerTest {
             "7,8,0,true",
             "7,8,6,false"
     })
-    void extract_ok(Integer totalBrokers, int totalCIsPerBroker, int totalIbansPerCI, String excludePagoPA) throws IOException {
+    void extract_ok(
+            Integer totalBrokers,
+            int totalCIsPerBroker,
+            int totalIbansPerCI,
+            String excludePagoPA
+    ) {
 
         // setting runtime variables
         int startId = 2;
@@ -77,16 +95,13 @@ class IbanByBrokerExtractionSchedulerTest {
         setParameterValues(excludePagoPABroker);
 
         // mocking DAO methods
-        doNothing().when(dao).init();
-        when(dao.getAllBrokerCodeGreaterThan(any(Date.class))).thenReturn(brokerCodesToBeExcluded);
-        doNothing().when(dao).save(any(BrokerIbansEntity.class));
-        doNothing().when(dao).clean(any(Date.class));
+        when(brokerIbansRepository.findProjectedByCreatedAtGreaterThen(any(Instant.class))).thenReturn(brokerCodesToBeExcluded);
 
         // mocking API client responses
         Set<String> brokerECMockMerged = mockGetBrokersEC(totalBrokers);
         Set<String> brokerAnalyzed = new HashSet<>(Set.copyOf(brokerECMockMerged));
         brokerAnalyzed.removeAll(brokerCodesToBeExcluded);
-        if(excludePagoPABroker) {
+        if (excludePagoPABroker) {
             brokerAnalyzed.remove(Constants.PAGOPA_BROKER_CODE);
         }
         mockGetIbans(totalCIsPerBroker, totalIbansPerCI, brokerECMockMerged, false);
@@ -95,7 +110,7 @@ class IbanByBrokerExtractionSchedulerTest {
         scheduler.extract();
 
         // execute assertions
-        verify(dao, times(brokerAnalyzed.size())).save(any(BrokerIbansEntity.class));
+        verify(brokerIbansRepository, times(brokerAnalyzed.size())).save(any(BrokerIbansEntity.class));
     }
 
     @ParameterizedTest
@@ -103,7 +118,7 @@ class IbanByBrokerExtractionSchedulerTest {
             "true",
             "false"
     })
-    void extract_ko(String excludePagoPA) throws IOException {
+    void extract_ko(String excludePagoPA) {
 
         // setting runtime variables
         int totalBrokers = 7;
@@ -114,18 +129,33 @@ class IbanByBrokerExtractionSchedulerTest {
         setParameterValues(excludePagoPABroker);
 
         // mocking DAO methods
-        doNothing().when(dao).init();
-        when(dao.getAllBrokerCodeGreaterThan(any(Date.class))).thenReturn(new HashSet<>());
+        when(brokerIbansRepository.findProjectedByCreatedAtGreaterThen(any(Instant.class))).thenReturn(new HashSet<>());
 
         // mocking API client responses
         Set<String> brokerECMockMerged = mockGetBrokersEC(totalBrokers);
         mockGetIbans(totalCIsPerBroker, PAGE_LIMIT, brokerECMockMerged, true);
 
         // executing main logic
-        scheduler.extract();
+        AppException e = assertThrows(AppException.class, () -> scheduler.extract());
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus());
 
         // execute assertions
-        verify(dao, times(0)).save(any(BrokerIbansEntity.class));
+        verify(brokerIbansRepository, times(0)).save(any(BrokerIbansEntity.class));
+    }
+
+    @Test
+    void extract_ko_on_get_brokers() {
+        when(apiConfigClient.getBrokersEC(1, 0, null, null, null, null)).thenThrow(RuntimeException.class);
+
+        AppException e = assertThrows(AppException.class, () -> scheduler.extract());
+
+        assertNotNull(e);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus());
+
+        // execute assertions
+        verify(brokerIbansRepository, never()).save(any(BrokerIbansEntity.class));
     }
 
     private Set<String> mockGetBrokersEC(int totalBrokers) {
@@ -140,7 +170,12 @@ class IbanByBrokerExtractionSchedulerTest {
         return brokerECMockMergedPages.stream().map(Broker::getBrokerCode).collect(Collectors.toSet());
     }
 
-    private void mockGetIbans(int totalCIsPerBroker, int totalIbansPerCI, Set<String> brokerECMockMerged, boolean throwInError) {
+    private void mockGetIbans(
+            int totalCIsPerBroker,
+            int totalIbansPerCI,
+            Set<String> brokerECMockMerged,
+            boolean throwInError
+    ) {
         for (String brokerECIdMock : brokerECMockMerged) {
             CreditorInstitutionsView getCIsByBrokerMockPage0 = getCIsByBrokerMock(0, IbanByBrokerExtractionSchedulerTest.PAGE_LIMIT, totalCIsPerBroker, brokerECIdMock);
             CreditorInstitutionsView getCIsByBrokerMockPage1 = getCIsByBrokerMock(1, IbanByBrokerExtractionSchedulerTest.PAGE_LIMIT, totalCIsPerBroker, brokerECIdMock);
@@ -155,9 +190,9 @@ class IbanByBrokerExtractionSchedulerTest {
             Set<String> partition = cisByBrokerMockMergedPages.stream().map(CreditorInstitutionView::getIdDominio).collect(Collectors.toSet());
             List<String> partitionAsList = new ArrayList<>(partition);
 
-            if(throwInError) {
+            if (throwInError) {
                 when(apiConfigSCIntClient.getIbans(1, 0, partitionAsList)).thenReturn(null);
-            } else if(totalCIsPerBroker > 0) {
+            } else if (totalCIsPerBroker > 0) {
                 IbansList ibanListMockPage0 = getIbansMock(0, IbanByBrokerExtractionSchedulerTest.PAGE_LIMIT, totalIbansPerCI, partitionAsList);
                 IbansList ibanListMockPage1 = getIbansMock(1, IbanByBrokerExtractionSchedulerTest.PAGE_LIMIT, totalIbansPerCI, partitionAsList);
                 when(apiConfigSCIntClient.getIbans(1, 0, partitionAsList)).thenReturn(getIbansPageMock(totalIbansPerCI));
@@ -169,7 +204,6 @@ class IbanByBrokerExtractionSchedulerTest {
 
 
     private void setParameterValues(boolean avoidExportPagoPABroker) {
-        ReflectionTestUtils.setField(scheduler, "getBrokersPageLimit", IbanByBrokerExtractionSchedulerTest.PAGE_LIMIT);
         ReflectionTestUtils.setField(scheduler, "getIbansPageLimit", IbanByBrokerExtractionSchedulerTest.PAGE_LIMIT);
         ReflectionTestUtils.setField(scheduler, "getCIByBrokerPageLimit", IbanByBrokerExtractionSchedulerTest.PAGE_LIMIT);
         ReflectionTestUtils.setField(scheduler, "avoidExportPagoPABroker", avoidExportPagoPABroker);
@@ -228,7 +262,12 @@ class IbanByBrokerExtractionSchedulerTest {
         return result;
     }
 
-    private static CreditorInstitutionsView getCIsByBrokerMock(int page, int limit, long totalItems, String brokerCode) {
+    private static CreditorInstitutionsView getCIsByBrokerMock(
+            int page,
+            int limit,
+            long totalItems,
+            String brokerCode
+    ) {
         int lowerLimit = limit * page + 1;
         int upperLimit = (int) Math.min(((long) limit * page) + limit, totalItems);
 

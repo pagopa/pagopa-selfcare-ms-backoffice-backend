@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.29.1-2-next" #improve
+    tag: "2.32.0-1-next" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -59,10 +59,10 @@ microservice-chart:
         - all
   resources:
     requests:
-      memory: "512Mi"
+      memory: "768Mi"
       cpu: "0.5"
     limits:
-      memory: "768Mi"
+      memory: "2048Mi"
       cpu: "0.5"
   autoscaling:
     enable: true
@@ -95,14 +95,10 @@ microservice-chart:
     REST_CLIENT_LOGGER_LEVEL: 'NONE'
     AWS_REGION: 'eu-south-1'
     OTEL_SERVICE_NAME: "pagopa-selfcare-backoffice-backend"
-    OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=prod"
-    OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
-    OTEL_LOGS_EXPORTER: none
-    OTEL_TRACES_SAMPLER: "always_on"
     CRONJOB_SCHEDULE_ENABLED: 'true'
     CRONJOB_SCHEDULE_TAXONOMYEXPORT: "0 0 7 * * *"
-    CRONJOB_SCHEDULE_IBANEXPORT: "0 0 2 * * *"
-    CRONJOB_SCHEDULE_CIEXPORT: "0 0 2 * * *"
+    CRONJOB_SCHEDULE_IBANEXPORT: "0 0 1 * * *"
+    CRONJOB_SCHEDULE_CIEXPORT: "0 0 3 * * *"
     EXTRACTION_IBANS_GETBROKERS_LIMIT: '200'
     EXTRACTION_IBANS_GETIBANS_LIMIT: '1000'
     EXTRACTION_IBANS_GETCIBYBROKER_LIMIT: '1000'
@@ -110,6 +106,7 @@ microservice-chart:
     EXTRACTION_IBANS_PERSISTIBANBATCHSIZE: '10000'
     CLIENT_RETRY_MAX_ATTEMPTS: '3'
     CLIENT_RETRY_MAX_DELAY: '2000'
+    JAVA_TOOL_OPTIONS: '-Xms768m -Xmx1024m'
   envSecret:
     AWS_ACCESS_KEY_ID: pagopa-p-aws-access-key-id
     AWS_SECRET_ACCESS_KEY: pagopa-p-aws-secret-access-key
