@@ -16,7 +16,6 @@ import it.pagopa.selfcare.pagopa.backoffice.repository.BrokerIbansRepository;
 import it.pagopa.selfcare.pagopa.backoffice.repository.CreditorInstitutionsIbansRepository;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.AllPages;
 import it.pagopa.selfcare.pagopa.backoffice.util.Constants;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
