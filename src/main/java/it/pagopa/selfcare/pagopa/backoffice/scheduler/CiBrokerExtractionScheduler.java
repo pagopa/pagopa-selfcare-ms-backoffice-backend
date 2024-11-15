@@ -3,6 +3,8 @@ package it.pagopa.selfcare.pagopa.backoffice.scheduler;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionsEntity;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.BrokerCreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
@@ -93,14 +95,19 @@ public class CiBrokerExtractionScheduler {
         // delete the old entities
         this.brokerInstitutionsRepository.deleteAllByCreatedAtBefore(Instant.now().minus(Duration.ofDays(olderThanDays)));
 
-        if (failedBrokers.isEmpty()) {
-            updateMDCForEndExecution();
-            log.info("[Export-CI] - Export complete successfully!");
-        } else {
-            updateMDCError("Export CI Broker");
-            log.error("[Export-CI] Error during brokerCiExport, process partially completed, the following brokers were not extracted/updated successfully: {}", failedBrokers);
+        try {
+            if (failedBrokers.isEmpty()) {
+                updateMDCForEndExecution();
+                log.info("[Export-CI] - Export complete successfully!");
+            } else {
+                updateMDCError("Export CI Broker");
+                String errMsg = "[Export-CI] - Error during brokerCiExport, process partially completed, the following brokers were not extracted/updated successfully";
+                log.error("{}: {}", errMsg, failedBrokers);
+                throw new AppException(AppError.BROKER_CI_EXPORT_SCHEDULER_ERROR, errMsg);
+            }
+        } finally {
+            MDC.clear();
         }
-        MDC.clear();
     }
 
     private Set<String> getAllBrokersOrThrowException() {
@@ -108,8 +115,11 @@ public class CiBrokerExtractionScheduler {
             return this.allPages.getAllBrokers();
         } catch (Exception e) {
             updateMDCError(e, "Export CI Broker");
-            log.error("[Export-CI] - An error occurred while extracting broker list, export aborted", e);
-            throw e;
+            String errMsg = "[Export-CI] - An error occurred while extracting broker list, export aborted";
+            log.error(errMsg, e);
+            throw new AppException(AppError.BROKER_CI_EXPORT_SCHEDULER_SETUP_ERROR, e, errMsg);
+        } finally {
+            MDC.clear();
         }
     }
 
