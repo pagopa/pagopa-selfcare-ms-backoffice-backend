@@ -5,6 +5,8 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationC
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.CreditorInstitutionIbansEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.IbanEntity;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionView;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbansList;
@@ -128,14 +130,19 @@ public class IbanByBrokerExtractionScheduler {
 
         // clean files older than N days
         this.brokerIbansRepository.deleteAllByCreatedAtBefore(Instant.now().minus(this.olderThanDays, ChronoUnit.DAYS));
-        if (failedBrokers.isEmpty()) {
-            updateMDCForEndExecution();
-            log.info("[Export IBANs] - IBAN extraction completed successfully");
-        } else {
-            updateMDCError("Export Broker IBAN");
-            log.error("[Export IBANs] - Error during brokerIbansExport, process partially completed, the following brokers were not extracted/updated successfully: {}", failedBrokers);
+        try {
+            if (failedBrokers.isEmpty()) {
+                updateMDCForEndExecution();
+                log.info("[Export IBANs] - IBAN extraction completed successfully");
+            } else {
+                updateMDCError("Export Broker IBAN");
+                String errMsg = "[Export IBANs] - Error during brokerIbansExport, process partially completed, the following brokers were not extracted/updated successfully";
+                log.error("{}: {}", errMsg, failedBrokers);
+                throw new AppException(AppError.BROKER_IBAN_EXPORT_SCHEDULER_ERROR, errMsg);
+            }
+        } finally {
+            MDC.clear();
         }
-        MDC.clear();
     }
 
     private Set<String> getAllBrokersOrThrowException() {
@@ -162,8 +169,11 @@ public class IbanByBrokerExtractionScheduler {
             return brokerCodes;
         } catch (Exception e) {
             updateMDCError(e, "Export Broker IBAN");
-            log.error("[Export IBANs] - An error occurred while extracting broker list, export aborted", e);
-            throw e;
+            String errMsg = "[Export IBANs] - An error occurred while extracting broker list, export aborted";
+            log.error(errMsg, e);
+            throw new AppException(AppError.BROKER_IBAN_EXPORT_SCHEDULER_SETUP_ERROR, e, errMsg);
+        } finally {
+            MDC.clear();
         }
     }
 
