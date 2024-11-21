@@ -29,6 +29,7 @@ import org.thymeleaf.context.Context;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -84,6 +85,7 @@ public class StationService {
      */
     public StationDetailResource createStation(@NotNull StationDetailsDto stationDetailsDto) {
         StationDetails stationDetails = this.stationMapper.fromDto(stationDetailsDto);
+        stationDetails.setActivationDate(Instant.now());
         this.apiConfigClient.createStation(stationDetails);
 
         WrapperEntityStations response = this.wrapperService.updateValidatedWrapperStation(stationDetails, WrapperStatus.APPROVED);
@@ -361,6 +363,8 @@ public class StationService {
                     if (optionalWrapperEntities.isPresent()) {
                         WrapperEntityStations wrapperEntities = optionalWrapperEntities.get();
                         wrapperStation.setCreatedAt(wrapperEntities.getCreatedAt());
+                        WrapperEntityStation mostRecentEntity = getStationWrapperEntityOperationsSortedList(wrapperEntities).get(0);
+                        wrapperStation.setActivationDate(mostRecentEntity.getEntity().getActivationDate());
                     }
                     return wrapperStation;
                 }).toList();
@@ -385,6 +389,7 @@ public class StationService {
 
             WrapperEntityStation mostRecentEntity = getStationWrapperEntityOperationsSortedList(wrapperEntities).get(0);
             stationDetailResource.setPendingUpdate(!WrapperStatus.APPROVED.equals(mostRecentEntity.getStatus()));
+            stationDetailResource.setActivationDate(mostRecentEntity.getEntity().getActivationDate());
         } else {
             stationDetailResource.setPendingUpdate(false);
         }
