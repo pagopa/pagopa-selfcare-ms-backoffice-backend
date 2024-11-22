@@ -363,8 +363,7 @@ public class StationService {
                     if (optionalWrapperEntities.isPresent()) {
                         WrapperEntityStations wrapperEntities = optionalWrapperEntities.get();
                         wrapperStation.setCreatedAt(wrapperEntities.getCreatedAt());
-                        WrapperEntityStation mostRecentEntity = getStationWrapperEntityOperationsSortedList(wrapperEntities).get(0);
-                        wrapperStation.setActivationDate(mostRecentEntity.getEntity().getActivationDate());
+                        wrapperStation.setActivationDate(wrapperEntities.getEntities().get(0).getEntity().getActivationDate());
                     }
                     return wrapperStation;
                 }).toList();
@@ -389,7 +388,7 @@ public class StationService {
 
             WrapperEntityStation mostRecentEntity = getStationWrapperEntityOperationsSortedList(wrapperEntities).get(0);
             stationDetailResource.setPendingUpdate(!WrapperStatus.APPROVED.equals(mostRecentEntity.getStatus()));
-            stationDetailResource.setActivationDate(mostRecentEntity.getEntity().getActivationDate());
+            stationDetailResource.setActivationDate(wrapperEntities.getEntities().get(0).getEntity().getActivationDate());
         } else {
             stationDetailResource.setPendingUpdate(false);
         }
