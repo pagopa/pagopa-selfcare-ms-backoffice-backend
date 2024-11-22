@@ -308,6 +308,7 @@ public class WrapperService {
         Optional<WrapperEntities> optionalWrapperEntities = this.repository.findById(stationCode);
 
         if (optionalWrapperEntities.isEmpty()) {
+            stationDetails.setActivationDate(Instant.now());
             return createWrapperStation(stationDetails, WrapperStatus.valueOf(status));
         }
 
