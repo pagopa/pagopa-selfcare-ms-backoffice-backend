@@ -117,9 +117,8 @@ public class CiBrokerExtractionScheduler {
             updateMDCError(e, "Export CI Broker");
             String errMsg = "[Export-CI] - An error occurred while extracting broker list, export aborted";
             log.error(errMsg, e);
-            throw new AppException(AppError.BROKER_CI_EXPORT_SCHEDULER_SETUP_ERROR, e, errMsg);
-        } finally {
             MDC.clear();
+            throw new AppException(AppError.BROKER_CI_EXPORT_SCHEDULER_SETUP_ERROR, e, errMsg);
         }
     }
 
