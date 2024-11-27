@@ -27,7 +27,7 @@ public enum Subscription {
     BO_EXT_EC("/apis/%s-backoffice-external-ec-api-v1", "Backoffice External (EC)", "selfcareboexternalec-", CI, "backoffice_external", false),
     BO_EXT_PSP("/apis/%s-backoffice-external-psp-api-v1", "Backoffice External (PSP)", "selfcareboexternalpsp-", PSP, "backoffice_external", false),
     PRINT_NOTICE("/products/pagopa_notices_service_external", "Stampa Avvisi", "printnotice-", CI, null, false),
-    ACA("/products/aca", "ACA - paCreatePosition", "aca-", CI, "aca", true);
+    ACA("/products/aca", "ACA - Conferimento delle posizioni debitorie", "aca-", CI, "aca", true);
 
     private final String scope;
     private final String displayName;
