@@ -82,7 +82,7 @@ microservice-chart:
     GEC_SERVICE_URL: https://api.dev.platform.pagopa.it
     FORWARDER_SERVICE_URL: https://api.dev.platform.pagopa.it
     TAXONOMY_SERVICE_URL: https://api.platform.pagopa.it
-    ENABLE_SEND_EMAIL: false
+    ENABLE_SEND_EMAIL: 'false'
     AZURE_RESOURCE_GROUP: pagopa-d-api-rg
     AZURE_SERVICE_NAME: pagopa-d-apim
     APPCONFIGURATION_ENDPOINT: 'https://pagopa-d-selfcare-appconfiguration.azconfig.io'
