@@ -32,7 +32,7 @@ public class AwsSesClient {
 
     private final ExternalApiClient externalApiClient;
 
-    private final Boolean isTestingEnvironment;
+    private final Boolean enableSendEmail;
 
     private final String testEmailAddress;
 
@@ -44,10 +44,9 @@ public class AwsSesClient {
             @Value("${aws.ses.user}") String from,
             SpringTemplateEngine templateEngine,
             ExternalApiClient externalApiClient,
-            @Value("${info.properties.environment}") String environment,
             @Value("${institution.subscription.test-email}") String testEmailAddress,
             @Value("${institution.subscription.pagopa-operator-email}") String pagopaOperatorEmailAddress,
-            @Value("${institution.subscription.user-environments}") List<String> userEnvironments) {
+            @Value("${institution.subscription.enable-send-email}") Boolean enableSendEmail) {
         this.sesClient = sesClient;
         this.from = from;
         this.templateEngine = templateEngine;
@@ -55,7 +54,7 @@ public class AwsSesClient {
 
         this.testEmailAddress = testEmailAddress;
         this.pagopaOperatorEmailAddress = pagopaOperatorEmailAddress;
-        this.isTestingEnvironment = !userEnvironments.contains(environment);
+        this.enableSendEmail = enableSendEmail;
     }
 
     /**
@@ -133,7 +132,7 @@ public class AwsSesClient {
     }
 
     private String[] getToAddressList(String taxCode, SelfcareProductUser destinationUserType) {
-        if (Boolean.TRUE.equals(isTestingEnvironment)) {
+        if (Boolean.FALSE.equals(this.enableSendEmail)) {
             return new String[]{testEmailAddress};
         }
         Optional<Institution> optionalInstitution = this.externalApiClient.getInstitutionsFiltered(taxCode)
@@ -160,6 +159,6 @@ public class AwsSesClient {
     }
 
     private boolean hasNotRequiredData(String taxCode) {
-        return Boolean.TRUE.equals(isTestingEnvironment) ? StringUtils.isBlank(testEmailAddress) : taxCode == null;
+        return Boolean.FALSE.equals(this.enableSendEmail) ? StringUtils.isBlank(testEmailAddress) : taxCode == null;
     }
 }
