@@ -48,7 +48,7 @@ class AwsSesClientTest {
 
     @Test
     void sendEmailPRODSuccess() {
-        ReflectionTestUtils.setField(sut, "isTestingEnvironment", false);
+        ReflectionTestUtils.setField(sut, "enableSendEmail", true);
 
         Institutions institutions = buildInstitutions();
         List<InstitutionProductUsers> institutionProductUsers = buildInstitutionProductUsers();
@@ -68,7 +68,7 @@ class AwsSesClientTest {
 
     @Test
     void sendEmailNotPRODSuccess() {
-        ReflectionTestUtils.setField(sut, "isTestingEnvironment", true);
+        ReflectionTestUtils.setField(sut, "enableSendEmail", false);
 
         when(templateEngine.process(anyString(), any())).thenReturn("html template");
         when(sesClient.sendEmail(any(SendEmailRequest.class))).thenReturn(SendEmailResponse.builder().build());
@@ -86,7 +86,7 @@ class AwsSesClientTest {
 
     @Test
     void sendEmailPRODFail() {
-        ReflectionTestUtils.setField(sut, "isTestingEnvironment", false);
+        ReflectionTestUtils.setField(sut, "enableSendEmail", true);
 
         Institutions institutions = buildInstitutions();
         List<InstitutionProductUsers> institutionProductUsers = buildInstitutionProductUsers();
@@ -106,7 +106,7 @@ class AwsSesClientTest {
 
     @Test
     void sendEmailPRODNoInstitutionTaxCodeSkipped() {
-        ReflectionTestUtils.setField(sut, "isTestingEnvironment", false);
+        ReflectionTestUtils.setField(sut, "enableSendEmail", true);
         ReflectionTestUtils.setField(sut, "testEmailAddress", "test@mail.it");
 
         assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail(null)));
@@ -124,7 +124,7 @@ class AwsSesClientTest {
 
     @Test
     void sendEmailNoInstitutionFoundSkipped() {
-        ReflectionTestUtils.setField(sut, "isTestingEnvironment", false);
+        ReflectionTestUtils.setField(sut, "enableSendEmail", true);
 
         when(externalApiClient.getInstitutionsFiltered(INSTITUTION_TAX_CODE))
                 .thenReturn(Institutions.builder().institutions(Collections.emptyList()).build());
@@ -143,7 +143,7 @@ class AwsSesClientTest {
 
     @Test
     void sendEmailNoDestinationSkipped() {
-        ReflectionTestUtils.setField(sut, "isTestingEnvironment", false);
+        ReflectionTestUtils.setField(sut, "enableSendEmail", true);
 
         Institutions institutions = buildInstitutions();
 
@@ -163,7 +163,7 @@ class AwsSesClientTest {
 
     @Test
     void sendEmailNotPRODAndNoTestEmailSkipped() {
-        ReflectionTestUtils.setField(sut, "isTestingEnvironment", true);
+        ReflectionTestUtils.setField(sut, "enableSendEmail", false);
         ReflectionTestUtils.setField(sut, "testEmailAddress", null);
 
         assertDoesNotThrow(() -> sut.sendEmail(buildEmailMessageDetail(INSTITUTION_TAX_CODE)));
@@ -181,7 +181,7 @@ class AwsSesClientTest {
 
     @Test
     void sendEmailPRODSWithPagopaOperatorSuccess() {
-        ReflectionTestUtils.setField(sut, "isTestingEnvironment", false);
+        ReflectionTestUtils.setField(sut, "enableSendEmail", true);
 
         Institutions institutions = buildInstitutions();
         List<InstitutionProductUsers> institutionProductUsers = buildInstitutionProductUsers();
