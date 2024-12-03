@@ -32,7 +32,7 @@ public class AwsSesClient {
 
     private final ExternalApiClient externalApiClient;
 
-    private final String environment;
+    private final Boolean isTestingEnvironment;
 
     private final String testEmailAddress;
 
@@ -46,15 +46,16 @@ public class AwsSesClient {
             ExternalApiClient externalApiClient,
             @Value("${info.properties.environment}") String environment,
             @Value("${institution.subscription.test-email}") String testEmailAddress,
-            @Value("${institution.subscription.pagopa-operator-email}") String pagopaOperatorEmailAddress
-    ) {
+            @Value("${institution.subscription.pagopa-operator-email}") String pagopaOperatorEmailAddress,
+            @Value("${institution.subscription.user-environments}") List<String> userEnvironments) {
         this.sesClient = sesClient;
         this.from = from;
         this.templateEngine = templateEngine;
         this.externalApiClient = externalApiClient;
-        this.environment = environment;
+
         this.testEmailAddress = testEmailAddress;
         this.pagopaOperatorEmailAddress = pagopaOperatorEmailAddress;
+        this.isTestingEnvironment = !userEnvironments.contains(environment);
     }
 
     /**
@@ -72,7 +73,7 @@ public class AwsSesClient {
      */
     public void sendEmail(EmailMessageDetail email, boolean sendEmailToPagopaOperator) {
         String taxCode = email.getInstitutionTaxCode();
-        if (isNotProdWithoutTestEmail() || isProdWithNullDestinationInstitutionTaxCode(taxCode)) {
+        if (hasNotRequiredData(taxCode)) {
             log.warn("Skip send email process");
             return;
         }
@@ -132,7 +133,7 @@ public class AwsSesClient {
     }
 
     private String[] getToAddressList(String taxCode, SelfcareProductUser destinationUserType) {
-        if (!this.environment.equals("PROD")) {
+        if (Boolean.TRUE.equals(isTestingEnvironment)) {
             return new String[]{testEmailAddress};
         }
         Optional<Institution> optionalInstitution = this.externalApiClient.getInstitutionsFiltered(taxCode)
@@ -158,11 +159,7 @@ public class AwsSesClient {
                 .toArray(new String[0]);
     }
 
-    private boolean isProdWithNullDestinationInstitutionTaxCode(String taxCode) {
-        return this.environment.equals("PROD") && taxCode == null;
-    }
-
-    private boolean isNotProdWithoutTestEmail() {
-        return !this.environment.equals("PROD") && StringUtils.isBlank(testEmailAddress);
+    private boolean hasNotRequiredData(String taxCode) {
+        return Boolean.TRUE.equals(isTestingEnvironment) ? StringUtils.isBlank(testEmailAddress) : taxCode == null;
     }
 }
