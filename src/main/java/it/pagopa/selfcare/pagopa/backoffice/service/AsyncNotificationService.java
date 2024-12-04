@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -17,9 +18,14 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.BUNDLE
 @Service
 public class AsyncNotificationService {
 
+    private final String environment;
     private final AwsSesClient awsSesClient;
 
-    public AsyncNotificationService(AwsSesClient awsSesClient) {
+    public AsyncNotificationService(
+            @Value("${info.properties.environment}") String environment,
+            AwsSesClient awsSesClient
+    ) {
+        this.environment = environment;
         this.awsSesClient = awsSesClient;
     }
 
@@ -43,7 +49,7 @@ public class AsyncNotificationService {
                     EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                             .institutionTaxCode(ciTaxCode)
                             .subject(BUNDLE_DELETE_SUBJECT)
-                            .textBody(String.format(BUNDLE_DELETE_BODY, pspName, bundleName))
+                            .textBody(String.format(BUNDLE_DELETE_BODY, pspName, bundleName, getEnvParam()))
                             .htmlBodyFileName("deleteBundleEmail.html")
                             .htmlBodyContext(bodyContext)
                             .destinationUserType(SelfcareProductUser.ADMIN)
@@ -60,6 +66,7 @@ public class AsyncNotificationService {
         // Properties to show up in Template after stored in Context
         Map<String, Object> properties = new HashMap<>();
         properties.put("bundleName", bundleName);
+        properties.put("environment", getEnvParam());
 
         if (pspName != null) {
             properties.put("pspName", pspName);
@@ -67,6 +74,12 @@ public class AsyncNotificationService {
 
         context.setVariables(properties);
         return context;
+    }
 
+    private String getEnvParam() {
+        if (this.environment.equals("PROD")) {
+            return "";
+        }
+        return String.format(".%s", this.environment.toLowerCase());
     }
 }

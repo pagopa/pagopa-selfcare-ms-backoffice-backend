@@ -9,6 +9,7 @@ import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.BundleAllPages;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,8 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.BUNDLE
 @Slf4j
 public class CommissionBundleMailNotificationScheduler {
 
+    private final String environment;
+
     private static final String VALID_FROM_DATE_FORMAT = "yyyy-MM-dd";
 
     private final BundleAllPages bundleAllPages;
@@ -44,10 +47,12 @@ public class CommissionBundleMailNotificationScheduler {
     private final AwsSesClient awsSesClient;
 
     public CommissionBundleMailNotificationScheduler(
+            @Value("${info.properties.environment}") String environment,
             BundleAllPages bundleAllPages,
             ApiConfigClient apiConfigClient,
             AwsSesClient awsSesClient
     ) {
+        this.environment = environment;
         this.bundleAllPages = bundleAllPages;
         this.apiConfigClient = apiConfigClient;
         this.awsSesClient = awsSesClient;
@@ -111,7 +116,7 @@ public class CommissionBundleMailNotificationScheduler {
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(notifyTaxCode)
                 .subject(BUNDLE_EXPIRE_SUBJECT)
-                .textBody(String.format(BUNDLE_EXPIRE_BODY, bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, expireAt))
+                .textBody(String.format(BUNDLE_EXPIRE_BODY, bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, expireAt, getEnvParam()))
                 .htmlBodyFileName("expiringBundleEmail.html")
                 .htmlBodyContext(buildEmailHtmlBodyContext(bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, expireAt))
                 .destinationUserType(SelfcareProductUser.ADMIN)
@@ -144,8 +149,16 @@ public class CommissionBundleMailNotificationScheduler {
         properties.put("pspName", pspBusinessName);
         properties.put("pspTaxCode", pspTaxCode);
         properties.put("expireAt", expireAt);
+        properties.put("environment", getEnvParam());
 
         context.setVariables(properties);
         return context;
+    }
+
+    private String getEnvParam() {
+        if (this.environment.equals("PROD")) {
+            return "";
+        }
+        return String.format(".%s", this.environment.toLowerCase());
     }
 }
