@@ -67,10 +67,7 @@ public class AsyncNotificationService {
         Map<String, Object> properties = new HashMap<>();
         properties.put("bundleName", bundleName);
         properties.put("environment", getEnvParam());
-
-        if (pspName != null) {
-            properties.put("pspName", pspName);
-        }
+        properties.put("pspName", pspName);
 
         context.setVariables(properties);
         return context;

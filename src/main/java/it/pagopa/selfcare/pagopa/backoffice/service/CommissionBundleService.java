@@ -642,7 +642,7 @@ public class CommissionBundleService {
         return this.exportService.exportPSPBundlesToCsv(pspCode, bundleTypeList);
     }
 
-    private Context buildEmailHtmlBodyContext(String bundleName, String pspName) {
+    private Context buildEmailHtmlBodyContext(String bundleName) {
         // Thymeleaf Context
         Context context = new Context();
 
@@ -650,9 +650,6 @@ public class CommissionBundleService {
         Map<String, Object> properties = new HashMap<>();
         properties.put("bundleName", bundleName);
         properties.put("environment", getEnvParam());
-        if (pspName != null) {
-            properties.put("pspName", pspName);
-        }
 
         context.setVariables(properties);
         return context;
@@ -663,10 +660,6 @@ public class CommissionBundleService {
             return "";
         }
         return String.format(".%s", this.environment.toLowerCase());
-    }
-
-    private Context buildEmailHtmlBodyContext(String bundleName) {
-        return buildEmailHtmlBodyContext(bundleName, null);
     }
 
     private List<CISubscriptionInfo> buildCISubscriptionInfoList(
