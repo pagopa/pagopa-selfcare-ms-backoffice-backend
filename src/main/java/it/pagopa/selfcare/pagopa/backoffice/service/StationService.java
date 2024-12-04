@@ -24,6 +24,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUs
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
@@ -45,7 +46,9 @@ public class StationService {
     private static final String UPDATE_STATION_SUBJECT = "Modifica stazione attiva";
     private static final String UPDATE_STATION_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato la stazione %s che hai modificato. Da questo momento la modifica effettuata risulta attiva.%n%n%nA presto,%n%n Pagamenti pagoPA";
     private static final String STATION_REVIEW_SUBJECT = "Modifiche richieste";
-    private static final String STATION_REVIEW_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha richiesto delle modifiche alla stazione %s che hai creato.%n Puoi vedere le modifiche qui sotto oppure nel dettaglio della stazione (https://selfcare.platform.pagopa.it/ui/stations/%s).%n Modifiche richieste %n '%s' %n%n%nA presto,%n%n Pagamenti pagoPA";
+    private static final String STATION_REVIEW_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha richiesto delle modifiche alla stazione %s che hai creato.%n Puoi vedere le modifiche qui sotto oppure nel dettaglio della stazione (https://selfcare%s.platform.pagopa.it/ui/stations/%s).%n Modifiche richieste %n '%s' %n%n%nA presto,%n%n Pagamenti pagoPA";
+
+    private final String environment;
 
     private final CreditorInstitutionMapper creditorInstitutionMapper = Mappers.getMapper(CreditorInstitutionMapper.class);
 
@@ -63,12 +66,14 @@ public class StationService {
 
     @Autowired
     public StationService(
+            @Value("${info.properties.environment}") String environment,
             ApiConfigClient apiConfigClient,
             WrapperService wrapperService,
             AwsSesClient awsSesClient,
             ForwarderClient forwarderClient,
             JiraServiceManagerClient jiraServiceManagerClient
     ) {
+        this.environment = environment;
         this.apiConfigClient = apiConfigClient;
         this.wrapperService = wrapperService;
         this.awsSesClient = awsSesClient;
@@ -238,7 +243,7 @@ public class StationService {
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
                 .subject(STATION_REVIEW_SUBJECT)
-                .textBody(String.format(STATION_REVIEW_EMAIL_BODY, stationCode, stationCode, note))
+                .textBody(String.format(STATION_REVIEW_EMAIL_BODY, stationCode, getEnvParam(), stationCode, note))
                 .htmlBodyFileName("stationReviewRequestedEmail.html")
                 .htmlBodyContext(buildStationHtmlEmailBodyContext(stationCode, note))
                 .destinationUserType(SelfcareProductUser.OPERATOR)
@@ -323,12 +328,20 @@ public class StationService {
         // Properties to show up in Template after stored in Context
         Map<String, Object> properties = new HashMap<>();
         properties.put("stationCode", stationCode);
+        properties.put("environment", getEnvParam());
         if (note != null) {
             properties.put("reviewNote", note);
         }
 
         context.setVariables(properties);
         return context;
+    }
+
+    private String getEnvParam() {
+        if (this.environment.equals("PROD")) {
+            return "";
+        }
+        return String.format(".%s", this.environment.toLowerCase());
     }
 
     /**

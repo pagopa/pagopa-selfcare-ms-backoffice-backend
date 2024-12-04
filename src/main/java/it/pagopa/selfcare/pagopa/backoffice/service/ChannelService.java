@@ -27,6 +27,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -49,7 +50,9 @@ public class ChannelService {
     private static final String UPDATE_CHANEL_SUBJECT = "Modifica canale attiva";
     private static final String UPDATE_CHANEL_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha revisionato e validato il canale %s che hai modificato. Da questo momento la modifica effettuata risulta attiva.%n%n%nA presto,%n%n Back-office pagoPA";
     private static final String CHANNEL_REVIEW_SUBJECT = "Modifiche richieste";
-    private static final String CHANNEL_REVIEW_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha richiesto delle modifiche al canale %s che hai creato.%n Puoi vedere le modifiche qui sotto oppure nel dettaglio del canale (https://selfcare.platform.pagopa.it/ui/channels/%s).%n Modifiche richieste %n '%s' %n%n%nA presto,%n%n Pagamenti pagoPA";
+    private static final String CHANNEL_REVIEW_EMAIL_BODY = "Ciao, %n%n%n pagoPA ha richiesto delle modifiche al canale %s che hai creato.%n Puoi vedere le modifiche qui sotto oppure nel dettaglio del canale (https://selfcare%s.platform.pagopa.it/ui/channels/%s).%n Modifiche richieste %n '%s' %n%n%nA presto,%n%n Pagamenti pagoPA";
+
+    private final String environment;
 
     private final ApiConfigClient apiConfigClient;
 
@@ -61,11 +64,13 @@ public class ChannelService {
 
     @Autowired
     public ChannelService(
+            @Value("${info.properties.environment}") String environment,
             ApiConfigClient apiConfigClient,
             WrapperService wrapperService,
             JiraServiceManagerClient jsmClient,
             AwsSesClient awsSesClient
     ) {
+        this.environment = environment;
         this.apiConfigClient = apiConfigClient;
         this.wrapperService = wrapperService;
         this.jsmClient = jsmClient;
@@ -286,7 +291,7 @@ public class ChannelService {
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(brokerPspCode)
                 .subject(CHANNEL_REVIEW_SUBJECT)
-                .textBody(String.format(CHANNEL_REVIEW_EMAIL_BODY, channelCode, channelCode, note))
+                .textBody(String.format(CHANNEL_REVIEW_EMAIL_BODY, channelCode, getEnvParam(), channelCode, note))
                 .htmlBodyFileName("channelReviewRequestedEmail.html")
                 .htmlBodyContext(buildChannelHtmlEmailBodyContext(channelCode, note))
                 .destinationUserType(SelfcareProductUser.OPERATOR)
@@ -303,12 +308,20 @@ public class ChannelService {
         // Properties to show up in Template after stored in Context
         Map<String, Object> properties = new HashMap<>();
         properties.put("channelCode", channelCode);
+        properties.put("environment", getEnvParam());
         if (note != null) {
             properties.put("reviewNote", note);
         }
 
         context.setVariables(properties);
         return context;
+    }
+
+    private String getEnvParam() {
+        if (this.environment.equals("PROD")) {
+            return "";
+        }
+        return String.format(".%s", this.environment.toLowerCase());
     }
 
     private WrapperChannels buildEnrichedWrapperChannels(Channels channels) {

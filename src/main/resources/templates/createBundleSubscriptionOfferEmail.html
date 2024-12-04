@@ -17,9 +17,12 @@
 </p>
 <br/>
 <p>
-    Puoi vedere e gestire il pacchetto da qui <a
-        href="https://selfcare.platform.pagopa.it/ui/comm-bundles">https://selfcare.platform.pagopa.it/ui/comm-bundles</a>.
-</p>
+    Puoi vedere e gestire il tuo pacchetto da qui <a
+        href="@{https://selfcare{env}.platform.pagopa.it/ui/comm-bundles(env=${environment})}">
+    <span th:if="${environment == ''}">https://selfcare.platform.pagopa.it/ui/comm-bundles</span>
+    <span th:if="${environment == '.uat'}">https://selfcare.uat.platform.pagopa.it/ui/comm-bundles</span>
+    <span th:if="${environment == '.dev'}">https://selfcare.dev.platform.pagopa.it/ui/comm-bundles</span>
+</a>.
 <br/>
 <p>
     A presto,

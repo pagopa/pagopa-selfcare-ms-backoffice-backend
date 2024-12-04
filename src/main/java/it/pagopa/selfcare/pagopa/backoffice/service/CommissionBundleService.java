@@ -39,8 +39,7 @@ public class CommissionBundleService {
     public static final String SUBJECT_NEW_BUNDLE_GEC = "Creazione Nuovo Pacchetto GEC %s";
     public static final String DETAIL_NEW_BUNDLE_GEC = "E' stato creato un nuovo pacchetto GEC '%s' da parte di %s (CF: %s) che si attiverà a partire dal %s. Si prega di prenderne visione per verificare se il PSP ha configurato correttamente il pacchetto. \nLink: https://selfcare%s.platform.pagopa.it/ui/comm-bundles/detail/%s";
 
-    @Value("${info.properties.environment}")
-    private String environment;
+    private final String environment;
 
     private final GecClient gecClient;
 
@@ -64,6 +63,7 @@ public class CommissionBundleService {
 
     @Autowired
     public CommissionBundleService(
+            @Value("${info.properties.environment}") String environment,
             GecClient gecClient,
             ModelMapper modelMapper,
             TaxonomyService taxonomyService,
@@ -75,6 +75,7 @@ public class CommissionBundleService {
             ExportService exportService,
             BundleAllPages bundleAllPages
     ) {
+        this.environment = environment;
         this.gecClient = gecClient;
         this.modelMapper = modelMapper;
         this.taxonomyService = taxonomyService;
@@ -206,7 +207,7 @@ public class CommissionBundleService {
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
                 .subject(BUNDLE_ACCEPT_REQUEST_SUBJECT)
-                .textBody(String.format(BUNDLE_ACCEPT_REQUEST_BODY, bundleName))
+                .textBody(String.format(BUNDLE_ACCEPT_REQUEST_BODY, bundleName, getEnvParam()))
                 .htmlBodyFileName("acceptBundleSubscriptionRequestEmail.html")
                 .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
                 .destinationUserType(SelfcareProductUser.ADMIN)
@@ -494,7 +495,7 @@ public class CommissionBundleService {
             EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                     .institutionTaxCode(bundleRequest.getIdPsp())
                     .subject(BUNDLE_CREATE_REQUEST_SUBJECT)
-                    .textBody(String.format(BUNDLE_CREATE_REQUEST_BODY, bundleName))
+                    .textBody(String.format(BUNDLE_CREATE_REQUEST_BODY, bundleName, getEnvParam()))
                     .htmlBodyFileName("createBundleSubscriptionRequestEmail.html")
                     .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
                     .destinationUserType(SelfcareProductUser.ADMIN)
@@ -558,7 +559,7 @@ public class CommissionBundleService {
                     EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                             .institutionTaxCode(ciTaxCode)
                             .subject(BUNDLE_CREATE_OFFER_SUBJECT)
-                            .textBody(String.format(BUNDLE_CREATE_OFFER_BODY, bundleName))
+                            .textBody(String.format(BUNDLE_CREATE_OFFER_BODY, bundleName, getEnvParam()))
                             .htmlBodyFileName("createBundleSubscriptionOfferEmail.html")
                             .htmlBodyContext(bodyContext)
                             .destinationUserType(SelfcareProductUser.ADMIN)
@@ -591,7 +592,7 @@ public class CommissionBundleService {
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(pspTaxCode)
                 .subject(BUNDLE_ACCEPT_OFFER_SUBJECT)
-                .textBody(String.format(BUNDLE_ACCEPT_OFFER_BODY, bundleName))
+                .textBody(String.format(BUNDLE_ACCEPT_OFFER_BODY, bundleName, getEnvParam()))
                 .htmlBodyFileName("acceptBundleSubscriptionOfferEmail.html")
                 .htmlBodyContext(buildEmailHtmlBodyContext(bundleName))
                 .destinationUserType(SelfcareProductUser.ADMIN)
@@ -641,25 +642,24 @@ public class CommissionBundleService {
         return this.exportService.exportPSPBundlesToCsv(pspCode, bundleTypeList);
     }
 
-    private Context buildEmailHtmlBodyContext(String bundleName, String pspName) {
+    private Context buildEmailHtmlBodyContext(String bundleName) {
         // Thymeleaf Context
         Context context = new Context();
 
         // Properties to show up in Template after stored in Context
         Map<String, Object> properties = new HashMap<>();
         properties.put("bundleName", bundleName);
-
-        if (pspName != null) {
-            properties.put("pspName", pspName);
-        }
+        properties.put("environment", getEnvParam());
 
         context.setVariables(properties);
         return context;
-
     }
 
-    private Context buildEmailHtmlBodyContext(String bundleName) {
-        return buildEmailHtmlBodyContext(bundleName, null);
+    private String getEnvParam() {
+        if (this.environment.equals("PROD")) {
+            return "";
+        }
+        return String.format(".%s", this.environment.toLowerCase());
     }
 
     private List<CISubscriptionInfo> buildCISubscriptionInfoList(

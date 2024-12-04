@@ -32,6 +32,8 @@ public class AwsSesClient {
 
     private final ExternalApiClient externalApiClient;
 
+    private final String environment;
+
     private final Boolean enableSendEmail;
 
     private final String testEmailAddress;
@@ -44,6 +46,7 @@ public class AwsSesClient {
             @Value("${aws.ses.user}") String from,
             SpringTemplateEngine templateEngine,
             ExternalApiClient externalApiClient,
+            @Value("${info.properties.environment}") String environment,
             @Value("${institution.subscription.test-email}") String testEmailAddress,
             @Value("${institution.subscription.pagopa-operator-email}") String pagopaOperatorEmailAddress,
             @Value("${institution.subscription.enable-send-email}") Boolean enableSendEmail) {
@@ -51,7 +54,7 @@ public class AwsSesClient {
         this.from = from;
         this.templateEngine = templateEngine;
         this.externalApiClient = externalApiClient;
-
+        this.environment = environment;
         this.testEmailAddress = testEmailAddress;
         this.pagopaOperatorEmailAddress = pagopaOperatorEmailAddress;
         this.enableSendEmail = enableSendEmail;
@@ -111,6 +114,7 @@ public class AwsSesClient {
 
     private SendEmailRequest buildEmailRequest(EmailMessageDetail email, String[] toAddressList, boolean sendEmailToPagopaOperator) {
         String html = this.templateEngine.process(email.getHtmlBodyFileName(), email.getHtmlBodyContext());
+        String subject = isNotProd() ? String.format("[%s] %s", this.environment, email.getSubject()) : email.getSubject();
 
         return SendEmailRequest.builder()
                 .source(this.from)
@@ -122,7 +126,7 @@ public class AwsSesClient {
                     }
                 })
                 .message(m -> m
-                        .subject(c -> c.data(email.getSubject()))
+                        .subject(c -> c.data(subject))
                         .body(b -> b
                                 .html(c -> c.data(html).charset(StandardCharsets.UTF_8.name()))
                                 .text(c -> c.data(email.getTextBody()))
@@ -156,6 +160,10 @@ public class AwsSesClient {
                 .map(InstitutionProductUsers::getEmail)
                 .toList()
                 .toArray(new String[0]);
+    }
+
+    private boolean isNotProd() {
+        return !this.environment.equals("PROD");
     }
 
     private boolean hasNotRequiredData(String taxCode) {
