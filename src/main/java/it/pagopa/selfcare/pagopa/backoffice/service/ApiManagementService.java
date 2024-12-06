@@ -560,6 +560,13 @@ public class ApiManagementService {
                 authorizationMetadata = buildAuthorizationMetadata(ciSegregationCodes);
             }
         }
+        if (subscription.equals(Subscription.BO_EXT_EC) || subscription.equals(Subscription.BO_EXT_PSP)) {
+            authorizationEntities.add(
+                    AuthorizationEntity.builder()
+                            .name(institution.getDescription())
+                            .value(institution.getTaxCode())
+                            .build());
+        }
         return new AuthorizationConfig(authorizationEntities, authorizationMetadata);
     }
 

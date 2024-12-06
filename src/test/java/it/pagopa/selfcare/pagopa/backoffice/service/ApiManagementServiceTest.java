@@ -40,7 +40,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpStatus;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -378,10 +377,20 @@ class ApiManagementServiceTest {
         verify(apimClient, never()).createInstitution(anyString(), any());
         verify(apimClient).createInstitutionSubscription(any(), any(), any(), any(), any());
         verify(externalApiClient).getInstitution(INSTITUTION_ID);
-        verify(authorizerConfigClient, times(2)).createAuthorization(any());
         verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
         verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
         verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
+        verify(authorizerConfigClient, times(2)).createAuthorization(authorizationCaptor.capture());
+
+        Authorization captorValue = authorizationCaptor.getValue();
+        assertNotNull(captorValue);
+        assertNotNull(captorValue.getOwner());
+        assertEquals(INSTITUTION_TAX_CODE, captorValue.getOwner().getId());
+        assertNotNull(captorValue.getAuthorizedEntities());
+        assertEquals(1, captorValue.getAuthorizedEntities().size());
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> INSTITUTION_TAX_CODE.equals(elem.getValue())));
+        assertNotNull(captorValue.getOtherMetadata());
+        assertTrue(captorValue.getOtherMetadata().isEmpty());
     }
 
     @Test
@@ -638,9 +647,17 @@ class ApiManagementServiceTest {
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
         verify(authorizerConfigClient).deleteAuthorization(anyString());
-        verify(authorizerConfigClient).createAuthorization(any());
         verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
         verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(authorizerConfigClient).createAuthorization(authorizationCaptor.capture());
+
+        Authorization captorValue = authorizationCaptor.getValue();
+        assertNotNull(captorValue);
+        assertNotNull(captorValue.getAuthorizedEntities());
+        assertEquals(1, captorValue.getAuthorizedEntities().size());
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> INSTITUTION_TAX_CODE.equals(elem.getValue())));
+        assertNotNull(captorValue.getOtherMetadata());
+        assertTrue(captorValue.getOtherMetadata().isEmpty());
     }
 
     @Test
@@ -659,9 +676,17 @@ class ApiManagementServiceTest {
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(legacyPspCodeUtil, never()).retrievePspCode(anyString(), anyBoolean());
         verify(authorizerConfigClient).deleteAuthorization(anyString());
-        verify(authorizerConfigClient).createAuthorization(any());
         verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
         verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(authorizerConfigClient).createAuthorization(authorizationCaptor.capture());
+
+        Authorization captorValue = authorizationCaptor.getValue();
+        assertNotNull(captorValue);
+        assertNotNull(captorValue.getAuthorizedEntities());
+        assertEquals(1, captorValue.getAuthorizedEntities().size());
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> INSTITUTION_TAX_CODE.equals(elem.getValue())));
+        assertNotNull(captorValue.getOtherMetadata());
+        assertTrue(captorValue.getOtherMetadata().isEmpty());
     }
 
     @Test
@@ -769,9 +794,17 @@ class ApiManagementServiceTest {
         verify(apimClient).regenerateSecondaryKey(subscriptionId);
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient).deleteAuthorization(anyString());
-        verify(authorizerConfigClient).createAuthorization(any());
         verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
         verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(authorizerConfigClient).createAuthorization(authorizationCaptor.capture());
+
+        Authorization captorValue = authorizationCaptor.getValue();
+        assertNotNull(captorValue);
+        assertNotNull(captorValue.getAuthorizedEntities());
+        assertEquals(1, captorValue.getAuthorizedEntities().size());
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> INSTITUTION_TAX_CODE.equals(elem.getValue())));
+        assertNotNull(captorValue.getOtherMetadata());
+        assertTrue(captorValue.getOtherMetadata().isEmpty());
     }
 
     @Test
@@ -790,9 +823,17 @@ class ApiManagementServiceTest {
         verify(apimClient).regenerateSecondaryKey(subscriptionId);
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient).deleteAuthorization(anyString());
-        verify(authorizerConfigClient).createAuthorization(any());
         verify(externalApiClient, never()).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
         verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(authorizerConfigClient).createAuthorization(authorizationCaptor.capture());
+
+        Authorization captorValue = authorizationCaptor.getValue();
+        assertNotNull(captorValue);
+        assertNotNull(captorValue.getAuthorizedEntities());
+        assertEquals(1, captorValue.getAuthorizedEntities().size());
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> INSTITUTION_TAX_CODE.equals(elem.getValue())));
+        assertNotNull(captorValue.getOtherMetadata());
+        assertTrue(captorValue.getOtherMetadata().isEmpty());
     }
 
     @Test
