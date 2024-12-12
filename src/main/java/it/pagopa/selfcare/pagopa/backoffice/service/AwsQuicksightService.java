@@ -18,8 +18,8 @@ public class AwsQuicksightService {
     private final String namespace;
     private final List<String> authorizedResourceArns;
     private final List<String> allowedDomains;
-
     private final AwsQuicksightClient awsQuicksightClient;
+    private final String sessionTagKey;
 
     @Autowired
     public AwsQuicksightService(
@@ -28,7 +28,8 @@ public class AwsQuicksightService {
             @Value("${aws.quicksight.dashboard-id}") String initialDashboardId,
             @Value("${aws.quicksight.namespace}") String namespace,
             @Value("${aws.quicksight.region}") Region region,
-            @Value("${aws.quicksight.allowed-domains}") List<String> allowedDomains
+            @Value("${aws.quicksight.allowed-domains}") List<String> allowedDomains,
+            @Value("${aws.quicksight.session-tag-key") String sessionTagKey
     ) {
         this.awsQuicksightClient = awsQuicksightClient;
         this.accountId = accountId;
@@ -36,6 +37,7 @@ public class AwsQuicksightService {
         this.namespace = namespace;
         this.authorizedResourceArns = Collections.singletonList(String.format("arn:aws:quicksight:%s:%s:dashboard/%s", region, accountId, initialDashboardId));
         this.allowedDomains = allowedDomains;
+        this.sessionTagKey = sessionTagKey;
     }
 
     /**
@@ -45,7 +47,7 @@ public class AwsQuicksightService {
      */
     public String generateEmbedUrlForAnonymousUser(String pspTaxCode) {
         // TODO verify key session tag
-        List<SessionTag> sessionTags = Collections.singletonList(SessionTag.builder().key("comune_tag").value(pspTaxCode).build());
+        List<SessionTag> sessionTags = Collections.singletonList(SessionTag.builder().key(sessionTagKey).value(pspTaxCode).build());
         return awsQuicksightClient.generateEmbedUrlForAnonymousUser(
                 this.accountId,
                 this.initialDashboardId,
