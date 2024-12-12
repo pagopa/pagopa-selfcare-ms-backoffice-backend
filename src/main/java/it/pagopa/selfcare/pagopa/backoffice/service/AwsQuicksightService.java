@@ -27,13 +27,14 @@ public class AwsQuicksightService {
             @Value("${aws.quicksight.account-id}") String accountId,
             @Value("${aws.quicksight.dashboard-id}") String initialDashboardId,
             @Value("${aws.quicksight.namespace}") String namespace,
+            @Value("${aws.quicksight.region}") Region region,
             @Value("${aws.quicksight.allowed-domains}") List<String> allowedDomains
     ) {
         this.awsQuicksightClient = awsQuicksightClient;
         this.accountId = accountId;
         this.initialDashboardId = initialDashboardId;
         this.namespace = namespace;
-        this.authorizedResourceArns = Collections.singletonList(String.format("arn:aws:quicksight:%s:%s:dashboard/%s", Region.EU_WEST_1, accountId, initialDashboardId));
+        this.authorizedResourceArns = Collections.singletonList(String.format("arn:aws:quicksight:%s:%s:dashboard/%s", region, accountId, initialDashboardId));
         this.allowedDomains = allowedDomains;
     }
 
