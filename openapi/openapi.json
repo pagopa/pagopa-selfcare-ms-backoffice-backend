@@ -11071,9 +11071,9 @@
         "responses": {
           "200": {
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/QuicksightEmbedUrlResponse"
                 }
               }
             },
@@ -15398,6 +15398,14 @@
           "rejectionDate": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "QuicksightEmbedUrlResponse": {
+        "type": "object",
+        "properties": {
+          "embedUrl": {
+            "type": "string"
           }
         }
       },

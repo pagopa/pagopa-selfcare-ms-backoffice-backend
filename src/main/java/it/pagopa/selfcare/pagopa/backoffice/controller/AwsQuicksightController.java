@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import it.pagopa.selfcare.pagopa.backoffice.model.quicksightdashboard.QuicksightEmbedUrlResponse;
 import it.pagopa.selfcare.pagopa.backoffice.service.AwsQuicksightService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +26,11 @@ public class AwsQuicksightController {
         this.awsQuicksightService = awsQuicksightService;
     }
 
-    @GetMapping(value = "dashboard/{psp-tax-code}", produces = {MediaType.TEXT_PLAIN_VALUE})
+    @GetMapping(value = "dashboard/{psp-tax-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get aws quicksight dashboard's embed url", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public String getEmbedUrlForAnonymousUser(
+    public QuicksightEmbedUrlResponse getEmbedUrlForAnonymousUser(
             @Parameter(description = "PSP's tax code") @PathVariable("psp-tax-code") String pspTaxCode) {
         return awsQuicksightService.generateEmbedUrlForAnonymousUser(pspTaxCode);
     }

@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsQuicksightClient;
+import it.pagopa.selfcare.pagopa.backoffice.model.quicksightdashboard.QuicksightEmbedUrlResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -45,15 +46,18 @@ public class AwsQuicksightService {
      *
      * @return dashboard's embed url
      */
-    public String generateEmbedUrlForAnonymousUser(String pspTaxCode) {
+    public QuicksightEmbedUrlResponse generateEmbedUrlForAnonymousUser(String pspTaxCode) {
         // TODO verify key session tag
         List<SessionTag> sessionTags = Collections.singletonList(SessionTag.builder().key(sessionTagKey).value(pspTaxCode).build());
-        return awsQuicksightClient.generateEmbedUrlForAnonymousUser(
+        String embedUrl = awsQuicksightClient.generateEmbedUrlForAnonymousUser(
                 this.accountId,
                 this.initialDashboardId,
                 this.namespace,
                 this.authorizedResourceArns,
                 this.allowedDomains,
                 sessionTags);
+        QuicksightEmbedUrlResponse quicksightEmbedUrlResponse = new QuicksightEmbedUrlResponse();
+        quicksightEmbedUrlResponse.setEmbedUrl(embedUrl);
+        return quicksightEmbedUrlResponse;
     }
 }
