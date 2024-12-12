@@ -31,12 +31,12 @@ public class AwsQuicksightClient {
     }
 
     public String generateEmbedUrlForAnonymousUser(
-            final String accountId, // YOUR AWS ACCOUNT ID
-            final String initialDashboardId, // DASHBOARD ID TO WHICH THE CONSTRUCTED URL POINTS.
-            final String namespace, // ANONYMOUS EMBEDDING REQUIRES SPECIFYING A VALID NAMESPACE FOR WHICH YOU WANT THE EMBEDDING URL
-            final List<String> authorizedResourceArns, // DASHBOARD ARN LIST TO EMBED
-            final List<String> allowedDomains, // RUNTIME ALLOWED DOMAINS FOR EMBEDDING
-            final List<SessionTag> sessionTags // SESSION TAGS USED FOR ROW-LEVEL SECURITY
+            final String accountId,
+            final String initialDashboardId,
+            final String namespace,
+            final List<String> authorizedResourceArns,
+            final List<String> allowedDomains,
+            final List<SessionTag> sessionTags
     ) {
         GenerateEmbedUrlForAnonymousUserRequest generateEmbedUrlForAnonymousUserRequest = GenerateEmbedUrlForAnonymousUserRequest.builder()
                 .awsAccountId(accountId)
