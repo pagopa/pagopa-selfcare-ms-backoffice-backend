@@ -92,6 +92,9 @@ microservice-chart:
     ENV: 'DEV'
     REST_CLIENT_LOGGER_LEVEL: 'FULL'
     AWS_REGION: 'eu-south-1'
+    AWS_QUICKSIGHT_REGION: 'eu-west-1'
+    AWS_QUICKSIGHT_NAMESPACE: 'default'
+    AWS_QUICKSIGHT_ALLOWED_DOMAINS: 'https://selfcare.dev.platform.pagopa.it'
     OTEL_SERVICE_NAME: "pagopa-selfcare-backoffice-backend"
     CRONJOB_SCHEDULE_ENABLED: 'true'
     CRONJOB_SCHEDULE_TAXONOMYEXPORT: "0 0 7 * * *"
@@ -109,6 +112,10 @@ microservice-chart:
     AWS_ACCESS_KEY_ID: pagopa-d-aws-access-key-id
     AWS_SECRET_ACCESS_KEY: pagopa-d-aws-secret-access-key
     AWS_SES_USER: pagopa-d-aws-ses-user
+    AWS_QUICKSIGHT_ACCESS_KEY: pagopa-d-aws-quicksight-access-key
+    AWS_QUICKSIGHT_SECRET_KEY: pagopa-d-aws-quicksight-secret-key
+    AWS_QUICKSIGHT_ACCOUNT_ID: pagopa-d-aws-quicksight-account-id
+    AWS_QUICKSIGHT_DASHBOARD_ID: pagopa-d-aws-quicksight-dashboard-id
     AZURE_CLIENT_SECRET: pagopa-d-selfcare-client-secret
     AZURE_CLIENT_ID: pagopa-d-selfcare-client-id
     AZURE_TENANT_ID: pagopa-selfcare-dev-tenant-id
