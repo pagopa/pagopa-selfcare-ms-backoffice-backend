@@ -30,6 +30,10 @@ public class AwsQuicksightClient {
                 .build();
     }
 
+    public AwsQuicksightClient(QuickSightClient quickSightClient){
+        this.quickSightClient = quickSightClient;
+    }
+
     public String generateEmbedUrlForAnonymousUser(
             final String accountId,
             final String initialDashboardId,
