@@ -444,7 +444,7 @@ class ApiManagementServiceTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "FDR_KPI_API"})
+    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "QI_FDR_KPI"})
     void createSubscriptionKeysForSubscriptionThatRequirePSPCodeFailNoPSPCodeFound(Subscription sub) {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
 
@@ -563,7 +563,7 @@ class ApiManagementServiceTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "FDR_KPI_API"})
+    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "QI_FDR_KPI"})
     void regeneratePrimaryKeyForSubscriptionThatRequirePSPCodeFailNoPSPCodeFound(Subscription sub) {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
         String subscriptionId = String.format("%s%s", sub.getPrefixId(), institutionResponse.getTaxCode());
@@ -585,7 +585,7 @@ class ApiManagementServiceTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "FDR_KPI_API"})
+    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "QI_FDR_KPI"})
     void regeneratePrimaryKeyForFDRPSPSuccess(Subscription sub) {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
         String subscriptionId = String.format("%s%s", sub.getPrefixId(), institutionResponse.getTaxCode());
@@ -715,7 +715,7 @@ class ApiManagementServiceTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "FDR_KPI_API"})
+    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "QI_FDR_KPI"})
     void regenerateSecondaryKeyForSubscriptionThatRequirePSPCodeFailNoPSPCodeFound(Subscription sub) {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
         String subscriptionId = String.format("%s%s", sub.getPrefixId(), institutionResponse.getTaxCode());
@@ -737,7 +737,7 @@ class ApiManagementServiceTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "FDR_KPI_API"})
+    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "QI_FDR_KPI"})
     void regenerateSecondaryKeyForSubscriptionThatRequirePSPCodeSuccess(Subscription sub) {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
         String subscriptionId = String.format("%s%s", sub.getPrefixId(), institutionResponse.getTaxCode());
