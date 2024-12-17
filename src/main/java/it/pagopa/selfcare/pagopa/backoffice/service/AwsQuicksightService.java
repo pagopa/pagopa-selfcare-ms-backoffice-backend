@@ -30,7 +30,7 @@ public class AwsQuicksightService {
             @Value("${aws.quicksight.namespace}") String namespace,
             @Value("${aws.quicksight.region}") Region region,
             @Value("${aws.quicksight.allowed-domains}") List<String> allowedDomains,
-            @Value("${aws.quicksight.session-tag-key") String sessionTagKey
+            @Value("${aws.quicksight.session-tag-key}") String sessionTagKey
     ) {
         this.awsQuicksightClient = awsQuicksightClient;
         this.accountId = accountId;
