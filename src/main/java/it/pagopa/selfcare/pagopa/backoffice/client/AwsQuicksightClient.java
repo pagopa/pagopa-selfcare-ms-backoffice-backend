@@ -9,7 +9,6 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.quicksight.QuickSightClient;
 import software.amazon.awssdk.services.quicksight.model.GenerateEmbedUrlForAnonymousUserRequest;
 import software.amazon.awssdk.services.quicksight.model.GenerateEmbedUrlForAnonymousUserResponse;
-import software.amazon.awssdk.services.quicksight.model.SessionTag;
 
 import java.util.List;
 
@@ -30,7 +29,7 @@ public class AwsQuicksightClient {
                 .build();
     }
 
-    public AwsQuicksightClient(QuickSightClient quickSightClient){
+    public AwsQuicksightClient(QuickSightClient quickSightClient) {
         this.quickSightClient = quickSightClient;
     }
 
@@ -40,14 +39,15 @@ public class AwsQuicksightClient {
             final String namespace,
             final List<String> authorizedResourceArns,
             final List<String> allowedDomains,
-            final List<SessionTag> sessionTags
+            final String sessionTagKey,
+            final String sessionTagValue
     ) {
         GenerateEmbedUrlForAnonymousUserRequest generateEmbedUrlForAnonymousUserRequest = GenerateEmbedUrlForAnonymousUserRequest.builder()
                 .awsAccountId(accountId)
                 .namespace(namespace)
                 .authorizedResourceArns(authorizedResourceArns)
                 .experienceConfiguration(e -> e.dashboard(d -> d.initialDashboardId(initialDashboardId)))
-                .sessionTags(sessionTags)
+                .sessionTags(s -> s.key(sessionTagKey).value(sessionTagValue).build())         // TODO verify key session tag
                 .allowedDomains(allowedDomains)
                 .build();
 

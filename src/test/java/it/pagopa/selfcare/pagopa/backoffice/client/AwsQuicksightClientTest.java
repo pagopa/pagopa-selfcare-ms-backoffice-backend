@@ -5,7 +5,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import software.amazon.awssdk.services.quicksight.QuickSightClient;
 import software.amazon.awssdk.services.quicksight.model.GenerateEmbedUrlForAnonymousUserRequest;
 import software.amazon.awssdk.services.quicksight.model.GenerateEmbedUrlForAnonymousUserResponse;
-import software.amazon.awssdk.services.quicksight.model.SessionTag;
 
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
@@ -28,15 +27,16 @@ class AwsQuicksightClientTest {
     @Test
     void generateEmbedUrlForAnonymousUserSuccess() {
         when(quickSightClient.generateEmbedUrlForAnonymousUser(any(GenerateEmbedUrlForAnonymousUserRequest.class))).thenReturn(GenerateEmbedUrlForAnonymousUserResponse.builder().embedUrl(EMBED_URL).build());
-        
+
         AtomicReference<String> response = new AtomicReference<>();
-        assertDoesNotThrow(() -> response.set( sut.generateEmbedUrlForAnonymousUser(
+        assertDoesNotThrow(() -> response.set(sut.generateEmbedUrlForAnonymousUser(
                 "accountId",
                 "dashboardId",
                 "namespace",
                 Collections.singletonList("authorizedResourceArns"),
                 Collections.singletonList("allowed-domain"),
-                Collections.singletonList(SessionTag.builder().build()))));
+                "sessionTagKey",
+                "sessionTagValue")));
         assertEquals(EMBED_URL, response.get());
     }
 

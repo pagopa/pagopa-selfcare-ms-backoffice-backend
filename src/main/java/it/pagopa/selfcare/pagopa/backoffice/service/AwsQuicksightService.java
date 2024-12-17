@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.quicksight.model.SessionTag;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,15 +46,14 @@ public class AwsQuicksightService {
      * @return dashboard's embed url
      */
     public QuicksightEmbedUrlResponse generateEmbedUrlForAnonymousUser(String pspTaxCode) {
-        // TODO verify key session tag
-        List<SessionTag> sessionTags = Collections.singletonList(SessionTag.builder().key(sessionTagKey).value(pspTaxCode).build());
         String embedUrl = awsQuicksightClient.generateEmbedUrlForAnonymousUser(
                 this.accountId,
                 this.initialDashboardId,
                 this.namespace,
                 this.authorizedResourceArns,
                 this.allowedDomains,
-                sessionTags);
+                sessionTagKey,
+                pspTaxCode);
         QuicksightEmbedUrlResponse quicksightEmbedUrlResponse = new QuicksightEmbedUrlResponse();
         quicksightEmbedUrlResponse.setEmbedUrl(embedUrl);
         return quicksightEmbedUrlResponse;

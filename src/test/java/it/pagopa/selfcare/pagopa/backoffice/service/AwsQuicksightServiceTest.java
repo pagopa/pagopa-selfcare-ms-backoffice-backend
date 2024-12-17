@@ -29,7 +29,7 @@ class AwsQuicksightServiceTest {
 
     @Test
     void generateEmbedUrlForAnonymousUserSuccess() {
-        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString(), anyString(), anyString(), any(List.class), any(List.class), any(List.class))).thenReturn(EMBED_URL);
+        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString(), anyString(), anyString(), any(List.class), any(List.class), anyString(), anyString())).thenReturn(EMBED_URL);
 
         AtomicReference<QuicksightEmbedUrlResponse> response = new AtomicReference<>();
         assertDoesNotThrow(() -> response.set(sut.generateEmbedUrlForAnonymousUser("psp-tax-code")));
