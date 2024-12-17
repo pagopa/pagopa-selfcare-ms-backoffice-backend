@@ -24,7 +24,7 @@ public enum Subscription {
     BIZ("/products/bizevents", "BIZ - Recupero ricevute Ente Creditore", "biz-", CI, null, false),
     FDR_ORG("/products/fdr-org", "FdR - Flussi di Rendicontazione (EC)", "fdrorg-", CI, "fdr", true),
     FDR_PSP("/products/fdr-psp", "FdR - Flussi di Rendicontazione (PSP)", "fdrpsp-", PSP, "fdr", true),
-    QI_FDR_KPI("/products/qi-fdr-kpi", "FdR - Quality Improvement KPI API", "qifdr-", PSP, "qi", true),
+    QI_FDR_KPI("/products/qi-fdr-kpi", "FdR - Quality Improvement KPI API", "qi-fdr-kpi-service-", PSP, "qi", true),
     BO_EXT_EC("/apis/%s-backoffice-external-ec-api-v1", "Backoffice External (EC)", "selfcareboexternalec-", CI, "backoffice_external", false),
     BO_EXT_PSP("/apis/%s-backoffice-external-psp-api-v1", "Backoffice External (PSP)", "selfcareboexternalpsp-", PSP, "backoffice_external", false),
     PRINT_NOTICE("/products/pagopa_notices_service_external", "Stampa Avvisi", "printnotice-", CI, null, false),
