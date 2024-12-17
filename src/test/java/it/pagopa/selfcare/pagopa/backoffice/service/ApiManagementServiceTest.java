@@ -443,15 +443,16 @@ class ApiManagementServiceTest {
         assertEquals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY, captorValue.getOtherMetadata().get(0).getShortKey());
     }
 
-    @Test
-    void createSubscriptionKeysForSubscriptionThatRequirePSPCodeFailNoPSPCodeFound() {
+    @ParameterizedTest
+    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "QI_FDR_KPI"})
+    void createSubscriptionKeysForSubscriptionThatRequirePSPCodeFailNoPSPCodeFound(Subscription sub) {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(legacyPspCodeUtil.retrievePspCode(INSTITUTION_TAX_CODE, false)).thenThrow(AppException.class);
 
         AppException e = assertThrows(AppException.class, () ->
-                service.createSubscriptionKeys(INSTITUTION_ID, Subscription.FDR_PSP));
+                service.createSubscriptionKeys(INSTITUTION_ID, sub));
 
         assertNotNull(e);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus());
@@ -561,10 +562,11 @@ class ApiManagementServiceTest {
         assertEquals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY, captorValue.getOtherMetadata().get(0).getShortKey());
     }
 
-    @Test
-    void regeneratePrimaryKeyForSubscriptionThatRequirePSPCodeFailNoPSPCodeFound() {
+    @ParameterizedTest
+    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "QI_FDR_KPI"})
+    void regeneratePrimaryKeyForSubscriptionThatRequirePSPCodeFailNoPSPCodeFound(Subscription sub) {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
-        String subscriptionId = String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode());
+        String subscriptionId = String.format("%s%s", sub.getPrefixId(), institutionResponse.getTaxCode());
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(legacyPspCodeUtil.retrievePspCode(INSTITUTION_TAX_CODE, false)).thenThrow(AppException.class);
@@ -582,10 +584,11 @@ class ApiManagementServiceTest {
         verify(authorizerConfigClient, never()).createAuthorization(any());
     }
 
-    @Test
-    void regeneratePrimaryKeyForFDRPSPSuccess() {
+    @ParameterizedTest
+    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "QI_FDR_KPI"})
+    void regeneratePrimaryKeyForFDRPSPSuccess(Subscription sub) {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
-        String subscriptionId = String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode());
+        String subscriptionId = String.format("%s%s", sub.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
         when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
@@ -711,10 +714,11 @@ class ApiManagementServiceTest {
         assertEquals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY, captorValue.getOtherMetadata().get(0).getShortKey());
     }
 
-    @Test
-    void regenerateSecondaryKeyForSubscriptionThatRequirePSPCodeFailNoPSPCodeFound() {
+    @ParameterizedTest
+    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "QI_FDR_KPI"})
+    void regenerateSecondaryKeyForSubscriptionThatRequirePSPCodeFailNoPSPCodeFound(Subscription sub) {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
-        String subscriptionId = String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode());
+        String subscriptionId = String.format("%s%s", sub.getPrefixId(), institutionResponse.getTaxCode());
 
         when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(legacyPspCodeUtil.retrievePspCode(INSTITUTION_TAX_CODE, false)).thenThrow(AppException.class);
@@ -732,10 +736,11 @@ class ApiManagementServiceTest {
         verify(authorizerConfigClient, never()).createAuthorization(any());
     }
 
-    @Test
-    void regenerateSecondaryKeyForSubscriptionThatRequirePSPCodeSuccess() {
+    @ParameterizedTest
+    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "QI_FDR_KPI"})
+    void regenerateSecondaryKeyForSubscriptionThatRequirePSPCodeSuccess(Subscription sub) {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
-        String subscriptionId = String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode());
+        String subscriptionId = String.format("%s%s", sub.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
         when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));

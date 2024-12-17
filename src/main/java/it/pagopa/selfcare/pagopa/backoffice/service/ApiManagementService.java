@@ -459,7 +459,7 @@ public class ApiManagementService {
             String taxCode
     ) {
         String value = taxCode;
-        if (subscription.equals(Subscription.FDR_PSP)) {
+        if (subscription.equals(Subscription.FDR_PSP) || subscription.equals(Subscription.QI_FDR_KPI)) {
             try {
                 value = this.legacyPspCodeUtil.retrievePspCode(taxCode, false);
             } catch (Exception e) {
@@ -603,6 +603,7 @@ public class ApiManagementService {
     }
 
     private boolean isPSPCodeRequiredForProvidedSubscriptionAnInstitution(Subscription subscriptionCode, InstitutionResponse institution) {
-        return subscriptionCode.equals(Subscription.FDR_PSP) && !InstitutionType.PT.equals(institution.getInstitutionType());
+        return (subscriptionCode.equals(Subscription.FDR_PSP) || subscriptionCode.equals(Subscription.QI_FDR_KPI))
+                && !InstitutionType.PT.equals(institution.getInstitutionType());
     }
 }
