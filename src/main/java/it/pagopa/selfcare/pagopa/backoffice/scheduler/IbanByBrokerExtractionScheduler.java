@@ -171,9 +171,8 @@ public class IbanByBrokerExtractionScheduler {
             updateMDCError(e, "Export Broker IBAN");
             String errMsg = "[Export IBANs] - An error occurred while extracting broker list, export aborted";
             log.error(errMsg, e);
-            throw new AppException(AppError.BROKER_IBAN_EXPORT_SCHEDULER_SETUP_ERROR, e, errMsg);
-        } finally {
             MDC.clear();
+            throw new AppException(AppError.BROKER_IBAN_EXPORT_SCHEDULER_SETUP_ERROR, e, errMsg);
         }
     }
 

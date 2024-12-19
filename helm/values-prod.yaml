@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.32.2-1-next" #improve
+    tag: "2.34.1" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -85,6 +85,7 @@ microservice-chart:
     GEC_SERVICE_URL: https://api.platform.pagopa.it
     FORWARDER_SERVICE_URL: https://api.platform.pagopa.it
     TAXONOMY_SERVICE_URL: https://api.platform.pagopa.it
+    ENABLE_SEND_EMAIL: 'true'
     AZURE_RESOURCE_GROUP: pagopa-p-api-rg
     AZURE_SERVICE_NAME: pagopa-p-apim
     APPCONFIGURATION_ENDPOINT: 'https://pagopa-p-selfcare-appconfiguration.azconfig.io'

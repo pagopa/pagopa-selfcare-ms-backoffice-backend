@@ -34,6 +34,8 @@ public class AwsSesClient {
 
     private final String environment;
 
+    private final Boolean enableSendEmail;
+
     private final String testEmailAddress;
 
     private final String pagopaOperatorEmailAddress;
@@ -46,8 +48,8 @@ public class AwsSesClient {
             ExternalApiClient externalApiClient,
             @Value("${info.properties.environment}") String environment,
             @Value("${institution.subscription.test-email}") String testEmailAddress,
-            @Value("${institution.subscription.pagopa-operator-email}") String pagopaOperatorEmailAddress
-    ) {
+            @Value("${institution.subscription.pagopa-operator-email}") String pagopaOperatorEmailAddress,
+            @Value("${institution.subscription.enable-send-email}") Boolean enableSendEmail) {
         this.sesClient = sesClient;
         this.from = from;
         this.templateEngine = templateEngine;
@@ -55,6 +57,7 @@ public class AwsSesClient {
         this.environment = environment;
         this.testEmailAddress = testEmailAddress;
         this.pagopaOperatorEmailAddress = pagopaOperatorEmailAddress;
+        this.enableSendEmail = enableSendEmail;
     }
 
     /**
@@ -72,7 +75,7 @@ public class AwsSesClient {
      */
     public void sendEmail(EmailMessageDetail email, boolean sendEmailToPagopaOperator) {
         String taxCode = email.getInstitutionTaxCode();
-        if (isNotProdWithoutTestEmail() || isProdWithNullDestinationInstitutionTaxCode(taxCode)) {
+        if (hasNotRequiredData(taxCode)) {
             log.warn("Skip send email process");
             return;
         }
@@ -111,6 +114,7 @@ public class AwsSesClient {
 
     private SendEmailRequest buildEmailRequest(EmailMessageDetail email, String[] toAddressList, boolean sendEmailToPagopaOperator) {
         String html = this.templateEngine.process(email.getHtmlBodyFileName(), email.getHtmlBodyContext());
+        String subject = isNotProd() ? String.format("[%s] %s", this.environment, email.getSubject()) : email.getSubject();
 
         return SendEmailRequest.builder()
                 .source(this.from)
@@ -122,7 +126,7 @@ public class AwsSesClient {
                     }
                 })
                 .message(m -> m
-                        .subject(c -> c.data(email.getSubject()))
+                        .subject(c -> c.data(subject))
                         .body(b -> b
                                 .html(c -> c.data(html).charset(StandardCharsets.UTF_8.name()))
                                 .text(c -> c.data(email.getTextBody()))
@@ -132,7 +136,7 @@ public class AwsSesClient {
     }
 
     private String[] getToAddressList(String taxCode, SelfcareProductUser destinationUserType) {
-        if (!this.environment.equals("PROD")) {
+        if (Boolean.FALSE.equals(this.enableSendEmail)) {
             return new String[]{testEmailAddress};
         }
         Optional<Institution> optionalInstitution = this.externalApiClient.getInstitutionsFiltered(taxCode)
@@ -158,11 +162,11 @@ public class AwsSesClient {
                 .toArray(new String[0]);
     }
 
-    private boolean isProdWithNullDestinationInstitutionTaxCode(String taxCode) {
-        return this.environment.equals("PROD") && taxCode == null;
+    private boolean isNotProd() {
+        return !this.environment.equals("PROD");
     }
 
-    private boolean isNotProdWithoutTestEmail() {
-        return !this.environment.equals("PROD") && StringUtils.isBlank(testEmailAddress);
+    private boolean hasNotRequiredData(String taxCode) {
+        return Boolean.FALSE.equals(this.enableSendEmail) ? StringUtils.isBlank(testEmailAddress) : taxCode == null;
     }
 }
