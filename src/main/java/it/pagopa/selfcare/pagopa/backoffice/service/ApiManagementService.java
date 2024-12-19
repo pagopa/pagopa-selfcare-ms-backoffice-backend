@@ -560,7 +560,7 @@ public class ApiManagementService {
                 authorizationMetadata = buildAuthorizationMetadata(ciSegregationCodes);
             }
         }
-        if (subscription.equals(Subscription.BO_EXT_EC) || subscription.equals(Subscription.BO_EXT_PSP)) {
+        if (subscription.equals(Subscription.BO_EXT_EC) || subscription.equals(Subscription.BO_EXT_PSP) || subscription.equals(Subscription.QI_FDR_KPI)) {
             authorizationEntities.add(
                     AuthorizationEntity.builder()
                             .name(institution.getDescription())

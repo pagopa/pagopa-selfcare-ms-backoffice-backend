@@ -584,11 +584,10 @@ class ApiManagementServiceTest {
         verify(authorizerConfigClient, never()).createAuthorization(any());
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "QI_FDR_KPI"})
-    void regeneratePrimaryKeyForFDRPSPSuccess(Subscription sub) {
+    @Test
+    void regeneratePrimaryKeyForFDRPSPSuccess() {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
-        String subscriptionId = String.format("%s%s", sub.getPrefixId(), institutionResponse.getTaxCode());
+        String subscriptionId = String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
         when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
@@ -612,6 +611,39 @@ class ApiManagementServiceTest {
         assertNotNull(captorValue);
         assertNotNull(captorValue.getAuthorizedEntities());
         assertEquals(2, captorValue.getAuthorizedEntities().size());
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_1.equals(elem.getValue())));
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_2.equals(elem.getValue())));
+        assertNotNull(captorValue.getOtherMetadata());
+        assertTrue(captorValue.getOtherMetadata().isEmpty());
+    }
+
+    @Test
+    void regeneratePrimaryKeyForQIFDRKPISuccess() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
+        String subscriptionId = String.format("%s%s", Subscription.QI_FDR_KPI.getPrefixId(), institutionResponse.getTaxCode());
+        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
+
+        when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
+        when(authorizerConfigClient.getAuthorization(anyString()))
+                .thenReturn(buildAuthorizationWithSegregationCodes(CI_TAX_CODE));
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
+        when(legacyPspCodeUtil.retrievePspCode(INSTITUTION_TAX_CODE, false)).thenReturn(PSP_CODE_1, PSP_CODE_1);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE_1, false)).thenReturn(PSP_CODE_2);
+        when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
+                .thenReturn(createDelegations());
+
+        assertDoesNotThrow(() -> service.regeneratePrimaryKey(INSTITUTION_ID, subscriptionId));
+
+        verify(apimClient).regeneratePrimaryKey(subscriptionId);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
+        verify(authorizerConfigClient).deleteAuthorization(AUTH_ID);
+        verify(authorizerConfigClient).createAuthorization(authorizationCaptor.capture());
+
+        Authorization captorValue = authorizationCaptor.getValue();
+        assertNotNull(captorValue);
+        assertNotNull(captorValue.getAuthorizedEntities());
+        assertEquals(3, captorValue.getAuthorizedEntities().size());
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_1.equals(elem.getValue())));
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_2.equals(elem.getValue())));
         assertNotNull(captorValue.getOtherMetadata());
@@ -736,11 +768,10 @@ class ApiManagementServiceTest {
         verify(authorizerConfigClient, never()).createAuthorization(any());
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Subscription.class, names = {"FDR_PSP", "QI_FDR_KPI"})
-    void regenerateSecondaryKeyForSubscriptionThatRequirePSPCodeSuccess(Subscription sub) {
+    @Test
+    void regenerateSecondaryKeyForFDRPSPSubscriptionThatRequirePSPCodeSuccess() {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
-        String subscriptionId = String.format("%s%s", sub.getPrefixId(), institutionResponse.getTaxCode());
+        String subscriptionId = String.format("%s%s", Subscription.FDR_PSP.getPrefixId(), institutionResponse.getTaxCode());
         InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
 
         when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
@@ -764,6 +795,39 @@ class ApiManagementServiceTest {
         assertNotNull(captorValue);
         assertNotNull(captorValue.getAuthorizedEntities());
         assertEquals(2, captorValue.getAuthorizedEntities().size());
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_1.equals(elem.getValue())));
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_2.equals(elem.getValue())));
+        assertNotNull(captorValue.getOtherMetadata());
+        assertTrue(captorValue.getOtherMetadata().isEmpty());
+    }
+
+    @Test
+    void regenerateSecondaryKeyForQIFDRKPISubscriptionThatRequirePSPCodeSuccess() {
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PSP);
+        String subscriptionId = String.format("%s%s", Subscription.QI_FDR_KPI.getPrefixId(), institutionResponse.getTaxCode());
+        InstitutionApiKeys institutionApiKeys = buildInstitutionApiKeys(subscriptionId);
+
+        when(apimClient.getApiSubscriptions(anyString())).thenReturn(Collections.singletonList(institutionApiKeys));
+        when(authorizerConfigClient.getAuthorization(anyString()))
+                .thenReturn(buildAuthorizationWithSegregationCodes(CI_TAX_CODE));
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
+        when(legacyPspCodeUtil.retrievePspCode(INSTITUTION_TAX_CODE, false)).thenReturn(PSP_CODE_1, PSP_CODE_1);
+        when(legacyPspCodeUtil.retrievePspCode(TAX_CODE_1, false)).thenReturn(PSP_CODE_2);
+        when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
+                .thenReturn(createDelegations());
+
+        assertDoesNotThrow(() -> service.regenerateSecondaryKey(INSTITUTION_ID, subscriptionId));
+
+        verify(apimClient).regenerateSecondaryKey(subscriptionId);
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString());
+        verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
+        verify(authorizerConfigClient).deleteAuthorization(AUTH_ID);
+        verify(authorizerConfigClient).createAuthorization(authorizationCaptor.capture());
+
+        Authorization captorValue = authorizationCaptor.getValue();
+        assertNotNull(captorValue);
+        assertNotNull(captorValue.getAuthorizedEntities());
+        assertEquals(3, captorValue.getAuthorizedEntities().size());
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_1.equals(elem.getValue())));
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> PSP_CODE_2.equals(elem.getValue())));
         assertNotNull(captorValue.getOtherMetadata());
