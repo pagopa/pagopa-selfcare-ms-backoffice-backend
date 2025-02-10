@@ -108,9 +108,9 @@ class StationServiceTest {
     @Test
     void createWrapperStationDetailsSuccess() {
         when(wrapperService.createWrapperStation(any(StationDetails.class), any()))
-                .thenReturn(buildStationDetailsWrapperEntities());
+                .thenReturn(buildWrapperEntityStation(WrapperStatus.TO_CHECK));
 
-        WrapperEntities<StationDetails> result =
+        WrapperEntityStations result =
                 assertDoesNotThrow(() -> service.createWrapperStationDetails(buildWrapperStationDetailsDto()));
 
         assertNotNull(result);

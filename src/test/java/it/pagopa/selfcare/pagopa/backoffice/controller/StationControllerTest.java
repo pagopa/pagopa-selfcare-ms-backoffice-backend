@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
+import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.WrapperStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
@@ -117,7 +117,7 @@ class StationControllerTest {
 
     @Test
     void createWrapperStationDetails() throws Exception {
-        when(stationService.createWrapperStationDetails(any())).thenReturn(new WrapperEntities<>());
+        when(stationService.createWrapperStationDetails(any())).thenReturn(new WrapperEntityStations());
         mvc.perform(post("/stations/wrapper")
                         .content(objectMapper.writeValueAsBytes(buildWrapperStationDetailsDto()))
                         .contentType(MediaType.APPLICATION_JSON))

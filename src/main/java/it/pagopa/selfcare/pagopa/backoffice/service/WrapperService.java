@@ -128,19 +128,19 @@ public class WrapperService {
      * @param status         the status of the new station
      * @return the created wrapper station
      */
-    public WrapperEntities<StationDetails> createWrapperStation(StationDetails stationDetails, WrapperStatus status) {
+    public WrapperEntityStations createWrapperStation(StationDetails stationDetails, WrapperStatus status) {
         String modifiedBy = this.auditorAware.getCurrentAuditor().orElse(null);
 
-        WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetails);
+        WrapperEntityStation wrapperEntity = new WrapperEntityStation(stationDetails);
         wrapperEntity.setStatus(status);
-        WrapperEntities<StationDetails> wrapperEntities = new WrapperEntities<>(wrapperEntity);
+        WrapperEntityStations wrapperEntities = new WrapperEntityStations(wrapperEntity);
         wrapperEntities.setModifiedBy(modifiedBy);
         String createdBy = wrapperEntities.getCreatedBy();
 
-        WrapperEntities<StationDetails> response;
+        WrapperEntityStations response;
         try {
             wrapperEntities.setCreatedBy(modifiedBy);
-            response = this.repository.insert(wrapperEntities);
+            response = this.wrapperStationsRepository.insert(wrapperEntities);
         } catch (DuplicateKeyException e) {
             response = update(stationDetails, null, status.name(), createdBy);
         }
@@ -298,29 +298,29 @@ public class WrapperService {
         return this.wrapperStationsRepository.save(wrapperEntities);
     }
 
-    public WrapperEntities<StationDetails> update(
+    public WrapperEntityStations update(
             StationDetails stationDetails,
             String note,
             String status,
             String createdBy
     ) {
         String stationCode = stationDetails.getStationCode();
-        Optional<WrapperEntities> optionalWrapperEntities = this.repository.findById(stationCode);
+        Optional<WrapperEntityStations> optionalWrapperEntityStations = this.wrapperStationsRepository.findById(stationCode);
 
-        if (optionalWrapperEntities.isEmpty()) {
+        if (optionalWrapperEntityStations.isEmpty()) {
             stationDetails.setActivationDate(Instant.now());
             return createWrapperStation(stationDetails, WrapperStatus.valueOf(status));
         }
 
-        WrapperEntities<StationDetails> wrapperEntities = optionalWrapperEntities.get();
-        WrapperEntity<StationDetails> wrapperEntity = new WrapperEntity<>(stationDetails);
+        WrapperEntityStations wrapperEntities = optionalWrapperEntityStations.get();
+        WrapperEntityStation wrapperEntity = new WrapperEntityStation(stationDetails);
         wrapperEntity.setNote(note);
         wrapperEntity.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.setStatus(WrapperStatus.valueOf(status));
         wrapperEntities.getEntities().add(wrapperEntity);
         if (createdBy != null)
             wrapperEntities.setCreatedBy(createdBy);
-        return this.repository.save(wrapperEntities);
+        return this.wrapperStationsRepository.save(wrapperEntities);
     }
 
     public WrapperEntitiesList findByStatusAndTypeAndBrokerCodeAndIdLike(

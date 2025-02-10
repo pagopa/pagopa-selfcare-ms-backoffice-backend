@@ -341,24 +341,24 @@ class WrapperServiceTest {
 
     @Test
     void createWrapperStationSuccessWithInsert() {
-        when(repository.insert(any(WrapperEntities.class))).thenReturn(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK));
+        when(wrapperStationsRepository.insert(any(WrapperEntityStations.class))).thenReturn(buildWrapperEntityStations(WrapperStatus.TO_CHECK));
 
-        WrapperEntities<StationDetails> result = assertDoesNotThrow(() ->
+        WrapperEntityStations result = assertDoesNotThrow(() ->
                 sut.createWrapperStation(buildStationDetails(), WrapperStatus.APPROVED));
 
         assertNotNull(result);
 
-        verify(repository, never()).findById(anyString());
-        verify(repository, never()).save(any());
+        verify(wrapperStationsRepository, never()).findById(anyString());
+        verify(wrapperStationsRepository, never()).save(any());
     }
 
     @Test
     void createWrapperStationSuccessWithUpdate() {
-        when(repository.insert(any(WrapperEntities.class))).thenThrow(DuplicateKeyException.class);
-        when(repository.findById(anyString())).thenReturn(Optional.of(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK)));
-        when(repository.save(any())).thenReturn(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK));
+        when(wrapperStationsRepository.insert(any(WrapperEntityStations.class))).thenThrow(DuplicateKeyException.class);
+        when(wrapperStationsRepository.findById(anyString())).thenReturn(Optional.of(buildWrapperEntityStations(WrapperStatus.TO_CHECK)));
+        when(wrapperStationsRepository.save(any())).thenReturn(buildWrapperEntityStations(WrapperStatus.TO_CHECK));
 
-        WrapperEntities<StationDetails> result = assertDoesNotThrow(() ->
+        WrapperEntityStations result = assertDoesNotThrow(() ->
                 sut.createWrapperStation(buildStationDetails(), WrapperStatus.APPROVED));
 
         assertNotNull(result);
