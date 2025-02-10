@@ -11053,15 +11053,15 @@
         }
       ]
     },
-    "/quicksight/dashboard/{psp-tax-code}": {
+    "/quicksight/dashboard/{institution-id}": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId": "getEmbedUrlForAnonymousUser",
         "parameters": [
           {
-            "description": "PSP's tax code",
+            "description": "Institution's identifier",
             "in": "path",
-            "name": "psp-tax-code",
+            "name": "institution-id",
             "required": true,
             "schema": {
               "type": "string"
