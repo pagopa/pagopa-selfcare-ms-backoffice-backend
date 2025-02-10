@@ -98,7 +98,7 @@ microservice-chart:
     AWS_QUICKSIGHT_REGION: 'eu-west-1'
     AWS_QUICKSIGHT_NAMESPACE: 'default'
     AWS_QUICKSIGHT_ALLOWED_DOMAINS: 'https://selfcare.platform.pagopa.it'
-    AWS_QUICKSIGHT_SESSION_TAG_KEY: 'psp_id'
+    AWS_QUICKSIGHT_SESSION_TAG_KEY: 'institution_id'
     OTEL_SERVICE_NAME: "pagopa-selfcare-backoffice-backend"
     CRONJOB_SCHEDULE_ENABLED: 'true'
     CRONJOB_SCHEDULE_TAXONOMYEXPORT: "0 0 7 * * *"
