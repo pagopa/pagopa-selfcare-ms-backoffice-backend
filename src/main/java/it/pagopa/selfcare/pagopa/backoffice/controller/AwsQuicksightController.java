@@ -26,12 +26,12 @@ public class AwsQuicksightController {
         this.awsQuicksightService = awsQuicksightService;
     }
 
-    @GetMapping(value = "dashboard/{psp-tax-code}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/dashboard/{institution-id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get aws quicksight dashboard's embed url", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
     public QuicksightEmbedUrlResponse getEmbedUrlForAnonymousUser(
-            @Parameter(description = "PSP's tax code") @PathVariable("psp-tax-code") String pspTaxCode) {
-        return awsQuicksightService.generateEmbedUrlForAnonymousUser(pspTaxCode);
+            @Parameter(description = "Institution's identifier") @PathVariable("institution-id") String institutionId) {
+        return this.awsQuicksightService.generateEmbedUrlForAnonymousUser(institutionId);
     }
 }
