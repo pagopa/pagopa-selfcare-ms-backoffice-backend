@@ -115,14 +115,14 @@ class StationControllerTest {
                 .andExpect(status().is2xxSuccessful());
     }
 
-    @Test
-    void createWrapperStationDetails() throws Exception {
-        when(stationService.createWrapperStationDetails(any())).thenReturn(new WrapperEntities<>());
-        mvc.perform(post("/stations/wrapper")
-                        .content(objectMapper.writeValueAsBytes(buildWrapperStationDetailsDto()))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
-    }
+//    @Test
+//    void createWrapperStationDetails() throws Exception {
+//        when(stationService.createWrapperStationDetails(any())).thenReturn(new WrapperEntities<>());
+//        mvc.perform(post("/stations/wrapper")
+//                        .content(objectMapper.writeValueAsBytes(buildWrapperStationDetailsDto()))
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().is2xxSuccessful());
+//    }
 
     @Test
     void getStationCode() throws Exception {

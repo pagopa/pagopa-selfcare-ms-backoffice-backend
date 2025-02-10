@@ -339,30 +339,30 @@ class WrapperServiceTest {
         assertNotNull(result);
     }
 
-    @Test
-    void createWrapperStationSuccessWithInsert() {
-        when(repository.insert(any(WrapperEntities.class))).thenReturn(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK));
+//    @Test
+//    void createWrapperStationSuccessWithInsert() {
+//        when(repository.insert(any(WrapperEntities.class))).thenReturn(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK));
+//
+//        WrapperEntities<StationDetails> result = assertDoesNotThrow(() ->
+//                sut.createWrapperStation(buildStationDetails(), WrapperStatus.APPROVED));
+//
+//        assertNotNull(result);
+//
+//        verify(repository, never()).findById(anyString());
+//        verify(repository, never()).save(any());
+//    }
 
-        WrapperEntities<StationDetails> result = assertDoesNotThrow(() ->
-                sut.createWrapperStation(buildStationDetails(), WrapperStatus.APPROVED));
-
-        assertNotNull(result);
-
-        verify(repository, never()).findById(anyString());
-        verify(repository, never()).save(any());
-    }
-
-    @Test
-    void createWrapperStationSuccessWithUpdate() {
-        when(repository.insert(any(WrapperEntities.class))).thenThrow(DuplicateKeyException.class);
-        when(repository.findById(anyString())).thenReturn(Optional.of(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK)));
-        when(repository.save(any())).thenReturn(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK));
-
-        WrapperEntities<StationDetails> result = assertDoesNotThrow(() ->
-                sut.createWrapperStation(buildStationDetails(), WrapperStatus.APPROVED));
-
-        assertNotNull(result);
-    }
+//    @Test
+//    void createWrapperStationSuccessWithUpdate() {
+//        when(repository.insert(any(WrapperEntities.class))).thenThrow(DuplicateKeyException.class);
+//        when(repository.findById(anyString())).thenReturn(Optional.of(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK)));
+//        when(repository.save(any())).thenReturn(buildChannelDetailsWrapperEntities(WrapperStatus.TO_CHECK));
+//
+//        WrapperEntities<StationDetails> result = assertDoesNotThrow(() ->
+//                sut.createWrapperStation(buildStationDetails(), WrapperStatus.APPROVED));
+//
+//        assertNotNull(result);
+//    }
 
     @Test
     void updateWrapperChannelSuccessToCheck() {

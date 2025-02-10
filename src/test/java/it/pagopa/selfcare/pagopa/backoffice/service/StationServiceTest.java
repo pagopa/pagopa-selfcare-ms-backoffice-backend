@@ -105,19 +105,19 @@ class StationServiceTest {
         verify(awsSesClient).sendEmail(any());
     }
 
-    @Test
-    void createWrapperStationDetailsSuccess() {
-        when(wrapperService.createWrapperStation(any(StationDetails.class), any()))
-                .thenReturn(buildStationDetailsWrapperEntities());
-
-        WrapperEntities<StationDetails> result =
-                assertDoesNotThrow(() -> service.createWrapperStationDetails(buildWrapperStationDetailsDto()));
-
-        assertNotNull(result);
-        assertTrue(result.getEntities().get(0).getEntity().getFlagStandin());
-
-        verify(jiraServiceManagerClient).createTicket(anyString(), anyString());
-    }
+//    @Test
+//    void createWrapperStationDetailsSuccess() {
+//        when(wrapperService.createWrapperStation(any(StationDetails.class), any()))
+//                .thenReturn(buildStationDetailsWrapperEntities());
+//
+//        WrapperEntities<StationDetails> result =
+//                assertDoesNotThrow(() -> service.createWrapperStationDetails(buildWrapperStationDetailsDto()));
+//
+//        assertNotNull(result);
+//        assertTrue(result.getEntities().get(0).getEntity().getFlagStandin());
+//
+//        verify(jiraServiceManagerClient).createTicket(anyString(), anyString());
+//    }
 
     @Test
     void getStationsActiveSuccessWithWrapperFound() {

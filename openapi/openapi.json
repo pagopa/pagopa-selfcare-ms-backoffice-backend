@@ -11511,7 +11511,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/WrapperEntities"
+                  "$ref": "#/components/schemas/WrapperEntityStations"
                 }
               }
             },
@@ -12396,6 +12396,26 @@
           },
           "creditorInstitutionDetailsResource": {
             "$ref": "#/components/schemas/CreditorInstitutionDetailsResource"
+          }
+        }
+      },
+      "BrokerDetails": {
+        "type": "object",
+        "properties": {
+          "broker_code": {
+            "type": "string"
+          },
+          "broker_details": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "extended_fault_bean": {
+            "type": "boolean"
           }
         }
       },
@@ -15621,6 +15641,182 @@
           }
         }
       },
+      "StationDetails": {
+        "required": [
+          "broker_code",
+          "enabled",
+          "flag_standin",
+          "station_code",
+          "thread_number",
+          "timeout_a",
+          "timeout_b",
+          "timeout_c",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "broker_code": {
+            "type": "string"
+          },
+          "broker_description": {
+            "type": "string"
+          },
+          "broker_details": {
+            "$ref": "#/components/schemas/BrokerDetails"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "flag_online": {
+            "type": "boolean"
+          },
+          "flag_standin": {
+            "type": "boolean",
+            "description": "Represents the authorization to use the standin mode with this station"
+          },
+          "invio_rt_istantaneo": {
+            "type": "boolean"
+          },
+          "ip": {
+            "type": "string"
+          },
+          "ip_4mod": {
+            "type": "string"
+          },
+          "is_connection_sync": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "is_payment_options_enabled": {
+            "type": "boolean",
+            "description": "Flag that enables EC's payment options service"
+          },
+          "new_password": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "pof_service": {
+            "type": "string"
+          },
+          "port": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "port_4mod": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "primitive_version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "protocol": {
+            "type": "string",
+            "enum": [
+              "HTTPS",
+              "HTTP"
+            ]
+          },
+          "protocol_4mod": {
+            "type": "string",
+            "enum": [
+              "HTTPS",
+              "HTTP"
+            ]
+          },
+          "proxy_enabled": {
+            "type": "boolean"
+          },
+          "proxy_host": {
+            "type": "string"
+          },
+          "proxy_password": {
+            "type": "string"
+          },
+          "proxy_port": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "proxy_username": {
+            "type": "string"
+          },
+          "redirect_ip": {
+            "type": "string"
+          },
+          "redirect_path": {
+            "type": "string"
+          },
+          "redirect_port": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "redirect_protocol": {
+            "type": "string",
+            "enum": [
+              "HTTPS",
+              "HTTP"
+            ]
+          },
+          "redirect_query_string": {
+            "type": "string"
+          },
+          "rest_endpoint": {
+            "type": "string",
+            "description": "Endpoint to all the API REST of the EC"
+          },
+          "service": {
+            "type": "string"
+          },
+          "service_4mod": {
+            "type": "string"
+          },
+          "station_code": {
+            "type": "string"
+          },
+          "target_host": {
+            "type": "string"
+          },
+          "target_host_pof": {
+            "type": "string"
+          },
+          "target_path": {
+            "type": "string"
+          },
+          "target_path_pof": {
+            "type": "string"
+          },
+          "target_port": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "target_port_pof": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "thread_number": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "timeout_a": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "timeout_b": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "timeout_c": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
       "StationDetailsDto": {
         "required": [
           "brokerCode",
@@ -16749,6 +16945,108 @@
           },
           "modifiedByOpt": {
             "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "APPROVED",
+              "TO_CHECK",
+              "TO_FIX",
+              "TO_CHECK_UPDATE",
+              "TO_FIX_UPDATE"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "CHANNEL",
+              "STATION"
+            ]
+          }
+        }
+      },
+      "WrapperEntityStation": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "entity": {
+            "$ref": "#/components/schemas/StationDetails"
+          },
+          "id": {
+            "type": "string"
+          },
+          "modifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modifiedBy": {
+            "type": "string"
+          },
+          "modifiedByOpt": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "APPROVED",
+              "TO_CHECK",
+              "TO_FIX",
+              "TO_CHECK_UPDATE",
+              "TO_FIX_UPDATE"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "CHANNEL",
+              "STATION"
+            ]
+          }
+        }
+      },
+      "WrapperEntityStations": {
+        "type": "object",
+        "properties": {
+          "brokerCode": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string"
+          },
+          "entities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WrapperEntityStation"
+            }
+          },
+          "id": {
+            "type": "string"
+          },
+          "modifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modifiedBy": {
+            "type": "string"
+          },
+          "modifiedByOpt": {
+            "type": "string"
+          },
+          "new": {
+            "type": "boolean"
           },
           "note": {
             "type": "string"
