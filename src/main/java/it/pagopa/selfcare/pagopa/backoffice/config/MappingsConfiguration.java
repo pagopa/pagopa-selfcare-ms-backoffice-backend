@@ -28,7 +28,6 @@ public class MappingsConfiguration {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        mapper.createTypeMap(it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo.class, InstitutionDetail.class).setConverter(new ConvertInstitutionInfoToInstitutionResource());
         mapper.createTypeMap(UserInstitution.class, InstitutionBase.class).setConverter(new ConvertUserInstitutionToInstitutionBase());
         mapper.createTypeMap(Institution.class, InstitutionBase.class).setConverter(new ConvertInstitutionToInstitutionBase());
         mapper.createTypeMap(Iban.class, IbanCreateApiconfig.class).setConverter(new ConvertIbanToIbanCreateApiconfig());

@@ -136,7 +136,6 @@ class ApiManagementServiceTest {
         assertNotNull(institutions);
         assertNotNull(institutions.getInstitutions());
         assertFalse(institutions.getInstitutions().isEmpty());
-        verify(externalApiClient, never()).getInstitutions(any());
     }
 
     @SneakyThrows
