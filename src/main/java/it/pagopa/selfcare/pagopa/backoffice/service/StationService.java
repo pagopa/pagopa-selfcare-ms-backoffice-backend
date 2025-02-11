@@ -4,7 +4,6 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ForwarderClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
-import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStation;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
@@ -117,11 +116,11 @@ public class StationService {
      * @param wrapperStationDetailsDto detail of the new channel
      * @return the created wrapper channel
      */
-    public WrapperEntities<StationDetails> createWrapperStationDetails(@Valid WrapperStationDetailsDto wrapperStationDetailsDto) {
+    public WrapperEntityStations createWrapperStationDetails(@Valid WrapperStationDetailsDto wrapperStationDetailsDto) {
         final String CREATE_STATION_SUMMARY = " Validazione stazione - creazione: %s";
         final String CREATE_STATION_DESCRIPTION = "La stazione %s deve essere validata: %s";
 
-        WrapperEntities<StationDetails> createdWrapperEntities =
+        WrapperEntityStations createdWrapperEntities =
                 this.wrapperService.createWrapperStation(
                         this.stationMapper.fromWrapperStationDetailsDto(wrapperStationDetailsDto),
                         WrapperStatus.TO_CHECK

@@ -172,7 +172,7 @@ public class ApiManagementService {
     /**
      * Create the subscription's api keys to the specified subscription for the specified institution.
      * <p>
-     * If the subscription is for {@link Subscription#BO_EXT_EC} or {@link Subscription#BO_EXT_PSP} then it configure
+     * If the subscription configuration {@link Subscription} require authorizer then it call
      * the Authorizer config service in order to enable the authorization process.
      *
      * @param institutionId    the id of the institution
@@ -182,7 +182,7 @@ public class ApiManagementService {
     public InstitutionApiKeysResource createSubscriptionKeys(String institutionId, Subscription subscriptionCode) {
         InstitutionResponse institution = getInstitutionResponse(institutionId);
         checkIfInstitutionCanOperateOnSubscriptionOtherwiseThrowException(institution, subscriptionCode);
-        if (subscriptionCode.equals(Subscription.FDR_PSP) && !InstitutionType.PT.equals(institution.getInstitutionType())) {
+        if (isPSPCodeRequiredForProvidedSubscriptionAnInstitution(subscriptionCode, institution)) {
             checkIfPSPCodeIsAvailableOtherwiseThrowException(institution, subscriptionCode);
         }
 
@@ -224,8 +224,8 @@ public class ApiManagementService {
     /**
      * Regenerate the primary subscription key to the specified subscription for the given institution.
      * <p>
-     * If the subscription is for {@link Subscription#BO_EXT_EC} or {@link Subscription#BO_EXT_PSP} then it update
-     * the Authorizer config service with the new api key.
+     * If the subscription configuration {@link Subscription} require authorizer then it call
+     * the Authorizer config service in order to enable the authorization process.
      *
      * @param institutionId  the id of the institution
      * @param subscriptionId the id of the subscription
@@ -235,7 +235,7 @@ public class ApiManagementService {
         var prefix = subscriptionId.split("-")[0] + "-";
         Subscription subscription = Subscription.fromPrefix(prefix);
         checkIfInstitutionCanOperateOnSubscriptionOtherwiseThrowException(institution, subscription);
-        if (subscription.equals(Subscription.FDR_PSP) && !InstitutionType.PT.equals(institution.getInstitutionType())) {
+        if (isPSPCodeRequiredForProvidedSubscriptionAnInstitution(subscription, institution)) {
             checkIfPSPCodeIsAvailableOtherwiseThrowException(institution, subscription);
         }
         this.apimClient.regeneratePrimaryKey(subscriptionId);
@@ -248,8 +248,8 @@ public class ApiManagementService {
     /**
      * Regenerate the secondary subscription key to the specified subscription for the given institution.
      * <p>
-     * If the subscription is for {@link Subscription#BO_EXT_EC} or {@link Subscription#BO_EXT_PSP} then it update
-     * the Authorizer config service with the new api key.
+     * If the subscription configuration {@link Subscription} require authorizer then it call
+     * the Authorizer config service in order to enable the authorization process.
      *
      * @param institutionId  the id of the institution
      * @param subscriptionId the id of the subscription
@@ -259,7 +259,7 @@ public class ApiManagementService {
         var prefix = subscriptionId.split("-")[0] + "-";
         Subscription subscription = Subscription.fromPrefix(prefix);
         checkIfInstitutionCanOperateOnSubscriptionOtherwiseThrowException(institution, subscription);
-        if (subscription.equals(Subscription.FDR_PSP) && !InstitutionType.PT.equals(institution.getInstitutionType())) {
+        if (isPSPCodeRequiredForProvidedSubscriptionAnInstitution(subscription, institution)) {
             checkIfPSPCodeIsAvailableOtherwiseThrowException(institution, subscription);
         }
         this.apimClient.regenerateSecondaryKey(subscriptionId);
@@ -454,7 +454,7 @@ public class ApiManagementService {
             String taxCode
     ) {
         String value = taxCode;
-        if (subscription.equals(Subscription.FDR_PSP)) {
+        if (subscription.equals(Subscription.FDR_PSP) || subscription.equals(Subscription.QI_FDR_KPI)) {
             try {
                 value = this.legacyPspCodeUtil.retrievePspCode(taxCode, false);
             } catch (Exception e) {
@@ -555,7 +555,7 @@ public class ApiManagementService {
                 authorizationMetadata = buildAuthorizationMetadata(ciSegregationCodes);
             }
         }
-        if (subscription.equals(Subscription.BO_EXT_EC) || subscription.equals(Subscription.BO_EXT_PSP)) {
+        if (subscription.equals(Subscription.BO_EXT_EC) || subscription.equals(Subscription.BO_EXT_PSP) || subscription.equals(Subscription.QI_FDR_KPI)) {
             authorizationEntities.add(
                     AuthorizationEntity.builder()
                             .name(institution.getDescription())
@@ -594,5 +594,11 @@ public class ApiManagementService {
     private record AuthorizationConfig(List<AuthorizationEntity> authorizationEntities,
                                        List<AuthorizationMetadata> authorizationMetadata) {
 
+
+    }
+
+    private boolean isPSPCodeRequiredForProvidedSubscriptionAnInstitution(Subscription subscriptionCode, InstitutionResponse institution) {
+        return (subscriptionCode.equals(Subscription.FDR_PSP) || subscriptionCode.equals(Subscription.QI_FDR_KPI))
+                && !InstitutionType.PT.equals(institution.getInstitutionType());
     }
 }
