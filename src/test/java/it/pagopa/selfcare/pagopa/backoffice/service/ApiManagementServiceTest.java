@@ -17,7 +17,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CIS
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionStationSegregationCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionBaseResources;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
@@ -135,15 +134,6 @@ class ApiManagementServiceTest {
         assertNotNull(institutions.getInstitutions());
         assertFalse(institutions.getInstitutions().isEmpty());
         verify(externalApiClient, never()).getInstitutions(any());
-    }
-
-    @Test
-    void getInstitution() {
-        when(externalApiClient.getInstitution(any()))
-                .thenReturn(buildInstitutionResponse(InstitutionType.PA));
-        Institution institution = service.getInstitution(INSTITUTION_ID);
-        assertNotNull(institution);
-        verify(externalApiClient).getInstitution(any());
     }
 
     @SneakyThrows
