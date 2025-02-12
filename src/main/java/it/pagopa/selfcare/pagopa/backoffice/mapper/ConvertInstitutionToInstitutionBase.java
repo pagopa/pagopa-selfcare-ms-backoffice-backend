@@ -13,8 +13,7 @@ public class ConvertInstitutionToInstitutionBase implements Converter<Institutio
         Institution src = mappingContext.getSource();
         return InstitutionBase.builder()
                 .id(src.getId())
-                .userProductRoles(Collections.emptyList()
-                )
+                .userProductRoles(Collections.emptyList())
                 .description(src.getDescription())
                 .build();
     }

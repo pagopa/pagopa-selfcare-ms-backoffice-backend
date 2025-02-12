@@ -1,9 +1,13 @@
 package it.pagopa.selfcare.pagopa.backoffice.component;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.AssistanceContact;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionBase;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.PspData;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.UserProductRole;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -46,9 +50,53 @@ public class ApiManagementComponent {
     }
 
     @Cacheable(cacheNames = "getInstitutionDetail")
-    public InstitutionDetail getInstitutionDetail(String institutionId) {
-        Institution institution = externalApiClient.getInstitution(institutionId);
-        return modelMapper.map(institution, InstitutionDetail.class);
+    public InstitutionDetail getInstitutionDetail(String institutionId, String userId) {
+        Institution institution = this.externalApiClient.getInstitution(institutionId);
+        List<UserInstitution> userInstitution =
+                this.externalApiClient.getUserInstitution(userId, institutionId, null, null, null, null, null);
+
+        return buildInstitutionDetail(institution, userInstitution.get(0)); // TODO add check on list size?
+    }
+
+    private InstitutionDetail buildInstitutionDetail(Institution institution, UserInstitution userInstitution) {
+        PspData pspData = null;
+        if(institution.getPaymentServiceProvider() != null) {
+            pspData = PspData.builder()
+                    .abiCode(institution.getPaymentServiceProvider().getAbiCode())
+                    .businessRegisterNumber(institution.getPaymentServiceProvider().getBusinessRegisterNumber())
+                    .vatNumberGroup(institution.getPaymentServiceProvider().getVatNumberGroup())
+                    .legalRegisterName(institution.getPaymentServiceProvider().getLegalRegisterName())
+                    .legalRegisterNumber(institution.getPaymentServiceProvider().getBusinessRegisterNumber())
+                    .build();
+        }
+
+        UserProductRole userProductRole = UserProductRole.builder().productRole("admin").build(); // maintain old logic
+        if (userInstitution.getProducts() != null && !userInstitution.getProducts().isEmpty()) {
+            userProductRole = UserProductRole.builder()
+                    .productRole(userInstitution.getProducts().get(0).getProductRole())
+                    .productRoleLabel(userInstitution.getProducts().get(0).getProductRoleLabel())
+                    .build();
+        }
+
+        return InstitutionDetail.builder()
+                .address(institution.getAddress())
+                .id(institution.getId())
+                .originId(institution.getOriginId())
+                .digitalAddress(institution.getDigitalAddress())
+                .address(institution.getAddress())
+                .taxCode(institution.getTaxCode())
+                .userProductRoles(List.of(userProductRole))
+                .status("ACTIVE") // TODO take status form institution.onboarding ?
+                .origin(institution.getOrigin())
+                .externalId(institution.getExternalId())
+                .description(institution.getDescription())
+                .institutionType(InstitutionType.valueOf(institution.getInstitutionType()))
+                .assistanceContacts(AssistanceContact.builder()
+                        .supportEmail(institution.getSupportEmail())
+                        .supportPhone(institution.getSupportPhone())
+                        .build())
+                .pspData(pspData)
+                .build();
     }
 
 }

@@ -17,34 +17,34 @@ public class InstitutionToInstitutionDetail implements Converter<Institution, In
 
     @Override
     public InstitutionDetail convert(MappingContext<Institution, InstitutionDetail> context) {
-        @NotNull Institution elem = context.getSource();
+        @NotNull Institution institution = context.getSource();
 
         PspData pspData = null;
-        if(elem.getPaymentServiceProvider() != null) {
+        if(institution.getPaymentServiceProvider() != null) {
             pspData = PspData.builder()
-                    .abiCode(elem.getPaymentServiceProvider().getAbiCode())
-                    .businessRegisterNumber(elem.getPaymentServiceProvider().getBusinessRegisterNumber())
-                    .vatNumberGroup(elem.getPaymentServiceProvider().getVatNumberGroup())
-                    .legalRegisterName(elem.getPaymentServiceProvider().getLegalRegisterName())
-                    .legalRegisterNumber(elem.getPaymentServiceProvider().getBusinessRegisterNumber())
+                    .abiCode(institution.getPaymentServiceProvider().getAbiCode())
+                    .businessRegisterNumber(institution.getPaymentServiceProvider().getBusinessRegisterNumber())
+                    .vatNumberGroup(institution.getPaymentServiceProvider().getVatNumberGroup())
+                    .legalRegisterName(institution.getPaymentServiceProvider().getLegalRegisterName())
+                    .legalRegisterNumber(institution.getPaymentServiceProvider().getBusinessRegisterNumber())
                     .build();
         }
         return InstitutionDetail.builder()
-                .address(elem.getAddress())
-                .id(elem.getId())
-                .originId(elem.getOriginId())
-                .digitalAddress(elem.getDigitalAddress())
-                .address(elem.getAddress())
-                .taxCode(elem.getTaxCode())
+                .address(institution.getAddress())
+                .id(institution.getId())
+                .originId(institution.getOriginId())
+                .digitalAddress(institution.getDigitalAddress())
+                .address(institution.getAddress())
+                .taxCode(institution.getTaxCode())
                 .userProductRoles(List.of(UserProductRole.builder().productRole("admin").build()))
                 .status("ACTIVE")
-                .origin(elem.getOrigin())
-                .externalId(elem.getExternalId())
-                .description(elem.getDescription())
-                .institutionType(InstitutionType.valueOf(elem.getInstitutionType()))
+                .origin(institution.getOrigin())
+                .externalId(institution.getExternalId())
+                .description(institution.getDescription())
+                .institutionType(InstitutionType.valueOf(institution.getInstitutionType()))
                 .assistanceContacts(AssistanceContact.builder()
-                        .supportEmail(elem.getSupportEmail())
-                        .supportPhone(elem.getSupportPhone())
+                        .supportEmail(institution.getSupportEmail())
+                        .supportPhone(institution.getSupportPhone())
                         .build())
                 .pspData(pspData)
                 .build();
