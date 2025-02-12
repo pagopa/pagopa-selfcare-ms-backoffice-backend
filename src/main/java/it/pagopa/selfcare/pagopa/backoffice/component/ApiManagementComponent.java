@@ -1,6 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.component;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.AssistanceContact;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionBase;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
@@ -9,6 +11,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.UserProductRole;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
+import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitutionProduct;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,6 +23,8 @@ import java.util.List;
 @Slf4j
 @Component
 public class ApiManagementComponent {
+
+    private static final String PAGOPA_BACKOFFICE_PRODUCT_ID = "prod-pagopa";
 
     private final ExternalApiClient externalApiClient;
 
@@ -48,35 +53,37 @@ public class ApiManagementComponent {
         return institutionsBaseList;
     }
 
+    @Cacheable(cacheNames = "getInstitutionDetailForOperator")
+    public InstitutionDetail getInstitutionDetailForOperator(String institutionId) {
+        Institution institution = this.externalApiClient.getInstitution(institutionId);
+
+        return buildInstitutionDetail(institution, null);
+    }
+
     @Cacheable(cacheNames = "getInstitutionDetail")
     public InstitutionDetail getInstitutionDetail(String institutionId, String userId) {
         Institution institution = this.externalApiClient.getInstitution(institutionId);
-        List<UserInstitution> userInstitution =
-                this.externalApiClient.getUserInstitution(userId, institutionId, null, null, null, null, null);
+        List<UserInstitution> userInstitution = this.externalApiClient
+                .getUserInstitution(userId, institutionId, null, null, null, null, null);
 
-        return buildInstitutionDetail(institution, userInstitution.get(0)); // TODO add check on list size?
+        UserInstitutionProduct backofficeProduct = getBackofficeProductIfPresentOrElseThrowUnauthorizedException(userInstitution);
+        return buildInstitutionDetail(institution, backofficeProduct);
     }
 
-    private InstitutionDetail buildInstitutionDetail(Institution institution, UserInstitution userInstitution) {
-        PspData pspData = null;
-        if(institution.getPaymentServiceProvider() != null) {
-            pspData = PspData.builder()
-                    .abiCode(institution.getPaymentServiceProvider().getAbiCode())
-                    .businessRegisterNumber(institution.getPaymentServiceProvider().getBusinessRegisterNumber())
-                    .vatNumberGroup(institution.getPaymentServiceProvider().getVatNumberGroup())
-                    .legalRegisterName(institution.getPaymentServiceProvider().getLegalRegisterName())
-                    .legalRegisterNumber(institution.getPaymentServiceProvider().getBusinessRegisterNumber())
-                    .build();
+    private UserInstitutionProduct getBackofficeProductIfPresentOrElseThrowUnauthorizedException(List<UserInstitution> userInstitution) {
+        if (userInstitution.isEmpty() || userInstitution.get(0).getProducts() == null) {
+            throw new AppException(AppError.UNAUTHORIZED);
         }
-
-        UserProductRole userProductRole = UserProductRole.builder().productRole("admin").build(); // maintain old logic
-        if (userInstitution.getProducts() != null && !userInstitution.getProducts().isEmpty()) {
-            userProductRole = UserProductRole.builder()
-                    .productRole(userInstitution.getProducts().get(0).getProductRole())
-                    .productRoleLabel(userInstitution.getProducts().get(0).getProductRoleLabel())
-                    .build();
+        List<UserInstitutionProduct> products = userInstitution.get(0).getProducts().parallelStream()
+                .filter(item -> item.getStatus().equals("ACTIVE") && item.getProductId().equals(PAGOPA_BACKOFFICE_PRODUCT_ID))
+                .toList();
+        if (products.isEmpty()) {
+            throw new AppException(AppError.UNAUTHORIZED);
         }
+        return products.get(0);
+    }
 
+    private InstitutionDetail buildInstitutionDetail(Institution institution, UserInstitutionProduct userInstitutionProduct) {
         return InstitutionDetail.builder()
                 .address(institution.getAddress())
                 .id(institution.getId())
@@ -84,8 +91,8 @@ public class ApiManagementComponent {
                 .digitalAddress(institution.getDigitalAddress())
                 .address(institution.getAddress())
                 .taxCode(institution.getTaxCode())
-                .userProductRoles(List.of(userProductRole))
-                .status("ACTIVE") // TODO take status form institution.onboarding ?
+                .userProductRoles(getUserProductRole(userInstitutionProduct))
+                .status("ACTIVE") // should be retrieved from institution.onboarding.status for prod-pagopa product
                 .origin(institution.getOrigin())
                 .externalId(institution.getExternalId())
                 .description(institution.getDescription())
@@ -94,9 +101,31 @@ public class ApiManagementComponent {
                         .supportEmail(institution.getSupportEmail())
                         .supportPhone(institution.getSupportPhone())
                         .build())
-                .pspData(pspData)
+                .pspData(getPspData(institution))
                 .build();
     }
 
-}
+    private List<UserProductRole> getUserProductRole(UserInstitutionProduct userInstitutionProduct) {
+        UserProductRole userProductRole = UserProductRole.builder().productRole("admin").build(); // maintain old logic
+        if (userInstitutionProduct != null) {
+            userProductRole=  UserProductRole.builder()
+                    .productRole(userInstitutionProduct.getProductRole())
+                    .productRoleLabel(userInstitutionProduct.getProductRoleLabel())
+                    .build();
+        }
+        return List.of(userProductRole);
+    }
 
+    private PspData getPspData(Institution institution) {
+        if(institution.getPaymentServiceProvider() != null) {
+           return PspData.builder()
+                    .abiCode(institution.getPaymentServiceProvider().getAbiCode())
+                    .businessRegisterNumber(institution.getPaymentServiceProvider().getBusinessRegisterNumber())
+                    .vatNumberGroup(institution.getPaymentServiceProvider().getVatNumberGroup())
+                    .legalRegisterName(institution.getPaymentServiceProvider().getLegalRegisterName())
+                    .legalRegisterNumber(institution.getPaymentServiceProvider().getBusinessRegisterNumber())
+                    .build();
+        }
+        return null;
+    }
+}

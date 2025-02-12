@@ -125,7 +125,9 @@ public class ApiManagementService {
     }
 
     public InstitutionDetail getInstitutionFullDetail(String institutionId) {
-        // TODO check whats happen with operator flag enabled 
+        if (Boolean.TRUE.equals(this.featureManager.isEnabled("isOperator"))) {
+            return this.apiManagementComponent.getInstitutionDetailForOperator(institutionId);
+        }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = Utility.extractUserIdFromAuth(authentication);
         return this.apiManagementComponent.getInstitutionDetail(institutionId, userId);
