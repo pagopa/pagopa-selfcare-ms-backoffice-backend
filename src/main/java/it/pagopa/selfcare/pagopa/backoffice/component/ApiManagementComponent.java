@@ -30,10 +30,9 @@ public class ApiManagementComponent {
         this.modelMapper = modelMapper;
     }
 
-
     @Cacheable(cacheNames = "getInstitutionsForOperator")
     public List<InstitutionBase> getInstitutionsForOperator(String taxCode) {
-        return externalApiClient.getInstitutionsFiltered(taxCode).getInstitutions().stream()
+        return externalApiClient.getInstitutionsFiltered(taxCode).getInstitutions().parallelStream()
                 .map(elem -> modelMapper.map(elem, InstitutionBase.class))
                 .toList();
     }
@@ -43,7 +42,7 @@ public class ApiManagementComponent {
         List<InstitutionBase> institutionsBaseList;
         Collection<UserInstitution> institutions = externalApiClient.getUserInstitution(
                 userIdForAuth, null, null, null, null, null, null);
-        institutionsBaseList = institutions.stream()
+        institutionsBaseList = institutions.parallelStream()
                 .map(elem -> modelMapper.map(elem, InstitutionBase.class))
                 .toList();
         return institutionsBaseList;

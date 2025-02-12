@@ -48,7 +48,7 @@ public class AwsQuicksightClient {
                 .namespace(namespace)
                 .authorizedResourceArns(authorizedResourceArns)
                 .experienceConfiguration(e -> e.dashboard(d -> d.initialDashboardId(initialDashboardId)))
-                .sessionTags(s -> s.key(sessionTagKey).value(sessionTagValue).build())         // TODO verify key session tag
+                .sessionTags(s -> s.key(sessionTagKey).value(sessionTagValue).build())
                 .allowedDomains(allowedDomains)
                 .build();
 
