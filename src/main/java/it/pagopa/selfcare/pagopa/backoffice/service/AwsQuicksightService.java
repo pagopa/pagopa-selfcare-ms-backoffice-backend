@@ -9,6 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.sanitizeLogParam;
+
 @Slf4j
 @Service
 public class AwsQuicksightService {
@@ -35,7 +37,7 @@ public class AwsQuicksightService {
     log.info(
         "Quicksigh dashboard url requested by user {} for institution {}. Url: {}",
         userId,
-        institutionId,
+        sanitizeLogParam(institutionId),
         quicksightEmbedUrlResponse.getEmbedUrl());
     return quicksightEmbedUrlResponse;
   }
