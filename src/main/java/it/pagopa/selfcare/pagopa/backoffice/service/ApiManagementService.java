@@ -19,7 +19,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CIS
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Delegation;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionBase;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionBaseResources;
@@ -126,13 +125,14 @@ public class ApiManagementService {
     }
 
     public InstitutionDetail getInstitutionFullDetail(String institutionId) {
-        return apiManagementComponent.getInstitutionDetail(institutionId);
+        if (Boolean.TRUE.equals(this.featureManager.isEnabled("isOperator"))) {
+            return this.apiManagementComponent.getInstitutionDetailForOperator(institutionId);
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = Utility.extractUserIdFromAuth(authentication);
+        return this.apiManagementComponent.getInstitutionDetail(institutionId, userId);
     }
 
-
-    public Institution getInstitution(String institutionId) {
-        return modelMapper.map(externalApiClient.getInstitution(institutionId), Institution.class);
-    }
 
     public ProductResource getInstitutionProducts(String institutionId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

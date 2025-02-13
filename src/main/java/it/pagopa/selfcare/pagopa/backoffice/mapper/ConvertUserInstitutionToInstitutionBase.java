@@ -13,11 +13,13 @@ public class ConvertUserInstitutionToInstitutionBase implements Converter<UserIn
         UserInstitution src = mappingContext.getSource();
         return InstitutionBase.builder()
                 .id(src.getInstitutionId())
-                .userProductRoles(src.getProducts().stream().map(item ->
-                        UserProductRole.builder()
-                                .productRole(item.getProductRole())
-                                .productRoleLabel(item.getProductRoleLabel())
-                                .build()).toList())
+                .userProductRoles(src.getProducts().parallelStream()
+                        .filter(item -> item.getStatus().equals("ACTIVE") && item.getProductId().equals("prod-pagopa"))
+                        .map(item ->
+                                UserProductRole.builder()
+                                        .productRole(item.getProductRole())
+                                        .productRoleLabel(item.getProductRoleLabel())
+                                        .build()).toList())
                 .description(src.getInstitutionDescription())
                 .build();
     }

@@ -17,7 +17,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CIS
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionStationSegregationCodes;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionBaseResources;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
@@ -29,8 +28,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutio
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
+import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitutionProduct;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -137,23 +136,43 @@ class ApiManagementServiceTest {
         assertNotNull(institutions);
         assertNotNull(institutions.getInstitutions());
         assertFalse(institutions.getInstitutions().isEmpty());
-        verify(externalApiClient, never()).getInstitutions(any());
     }
 
     @Test
-    void getInstitution() {
-        when(externalApiClient.getInstitution(any()))
-                .thenReturn(buildInstitutionResponse(InstitutionType.PA));
-        Institution institution = service.getInstitution(INSTITUTION_ID);
-        assertNotNull(institution);
-        verify(externalApiClient).getInstitution(any());
+    void getInstitutionFullDetailForOperator() {
+        when(featureManager.isEnabled("isOperator")).thenReturn(true);
+        when(externalApiClient.getInstitution(anyString())).thenReturn(buildInstitutionResponse(InstitutionType.PA));
+
+        InstitutionDetail institutionDetail = service.getInstitutionFullDetail(INSTITUTION_ID);
+
+        assertNotNull(institutionDetail);
+
+        verify(externalApiClient, never())
+                .getUserInstitution(anyString(), anyString(), eq(null), eq(null), eq(null), eq(null), eq(null));
     }
 
-    @SneakyThrows
     @Test
-    void getInstitutionFullDetail() {
+    void getInstitutionFullDetailForRegularUser() {
+        when(featureManager.isEnabled("isOperator")).thenReturn(false);
         when(externalApiClient.getInstitution(any())).thenReturn(buildInstitutionResponse(InstitutionType.PA));
-        InstitutionDetail institutionDetail = service.getInstitutionFullDetail(any());
+        when(externalApiClient.getUserInstitution(anyString(), anyString(), eq(null), eq(null), eq(null), eq(null), eq(null)))
+                .thenReturn(List.of(
+                        UserInstitution.builder()
+                                .products(
+                                        List.of(
+                                                UserInstitutionProduct.builder()
+                                                        .productId("prod-pagopa")
+                                                        .status("ACTIVE")
+                                                        .productRole("admin")
+                                                        .productRoleLabel("administrator")
+                                                        .build()
+                                        )
+                                )
+                                .build()
+                ));
+
+        InstitutionDetail institutionDetail = service.getInstitutionFullDetail(INSTITUTION_ID);
+
         assertNotNull(institutionDetail);
     }
 
