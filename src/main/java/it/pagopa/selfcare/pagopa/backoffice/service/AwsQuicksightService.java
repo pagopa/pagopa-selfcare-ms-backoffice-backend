@@ -37,7 +37,7 @@ public class AwsQuicksightService {
     log.info(
         "Quicksigh dashboard url requested by user {} for institution {}. Url: {}",
         userId,
-        institutionId,
+        sanitizeLogParam(institutionId),
         quicksightEmbedUrlResponse.getEmbedUrl());
     return quicksightEmbedUrlResponse;
   }
