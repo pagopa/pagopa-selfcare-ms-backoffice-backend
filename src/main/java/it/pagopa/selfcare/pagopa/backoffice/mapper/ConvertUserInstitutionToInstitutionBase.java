@@ -1,5 +1,8 @@
 package it.pagopa.selfcare.pagopa.backoffice.mapper;
 
+import static it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserProductStatus.ACTIVE;
+import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.PAGOPA_BACKOFFICE_PRODUCT_ID;
+
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionBase;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.UserProductRole;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
@@ -14,7 +17,7 @@ public class ConvertUserInstitutionToInstitutionBase implements Converter<UserIn
         return InstitutionBase.builder()
                 .id(src.getInstitutionId())
                 .userProductRoles(src.getProducts().parallelStream()
-                        .filter(item -> item.getStatus().equals("ACTIVE") && item.getProductId().equals("prod-pagopa"))
+                        .filter(item -> item.getStatus().equals(ACTIVE) && item.getProductId().equals(PAGOPA_BACKOFFICE_PRODUCT_ID))
                         .map(item ->
                                 UserProductRole.builder()
                                         .productRole(item.getProductRole())

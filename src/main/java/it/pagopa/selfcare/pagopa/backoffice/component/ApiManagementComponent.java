@@ -12,6 +12,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutio
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitutionProduct;
+import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserProductStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,11 +21,11 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.List;
 
+import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.PAGOPA_BACKOFFICE_PRODUCT_ID;
+
 @Slf4j
 @Component
 public class ApiManagementComponent {
-
-    private static final String PAGOPA_BACKOFFICE_PRODUCT_ID = "prod-pagopa";
 
     private final ExternalApiClient externalApiClient;
 
@@ -75,7 +76,7 @@ public class ApiManagementComponent {
             throw new AppException(AppError.UNAUTHORIZED);
         }
         List<UserInstitutionProduct> products = userInstitution.get(0).getProducts().parallelStream()
-                .filter(item -> item.getStatus().equals("ACTIVE") && item.getProductId().equals(PAGOPA_BACKOFFICE_PRODUCT_ID))
+                .filter(item -> item.getStatus().equals(UserProductStatus.ACTIVE) && item.getProductId().equals(PAGOPA_BACKOFFICE_PRODUCT_ID))
                 .toList();
         if (products.isEmpty()) {
             throw new AppException(AppError.UNAUTHORIZED);
