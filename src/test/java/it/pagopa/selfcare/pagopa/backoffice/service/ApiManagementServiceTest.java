@@ -29,6 +29,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutio
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitutionProduct;
+import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserProductStatus;
 import it.pagopa.selfcare.pagopa.backoffice.util.LegacyPspCodeUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -162,7 +163,7 @@ class ApiManagementServiceTest {
                                         List.of(
                                                 UserInstitutionProduct.builder()
                                                         .productId("prod-pagopa")
-                                                        .status("ACTIVE")
+                                                        .status(UserProductStatus.ACTIVE)
                                                         .productRole("admin")
                                                         .productRoleLabel("administrator")
                                                         .build()

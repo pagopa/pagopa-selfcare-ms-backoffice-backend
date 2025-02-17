@@ -12,6 +12,8 @@ import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitutionProduct;
 import java.util.Collections;
 import java.util.List;
+
+import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserProductStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -88,7 +90,7 @@ class ApiManagementComponentTest {
             List.of(
                 UserInstitutionProduct.builder()
                     .productId(productId)
-                    .status("ACTIVE")
+                    .status(UserProductStatus.ACTIVE)
                     .productRole("admin")
                     .productRoleLabel("administrator")
                     .build()))
