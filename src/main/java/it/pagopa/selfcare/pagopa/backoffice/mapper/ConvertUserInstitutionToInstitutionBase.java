@@ -14,7 +14,7 @@ public class ConvertUserInstitutionToInstitutionBase implements Converter<UserIn
     @Override
     public InstitutionBase convert(MappingContext<UserInstitution, InstitutionBase> mappingContext) {
         UserInstitution src = mappingContext.getSource();
-        return InstitutionBase.builder()
+        InstitutionBase institution = InstitutionBase.builder()
                 .id(src.getInstitutionId())
                 .userProductRoles(src.getProducts().parallelStream()
                         .filter(item -> item.getStatus().equals(ACTIVE) && item.getProductId().equals(PAGOPA_BACKOFFICE_PRODUCT_ID))
@@ -25,6 +25,10 @@ public class ConvertUserInstitutionToInstitutionBase implements Converter<UserIn
                                         .build()).toList())
                 .description(src.getInstitutionDescription())
                 .build();
+        if (institution.getUserProductRoles().isEmpty()) {
+            return null;
+        }
+        return institution;
     }
 
 }

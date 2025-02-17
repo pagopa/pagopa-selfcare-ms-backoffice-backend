@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.PAGOPA_BACKOFFICE_PRODUCT_ID;
 
@@ -50,6 +51,7 @@ public class ApiManagementComponent {
                 userIdForAuth, null, null, null, null, null, null);
         institutionsBaseList = institutions.parallelStream()
                 .map(elem -> modelMapper.map(elem, InstitutionBase.class))
+                .filter(Objects::nonNull)
                 .toList();
         return institutionsBaseList;
     }
