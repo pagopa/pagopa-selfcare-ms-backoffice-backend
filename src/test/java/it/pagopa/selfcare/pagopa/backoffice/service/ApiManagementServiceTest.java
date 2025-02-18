@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.PAGOPA_BACKOFFICE_PRODUCT_ID;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -108,15 +109,55 @@ class ApiManagementServiceTest {
     private ApiManagementService service;
 
     @Test
-    void getInstitutions() {
+    void getInstitutionsSuccess() {
         when(externalApiClient.getUserInstitution(any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(Collections.singletonList(UserInstitution.builder()
-                        .institutionId("test").institutionDescription("test").products(Collections.emptyList())
+                .thenReturn(
+                        Collections.singletonList(
+                                UserInstitution.builder()
+                                        .institutionId("test")
+                                        .institutionDescription("test")
+                                        .products(
+                                                Collections.singletonList(
+                                                        UserInstitutionProduct.builder()
+                                                                .productId(PAGOPA_BACKOFFICE_PRODUCT_ID)
+                                                                .status(UserProductStatus.ACTIVE)
+                                                                .productRole("admin")
+                                                                .build())
+                                        )
                         .build()));
         InstitutionBaseResources institutions = service.getInstitutions(null);
+
         assertNotNull(institutions);
         assertNotNull(institutions.getInstitutions());
-        assertFalse(institutions.getInstitutions().isEmpty());
+        assertEquals(1, institutions.getInstitutions().size());
+
+        verify(externalApiClient).getUserInstitution(any(), any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void getInstitutionsSuccessWithEmptyListBecauseInactiveBackofficeProduct() {
+        when(externalApiClient.getUserInstitution(any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(
+                        Collections.singletonList(
+                                UserInstitution.builder()
+                                        .institutionId("test")
+                                        .institutionDescription("test")
+                                        .products(
+                                                Collections.singletonList(
+                                                        UserInstitutionProduct.builder()
+                                                                .productId(PAGOPA_BACKOFFICE_PRODUCT_ID)
+                                                                .status(UserProductStatus.DELETED)
+                                                                .productRole("admin")
+                                                                .build())
+                                        )
+                        .build()));
+
+        InstitutionBaseResources institutions = service.getInstitutions(null);
+
+        assertNotNull(institutions);
+        assertNotNull(institutions.getInstitutions());
+        assertTrue(institutions.getInstitutions().isEmpty());
+
         verify(externalApiClient).getUserInstitution(any(), any(), any(), any(), any(), any(), any());
     }
 
