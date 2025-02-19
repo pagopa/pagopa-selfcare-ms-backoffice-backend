@@ -28,7 +28,6 @@ public class MappingsConfiguration {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        mapper.createTypeMap(it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo.class, InstitutionDetail.class).setConverter(new ConvertInstitutionInfoToInstitutionResource());
         mapper.createTypeMap(UserInstitution.class, InstitutionBase.class).setConverter(new ConvertUserInstitutionToInstitutionBase());
         mapper.createTypeMap(Institution.class, InstitutionBase.class).setConverter(new ConvertInstitutionToInstitutionBase());
         mapper.createTypeMap(Iban.class, IbanCreateApiconfig.class).setConverter(new ConvertIbanToIbanCreateApiconfig());
@@ -36,7 +35,6 @@ public class MappingsConfiguration {
         mapper.createTypeMap(OffsetDateTime.class, LocalDate.class).setConverter(new OffsetToLocalDate());
         mapper.createTypeMap(DelegationExternal.class, CIBrokerDelegationResource.class).setConverter(new ConvertDelegationExternalToCIBrokerDelegationResource());
         mapper.createTypeMap(CreditorInstitutionView.class, CIBrokerStationResource.class).setConverter(new ConvertCreditorInstitutionViewToCIBrokerStationResource());
-        mapper.createTypeMap(Institution.class, InstitutionDetail.class).setConverter(new InstitutionToInstitutionDetail());
         mapper.createTypeMap(DelegationExternal.class, CreditorInstitutionInfo.class).setConverter(new ConvertDelegationExternalToCreditorInstitutionInfo());
         mapper.createTypeMap(IbanDetails.class, IbanEntity.class).setConverter(new ConvertIbanDetailsToIbanEntity());
         mapper.createTypeMap(IbanEntity.class, CreditorInstitutionIbansEntity.class).setConverter(new ConvertIbanEntityToCreditorInstitutionIbansEntity());
