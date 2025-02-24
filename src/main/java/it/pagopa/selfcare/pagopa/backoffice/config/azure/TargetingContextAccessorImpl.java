@@ -11,14 +11,10 @@ public class TargetingContextAccessorImpl implements TargetingContextAccessor {
 
     @Override
     public void configureTargetingContext(TargetingContext context) {
-//        var selfcareUser = ((SelfCareUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-//        context.setUserId(selfcareUser.getEmail());
-//        ArrayList<String> groups = new ArrayList<>();
-//        groups.add(getGroup(selfcareUser));
-//        context.setGroups(groups);
-        context.setUserId("pagopa@altoadigeriscossioni.it");
+        var selfcareUser = ((SelfCareUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        context.setUserId(selfcareUser.getEmail());
         ArrayList<String> groups = new ArrayList<>();
-        groups.add("altoadigeriscossioni.it");
+        groups.add(getGroup(selfcareUser));
         context.setGroups(groups);
     }
 
