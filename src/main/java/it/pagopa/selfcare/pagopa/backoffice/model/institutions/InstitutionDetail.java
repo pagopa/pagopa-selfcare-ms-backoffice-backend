@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.model.institutions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Onboarding;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -89,4 +90,9 @@ public class InstitutionDetail {
     @JsonProperty(value = "dpo_data")
     @Valid
     private DpoData dpoData;
+
+    @Schema(description = "Institution's product data")
+    @JsonProperty(value = "onboarding")
+    @Valid
+    private List<Onboarding> onboarding;
 }

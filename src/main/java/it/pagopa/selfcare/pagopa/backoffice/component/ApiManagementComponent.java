@@ -95,6 +95,7 @@ public class ApiManagementComponent {
                 .address(institution.getAddress())
                 .taxCode(institution.getTaxCode())
                 .userProductRoles(getUserProductRole(userInstitutionProduct))
+                .onboarding(institution.getOnboarding())
                 .status("ACTIVE") // should be retrieved from institution.onboarding.status for prod-pagopa product
                 .origin(institution.getOrigin())
                 .externalId(institution.getExternalId())
