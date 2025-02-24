@@ -41,7 +41,8 @@ public class ApiManagementComponent {
     Collection<UserInstitution> pageInstitutions;
     int page = 0;
     do {
-      pageInstitutions = externalApiClient.getUserInstitution(userIdForAuth, null, null, null, null, page, 100);
+      pageInstitutions =
+          externalApiClient.getUserInstitution(userIdForAuth, null, null, null, null, page, 100);
       institutions.addAll(pageInstitutions);
       page += 1;
     } while (!pageInstitutions.isEmpty());

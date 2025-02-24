@@ -109,7 +109,7 @@ class ApiManagementServiceTest {
 
     @Test
     void getInstitutions() {
-        when(externalApiClient.getUserInstitution(any(), any(), any(), any(), any(), any(), any()))
+        when(externalApiClient.getUserInstitution(any(), any(), any(), any(), any(), eq(0), any()))
                 .thenReturn(Collections.singletonList(UserInstitution.builder()
                         .institutionId("test").institutionDescription("test").products(Collections.emptyList())
                         .build()));
@@ -117,7 +117,7 @@ class ApiManagementServiceTest {
         assertNotNull(institutions);
         assertNotNull(institutions.getInstitutions());
         assertFalse(institutions.getInstitutions().isEmpty());
-        verify(externalApiClient).getUserInstitution(any(), any(), any(), any(), any(), any(), any());
+        verify(externalApiClient, times(2)).getUserInstitution(any(), any(), any(), any(), any(), any(), any());
     }
 
     @Test
