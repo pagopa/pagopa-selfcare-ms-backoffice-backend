@@ -12365,6 +12365,20 @@
           }
         }
       },
+      "Billing": {
+        "type": "object",
+        "properties": {
+          "publicServices": {
+            "type": "boolean"
+          },
+          "recipientCode": {
+            "type": "string"
+          },
+          "vatNumber": {
+            "type": "string"
+          }
+        }
+      },
       "BrokerAndEcDetailsResource": {
         "type": "object",
         "properties": {
@@ -14540,6 +14554,13 @@
             "type": "string",
             "description": "Institution's name"
           },
+          "onboarding": {
+            "type": "array",
+            "description": "Institution's product data",
+            "items": {
+              "$ref": "#/components/schemas/Onboarding"
+            }
+          },
           "origin": {
             "type": "string",
             "description": "Institution data origin"
@@ -14681,6 +14702,25 @@
             "description": "Maintenance page message"
           }
         }
+      },
+      "Onboarding": {
+        "type": "object",
+        "properties": {
+          "billing": {
+            "$ref": "#/components/schemas/Billing"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "productId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "description": "Institution's product data"
       },
       "OperatorChannelReview": {
         "type": "object",
