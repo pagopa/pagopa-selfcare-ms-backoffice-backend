@@ -1,17 +1,26 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
+import com.azure.spring.cloud.feature.management.FeatureManager;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsQuicksightClient;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Onboarding;
 import it.pagopa.selfcare.pagopa.backoffice.model.quicksightdashboard.QuicksightEmbedUrlResponse;
-import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.PAGOPA_BACKOFFICE_PRODUCT_ID;
+import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.QUICKSIGHT_DASHBOARD_PRODUCT_ID;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = AwsQuicksightService.class)
 class AwsQuicksightServiceTest {
@@ -20,16 +29,99 @@ class AwsQuicksightServiceTest {
 
     @MockBean
     private AwsQuicksightClient awsQuicksightClient;
+    @MockBean
+    private FeatureManager featureManager;
+    @MockBean
+    private ApiManagementService apiManagementService;
 
     @Autowired
     private AwsQuicksightService sut;
 
     @Test
-    void generateEmbedUrlForAnonymousUserSuccess() {
+    void generateEmbedUrlForAnonymousUser_Success() {
+        when(featureManager.isEnabled("isOperator")).thenReturn(Boolean.FALSE);
+        when(featureManager.isEnabled("quicksight-product-free-trial")).thenReturn(Boolean.FALSE);
+
+        when(apiManagementService.getInstitutionFullDetail(anyString())).thenReturn(institutionWithActiveDashboardProduct());
+
         when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString())).thenReturn(EMBED_URL);
 
         AtomicReference<QuicksightEmbedUrlResponse> response = new AtomicReference<>();
-        assertDoesNotThrow(() -> response.set(sut.generateEmbedUrlForAnonymousUser("institution-id")));
+        assertDoesNotThrow(() -> response.set(sut.generateEmbedUrlForAnonymousUser()));
         assertEquals(EMBED_URL, response.get().getEmbedUrl());
+    }
+
+    @Test
+    void generateEmbedUrlForAnonymousUser_IsOperator_Success() {
+        when(featureManager.isEnabled("isOperator")).thenReturn(Boolean.TRUE);
+        when(featureManager.isEnabled("quicksight-product-free-trial")).thenReturn(Boolean.FALSE);
+
+        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString())).thenReturn(EMBED_URL);
+
+        AtomicReference<QuicksightEmbedUrlResponse> response = new AtomicReference<>();
+        assertDoesNotThrow(() -> response.set(sut.generateEmbedUrlForAnonymousUser()));
+        assertEquals(EMBED_URL, response.get().getEmbedUrl());
+        verifyNoInteractions(apiManagementService);
+    }
+
+    @Test
+    void generateEmbedUrlForAnonymousUser_EnabledFreeTrial_Success() {
+        when(featureManager.isEnabled("isOperator")).thenReturn(Boolean.FALSE);
+        when(featureManager.isEnabled("quicksight-product-free-trial")).thenReturn(Boolean.TRUE);
+
+        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString())).thenReturn(EMBED_URL);
+
+        AtomicReference<QuicksightEmbedUrlResponse> response = new AtomicReference<>();
+        assertDoesNotThrow(() -> response.set(sut.generateEmbedUrlForAnonymousUser()));
+        assertEquals(EMBED_URL, response.get().getEmbedUrl());
+        verifyNoInteractions(apiManagementService);
+    }
+
+    @Test
+    void generateEmbedUrlForAnonymousUser_InactiveProduct_Forbidden() {
+        when(featureManager.isEnabled("isOperator")).thenReturn(Boolean.FALSE);
+        when(featureManager.isEnabled("quicksight-product-free-trial")).thenReturn(Boolean.FALSE);
+
+        when(apiManagementService.getInstitutionFullDetail(anyString())).thenReturn(institutionWithInactiveDashboardProduct());
+
+        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString())).thenReturn(EMBED_URL);
+
+        assertThrows(AppException.class, () -> sut.generateEmbedUrlForAnonymousUser(), AppError.FORBIDDEN.getTitle());
+    }
+
+    @Test
+    void generateEmbedUrlForAnonymousUser_WithoutProduct_Forbidden() {
+        when(featureManager.isEnabled("isOperator")).thenReturn(Boolean.FALSE);
+        when(featureManager.isEnabled("quicksight-product-free-trial")).thenReturn(Boolean.FALSE);
+
+        when(apiManagementService.getInstitutionFullDetail(anyString())).thenReturn(institutionWithoutDashboardProduct());
+
+        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString())).thenReturn(EMBED_URL);
+
+        assertThrows(AppException.class, () -> sut.generateEmbedUrlForAnonymousUser(), AppError.FORBIDDEN.getDetails());
+    }
+
+    @Test
+    void generateEmbedUrlForAnonymousUser_getInstitutionFullDetail_404() {
+        when(featureManager.isEnabled("isOperator")).thenReturn(Boolean.FALSE);
+        when(featureManager.isEnabled("quicksight-product-free-trial")).thenReturn(Boolean.FALSE);
+
+        when(apiManagementService.getInstitutionFullDetail(anyString())).thenThrow(new AppException(AppError.INSTITUTION_NOT_FOUND));
+
+        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString())).thenReturn(EMBED_URL);
+
+        assertThrows(AppException.class, () -> sut.generateEmbedUrlForAnonymousUser(), AppError.INSTITUTION_NOT_FOUND.getDetails());
+    }
+
+    InstitutionDetail institutionWithActiveDashboardProduct() {
+        return InstitutionDetail.builder().onboarding(List.of(Onboarding.builder().productId(QUICKSIGHT_DASHBOARD_PRODUCT_ID).status("ACTIVE").build())).build();
+    }
+
+    InstitutionDetail institutionWithInactiveDashboardProduct() {
+        return InstitutionDetail.builder().onboarding(List.of(Onboarding.builder().productId(QUICKSIGHT_DASHBOARD_PRODUCT_ID).status("NOT_ACTIVE").build())).build();
+    }
+
+    InstitutionDetail institutionWithoutDashboardProduct() {
+        return InstitutionDetail.builder().onboarding(List.of(Onboarding.builder().productId(PAGOPA_BACKOFFICE_PRODUCT_ID).status("ACTIVE").build())).build();
     }
 }

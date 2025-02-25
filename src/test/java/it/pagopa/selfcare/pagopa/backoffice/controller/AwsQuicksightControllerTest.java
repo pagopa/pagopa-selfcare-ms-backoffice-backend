@@ -1,5 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.quicksightdashboard.QuicksightEmbedUrlResponse;
 import it.pagopa.selfcare.pagopa.backoffice.service.AwsQuicksightService;
 import org.junit.jupiter.api.Test;
@@ -29,11 +31,20 @@ class AwsQuicksightControllerTest {
     private MockMvc mvc;
 
     @Test
-    void getEmbedUrlForAnonymousUser() throws Exception {
+    void getEmbedUrlForAnonymousUser_200() throws Exception {
         QuicksightEmbedUrlResponse response = new QuicksightEmbedUrlResponse();
         response.setEmbedUrl(EMBED_URL);
-        when(awsQuicksightService.generateEmbedUrlForAnonymousUser(anyString())).thenReturn(response);
-        mvc.perform(get("/quicksight/dashboard/{psp-tax-code}", "psp-tax-code"))
+        when(awsQuicksightService.generateEmbedUrlForAnonymousUser()).thenReturn(response);
+        mvc.perform(get("/quicksight/dashboard"))
                 .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void getEmbedUrlForAnonymousUser_403() throws Exception {
+        QuicksightEmbedUrlResponse response = new QuicksightEmbedUrlResponse();
+        response.setEmbedUrl(EMBED_URL);
+        when(awsQuicksightService.generateEmbedUrlForAnonymousUser()).thenThrow(new AppException(AppError.FORBIDDEN));
+        mvc.perform(get("/quicksight/dashboard"))
+                .andExpect(status().isForbidden());
     }
 }
