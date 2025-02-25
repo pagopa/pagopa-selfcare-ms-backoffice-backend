@@ -22,6 +22,14 @@ public class Utility {
         return userIdForAuth;
     }
 
+    public static String extractInstitutionIdFromAuth(Authentication authentication) {
+        String institutionId = "";
+        if(authentication != null && authentication.getPrincipal() instanceof SelfCareUser user) {
+            institutionId = user.getOrgId();
+        }
+        return institutionId;
+    }
+
     /**
      * @param value value to deNullify.
      * @return return empty string if value is null
