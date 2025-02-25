@@ -10998,21 +10998,10 @@
         }
       ]
     },
-    "/quicksight/dashboard/{institution-id}": {
+    "/quicksight/dashboard": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId": "getEmbedUrlForAnonymousUser",
-        "parameters": [
-          {
-            "description": "Institution's identifier",
-            "in": "path",
-            "name": "institution-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "content": {
