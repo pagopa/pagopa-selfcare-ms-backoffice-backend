@@ -10998,21 +10998,10 @@
         }
       ]
     },
-    "/quicksight/dashboard/{institution-id}": {
+    "/quicksight/dashboard": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
         "operationId": "getEmbedUrlForAnonymousUser",
-        "parameters": [
-          {
-            "description": "Institution's identifier",
-            "in": "path",
-            "name": "institution-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "content": {
@@ -11023,6 +11012,53 @@
               }
             },
             "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
@@ -12362,6 +12398,20 @@
               "type": "string",
               "description": "List of codes not used for existing associations"
             }
+          }
+        }
+      },
+      "Billing": {
+        "type": "object",
+        "properties": {
+          "publicServices": {
+            "type": "boolean"
+          },
+          "recipientCode": {
+            "type": "string"
+          },
+          "vatNumber": {
+            "type": "string"
           }
         }
       },
@@ -14540,6 +14590,13 @@
             "type": "string",
             "description": "Institution's name"
           },
+          "onboarding": {
+            "type": "array",
+            "description": "Institution's product data",
+            "items": {
+              "$ref": "#/components/schemas/Onboarding"
+            }
+          },
           "origin": {
             "type": "string",
             "description": "Institution data origin"
@@ -14681,6 +14738,25 @@
             "description": "Maintenance page message"
           }
         }
+      },
+      "Onboarding": {
+        "type": "object",
+        "properties": {
+          "billing": {
+            "$ref": "#/components/schemas/Billing"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "productId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "description": "Institution's product data"
       },
       "OperatorChannelReview": {
         "type": "object",

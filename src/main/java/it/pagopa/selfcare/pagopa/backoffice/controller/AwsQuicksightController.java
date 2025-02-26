@@ -1,9 +1,13 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.quicksightdashboard.QuicksightEmbedUrlResponse;
 import it.pagopa.selfcare.pagopa.backoffice.service.AwsQuicksightService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
@@ -26,12 +30,17 @@ public class AwsQuicksightController {
         this.awsQuicksightService = awsQuicksightService;
     }
 
-    @GetMapping(value = "/dashboard/{institution-id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/dashboard", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = QuicksightEmbedUrlResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @Operation(summary = "Get aws quicksight dashboard's embed url", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public QuicksightEmbedUrlResponse getEmbedUrlForAnonymousUser(
-            @Parameter(description = "Institution's identifier") @PathVariable("institution-id") String institutionId) {
-        return this.awsQuicksightService.generateEmbedUrlForAnonymousUser(institutionId);
+    public QuicksightEmbedUrlResponse getEmbedUrlForAnonymousUser() {
+        return this.awsQuicksightService.generateEmbedUrlForAnonymousUser();
     }
 }

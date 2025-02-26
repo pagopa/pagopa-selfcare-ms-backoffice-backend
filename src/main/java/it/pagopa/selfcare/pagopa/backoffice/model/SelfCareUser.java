@@ -15,6 +15,7 @@ public class SelfCareUser implements AuthenticatedPrincipal {
     private String userName;
 
     private String orgVat;
+    private String orgId;
 
     public SelfCareUser(String id) {
         this.id = id;
@@ -36,6 +37,7 @@ public class SelfCareUser implements AuthenticatedPrincipal {
         private String name;
         private String surname;
         private String orgVat;
+        private String orgId;
 
         private SelfCareUserBuilder(String id) {
             this.id = id;
@@ -61,12 +63,18 @@ public class SelfCareUser implements AuthenticatedPrincipal {
             return this;
         }
 
+        public SelfCareUserBuilder orgId(String orgId) {
+            this.orgId = orgId;
+            return this;
+        }
+
         public SelfCareUser build() {
             SelfCareUser user = new SelfCareUser(id);
             user.email = email;
             user.userName = name;
             user.surname = surname;
             user.orgVat = orgVat;
+            user.orgId = orgId;
             return user;
         }
 

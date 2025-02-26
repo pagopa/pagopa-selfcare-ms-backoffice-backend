@@ -1,5 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.quicksightdashboard.QuicksightEmbedUrlResponse;
 import it.pagopa.selfcare.pagopa.backoffice.service.AwsQuicksightService;
 import org.junit.jupiter.api.Test;
@@ -10,7 +12,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,11 +30,18 @@ class AwsQuicksightControllerTest {
     private MockMvc mvc;
 
     @Test
-    void getEmbedUrlForAnonymousUser() throws Exception {
+    void getEmbedUrlForAnonymousUser_200() throws Exception {
         QuicksightEmbedUrlResponse response = new QuicksightEmbedUrlResponse();
         response.setEmbedUrl(EMBED_URL);
-        when(awsQuicksightService.generateEmbedUrlForAnonymousUser(anyString())).thenReturn(response);
-        mvc.perform(get("/quicksight/dashboard/{psp-tax-code}", "psp-tax-code"))
+        when(awsQuicksightService.generateEmbedUrlForAnonymousUser()).thenReturn(response);
+        mvc.perform(get("/quicksight/dashboard"))
                 .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void getEmbedUrlForAnonymousUser_403() throws Exception {
+        when(awsQuicksightService.generateEmbedUrlForAnonymousUser()).thenThrow(new AppException(AppError.FORBIDDEN));
+        mvc.perform(get("/quicksight/dashboard"))
+                .andExpect(status().isForbidden());
     }
 }
