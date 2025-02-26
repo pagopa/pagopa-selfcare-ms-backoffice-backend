@@ -7,6 +7,7 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.quicksightdashboard.QuicksightEmbedUrlResponse;
+import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserProductStatus;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ public class AwsQuicksightService {
         return quicksightEmbedUrlResponse;
     }
 
-    private static boolean isNotSubscribedToDashboardProduct(Institution institutionDetail) {
-        return institutionDetail.getOnboarding().parallelStream().noneMatch(el -> el.getProductId().equals(QUICKSIGHT_DASHBOARD_PRODUCT_ID) && el.getStatus().equals("ACTIVE"));
+    private static boolean isNotSubscribedToDashboardProduct(Institution institution) {
+        return institution.getOnboarding().parallelStream().noneMatch(el -> el.getProductId().equals(QUICKSIGHT_DASHBOARD_PRODUCT_ID) && el.getStatus().equals(String.valueOf(UserProductStatus.ACTIVE)));
     }
 }
