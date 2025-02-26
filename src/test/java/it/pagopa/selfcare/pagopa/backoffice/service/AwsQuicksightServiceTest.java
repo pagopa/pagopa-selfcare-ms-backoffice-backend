@@ -8,6 +8,7 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Onboarding;
 import it.pagopa.selfcare.pagopa.backoffice.model.quicksightdashboard.QuicksightEmbedUrlResponse;
+import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserProductStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -115,14 +116,14 @@ class AwsQuicksightServiceTest {
     }
 
     Institution institutionWithActiveDashboardProduct() {
-        return Institution.builder().onboarding(List.of(Onboarding.builder().productId(QUICKSIGHT_DASHBOARD_PRODUCT_ID).status("ACTIVE").build())).build();
+        return Institution.builder().onboarding(List.of(Onboarding.builder().productId(QUICKSIGHT_DASHBOARD_PRODUCT_ID).status(UserProductStatus.ACTIVE).build())).build();
     }
 
     Institution institutionWithInactiveDashboardProduct() {
-        return Institution.builder().onboarding(List.of(Onboarding.builder().productId(QUICKSIGHT_DASHBOARD_PRODUCT_ID).status("NOT_ACTIVE").build())).build();
+        return Institution.builder().onboarding(List.of(Onboarding.builder().productId(QUICKSIGHT_DASHBOARD_PRODUCT_ID).status(UserProductStatus.REJECTED).build())).build();
     }
 
     Institution institutionWithoutDashboardProduct() {
-        return Institution.builder().onboarding(List.of(Onboarding.builder().productId(PAGOPA_BACKOFFICE_PRODUCT_ID).status("ACTIVE").build())).build();
+        return Institution.builder().onboarding(List.of(Onboarding.builder().productId(PAGOPA_BACKOFFICE_PRODUCT_ID).status(UserProductStatus.ACTIVE).build())).build();
     }
 }

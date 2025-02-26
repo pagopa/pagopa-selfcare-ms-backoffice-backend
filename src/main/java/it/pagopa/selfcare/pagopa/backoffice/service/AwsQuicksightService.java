@@ -59,6 +59,6 @@ public class AwsQuicksightService {
     }
 
     private static boolean isNotSubscribedToDashboardProduct(Institution institution) {
-        return institution.getOnboarding().parallelStream().noneMatch(el -> el.getProductId().equals(QUICKSIGHT_DASHBOARD_PRODUCT_ID) && el.getStatus().equals(String.valueOf(UserProductStatus.ACTIVE)));
+        return institution.getOnboarding().parallelStream().noneMatch(el -> el.getProductId().equals(QUICKSIGHT_DASHBOARD_PRODUCT_ID) && el.getStatus().equals(UserProductStatus.ACTIVE));
     }
 }
