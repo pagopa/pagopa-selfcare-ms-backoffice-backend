@@ -40,8 +40,6 @@ class AwsQuicksightControllerTest {
 
     @Test
     void getEmbedUrlForAnonymousUser_403() throws Exception {
-        QuicksightEmbedUrlResponse response = new QuicksightEmbedUrlResponse();
-        response.setEmbedUrl(EMBED_URL);
         when(awsQuicksightService.generateEmbedUrlForAnonymousUser()).thenThrow(new AppException(AppError.FORBIDDEN));
         mvc.perform(get("/quicksight/dashboard"))
                 .andExpect(status().isForbidden());

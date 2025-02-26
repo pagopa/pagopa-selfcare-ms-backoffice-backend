@@ -2,9 +2,10 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import com.azure.spring.cloud.feature.management.FeatureManager;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsQuicksightClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionDetail;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.quicksightdashboard.QuicksightEmbedUrlResponse;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +23,13 @@ public class AwsQuicksightService {
 
     private final AwsQuicksightClient awsQuicksightClient;
     private final FeatureManager featureManager;
-    private final ApiManagementService apiManagementService;
+    private final ExternalApiClient externalApiClient;
 
     @Autowired
-    public AwsQuicksightService(AwsQuicksightClient awsQuicksightClient, FeatureManager featureManager, ApiManagementService apiManagementService) {
+    public AwsQuicksightService(AwsQuicksightClient awsQuicksightClient, FeatureManager featureManager, ExternalApiClient externalApiClient) {
         this.awsQuicksightClient = awsQuicksightClient;
         this.featureManager = featureManager;
-        this.apiManagementService = apiManagementService;
+        this.externalApiClient = externalApiClient;
     }
 
     /**
@@ -43,8 +44,8 @@ public class AwsQuicksightService {
 
         QuicksightEmbedUrlResponse quicksightEmbedUrlResponse = new QuicksightEmbedUrlResponse();
         if (Boolean.FALSE.equals(this.featureManager.isEnabled("quicksight-product-free-trial")) && Boolean.FALSE.equals(this.featureManager.isEnabled("isOperator"))) {
-            InstitutionDetail institutionDetail = apiManagementService.getInstitutionFullDetail(institutionId);
-            if (isNotSubscribedToDashboardProduct(institutionDetail)) {
+            Institution institution = this.externalApiClient.getInstitution(institutionId);
+            if (isNotSubscribedToDashboardProduct(institution)) {
                 throw new AppException(AppError.FORBIDDEN);
             }
         }
@@ -56,7 +57,7 @@ public class AwsQuicksightService {
         return quicksightEmbedUrlResponse;
     }
 
-    private static boolean isNotSubscribedToDashboardProduct(InstitutionDetail institutionDetail) {
+    private static boolean isNotSubscribedToDashboardProduct(Institution institutionDetail) {
         return institutionDetail.getOnboarding().parallelStream().noneMatch(el -> el.getProductId().equals(QUICKSIGHT_DASHBOARD_PRODUCT_ID) && el.getStatus().equals("ACTIVE"));
     }
 }
