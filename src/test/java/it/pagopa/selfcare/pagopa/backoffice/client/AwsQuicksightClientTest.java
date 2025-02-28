@@ -31,7 +31,7 @@ class AwsQuicksightClientTest {
                 .thenReturn(GenerateEmbedUrlForAnonymousUserResponse.builder().embedUrl(EMBED_URL).build());
 
         AtomicReference<String> response = new AtomicReference<>();
-        assertDoesNotThrow(() -> response.set(sut.generateEmbedUrlForAnonymousUser("sessionTagValue")));
-        assertEquals(EMBED_URL, response.get());
+        assertDoesNotThrow(() -> response.set(sut.generateEmbedUrlForAnonymousUser("sessionTagValue", "pspName")));
+        assertEquals(EMBED_URL+"#p.PSP=pspName", response.get());
     }
 }
