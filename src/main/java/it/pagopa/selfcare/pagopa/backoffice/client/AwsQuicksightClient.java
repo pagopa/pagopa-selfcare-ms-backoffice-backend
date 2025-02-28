@@ -54,6 +54,6 @@ public class AwsQuicksightClient {
 
         GenerateEmbedUrlForAnonymousUserResponse dashboardEmbedUrl = this.quickSightClient.generateEmbedUrlForAnonymousUser(generateEmbedUrlForAnonymousUserRequest);
 
-        return dashboardEmbedUrl.embedUrl() + String.format("#p.PSP=%s", pspName);
+        return String.format("%s#p.PSP=%s", dashboardEmbedUrl.embedUrl(), pspName);
     }
 }
