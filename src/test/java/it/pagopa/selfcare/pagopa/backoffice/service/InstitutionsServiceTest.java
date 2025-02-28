@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.InstitutionsClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
@@ -46,6 +47,21 @@ class InstitutionsServiceTest {
         AppException appException = assertThrows(AppException.class,
                 () -> institutionsService.uploadInstitutionsData("", multipartFile));
         assertEquals(AppError.INSTITUTION_DATA_UPLOAD_ERROR.title, appException.getTitle());
+        verify(institutionsClient).updateInstitutions(any(),any());
+    }
+
+    @Test
+    void shouldReturnBadRequestOnDownstreamDependencyBadRequest() {
+        FeignException.BadRequest badRequest = Mockito.mock(FeignException.BadRequest.class);
+        doAnswer(item -> {
+            throw badRequest;
+        }).when(institutionsClient).updateInstitutions(any(),any());
+        MultipartFile multipartFile = Mockito.mock(MultipartFile.class);
+        AppException appException = assertThrows(AppException.class,
+                () -> institutionsService.uploadInstitutionsData("", multipartFile));
+        assertEquals(AppError.INSTITUTION_DATA_UPLOAD_BAD_REQUEST.title, appException.getTitle());
+        assertEquals(AppError.INSTITUTION_DATA_UPLOAD_BAD_REQUEST.httpStatus, appException.getHttpStatus());
+        assertEquals(AppError.INSTITUTION_DATA_UPLOAD_BAD_REQUEST.details, appException.getMessage());
         verify(institutionsClient).updateInstitutions(any(),any());
     }
 
