@@ -21,7 +21,6 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.PAGOPA_BACKOFF
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.QUICKSIGHT_DASHBOARD_PRODUCT_ID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = AwsQuicksightService.class)
@@ -46,7 +45,7 @@ class AwsQuicksightServiceTest {
 
         when(externalApiClient.getInstitution(anyString())).thenReturn(institutionWithActiveDashboardProduct());
 
-        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString())).thenReturn(EMBED_URL);
+        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString(),anyString())).thenReturn(EMBED_URL);
 
         AtomicReference<QuicksightEmbedUrlResponse> response = new AtomicReference<>();
         assertDoesNotThrow(() -> response.set(sut.generateEmbedUrlForAnonymousUser()));
@@ -58,12 +57,13 @@ class AwsQuicksightServiceTest {
         when(featureManager.isEnabled("isOperator")).thenReturn(Boolean.TRUE);
         when(featureManager.isEnabled("quicksight-product-free-trial")).thenReturn(Boolean.FALSE);
 
-        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString())).thenReturn(EMBED_URL);
+        when(externalApiClient.getInstitution(anyString())).thenReturn(institutionWithActiveDashboardProduct());
+
+        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString(),anyString())).thenReturn(EMBED_URL);
 
         AtomicReference<QuicksightEmbedUrlResponse> response = new AtomicReference<>();
         assertDoesNotThrow(() -> response.set(sut.generateEmbedUrlForAnonymousUser()));
         assertEquals(EMBED_URL, response.get().getEmbedUrl());
-        verifyNoInteractions(externalApiClient);
     }
 
     @Test
@@ -71,12 +71,13 @@ class AwsQuicksightServiceTest {
         when(featureManager.isEnabled("isOperator")).thenReturn(Boolean.FALSE);
         when(featureManager.isEnabled("quicksight-product-free-trial")).thenReturn(Boolean.TRUE);
 
-        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString())).thenReturn(EMBED_URL);
+        when(externalApiClient.getInstitution(anyString())).thenReturn(institutionWithActiveDashboardProduct());
+
+        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString(),anyString())).thenReturn(EMBED_URL);
 
         AtomicReference<QuicksightEmbedUrlResponse> response = new AtomicReference<>();
         assertDoesNotThrow(() -> response.set(sut.generateEmbedUrlForAnonymousUser()));
         assertEquals(EMBED_URL, response.get().getEmbedUrl());
-        verifyNoInteractions(externalApiClient);
     }
 
     @Test
@@ -86,7 +87,7 @@ class AwsQuicksightServiceTest {
 
         when(externalApiClient.getInstitution(anyString())).thenReturn(institutionWithInactiveDashboardProduct());
 
-        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString())).thenReturn(EMBED_URL);
+        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString(),anyString())).thenReturn(EMBED_URL);
 
         assertThrows(AppException.class, () -> sut.generateEmbedUrlForAnonymousUser(), AppError.FORBIDDEN.getTitle());
     }
@@ -98,7 +99,7 @@ class AwsQuicksightServiceTest {
 
         when(externalApiClient.getInstitution(anyString())).thenReturn(institutionWithoutDashboardProduct());
 
-        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString())).thenReturn(EMBED_URL);
+        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString(),anyString())).thenReturn(EMBED_URL);
 
         assertThrows(AppException.class, () -> sut.generateEmbedUrlForAnonymousUser(), AppError.FORBIDDEN.getDetails());
     }
@@ -110,20 +111,20 @@ class AwsQuicksightServiceTest {
 
         when(externalApiClient.getInstitution(anyString())).thenThrow(new AppException(AppError.INSTITUTION_NOT_FOUND));
 
-        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString())).thenReturn(EMBED_URL);
+        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString(),anyString())).thenReturn(EMBED_URL);
 
         assertThrows(AppException.class, () -> sut.generateEmbedUrlForAnonymousUser(), AppError.INSTITUTION_NOT_FOUND.getDetails());
     }
 
     Institution institutionWithActiveDashboardProduct() {
-        return Institution.builder().onboarding(List.of(Onboarding.builder().productId(QUICKSIGHT_DASHBOARD_PRODUCT_ID).status(UserProductStatus.ACTIVE).build())).build();
+        return Institution.builder().description("pspName").onboarding(List.of(Onboarding.builder().productId(QUICKSIGHT_DASHBOARD_PRODUCT_ID).status(UserProductStatus.ACTIVE).build())).build();
     }
 
     Institution institutionWithInactiveDashboardProduct() {
-        return Institution.builder().onboarding(List.of(Onboarding.builder().productId(QUICKSIGHT_DASHBOARD_PRODUCT_ID).status(UserProductStatus.REJECTED).build())).build();
+        return Institution.builder().description("pspName").onboarding(List.of(Onboarding.builder().productId(QUICKSIGHT_DASHBOARD_PRODUCT_ID).status(UserProductStatus.REJECTED).build())).build();
     }
 
     Institution institutionWithoutDashboardProduct() {
-        return Institution.builder().onboarding(List.of(Onboarding.builder().productId(PAGOPA_BACKOFFICE_PRODUCT_ID).status(UserProductStatus.ACTIVE).build())).build();
+        return Institution.builder().description("pspName").onboarding(List.of(Onboarding.builder().productId(PAGOPA_BACKOFFICE_PRODUCT_ID).status(UserProductStatus.ACTIVE).build())).build();
     }
 }

@@ -42,7 +42,7 @@ public class AwsQuicksightClient {
         this.sessionTagKey = sessionTagKey;
     }
 
-    public String generateEmbedUrlForAnonymousUser(String sessionTagValue) {
+    public String generateEmbedUrlForAnonymousUser(String sessionTagValue, String pspName) {
         GenerateEmbedUrlForAnonymousUserRequest generateEmbedUrlForAnonymousUserRequest = GenerateEmbedUrlForAnonymousUserRequest.builder()
                 .awsAccountId(accountId)
                 .namespace(namespace)
@@ -54,6 +54,6 @@ public class AwsQuicksightClient {
 
         GenerateEmbedUrlForAnonymousUserResponse dashboardEmbedUrl = this.quickSightClient.generateEmbedUrlForAnonymousUser(generateEmbedUrlForAnonymousUserRequest);
 
-        return dashboardEmbedUrl.embedUrl();
+        return dashboardEmbedUrl.embedUrl() + String.format("#p.PSP=%s", pspName);
     }
 }

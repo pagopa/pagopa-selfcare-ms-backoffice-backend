@@ -44,13 +44,15 @@ public class AwsQuicksightService {
         String institutionId = Utility.extractInstitutionIdFromAuth(authentication);
 
         QuicksightEmbedUrlResponse quicksightEmbedUrlResponse = new QuicksightEmbedUrlResponse();
-        if (Boolean.FALSE.equals(this.featureManager.isEnabled("quicksight-product-free-trial")) && Boolean.FALSE.equals(this.featureManager.isEnabled("isOperator"))) {
-            Institution institution = this.externalApiClient.getInstitution(institutionId);
-            if (isNotSubscribedToDashboardProduct(institution)) {
-                throw new AppException(AppError.FORBIDDEN);
-            }
+
+        Institution institution = this.externalApiClient.getInstitution(institutionId);
+        if (Boolean.FALSE.equals(this.featureManager.isEnabled("quicksight-product-free-trial")) &&
+                Boolean.FALSE.equals(this.featureManager.isEnabled("isOperator")) &&
+                isNotSubscribedToDashboardProduct(institution)
+        ) {
+            throw new AppException(AppError.FORBIDDEN);
         }
-        String embedUrl = this.awsQuicksightClient.generateEmbedUrlForAnonymousUser(institutionId);
+        String embedUrl = this.awsQuicksightClient.generateEmbedUrlForAnonymousUser(institutionId, institution.getDescription());
 
         quicksightEmbedUrlResponse.setEmbedUrl(embedUrl);
 
