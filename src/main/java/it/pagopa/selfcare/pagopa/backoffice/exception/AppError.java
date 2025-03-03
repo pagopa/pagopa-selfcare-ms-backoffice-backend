@@ -46,6 +46,8 @@ public enum AppError {
 
     INSTITUTION_DATA_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error uploading institution data",
             "Error occured while attempting to upload institution data"),
+    INSTITUTION_DATA_UPLOAD_BAD_REQUEST(HttpStatus.BAD_REQUEST, "Error uploading institution data",
+            "Invalid input"),
 
     LOGO_FILE_INPUT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error managing logo input",
             "Exception has been thrown while managing the logo file passed as input," +

@@ -25,6 +25,8 @@ public class InstitutionsService {
             institutionClient.updateInstitutions(institutionsData, logo);
         } catch (AppException e) {
             throw e;
+        } catch (FeignException.BadRequest e) {
+            throw new AppException(AppError.INSTITUTION_DATA_UPLOAD_BAD_REQUEST, e);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new AppException(AppError.INSTITUTION_DATA_UPLOAD_ERROR, e);
