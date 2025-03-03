@@ -13,7 +13,7 @@ public class UserInstitutionProduct {
 
     private String productId;
     private String tokenId;
-    private String status;
+    private UserProductStatus status;
     private String productRole;
     private String productRoleLabel;
     private String role;

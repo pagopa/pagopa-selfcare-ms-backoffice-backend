@@ -20,6 +20,7 @@ public class PagopaAuthenticationStrategy {
     private static final String CLAIM_NAME = "name";
     private static final String CLAIM_SURNAME = "family_name";
     private static final String CLAIM_ORG_VAT = "org_vat";
+    private static final String CLAIM_ORG_ID = "org_id";
     private final JwtUtil jwtUtil;
 
     public PagopaAuthenticationStrategy(JwtUtil jwtUtil) {
@@ -40,6 +41,7 @@ public class PagopaAuthenticationStrategy {
                     .name(claims.get(CLAIM_NAME, String.class))
                     .surname(claims.get(CLAIM_SURNAME, String.class))
                     .orgVat(claims.get(CLAIM_ORG_VAT, String.class))
+                    .orgId(claims.get(CLAIM_ORG_ID, String.class))
                     .build();
 
         } catch (Exception e) {

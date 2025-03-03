@@ -4,7 +4,6 @@ import it.pagopa.selfcare.pagopa.backoffice.config.feign.ExternalFeignConfig;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.Product;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institutions;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserInstitution;
@@ -35,11 +34,6 @@ public interface ExternalApiClient {
     @ResponseBody
     @Valid
     Institutions getInstitutionsFiltered(@RequestParam(value = "taxCode") String institutionTaxCode);
-
-    @GetMapping(value = "/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    @Valid
-    List<InstitutionInfo> getInstitutions(@RequestParam(value = "userIdForAuth") String userIdForAuth);
 
     @GetMapping(value = "/institutions/{institutionId}/products", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody

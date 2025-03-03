@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.35.7"
+    "version": "2.35.7-1-next"
   },
   "servers": [
     {
@@ -8826,62 +8826,6 @@
         }
       ]
     },
-    "/institutions/{institution-id}": {
-      "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
-        "operationId": "getInstitution",
-        "parameters": [
-          {
-            "description": "Institution's unique internal identifier",
-            "in": "path",
-            "name": "institution-id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Institution"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Retrieves the details of an institution",
-        "tags": [
-          "Institutions"
-        ]
-      },
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ]
-    },
     "/institutions/{institution-id}/api-keys": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
@@ -11054,6 +10998,98 @@
         }
       ]
     },
+    "/quicksight/dashboard": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
+        "operationId": "getEmbedUrlForAnonymousUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuicksightEmbedUrlResponse"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Get aws quicksight dashboard's embed url",
+        "tags": [
+          "Aws Quicksight"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
     "/stations": {
       "get": {
         "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
@@ -12352,29 +12388,6 @@
         },
         "description": "Institution's assistance contacts"
       },
-      "Attribute": {
-        "required": [
-          "code",
-          "description",
-          "origin"
-        ],
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "description": "Institution's code"
-          },
-          "description": {
-            "type": "string",
-            "description": "Institution's name"
-          },
-          "origin": {
-            "type": "string",
-            "description": "Institution data origin"
-          }
-        },
-        "description": "Institution's attributes"
-      },
       "AvailableCodes": {
         "type": "object",
         "properties": {
@@ -12385,6 +12398,20 @@
               "type": "string",
               "description": "List of codes not used for existing associations"
             }
+          }
+        }
+      },
+      "Billing": {
+        "type": "object",
+        "properties": {
+          "publicServices": {
+            "type": "boolean"
+          },
+          "recipientCode": {
+            "type": "string"
+          },
+          "vatNumber": {
+            "type": "string"
           }
         }
       },
@@ -14430,81 +14457,6 @@
           }
         }
       },
-      "Institution": {
-        "required": [
-          "attributes",
-          "description",
-          "external_id",
-          "id",
-          "institution_type",
-          "origin",
-          "origin_id",
-          "tax_code",
-          "zip_code"
-        ],
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "description": "Institution's physical address"
-          },
-          "attributes": {
-            "type": "array",
-            "description": "Institution's attributes",
-            "items": {
-              "$ref": "#/components/schemas/Attribute"
-            }
-          },
-          "description": {
-            "type": "string",
-            "description": "Institution's name"
-          },
-          "digital_address": {
-            "type": "string",
-            "description": "Institution's digitalAddress"
-          },
-          "external_id": {
-            "type": "string",
-            "description": "Institution's unique external identifier"
-          },
-          "id": {
-            "type": "string",
-            "description": "Institution's unique internal identifier"
-          },
-          "institution_type": {
-            "type": "string",
-            "description": "Institution's type",
-            "enum": [
-              "AS",
-              "PA",
-              "GSP",
-              "PT",
-              "PG",
-              "SCP",
-              "PSP",
-              "SA",
-              "GPU",
-              "PRV"
-            ]
-          },
-          "origin": {
-            "type": "string",
-            "description": "Institution data origin"
-          },
-          "origin_id": {
-            "type": "string",
-            "description": "Institution's details origin Id"
-          },
-          "tax_code": {
-            "type": "string",
-            "description": "Institution's taxCode"
-          },
-          "zip_code": {
-            "type": "string",
-            "description": "Institution's zipCode"
-          }
-        }
-      },
       "InstitutionApiKeys": {
         "required": [
           "displayName",
@@ -14637,6 +14589,13 @@
           "name": {
             "type": "string",
             "description": "Institution's name"
+          },
+          "onboarding": {
+            "type": "array",
+            "description": "Institution's product data",
+            "items": {
+              "$ref": "#/components/schemas/Onboarding"
+            }
           },
           "origin": {
             "type": "string",
@@ -14779,6 +14738,33 @@
             "description": "Maintenance page message"
           }
         }
+      },
+      "Onboarding": {
+        "type": "object",
+        "properties": {
+          "billing": {
+            "$ref": "#/components/schemas/Billing"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "productId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "PENDING",
+              "TOBEVALIDATED",
+              "SUSPENDED",
+              "DELETED",
+              "REJECTED"
+            ]
+          }
+        },
+        "description": "Institution's product data"
       },
       "OperatorChannelReview": {
         "type": "object",
@@ -15363,6 +15349,14 @@
           "rejectionDate": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "QuicksightEmbedUrlResponse": {
+        "type": "object",
+        "properties": {
+          "embedUrl": {
+            "type": "string"
           }
         }
       },

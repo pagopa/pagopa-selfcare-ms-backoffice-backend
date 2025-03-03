@@ -26,6 +26,7 @@ public class Institution {
     private String id;
     private Boolean imported;
     private String institutionType;
+    private List<Onboarding> onboarding;
     private String origin;
     private String originId;
     private String parentDescription;

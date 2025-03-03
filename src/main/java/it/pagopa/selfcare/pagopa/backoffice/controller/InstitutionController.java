@@ -61,16 +61,6 @@ public class InstitutionController {
         return this.apiManagementService.getBrokerDelegation(institutionId, brokerId, roles);
     }
 
-    @GetMapping("/{institution-id}")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Retrieves the details of an institution", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata
-    public Institution getInstitution(
-            @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId
-    ) {
-        return this.apiManagementService.getInstitution(institutionId);
-    }
-
     @GetMapping("/{institution-id}/full-detail")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieves the full detail of an institution", security = {@SecurityRequirement(name = "JWT")})
