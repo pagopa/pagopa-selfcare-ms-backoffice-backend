@@ -1,11 +1,17 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKeysResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionType;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.service.ApiManagementService;
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,23 +22,13 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Collections;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @WithMockUser(username = "user1", password = "pwd", roles = "USER")
 class InstitutionControllerTest {
 
-    private final String INSTITUTION_ID = "INSTITUTION_ID";
-    private final String SUBSCRIPTION_ID = "SUBSCRIPTION_ID";
+    private static final String INSTITUTION_ID = "INSTITUTION_ID";
+    private static final String SUBSCRIPTION_ID = "SUBSCRIPTION_ID";
 
     @Autowired
     private MockMvc mvc;
@@ -40,22 +36,8 @@ class InstitutionControllerTest {
     @MockBean
     private ApiManagementService apiManagementService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     @BeforeEach
     void setUp() {
-        when(apiManagementService.getInstitution(anyString()))
-                .thenReturn(Institution.builder()
-                        .id("1")
-                        .taxCode("123")
-                        .description("description")
-                        .zipCode("123")
-                        .externalId("1")
-                        .institutionType(InstitutionType.PA)
-                        .origin("origin")
-                        .originId("1")
-                        .attributes(List.of())
-                        .build());
         when(apiManagementService.getInstitutions(null))
                 .thenReturn(InstitutionBaseResources.builder()
                         .institutions(Collections.singletonList(InstitutionBase.builder()
@@ -100,13 +82,6 @@ class InstitutionControllerTest {
                         .queryParam("institution-id", "test1")
                         .queryParam("brokerId", "test1")
                         .queryParam("role", "PSP")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void getInstitution() throws Exception {
-        mvc.perform(get("/institutions/{institution-id}", INSTITUTION_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

@@ -25,5 +25,6 @@ public class Constants {
 
     public static final String PAGOPA_BROKER_CODE = "15376371009";
 
-
+    public static final String PAGOPA_BACKOFFICE_PRODUCT_ID = "prod-pagopa";
+    public static final String QUICKSIGHT_DASHBOARD_PRODUCT_ID = "prod-dashboard-psp";
 }

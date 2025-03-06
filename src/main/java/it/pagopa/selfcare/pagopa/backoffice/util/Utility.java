@@ -22,6 +22,14 @@ public class Utility {
         return userIdForAuth;
     }
 
+    public static String extractInstitutionIdFromAuth(Authentication authentication) {
+        String institutionId = "";
+        if(authentication != null && authentication.getPrincipal() instanceof SelfCareUser user) {
+            institutionId = user.getOrgId();
+        }
+        return institutionId;
+    }
+
     /**
      * @param value value to deNullify.
      * @return return empty string if value is null
@@ -69,7 +77,7 @@ public class Utility {
      * @return the sanitized param
      */
     public static String sanitizeLogParam(String logParam) {
-        if (logParam.matches("\\w*")) {
+        if (logParam.matches("\\w*-*")) {
             return logParam;
         }
         return "suspicious log param";
