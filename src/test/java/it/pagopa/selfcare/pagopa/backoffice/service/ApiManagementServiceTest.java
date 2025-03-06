@@ -57,11 +57,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = {MappingsConfiguration.class, ApiManagementService.class})
 class ApiManagementServiceTest {
@@ -131,12 +127,12 @@ class ApiManagementServiceTest {
         assertNotNull(institutions.getInstitutions());
         assertEquals(1, institutions.getInstitutions().size());
 
-        verify(externalApiClient).getUserInstitution(any(), any(), any(), any(), any(), any(), any());
+        verify(externalApiClient, times(2)).getUserInstitution(any(), any(), any(), any(), any(), any(), any());
     }
 
     @Test
     void getInstitutionsSuccessWithEmptyListBecauseInactiveBackofficeProduct() {
-        when(externalApiClient.getUserInstitution(any(), any(), any(), any(), any(), any(), any()))
+        when(externalApiClient.getUserInstitution(any(), any(), any(), any(), any(), eq(0), any()))
                 .thenReturn(
                         Collections.singletonList(
                                 UserInstitution.builder()
@@ -151,6 +147,8 @@ class ApiManagementServiceTest {
                                                                 .build())
                                         )
                         .build()));
+        when(externalApiClient.getUserInstitution(any(), any(), any(), any(), any(), eq(1), any()))
+                .thenReturn(Collections.emptyList());
 
         InstitutionBaseResources institutions = service.getInstitutions(null);
 
