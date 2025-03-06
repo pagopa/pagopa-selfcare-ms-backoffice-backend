@@ -119,7 +119,7 @@ microservice-chart:
     AWS_QUICKSIGHT_ACCESS_KEY: pagopa-p-aws-quicksight-access-key
     AWS_QUICKSIGHT_SECRET_KEY: pagopa-p-aws-quicksight-secret-key
     AWS_QUICKSIGHT_ACCOUNT_ID: pagopa-p-aws-quicksight-account-id
-    AWS_QUICKSIGHT_DASHBOARD_ID: pagopa-d-aws-quicksight-dashboard-id
+    AWS_QUICKSIGHT_DASHBOARD_ID: pagopa-p-aws-quicksight-dashboard-id
     AZURE_CLIENT_SECRET: pagopa-p-selfcare-client-secret
     AZURE_CLIENT_ID: pagopa-p-selfcare-client-id
     AZURE_TENANT_ID: pagopa-selfcare-prod-tenant-id
