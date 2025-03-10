@@ -12752,6 +12752,10 @@
           "name": {
             "type": "string"
           },
+          "onUs": {
+            "type": "boolean",
+            "description": "If the bundle's commission is on the PSP"
+          },
           "paymentAmount": {
             "type": "integer",
             "description": "Applied commission fee",
@@ -13086,6 +13090,10 @@
           },
           "name": {
             "type": "string"
+          },
+          "onUs": {
+            "type": "boolean",
+            "description": "If the bundle's commission is on the PSP"
           },
           "paymentAmount": {
             "type": "integer",
@@ -14846,6 +14854,10 @@
           },
           "name": {
             "type": "string"
+          },
+          "onUs": {
+            "type": "boolean",
+            "description": "If the bundle's commission is on the PSP"
           },
           "paymentAmount": {
             "type": "integer",
