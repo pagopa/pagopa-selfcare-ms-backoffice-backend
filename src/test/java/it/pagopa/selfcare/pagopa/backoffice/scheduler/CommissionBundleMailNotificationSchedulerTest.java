@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.scheduler;
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.BundleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PaymentServiceProviderDetails;
@@ -49,6 +50,9 @@ class CommissionBundleMailNotificationSchedulerTest {
     @Autowired
     private CommissionBundleMailNotificationScheduler scheduler;
 
+    @MockBean
+    private JiraServiceManagerClient jsmClient;
+
     @Test
     void mailNotificationSuccess() {
         HashSet<Bundle> bundles = new HashSet<>();
@@ -78,7 +82,9 @@ class CommissionBundleMailNotificationSchedulerTest {
 
         assertDoesNotThrow(() -> scheduler.mailNotification());
 
-        verify(awsSesClient, times(12)).sendEmail(any(), anyBoolean());
+        verify(awsSesClient, times(12)).sendEmail(any());
+
+        verify(jsmClient, times(6)).createTicket(anyString(),anyString());
     }
 
     @Test
@@ -110,7 +116,9 @@ class CommissionBundleMailNotificationSchedulerTest {
 
         assertDoesNotThrow(() -> scheduler.mailNotification());
 
-        verify(awsSesClient, times(11)).sendEmail(any(), anyBoolean());
+        verify(awsSesClient, times(11)).sendEmail(any());
+
+        verify(jsmClient, times(6)).createTicket(anyString(),anyString());
     }
 
     @Test
@@ -126,6 +134,7 @@ class CommissionBundleMailNotificationSchedulerTest {
         verify(bundleAllPages, never()).getBundleSubscriptionByPSP(anyString(), anyString());
         verify(bundleAllPages, never()).getPublicBundleSubscriptionRequestByPSP(anyString(), anyString());
         verify(bundleAllPages, never()).getPrivateBundleOffersByPSP(anyString(), anyString());
+        verify(awsSesClient, never()).sendEmail(any());
     }
 
     private Bundle buildBundle(BundleType bundleType, String idBundle) {
