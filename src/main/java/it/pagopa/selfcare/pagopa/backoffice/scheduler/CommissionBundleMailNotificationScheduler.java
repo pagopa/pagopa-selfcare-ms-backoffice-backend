@@ -31,7 +31,7 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.BUNDLE
 
 /**
  * Contains the scheduled function to be used for bundles expiring email notification. It retrieves all expiring bundles
- * and notify all the associated CI and PSP
+ * and notify all the associated CI and PSP. In addition it creates a SMO JIRA ticket for each bundle.
  */
 @Component
 @Slf4j
