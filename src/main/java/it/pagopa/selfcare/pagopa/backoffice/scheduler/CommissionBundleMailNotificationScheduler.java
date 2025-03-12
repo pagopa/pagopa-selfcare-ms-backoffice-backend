@@ -114,7 +114,7 @@ public class CommissionBundleMailNotificationScheduler {
                     }
 
                     this.jsmClient.createTicket(
-                            BUNDLE_EXPIRE_SUBJECT,
+                            BUNDLE_EXPIRE_SUBJECT + " - " + bundle.getName()+ " - " + bundle.getPspBusinessName(),
                             getBundleExpireBody(bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, expireAt)
                     );
 
