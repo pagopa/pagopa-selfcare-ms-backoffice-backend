@@ -134,7 +134,7 @@ class CommissionBundleMailNotificationSchedulerTest {
         verify(bundleAllPages, never()).getBundleSubscriptionByPSP(anyString(), anyString());
         verify(bundleAllPages, never()).getPublicBundleSubscriptionRequestByPSP(anyString(), anyString());
         verify(bundleAllPages, never()).getPrivateBundleOffersByPSP(anyString(), anyString());
-        verify(awsSesClient, never()).sendEmail(any());
+        verify(jsmClient, never()).createTicket(anyString(),anyString());
     }
 
     private Bundle buildBundle(BundleType bundleType, String idBundle) {
