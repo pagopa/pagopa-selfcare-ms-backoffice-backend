@@ -183,7 +183,7 @@ public class CommissionBundleMailNotificationScheduler {
     }
 
     private String getFormattedPspTaxCode(String pspTaxCode) {
-        return pspTaxCode == null ? "n/a" : pspTaxCode;
+        return pspTaxCode == null || pspTaxCode.isEmpty()  ? "n/a" : pspTaxCode;
     }
 
 }
