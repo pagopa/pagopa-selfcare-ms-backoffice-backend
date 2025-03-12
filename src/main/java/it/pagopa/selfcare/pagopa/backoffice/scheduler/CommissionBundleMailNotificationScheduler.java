@@ -115,7 +115,7 @@ public class CommissionBundleMailNotificationScheduler {
 
                     this.jsmClient.createTicket(
                             BUNDLE_EXPIRE_SUBJECT + " - " + bundle.getName()+ " - " + bundle.getPspBusinessName(),
-                            getBundleExpireBody(bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, expireAt)
+                            getBundleExpireBody(bundle.getName(), bundle.getPspBusinessName(),getFormattedPspTaxCode(pspTaxCode) , expireAt)
                     );
 
                 });
@@ -129,7 +129,7 @@ public class CommissionBundleMailNotificationScheduler {
                 .subject(BUNDLE_EXPIRE_SUBJECT)
                 .textBody(getBundleExpireBody(bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, expireAt))
                 .htmlBodyFileName("expiringBundleEmail.html")
-                .htmlBodyContext(buildEmailHtmlBodyContext(bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, expireAt))
+                .htmlBodyContext(buildEmailHtmlBodyContext(bundle.getName(), bundle.getPspBusinessName(), getFormattedPspTaxCode(pspTaxCode), expireAt))
                 .destinationUserType(SelfcareProductUser.ADMIN)
                 .build();
         this.awsSesClient.sendEmail(messageDetail);
@@ -181,4 +181,9 @@ public class CommissionBundleMailNotificationScheduler {
     ) {
         return String.format(BUNDLE_EXPIRE_BODY, bundleName, pspBusinessName, pspTaxCode, expireAt, getEnvParam());
     }
+
+    private String getFormattedPspTaxCode(String pspTaxCode) {
+        return pspTaxCode == null ? "n/a" : pspTaxCode;
+    }
+
 }
