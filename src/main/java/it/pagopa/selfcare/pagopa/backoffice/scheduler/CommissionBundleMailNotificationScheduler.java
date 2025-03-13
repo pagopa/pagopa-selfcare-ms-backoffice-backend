@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.scheduler;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.JiraServiceManagerClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.commissionbundle.client.Bundle;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
@@ -30,7 +31,7 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.BUNDLE
 
 /**
  * Contains the scheduled function to be used for bundles expiring email notification. It retrieves all expiring bundles
- * and notify all the associated CI and PSP
+ * and notify all the associated CI and PSP. In addition, it creates a SMO JIRA ticket for each bundle.
  */
 @Component
 @Slf4j
@@ -46,16 +47,20 @@ public class CommissionBundleMailNotificationScheduler {
 
     private final AwsSesClient awsSesClient;
 
+    private final JiraServiceManagerClient jsmClient;
+
     public CommissionBundleMailNotificationScheduler(
             @Value("${info.properties.environment}") String environment,
             BundleAllPages bundleAllPages,
             ApiConfigClient apiConfigClient,
-            AwsSesClient awsSesClient
+            AwsSesClient awsSesClient,
+            JiraServiceManagerClient jsmClient
     ) {
         this.environment = environment;
         this.bundleAllPages = bundleAllPages;
         this.apiConfigClient = apiConfigClient;
         this.awsSesClient = awsSesClient;
+        this.jsmClient = jsmClient;
     }
 
     /**
@@ -107,6 +112,12 @@ public class CommissionBundleMailNotificationScheduler {
                     if (pspTaxCode != null) {
                         sendMail(expireAt, bundle, pspTaxCode, pspTaxCode);
                     }
+
+                    this.jsmClient.createTicket(
+                            BUNDLE_EXPIRE_SUBJECT + " - " + bundle.getName()+ " - " + bundle.getPspBusinessName(),
+                            getBundleExpireBody(bundle.getName(), bundle.getPspBusinessName(),getFormattedPspTaxCode(pspTaxCode) , expireAt)
+                    );
+
                 });
         log.info("[Mail-Notification] Mail notification completed for expiring bundle in {} days",
                 expireAt);
@@ -116,12 +127,12 @@ public class CommissionBundleMailNotificationScheduler {
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(notifyTaxCode)
                 .subject(BUNDLE_EXPIRE_SUBJECT)
-                .textBody(String.format(BUNDLE_EXPIRE_BODY, bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, expireAt, getEnvParam()))
+                .textBody(getBundleExpireBody(bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, expireAt))
                 .htmlBodyFileName("expiringBundleEmail.html")
-                .htmlBodyContext(buildEmailHtmlBodyContext(bundle.getName(), bundle.getPspBusinessName(), pspTaxCode, expireAt))
+                .htmlBodyContext(buildEmailHtmlBodyContext(bundle.getName(), bundle.getPspBusinessName(), getFormattedPspTaxCode(pspTaxCode), expireAt))
                 .destinationUserType(SelfcareProductUser.ADMIN)
                 .build();
-        this.awsSesClient.sendEmail(messageDetail, true);
+        this.awsSesClient.sendEmail(messageDetail);
     }
 
     private String getPspTaxCode(Bundle bundle) {
@@ -161,4 +172,18 @@ public class CommissionBundleMailNotificationScheduler {
         }
         return String.format(".%s", this.environment.toLowerCase());
     }
+
+    private String getBundleExpireBody(
+            String bundleName,
+            String pspBusinessName,
+            String pspTaxCode,
+            String expireAt
+    ) {
+        return String.format(BUNDLE_EXPIRE_BODY, bundleName, pspBusinessName, pspTaxCode, expireAt, getEnvParam());
+    }
+
+    private String getFormattedPspTaxCode(String pspTaxCode) {
+        return pspTaxCode == null || pspTaxCode.isEmpty()  ? "n/a" : pspTaxCode;
+    }
+
 }
