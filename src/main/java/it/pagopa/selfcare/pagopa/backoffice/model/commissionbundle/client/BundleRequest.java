@@ -48,4 +48,6 @@ public class BundleRequest {
     private LocalDate validityDateTo;
     @Schema(description = "If the bundle is valid for cart payments")
     private Boolean cart;
+    @Schema(description = "If the bundle's commission is on the PSP")
+    private Boolean onUs;
 }
