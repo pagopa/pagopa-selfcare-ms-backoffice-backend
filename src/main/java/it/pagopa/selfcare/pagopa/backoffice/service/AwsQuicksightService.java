@@ -36,12 +36,13 @@ public class AwsQuicksightService {
     /**
      * Generated embed url for Aws quicksight dashboard
      *
+     * @param institutionIdForOperator institution's id for dashboard retrieval (Only for pagoPA operator)
      * @return dashboard's embed url
      */
-    public QuicksightEmbedUrlResponse generateEmbedUrlForAnonymousUser() {
+    public QuicksightEmbedUrlResponse generateEmbedUrlForAnonymousUser(String institutionIdForOperator) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = Utility.extractUserIdFromAuth(authentication);
-        String institutionId = Utility.extractInstitutionIdFromAuth(authentication);
+        String institutionId = getInstitutionId(authentication, institutionIdForOperator);
 
         QuicksightEmbedUrlResponse quicksightEmbedUrlResponse = new QuicksightEmbedUrlResponse();
 
@@ -60,7 +61,14 @@ public class AwsQuicksightService {
         return quicksightEmbedUrlResponse;
     }
 
-    private static boolean isNotSubscribedToDashboardProduct(Institution institution) {
+    private String getInstitutionId(Authentication authentication, String institutionIdForOperator) {
+        if (institutionIdForOperator != null && Boolean.TRUE.equals(this.featureManager.isEnabled("isOperator"))) {
+            return institutionIdForOperator;
+        }
+        return Utility.extractInstitutionIdFromAuth(authentication);
+    }
+
+    private boolean isNotSubscribedToDashboardProduct(Institution institution) {
         return institution.getOnboarding().parallelStream().noneMatch(el -> el.getProductId().equals(QUICKSIGHT_DASHBOARD_PRODUCT_ID) && el.getStatus().equals(UserProductStatus.ACTIVE));
     }
 }

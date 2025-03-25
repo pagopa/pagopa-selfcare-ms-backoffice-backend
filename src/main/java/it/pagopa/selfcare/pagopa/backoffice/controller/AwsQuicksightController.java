@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,7 +41,9 @@ public class AwsQuicksightController {
     })
     @Operation(summary = "Get aws quicksight dashboard's embed url", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public QuicksightEmbedUrlResponse getEmbedUrlForAnonymousUser() {
-        return this.awsQuicksightService.generateEmbedUrlForAnonymousUser();
+    public QuicksightEmbedUrlResponse getEmbedUrlForAnonymousUser(
+            @Parameter(description = "Institution's id for dashboard retrieval(Only for operator PagoPA)") @RequestParam(required = false) String institutionId
+    ) {
+        return this.awsQuicksightService.generateEmbedUrlForAnonymousUser(institutionId);
     }
 }
