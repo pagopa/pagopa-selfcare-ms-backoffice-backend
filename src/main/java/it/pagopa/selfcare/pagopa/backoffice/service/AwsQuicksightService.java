@@ -61,7 +61,7 @@ public class AwsQuicksightService {
 
         quicksightEmbedUrlResponse.setEmbedUrl(embedUrl);
 
-        addDashboardLogMetadata(institutionId, userId, quicksightEmbedUrlResponse);
+        addDashboardLogMetadata(institutionId, userId, quicksightEmbedUrlResponse.getEmbedUrl());
         log.info("Quicksight dashboard url requested by user {} for institution {}. Url: {}", userId, institutionId, quicksightEmbedUrlResponse.getEmbedUrl());
         removeDashboardLogMetadata();
         return quicksightEmbedUrlResponse;
@@ -89,11 +89,10 @@ public class AwsQuicksightService {
 
     private void addDashboardLogMetadata(
             String institutionId,
-            String userId,
-            QuicksightEmbedUrlResponse quicksightEmbedUrlResponse
+            String userId, String embedUrl
     ) {
         MDC.put(INSTITUTION_ID_MDC_KEY, institutionId);
         MDC.put(USER_ID_MDC_KEY, userId);
-        MDC.put(DASHBOARD_URL_MDC_KEY, quicksightEmbedUrlResponse.getEmbedUrl());
+        MDC.put(DASHBOARD_URL_MDC_KEY, embedUrl);
     }
 }
