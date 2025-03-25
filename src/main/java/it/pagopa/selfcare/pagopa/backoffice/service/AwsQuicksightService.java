@@ -10,6 +10,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.quicksightdashboard.Quicksight
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserProductStatus;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -67,7 +68,10 @@ public class AwsQuicksightService {
     }
 
     private String getInstitutionId(Authentication authentication, String institutionIdForOperator) {
-        if (institutionIdForOperator != null && Boolean.TRUE.equals(this.featureManager.isEnabled("isOperator"))) {
+        if (Boolean.TRUE.equals(this.featureManager.isEnabled("isOperator"))) {
+            if (institutionIdForOperator == null) {
+                throw new AppException(AppError.INVALID_OPERATOR_GENERATE_PSP_DASHBOARD_REQUEST);
+            }
             return institutionIdForOperator;
         }
         return Utility.extractInstitutionIdFromAuth(authentication);
