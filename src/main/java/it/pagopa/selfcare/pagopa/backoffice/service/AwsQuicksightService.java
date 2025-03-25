@@ -21,6 +21,9 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.QUICKSIGHT_DAS
 @Service
 public class AwsQuicksightService {
 
+    private static final String INSTITUTION_ID_MDC_KEY = "institutionId";
+    private static final String USER_ID_MDC_KEY = "userId";
+    private static final String DASHBOARD_URL_MDC_KEY = "dashboardUrl";
 
     private final AwsQuicksightClient awsQuicksightClient;
     private final FeatureManager featureManager;
@@ -57,7 +60,9 @@ public class AwsQuicksightService {
 
         quicksightEmbedUrlResponse.setEmbedUrl(embedUrl);
 
+        addDashboardLogMetadata(institutionId, userId, quicksightEmbedUrlResponse);
         log.info("Quicksight dashboard url requested by user {} for institution {}. Url: {}", userId, institutionId, quicksightEmbedUrlResponse.getEmbedUrl());
+        removeDashboardLogMetadata();
         return quicksightEmbedUrlResponse;
     }
 
@@ -70,5 +75,21 @@ public class AwsQuicksightService {
 
     private boolean isNotSubscribedToDashboardProduct(Institution institution) {
         return institution.getOnboarding().parallelStream().noneMatch(el -> el.getProductId().equals(QUICKSIGHT_DASHBOARD_PRODUCT_ID) && el.getStatus().equals(UserProductStatus.ACTIVE));
+    }
+
+    private void removeDashboardLogMetadata() {
+        MDC.remove(INSTITUTION_ID_MDC_KEY);
+        MDC.remove(USER_ID_MDC_KEY);
+        MDC.remove(DASHBOARD_URL_MDC_KEY);
+    }
+
+    private void addDashboardLogMetadata(
+            String institutionId,
+            String userId,
+            QuicksightEmbedUrlResponse quicksightEmbedUrlResponse
+    ) {
+        MDC.put(INSTITUTION_ID_MDC_KEY, institutionId);
+        MDC.put(USER_ID_MDC_KEY, userId);
+        MDC.put(DASHBOARD_URL_MDC_KEY, quicksightEmbedUrlResponse.getEmbedUrl());
     }
 }
