@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.QUICKSIGHT_DASHBOARD_PRODUCT_ID;
+import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.sanitizeLogParam;
 
 @Slf4j
 @Service
@@ -62,7 +63,7 @@ public class AwsQuicksightService {
         quicksightEmbedUrlResponse.setEmbedUrl(embedUrl);
 
         addDashboardLogMetadata(institutionId, userId, quicksightEmbedUrlResponse.getEmbedUrl());
-        log.info("Quicksight dashboard url requested by user {} for institution {}. Url: {}", userId, institutionId, quicksightEmbedUrlResponse.getEmbedUrl());
+        log.info("Quicksight dashboard url requested by user {} for institution {}. Url: {}", userId, sanitizeLogParam(institutionId), quicksightEmbedUrlResponse.getEmbedUrl());
         removeDashboardLogMetadata();
         return quicksightEmbedUrlResponse;
     }
@@ -91,7 +92,7 @@ public class AwsQuicksightService {
             String institutionId,
             String userId, String embedUrl
     ) {
-        MDC.put(INSTITUTION_ID_MDC_KEY, institutionId);
+        MDC.put(INSTITUTION_ID_MDC_KEY, sanitizeLogParam(institutionId));
         MDC.put(USER_ID_MDC_KEY, userId);
         MDC.put(DASHBOARD_URL_MDC_KEY, embedUrl);
     }
