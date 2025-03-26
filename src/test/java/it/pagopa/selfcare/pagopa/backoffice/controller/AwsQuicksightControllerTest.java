@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AwsQuicksightControllerTest {
 
     private static final String EMBED_URL = "embed_URL";
+    private static final String INSTITUTION_ID = "institution_id";
 
     @MockBean
     private AwsQuicksightService awsQuicksightService;
@@ -33,14 +34,24 @@ class AwsQuicksightControllerTest {
     void getEmbedUrlForAnonymousUser_200() throws Exception {
         QuicksightEmbedUrlResponse response = new QuicksightEmbedUrlResponse();
         response.setEmbedUrl(EMBED_URL);
-        when(awsQuicksightService.generateEmbedUrlForAnonymousUser()).thenReturn(response);
+        when(awsQuicksightService.generateEmbedUrlForAnonymousUser(null)).thenReturn(response);
         mvc.perform(get("/quicksight/dashboard"))
                 .andExpect(status().is2xxSuccessful());
     }
 
     @Test
+    void getEmbedUrlForAnonymousUserForOperator_200() throws Exception {
+        QuicksightEmbedUrlResponse response = new QuicksightEmbedUrlResponse();
+        response.setEmbedUrl(EMBED_URL);
+        when(awsQuicksightService.generateEmbedUrlForAnonymousUser(INSTITUTION_ID)).thenReturn(response);
+        mvc.perform(get("/quicksight/dashboard")
+                        .param("institutionId", INSTITUTION_ID))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
     void getEmbedUrlForAnonymousUser_403() throws Exception {
-        when(awsQuicksightService.generateEmbedUrlForAnonymousUser()).thenThrow(new AppException(AppError.FORBIDDEN));
+        when(awsQuicksightService.generateEmbedUrlForAnonymousUser(null)).thenThrow(new AppException(AppError.FORBIDDEN));
         mvc.perform(get("/quicksight/dashboard"))
                 .andExpect(status().isForbidden());
     }

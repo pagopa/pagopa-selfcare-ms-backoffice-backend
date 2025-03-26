@@ -10,17 +10,22 @@ import it.pagopa.selfcare.pagopa.backoffice.model.quicksightdashboard.Quicksight
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserProductStatus;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.QUICKSIGHT_DASHBOARD_PRODUCT_ID;
+import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.sanitizeLogParam;
 
 @Slf4j
 @Service
 public class AwsQuicksightService {
 
+    private static final String INSTITUTION_ID_MDC_KEY = "institutionId";
+    private static final String USER_ID_MDC_KEY = "userId";
+    private static final String DASHBOARD_URL_MDC_KEY = "dashboardUrl";
 
     private final AwsQuicksightClient awsQuicksightClient;
     private final FeatureManager featureManager;
@@ -36,12 +41,13 @@ public class AwsQuicksightService {
     /**
      * Generated embed url for Aws quicksight dashboard
      *
+     * @param institutionIdForOperator institution's id for dashboard retrieval (Only for pagoPA operator)
      * @return dashboard's embed url
      */
-    public QuicksightEmbedUrlResponse generateEmbedUrlForAnonymousUser() {
+    public QuicksightEmbedUrlResponse generateEmbedUrlForAnonymousUser(String institutionIdForOperator) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = Utility.extractUserIdFromAuth(authentication);
-        String institutionId = Utility.extractInstitutionIdFromAuth(authentication);
+        String institutionId = getInstitutionId(authentication, institutionIdForOperator);
 
         QuicksightEmbedUrlResponse quicksightEmbedUrlResponse = new QuicksightEmbedUrlResponse();
 
@@ -56,11 +62,38 @@ public class AwsQuicksightService {
 
         quicksightEmbedUrlResponse.setEmbedUrl(embedUrl);
 
-        log.info("Quicksight dashboard url requested by user {} for institution {}. Url: {}", userId, institutionId, quicksightEmbedUrlResponse.getEmbedUrl());
+        addDashboardLogMetadata(institutionId, userId, quicksightEmbedUrlResponse.getEmbedUrl());
+        log.info("Quicksight dashboard url requested by user {} for institution {}. Url: {}", userId, sanitizeLogParam(institutionId), quicksightEmbedUrlResponse.getEmbedUrl());
+        removeDashboardLogMetadata();
         return quicksightEmbedUrlResponse;
     }
 
-    private static boolean isNotSubscribedToDashboardProduct(Institution institution) {
+    private String getInstitutionId(Authentication authentication, String institutionIdForOperator) {
+        if (Boolean.TRUE.equals(this.featureManager.isEnabled("isOperator"))) {
+            if (institutionIdForOperator == null) {
+                throw new AppException(AppError.INVALID_OPERATOR_GENERATE_PSP_DASHBOARD_REQUEST);
+            }
+            return institutionIdForOperator;
+        }
+        return Utility.extractInstitutionIdFromAuth(authentication);
+    }
+
+    private boolean isNotSubscribedToDashboardProduct(Institution institution) {
         return institution.getOnboarding().parallelStream().noneMatch(el -> el.getProductId().equals(QUICKSIGHT_DASHBOARD_PRODUCT_ID) && el.getStatus().equals(UserProductStatus.ACTIVE));
+    }
+
+    private void removeDashboardLogMetadata() {
+        MDC.remove(INSTITUTION_ID_MDC_KEY);
+        MDC.remove(USER_ID_MDC_KEY);
+        MDC.remove(DASHBOARD_URL_MDC_KEY);
+    }
+
+    private void addDashboardLogMetadata(
+            String institutionId,
+            String userId, String embedUrl
+    ) {
+        MDC.put(INSTITUTION_ID_MDC_KEY, sanitizeLogParam(institutionId));
+        MDC.put(USER_ID_MDC_KEY, userId);
+        MDC.put(DASHBOARD_URL_MDC_KEY, embedUrl);
     }
 }
