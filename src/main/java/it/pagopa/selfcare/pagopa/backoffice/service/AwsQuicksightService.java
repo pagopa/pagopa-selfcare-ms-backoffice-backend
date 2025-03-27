@@ -26,7 +26,7 @@ public class AwsQuicksightService {
     private static final String INSTITUTION_ID_MDC_KEY = "institutionId";
     private static final String USER_ID_MDC_KEY = "userId";
     private static final String DASHBOARD_URL_MDC_KEY = "dashboardUrl";
-    private static final String IS_OPERATOR_MDC_KEY = "isOperator";
+    private static final String IS_OPERATOR_MDC_KEY = "isPagoPAOperator";
 
     private final AwsQuicksightClient awsQuicksightClient;
     private final FeatureManager featureManager;
