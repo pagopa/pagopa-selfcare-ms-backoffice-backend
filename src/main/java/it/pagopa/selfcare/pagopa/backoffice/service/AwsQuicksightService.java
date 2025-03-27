@@ -26,6 +26,7 @@ public class AwsQuicksightService {
     private static final String INSTITUTION_ID_MDC_KEY = "institutionId";
     private static final String USER_ID_MDC_KEY = "userId";
     private static final String DASHBOARD_URL_MDC_KEY = "dashboardUrl";
+    private static final String IS_OPERATOR_MDC_KEY = "isOperator";
 
     private final AwsQuicksightClient awsQuicksightClient;
     private final FeatureManager featureManager;
@@ -47,13 +48,14 @@ public class AwsQuicksightService {
     public QuicksightEmbedUrlResponse generateEmbedUrlForAnonymousUser(String institutionIdForOperator) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = Utility.extractUserIdFromAuth(authentication);
-        String institutionId = getInstitutionId(authentication, institutionIdForOperator);
+        Boolean isOperator = this.featureManager.isEnabled(IS_OPERATOR_MDC_KEY);
+        String institutionId = getInstitutionId(authentication, institutionIdForOperator, isOperator);
 
         QuicksightEmbedUrlResponse quicksightEmbedUrlResponse = new QuicksightEmbedUrlResponse();
 
         Institution institution = this.externalApiClient.getInstitution(institutionId);
         if (Boolean.FALSE.equals(this.featureManager.isEnabled("quicksight-product-free-trial")) &&
-                Boolean.FALSE.equals(this.featureManager.isEnabled("isOperator")) &&
+                Boolean.FALSE.equals(isOperator) &&
                 isNotSubscribedToDashboardProduct(institution)
         ) {
             throw new AppException(AppError.FORBIDDEN);
@@ -62,14 +64,14 @@ public class AwsQuicksightService {
 
         quicksightEmbedUrlResponse.setEmbedUrl(embedUrl);
 
-        addDashboardLogMetadata(institutionId, userId, quicksightEmbedUrlResponse.getEmbedUrl());
+        addDashboardLogMetadata(institutionId, userId, quicksightEmbedUrlResponse.getEmbedUrl(), isOperator);
         log.info("Quicksight dashboard url requested by user {} for institution {}. Url: {}", userId, sanitizeLogParam(institutionId), quicksightEmbedUrlResponse.getEmbedUrl());
         removeDashboardLogMetadata();
         return quicksightEmbedUrlResponse;
     }
 
-    private String getInstitutionId(Authentication authentication, String institutionIdForOperator) {
-        if (Boolean.TRUE.equals(this.featureManager.isEnabled("isOperator"))) {
+    private String getInstitutionId(Authentication authentication, String institutionIdForOperator, Boolean isOperator) {
+        if (Boolean.TRUE.equals(isOperator)) {
             if (institutionIdForOperator == null) {
                 throw new AppException(AppError.INVALID_OPERATOR_GENERATE_PSP_DASHBOARD_REQUEST);
             }
@@ -86,14 +88,18 @@ public class AwsQuicksightService {
         MDC.remove(INSTITUTION_ID_MDC_KEY);
         MDC.remove(USER_ID_MDC_KEY);
         MDC.remove(DASHBOARD_URL_MDC_KEY);
+        MDC.remove(IS_OPERATOR_MDC_KEY);
     }
 
     private void addDashboardLogMetadata(
             String institutionId,
-            String userId, String embedUrl
+            String userId,
+            String embedUrl,
+            Boolean isOperator
     ) {
         MDC.put(INSTITUTION_ID_MDC_KEY, sanitizeLogParam(institutionId));
         MDC.put(USER_ID_MDC_KEY, userId);
         MDC.put(DASHBOARD_URL_MDC_KEY, embedUrl);
+        MDC.put(IS_OPERATOR_MDC_KEY, isOperator.toString());
     }
 }
