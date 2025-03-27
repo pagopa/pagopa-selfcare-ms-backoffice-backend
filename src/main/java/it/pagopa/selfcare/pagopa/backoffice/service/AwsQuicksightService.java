@@ -48,7 +48,7 @@ public class AwsQuicksightService {
     public QuicksightEmbedUrlResponse generateEmbedUrlForAnonymousUser(String institutionIdForOperator) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = Utility.extractUserIdFromAuth(authentication);
-        Boolean isOperator = this.featureManager.isEnabled(IS_OPERATOR_MDC_KEY);
+        Boolean isOperator = this.featureManager.isEnabled("isOperator");
         String institutionId = getInstitutionId(authentication, institutionIdForOperator, isOperator);
 
         QuicksightEmbedUrlResponse quicksightEmbedUrlResponse = new QuicksightEmbedUrlResponse();
