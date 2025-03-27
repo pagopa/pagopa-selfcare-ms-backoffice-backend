@@ -48,14 +48,14 @@ public class AwsQuicksightService {
     public QuicksightEmbedUrlResponse generateEmbedUrlForAnonymousUser(String institutionIdForOperator) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = Utility.extractUserIdFromAuth(authentication);
-        Boolean isOperator = this.featureManager.isEnabled("isOperator");
+        boolean isOperator = Boolean.TRUE.equals(this.featureManager.isEnabled("isOperator"));
         String institutionId = getInstitutionId(authentication, institutionIdForOperator, isOperator);
 
         QuicksightEmbedUrlResponse quicksightEmbedUrlResponse = new QuicksightEmbedUrlResponse();
 
         Institution institution = this.externalApiClient.getInstitution(institutionId);
         if (Boolean.FALSE.equals(this.featureManager.isEnabled("quicksight-product-free-trial")) &&
-                Boolean.FALSE.equals(isOperator) &&
+                !isOperator &&
                 isNotSubscribedToDashboardProduct(institution)
         ) {
             throw new AppException(AppError.FORBIDDEN);
@@ -70,8 +70,8 @@ public class AwsQuicksightService {
         return quicksightEmbedUrlResponse;
     }
 
-    private String getInstitutionId(Authentication authentication, String institutionIdForOperator, Boolean isOperator) {
-        if (Boolean.TRUE.equals(isOperator)) {
+    private String getInstitutionId(Authentication authentication, String institutionIdForOperator, boolean isOperator) {
+        if (isOperator) {
             if (institutionIdForOperator == null) {
                 throw new AppException(AppError.INVALID_OPERATOR_GENERATE_PSP_DASHBOARD_REQUEST);
             }
@@ -95,11 +95,11 @@ public class AwsQuicksightService {
             String institutionId,
             String userId,
             String embedUrl,
-            Boolean isOperator
+            boolean isOperator
     ) {
         MDC.put(INSTITUTION_ID_MDC_KEY, sanitizeLogParam(institutionId));
         MDC.put(USER_ID_MDC_KEY, userId);
         MDC.put(DASHBOARD_URL_MDC_KEY, embedUrl);
-        MDC.put(IS_OPERATOR_MDC_KEY, isOperator.toString());
+        MDC.put(IS_OPERATOR_MDC_KEY, String.valueOf(isOperator));
     }
 }
