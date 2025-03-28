@@ -1,7 +1,7 @@
 microservice-chart:
   namespace: "selfcare"
   nameOverride: ""
-  fullnameOverride: ""
+  fullnameOverride: "backoffice"
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
     tag: "2.36.4"
