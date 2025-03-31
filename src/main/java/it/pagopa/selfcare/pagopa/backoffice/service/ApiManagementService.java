@@ -381,6 +381,7 @@ public class ApiManagementService {
                             authorization.getOtherMetadata())
             );
 
+            // It must delete and recreate the authorizer configuration to update the subscription key field
             this.authorizerConfigClient.deleteAuthorization(authorization.getId());
             this.authorizerConfigClient.createAuthorization(authorization);
         } catch (FeignException.NotFound e) {
