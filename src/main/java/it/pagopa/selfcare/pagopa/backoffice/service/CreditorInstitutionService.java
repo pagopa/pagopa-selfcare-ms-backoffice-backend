@@ -45,7 +45,6 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.sanitizeLogParam;
@@ -148,7 +147,7 @@ public class CreditorInstitutionService {
         CreditorInstitutionStationEdit station = this.mapper.fromDto(dto);
         CreditorInstitutionStationEdit ecStation = this.apiConfigClient.createCreditorInstitutionStationRelationship(ciTaxCode, station);
         try {
-            this.apiManagementService.updateBrokerAuthorizerSegregationCodesMetadata(institutionId, brokerTaxCode);
+            this.apiManagementService.updateBrokerAuthorizerConfiguration(institutionId, brokerTaxCode);
         } catch (Exception e) {
             log.error("Failed to update broker {} API key authorizations, revert associate station to CI operation",
                     sanitizeLogParam(brokerTaxCode), e);
@@ -198,7 +197,7 @@ public class CreditorInstitutionService {
                 this.apiConfigClient.getCreditorInstitutionsByStation(stationCode, 1, 0, ciTaxCode);
         this.apiConfigClient.deleteCreditorInstitutionStationRelationship(ciTaxCode, stationCode);
         try {
-            this.apiManagementService.updateBrokerAuthorizerSegregationCodesMetadata(institutionId, brokerTaxCode);
+            this.apiManagementService.updateBrokerAuthorizerConfiguration(institutionId, brokerTaxCode);
         } catch (Exception e) {
             log.error("Failed to update broker {} API key authorizations, revert dissociate station to CI operation",
                     sanitizeLogParam(brokerTaxCode), e);

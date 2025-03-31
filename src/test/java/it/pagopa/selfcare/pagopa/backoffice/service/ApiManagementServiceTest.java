@@ -927,7 +927,7 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void updateBrokerAuthorizerSegregationCodesMetadataSuccess() {
+    void updateBrokerAuthorizerConfigurationSuccess() {
         String subscriptionId = String.format("%s%s", Subscription.GPD.getPrefixId(), CI_TAX_CODE);
         InstitutionApiKeys institutionApiKeys1 = buildInstitutionApiKeys(subscriptionId);
         InstitutionApiKeys institutionApiKeys2 = buildInstitutionApiKeys("not from BO API key");
@@ -940,14 +940,14 @@ class ApiManagementServiceTest {
                 buildAuthorizationWithSegregationCodes("pippo")
         );
 
-        assertDoesNotThrow(() -> service.updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, CI_TAX_CODE));
+        assertDoesNotThrow(() -> service.updateBrokerAuthorizerConfiguration(INSTITUTION_ID, CI_TAX_CODE));
 
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient, times(2)).updateAuthorization(anyString(), any());
     }
 
     @Test
-    void updateBrokerAuthorizerSegregationCodesMetadataFailOnPrimary() {
+    void updateBrokerAuthorizerConfigurationFailOnPrimary() {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
         String subscriptionId = String.format("%s%s", Subscription.GPD.getPrefixId(), CI_TAX_CODE);
         InstitutionApiKeys institutionApiKeys1 = buildInstitutionApiKeys(subscriptionId);
@@ -965,7 +965,7 @@ class ApiManagementServiceTest {
         when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
                 .thenReturn(createDelegations());
 
-        assertDoesNotThrow(() -> service.updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, CI_TAX_CODE));
+        assertDoesNotThrow(() -> service.updateBrokerAuthorizerConfiguration(INSTITUTION_ID, CI_TAX_CODE));
 
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient).updateAuthorization(anyString(), any());

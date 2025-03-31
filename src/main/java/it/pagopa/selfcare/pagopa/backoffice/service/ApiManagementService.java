@@ -246,7 +246,7 @@ public class ApiManagementService {
         this.apimClient.regeneratePrimaryKey(subscriptionId);
 
         if (subscription.getAuthDomain() != null) {
-            updateAuthorization(institution, subscriptionId, subscription, true);
+            updateAuthorizerConfiguration(institution, subscriptionId, subscription, true);
         }
     }
 
@@ -270,7 +270,7 @@ public class ApiManagementService {
         this.apimClient.regenerateSecondaryKey(subscriptionId);
 
         if (subscription.getAuthDomain() != null) {
-            updateAuthorization(institution, subscriptionId, subscription, false);
+            updateAuthorizerConfiguration(institution, subscriptionId, subscription, false);
         }
     }
 
@@ -282,7 +282,7 @@ public class ApiManagementService {
      * @param institutionId broker's institution id
      * @param ciTaxCode     broker's tax code
      */
-    public void updateBrokerAuthorizerSegregationCodesMetadata(
+    public void updateBrokerAuthorizerConfiguration(
             String institutionId,
             String ciTaxCode
     ) {
@@ -290,14 +290,21 @@ public class ApiManagementService {
                 .filter(this::checkIfAPIKeyHasAuthDelegations)
                 .toList();
 
+        InstitutionResponse institution = getInstitutionResponse(institutionId);
         CIStationSegregationCodesList ciSegregationCodes =
                 this.apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(ciTaxCode);
+        List<AuthorizationMetadata> authorizationMetadata = buildAuthorizationMetadata(ciSegregationCodes);
 
         apiKeys.parallelStream().forEach(
                 apiKey -> {
                     String prefixId = apiKey.getId().split("-")[0] + "-";
-                    updateAuthorizerConfigMetadata(institutionId, prefixId, ciSegregationCodes, true, apiKey.getPrimaryKey());
-                    updateAuthorizerConfigMetadata(institutionId, prefixId, ciSegregationCodes, false, apiKey.getSecondaryKey());
+                    Subscription subscription = Subscription.fromPrefix(prefixId);
+
+                    List<AuthorizationEntity> authorizationEntities = getAuthorizationEntities(institution, subscription);
+                    AuthorizationConfig authorizationConfig = new AuthorizationConfig(authorizationEntities, authorizationMetadata);
+
+                    updateAuthorizerConfig(institutionId, subscription, authorizationConfig, true, apiKey.getPrimaryKey());
+                    updateAuthorizerConfig(institutionId, subscription, authorizationConfig, false, apiKey.getSecondaryKey());
                 }
         );
     }
@@ -345,7 +352,7 @@ public class ApiManagementService {
         }
     }
 
-    private void updateAuthorization(
+    private void updateAuthorizerConfiguration(
             InstitutionResponse institution,
             String subscriptionId,
             Subscription subscription,
@@ -389,6 +396,7 @@ public class ApiManagementService {
             List<AuthorizationMetadata> authorizationMetadata,
             List<AuthorizationMetadata> existingMetadata
     ) {
+        // Avoid overriding others metadata different from _seg, if present
         if (existingMetadata != null) {
             List<AuthorizationMetadata> newOtherMetadata = new ArrayList<>(existingMetadata);
             newOtherMetadata.removeIf(metadata -> metadata.getShortKey().equals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY));
@@ -499,19 +507,19 @@ public class ApiManagementService {
         }
     }
 
-    private void updateAuthorizerConfigMetadata(
+    private void updateAuthorizerConfig(
             String institutionId,
-            String prefixId,
-            CIStationSegregationCodesList ciSegregationCodes,
+            Subscription subscription,
+            AuthorizationConfig authorizationConfig,
             boolean isPrimaryKey,
             String subKey
     ) {
-        Subscription subscription = Subscription.fromPrefix(prefixId);
         Authorization authorization;
-        String authorizationId = createAuthorizationId(prefixId, institutionId, isPrimaryKey);
+        String authorizationId = createAuthorizationId(subscription.getPrefixId(), institutionId, isPrimaryKey);
         try {
             authorization = this.authorizerConfigClient.getAuthorization(authorizationId);
-            authorization.setOtherMetadata(replaceExistingAuthorizationMetadataOtherwiseCreateNew(buildAuthorizationMetadata(ciSegregationCodes), authorization.getOtherMetadata()));
+            authorization.setAuthorizedEntities(authorizationConfig.authorizationEntities);
+            authorization.setOtherMetadata(replaceExistingAuthorizationMetadataOtherwiseCreateNew(authorizationConfig.authorizationMetadata, authorization.getOtherMetadata()));
             this.authorizerConfigClient.updateAuthorization(authorizationId, authorization);
         } catch (FeignException.NotFound e) {
             log.error("{} key authorizer configuration for institution {} and subscription {} not found, proceed to recreate the configuration",
@@ -520,7 +528,6 @@ public class ApiManagementService {
                     sanitizeLogParam(subscription.getDisplayName()),
                     e);
             InstitutionResponse institution = getInstitutionResponse(institutionId);
-            AuthorizationConfig authorizationConfig = getAuthorizationConfig(subscription, institution);
             authorization = buildAuthorization(subscription, subKey, institution, isPrimaryKey, authorizationConfig);
             this.authorizerConfigClient.createAuthorization(authorization);
         }
