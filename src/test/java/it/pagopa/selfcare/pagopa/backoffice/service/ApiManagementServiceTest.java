@@ -927,32 +927,38 @@ class ApiManagementServiceTest {
     }
 
     @Test
-    void updateBrokerAuthorizerSegregationCodesMetadataSuccess() {
+    void updateBrokerAuthorizerConfigurationSuccess() {
         String subscriptionId = String.format("%s%s", Subscription.GPD.getPrefixId(), CI_TAX_CODE);
+        it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
         InstitutionApiKeys institutionApiKeys1 = buildInstitutionApiKeys(subscriptionId);
         InstitutionApiKeys institutionApiKeys2 = buildInstitutionApiKeys("not from BO API key");
 
         when(apimClient.getApiSubscriptions(INSTITUTION_ID)).thenReturn(List.of(institutionApiKeys1, institutionApiKeys2));
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString()))
                 .thenReturn(buildCreditorInstitutionStationSegregationCodesList());
+        when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
+                .thenReturn(createDelegations());
         when(authorizerConfigClient.getAuthorization(anyString())).thenReturn(
                 buildAuthorizationWithSegregationCodes(CI_TAX_CODE),
                 buildAuthorizationWithSegregationCodes("pippo")
         );
 
-        assertDoesNotThrow(() -> service.updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, CI_TAX_CODE));
+        assertDoesNotThrow(() -> service.updateBrokerAuthorizerConfiguration(INSTITUTION_ID, CI_TAX_CODE));
 
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient, times(2)).updateAuthorization(anyString(), any());
+        verify(externalApiClient).getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null);
     }
 
     @Test
-    void updateBrokerAuthorizerSegregationCodesMetadataFailOnPrimary() {
+    void updateBrokerAuthorizerConfigurationFailOnPrimary() {
         it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution institutionResponse = buildInstitutionResponse(InstitutionType.PA);
         String subscriptionId = String.format("%s%s", Subscription.GPD.getPrefixId(), CI_TAX_CODE);
         InstitutionApiKeys institutionApiKeys1 = buildInstitutionApiKeys(subscriptionId);
 
         when(apimClient.getApiSubscriptions(INSTITUTION_ID)).thenReturn(List.of(institutionApiKeys1));
+        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsSegregationCodeAssociatedToBroker(anyString()))
                 .thenReturn(
                         buildCreditorInstitutionStationSegregationCodesList(),
@@ -961,15 +967,15 @@ class ApiManagementServiceTest {
         when(authorizerConfigClient.getAuthorization(anyString()))
                 .thenThrow(FeignException.NotFound.class)
                 .thenReturn(buildAuthorizationWithSegregationCodes(CI_TAX_CODE));
-        when(externalApiClient.getInstitution(any())).thenReturn(institutionResponse);
         when(externalApiClient.getBrokerDelegation(null, INSTITUTION_ID, "prod-pagopa", "FULL", null))
                 .thenReturn(createDelegations());
 
-        assertDoesNotThrow(() -> service.updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, CI_TAX_CODE));
+        assertDoesNotThrow(() -> service.updateBrokerAuthorizerConfiguration(INSTITUTION_ID, CI_TAX_CODE));
 
         verify(apimClient).getApiSubscriptions(INSTITUTION_ID);
         verify(authorizerConfigClient).updateAuthorization(anyString(), any());
         verify(authorizerConfigClient).createAuthorization(any());
+        verify(externalApiClient, times(2)).getInstitution(any());
     }
 
     private Authorization buildAuthorizationWithSegregationCodes(String ciTaxCode) {
