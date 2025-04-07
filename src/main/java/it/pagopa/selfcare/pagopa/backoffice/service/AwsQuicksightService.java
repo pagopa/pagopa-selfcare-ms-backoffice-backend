@@ -65,7 +65,7 @@ public class AwsQuicksightService {
         quicksightEmbedUrlResponse.setEmbedUrl(embedUrl);
 
         addDashboardLogMetadata(institutionId, userId, quicksightEmbedUrlResponse.getEmbedUrl(), isOperator);
-        log.info("Quicksight dashboard url requested by user {} for institution {}. Url: {}", userId, sanitizeLogParam(institutionId), quicksightEmbedUrlResponse.getEmbedUrl());
+        log.info("Quicksight dashboard url requested by user {} for institution {}. Url: {}", userId, institutionId, quicksightEmbedUrlResponse.getEmbedUrl());
         removeDashboardLogMetadata();
         return quicksightEmbedUrlResponse;
     }
@@ -97,7 +97,7 @@ public class AwsQuicksightService {
             String embedUrl,
             boolean isOperator
     ) {
-        MDC.put(INSTITUTION_ID_MDC_KEY, sanitizeLogParam(institutionId));
+        MDC.put(INSTITUTION_ID_MDC_KEY, institutionId);
         MDC.put(USER_ID_MDC_KEY, userId);
         MDC.put(DASHBOARD_URL_MDC_KEY, embedUrl);
         MDC.put(IS_OPERATOR_MDC_KEY, String.valueOf(isOperator));

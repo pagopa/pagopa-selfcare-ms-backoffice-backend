@@ -261,12 +261,12 @@ public class StationService {
     }
 
     public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(
-            String stationcode,
+            String stationCode,
             Integer limit,
             Integer page,
             String ciNameOrFiscalCode
     ) {
-        CreditorInstitutions creditorInstitutions = apiConfigClient.getCreditorInstitutionsByStation(stationcode, limit, page, ciNameOrFiscalCode);
+        CreditorInstitutions creditorInstitutions = apiConfigClient.getCreditorInstitutionsByStation(stationCode, limit, page, ciNameOrFiscalCode);
         return creditorInstitutionMapper.toResource(creditorInstitutions);
     }
 
