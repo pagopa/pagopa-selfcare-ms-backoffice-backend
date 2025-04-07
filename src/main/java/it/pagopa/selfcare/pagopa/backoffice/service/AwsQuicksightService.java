@@ -64,8 +64,9 @@ public class AwsQuicksightService {
 
         quicksightEmbedUrlResponse.setEmbedUrl(embedUrl);
 
-        addDashboardLogMetadata(institutionId, userId, quicksightEmbedUrlResponse.getEmbedUrl(), isOperator);
-        log.info("Quicksight dashboard url requested by user {} for institution {}. Url: {}", userId, institutionId, quicksightEmbedUrlResponse.getEmbedUrl());
+        String sanitizedInstitutionId = sanitizeLogParam(institutionId);
+        addDashboardLogMetadata(sanitizedInstitutionId, userId, quicksightEmbedUrlResponse.getEmbedUrl(), isOperator);
+        log.info("Quicksight dashboard url requested by user {} for institution {}. Url: {}", userId, sanitizedInstitutionId, quicksightEmbedUrlResponse.getEmbedUrl());
         removeDashboardLogMetadata();
         return quicksightEmbedUrlResponse;
     }
