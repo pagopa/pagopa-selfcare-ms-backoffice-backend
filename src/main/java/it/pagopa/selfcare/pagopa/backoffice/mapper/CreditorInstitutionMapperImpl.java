@@ -175,10 +175,10 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         creditorInstitutionResource.setCbillCode(model.getCbillCode());
         creditorInstitutionResource.setEnabled(model.getEnabled());
         creditorInstitutionResource.setBroadcast(model.getBroadcast());
-        creditorInstitutionResource.setMod4(String.valueOf(model.getMod4()));
-        creditorInstitutionResource.setApplicationCode(String.valueOf(model.getApplicationCode()));
-        creditorInstitutionResource.setAuxDigit(String.valueOf(model.getAuxDigit()));
-        creditorInstitutionResource.setSegregationCode(String.valueOf(model.getSegregationCode()));
+        creditorInstitutionResource.setMod4(model.getMod4() == null ? null : model.getMod4().toString());
+        creditorInstitutionResource.setApplicationCode(longToString(model.getApplicationCode()));
+        creditorInstitutionResource.setAuxDigit(longToString(model.getAuxDigit()));
+        creditorInstitutionResource.setSegregationCode(longToString(model.getSegregationCode()));
         creditorInstitutionResource.setAca(model.getAca());
         creditorInstitutionResource.setStandIn(model.getStandIn());
 
@@ -201,4 +201,8 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
         return creditorInstitutionsResource;
     }
 
+
+    private String longToString(Long value) {
+        return value == null ? null : value.toString();
+    }
 }
