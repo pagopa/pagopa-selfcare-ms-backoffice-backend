@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.service.PaymentServiceProviderService;
+import it.pagopa.selfcare.pagopa.backoffice.util.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -96,6 +97,7 @@ public class PaymentServiceProviderController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a relation between a PSP and a channel, using the tax code to find related PSP Code", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public PspChannelPaymentTypesResource updatePaymentServiceProvidersChannels(@Parameter(description = "Tax Code to use for retrieval of the related Code of the payment service provider") @PathVariable("tax-code") String taxCode,
                                                                                 @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
                                                                                 @Parameter(description = " List of payment types") @RequestBody PspChannelPaymentTypes pspChannelPaymentTypes) {
@@ -107,6 +109,7 @@ public class PaymentServiceProviderController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Delete a relation between a PSP and a channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public void dissociatePSPFromChannel(@Parameter(description = "Tax code of the payment service provider") @PathVariable("tax-code") String pspTaxCode,
                                          @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode) {
 

@@ -38,7 +38,11 @@ public class JwtAspect {
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       String taxCode = Utility.extractInstitutionTaxCodeFromAuth(authentication);
 
-      if ((paramValue == null && !jwtSecurity.skipCheckIfNull()) || (paramValue != null && !paramValue.equals(taxCode))) {
+      if (paramValue != null && jwtSecurity.removeParamSuffix()) {
+        paramValue = paramValue.split("_")[0];
+      }
+      if ((paramValue == null && !jwtSecurity.skipCheckIfParamIsNull())
+          || (paramValue != null && !paramValue.equals(taxCode))) {
         throw new AppException(AppError.FORBIDDEN);
       }
     }

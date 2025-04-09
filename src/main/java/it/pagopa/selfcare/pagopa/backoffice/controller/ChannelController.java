@@ -91,6 +91,7 @@ public class ChannelController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public ChannelDetailsResource getChannelDetails(
             @Parameter(description = "Channel's code") @PathVariable("channel-code") String channelCode,
             @Parameter(description = "Channel's status") @RequestParam ConfigurationStatus status
@@ -219,6 +220,7 @@ public class ChannelController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public ChannelDetailsResource updateWrapperChannelDetails(
             @Parameter(description = "Channel's code") @PathVariable("channel-code") String channelCode,
             @RequestBody @Valid ChannelDetailsDto channelDetailsDto
@@ -246,6 +248,7 @@ public class ChannelController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public ChannelDetailsResource updateWrapperChannelWithOperatorReview(
             @Parameter(description = "Channel's code") @PathVariable("channel-code") String channelCode,
             @Parameter(description = "Broker Code related to the channel") @RequestParam String brokerPspCode,
