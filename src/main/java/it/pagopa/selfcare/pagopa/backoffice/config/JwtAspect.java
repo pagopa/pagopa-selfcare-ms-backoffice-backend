@@ -5,12 +5,10 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.util.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
-import java.lang.reflect.Method;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -29,17 +27,9 @@ public class JwtAspect {
     this.featureManager = featureManager;
   }
 
-  @Pointcut("@annotation(it.pagopa.selfcare.pagopa.backoffice.util.JwtSecurity)")
-  public void jwtSecurity() {
-    // all repository methods
-  }
-
-  @Around(value = "jwtSecurity()")
-  public Object checkJwt(ProceedingJoinPoint joinPoint) throws Throwable {
-    Method method = getMethodFromJoinPoint(joinPoint);
-    JwtSecurity annotation = method.getAnnotation(JwtSecurity.class);
-
-    var paramValue = getParamValue(joinPoint, annotation.paramName());
+  @Before("within(@org.springframework.web.bind.annotation.RestController *) && @annotation(jwtSecurity)")
+  public void checkJwt(final JoinPoint joinPoint, final JwtSecurity jwtSecurity) throws Throwable {
+    var paramValue = getParamValue(joinPoint, jwtSecurity.paramName());
 
     if (!Boolean.TRUE.equals(featureManager.isEnabled("operator"))) {
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -49,11 +39,9 @@ public class JwtAspect {
         throw new AppException(AppError.UNAUTHORIZED);
       }
     }
-
-    return joinPoint.proceed();
   }
 
-  private static String getParamValue(ProceedingJoinPoint joinPoint, String requestedParam) {
+  private static String getParamValue(JoinPoint joinPoint, String requestedParam) {
     // retrieve parameters
     Object[] args = joinPoint.getArgs();
     String[] paramNames = ((MethodSignature) joinPoint.getSignature()).getParameterNames();
@@ -65,22 +53,5 @@ public class JwtAspect {
       }
     }
     return null;
-  }
-
-  private Method getMethodFromJoinPoint(ProceedingJoinPoint joinPoint)
-      throws NoSuchMethodException {
-    MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-    Method method = signature.getMethod();
-
-    // In case of proxies, get the actual implementation method
-    if (method.getDeclaringClass().isInterface()) {
-      method =
-          joinPoint
-              .getTarget()
-              .getClass()
-              .getDeclaredMethod(signature.getName(), signature.getParameterTypes());
-    }
-
-    return method;
   }
 }
