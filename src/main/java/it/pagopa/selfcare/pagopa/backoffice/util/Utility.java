@@ -22,20 +22,20 @@ public class Utility {
         return userIdForAuth;
     }
 
-    public static String extractOrgVatFromAuth(Authentication authentication) {
-        String taxCode = "";
-        if(authentication != null && authentication.getPrincipal() instanceof SelfCareUser user) {
-            taxCode = user.getOrgVat();
-        }
-        return taxCode;
-    }
-
     public static String extractInstitutionIdFromAuth(Authentication authentication) {
         String institutionId = "";
         if(authentication != null && authentication.getPrincipal() instanceof SelfCareUser user) {
             institutionId = user.getOrgId();
         }
         return institutionId;
+    }
+
+    public static String extractInstitutionTaxCodeFromAuth(Authentication authentication) {
+        String institutionTaxCode = "";
+        if(authentication != null && authentication.getPrincipal() instanceof SelfCareUser user) {
+            institutionTaxCode = user.getOrgVat();
+        }
+        return institutionTaxCode;
     }
 
     /**

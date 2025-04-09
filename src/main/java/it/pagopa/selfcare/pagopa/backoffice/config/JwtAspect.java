@@ -36,9 +36,9 @@ public class JwtAspect {
 
     if (!this.environment.equals("local") && !Boolean.TRUE.equals(featureManager.isEnabled("operator"))) {
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-      String taxCode = Utility.extractOrgVatFromAuth(authentication);
+      String taxCode = Utility.extractInstitutionTaxCodeFromAuth(authentication);
 
-      if (paramValue == null || !paramValue.equals(taxCode)) {
+      if ((paramValue == null && !jwtSecurity.skipCheckIfNull()) || (paramValue != null && !paramValue.equals(taxCode))) {
         throw new AppException(AppError.FORBIDDEN);
       }
     }

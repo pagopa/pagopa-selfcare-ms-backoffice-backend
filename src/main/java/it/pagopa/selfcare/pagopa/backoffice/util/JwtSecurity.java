@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 public @interface JwtSecurity {
 
   String paramName() default "";
+  boolean skipCheckIfNull() default false;
 }
