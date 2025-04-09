@@ -21,6 +21,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationsResource;
 import it.pagopa.selfcare.pagopa.backoffice.service.StationService;
+import it.pagopa.selfcare.pagopa.backoffice.util.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -63,6 +64,7 @@ public class StationController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    @JwtSecurity(paramName = "brokerCode")
     public WrapperStationsResource getStations(
             @Parameter(description = "Station's status") @RequestParam ConfigurationStatus status,
             @Parameter(description = "Station's unique identifier") @RequestParam(required = false) String stationCode,

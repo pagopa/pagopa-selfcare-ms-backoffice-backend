@@ -22,6 +22,14 @@ public class Utility {
         return userIdForAuth;
     }
 
+    public static String extractOrgVatFromAuth(Authentication authentication) {
+        String taxCode = "";
+        if(authentication != null && authentication.getPrincipal() instanceof SelfCareUser user) {
+            taxCode = user.getOrgVat();
+        }
+        return taxCode;
+    }
+
     public static String extractInstitutionIdFromAuth(Authentication authentication) {
         String institutionId = "";
         if(authentication != null && authentication.getPrincipal() instanceof SelfCareUser user) {
