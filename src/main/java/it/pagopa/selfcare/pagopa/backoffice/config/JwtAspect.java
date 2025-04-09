@@ -6,8 +6,6 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.util.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import java.lang.reflect.Method;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -24,11 +22,12 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class JwtAspect {
 
-  @Autowired FeatureManager featureManager;
+  private final FeatureManager featureManager;
 
-  @Autowired HttpServletRequest httRequest;
-
-  @Autowired HttpServletResponse httpResponse;
+  @Autowired
+  public JwtAspect(FeatureManager featureManager) {
+    this.featureManager = featureManager;
+  }
 
   @Pointcut("@annotation(it.pagopa.selfcare.pagopa.backoffice.util.JwtSecurity)")
   public void jwtSecurity() {
@@ -40,30 +39,28 @@ public class JwtAspect {
     Method method = getMethodFromJoinPoint(joinPoint);
     JwtSecurity annotation = method.getAnnotation(JwtSecurity.class);
 
-    var paramValue = getParamValue(joinPoint);
+    var paramValue = getParamValue(joinPoint, annotation.paramName());
 
-    if (Boolean.FALSE.equals(featureManager.isEnabled("operator"))) {
+    if (!Boolean.TRUE.equals(featureManager.isEnabled("operator"))) {
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       String taxCode = Utility.extractOrgVatFromAuth(authentication);
 
-      if (paramValue!=null && !paramValue.equals(taxCode)) {
+      if (paramValue == null || !paramValue.equals(taxCode)) {
         throw new AppException(AppError.UNAUTHORIZED);
       }
     }
 
-    Object result = joinPoint.proceed();
-    return result;
+    return joinPoint.proceed();
   }
 
-  private static String getParamValue(ProceedingJoinPoint joinPoint) {
-    // Ottieni i parametri
+  private static String getParamValue(ProceedingJoinPoint joinPoint, String requestedParam) {
+    // retrieve parameters
     Object[] args = joinPoint.getArgs();
     String[] paramNames = ((MethodSignature) joinPoint.getSignature()).getParameterNames();
 
-    // Cerca brokerCode tra i parametri
+    // find requested param
     for (int i = 0; i < paramNames.length; i++) {
-      if ("brokerCode".equals(paramNames[i])) {
-
+      if (requestedParam.equals(paramNames[i])) {
         return args[i] != null ? args[i].toString() : null;
       }
     }

@@ -13,6 +13,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.iban.Iban;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
 import it.pagopa.selfcare.pagopa.backoffice.service.IbanService;
+import it.pagopa.selfcare.pagopa.backoffice.util.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ public class IbanController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all IBANs related to creditor institution, filtering by specific label", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "ciCode")
     public Ibans getCreditorInstitutionIbans(@Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
                                              @Parameter(description = "Label to be used as search filter for associated IBANs") @RequestParam(required = false) String labelName) {
 
