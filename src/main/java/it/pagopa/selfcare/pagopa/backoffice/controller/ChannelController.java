@@ -21,6 +21,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetai
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
 import it.pagopa.selfcare.pagopa.backoffice.service.ChannelService;
+import it.pagopa.selfcare.pagopa.backoffice.util.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,10 +69,11 @@ public class ChannelController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    @JwtSecurity(paramName = "brokerCode")
     public WrapperChannelsResource getChannels(
             @Parameter(description = "Channel's status") @RequestParam ConfigurationStatus status,
             @Parameter(description = "Channel's 'code, to filter out result") @RequestParam(required = false) String channelCode,
-            @Parameter(description = "Broker code, to filter out result") @RequestParam(required = false, value = "brokerCode") String brokerCode,
+            @Parameter(description = "Broker code, to filter out result") @RequestParam(value = "brokerCode") String brokerCode,
             @Parameter(description = "Number of elements on one page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
             @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page
     ) {
@@ -89,6 +91,7 @@ public class ChannelController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public ChannelDetailsResource getChannelDetails(
             @Parameter(description = "Channel's code") @PathVariable("channel-code") String channelCode,
             @Parameter(description = "Channel's status") @RequestParam ConfigurationStatus status
@@ -217,6 +220,7 @@ public class ChannelController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public ChannelDetailsResource updateWrapperChannelDetails(
             @Parameter(description = "Channel's code") @PathVariable("channel-code") String channelCode,
             @RequestBody @Valid ChannelDetailsDto channelDetailsDto
@@ -244,6 +248,7 @@ public class ChannelController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public ChannelDetailsResource updateWrapperChannelWithOperatorReview(
             @Parameter(description = "Channel's code") @PathVariable("channel-code") String channelCode,
             @Parameter(description = "Broker Code related to the channel") @RequestParam String brokerPspCode,
