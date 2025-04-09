@@ -11,6 +11,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -20,23 +21,25 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class JwtAspect {
 
+  private final String environment;
   private final FeatureManager featureManager;
 
   @Autowired
-  public JwtAspect(FeatureManager featureManager) {
-    this.featureManager = featureManager;
+  public JwtAspect(@Value("${info.properties.environment}") String environment, FeatureManager featureManager) {
+      this.environment = environment;
+      this.featureManager = featureManager;
   }
 
   @Before("within(@org.springframework.web.bind.annotation.RestController *) && @annotation(jwtSecurity)")
-  public void checkJwt(final JoinPoint joinPoint, final JwtSecurity jwtSecurity) throws Throwable {
+  public void checkJwt(final JoinPoint joinPoint, final JwtSecurity jwtSecurity) {
     var paramValue = getParamValue(joinPoint, jwtSecurity.paramName());
 
-    if (!Boolean.TRUE.equals(featureManager.isEnabled("operator"))) {
+    if (!this.environment.equals("local") && !Boolean.TRUE.equals(featureManager.isEnabled("operator"))) {
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       String taxCode = Utility.extractOrgVatFromAuth(authentication);
 
       if (paramValue == null || !paramValue.equals(taxCode)) {
-        throw new AppException(AppError.UNAUTHORIZED);
+        throw new AppException(AppError.FORBIDDEN);
       }
     }
   }
