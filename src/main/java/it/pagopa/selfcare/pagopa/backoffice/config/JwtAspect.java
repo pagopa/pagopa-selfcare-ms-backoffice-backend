@@ -21,6 +21,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class JwtAspect {
 
+  private static final String LOCAL_ENV = "local";
+  private static final String OPERATOR_FLAG = "operator";
+
   private final String environment;
   private final FeatureManager featureManager;
 
@@ -34,7 +37,7 @@ public class JwtAspect {
   public void checkJwt(final JoinPoint joinPoint, final JwtSecurity jwtSecurity) {
     var paramValue = getParamValue(joinPoint, jwtSecurity.paramName());
 
-    if (!this.environment.equals("local") && !Boolean.TRUE.equals(featureManager.isEnabled("operator"))) {
+    if (!this.environment.equals(LOCAL_ENV) && !Boolean.TRUE.equals(featureManager.isEnabled(OPERATOR_FLAG))) {
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       String taxCode = Utility.extractInstitutionTaxCodeFromAuth(authentication);
 
