@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 public class JwtAspect {
 
   private static final String LOCAL_ENV = "local";
+  private static final String TEST_ENV = "test";
 
   private final String environment;
 
@@ -34,7 +35,7 @@ public class JwtAspect {
   public void checkJwt(final JoinPoint joinPoint, final JwtSecurity jwtSecurity) {
     var paramValue = getParamValue(joinPoint, jwtSecurity.paramName());
 
-    if (!this.environment.equals(LOCAL_ENV)) {
+    if (!this.environment.equals(LOCAL_ENV) && !this.environment.equals(TEST_ENV)) {
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       String taxCode = Utility.extractInstitutionTaxCodeFromAuth(authentication);
 
