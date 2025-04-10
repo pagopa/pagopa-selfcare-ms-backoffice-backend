@@ -29,7 +29,8 @@ public class JwtAspect {
   private final FeatureManager featureManager;
 
   @Autowired
-  public JwtAspect(@Value("${info.properties.environment}") String environment, FeatureManager featureManager) {
+  public JwtAspect(
+      @Value("${info.properties.environment}") String environment, FeatureManager featureManager) {
     this.environment = environment;
     this.featureManager = featureManager;
   }
@@ -39,7 +40,9 @@ public class JwtAspect {
   public void checkJwt(final JoinPoint joinPoint, final JwtSecurity jwtSecurity) {
     var paramValue = getParamValue(joinPoint, jwtSecurity.paramName());
 
-    if (!this.environment.equals(LOCAL_ENV) && !this.environment.equals(TEST_ENV) && !Boolean.TRUE.equals(featureManager.isEnabled(OPERATOR_FLAG))) {
+    if (!this.environment.equals(LOCAL_ENV)
+        && !this.environment.equals(TEST_ENV)
+        && !Boolean.TRUE.equals(featureManager.isEnabled(OPERATOR_FLAG))) {
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       String institutionTaxCode = Utility.extractInstitutionTaxCodeFromAuth(authentication);
 
