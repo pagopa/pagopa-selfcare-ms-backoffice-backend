@@ -37,7 +37,7 @@ public class JwtAspect {
 
     if (!this.environment.equals(LOCAL_ENV) && !this.environment.equals(TEST_ENV)) {
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-      String taxCode = Utility.extractInstitutionTaxCodeFromAuth(authentication);
+      String institutionTaxCode = Utility.extractInstitutionTaxCodeFromAuth(authentication);
 
       if (paramValue == null || !paramValue.equals(taxCode)) {
         throw new AppException(AppError.FORBIDDEN);
