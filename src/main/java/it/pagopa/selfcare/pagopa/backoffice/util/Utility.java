@@ -30,6 +30,14 @@ public class Utility {
         return institutionId;
     }
 
+    public static String extractInstitutionTaxCodeFromAuth(Authentication authentication) {
+        String institutionTaxCode = "";
+        if(authentication != null && authentication.getPrincipal() instanceof SelfCareUser user) {
+            institutionTaxCode = user.getOrgVat();
+        }
+        return institutionTaxCode;
+    }
+
     /**
      * @param value value to deNullify.
      * @return return empty string if value is null
@@ -77,7 +85,7 @@ public class Utility {
      * @return the sanitized param
      */
     public static String sanitizeLogParam(String logParam) {
-        if (logParam.matches("\\w*-*")) {
+        if (logParam.matches("[\\w- ]*")) {
             return logParam;
         }
         return "suspicious log param";

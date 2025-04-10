@@ -28,7 +28,6 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.UpdateCreditorInstitutionDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.DelegationExternal;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionProductUsers;
@@ -218,7 +217,7 @@ class CreditorInstitutionServiceTest {
 
         assertNotNull(result);
 
-        verify(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, BROKER_TAX_CODE);
+        verify(apiManagementService).updateBrokerAuthorizerConfiguration(INSTITUTION_ID, BROKER_TAX_CODE);
     }
 
     @Test
@@ -229,7 +228,7 @@ class CreditorInstitutionServiceTest {
         assertThrows(AppException.class, () -> service.associateStationToCreditorInstitution(CI_TAX_CODE, INSTITUTION_ID, BROKER_TAX_CODE, dto));
 
         verify(apiConfigClient, never()).createCreditorInstitutionStationRelationship(anyString(), any(CreditorInstitutionStationEdit.class));
-        verify(apiManagementService, never()).updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, BROKER_TAX_CODE);
+        verify(apiManagementService, never()).updateBrokerAuthorizerConfiguration(INSTITUTION_ID, BROKER_TAX_CODE);
     }
 
     @Test
@@ -241,13 +240,13 @@ class CreditorInstitutionServiceTest {
                                 "response/apiconfig/post_creditor_institution_station_association_ok.json",
                                 CreditorInstitutionStationEdit.class)
                 );
-        doThrow(AppException.class).when(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(anyString(), anyString());
+        doThrow(AppException.class).when(apiManagementService).updateBrokerAuthorizerConfiguration(anyString(), anyString());
 
         CreditorInstitutionStationDto dto =
                 TestUtil.fileToObject("request/post_creditor_institution_station_association.json", CreditorInstitutionStationDto.class);
         assertThrows(AppException.class, () -> service.associateStationToCreditorInstitution(CI_TAX_CODE, INSTITUTION_ID, BROKER_TAX_CODE, dto));
 
-        verify(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, BROKER_TAX_CODE);
+        verify(apiManagementService).updateBrokerAuthorizerConfiguration(INSTITUTION_ID, BROKER_TAX_CODE);
         verify(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
     }
 
@@ -278,7 +277,7 @@ class CreditorInstitutionServiceTest {
         assertDoesNotThrow(() -> service.deleteCreditorInstitutionStationRelationship(CI_TAX_CODE, STATION_CODE1, INSTITUTION_ID, BROKER_TAX_CODE));
 
         verify(apiConfigClient).deleteCreditorInstitutionStationRelationship(anyString(), anyString());
-        verify(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(INSTITUTION_ID, BROKER_TAX_CODE);
+        verify(apiManagementService).updateBrokerAuthorizerConfiguration(INSTITUTION_ID, BROKER_TAX_CODE);
         verify(apiConfigClient).getCreditorInstitutionsByStation(STATION_CODE1, 1, 0, CI_TAX_CODE);
         verify(apiConfigClient, never()).createCreditorInstitutionStationRelationship(anyString(), any());
     }
@@ -297,7 +296,7 @@ class CreditorInstitutionServiceTest {
 
     @Test
     void deleteCreditorInstitutionStationRelationshipFailOnAuthorizerUpdateExpectRollback() {
-        doThrow(AppException.class).when(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(anyString(), anyString());
+        doThrow(AppException.class).when(apiManagementService).updateBrokerAuthorizerConfiguration(anyString(), anyString());
         when(apiConfigClient.getCreditorInstitutionsByStation(STATION_CODE1, 1, 0, CI_TAX_CODE))
                 .thenReturn(buildCreditorInstitutions());
         assertThrows(AppException.class, () ->
@@ -309,7 +308,7 @@ class CreditorInstitutionServiceTest {
 
     @Test
     void deleteCreditorInstitutionStationRelationshipFailOnAuthorizerUpdateNoRollback() {
-        doThrow(AppException.class).when(apiManagementService).updateBrokerAuthorizerSegregationCodesMetadata(anyString(), anyString());
+        doThrow(AppException.class).when(apiManagementService).updateBrokerAuthorizerConfiguration(anyString(), anyString());
         assertThrows(AppException.class, () ->
                 service.deleteCreditorInstitutionStationRelationship(CI_TAX_CODE, STATION_CODE1, INSTITUTION_ID, BROKER_TAX_CODE));
 

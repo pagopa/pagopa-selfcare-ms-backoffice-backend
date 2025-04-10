@@ -1,83 +1,80 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
-import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
-import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
-import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
-import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.io.IOException;
-
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@WithMockUser(username = "user1", password = "pwd", roles = "USER")
+import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
+import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
+import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
+import it.pagopa.selfcare.pagopa.backoffice.model.iban.Iban;
+import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreate;
+import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
+import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
+import java.io.IOException;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
+@SpringBootTest(classes = {IbanService.class, MappingsConfiguration.class})
 class IbanServiceTest {
 
-    @MockBean
-    private ExternalApiClient externalApiClient;
+  private static final String CI_CODE = "11111";
+  private static final String IBAN = "GB33BUKB20201555555556";
 
-    @MockBean
-    private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
+  @MockBean private ExternalApiClient externalApiClient;
 
-    @MockBean
-    private ApiConfigClient apiConfigClient;
+  @MockBean private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
-    @Autowired
-    @InjectMocks
-    private IbanService ibanService;
+  @MockBean private ApiConfigClient apiConfigClient;
 
-    @Autowired
-    private MockMvc mvc;
+  @Autowired private IbanService sut;
 
+  @Test
+  void getIban() throws IOException {
+    when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionIbans(CI_CODE, null))
+        .thenReturn(TestUtil.fileToObject("response/apiconfig/ibans.json", Ibans.class));
 
-    @Test
-    void getIban() throws IOException {
-        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionIbans(eq("1111"), any()))
-                .thenReturn(TestUtil.fileToObject("response/apiconfig/ibans.json", Ibans.class));
-        Ibans response = ibanService.getIban("1111", null);
-        assertNotNull(response);
-        assertNotNull(response.getIbanList());
-        assertEquals(28, response.getIbanList().size());
-    }
+    Ibans response = assertDoesNotThrow(() -> sut.getIban(CI_CODE, null));
 
-    @Test
-    void getCreditorInstitutionIbans() throws Exception {
-        String url = "/creditor-institutions/11111/ibans";
-        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionIbans(eq("11111"), any()))
-                .thenReturn(TestUtil.fileToObject("response/apiconfig/ibans.json", Ibans.class));
-        mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-    }
+    assertNotNull(response);
+    assertNotNull(response.getIbanList());
+    assertEquals(28, response.getIbanList().size());
+  }
 
-    @Test
-    void createCreditorInstitutionIbans() throws Exception {
-        String url = "/creditor-institutions/11111/ibans";
-        when(apiConfigClient.createCreditorInstitutionIbans(any(), any()))
-                .thenReturn(TestUtil.fileToObject("request/create_iban.json", IbanCreateApiconfig.class));
-        mvc.perform(post(url).content(TestUtil.readJsonFromFile("request/create_iban.json"))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-    }
+  @Test
+  void createCreditorInstitutionIban() throws Exception {
+    when(apiConfigClient.createCreditorInstitutionIbans(eq(CI_CODE), any()))
+        .thenReturn(TestUtil.fileToObject("request/create_iban.json", IbanCreateApiconfig.class));
+
+    IbanCreate ibanCreate = TestUtil.fileToObject("request/create_iban.json", IbanCreate.class);
+    Iban response = assertDoesNotThrow(() -> sut.createIban(CI_CODE, ibanCreate));
+
+    assertNotNull(response);
+  }
+
+  @Test
+  void updateCreditorInstitutionIbanWithoutLabel() throws Exception {
+    when(apiConfigClient.updateCreditorInstitutionIbans(eq(CI_CODE), eq(IBAN), any()))
+        .thenReturn(TestUtil.fileToObject("request/create_iban.json", IbanCreateApiconfig.class));
+
+    IbanCreate ibanCreate = TestUtil.fileToObject("request/create_iban.json", IbanCreate.class);
+    Iban response = assertDoesNotThrow(() -> sut.updateIban(CI_CODE, IBAN, ibanCreate));
+
+    assertNotNull(response);
+  }
+
+  @Test
+  void deleteCreditorInstitutionIbanWithoutLabel() {
+    assertDoesNotThrow(() -> sut.deleteIban(CI_CODE, IBAN));
+
+    verify(apiConfigClient).deleteCreditorInstitutionIbans(CI_CODE, IBAN);
+  }
 }

@@ -59,4 +59,6 @@ public class Bundle {
 
     private String pspBusinessName;
     private String urlPolicyPsp;
+    @Schema(description = "If the bundle's commission is on the PSP")
+    private Boolean onUs;
 }

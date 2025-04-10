@@ -42,6 +42,8 @@ public enum AppError {
     BUNDLE_SUBSCRIPTION_TYPE_NULL_BAD_REQUEST(HttpStatus.BAD_REQUEST, "Invalid bundle type requested", "Bundle type is required to retrieve bundle subscription"),
     INSTITUTION_TYPE_NOT_ALLOWED_ON_SUBSCRIPTION_BAD_REQUEST(HttpStatus.BAD_REQUEST, "Subscription not allowed for institution", "Institution %s of type %s can not operate on the requested subscription %s"),
 
+    INVALID_OPERATOR_GENERATE_PSP_DASHBOARD_REQUEST(HttpStatus.BAD_REQUEST, "Invalid generate PSP dashboard request for pagoPa operator", "pagoPa operator must provide an institution id for PSP dashboard retrieval"),
+
     STATION_CONFLICT(HttpStatus.CONFLICT, "Station Conflict", "There is a Station not completed."),
 
     INSTITUTION_DATA_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error uploading institution data",
