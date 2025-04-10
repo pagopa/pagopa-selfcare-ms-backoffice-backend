@@ -29,8 +29,12 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "Ibans")
 public class IbanController {
 
+    private final IbanService ibanService;
+
     @Autowired
-    private IbanService ibanService;
+    public IbanController(IbanService ibanService) {
+        this.ibanService = ibanService;
+    }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
