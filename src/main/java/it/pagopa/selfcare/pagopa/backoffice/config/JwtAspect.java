@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.config;
 
+import com.azure.spring.cloud.feature.management.FeatureManager;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
@@ -22,12 +23,15 @@ public class JwtAspect {
 
   private static final String LOCAL_ENV = "local";
   private static final String TEST_ENV = "test";
+  private static final String OPERATOR_FLAG = "operator";
 
   private final String environment;
+  private final FeatureManager featureManager;
 
   @Autowired
-  public JwtAspect(@Value("${info.properties.environment}") String environment) {
+  public JwtAspect(@Value("${info.properties.environment}") String environment, FeatureManager featureManager) {
     this.environment = environment;
+    this.featureManager = featureManager;
   }
 
   @Before(
@@ -35,7 +39,7 @@ public class JwtAspect {
   public void checkJwt(final JoinPoint joinPoint, final JwtSecurity jwtSecurity) {
     var paramValue = getParamValue(joinPoint, jwtSecurity.paramName());
 
-    if (!this.environment.equals(LOCAL_ENV) && !this.environment.equals(TEST_ENV)) {
+    if (!this.environment.equals(LOCAL_ENV) && !this.environment.equals(TEST_ENV) && !Boolean.TRUE.equals(featureManager.isEnabled(OPERATOR_FLAG))) {
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       String institutionTaxCode = Utility.extractInstitutionTaxCodeFromAuth(authentication);
 
