@@ -23,7 +23,7 @@ public class JwtAspect {
 
   private static final String LOCAL_ENV = "local";
   private static final String TEST_ENV = "test";
-  private static final String OPERATOR_FLAG = "operator";
+  private static final String OPERATOR_FLAG = "isOperator";
 
   private final String environment;
   private final FeatureManager featureManager;
