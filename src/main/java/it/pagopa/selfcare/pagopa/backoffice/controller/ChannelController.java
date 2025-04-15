@@ -20,6 +20,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.channels.WrapperChannelsResour
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.ChannelDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.channel.PspChannelPaymentTypes;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.wrapper.ConfigurationStatus;
+import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.service.ChannelService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -89,6 +90,7 @@ public class ChannelController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public ChannelDetailsResource getChannelDetails(
             @Parameter(description = "Channel's code") @PathVariable("channel-code") String channelCode,
             @Parameter(description = "Channel's status") @RequestParam ConfigurationStatus status
@@ -100,6 +102,7 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get paginated list of PSPs associated with the channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public ChannelPspListResource getChannelPaymentServiceProviders(
             @Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode,
             @Parameter(description = "Filter by PSP name") @RequestParam(name = "psp-name") String pspName,
@@ -144,6 +147,7 @@ public class ChannelController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public ChannelDetailsResource updateChannel(
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
             @RequestBody @NotNull ChannelDetailsDto channelDetailsDto
@@ -155,6 +159,7 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "delete channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public void deleteChannel(@Parameter(description = "Code of the payment channel") @PathVariable("channel-code") String channelCode) {
         this.channelService.deleteChannel(channelCode);
     }
@@ -163,6 +168,7 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get list of payment type of a channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public PspChannelPaymentTypesResource getChannelPaymentTypes(
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode
     ) {
@@ -173,6 +179,7 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a payment types of a channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public PspChannelPaymentTypesResource createChannelPaymentType(
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
             @Parameter(description = " List of payment types") @RequestBody PspChannelPaymentTypes pspChannelPaymentTypes
@@ -184,6 +191,7 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "delete payment type of a channel", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public void deleteChannelPaymentType(
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
             @Parameter(description = "Code of the payment type") @PathVariable("payment-type-code") String paymentTypeCode
@@ -217,6 +225,7 @@ public class ChannelController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public ChannelDetailsResource updateWrapperChannelDetails(
             @Parameter(description = "Channel's code") @PathVariable("channel-code") String channelCode,
             @RequestBody @Valid ChannelDetailsDto channelDetailsDto
@@ -244,6 +253,7 @@ public class ChannelController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
     public ChannelDetailsResource updateWrapperChannelWithOperatorReview(
             @Parameter(description = "Channel's code") @PathVariable("channel-code") String channelCode,
             @Parameter(description = "Broker Code related to the channel") @RequestParam String brokerPspCode,

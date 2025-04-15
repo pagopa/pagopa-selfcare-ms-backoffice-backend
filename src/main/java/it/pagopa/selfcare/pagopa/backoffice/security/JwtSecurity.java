@@ -11,4 +11,5 @@ public @interface JwtSecurity {
 
   String paramName() default "";
   boolean skipCheckIfParamIsNull() default false;
+  boolean removeParamSuffix() default false;
 }
