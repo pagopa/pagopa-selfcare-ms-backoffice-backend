@@ -72,7 +72,7 @@ public class JwtAspect {
                     return field.get(args[i]).toString();
 
                 } else if (requestedParam.equals(paramNames[i])) {
-                    return args[i].toString();
+                    return args[i] != null ? args[i].toString() : null;
                 }
             } catch (Exception ignored) {}
         }
