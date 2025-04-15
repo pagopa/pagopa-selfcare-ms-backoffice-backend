@@ -67,7 +67,7 @@ public class PaymentServiceProviderController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a valid code for the passed PSP that is not used yet for existing channels", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    @JwtSecurity(paramName = "pspTaxCode")
+    @JwtSecurity(paramName = "taxCode")
     public ChannelCodeResource getFirstValidChannelCode(@Parameter(description = "Tax Code of the payment service provider") @PathVariable("tax-code") String taxCode,
                                                         @Parameter(description = "is true if the channel is V2") @RequestParam(required = false, defaultValue = "false") Boolean v2) {
 
