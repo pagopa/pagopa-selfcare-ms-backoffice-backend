@@ -22,30 +22,32 @@ import org.springframework.stereotype.Component;
 public class JwtAspect {
 
   private static final String LOCAL_ENV = "local";
-  private static final String OPERATOR_FLAG = "operator";
+  private static final String TEST_ENV = "test";
+  private static final String OPERATOR_FLAG = "isOperator";
 
   private final String environment;
   private final FeatureManager featureManager;
 
   @Autowired
-  public JwtAspect(@Value("${info.properties.environment}") String environment, FeatureManager featureManager) {
-      this.environment = environment;
-      this.featureManager = featureManager;
+  public JwtAspect(
+      @Value("${info.properties.environment}") String environment, FeatureManager featureManager) {
+    this.environment = environment;
+    this.featureManager = featureManager;
   }
 
-  @Before("within(@org.springframework.web.bind.annotation.RestController *) && @annotation(jwtSecurity)")
+  @Before(
+      "within(@org.springframework.web.bind.annotation.RestController *) && @annotation(jwtSecurity)")
   public void checkJwt(final JoinPoint joinPoint, final JwtSecurity jwtSecurity) {
     var paramValue = getParamValue(joinPoint, jwtSecurity.paramName());
 
-    if (!this.environment.equals(LOCAL_ENV) && !Boolean.TRUE.equals(featureManager.isEnabled(OPERATOR_FLAG))) {
+    if (!this.environment.equals(LOCAL_ENV)
+        && !this.environment.equals(TEST_ENV)
+        && !Boolean.TRUE.equals(featureManager.isEnabled(OPERATOR_FLAG))) {
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-      String taxCode = Utility.extractInstitutionTaxCodeFromAuth(authentication);
+      String institutionTaxCode = Utility.extractInstitutionTaxCodeFromAuth(authentication);
 
-      if (paramValue != null && jwtSecurity.removeParamSuffix()) {
-        paramValue = paramValue.split("_")[0];
-      }
       if ((paramValue == null && !jwtSecurity.skipCheckIfParamIsNull())
-          || (paramValue != null && !paramValue.equals(taxCode))) {
+              || (paramValue != null && !paramValue.equals(institutionTaxCode))) {
         throw new AppException(AppError.FORBIDDEN);
       }
     }
