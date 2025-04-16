@@ -21,6 +21,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorIn
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.UpdateCreditorInstitutionDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerAndEcDetailsResource;
+import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.service.CreditorInstitutionService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,6 +114,7 @@ public class CreditorInstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get the available creditor institution's segregation code", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "ciTaxCode")
     public AvailableCodes getCreditorInstitutionSegregationCodes(
             @Parameter(description = "Creditor institution's tax code that own the station") @PathVariable("ci-tax-code") String ciTaxCode,
             @Parameter(description = "Tax code of the creditor institution that will be associated to the station") @RequestParam @NotBlank String targetCITaxCode
@@ -134,6 +136,7 @@ public class CreditorInstitutionController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Creates the relationship between the created station and the creditorInstitution", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "brokerTaxCode")
     public CreditorInstitutionStationEditResource associateStationToCreditorInstitution(
             @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
             @Parameter(description = "Broker's institution id") @RequestParam("institutionId") String institutionId,
@@ -157,6 +160,7 @@ public class CreditorInstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Updates the relationship between the created station and the creditorInstitution", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "ciTaxCode")
     public CreditorInstitutionStationEditResource updateStationAssociationToCreditorInstitution(
             @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
             @RequestBody @NotNull CreditorInstitutionStationDto dto
@@ -179,6 +183,7 @@ public class CreditorInstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "delete the relationship between the created station and the creditorInstitution", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "brokerTaxCode")
     public void deleteCreditorInstitutionStationRelationship(
             @Parameter(description = "Creditor institution's code") @PathVariable("ci-tax-code") String ciTaxCode,
             @Parameter(description = "Broker's institution id") @RequestParam("institutionId") String institutionId,
@@ -319,6 +324,7 @@ public class CreditorInstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get the list of Creditor Institutions that can be associated to the station", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    @JwtSecurity(paramName = "stationCode", removeParamSuffix = true)
     public CreditorInstitutionInfoResource getAvailableCreditorInstitutionsForStation(
             @Parameter(description = "Station's code") @PathVariable("station-code") String stationCode,
             @Parameter(description = "Broker's unique id") @RequestParam String brokerId,
