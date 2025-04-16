@@ -48,6 +48,7 @@ public class PaymentServiceProviderController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get payment service provider's details", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    @JwtSecurity(paramName = "brokerTaxCode")
     public BrokerOrPspDetailsResource getBrokerAndPspDetails(@Parameter(description = "Tax Code to use for retrieval of the related Code of the payment service provider") @PathVariable(required = true, name = "tax-code") String brokerTaxCode) {
 
         return paymentServiceProviderService.getBrokerAndPspDetails(brokerTaxCode);
