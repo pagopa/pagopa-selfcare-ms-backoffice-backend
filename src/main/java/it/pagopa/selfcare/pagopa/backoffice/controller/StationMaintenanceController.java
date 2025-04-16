@@ -16,6 +16,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMain
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceListState;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.StationMaintenanceResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stationmaintenance.UpdateStationMaintenance;
+import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.service.StationMaintenanceService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +68,7 @@ public class StationMaintenanceController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @GetMapping(value = "/{broker-tax-code}/station-maintenances", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @JwtSecurity(paramName = "brokerCode")
     public StationMaintenanceListResource getStationMaintenances(
             @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
             @Parameter(description = "Station's code") @RequestParam(required = false) String stationCode,
@@ -102,6 +104,7 @@ public class StationMaintenanceController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Schedule a maintenance period for a Station", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
+    @JwtSecurity(paramName = "brokerCode")
     public StationMaintenanceResource createStationMaintenance(
             @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
             @RequestBody @Valid @NotNull CreateStationMaintenance createStationMaintenance
@@ -127,6 +130,7 @@ public class StationMaintenanceController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/{broker-tax-code}/station-maintenances/{maintenance-id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
+    @JwtSecurity(paramName = "brokerCode")
     public StationMaintenanceResource updateStationMaintenance(
             @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
             @Parameter(description = "Maintenance's id") @PathVariable("maintenance-id") Long maintenanceId,
@@ -158,6 +162,7 @@ public class StationMaintenanceController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @GetMapping(value = "/{broker-tax-code}/station-maintenances/summary", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @JwtSecurity(paramName = "brokerCode")
     public MaintenanceHoursSummaryResource getBrokerMaintenancesSummary(
             @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
             @Parameter(description = "Year of maintenance (yyyy)", example = "2024") @RequestParam @Size(min = 4, max = 4) String maintenanceYear
@@ -191,6 +196,7 @@ public class StationMaintenanceController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @GetMapping(value = "/{broker-tax-code}/station-maintenances/{maintenance-id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @JwtSecurity(paramName = "brokerCode")
     public StationMaintenanceResource getStationMaintenance(
             @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
             @Parameter(description = "Maintenance's id") @PathVariable("maintenance-id") Long maintenanceId
@@ -212,6 +218,7 @@ public class StationMaintenanceController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @DeleteMapping(value = "/{broker-tax-code}/station-maintenances/{maintenance-id}")
+    @JwtSecurity(paramName = "brokerCode")
     public void deleteStationMaintenance(
             @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
             @Parameter(description = "Maintenance's id") @PathVariable("maintenance-id") Long maintenanceId
@@ -234,6 +241,7 @@ public class StationMaintenanceController {
     })
     @Operation(summary = "Finish an in progress station's maintenance", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.NONE)
+    @JwtSecurity(paramName = "brokerCode")
     public void finishStationMaintenance(
             @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
             @Parameter(description = "Maintenance's id") @PathVariable("maintenance-id") Long maintenanceId
