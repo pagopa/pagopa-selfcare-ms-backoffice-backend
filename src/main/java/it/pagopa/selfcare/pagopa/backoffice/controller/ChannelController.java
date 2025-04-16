@@ -58,7 +58,7 @@ public class ChannelController {
     public WrapperChannelsResource getChannels(
             @Parameter(description = "Channel's status") @RequestParam ConfigurationStatus status,
             @Parameter(description = "Channel's 'code, to filter out result") @RequestParam(required = false) String channelCode,
-            @Parameter(description = "Broker code, to filter out result") @RequestParam(required = false, value = "brokerCode") String brokerCode,
+            @Parameter(description = "Broker code, to filter out result") @RequestParam(value = "brokerCode") String brokerCode,
             @Parameter(description = "Number of elements on one page") @RequestParam(required = false, defaultValue = "50") @Positive Integer limit,
             @Parameter(description = "Page number") @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page
     ) {

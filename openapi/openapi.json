@@ -5010,7 +5010,7 @@
             "description": "Broker code, to filter out result",
             "in": "query",
             "name": "brokerCode",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "string"
             }
