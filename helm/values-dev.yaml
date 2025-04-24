@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.38.3-1-PIDM-483-update-helm-chart"
+    tag: "2.38.3-2-PIDM-483-update-helm-chart"
     pullPolicy: Always
   livenessProbe:
     httpGet:
