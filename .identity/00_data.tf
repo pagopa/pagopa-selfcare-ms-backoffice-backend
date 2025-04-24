@@ -63,6 +63,6 @@ data "azurerm_key_vault_secret" "key_vault_integration_test_subkey" {
 
 
 data "azurerm_user_assigned_identity" "workload_identity_clientid" {
-  name                = "qi-workload-identity"
+  name                = "selfcare-workload-identity"
   resource_group_name = "pagopa-${var.env_short}-weu-${var.env}-aks-rg"
 }
