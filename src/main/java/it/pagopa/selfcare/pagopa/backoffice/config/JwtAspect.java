@@ -48,7 +48,7 @@ public class JwtAspect {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String authParamToCheck;
 
-            if(jwtSecurity.paramName().contains("Id")){
+            if(jwtSecurity.checkParamAsUserId()){
                 authParamToCheck = Utility.extractInstitutionIdFromAuth(authentication);
             } else {
                 authParamToCheck = Utility.extractInstitutionTaxCodeFromAuth(authentication);
