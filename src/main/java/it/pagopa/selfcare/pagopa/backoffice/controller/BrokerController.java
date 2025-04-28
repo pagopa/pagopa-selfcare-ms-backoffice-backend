@@ -18,6 +18,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokersResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsResourceList;
+import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.service.BrokerService;
 import it.pagopa.selfcare.pagopa.backoffice.service.ExportService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
@@ -64,10 +65,12 @@ public class BrokerController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a Broker", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
+    @JwtSecurity(paramName = "brokerCode", checkParamInsideBody = true)
     public BrokerResource createBroker(@RequestBody BrokerDto brokerDto) {
         return brokerService.createBroker(brokerDto);
     }
 
+    // TODO  unused
     @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get paginated list of creditor brokers", security = {@SecurityRequirement(name = "JWT")})
@@ -86,6 +89,7 @@ public class BrokerController {
     }
 
 
+    // TODO  unused
     @PutMapping(value = "/{broker-tax-code}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update an existing EC broker", security = {@SecurityRequirement(name = "JWT")})
@@ -97,6 +101,7 @@ public class BrokerController {
         return brokerService.updateBrokerForCI(dto, brokerCode);
     }
 
+    // TODO  unused
     @GetMapping(value = "/{broker-tax-code}/stations", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get paginated list of stations given a broker code",
@@ -120,6 +125,7 @@ public class BrokerController {
                     "stato, dataAttivazioneIban, descrizione, etichetta`")
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
     @Cacheable(value = "exportIbansToCsv")
+    @JwtSecurity(paramName = "brokerCode")
     public ResponseEntity<Resource> exportIbansToCsv(
             @Parameter(description = "SelfCare Broker Code. it's a tax code")
             @PathVariable("broker-tax-code") String brokerCode
@@ -143,6 +149,7 @@ public class BrokerController {
                     "activationDate, version, broadcast`")
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
     @Cacheable(value = "exportCreditorInstitutionToCsv")
+    @JwtSecurity(paramName = "brokerCode")
     public ResponseEntity<Resource> exportCreditorInstitutionToCsv(
             @Parameter(description = "SelfCare Broker Code. it's a tax code")
             @PathVariable("broker-tax-code") String brokerCode
@@ -161,6 +168,7 @@ public class BrokerController {
     @Operation(summary = "Get all info about data exports for the broker EC",
             security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    @JwtSecurity(paramName = "brokerCode")
     public BrokerECExportStatus getBrokerExportStatus(
             @Parameter(description = "SelfCare Broker Code. it's a tax code")
             @PathVariable("broker-tax-code") String brokerCode
@@ -191,6 +199,7 @@ public class BrokerController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = false)
+    @JwtSecurity(paramName = "brokerCode")
     public CIBrokerDelegationPage getCIBrokerDelegation(
             @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode,
             @Parameter(description = "Broker's unique id") @RequestParam String brokerId,
@@ -226,6 +235,7 @@ public class BrokerController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = false)
+    @JwtSecurity(paramName = "brokerTaxCode")
     public CIBrokerStationPage getCIBrokerStations(
             @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerTaxCode,
             @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
@@ -253,6 +263,7 @@ public class BrokerController {
             @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
+    @JwtSecurity(paramName = "brokerTaxCode")
     public void deleteCIBroker(
             @Parameter(description = "Broker tax code") @PathVariable("broker-tax-code") String brokerTaxCode
     ) {
