@@ -64,8 +64,6 @@ class BrokerControllerTest {
         when(brokerService.createBroker(any())).thenReturn(new BrokerResource());
         when(brokerService.getCIBrokerDelegation(anyString(), anyString(), anyString(), anyInt(), anyInt()))
                 .thenReturn(new CIBrokerDelegationPage());
-        when(brokerService.getBrokersEC(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(new BrokersResource());
         when(brokerService.getCIBrokerStations(anyString(), anyString(), anyString(), anyInt(), anyInt()))
                 .thenReturn(new CIBrokerStationPage());
     }
@@ -78,35 +76,6 @@ class BrokerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
-    }
-
-    @Test
-    void getBrokersEC() throws Exception {
-        String url = "/brokers";
-        mvc.perform(get(url)
-                        .param("page", "0")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void updateBroker() throws Exception {
-        String url = "/brokers/{broker-tax-code}";
-        BrokerEcDto brokerEcDto = new BrokerEcDto();
-        brokerEcDto.setBrokerCode("brokerTaxCode");
-
-        mvc.perform(put(url, "brokerTaxCode")
-                        .content(objectMapper.writeValueAsString(brokerEcDto))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void getStationsDetailsListByBroker() throws Exception {
-        String url = "/brokers/{broker-tax-code}/stations";
-        mvc.perform(get(url, "brokerTaxCode")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
     }
 
     @Test

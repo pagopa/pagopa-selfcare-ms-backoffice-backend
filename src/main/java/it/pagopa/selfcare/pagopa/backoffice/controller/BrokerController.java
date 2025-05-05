@@ -9,15 +9,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
-import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.BrokerEcDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.export.BrokerECExportStatus;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationPage;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerStationPage;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDetailsResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokersResource;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationDetailsResourceList;
 import it.pagopa.selfcare.pagopa.backoffice.service.BrokerService;
 import it.pagopa.selfcare.pagopa.backoffice.service.ExportService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
@@ -30,18 +26,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -66,49 +51,6 @@ public class BrokerController {
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
     public BrokerResource createBroker(@RequestBody BrokerDto brokerDto) {
         return brokerService.createBroker(brokerDto);
-    }
-
-    @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get paginated list of creditor brokers", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public BrokersResource getBrokersEC(
-            @Parameter(description = "Number of elements on one page") @RequestParam(required = false,
-                    defaultValue = "50") Integer limit,
-            @Parameter(description = "Page number. Page value starts from 0") @RequestParam Integer page,
-            @RequestParam(required = false) String code,
-            @RequestParam(required = false) String name,
-            @Parameter(description = "order by name or code, default = CODE") @RequestParam(
-                    required = false, defaultValue = "CODE") String orderby,
-            @Parameter() @RequestParam(required = false,
-                    defaultValue = "DESC") String ordering) {
-        return brokerService.getBrokersEC(limit, page, code, name, orderby, ordering);
-    }
-
-
-    @PutMapping(value = "/{broker-tax-code}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Update an existing EC broker", security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    public BrokerDetailsResource updateBroker(
-            @RequestBody @Valid BrokerEcDto dto,
-            @Parameter(description = "Broker's tax code") @PathVariable("broker-tax-code") String brokerCode
-    ) {
-        return brokerService.updateBrokerForCI(dto, brokerCode);
-    }
-
-    @GetMapping(value = "/{broker-tax-code}/stations", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get paginated list of stations given a broker code",
-            security = {@SecurityRequirement(name = "JWT")})
-    @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    public StationDetailsResourceList getStationsDetailsListByBroker(
-            @PathVariable("broker-tax-code") String brokerCode,
-            @RequestParam(required = false) String stationId,
-            @RequestParam(required = false, defaultValue = "10") Integer limit,
-            @RequestParam(required = false, defaultValue = "0") Integer page) {
-        return brokerService.getStationsDetailsListByBroker(brokerCode, stationId, limit,
-                page);
     }
 
     @GetMapping(value = "/{broker-tax-code}/ibans/export",

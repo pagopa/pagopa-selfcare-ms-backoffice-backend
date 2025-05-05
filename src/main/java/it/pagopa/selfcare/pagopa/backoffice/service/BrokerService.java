@@ -9,14 +9,13 @@ import it.pagopa.selfcare.pagopa.backoffice.mapper.BrokerMapper;
 import it.pagopa.selfcare.pagopa.backoffice.mapper.CreditorInstitutionMapper;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.BrokerDetails;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Brokers;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetailsList;
-import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.BrokerEcDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.CreditorInstitutionsView;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
-import it.pagopa.selfcare.pagopa.backoffice.model.stations.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerDto;
+import it.pagopa.selfcare.pagopa.backoffice.model.stations.BrokerResource;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.modelmapper.ModelMapper;
@@ -64,32 +63,6 @@ public class BrokerService {
         BrokerDetails broker = apiConfigClient.createBroker(BrokerMapper.fromDto(brokerDto));
         return BrokerMapper.toResource(broker);
     }
-
-
-    public BrokerDetailsResource updateBrokerForCI(BrokerEcDto brokerEcDto, String brokerCode) {
-        BrokerDetails dto = mapper.fromDto(brokerEcDto);
-        dto = apiConfigClient.updateBrokerEc(dto, brokerCode);
-        return mapper.toResource(dto);
-    }
-
-    public StationDetailsResourceList getStationsDetailsListByBroker(
-            String brokerCode,
-            String stationId,
-            Integer limit,
-            Integer page
-    ) {
-        StationDetailsList response = apiConfigSelfcareIntegrationClient
-                .getStationsDetailsListByBroker(brokerCode, stationId, null, limit, page);
-        return modelMapper.map(response, StationDetailsResourceList.class);
-    }
-
-
-    public BrokersResource getBrokersEC(Integer limit, Integer page, String code, String name,
-                                        String orderby, String ordering) {
-        Brokers response = apiConfigClient.getBrokersEC(limit, page, code, name, orderby, ordering);
-        return modelMapper.map(response, BrokersResource.class);
-    }
-
 
     /**
      * Retrieves the paginated list of broker's creditor institution delegation for the specified broker
