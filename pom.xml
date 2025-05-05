@@ -10,7 +10,7 @@
         <version>2.7.10</version>
     </parent>
     <artifactId>pagopa-selfcare-ms-backoffice</artifactId>
-    <version>2.38.5-1-PIDM-441-va-pt-step-6-institutions</version>
+    <version>2.38.6</version>
     <name>SelfCare Backoffice</name>
     <description>Microservice to manage PagoPA Backoffice</description>
 
