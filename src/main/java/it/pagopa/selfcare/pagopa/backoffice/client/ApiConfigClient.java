@@ -54,14 +54,6 @@ import java.time.OffsetDateTime;
 @FeignClient(name = "api-config", url = "${rest-client.api-config.base-url}", configuration = ApiConfigFeignConfig.class)
 public interface ApiConfigClient {
 
-    @PutMapping(value = "/brokers/{brokercode}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Valid
-    BrokerDetails updateBrokerEc(
-            @RequestBody BrokerDetails brokerDetails,
-            @PathVariable("brokercode") String brokerCode
-    );
-
-
     @GetMapping(value = "/brokerspsp", produces = MediaType.APPLICATION_JSON_VALUE)
     @RequestLine("getBrokersPsp")
     @Valid
