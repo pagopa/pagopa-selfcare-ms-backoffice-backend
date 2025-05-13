@@ -13,10 +13,12 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 @Aspect
 @Component
@@ -26,6 +28,14 @@ public class JwtAspect {
     private static final String LOCAL_ENV = "local";
     private static final String TEST_ENV = "test";
     private static final String OPERATOR_FLAG = "isOperator";
+
+    List<String> adminRoles =
+            List.of(
+                    "PSP_ADMIN",
+                    "PSP_DIRECT_ADMIN",
+                    "EC_ADMIN",
+                    "EC_DIRECT_ADMIN",
+                    "PT_PSPEC_OPERATOR");
 
     private final String environment;
     private final FeatureManager featureManager;
@@ -60,6 +70,15 @@ public class JwtAspect {
             if ((paramValue == null && !jwtSecurity.skipCheckIfParamIsNull())
                     || (paramValue != null && !paramValue.equals(authParamToCheck))) {
                 throw new AppException(AppError.FORBIDDEN);
+            }
+
+            if (jwtSecurity.checkAdminRole()) {
+
+                if (authentication == null || authentication.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .noneMatch(adminRoles::contains)) {
+                    throw new AppException(AppError.FORBIDDEN);
+                }
             }
         }
     }
