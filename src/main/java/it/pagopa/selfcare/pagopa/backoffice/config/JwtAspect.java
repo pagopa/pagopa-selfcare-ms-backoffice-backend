@@ -42,17 +42,23 @@ public class JwtAspect {
     public void checkJwt(final JoinPoint joinPoint, final JwtSecurity jwtSecurity) {
         var paramValue = getParamValue(joinPoint, jwtSecurity.paramName(), jwtSecurity.checkParamInsideBody());
 
-    if (!this.environment.equals(LOCAL_ENV)
-        && !this.environment.equals(TEST_ENV)
+        if (!this.environment.equals(LOCAL_ENV)
+                && !this.environment.equals(TEST_ENV)
                 && !Boolean.TRUE.equals(featureManager.isEnabled(OPERATOR_FLAG))) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String institutionTaxCode = Utility.extractInstitutionTaxCodeFromAuth(authentication);
+            String authParamToCheck;
+
+            if(jwtSecurity.checkParamAsUserId()){
+                authParamToCheck = Utility.extractInstitutionIdFromAuth(authentication);
+            } else {
+                authParamToCheck = Utility.extractInstitutionTaxCodeFromAuth(authentication);
+            }
 
             if (paramValue != null && jwtSecurity.removeParamSuffix()) {
                 paramValue = paramValue.split("_")[0];
             }
             if ((paramValue == null && !jwtSecurity.skipCheckIfParamIsNull())
-                    || (paramValue != null && !paramValue.equals(institutionTaxCode))) {
+                    || (paramValue != null && !paramValue.equals(authParamToCheck))) {
                 throw new AppException(AppError.FORBIDDEN);
             }
         }
@@ -74,7 +80,8 @@ public class JwtAspect {
                 } else if (requestedParam.equals(paramNames[i])) {
                     return args[i] != null ? args[i].toString() : null;
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         return null;
     }
