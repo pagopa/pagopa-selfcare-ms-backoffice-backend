@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.config;
 import com.azure.spring.cloud.feature.management.FeatureManager;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
+import it.pagopa.selfcare.pagopa.backoffice.model.SelfCareUser;
 import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -31,11 +31,8 @@ public class JwtAspect {
 
     List<String> adminRoles =
             List.of(
-                    "PSP_ADMIN",
-                    "PSP_DIRECT_ADMIN",
-                    "EC_ADMIN",
-                    "EC_DIRECT_ADMIN",
-                    "PT_PSPEC_OPERATOR");
+                    "admin",
+                    "admin-psp");
 
     private final String environment;
     private final FeatureManager featureManager;
@@ -74,9 +71,8 @@ public class JwtAspect {
 
             if (jwtSecurity.checkAdminRole()) {
 
-                if (authentication == null || authentication.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .noneMatch(adminRoles::contains)) {
+                if (authentication == null || !(authentication.getPrincipal() instanceof SelfCareUser user)
+                        || !adminRoles.contains(user.getOrgRole()))  {
                     throw new AppException(AppError.FORBIDDEN);
                 }
             }
