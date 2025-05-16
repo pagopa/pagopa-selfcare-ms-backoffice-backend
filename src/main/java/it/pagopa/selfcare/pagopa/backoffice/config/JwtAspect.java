@@ -3,6 +3,7 @@ package it.pagopa.selfcare.pagopa.backoffice.config;
 import com.azure.spring.cloud.feature.management.FeatureManager;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
+import it.pagopa.selfcare.pagopa.backoffice.model.SelfCareUser;
 import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 @Aspect
 @Component
@@ -26,6 +28,11 @@ public class JwtAspect {
     private static final String LOCAL_ENV = "local";
     private static final String TEST_ENV = "test";
     private static final String OPERATOR_FLAG = "isOperator";
+
+    List<String> adminRoles =
+            List.of(
+                    "admin",
+                    "admin-psp");
 
     private final String environment;
     private final FeatureManager featureManager;
@@ -60,6 +67,14 @@ public class JwtAspect {
             if ((paramValue == null && !jwtSecurity.skipCheckIfParamIsNull())
                     || (paramValue != null && !paramValue.equals(authParamToCheck))) {
                 throw new AppException(AppError.FORBIDDEN);
+            }
+
+            if (jwtSecurity.checkAdminRole()) {
+
+                if (authentication == null || !(authentication.getPrincipal() instanceof SelfCareUser user)
+                        || !adminRoles.contains(user.getOrgRole()))  {
+                    throw new AppException(AppError.FORBIDDEN);
+                }
             }
         }
     }
