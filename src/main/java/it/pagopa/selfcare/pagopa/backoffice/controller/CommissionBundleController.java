@@ -126,7 +126,7 @@ public class CommissionBundleController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a paginated list of bundles related to PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    @JwtSecurity(paramName = "pspTaxCode")
+    @JwtSecurity(paramName = "pspTaxCode", checkAdminRole = true)
     public PSPBundlesResource getBundlesByPSP(
             @Parameter(description = "Number of elements on one page. Default = 50") @RequestParam(required = false, defaultValue = "50") Integer limit,
             @Parameter(description = "Commission bundle's type") @RequestParam(name = "bundle-type", required = false) List<BundleType> bundleType,
@@ -156,7 +156,7 @@ public class CommissionBundleController {
     })
     @Operation(summary = "Create a commission bundle related to PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    @JwtSecurity(paramName = "pspTaxCode")
+    @JwtSecurity(paramName = "pspTaxCode", checkAdminRole = true)
     public BundleCreateResponse createBundle(
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
             @Parameter(description = "Commission bundle related to PSP to be created") @RequestBody @NotNull BundleRequest bundleRequest
@@ -196,7 +196,7 @@ public class CommissionBundleController {
     })
     @Operation(summary = "Update a bundle by psp code and bundle id", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    @JwtSecurity(paramName = "pspTaxCode")
+    @JwtSecurity(paramName = "pspTaxCode", checkAdminRole = true)
     public void updatePSPBundle(
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
             @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
@@ -217,7 +217,7 @@ public class CommissionBundleController {
     })
     @Operation(summary = "Delete a bundle by psp code and bundle id", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    @JwtSecurity(paramName = "pspTaxCode")
+    @JwtSecurity(paramName = "pspTaxCode", checkAdminRole = true)
     public void deletePSPBundle(
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
             @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
@@ -278,7 +278,7 @@ public class CommissionBundleController {
     })
     @Operation(summary = "reject of subscription to a public bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    @JwtSecurity(paramName = "pspTaxCode")
+    @JwtSecurity(paramName = "pspTaxCode", checkAdminRole = true)
     public void rejectPublicBundleSubscription(
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
             @Parameter(description = "Public bundle request's id") @PathVariable("bundle-request-id") String bundleRequestId,
@@ -312,7 +312,7 @@ public class CommissionBundleController {
     })
     @Operation(summary = "Get a paginated list of creditor institution's subscriptions to a public/private bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    @JwtSecurity(paramName = "pspTaxCode")
+    @JwtSecurity(paramName = "pspTaxCode", checkAdminRole = true)
     public CIBundleSubscriptionsResource getBundleCISubscriptions(
             @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
             @Parameter(description = "Payment Service Provider's tax code") @PathVariable("psp-tax-code") String pspTaxCode,
@@ -350,7 +350,7 @@ public class CommissionBundleController {
     })
     @Operation(summary = "Get the detail of a creditor institution's subscription to a public/private bundle of a PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    @JwtSecurity(paramName = "pspTaxCode")
+    @JwtSecurity(paramName = "pspTaxCode", checkAdminRole = true)
     public CIBundleSubscriptionsDetail getBundleCISubscriptionsDetail(
             @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
             @Parameter(description = "Payment Service Provider's tax code") @PathVariable("psp-tax-code") String pspTaxCode,
@@ -383,7 +383,7 @@ public class CommissionBundleController {
     })
     @Operation(summary = "Delete a creditor institution's subscription to a public/private bundle", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    @JwtSecurity(paramName = "ciTaxCode")
+    @JwtSecurity(paramName = "ciTaxCode", checkAdminRole = true)
     public void deleteCIBundleSubscription(
             @Parameter(description = "Subscription's id of a creditor institution to a bundle") @PathVariable("ci-bundle-id") String ciBundleId,
             @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
@@ -410,7 +410,7 @@ public class CommissionBundleController {
     })
     @Operation(summary = "Delete a creditor institution's subscription request to a public bundle", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    @JwtSecurity(paramName = "ciTaxCode")
+    @JwtSecurity(paramName = "ciTaxCode", checkAdminRole = true)
     public void deleteCIBundleRequest(
             @Parameter(description = "Subscription request's id of a creditor institution to a bundle") @PathVariable("bundle-request-id") String idBundleRequest,
             @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode
@@ -436,7 +436,7 @@ public class CommissionBundleController {
     })
     @Operation(summary = "Create a creditor institution's subscription request to a public bundle", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    @JwtSecurity(paramName = "ciTaxCode")
+    @JwtSecurity(paramName = "ciTaxCode", checkAdminRole = true)
     public void createCIBundleRequest(
             @Parameter(description = "Creditor Institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
             @Parameter(description = "Bundle's name, if present sends an email to notify the Payment Service Provider") @RequestParam(required = false) String bundleName,
@@ -464,7 +464,7 @@ public class CommissionBundleController {
     })
     @Operation(summary = "Delete private bundle offer", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    @JwtSecurity(paramName = "pspTaxCode")
+    @JwtSecurity(paramName = "pspTaxCode",checkAdminRole = true)
     public void deletePrivateBundleOffer(
             @Parameter(description = "Commission bundle's id") @PathVariable("id-bundle") String idBundle,
             @Parameter(description = "Payment Service Provider's tax code") @PathVariable("psp-tax-code") String pspTaxCode,
@@ -517,7 +517,7 @@ public class CommissionBundleController {
     })
     @Operation(summary = "Accept a private bundle offer by bundle offer id and ci tax code", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    @JwtSecurity(paramName = "ciTaxCode")
+    @JwtSecurity(paramName = "ciTaxCode", checkAdminRole = true)
     public CIBundleId acceptPrivateBundleOffer(
             @Parameter(description = "Tax code of the creditor institution") @PathVariable("ci-tax-code") String ciTaxCode,
             @Parameter(description = "Commission bundle offer's id") @PathVariable("id-bundle-offer") String idBundleOffer,
@@ -540,7 +540,7 @@ public class CommissionBundleController {
     })
     @Operation(summary = "Reject a private bundle offer by bundle offer id and ci tax code", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    @JwtSecurity(paramName = "ciTaxCode")
+    @JwtSecurity(paramName = "ciTaxCode", checkAdminRole = true)
     public void rejectPrivateBundleOffer(
             @Parameter(description = "Tax code of the creditor institution") @PathVariable("ci-tax-code") String ciTaxCode,
             @Parameter(description = "Commission bundle offer's id") @PathVariable("id-bundle-offer") String idBundleOffer,
@@ -561,7 +561,7 @@ public class CommissionBundleController {
     })
     @Operation(summary = "Export all commission bundle related to a PSP", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ, cacheable = true)
-    @JwtSecurity(paramName = "pspTaxCode")
+    @JwtSecurity(paramName = "pspTaxCode", checkAdminRole = true)
     public ResponseEntity<Resource> exportPSPBundleList(
             @Parameter(description = "Tax code of the payment service provider") @PathVariable("psp-tax-code") String pspTaxCode,
             @Parameter(description = "Commission bundle's type") @RequestParam List<BundleType> bundleTypeList
