@@ -88,7 +88,7 @@ public class CommissionBundleController {
     })
     @Operation(summary = "Get a paginated list of bundles to be used by creditor institutions", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    @JwtSecurity(paramName = "ciTaxCode", skipCheckIfParamIsNull = true)
+    @JwtSecurity(paramName = "ciTaxCode", skipCheckIfParamIsNull = true, checkAdminRole = true)
     public CIBundlesResource getCisBundles(
             @Parameter(description = "Commission bundle's type") @RequestParam BundleType bundleType,
             @Parameter(description = "Bundle subscription status, required in case of private bundle otherwise is not considered") @RequestParam(required = false) BundleSubscriptionStatus status,
