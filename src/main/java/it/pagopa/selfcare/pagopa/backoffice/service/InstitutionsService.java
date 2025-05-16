@@ -1,18 +1,24 @@
 
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.InstitutionsClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.notices.InstitutionUploadData;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Slf4j
 public class InstitutionsService {
+
+    @Value("${rest-client.external-api.printit-blob-url}")
+    private String printitBlobUrl;
 
     private final InstitutionsClient institutionClient;
 
@@ -22,6 +28,15 @@ public class InstitutionsService {
 
     public void uploadInstitutionsData(String institutionsData, MultipartFile logo) {
         try {
+            String logoUrl = new ObjectMapper()
+                    .readTree(institutionsData)
+                    .path("logo")
+                    .asText(null);
+
+            if (logoUrl != null && !logoUrl.startsWith(printitBlobUrl)) {
+                throw new IllegalArgumentException("Logo must start with " + printitBlobUrl);
+            }
+
             institutionClient.updateInstitutions(institutionsData, logo);
         } catch (AppException e) {
             throw e;
