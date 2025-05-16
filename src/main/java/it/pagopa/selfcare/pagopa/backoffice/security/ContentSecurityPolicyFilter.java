@@ -13,7 +13,7 @@ public class ContentSecurityPolicyFilter implements Filter {
     private String imgSource;
 
     public ContentSecurityPolicyFilter(
-            @Value("${rest-client.external-api.printit-blob-url}") String imgSource
+            @Value("${authorization.institutions.contentSecurityPolicy}") String imgSource
     ) {
         this.imgSource = imgSource;
     }
