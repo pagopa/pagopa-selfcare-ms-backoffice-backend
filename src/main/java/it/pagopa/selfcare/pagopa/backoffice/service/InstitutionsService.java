@@ -36,7 +36,10 @@ public class InstitutionsService {
                     .asText(null);
 
             if (logoUrl != null && Arrays.stream(printitBlobUrls).noneMatch(logoUrl::startsWith)) {
-                throw new IllegalArgumentException("Logo must start with one of the allowed base URLs: " + Arrays.toString(printitBlobUrls));
+                throw new AppException(
+                        AppError.INSTITUTION_DATA_UPLOAD_BAD_REQUEST,
+                        "The logo URL must begin with one of the allowed base URLs"
+                );
             }
 
             institutionClient.updateInstitutions(institutionsData, logo);
@@ -49,6 +52,7 @@ public class InstitutionsService {
             throw new AppException(AppError.INSTITUTION_DATA_UPLOAD_ERROR, e);
         }
     }
+
 
     public InstitutionUploadData getInstitutionData(String institutionsData) {
         try {
