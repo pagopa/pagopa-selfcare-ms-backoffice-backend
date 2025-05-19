@@ -13,12 +13,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+
 @Service
 @Slf4j
 public class InstitutionsService {
 
-    @Value("${rest-client.external-api.printit-blob-url}")
-    private String printitBlobUrl;
+    @Value("${rest-client.external-api.printit-blob-urls}")
+    private String[] printitBlobUrls;
 
     private final InstitutionsClient institutionClient;
 
@@ -33,8 +35,8 @@ public class InstitutionsService {
                     .path("logo")
                     .asText(null);
 
-            if (logoUrl != null && !logoUrl.startsWith(printitBlobUrl)) {
-                throw new IllegalArgumentException("Logo must start with " + printitBlobUrl);
+            if (logoUrl != null && Arrays.stream(printitBlobUrls).noneMatch(logoUrl::startsWith)) {
+                throw new IllegalArgumentException("Logo must start with one of the allowed base URLs: " + Arrays.toString(printitBlobUrls));
             }
 
             institutionClient.updateInstitutions(institutionsData, logo);
