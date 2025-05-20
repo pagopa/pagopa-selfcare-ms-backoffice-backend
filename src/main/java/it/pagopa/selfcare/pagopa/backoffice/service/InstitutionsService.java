@@ -31,7 +31,7 @@ public class InstitutionsService {
     public void uploadInstitutionsData(String institutionsData, MultipartFile logo) {
         try {
 
-            String[] printitBlobUrls = Arrays.stream(printitBlobUrlsRaw.split(","))
+            /*String[] printitBlobUrls = Arrays.stream(printitBlobUrlsRaw.split(","))
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
                     .toArray(String[]::new);
@@ -55,7 +55,7 @@ public class InstitutionsService {
                     );
                 }
             }
-
+*/
             institutionClient.updateInstitutions(institutionsData, logo);
         } catch (AppException e) {
             throw e;
