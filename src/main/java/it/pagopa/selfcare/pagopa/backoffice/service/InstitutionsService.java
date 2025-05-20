@@ -20,7 +20,7 @@ import java.util.Arrays;
 public class InstitutionsService {
 
     @Value("${rest-client.external-api.printit-blob-urls}")
-    private String[] printitBlobUrls;
+    private String printitBlobUrlsRaw;
 
     private final InstitutionsClient institutionClient;
 
@@ -30,12 +30,19 @@ public class InstitutionsService {
 
     public void uploadInstitutionsData(String institutionsData, MultipartFile logo) {
         try {
+
+            String[] printitBlobUrls = Arrays.stream(printitBlobUrlsRaw.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .toArray(String[]::new);
+
+
             String logoUrl = new ObjectMapper()
                     .readTree(institutionsData)
                     .path("logo")
                     .asText(null);
 
-            /*if (logo != null) {
+            if (logo != null) {
                 boolean isValid = Arrays.stream(printitBlobUrls)
                         .filter(url -> url != null && !url.isBlank())
                         .map(url -> url.endsWith("/") ? url.substring(0, url.length() -1) : url)
@@ -47,7 +54,7 @@ public class InstitutionsService {
                             "The logo URL must begin with one of the allowed base URLs"
                     );
                 }
-            }*/
+            }
 
             institutionClient.updateInstitutions(institutionsData, logo);
         } catch (AppException e) {
