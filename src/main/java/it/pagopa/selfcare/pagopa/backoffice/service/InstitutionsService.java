@@ -35,11 +35,18 @@ public class InstitutionsService {
                     .path("logo")
                     .asText(null);
 
-            if (logoUrl != null && Arrays.stream(printitBlobUrls).noneMatch(logoUrl::startsWith)) {
-                throw new AppException(
-                        AppError.INSTITUTION_DATA_UPLOAD_BAD_REQUEST,
-                        "The logo URL must begin with one of the allowed base URLs"
-                );
+            if (logo != null) {
+                boolean isValid = Arrays.stream(printitBlobUrls)
+                        .filter(url -> url != null && !url.isBlank())
+                        .map(url -> url.endsWith("/") ? url.substring(0, url.length() -1) : url)
+                        .anyMatch(url -> url.startsWith(logoUrl));
+                if (!isValid) {
+                    log.warn("Invalid logo URL: {}. Allowed base URLs: {}", logoUrl, Arrays.toString(printitBlobUrls));
+                    throw new AppException(
+                            AppError.INSTITUTION_DATA_UPLOAD_BAD_REQUEST,
+                            "The logo URL must begin with one of the allowed base URLs"
+                    );
+                }
             }
 
             institutionClient.updateInstitutions(institutionsData, logo);
