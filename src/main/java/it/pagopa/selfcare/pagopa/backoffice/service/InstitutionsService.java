@@ -35,7 +35,7 @@ public class InstitutionsService {
                     .path("logo")
                     .asText(null);
 
-            if (logo != null) {
+            /*if (logo != null) {
                 boolean isValid = Arrays.stream(printitBlobUrls)
                         .filter(url -> url != null && !url.isBlank())
                         .map(url -> url.endsWith("/") ? url.substring(0, url.length() -1) : url)
@@ -47,7 +47,7 @@ public class InstitutionsService {
                             "The logo URL must begin with one of the allowed base URLs"
                     );
                 }
-            }
+            }*/
 
             institutionClient.updateInstitutions(institutionsData, logo);
         } catch (AppException e) {
