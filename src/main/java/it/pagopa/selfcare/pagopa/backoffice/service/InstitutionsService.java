@@ -19,8 +19,10 @@ import java.util.Arrays;
 @Slf4j
 public class InstitutionsService {
 
-    @Value("${rest-client.external-api.printit-blob-urls}")
+    /*@Value("${rest-client.external-api.printit-blob-urls}")
     private String printitBlobUrlsRaw;
+    
+     */
 
     private final InstitutionsClient institutionClient;
 
