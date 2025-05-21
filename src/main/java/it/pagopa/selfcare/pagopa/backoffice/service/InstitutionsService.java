@@ -1,6 +1,7 @@
 
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.InstitutionsClient;
@@ -32,18 +33,19 @@ public class InstitutionsService {
         try {
             String[] whitelistUrls = Arrays.stream(whitelistRow.split(",")).map(String::trim).toArray(String[]::new);
 
-            String logoUrl = new ObjectMapper().readTree(institutionsData).path("logo").asText();
+            JsonNode logoNode = new ObjectMapper().readTree(institutionsData).path("logo");
+            if (!logoNode.isMissingNode() && !logoNode.isNull()) {
+                String logoUrl = logoNode.asText();
+                if (!logoUrl.isEmpty()) {
+                    boolean isValid = Arrays.stream(whitelistUrls)
+                            .anyMatch(logoUrl::startsWith);
 
-            if (logoUrl != null && !logoUrl.isEmpty()) {
-                boolean isValid = false;
-                for (String whitelistUrl : whitelistUrls) {
-                    if (logoUrl.startsWith(whitelistUrl)) {
-                        isValid = true;
-                        break;
+                    if (!isValid) {
+                        throw new AppException(AppError.INSTITUTION_DATA_UPLOAD_BAD_REQUEST, "error logo url");
                     }
                 }
-                if (!isValid) { throw new AppException(AppError.INSTITUTION_DATA_UPLOAD_BAD_REQUEST, "error logo url"); }
             }
+
 
 
             institutionClient.updateInstitutions(institutionsData, logo);
