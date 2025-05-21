@@ -7,12 +7,17 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.notices.InstitutionUploadData;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Slf4j
 public class InstitutionsService {
+
+    @Value("${whitelist}")
+    private String whitelistRow;
+
 
     private final InstitutionsClient institutionClient;
 
