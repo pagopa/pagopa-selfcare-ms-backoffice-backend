@@ -1,6 +1,7 @@
 
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.InstitutionsClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
@@ -30,6 +31,8 @@ public class InstitutionsService {
     public void uploadInstitutionsData(String institutionsData, MultipartFile logo) {
         try {
             String[] whitelistUrls = Arrays.stream(whitelistRow.split(",")).map(String::trim).toArray(String[]::new);
+
+            String logoUrl = new ObjectMapper().readTree(institutionsData).path("logo").asText();
 
 
             institutionClient.updateInstitutions(institutionsData, logo);
