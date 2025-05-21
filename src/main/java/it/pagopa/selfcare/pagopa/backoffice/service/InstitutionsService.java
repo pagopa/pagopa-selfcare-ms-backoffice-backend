@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+
 @Service
 @Slf4j
 public class InstitutionsService {
@@ -27,6 +29,8 @@ public class InstitutionsService {
 
     public void uploadInstitutionsData(String institutionsData, MultipartFile logo) {
         try {
+            String[] whitelistUrls = Arrays.stream(whitelistRow.split(",")).map(String::trim).toArray(String[]::new);
+
 
             institutionClient.updateInstitutions(institutionsData, logo);
         } catch (AppException e) {
