@@ -22,6 +22,7 @@ public class InstitutionsService {
 
     public void uploadInstitutionsData(String institutionsData, MultipartFile logo) {
         try {
+
             institutionClient.updateInstitutions(institutionsData, logo);
         } catch (AppException e) {
             throw e;
