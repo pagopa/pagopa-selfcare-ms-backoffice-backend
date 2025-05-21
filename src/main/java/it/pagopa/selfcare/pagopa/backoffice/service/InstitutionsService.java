@@ -34,6 +34,17 @@ public class InstitutionsService {
 
             String logoUrl = new ObjectMapper().readTree(institutionsData).path("logo").asText();
 
+            if (logoUrl != null && !logoUrl.isEmpty()) {
+                boolean isValid = false;
+                for (String whitelistUrl : whitelistUrls) {
+                    if (logoUrl.startsWith(whitelistUrl)) {
+                        isValid = true;
+                        break;
+                    }
+                }
+                if (!isValid) { throw new AppException(AppError.INSTITUTION_DATA_UPLOAD_BAD_REQUEST, "error logo url"); }
+            }
+
 
             institutionClient.updateInstitutions(institutionsData, logo);
         } catch (AppException e) {
