@@ -55,7 +55,7 @@ public class PaymentsReceiptsController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    @JwtSecurity(paramName = "organizationTaxCode")
+    @JwtSecurity(paramName = "organizationTaxCode", checkAdminRole = true)
     public PaymentsResult<ReceiptModelResponse> getPaymentsReceipts(
             @Parameter(description = "Tax code of the organization") @PathVariable("organization-tax-code") String organizationTaxCode,
             @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = false, defaultValue = "0") Integer page,
@@ -88,7 +88,7 @@ public class PaymentsReceiptsController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    @JwtSecurity(paramName = "organizationTaxCode")
+    @JwtSecurity(paramName = "organizationTaxCode", checkAdminRole = true)
     public String getPaymentReceiptDetail(
             @Parameter(description = "Tax code of the organization") @PathVariable("organization-tax-code") String organizationTaxCode,
             @Parameter(description = "Receipt's IUV") @PathVariable("iuv") String iuv
