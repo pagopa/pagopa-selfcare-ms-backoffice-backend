@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import it.pagopa.selfcare.pagopa.backoffice.client.InstitutionsClient;
+import it.pagopa.selfcare.pagopa.backoffice.config.WhitelistConfig;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.notices.InstitutionUploadData;
@@ -19,35 +20,23 @@ import java.util.Arrays;
 @Slf4j
 public class InstitutionsService {
 
-    @Value("${whitelist}")
-    private String whitelistRow;
-
-
+    private final WhitelistConfig whitelistConfig;
     private final InstitutionsClient institutionClient;
 
-    public InstitutionsService(InstitutionsClient institutionClient) {
+    public InstitutionsService(InstitutionsClient institutionClient, WhitelistConfig whitelistConfig) {
         this.institutionClient = institutionClient;
+        this.whitelistConfig = whitelistConfig;
     }
 
     public void uploadInstitutionsData(String institutionsData, MultipartFile logo) {
         try {
-            String[] whitelistUrls = Arrays.stream(whitelistRow.split(",")).map(String::trim).toArray(String[]::new);
-
             JsonNode logoNode = new ObjectMapper().readTree(institutionsData).path("logo");
             if (!logoNode.isMissingNode() && !logoNode.isNull()) {
                 String logoUrl = logoNode.asText();
-                if (!logoUrl.isEmpty()) {
-                    boolean isValid = Arrays.stream(whitelistUrls)
-                            .anyMatch(logoUrl::startsWith);
-
-                    if (!isValid) {
-                        throw new AppException(AppError.INSTITUTION_DATA_UPLOAD_BAD_REQUEST, "error logo url");
-                    }
+                if (!whitelistConfig.isAllowed(logoUrl)) {
+                    throw new AppException(AppError.INSTITUTION_DATA_UPLOAD_BAD_REQUEST, "error logo url");
                 }
             }
-
-
-
             institutionClient.updateInstitutions(institutionsData, logo);
         } catch (AppException e) {
             throw e;
