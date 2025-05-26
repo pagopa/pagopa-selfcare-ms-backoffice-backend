@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.38.8-1-CHK-4137-hyperlink-injection" #improve
+    tag: "2.38.8-2-CHK-4137-hyperlink-injection" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
