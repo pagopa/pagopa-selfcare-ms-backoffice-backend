@@ -13,6 +13,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -30,6 +33,57 @@ class InstitutionsServiceTest {
         Mockito.reset(institutionsClient);
         institutionsService = new InstitutionsService(institutionsClient);
     }
+
+    private void setWhitelistLogoUrls(String whitelist) throws Exception {
+        Field field = InstitutionsService.class.getDeclaredField("whitelistLogoUrls");
+        field.setAccessible(true);
+        field.set(institutionsService, whitelist);
+
+        Method initMethod = InstitutionsService.class.getDeclaredMethod("init");
+        initMethod.setAccessible(true);
+        initMethod.invoke(institutionsService);
+    }
+
+    @Test
+    void uploadInstitutionsData_shouldValidateLogoUrlAgainstWhitelist() throws Exception {
+        MultipartFile multipartFile = Mockito.mock(MultipartFile.class);
+
+        // Set the whitelist with localhost host
+        setWhitelistLogoUrls("https://localhost:8080/printit-blob/v1/");
+
+        // Valid case: logoUrl with host in the whitelist
+        String jsonValid = "{\"logo\":\"https://localhost:8080/printit-blob/v1/logo.png\"}";
+        institutionsService.uploadInstitutionsData(jsonValid, multipartFile);
+        verify(institutionsClient, times(1)).updateInstitutions(any(), any());
+        reset(institutionsClient);
+
+        // Invalid case: host not present in the whitelist
+        String jsonInvalid = "{\"logo\":\"https://malicious.com/logo.png\"}";
+        AppException ex = assertThrows(AppException.class, () -> {
+            institutionsService.uploadInstitutionsData(jsonInvalid, multipartFile);
+        });
+        assertEquals(AppError.INSTITUTION_DATA_UPLOAD_LOGO_NOT_ALLOWED_BAD_REQUEST.getTitle(), ex.getTitle());
+
+        // Case with logoUrl without host (file path)
+        String jsonNoHost = "{\"logo\":\"file:///etc/passwd\"}";
+        ex = assertThrows(AppException.class, () -> {
+            institutionsService.uploadInstitutionsData(jsonNoHost, multipartFile);
+        });
+        assertEquals(AppError.INSTITUTION_DATA_UPLOAD_LOGO_NOT_ALLOWED_BAD_REQUEST.getTitle(), ex.getTitle());
+
+        // Malformed logoUrl case
+        String jsonMalformed = "{\"logo\":\"ht!tp://bad-url\"}";
+        ex = assertThrows(AppException.class, () -> {
+            institutionsService.uploadInstitutionsData(jsonMalformed, multipartFile);
+        });
+        assertEquals(AppError.INSTITUTION_DATA_UPLOAD_LOGO_NOT_ALLOWED_BAD_REQUEST.getTitle(), ex.getTitle());
+
+        // Case without logo (null or missing) - should pass without exceptions
+        String jsonNoLogo = "{}";
+        institutionsService.uploadInstitutionsData(jsonNoLogo, multipartFile);
+        verify(institutionsClient, times(1)).updateInstitutions(any(), any());
+    }
+
 
     @Test
     void shouldReturnMappedTemplatesDataOnSuccess() {
