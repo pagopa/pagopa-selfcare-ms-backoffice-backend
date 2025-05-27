@@ -19,6 +19,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @Service
 @Slf4j
@@ -33,6 +34,8 @@ public class InstitutionsService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private static final Pattern COMMA_PATTERN = Pattern.compile("\\s*,\\s*");
+
     public InstitutionsService(InstitutionsClient institutionClient) {
         this.institutionClient = institutionClient;
     }
@@ -41,9 +44,9 @@ public class InstitutionsService {
     public void init() {
         if (whitelistLogoUrls != null && !whitelistLogoUrls.isEmpty()) {
             allowedLogoHosts = new HashSet<>();
-            Arrays.stream(whitelistLogoUrls.split("\\s*,\\s*"))
-                    .map(this::extractHost)
-                    .filter(host -> host != null)
+            Arrays.stream(COMMA_PATTERN.split(whitelistLogoUrls))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
                     .forEach(allowedLogoHosts::add);
         } else {
             allowedLogoHosts = new HashSet<>();
