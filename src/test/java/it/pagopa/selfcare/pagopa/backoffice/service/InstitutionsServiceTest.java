@@ -49,7 +49,7 @@ class InstitutionsServiceTest {
         MultipartFile multipartFile = Mockito.mock(MultipartFile.class);
 
         // Set the whitelist with localhost host
-        setWhitelistLogoUrls("https://localhost:8080/printit-blob/v1/");
+        setWhitelistLogoUrls("localhost");
 
         // Valid case: logoUrl with host in the whitelist
         String jsonValid = "{\"logo\":\"https://localhost:8080/printit-blob/v1/logo.png\"}";
