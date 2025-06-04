@@ -58,7 +58,6 @@ public class InstitutionController {
     @JwtSecurity(
             paramName = "institutionId",
             checkParamAsUserId = true,
-            hasFallbackParam = true,
             fallbackParamName = "brokerId")
     public @Valid DelegationResource getBrokerDelegation(
             @Parameter(description = "Institution's unique internal identifier") @RequestParam(required = false, value = "institution-id") String institutionId,

@@ -82,7 +82,7 @@ public class JwtAspect {
     private String getParamValue(JoinPoint joinPoint, JwtSecurity jwtSecurity) {
         var paramValue = extractParamValue(joinPoint, jwtSecurity.paramName(), jwtSecurity.checkParamInsideBody());
 
-        if (paramValue == null && jwtSecurity.hasFallbackParam() && jwtSecurity.fallbackParamName() != null) {
+        if (paramValue == null && !jwtSecurity.fallbackParamName().isEmpty()) {
             paramValue = extractParamValue(joinPoint, jwtSecurity.fallbackParamName(), jwtSecurity.checkParamInsideBody());
         }
         return paramValue;
