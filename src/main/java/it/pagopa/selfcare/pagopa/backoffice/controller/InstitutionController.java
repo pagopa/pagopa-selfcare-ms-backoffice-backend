@@ -55,7 +55,11 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve all active delegations for given institution broker and logged user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    @JwtSecurity(paramName = "institutionId", checkParamAsUserId = true, skipCheckIfParamIsNull = true)
+    @JwtSecurity(
+            paramName = "institutionId",
+            checkParamAsUserId = true,
+            hasFallbackParam = true,
+            fallbackParamName = "brokerId")
     public @Valid DelegationResource getBrokerDelegation(
             @Parameter(description = "Institution's unique internal identifier") @RequestParam(required = false, value = "institution-id") String institutionId,
             @Parameter(description = "Broker's unique id") @RequestParam(required = false, value = "brokerId") String brokerId,

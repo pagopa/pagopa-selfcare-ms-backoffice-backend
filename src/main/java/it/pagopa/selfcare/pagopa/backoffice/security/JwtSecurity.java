@@ -15,4 +15,6 @@ public @interface JwtSecurity {
   boolean checkParamInsideBody() default false;
   boolean checkParamAsUserId() default false;
   boolean checkAdminRole() default false;
+  boolean hasFallbackParam() default false;
+  String fallbackParamName() default "";
 }
