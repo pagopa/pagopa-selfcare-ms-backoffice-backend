@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.38.1" #improve
+    tag: "2.38.10" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -28,9 +28,6 @@ microservice-chart:
       - interval: 10s #jmx-exporter
         targetPort: 12345
         path: /metrics
-  ports:
-    - 80 #http
-    - 12345 #jmx-exporter
   service:
     create: true
     type: ClusterIP
@@ -44,7 +41,7 @@ microservice-chart:
   serviceAccount:
     create: false
     annotations: {}
-    name: ""
+    name: "selfcare-workload-identity"
   podAnnotations: {}
   podSecurityContext:
     seccompProfile:
@@ -160,19 +157,13 @@ microservice-chart:
   canaryDelivery:
     create: false
     ingress:
-      create: true
-      canary:
-        type: header
-        headerName: X-Canary
-        headerValue: canary
-        weightPercent: 0
-    service:
-      create: true
-    deployment:
-      create: true
-      image:
-        repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-        tag: 2.14.1-1-hotfix-timout-feign
-        pullPolicy: Always
-      envConfig: {}
-      envSecret: {}
+      headerName: X-Canary
+      headerValue: canary
+      weightPercent: 0
+    image:
+      repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
+      tag: 2.14.1-1-hotfix-timout-feign
+    envConfig: {}
+    envSecret: {}
+  azure:
+    workloadIdentityClientId: <workload-identity-client-id-set-automatically-by-gha>

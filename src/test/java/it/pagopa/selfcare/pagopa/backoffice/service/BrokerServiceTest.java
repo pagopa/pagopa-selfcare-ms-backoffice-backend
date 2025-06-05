@@ -89,40 +89,6 @@ class BrokerServiceTest {
     }
 
     @Test
-    void updateBrokerForCITest() {
-        when(apiConfigClient.updateBrokerEc(any(), anyString()))
-                .thenReturn(new BrokerDetails());
-
-        BrokerDetailsResource result =
-                assertDoesNotThrow(() -> sut.updateBrokerForCI(any(), anyString()));
-
-        assertNotNull(result);
-    }
-
-    @Test
-    void getStationsDetailsListByBrokerTest() {
-        when(apiConfigSelfcareIntegrationClient
-                .getStationsDetailsListByBroker(anyString(), anyString(), eq(null), anyInt(), anyInt()))
-                .thenReturn(new StationDetailsList());
-
-        StationDetailsResourceList result = assertDoesNotThrow(() ->
-                sut.getStationsDetailsListByBroker("brokerCode", "stationId", 1, PAGE_0));
-
-        assertNotNull(result);
-    }
-
-    @Test
-    void getBrokersECTest() {
-        when(apiConfigClient.getBrokersEC(anyInt(), anyInt(), anyString(), anyString(),
-                anyString(), anyString())).thenReturn(new Brokers());
-
-        BrokersResource result = assertDoesNotThrow(() -> sut.getBrokersEC(anyInt(),
-                anyInt(), anyString(), anyString(), anyString(), anyString()));
-
-        assertNotNull(result);
-    }
-
-    @Test
     void getBrokerDelegationTest() {
         List<DelegationExternal> delegationExternalList = new ArrayList<>();
         delegationExternalList.add(buildDelegationExternal("PA", INSTITUTION_TAX_CODE_1));

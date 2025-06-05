@@ -16,6 +16,8 @@ public class SelfCareUser implements AuthenticatedPrincipal {
 
     private String orgVat;
     private String orgId;
+    private String orgPartyRole;
+    private String orgRole;
 
     public SelfCareUser(String id) {
         this.id = id;
@@ -38,6 +40,8 @@ public class SelfCareUser implements AuthenticatedPrincipal {
         private String surname;
         private String orgVat;
         private String orgId;
+        private String orgPartyRole;
+        private String orgRole;
 
         private SelfCareUserBuilder(String id) {
             this.id = id;
@@ -68,6 +72,16 @@ public class SelfCareUser implements AuthenticatedPrincipal {
             return this;
         }
 
+        public SelfCareUserBuilder orgPartyRole(String orgPartyRole) {
+            this.orgPartyRole = orgPartyRole;
+            return this;
+        }
+
+        public SelfCareUserBuilder orgRole(String orgRole) {
+            this.orgRole = orgRole;
+            return this;
+        }
+
         public SelfCareUser build() {
             SelfCareUser user = new SelfCareUser(id);
             user.email = email;
@@ -75,6 +89,8 @@ public class SelfCareUser implements AuthenticatedPrincipal {
             user.surname = surname;
             user.orgVat = orgVat;
             user.orgId = orgId;
+            user.orgPartyRole = orgPartyRole;
+            user.orgRole = orgRole;
             return user;
         }
 

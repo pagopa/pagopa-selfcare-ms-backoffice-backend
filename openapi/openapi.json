@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.38.1"
+    "version": "2.38.10"
   },
   "servers": [
     {
@@ -29,97 +29,6 @@
   ],
   "paths": {
     "/brokers": {
-      "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId": "getBrokersEC",
-        "parameters": [
-          {
-            "description": "Number of elements on one page",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 50
-            }
-          },
-          {
-            "description": "Page number. Page value starts from 0",
-            "in": "query",
-            "name": "page",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "in": "query",
-            "name": "code",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "name",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "order by name or code, default = CODE",
-            "in": "query",
-            "name": "orderby",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "default": "CODE"
-            }
-          },
-          {
-            "in": "query",
-            "name": "ordering",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "default": "DESC"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BrokersResource"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Get paginated list of creditor brokers",
-        "tags": [
-          "Creditor institution's Brokers"
-        ]
-      },
       "parameters": [
         {
           "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
@@ -297,61 +206,7 @@
             "type": "string"
           }
         }
-      ],
-      "put": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Write | N\n",
-        "operationId": "updateBroker",
-        "parameters": [
-          {
-            "description": "Broker's tax code",
-            "in": "path",
-            "name": "broker-tax-code",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BrokerEcDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BrokerDetailsResource"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Update an existing EC broker",
-        "tags": [
-          "Creditor institution's Brokers"
-        ]
-      }
+      ]
     },
     "/brokers/{broker-tax-code}/creditor-institutions/export": {
       "get": {
@@ -1932,89 +1787,6 @@
           "Station Maintenance"
         ]
       }
-    },
-    "/brokers/{broker-tax-code}/stations": {
-      "get": {
-        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y | Read | N\n",
-        "operationId": "getStationsDetailsListByBroker",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "broker-tax-code",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "stationId",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 10
-            }
-          },
-          {
-            "in": "query",
-            "name": "page",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StationDetailsResourceList"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "X-Request-Id": {
-                "description": "This header identifies the call",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
-        "summary": "Get paginated list of stations given a broker code",
-        "tags": [
-          "Creditor institution's Brokers"
-        ]
-      },
-      "parameters": [
-        {
-          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
-          "in": "header",
-          "name": "X-Request-Id",
-          "schema": {
-            "type": "string"
-          }
-        }
-      ]
     },
     "/bundles/creditor-institutions": {
       "get": {
@@ -12524,37 +12296,6 @@
           }
         }
       },
-      "BrokerEcDto": {
-        "required": [
-          "brokerCode",
-          "description",
-          "enabled",
-          "extendedFaultBean"
-        ],
-        "type": "object",
-        "properties": {
-          "brokerCode": {
-            "maxLength": 30,
-            "minLength": 0,
-            "type": "string",
-            "description": "broker code"
-          },
-          "description": {
-            "maxLength": 30,
-            "minLength": 0,
-            "type": "string",
-            "description": "broker code"
-          },
-          "enabled": {
-            "type": "boolean",
-            "description": "Creditor Institution activation state on ApiConfig"
-          },
-          "extendedFaultBean": {
-            "type": "boolean",
-            "description": "xxx"
-          }
-        }
-      },
       "BrokerOrPspDetailsResource": {
         "type": "object",
         "properties": {
@@ -12657,20 +12398,6 @@
             "description": " Psp's broker",
             "items": {
               "$ref": "#/components/schemas/BrokerPspResource"
-            }
-          },
-          "page_info": {
-            "$ref": "#/components/schemas/PageInfo"
-          }
-        }
-      },
-      "BrokersResource": {
-        "type": "object",
-        "properties": {
-          "brokers": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/BrokerResource"
             }
           },
           "page_info": {
@@ -16088,24 +15815,6 @@
             "type": "integer",
             "description": "Station's version",
             "format": "int64"
-          }
-        }
-      },
-      "StationDetailsResourceList": {
-        "required": [
-          "stations"
-        ],
-        "type": "object",
-        "properties": {
-          "page_info": {
-            "$ref": "#/components/schemas/PageInfo"
-          },
-          "stations": {
-            "type": "array",
-            "description": "Object that contains List of ec stations",
-            "items": {
-              "$ref": "#/components/schemas/StationDetailResource"
-            }
           }
         }
       },

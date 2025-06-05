@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.notices.InstitutionUploadData;
+import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.service.InstitutionsService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import org.springframework.http.MediaType;
@@ -112,6 +113,7 @@ public class NoticeController {
                             schema = @Schema(implementation = ProblemJson.class)))
     })
     @GetMapping(value = "/institutions/data/{taxCode}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @JwtSecurity(paramName = "taxCode")
     public InstitutionUploadData getInstitutionData(
             @Parameter(description = "tax code of the CI to use for retrieval")
             @PathVariable(name = "taxCode") String taxCode) {

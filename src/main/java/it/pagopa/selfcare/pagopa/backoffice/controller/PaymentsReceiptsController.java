@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.paymentsreceipts.PaymentsResult;
 import it.pagopa.selfcare.pagopa.backoffice.model.paymentsreceipts.ReceiptModelResponse;
+import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.service.PaymentsReceiptsService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +55,7 @@ public class PaymentsReceiptsController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    @JwtSecurity(paramName = "organizationTaxCode", checkAdminRole = true)
     public PaymentsResult<ReceiptModelResponse> getPaymentsReceipts(
             @Parameter(description = "Tax code of the organization") @PathVariable("organization-tax-code") String organizationTaxCode,
             @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = false, defaultValue = "0") Integer page,
@@ -86,6 +88,7 @@ public class PaymentsReceiptsController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    @JwtSecurity(paramName = "organizationTaxCode", checkAdminRole = true)
     public String getPaymentReceiptDetail(
             @Parameter(description = "Tax code of the organization") @PathVariable("organization-tax-code") String organizationTaxCode,
             @Parameter(description = "Receipt's IUV") @PathVariable("iuv") String iuv

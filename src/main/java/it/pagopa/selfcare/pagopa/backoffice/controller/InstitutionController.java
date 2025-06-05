@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
+import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.service.ApiManagementService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieves all the onboarded institutions related to the logged user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "taxCode", skipCheckIfParamIsNull = true)
     public @Valid InstitutionBaseResources getInstitutions(
             @Parameter(description = "filter by the tax code of the Creditor Institution") @RequestParam(required = false, value = "tax-code") String taxCode
     ) {
@@ -53,6 +55,10 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve all active delegations for given institution broker and logged user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(
+            paramName = "institutionId",
+            checkParamAsUserId = true,
+            fallbackParamName = "brokerId")
     public @Valid DelegationResource getBrokerDelegation(
             @Parameter(description = "Institution's unique internal identifier") @RequestParam(required = false, value = "institution-id") String institutionId,
             @Parameter(description = "Broker's unique id") @RequestParam(required = false, value = "brokerId") String brokerId,
@@ -65,6 +71,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieves the full detail of an institution", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "institutionId", checkParamAsUserId = true)
     public InstitutionDetail getInstitutionFullDetail(
             @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId
     ) {
@@ -75,6 +82,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve all active products for given institution and logged user", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "institutionId", checkParamAsUserId = true)
     public @Valid ProductResource getInstitutionProducts(
             @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId
     ) {
@@ -85,6 +93,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve an institution's key pair, including primary and secondary keys", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "institutionId", checkParamAsUserId = true)
     public @Valid InstitutionApiKeysResource getInstitutionApiKeys(
             @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId
     ) {
@@ -95,6 +104,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Creates a new subscription for a given Institution and returns its primary and secondary keys", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "institutionId", checkParamAsUserId = true)
     public @Valid InstitutionApiKeysResource createInstitutionApiKeys(
             @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId,
             @Parameter(description = "Subscription's unique internal identifier") @RequestParam("subscription-code") Subscription subscriptionCode
@@ -106,6 +116,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Regenerates the subscription's primary key", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "institutionId", checkParamAsUserId = true)
     public void regeneratePrimaryKey(
             @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId,
             @Parameter(description = "Institution's subscription id") @PathVariable("subscription-id") @NotBlank String subscriptionId
@@ -117,6 +128,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Regenerates the subscription's secondary key", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "institutionId", checkParamAsUserId = true)
     public void regenerateSecondaryKey(
             @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId,
             @Parameter(description = "Institution's subscription id") @PathVariable("subscription-id") String subscriptionId

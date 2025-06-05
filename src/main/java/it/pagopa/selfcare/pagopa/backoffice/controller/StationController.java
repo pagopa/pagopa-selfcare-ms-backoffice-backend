@@ -20,6 +20,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.stations.StationTestDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.TestStationResource;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationDetailsDto;
 import it.pagopa.selfcare.pagopa.backoffice.model.stations.WrapperStationsResource;
+import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.service.StationService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,7 @@ public class StationController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
+    @JwtSecurity(paramName = "brokerCode")
     public WrapperStationsResource getStations(
             @Parameter(description = "Station's status") @RequestParam ConfigurationStatus status,
             @Parameter(description = "Station's unique identifier") @RequestParam(required = false) String stationCode,
@@ -84,6 +86,7 @@ public class StationController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "stationCode", removeParamSuffix = true)
     public StationDetailResource getStationDetails(
             @Parameter(description = "Station's code") @PathVariable("station-code") String stationCode,
             @Parameter(description = "Station's status") @RequestParam ConfigurationStatus status
@@ -95,6 +98,7 @@ public class StationController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a paginated list of Creditor Institutions associated to a station", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "stationCode", removeParamSuffix = true)
     public CreditorInstitutionsResource getCreditorInstitutionsByStationCode(
             @Parameter(description = "Station Code") @PathVariable("station-code") String stationCode,
             @Parameter(description = "Number of elements in one page") @RequestParam(required = false, defaultValue = "50") Integer limit,
@@ -115,6 +119,7 @@ public class StationController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "brokerCode", checkParamInsideBody = true)
     public StationDetailResource createStation(@RequestBody @NotNull StationDetailsDto stationDetailsDto) {
         return this.stationService.createStation(stationDetailsDto);
     }
@@ -130,6 +135,7 @@ public class StationController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "stationCode", removeParamSuffix = true)
     public StationDetailResource updateStation(
             @Parameter(description = "Station's unique identifier") @PathVariable("station-code") String stationCode,
             @RequestBody @NotNull StationDetailsDto stationDetailsDto
@@ -148,6 +154,7 @@ public class StationController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "brokerCode", checkParamInsideBody = true)
     public WrapperEntityStations createWrapperStationDetails(
             @RequestBody @Valid WrapperStationDetailsDto wrapperStationDetailsDto
     ) {
@@ -162,6 +169,7 @@ public class StationController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Generate a station code given the creditor institution's code", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "ecCode")
     public StationCodeResource getStationCode(
             @Parameter(description = "Creditor institution code") @RequestParam(value = "ec-code") String ecCode
     ) {
@@ -172,6 +180,7 @@ public class StationController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Generate a station code given the creditor institution's code", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "ecCode")
     public StationCodeResource getStationCodeV2(
             @Parameter(description = "Creditor institution code") @RequestParam(value = "ec-code") String ecCode
     ) {
@@ -189,6 +198,7 @@ public class StationController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "stationCode", removeParamSuffix = true)
     public StationDetailResource updateWrapperStationDetails(
             @Parameter(description = "Station code") @PathVariable(value = "station-code") String stationCode,
             @RequestBody @Valid StationDetailsDto stationDetailsDto
@@ -216,6 +226,7 @@ public class StationController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
+    @JwtSecurity(paramName = "ciTaxCode")
     public StationDetailResource updateWrapperStationWithOperatorReview(
             @Parameter(description = "Station code") @PathVariable(value = "station-code") String stationCode,
             @Parameter(description = "Creditor institution's tax code that own the station") @RequestParam String ciTaxCode,

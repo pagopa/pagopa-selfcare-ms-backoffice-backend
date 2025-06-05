@@ -13,4 +13,7 @@ public @interface JwtSecurity {
   boolean skipCheckIfParamIsNull() default false;
   boolean removeParamSuffix() default false;
   boolean checkParamInsideBody() default false;
+  boolean checkParamAsUserId() default false;
+  boolean checkAdminRole() default false;
+  String fallbackParamName() default "";
 }
