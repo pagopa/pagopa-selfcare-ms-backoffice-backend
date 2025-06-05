@@ -4,6 +4,7 @@ import com.azure.spring.cloud.feature.management.FeatureManager;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.SelfCareUser;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.ProductRole;
 import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
@@ -53,13 +54,7 @@ public class JwtAspect {
                 && !this.environment.equals(TEST_ENV)
                 && !Boolean.TRUE.equals(featureManager.isEnabled(OPERATOR_FLAG))) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String authParamToCheck;
-
-            if(jwtSecurity.checkParamAsUserId()){
-                authParamToCheck = Utility.extractInstitutionIdFromAuth(authentication);
-            } else {
-                authParamToCheck = Utility.extractInstitutionTaxCodeFromAuth(authentication);
-            }
+            String authParamToCheck = getAuthParamToCheck(jwtSecurity, authentication);
 
             if (paramValue != null && jwtSecurity.removeParamSuffix()) {
                 paramValue = paramValue.split("_")[0];
@@ -69,14 +64,20 @@ public class JwtAspect {
                 throw new AppException(AppError.FORBIDDEN);
             }
 
-            if (jwtSecurity.checkAdminRole()) {
-
-                if (authentication == null || !(authentication.getPrincipal() instanceof SelfCareUser user)
-                        || !adminRoles.contains(user.getOrgRole()))  {
+            if (!ProductRole.ALL.equals(jwtSecurity.allowedProductRole())) {
+                String roleFromAuth = Utility.extractUserProductRoleFromAuth(authentication);
+                if (!jwtSecurity.allowedProductRole().getValue().contains(roleFromAuth))  {
                     throw new AppException(AppError.FORBIDDEN);
                 }
             }
         }
+    }
+
+    private String getAuthParamToCheck(JwtSecurity jwtSecurity, Authentication authentication) {
+        if(jwtSecurity.checkParamAsUserId()){
+            return Utility.extractInstitutionIdFromAuth(authentication);
+        }
+        return Utility.extractInstitutionTaxCodeFromAuth(authentication);
     }
 
     private String getParamValue(JoinPoint joinPoint, JwtSecurity jwtSecurity) {

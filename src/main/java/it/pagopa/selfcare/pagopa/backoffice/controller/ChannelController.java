@@ -30,6 +30,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
+import static it.pagopa.selfcare.pagopa.backoffice.model.institutions.ProductRole.PAGOPA_OPERATOR;
+
 @Slf4j
 @RestController
 @RequestMapping(value = "/channels", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -118,7 +120,7 @@ public class ChannelController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    @JwtSecurity(paramName = "brokerPspCode", checkParamInsideBody = true)
+    @JwtSecurity(paramName = "brokerPspCode", checkParamInsideBody = true, allowedProductRole = PAGOPA_OPERATOR)
     public ChannelDetailsResource createChannel(@RequestBody @NotNull ChannelDetailsDto channelDetailsDto) {
         return this.channelService.validateChannelCreation(channelDetailsDto);
     }
@@ -134,7 +136,7 @@ public class ChannelController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.WRITE)
-    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true, allowedProductRole = PAGOPA_OPERATOR)
     public ChannelDetailsResource updateChannel(
             @Parameter(description = "Channel's unique identifier") @PathVariable("channel-code") String channelCode,
             @RequestBody @NotNull ChannelDetailsDto channelDetailsDto

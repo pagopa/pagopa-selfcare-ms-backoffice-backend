@@ -41,6 +41,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
+import static it.pagopa.selfcare.pagopa.backoffice.model.institutions.ProductRole.PAGOPA_OPERATOR;
+
 @RestController
 @RequestMapping(value = "/stations")
 @Tag(name = "Stations")
@@ -119,7 +121,7 @@ public class StationController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
-    @JwtSecurity(paramName = "brokerCode", checkParamInsideBody = true)
+    @JwtSecurity(paramName = "brokerCode", checkParamInsideBody = true, allowedProductRole = PAGOPA_OPERATOR)
     public StationDetailResource createStation(@RequestBody @NotNull StationDetailsDto stationDetailsDto) {
         return this.stationService.createStation(stationDetailsDto);
     }
@@ -135,7 +137,7 @@ public class StationController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
-    @JwtSecurity(paramName = "stationCode", removeParamSuffix = true)
+    @JwtSecurity(paramName = "stationCode", removeParamSuffix = true, allowedProductRole = PAGOPA_OPERATOR)
     public StationDetailResource updateStation(
             @Parameter(description = "Station's unique identifier") @PathVariable("station-code") String stationCode,
             @RequestBody @NotNull StationDetailsDto stationDetailsDto
