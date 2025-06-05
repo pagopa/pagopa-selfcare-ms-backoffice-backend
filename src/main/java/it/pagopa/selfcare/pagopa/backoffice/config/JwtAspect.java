@@ -47,7 +47,7 @@ public class JwtAspect {
     @Before(
             "within(@org.springframework.web.bind.annotation.RestController *) && @annotation(jwtSecurity)")
     public void checkJwt(final JoinPoint joinPoint, final JwtSecurity jwtSecurity) {
-        var paramValue = getParamValue(joinPoint, jwtSecurity.paramName(), jwtSecurity.checkParamInsideBody());
+        var paramValue = getParamValue(joinPoint, jwtSecurity);
 
         if (!this.environment.equals(LOCAL_ENV)
                 && !this.environment.equals(TEST_ENV)
@@ -79,7 +79,16 @@ public class JwtAspect {
         }
     }
 
-    private static String getParamValue(JoinPoint joinPoint, String requestedParam, boolean checkParamInsideBody) {
+    private String getParamValue(JoinPoint joinPoint, JwtSecurity jwtSecurity) {
+        var paramValue = extractParamValue(joinPoint, jwtSecurity.paramName(), jwtSecurity.checkParamInsideBody());
+
+        if (paramValue == null && !jwtSecurity.fallbackParamName().isEmpty()) {
+            paramValue = extractParamValue(joinPoint, jwtSecurity.fallbackParamName(), jwtSecurity.checkParamInsideBody());
+        }
+        return paramValue;
+    }
+
+    private String extractParamValue(JoinPoint joinPoint, String requestedParam, boolean checkParamInsideBody) {
         // retrieve parameters
         Object[] args = joinPoint.getArgs();
         String[] paramNames = ((MethodSignature) joinPoint.getSignature()).getParameterNames();
