@@ -4,11 +4,22 @@
 
 ENV=$1
 
+set -euo pipefail
+
 if [ -z "$ENV" ]
 then
   ENV="local"
   echo "No environment specified: local is used."
 fi
+
+case "$ENV" in
+  local|dev|uat|prod)
+    ;;
+  *)
+    echo "Error: Environment must be one of: local, dev, uat, prod"
+    exit 1
+    ;;
+esac
 
 pip3 install yq
 
