@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.38.10-1-PIDM-517-fix-secure-admin-operator-api" #improve
+    tag: "2.38.10-2-PIDM-517-fix-secure-admin-operator-api" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
