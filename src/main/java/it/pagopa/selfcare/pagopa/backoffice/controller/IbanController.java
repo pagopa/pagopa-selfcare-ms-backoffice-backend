@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 
+import static it.pagopa.selfcare.pagopa.backoffice.model.institutions.ProductRole.ADMIN;
+
 @Slf4j
 @RestController
 @RequestMapping(value = "/creditor-institutions/{ci-code}/ibans", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -40,7 +42,7 @@ public class IbanController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all IBANs related to creditor institution, filtering by specific label", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    @JwtSecurity(paramName = "ciCode", checkAdminRole = true)
+    @JwtSecurity(paramName = "ciCode", allowedProductRole = ADMIN)
     public Ibans getCreditorInstitutionIbans(@Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
                                              @Parameter(description = "Label to be used as search filter for associated IBANs") @RequestParam(required = false) String labelName) {
 
@@ -55,7 +57,7 @@ public class IbanController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create an IBAN owned by creditor institution", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    @JwtSecurity(paramName = "ciCode", checkAdminRole = true)
+    @JwtSecurity(paramName = "ciCode", allowedProductRole = ADMIN)
     public Iban createCreditorInstitutionIbans(@Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
                                                @RequestBody @NotNull IbanCreate requestDto) {
 
@@ -66,7 +68,7 @@ public class IbanController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a specific IBAN owned by creditor institution", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    @JwtSecurity(paramName = "ciCode", checkAdminRole = true)
+    @JwtSecurity(paramName = "ciCode", allowedProductRole = ADMIN)
     public Iban updateCreditorInstitutionIbans(@Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
                                                @Parameter(description = "IBAN identification value") @PathVariable("iban-value") String ibanValue,
                                                @RequestBody @NotNull IbanCreate requestDto) {
@@ -78,7 +80,7 @@ public class IbanController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Delete a specific IBAN owned by creditor institution", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    @JwtSecurity(paramName = "ciCode", checkAdminRole = true)
+    @JwtSecurity(paramName = "ciCode", allowedProductRole = ADMIN)
     public void deleteCreditorInstitutionIbans(@Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
                                                @Parameter(description = "IBAN identification value") @PathVariable("iban-value") String ibanValue) {
 

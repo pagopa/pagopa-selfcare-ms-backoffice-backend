@@ -20,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import static it.pagopa.selfcare.pagopa.backoffice.model.institutions.ProductRole.ADMIN;
+
 @Slf4j
 @RestController
 @RequestMapping(value = "/payments-receipts")
@@ -55,7 +57,7 @@ public class PaymentsReceiptsController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    @JwtSecurity(paramName = "organizationTaxCode", checkAdminRole = true)
+    @JwtSecurity(paramName = "organizationTaxCode", allowedProductRole = ADMIN)
     public PaymentsResult<ReceiptModelResponse> getPaymentsReceipts(
             @Parameter(description = "Tax code of the organization") @PathVariable("organization-tax-code") String organizationTaxCode,
             @Parameter(description = "Page number. Page value starts from 0") @RequestParam(required = false, defaultValue = "0") Integer page,
@@ -88,7 +90,7 @@ public class PaymentsReceiptsController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    @JwtSecurity(paramName = "organizationTaxCode", checkAdminRole = true)
+    @JwtSecurity(paramName = "organizationTaxCode", allowedProductRole = ADMIN)
     public String getPaymentReceiptDetail(
             @Parameter(description = "Tax code of the organization") @PathVariable("organization-tax-code") String organizationTaxCode,
             @Parameter(description = "Receipt's IUV") @PathVariable("iuv") String iuv

@@ -38,6 +38,14 @@ public class Utility {
         return institutionTaxCode;
     }
 
+    public static String extractUserProductRoleFromAuth(Authentication authentication) {
+        String userProductRole = "";
+        if(authentication != null && authentication.getPrincipal() instanceof SelfCareUser user) {
+            userProductRole = user.getOrgRole();
+        }
+        return userProductRole;
+    }
+
     /**
      * @param value value to deNullify.
      * @return return empty string if value is null
