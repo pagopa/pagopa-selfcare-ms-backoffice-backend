@@ -228,7 +228,7 @@ public class StationController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
-    @JwtSecurity(paramName = "ciTaxCode")
+    @JwtSecurity(paramName = "ciTaxCode", allowedProductRole = PAGOPA_OPERATOR)
     public StationDetailResource updateWrapperStationWithOperatorReview(
             @Parameter(description = "Station code") @PathVariable(value = "station-code") String stationCode,
             @Parameter(description = "Creditor institution's tax code that own the station") @RequestParam String ciTaxCode,

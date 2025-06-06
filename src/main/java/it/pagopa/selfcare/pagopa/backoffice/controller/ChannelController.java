@@ -243,7 +243,7 @@ public class ChannelController {
             @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
     })
     @OpenApiTableMetadata
-    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true)
+    @JwtSecurity(paramName = "channelCode", removeParamSuffix = true, allowedProductRole = PAGOPA_OPERATOR)
     public ChannelDetailsResource updateWrapperChannelWithOperatorReview(
             @Parameter(description = "Channel's code") @PathVariable("channel-code") String channelCode,
             @Parameter(description = "Broker Code related to the channel") @RequestParam String brokerPspCode,
