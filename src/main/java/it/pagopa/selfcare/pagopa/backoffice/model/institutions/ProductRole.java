@@ -3,6 +3,9 @@ package it.pagopa.selfcare.pagopa.backoffice.model.institutions;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Enum that define the product role that BackOffice handle for authorization
+ */
 public enum ProductRole {
 
     ADMIN(List.of("admin", "admin-psp")),
