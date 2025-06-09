@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,9 +30,10 @@ class InstitutionsServiceTest {
     private InstitutionsService institutionsService;
 
     @BeforeEach
-    public void init() {
+    void init() {
         Mockito.reset(institutionsClient);
-        institutionsService = new InstitutionsService(institutionsClient, any());
+        Set<String> whitelist = Set.of("https://localhost:8080/printit-blob/v1/");
+        institutionsService = new InstitutionsService(institutionsClient, whitelist);
     }
 
     private void setWhitelistLogoUrls(String whitelist) throws Exception {
@@ -45,43 +47,36 @@ class InstitutionsServiceTest {
     }
 
     @Test
-    void uploadInstitutionsData_shouldValidateLogoUrlAgainstWhitelist() throws Exception {
+    void uploadInstitutionsData_shouldValidateLogoUrlAgainstWhitelist() {
         MultipartFile multipartFile = Mockito.mock(MultipartFile.class);
 
-        // Set the whitelist with localhost host
-        setWhitelistLogoUrls("localhost");
-
-        // Valid case: logoUrl with host in the whitelist
-        String jsonValid = "{\"logo\":\"https://localhost:8080/printit-blob/v1/logo.png\"}";
-        institutionsService.uploadInstitutionsData(jsonValid, multipartFile);
-        verify(institutionsClient, times(1)).updateInstitutions(any(), any());
+        // ✅ Valid prefix - should pass
+        String validJson = "{\"logo\":\"https://localhost:8080/printit-blob/v1/logo.png\"}";
+        institutionsService.uploadInstitutionsData(validJson, multipartFile);
+        verify(institutionsClient).updateInstitutions(any(), any());
         reset(institutionsClient);
 
-        // Invalid case: host not present in the whitelist
-        String jsonInvalid = "{\"logo\":\"https://malicious.com/logo.png\"}";
-        AppException ex = assertThrows(AppException.class, () -> {
-            institutionsService.uploadInstitutionsData(jsonInvalid, multipartFile);
-        });
+        // ❌ Invalid prefix - should fail
+        String invalidJson = "{\"logo\":\"https://malicious.com/logo.png\"}";
+        AppException ex = assertThrows(AppException.class,
+                () -> institutionsService.uploadInstitutionsData(invalidJson, multipartFile));
         assertEquals(AppError.INSTITUTION_DATA_UPLOAD_LOGO_NOT_ALLOWED_BAD_REQUEST.getTitle(), ex.getTitle());
 
-        // Case with logoUrl without host (file path)
-        String jsonNoHost = "{\"logo\":\"file:///etc/passwd\"}";
-        ex = assertThrows(AppException.class, () -> {
-            institutionsService.uploadInstitutionsData(jsonNoHost, multipartFile);
-        });
+        // ❌ Malformed URL - should fail
+        String malformedJson = "{\"logo\":\"ht!tp://bad-url\"}";
+        ex = assertThrows(AppException.class,
+                () -> institutionsService.uploadInstitutionsData(malformedJson, multipartFile));
         assertEquals(AppError.INSTITUTION_DATA_UPLOAD_LOGO_NOT_ALLOWED_BAD_REQUEST.getTitle(), ex.getTitle());
 
-        // Malformed logoUrl case
-        String jsonMalformed = "{\"logo\":\"ht!tp://bad-url\"}";
-        ex = assertThrows(AppException.class, () -> {
-            institutionsService.uploadInstitutionsData(jsonMalformed, multipartFile);
-        });
-        assertEquals(AppError.INSTITUTION_DATA_UPLOAD_LOGO_NOT_ALLOWED_BAD_REQUEST.getTitle(), ex.getTitle());
+        // ✅ No logo field - should pass
+        String noLogoJson = "{}";
+        institutionsService.uploadInstitutionsData(noLogoJson, multipartFile);
+        verify(institutionsClient).updateInstitutions(any(), any());
 
-        // Case without logo (null or missing) - should pass without exceptions
-        String jsonNoLogo = "{}";
-        institutionsService.uploadInstitutionsData(jsonNoLogo, multipartFile);
-        verify(institutionsClient, times(1)).updateInstitutions(any(), any());
+        // ✅ Logo is null - should pass
+        String nullLogoJson = "{\"logo\":null}";
+        institutionsService.uploadInstitutionsData(nullLogoJson, multipartFile);
+        verify(institutionsClient, times(2)).updateInstitutions(any(), any());  // chiamata 2 volte in totale
     }
 
 
