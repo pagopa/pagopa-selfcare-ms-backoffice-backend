@@ -31,7 +31,7 @@ class InstitutionsServiceTest {
     @BeforeEach
     public void init() {
         Mockito.reset(institutionsClient);
-        institutionsService = new InstitutionsService(institutionsClient);
+        institutionsService = new InstitutionsService(institutionsClient, any());
     }
 
     private void setWhitelistLogoUrls(String whitelist) throws Exception {
