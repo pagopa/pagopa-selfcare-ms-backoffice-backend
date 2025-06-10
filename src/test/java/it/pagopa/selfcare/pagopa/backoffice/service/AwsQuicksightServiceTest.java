@@ -4,25 +4,29 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.PAGOPA_BACKOFF
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.QUICKSIGHT_DASHBOARD_PRODUCT_ID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import static org.mockito.Mockito.*;
 import com.azure.spring.cloud.feature.management.FeatureManager;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsQuicksightClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Onboarding;
 import it.pagopa.selfcare.pagopa.backoffice.model.quicksightdashboard.QuicksightEmbedUrlResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserProductStatus;
+import java.util.Collections;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @SpringBootTest(classes = AwsQuicksightService.class)
 class AwsQuicksightServiceTest {
@@ -39,6 +43,112 @@ class AwsQuicksightServiceTest {
 
     @Autowired
     private AwsQuicksightService sut;
+
+    @BeforeEach
+    void setup() {
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        Authentication auth = mock(Authentication.class);
+        when(auth.getPrincipal()).thenReturn("user");
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
+    }
+
+
+    @Test
+    void shouldThrowNotFoundWhenInstitutionIsNull() {
+        String userId = "user123";
+        String institutionId = "inst123";
+
+        // Mock SecurityContext e Authentication
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(userId);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        Institution institution = new Institution();
+        institution.setDescription("Test Description");
+        institution.setOnboarding(Collections.emptyList());
+
+        when(externalApiClient.getInstitution(anyString())).thenReturn(null);
+
+        AppException exception = assertThrows(AppException.class, () -> {
+            sut.generateEmbedUrlForAnonymousUser(institutionId);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+        assertEquals("Institution Not Found", exception.getTitle());
+        assertTrue(exception.getMessage().contains("Required institution data has not been found on the storage"));
+    }
+
+    @Test
+    void shouldThrowForbiddenWhenInstitutionIsNotPsp() {
+        String userId = "user123";
+        String institutionId = "inst123";
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(userId);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        Institution institution = new Institution();
+        institution.setTaxCode("TAX123");
+        institution.setInstitutionType("NOT_PSP_TYPE");
+
+        when(externalApiClient.getInstitution(any())).thenReturn(institution);
+
+        try (MockedStatic<RoleType> roleMock = mockStatic(RoleType.class)) {
+            roleMock.when(() ->
+                    RoleType.fromSelfcareRole("TAX123", "NOT_PSP_TYPE")
+            ).thenReturn(RoleType.PT);
+
+            AppException exception = assertThrows(AppException.class, () -> {
+                sut.generateEmbedUrlForAnonymousUser(institutionId);
+            });
+
+            assertEquals(HttpStatus.FORBIDDEN, exception.getHttpStatus());
+            assertEquals("Forbidden", exception.getTitle());
+        }
+    }
+
+    @Test
+    void shouldReturnEmbedUrlWhenInstitutionIsPspAndFeatureFlagsAllowIt() {
+        String userId = "user123";
+        String institutionId = "inst123";
+        String institutionDescription = "Test PSP";
+        String expectedEmbedUrl = "https://quicksight.aws.amazon.com/embedUrl";
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(userId);
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(featureManager.isEnabled("isOperator")).thenReturn(false);
+        when(featureManager.isEnabled("quicksight-product-free-trial")).thenReturn(true); // bypassa check abbonamento
+
+        Institution institution = new Institution();
+        institution.setTaxCode("PSP-TAX");
+        institution.setInstitutionType("PSP-TYPE");
+        institution.setDescription(institutionDescription);
+
+        when(externalApiClient.getInstitution(any())).thenReturn(institution);
+
+        when(awsQuicksightClient.generateEmbedUrlForAnonymousUser(anyString(), anyString()))
+                .thenReturn("https://quicksight.aws.amazon.com/embedUrl");
+
+        try (MockedStatic<RoleType> roleMock = mockStatic(RoleType.class)) {
+            roleMock.when(() ->
+                    RoleType.fromSelfcareRole("PSP-TAX", "PSP-TYPE")
+            ).thenReturn(RoleType.PSP);
+
+            QuicksightEmbedUrlResponse result = sut.generateEmbedUrlForAnonymousUser(institutionId);
+            assertNotNull(result);
+            assertEquals(expectedEmbedUrl, result.getEmbedUrl());
+        }
+    }
 
     @Test
     void generateEmbedUrlForAnonymousUser_Success() {
