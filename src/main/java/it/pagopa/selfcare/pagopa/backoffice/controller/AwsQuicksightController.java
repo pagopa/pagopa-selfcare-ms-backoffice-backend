@@ -43,7 +43,6 @@ public class AwsQuicksightController {
     })
     @Operation(summary = "Get aws quicksight dashboard's embed url", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata(readWriteIntense = OpenApiTableMetadata.ReadWrite.READ)
-    @JwtSecurity(paramName = "institutionId", checkParamAsUserId = true)
     public QuicksightEmbedUrlResponse getEmbedUrlForAnonymousUser(
             @Parameter(description = "Institution's id for dashboard retrieval (Only for operator PagoPA)") @RequestParam(required = false) String institutionId
     ) {
