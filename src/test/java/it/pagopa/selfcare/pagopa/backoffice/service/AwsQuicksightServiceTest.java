@@ -163,6 +163,7 @@ class AwsQuicksightServiceTest {
 
         assertNotNull(response);
         assertEquals(EMBED_URL, response.getEmbedUrl());
+
     }
 
     @Test
@@ -262,6 +263,7 @@ class AwsQuicksightServiceTest {
     Institution institutionWithActiveDashboardProduct() {
         return Institution.builder()
                 .description("pspName")
+                .institutionType(RoleType.PSP.name())
                 .onboarding(
                         List.of(Onboarding.builder()
                                 .productId(QUICKSIGHT_DASHBOARD_PRODUCT_ID)
@@ -273,6 +275,7 @@ class AwsQuicksightServiceTest {
     Institution institutionWithInactiveDashboardProduct() {
         return Institution.builder()
                 .description("pspName")
+                .institutionType(RoleType.PSP.name())
                 .onboarding(
                         List.of(Onboarding.builder()
                                 .productId(QUICKSIGHT_DASHBOARD_PRODUCT_ID)
@@ -284,6 +287,7 @@ class AwsQuicksightServiceTest {
     Institution institutionWithoutDashboardProduct() {
         return Institution.builder()
                 .description("pspName")
+                .institutionType(RoleType.PSP.name())
                 .onboarding(
                         List.of(Onboarding.builder()
                                 .productId(PAGOPA_BACKOFFICE_PRODUCT_ID)
