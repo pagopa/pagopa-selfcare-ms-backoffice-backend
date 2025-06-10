@@ -50,6 +50,7 @@ class InstitutionsServiceTest {
     void uploadInstitutionsData_shouldValidateLogoUrlAgainstWhitelist() {
         MultipartFile multipartFile = Mockito.mock(MultipartFile.class);
 
+
         // ✅ Valid prefix - should pass
         String validJson = "{\"logo\":\"https://localhost:8080/printit-blob/v1/logo.png\"}";
         institutionsService.uploadInstitutionsData(validJson, multipartFile);
