@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.AwsQuicksightClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.model.quicksightdashboard.QuicksightEmbedUrlResponse;
 import it.pagopa.selfcare.pagopa.backoffice.model.users.client.UserProductStatus;
@@ -16,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import static it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType.fromSelfcareRole;
 import static it.pagopa.selfcare.pagopa.backoffice.util.Constants.QUICKSIGHT_DASHBOARD_PRODUCT_ID;
 import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.sanitizeLogParam;
 
@@ -54,6 +56,17 @@ public class AwsQuicksightService {
         QuicksightEmbedUrlResponse quicksightEmbedUrlResponse = new QuicksightEmbedUrlResponse();
 
         Institution institution = this.externalApiClient.getInstitution(institutionId);
+
+        if(institution == null)
+        {
+            throw new AppException(AppError.INSTITUTION_NOT_FOUND);
+        }
+
+        RoleType institutionRoleType = fromSelfcareRole(institution.getTaxCode(), institution.getInstitutionType());
+        if (!institutionRoleType.equals(RoleType.PSP)) {
+            throw new AppException(AppError.FORBIDDEN);
+        }
+
         if (Boolean.FALSE.equals(this.featureManager.isEnabled("quicksight-product-free-trial")) &&
                 !isOperator &&
                 isNotSubscribedToDashboardProduct(institution)
@@ -70,6 +83,7 @@ public class AwsQuicksightService {
         removeDashboardLogMetadata();
         return quicksightEmbedUrlResponse;
     }
+
 
     private String getInstitutionId(Authentication authentication, String institutionIdForOperator, boolean isOperator) {
         if (isOperator) {
