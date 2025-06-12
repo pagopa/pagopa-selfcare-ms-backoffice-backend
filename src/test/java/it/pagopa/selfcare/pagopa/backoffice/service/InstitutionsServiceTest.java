@@ -13,6 +13,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -26,10 +30,56 @@ class InstitutionsServiceTest {
     private InstitutionsService institutionsService;
 
     @BeforeEach
-    public void init() {
+    void init() {
         Mockito.reset(institutionsClient);
-        institutionsService = new InstitutionsService(institutionsClient);
+        Set<String> whitelist = Set.of("https://localhost:8080/printit-blob/v1/");
+        institutionsService = new InstitutionsService(institutionsClient, whitelist);
     }
+
+    private void setWhitelistLogoUrls(String whitelist) throws Exception {
+        Field field = InstitutionsService.class.getDeclaredField("whitelistLogoUrls");
+        field.setAccessible(true);
+        field.set(institutionsService, whitelist);
+
+        Method initMethod = InstitutionsService.class.getDeclaredMethod("init");
+        initMethod.setAccessible(true);
+        initMethod.invoke(institutionsService);
+    }
+
+    @Test
+    void uploadInstitutionsData_shouldValidateLogoUrlAgainstWhitelist() {
+        MultipartFile multipartFile = Mockito.mock(MultipartFile.class);
+
+
+        // ✅ Valid prefix - should pass
+        String validJson = "{\"logo\":\"https://localhost:8080/printit-blob/v1/logo.png\"}";
+        institutionsService.uploadInstitutionsData(validJson, multipartFile);
+        verify(institutionsClient).updateInstitutions(any(), any());
+        reset(institutionsClient);
+
+        // ❌ Invalid prefix - should fail
+        String invalidJson = "{\"logo\":\"https://malicious.com/logo.png\"}";
+        AppException ex = assertThrows(AppException.class,
+                () -> institutionsService.uploadInstitutionsData(invalidJson, multipartFile));
+        assertEquals(AppError.INSTITUTION_DATA_UPLOAD_LOGO_NOT_ALLOWED_BAD_REQUEST.getTitle(), ex.getTitle());
+
+        // ❌ Malformed URL - should fail
+        String malformedJson = "{\"logo\":\"ht!tp://bad-url\"}";
+        ex = assertThrows(AppException.class,
+                () -> institutionsService.uploadInstitutionsData(malformedJson, multipartFile));
+        assertEquals(AppError.INSTITUTION_DATA_UPLOAD_LOGO_NOT_ALLOWED_BAD_REQUEST.getTitle(), ex.getTitle());
+
+        // ✅ No logo field - should pass
+        String noLogoJson = "{}";
+        institutionsService.uploadInstitutionsData(noLogoJson, multipartFile);
+        verify(institutionsClient).updateInstitutions(any(), any());
+
+        // ✅ Logo is null - should pass
+        String nullLogoJson = "{\"logo\":null}";
+        institutionsService.uploadInstitutionsData(nullLogoJson, multipartFile);
+        verify(institutionsClient, times(2)).updateInstitutions(any(), any());  // chiamata 2 volte in totale
+    }
+
 
     @Test
     void shouldReturnMappedTemplatesDataOnSuccess() {
