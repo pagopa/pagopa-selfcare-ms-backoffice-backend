@@ -18,3 +18,5 @@ services:
         target: /tmp
       - type: tmpfs
         target: /var/temp
+    security_opt:
+      - no-new-privileges:true

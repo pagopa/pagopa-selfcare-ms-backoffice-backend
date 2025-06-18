@@ -16,6 +16,7 @@ class UtilityTest {
   private static final String USER_ID = "userId";
   private static final String INSTITUTION_TAX_CODE = "institutionTaxCode";
   private static final String INSTITUTION_ID = "institutionId";
+  private static final String ADMIN = "admin";
 
   @Mock private Authentication authenticationMock;
 
@@ -100,7 +101,38 @@ class UtilityTest {
     assertEquals("", result);
   }
 
+  @Test
+  void extractUserProductRoleFromAuthTest() {
+    SelfCareUser selfCareUser = buildSelfCareUser();
+    doReturn(selfCareUser).when(authenticationMock).getPrincipal();
+
+    String result = Utility.extractUserProductRoleFromAuth(authenticationMock);
+
+    assertNotNull(result);
+    assertEquals(ADMIN, result);
+  }
+
+  @Test
+  void extractUserProductRoleFromAuthTestAuthenticationNotExpectedType() {
+    String result = Utility.extractUserProductRoleFromAuth(authenticationMock);
+
+    assertNotNull(result);
+    assertEquals("", result);
+  }
+
+  @Test
+  void extractUserProductRoleFromAuthTestAuthenticationNull() {
+    String result = Utility.extractUserProductRoleFromAuth(null);
+
+    assertNotNull(result);
+    assertEquals("", result);
+  }
+
   private SelfCareUser buildSelfCareUser() {
-    return SelfCareUser.builder(USER_ID).orgVat(INSTITUTION_TAX_CODE).orgId(INSTITUTION_ID).build();
+    return SelfCareUser.builder(USER_ID)
+        .orgVat(INSTITUTION_TAX_CODE)
+        .orgId(INSTITUTION_ID)
+        .orgRole(ADMIN)
+        .build();
   }
 }
