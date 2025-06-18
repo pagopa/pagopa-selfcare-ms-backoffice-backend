@@ -13,3 +13,8 @@ services:
     ports:
       - "8080:8080"
     read_only: true
+    volumes:
+      - type: tmpfs
+        target: /tmp
+      - type: tmpfs
+        target: /var/temp
