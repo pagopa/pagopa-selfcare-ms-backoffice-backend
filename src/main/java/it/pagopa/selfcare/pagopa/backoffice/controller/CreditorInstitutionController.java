@@ -160,7 +160,7 @@ public class CreditorInstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Updates the relationship between the created station and the creditorInstitution", security = {@SecurityRequirement(name = "JWT")})
     @OpenApiTableMetadata
-    @JwtSecurity(paramName = "ciTaxCode")
+    @JwtSecurity(paramName = "stationCode", checkParamInsideBody = true, removeParamSuffix = true)
     public CreditorInstitutionStationEditResource updateStationAssociationToCreditorInstitution(
             @Parameter(description = "Creditor institution's tax code") @PathVariable("ci-tax-code") String ciTaxCode,
             @RequestBody @NotNull CreditorInstitutionStationDto dto
