@@ -1,6 +1,23 @@
 version: '3.8'
 
 services:
+  mongo:
+    container_name: mongo
+    image: mongo
+    env_file: mongodb/mongodb.env
+    ports:
+      - "27017:27017"
+    networks:
+      - pagopa-backoffice-net
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongosh admin --username admin --password password --quiet | grep 1
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - ./mongodb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
   app:
     container_name: 'selfcare'
     image: ${image}
@@ -14,3 +31,25 @@ services:
       - "8080:8080"
     security_opt:
       - no-new-privileges:true
+    networks:
+      - pagopa-backoffice-net
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  mongo-express:
+    container_name: mongo-express
+    image: mongo-express
+    env_file: mongodb/mongo-express.env
+    ports:
+      - "8081:8081"
+    networks:
+      - pagopa-backoffice-net
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+networks:
+  pagopa-backoffice-net:
+    name: pagopa-backoffice-net
+    driver: bridge
