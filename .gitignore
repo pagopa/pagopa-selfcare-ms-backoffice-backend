@@ -39,6 +39,7 @@ build/
 /.cache_ggshield
 
 *.env*
+!*.env.local
 **/**/.java-version
 **/.terraform/
 **/secrets
