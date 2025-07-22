@@ -1,4 +1,4 @@
-randomically generated public/private keys, used for test purpose only
+randomically generated public/private keys, used for local tests only
 
 -----BEGIN PUBLIC KEY-----
 MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHE2BHhA4svLmif+QUtgN2bYH3CK
