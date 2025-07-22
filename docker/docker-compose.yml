@@ -3,6 +3,8 @@ version: '3.8'
 services:
   mongo:
     container_name: mongo
+    deploy:
+      replicas: ${DOCKER_COMPOSE_MONGO_REPLICAS}
     image: mongo
     env_file: mongodb/mongodb.env
     ports:
@@ -39,6 +41,8 @@ services:
 
   mongo-express:
     container_name: mongo-express
+    deploy:
+      replicas: ${DOCKER_COMPOSE_MONGO_REPLICAS}
     image: mongo-express
     env_file: mongodb/mongo-express.env
     ports:

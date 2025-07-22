@@ -56,40 +56,22 @@ Start the springboot application with this command:
 
 👀 You need to put in your local environment some variables
 
+An example local environment file could be found at `./docker/.env.local`
+
+To build & startup project locally use the following command:
+
+## myLib documentation
+see documentation [here](docker/README.md)
+
 If you have access to azure dev, you can use `./infra/sops.sh` script to decrypt `./infra/env/dev/encrypted_env` to
-create a valid env file.
+create a valid env file or run 
 _You need to have sops installed._
 
-_An example:_
+Running docker with local target will generate/overwrite a local .env file cloning the `./docker/.env.local` file
 
 ```
-API_CONFIG_SERVICE_URL=https://api.dev.platform.pagopa.it
-AWS_ACCESS_KEY_ID=***
-AWS_REGION=eu-south-1
-AWS_SECRET_ACCESS_KEY=***
-AWS_SES_USER=noreply@selfcare.pagopa.it
-AZURE_CLIENT_ID=***
-AZURE_CLIENT_SECRET=****
-RESOURCE_GROUP=pagopa-d-api-rg
-SERVICE_NAME=pagopa-d-apim
-AZURE_SID=***
-SUBSCRIPTION_ID=***
-TENANT_ID=***
-ENV=local
-EXTERNAL_API_SERVICE_URL=https://api.dev.selfcare.pagopa.it
-JIRA_PASSWORD=***
-MONGODB_CONNECTION_URI=***
-PAGOPA_APIM_API_CONFIG_API_KEY_PAGOPA=***
-PAGOPA_APIM_API_CONFIG_SELFCARE_INTEGRATION_API_KEY_PAGOPA=***
-PAGOPA_APIM_SERVICE_URL=https://api.dev.platform.pagopa.it
-PAGOPA_SELFCARE_INTEGRATION_APIM_SERVICE_URL=https://api.dev.platform.pagopa.it
-PAPGOPA_APIM_GEC_API_KEY_PAGOPA=***
-PAPGOPA_APIM_GPD_API_KEY_PAGOPA=***
-PAPGOPA_APIM_TAXONOMY_API_KEY_PAGOPA=***
-SELFCARE_APIM_API_CONFIG_API_KEY_PAGOPA=***
-SELFCARE_APIM_EXTERNAL_API_KEY_PAGOPA=***
-TEST_EMAIL=***
 ```
+
 
 ### Spring Profiles
 

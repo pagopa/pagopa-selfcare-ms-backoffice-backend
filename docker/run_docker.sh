@@ -32,20 +32,24 @@ if [ "$ENV" = "local" ]; then
   image="service-local:latest"
   ENV="dev"
   cp .env.local .env
+  echo "\nDOCKER_COMPOSE_MONGO_REPLICAS=1" >> .env
 else
   repository=$(yq -r '."microservice-chart".image.repository' ../helm/values-$ENV.yaml)
-  image="${repository}:latest"
+    image="${repository}:latest"
   #generating env file from helm values
+  echo "DOCKER_COMPOSE_MONGO_REPLICAS=0" >> .env
   config=$(yq  -r '."microservice-chart".envConfig' ../helm/values-$ENV.yaml)
   IFS=$'\n'
   for line in $(echo "$config" | yq -r '. | to_entries[] | select(.key) | "\(.key)=\(.value)"'); do
       echo "$line" >> .env
   done
 
+
   keyvault=$(yq  -r '."microservice-chart".keyvault.name' ../helm/values-$ENV.yaml)
   secret=$(yq  -r '."microservice-chart".envSecret' ../helm/values-$ENV.yaml)
   for line in $(echo "$secret" | yq -r '. | to_entries[] | select(.key) | "\(.key)=\(.value)"'); do
     IFS='=' read -r -a array <<< "$line"
+    echo "Reading secret $keyvault.${array[1]}"
     response=$(az keyvault secret show --vault-name $keyvault --name "${array[1]}")
     response=$(echo "$response" | tr -d '\n')
     value=$(echo "$response" | yq -r '.value')
