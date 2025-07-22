@@ -40,6 +40,8 @@ build/
 
 *.env*
 !*.env.local
+!*mongo-express.env
+!*mongodb.env
 **/**/.java-version
 **/.terraform/
 **/secrets
