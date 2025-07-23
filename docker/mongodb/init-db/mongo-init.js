@@ -12,8 +12,6 @@ const wrappers = require('./usr/local/data/wrappers.json');
 const mongoConnection = new Mongo();
 const db = mongoConnection.getDB("pagopaBackoffice");
 
-console.log(`broker ibans: ${JSON.stringify(brokerIbans)}`);
-
 //add here collection initialization putting documents
 db.getCollection('brokerIbans').insertMany(brokerIbans);
 db.getCollection('brokerInstitutions').insertMany(brokerInstitutions);
@@ -24,3 +22,5 @@ db.getCollection('tavoloOp').insertMany(tavoloOp);
 db.getCollection('taxonomies').insertMany(taxonomies);
 db.getCollection('taxonomy_groups').insertMany(taxonomy_groups);
 db.getCollection('wrappers').insertMany(wrappers);
+
+console.log("Initialization end");
