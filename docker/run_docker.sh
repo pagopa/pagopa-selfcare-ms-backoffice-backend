@@ -30,7 +30,6 @@ fi
 
 if [ "$ENV" = "local" ]; then
   image="service-local:latest"
-  ENV="dev"
   cp .env.local .env
   printf "\nDOCKER_COMPOSE_MONGO_REPLICAS=1" >> .env
 else
