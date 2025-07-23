@@ -1,0 +1,29 @@
+[{
+  "_id": "688050302f9523315c76f572",
+  "brokerCode": "test",
+  "createdAt": {
+    "$date": "2025-01-01T00:00:00.000Z"
+  },
+  "_class": "it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionsEntity",
+  "institutions": [
+    {
+      "companyName": "test",
+      "taxCode": "test",
+      "intermediated": true,
+      "brokerCompanyName": "test",
+      "brokerTaxCode": "test",
+      "model": 3,
+      "auxDigit": "1",
+      "stationId": "testStationId",
+      "stationState": "ENABLED",
+      "version": "1",
+      "broadcast": false,
+      "pspPayment": true,
+      "endpointRT": "https://api.dev.platform.pagopa.it:443/mock-ec-ndp/service/v1/mock",
+      "endpointRedirect": "http://redirect.ip:443/PATH?",
+      "endpointMU": "https://api.dev.platform.pagopa.it:443/mock-ec-ndp/service/v1/mock",
+      "primitiveVersion": 1,
+      "ciStatus": true
+    }
+  ]
+}]

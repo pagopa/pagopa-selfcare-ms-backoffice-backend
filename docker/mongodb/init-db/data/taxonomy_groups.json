@@ -1,0 +1,25 @@
+[
+{
+  "_id": "6700e403bdd6e16c82ebe7a2",
+  "ecTypeCode": "10",
+  "ecType": "AUTORITA' AMMINISTRATIVE INDIPENDENTI",
+  "areas": [
+    {
+      "macroAreaEcProgressive": "01",
+      "macroAreaName": "MacroAreaName",
+      "macroAreaDescription": "Macro area description"
+    },
+    {
+      "macroAreaEcProgressive": "02",
+      "macroAreaName": "Macro area name 2",
+      "macroAreaDescription": "Macro area description 2"
+    }
+  ],
+  "modifiedAt": {
+    "$date": "2025-01-01T00:00:00.000Z"
+  },
+  "createdAt": {
+    "$date": "2025-01-01T00:00:00.000Z"
+  },
+  "_class": "it.pagopa.selfcare.pagopa.backoffice.entity.TaxonomyGroupEntity"
+}]

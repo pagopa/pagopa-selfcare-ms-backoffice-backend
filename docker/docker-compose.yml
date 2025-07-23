@@ -18,7 +18,8 @@ services:
       retries: 10
       start_period: 20s
     volumes:
-      - ./mongodb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./mongodb/init-db/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./mongodb/init-db/data/:/usr/local/data/:ro
 
   app:
     container_name: 'selfcare'

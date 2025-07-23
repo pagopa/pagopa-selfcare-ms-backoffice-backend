@@ -1,0 +1,97 @@
+[{
+  "_id": "77777777777_01",
+  "brokerCode": "7777777777",
+  "type": "STATION",
+  "status": "APPROVED",
+  "modifiedAt": {
+    "$date": "2025-01-01T00:00:00.000Z"
+  },
+  "modifiedBy": "5096e4c6-25a1-45d5-9bdf-2fb974a7c1c8",
+  "modifiedByOpt": "5096e4c6-25a1-45d5-9bdf-2fb974a7c1c8",
+  "createdAt": {
+    "$date": "2025-01-01T00:00:00.000Z"
+  },
+  "entities": [
+    {
+      "_id": "77777777777_01",
+      "type": "STATION",
+      "createdAt": {
+        "$date": "2025-01-01T00:00:00.000Z"
+      },
+      "modifiedAt": {
+        "$date": "2025-01-01T00:00:00.000Z"
+      },
+      "entity": {
+        "ip": "192.168.0.1",
+        "newPassword": "",
+        "password": "password1",
+        "port": {
+          "$numberLong": "8080"
+        },
+        "protocol": "HTTP",
+        "redirectIp": "someredirect.xx.yy",
+        "redirectPath": "ec",
+        "redirectPort": {
+          "$numberLong": "80"
+        },
+        "redirectQueryString": "qrstr=test",
+        "redirectProtocol": "HTTP",
+        "service": "PAPortaleRTServer",
+        "pofService": "PAPof",
+        "brokerCode": "77777777777",
+        "protocol4Mod": "HTTP",
+        "ip4Mod": "192.168.0.1",
+        "port4Mod": {
+          "$numberLong": "8088"
+        },
+        "service4Mod": "4mod",
+        "proxyEnabled": true,
+        "proxyHost": "192.168.0.1",
+        "proxyPort": {
+          "$numberLong": "80"
+        },
+        "proxyUsername": "",
+        "proxyPassword": "",
+        "threadNumber": {
+          "$numberLong": "4"
+        },
+        "timeoutA": {
+          "$numberLong": "15"
+        },
+        "timeoutB": {
+          "$numberLong": "30"
+        },
+        "timeoutC": {
+          "$numberLong": "10"
+        },
+        "flagOnline": true,
+        "rtInstantaneousDispatch": false,
+        "targetHost": "",
+        "targetPath": "",
+        "primitiveVersion": 2,
+        "targetHostPof": "",
+        "targetPathPof": "",
+        "stationCode": "77777777777_01",
+        "enabled": true,
+        "version": {
+          "$numberLong": "2"
+        },
+        "associatedCreditorInstitutions": 0,
+        "activationDate": {
+          "$date": "2025-01-01T00:00:00.000Z"
+        },
+        "createdAt": {
+          "$date": "2025-01-01T00:00:00.000Z"
+        },
+        "modifiedAt": {
+          "$date": "2025-01-01T00:00:00.000Z"
+        },
+        "_class": "it.pagopa.selfcare.pagopa.backoffice.model.connector.station.StationDetails"
+      },
+      "modifiedByOpt": "5096e4c6-25a1-45d5-9bdf-2fb974a7c1c8",
+      "note": "",
+      "status": "APPROVED"
+    }
+  ],
+  "_class": "it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities"
+}]
