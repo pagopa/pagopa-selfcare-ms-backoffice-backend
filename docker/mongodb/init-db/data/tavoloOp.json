@@ -1,0 +1,16 @@
+[{
+  "_id": "test",
+  "taxCode": "test",
+  "referent": "John Doe",
+  "name": "Creditor institution name",
+  "email": "john.doe@foo.it",
+  "telephone": "0123456789",
+  "createdAt": {
+    "$date": "2000-01-01T00:00:00.000Z"
+  },
+  "createdBy": "John Doe Jr.",
+  "modifiedAt": {
+    "$date": "2000-01-01T00:00:00.000Z"
+  },
+  "modifiedBy": "John Doe Jr."
+}]

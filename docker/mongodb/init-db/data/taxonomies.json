@@ -1,0 +1,26 @@
+[{
+  "ecTypeCode": "10",
+  "ecType": "AUTORITA' AMMINISTRATIVE INDIPENDENTI",
+  "macroAreaEcProgressive": "01",
+  "macroAreaName": "Macro area name",
+  "macroAreaDescription": "Macro area description",
+  "serviceTypeCode": "100",
+  "serviceType": "Service type",
+  "legalReasonCollection": "TS",
+  "serviceTypeDescription": "Service type description",
+  "taxonomyVersion": "41",
+  "specificBuiltInData": "9/1004100TS/",
+  "startDate": {
+    "$date": "2025-01-01T00:00:00.000Z"
+  },
+  "endDate": {
+    "$date": "2099-01-01T00:00:00.000Z"
+  },
+  "modifiedAt": {
+    "$date": "2025-01-01T00:00:00.000Z"
+  },
+  "createdAt": {
+    "$date": "2025-01-01T00:00:00.000Z"
+  },
+  "_class": "it.pagopa.selfcare.pagopa.backoffice.entity.TaxonomyEntity"
+}]

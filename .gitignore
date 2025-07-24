@@ -39,6 +39,9 @@ build/
 /.cache_ggshield
 
 *.env*
+!*.env.local
+!*mongo-express.env
+!*mongodb.env
 **/**/.java-version
 **/.terraform/
 **/secrets
