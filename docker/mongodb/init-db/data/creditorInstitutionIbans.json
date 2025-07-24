@@ -1,0 +1,14 @@
+[{
+  "createdAt": {
+    "$date": "2024-11-06T14:03:02.055Z"
+  },
+  "ciName": "test",
+  "ciFiscalCode": "test",
+  "iban": "IT00R0000000000000000000000",
+  "status": "ATTIVO",
+  "validityDate": {
+    "$date": "2018-01-01T00:00:00.000Z"
+  },
+  "label": "",
+  "_class": "it.pagopa.selfcare.pagopa.backoffice.entity.CreditorInstitutionIbansEntity"
+}]
