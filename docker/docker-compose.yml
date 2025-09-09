@@ -5,7 +5,7 @@ services:
     container_name: mongo
     deploy:
       replicas: ${DOCKER_COMPOSE_MONGO_REPLICAS}
-    image: mongo
+    image: mongo@sha256:c75092233f998275c7b2c3942bb897994adb709bc5b9b7d043cc642ec521b6c7
     env_file: mongodb/mongodb.env
     ports:
       - "27017:27017"
@@ -44,7 +44,7 @@ services:
     container_name: mongo-express
     deploy:
       replicas: ${DOCKER_COMPOSE_MONGO_REPLICAS}
-    image: mongo-express
+    image: mongo-express@sha256:1b23d7976f0210dbec74045c209e52fbb26d29b2e873d6c6fa3d3f0ae32c2a64
     env_file: mongodb/mongo-express.env
     ports:
       - "8081:8081"
