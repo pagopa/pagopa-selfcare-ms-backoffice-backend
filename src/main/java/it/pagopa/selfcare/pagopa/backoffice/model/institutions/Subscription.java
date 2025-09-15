@@ -29,7 +29,7 @@ public enum Subscription {
     BO_EXT_PSP("/apis/%s-backoffice-external-psp-api-v1", "Backoffice External (PSP)", "selfcareboexternalpsp-", PSP, "backoffice_external", false),
     PRINT_NOTICE("/products/pagopa_notices_service_external", "Stampa Avvisi", "printnotice-", CI, null, false),
     ACA("/products/aca", "ACA - Conferimento delle posizioni debitorie", "aca-", CI, "aca", true),
-    MBD("/products/pagopa_ebollo", "MBD Product pagoPA", "mbd-", CI, null, false);
+    MBD("/products/pagopa_ebollo", "MBD Product pagoPA", "mbd-", CI, "mbd", true);
 
     private final String scope;
     private final String displayName;
