@@ -9,22 +9,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
 public class ConfigurationService {
 
+    private final ApiConfigClient apiConfigClient;
+
     @Autowired
-    private ApiConfigClient apiConfigClient;
+    public ConfigurationService(ApiConfigClient apiConfigClient) {
+        this.apiConfigClient = apiConfigClient;
+    }
 
     public PaymentTypes getPaymentTypes() {
-        @Valid PaymentTypes paymentTypes = apiConfigClient.getPaymentTypes();
-        if(paymentTypes != null && paymentTypes.getPaymentTypeList() != null && !paymentTypes.getPaymentTypeList().isEmpty())
+        PaymentTypes paymentTypes = apiConfigClient.getPaymentTypes();
+        if(paymentTypes != null && paymentTypes.getPaymentTypeList() != null)
         {
             PaymentType paymentTypeAny = new PaymentType();
             paymentTypeAny.setDescription("");
             paymentTypeAny.setPaymentTypeCode("ANY");
-            paymentTypes.getPaymentTypeList().add(paymentTypeAny);
+            paymentTypes.setPaymentTypeList(Stream.concat(paymentTypes.getPaymentTypeList().stream(),
+                    Stream.of(paymentTypeAny)).toList());
         }
         return paymentTypes;
     }
