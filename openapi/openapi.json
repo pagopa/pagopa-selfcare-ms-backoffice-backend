@@ -6134,7 +6134,7 @@
           "description" : "Filter by IBAN value",
           "in" : "query",
           "name" : "ibanValue",
-          "required" : true,
+          "required" : false,
           "schema" : {
             "type" : "string"
           }
@@ -6144,7 +6144,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/IbanDeletionRequestResponse"
+                  "$ref" : "#/components/schemas/IbanDeletionRequests"
                 }
               }
             },
@@ -6200,7 +6200,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/IbanDeletionRequestResponse"
+                  "$ref" : "#/components/schemas/IbanDeletionRequest"
                 }
               }
             },
@@ -6269,63 +6269,7 @@
         "schema" : {
           "type" : "string"
         }
-      } ],
-      "patch" : {
-        "description" : "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\nUpdates the scheduled execution date for a pending IBAN deletion request.",
-        "operationId" : "updateIbanDeletionRequestSchedule",
-        "parameters" : [ {
-          "description" : "Creditor institution code",
-          "in" : "path",
-          "name" : "ci-code",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "Deletion request ID",
-          "in" : "path",
-          "name" : "id",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/IbanDeletionRequestUpdateRequest"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/IbanDeletionRequestResponse"
-                }
-              }
-            },
-            "description" : "OK",
-            "headers" : {
-              "X-Request-Id" : {
-                "description" : "This header identifies the call",
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "JWT" : [ ]
-        } ],
-        "summary" : "Update the scheduled execution date of an IBAN deletion request",
-        "tags" : [ "IbanDeletionRequest" ]
-      }
+      } ]
     },
     "/creditor-institutions/{ci-code}/ibans" : {
       "get" : {
@@ -13176,53 +13120,41 @@
         "required" : [ "ibanValue", "scheduledExecutionDate" ],
         "type" : "object",
         "properties" : {
-          "ibanValue" : {
-            "type" : "string",
-            "description" : "IBAN identification value",
-            "example" : "IT0000000000001000000123456"
-          },
-          "scheduledExecutionDate" : {
-            "type" : "string",
-            "description" : "Scheduled date for IBAN deletion execution",
-            "example" : "2025-12-31"
-          }
-        }
-      },
-      "IbanDeletionRequestResponse" : {
-        "type" : "object",
-        "properties" : {
           "ciCode" : {
             "type" : "string",
             "description" : "Creditor institution code"
           },
           "ibanValue" : {
             "type" : "string",
-            "description" : "IBAN identification value"
+            "description" : "IBAN identification value",
+            "example" : "IT0000000000001000000123456"
           },
           "id" : {
             "type" : "string",
-            "description" : "Unique identifier of the deletion task"
+            "description" : "Unique identifier of the deletion request"
           },
           "scheduledExecutionDate" : {
             "type" : "string",
             "description" : "Scheduled date for IBAN deletion execution",
-            "format" : "date"
+            "format" : "date",
+            "example" : "2025-12-31"
           },
           "status" : {
             "type" : "string",
-            "description" : "Current status of the deletion task"
+            "description" : "Current status of the deletion request"
           }
         }
       },
-      "IbanDeletionRequestUpdateRequest" : {
-        "required" : [ "scheduledExecutionDate" ],
+      "IbanDeletionRequests" : {
+        "required" : [ "requests" ],
         "type" : "object",
         "properties" : {
-          "scheduledExecutionDate" : {
-            "type" : "string",
-            "description" : "New scheduled date for IBAN deletion execution",
-            "format" : "date",
-            "example" : "2025-12-31"
+          "requests" : {
+            "type" : "array",
+            "description" : "List of IBAN deletion requests",
+            "items" : {
+              "$ref" : "#/components/schemas/IbanDeletionRequest"
+            }
           }
         }
       },
