@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.util;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -37,5 +38,12 @@ public class StringUtils {
             }
         });
         return validCodes.get(0);
+    }
+
+    public static String obfuscateKeepingLast4(String value) {
+        return Optional.ofNullable(value)
+                .filter(v -> v.length() > 4)
+                .map(v -> "****" + v.substring(v.length() - 4))
+                .orElse("****");
     }
 }
