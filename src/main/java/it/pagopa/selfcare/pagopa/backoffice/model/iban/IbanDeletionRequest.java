@@ -36,5 +36,5 @@ public class IbanDeletionRequest {
     @NotNull(message = "Scheduled execution date is required")
     @Future(message = "Scheduled execution date must be in the future")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate scheduledExecutionDate;
+    private String scheduledExecutionDate;
 }

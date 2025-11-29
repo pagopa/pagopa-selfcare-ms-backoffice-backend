@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import java.time.LocalDate;
+
 import static it.pagopa.selfcare.pagopa.backoffice.model.institutions.ProductRole.ADMIN;
 
 @Slf4j
@@ -60,7 +62,7 @@ public class IbanDeletionRequestsController {
             @Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
             @Valid @RequestBody IbanDeletionRequest request) {
 
-        return ibanDeletionRequestsService.createIbanDeletionRequest(ciCode, request.getIbanValue(), request.getScheduledExecutionDate());
+        return ibanDeletionRequestsService.createIbanDeletionRequest(ciCode, request.getIbanValue(), LocalDate.parse(request.getScheduledExecutionDate()));
     }
 
     @DeleteMapping(value = "/{id}")
