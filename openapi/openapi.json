@@ -13136,7 +13136,6 @@
           "scheduledExecutionDate" : {
             "type" : "string",
             "description" : "Scheduled date for IBAN deletion execution",
-            "format" : "date",
             "example" : "2025-12-31"
           },
           "status" : {
