@@ -4,8 +4,8 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationC
 import it.pagopa.selfcare.pagopa.backoffice.entity.IbanDeletionRequestEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Iban;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDeletionRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDeletionRequests;
+import it.pagopa.selfcare.pagopa.backoffice.model.ibanRequests.IbanDeletionRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.ibanRequests.IbanDeletionRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
 import it.pagopa.selfcare.pagopa.backoffice.repository.IbanDeletionRequestsRepository;
 import it.pagopa.selfcare.pagopa.backoffice.util.IbanDeletionRequestStatus;
@@ -44,7 +44,7 @@ class IbanDeletionRequestsServiceTest {
     @Test
     void createIbanDeletionRequest_shouldCreateSuccessfully() {
         String scheduledDate = "2030-12-12";
-        LocalDateTime expectedScheduledDate = LocalDate.parse(scheduledDate).atStartOfDay();
+        String expectedScheduledDate = LocalDate.parse(scheduledDate).atStartOfDay(ZoneOffset.UTC).toInstant().toString();
         Iban iban = Iban.builder()
                 .iban(IBAN_VALUE)
                 .active(true)
@@ -86,7 +86,7 @@ class IbanDeletionRequestsServiceTest {
         IbanDeletionRequestEntity capturedEntity = entityCaptor.getValue();
         assertNotNull(capturedEntity.getId());
         assertEquals(IBAN_VALUE, capturedEntity.getIbanValue());
-        assertEquals(expectedScheduledDate.toString(), capturedEntity.getScheduledExecutionDate());
+        assertEquals(expectedScheduledDate, capturedEntity.getScheduledExecutionDate());
         assertEquals(IbanDeletionRequestStatus.PENDING, capturedEntity.getStatus());
     }
 
@@ -139,7 +139,7 @@ class IbanDeletionRequestsServiceTest {
     void createIbanDeletionRequest_shouldSetMidnightUTC() {
 
         String scheduledDate = "2030-12-12";
-        LocalDateTime expectdScheduledDate = LocalDate.parse(scheduledDate).atStartOfDay();
+        String expectedScheduledDate = LocalDate.parse(scheduledDate).atStartOfDay(ZoneOffset.UTC).toInstant().toString();
 
         Iban iban = Iban.builder()
                 .iban(IBAN_VALUE)
@@ -170,7 +170,7 @@ class IbanDeletionRequestsServiceTest {
 
         IbanDeletionRequestEntity capturedEntity = entityCaptor.getValue();
 
-        assertEquals(expectdScheduledDate.toString(), capturedEntity.getScheduledExecutionDate());
+        assertEquals(expectedScheduledDate, capturedEntity.getScheduledExecutionDate());
     }
 
     @Test

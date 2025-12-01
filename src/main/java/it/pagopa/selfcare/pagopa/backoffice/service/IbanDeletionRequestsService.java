@@ -4,10 +4,12 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationC
 import it.pagopa.selfcare.pagopa.backoffice.entity.IbanDeletionRequestEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.*;
+import it.pagopa.selfcare.pagopa.backoffice.model.ibanRequests.IbanDeletionRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.ibanRequests.IbanDeletionRequests;
 import it.pagopa.selfcare.pagopa.backoffice.repository.IbanDeletionRequestsRepository;
 import it.pagopa.selfcare.pagopa.backoffice.util.IbanDeletionRequestStatus;
 import it.pagopa.selfcare.pagopa.backoffice.util.StringUtils;
+import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,59 +38,55 @@ public class IbanDeletionRequestsService {
 
     public IbanDeletionRequest createIbanDeletionRequest(String ciCode, String ibanValue, String scheduledExecutionDate) {
 
-
-        // scheduledExecutionDate like 2025-12-12
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        LocalDate scheduledExecutionDateAsLocalDate;
-
-        try {
-             scheduledExecutionDateAsLocalDate = LocalDate.parse(scheduledExecutionDate);
-        } catch (DateTimeParseException e) {
-            log.error("Invalid date format provided for scheduledExecutionDate: {}", scheduledExecutionDate);
-            throw new AppException(AppError.BAD_REQUEST);
-        }
-
-        if (scheduledExecutionDateAsLocalDate.isBefore(tomorrow)) {
-            log.error("Scheduled execution date {} is not a valid future date (must be at least {}) for ciCode: {}",
-                    scheduledExecutionDate, tomorrow, ciCode);
-            throw new AppException(AppError.BAD_REQUEST);
-        }
-
-        String validateScheduledExecutionDate = scheduledExecutionDateAsLocalDate.atStartOfDay().toString();
-
-        String maskedIban = StringUtils.obfuscateKeepingLast4(ibanValue);
-
-        log.info("Creating IBAN deletion request for ciCode: {}, ibanValue: {}, scheduled date: {}", ciCode, maskedIban, validateScheduledExecutionDate);
-
-        apiConfigSelfcareIntegrationClient.getCreditorInstitutionIbans(ciCode, null)
-                .getIbanList()
-                .stream()
-                .filter(iban -> iban.getIban().equals(ibanValue))
-                .findFirst()
-                .orElseThrow(() -> {
-                    log.error("IBAN {} not found for ciCode: {}", maskedIban, ciCode);
-                    return new AppException(AppError.UNAUTHORIZED);
-                });
-
-        log.debug("IBAN {} validated successfully for ciCode: {}", maskedIban, ciCode);
-
+        String maskedIbanForLogs = Utility.sanitizeLogParam(StringUtils.obfuscateKeepingLast4(ibanValue));
+        String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
+        String sanitizedScheduledExecutionDateForLogs = Utility.sanitizeLogParam(scheduledExecutionDate);
         Instant now = Instant.now();
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
 
-        return Optional.of(IbanDeletionRequestEntity.builder()
+        return Optional.of(scheduledExecutionDate)
+                .map(LocalDate::parse)
+                .filter(date -> !date.isBefore(tomorrow))
+                .or(() -> {
+                    log.error("Scheduled execution date {} is not a valid future date (must be at least {}) for ciCode: {}",
+                            sanitizedScheduledExecutionDateForLogs, tomorrow, sanitizedCiCodeForLogs);
+                    throw new AppException(AppError.BAD_REQUEST, "Invalid scheduledExecutionDate");
+                })
+                .map(validScheduledExecutionDate -> {
+                    log.info("Creating IBAN deletion request for ciCode: {}, ibanValue: {}, scheduled date: {}",
+                            sanitizedCiCodeForLogs, maskedIbanForLogs, sanitizedScheduledExecutionDateForLogs);
+
+                    apiConfigSelfcareIntegrationClient.getCreditorInstitutionIbans(ciCode, null)
+                            .getIbanList()
+                            .stream()
+                            .filter(iban -> iban.getIban().equals(ibanValue))
+                            .findFirst()
+                            .ifPresentOrElse(
+                                    iban -> log.debug("IBAN {} validated successfully for ciCode: {}", maskedIbanForLogs, sanitizedCiCodeForLogs),
+                                    () -> {
+                                        log.error("IBAN {} not found for ciCode: {}", maskedIbanForLogs, sanitizedCiCodeForLogs);
+                                        throw new AppException(AppError.BAD_GATEWAY, "Invalid Iban");
+                                    }
+                            );
+
+                    return validScheduledExecutionDate;
+                })
+                .map(validScheduledExecutionDate -> IbanDeletionRequestEntity.builder()
                         .id(UUID.randomUUID().toString())
+                        .creditorInstitutionCode(ciCode)
                         .requestedAt(now.toString())
                         .updatedAt(now.toString())
                         .ibanValue(ibanValue)
-                        .scheduledExecutionDate(validateScheduledExecutionDate)
+                        .scheduledExecutionDate(validScheduledExecutionDate.atStartOfDay(ZoneOffset.UTC).toInstant().toString())
                         .status(IbanDeletionRequestStatus.PENDING)
                         .build())
-                .map(task -> {
-                    log.debug("Saving IBAN deletion request with ID: {}", task.getId());
-                    return ibanDeletionRequestsRepository.save(task);
+                .map(entity -> {
+                    log.debug("Saving IBAN deletion request with ID: {}", entity.getId());
+                    return ibanDeletionRequestsRepository.save(entity);
                 })
                 .map(savedEntity -> {
                     log.info("IBAN deletion request created successfully with ID: {} for ciCode: {}, IBAN: {}",
-                            savedEntity.getId(), ciCode, maskedIban);
+                            savedEntity.getId(), sanitizedCiCodeForLogs, maskedIbanForLogs);
                     return IbanDeletionRequest.builder()
                             .id(savedEntity.getId())
                             .ciCode(savedEntity.getCreditorInstitutionCode())
@@ -98,18 +96,18 @@ public class IbanDeletionRequestsService {
                             .build();
                 })
                 .orElseThrow(() -> {
-                    log.error("Failed to create IBAN deletion request for ciCode: {}, IBAN: {}", ciCode, maskedIban);
-                    return new AppException(AppError.INTERNAL_SERVER_ERROR);
+                    log.error("Failed to create IBAN deletion request for ciCode: {}, IBAN: {}",
+                            sanitizedCiCodeForLogs, maskedIbanForLogs);
+                    return new AppException(AppError.INTERNAL_SERVER_ERROR, "Generic Error");
                 });
     }
 
     public IbanDeletionRequests getIbanDeletionRequests(String ciCode, String ibanValue) {
 
-        String maskedIban = Optional.ofNullable(ibanValue)
-                .map(StringUtils::obfuscateKeepingLast4)
-                .orElse("all");
+        String maskedIbanForLogs = Utility.sanitizeLogParam(StringUtils.obfuscateKeepingLast4(ibanValue));
+        String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
 
-        log.info("Retrieving IBAN deletion requests for ciCode: {}, ibanValue: {}", ciCode, maskedIban);
+        log.info("Retrieving IBAN deletion requests for ciCode: {}, ibanValue: {}", sanitizedCiCodeForLogs, maskedIbanForLogs);
 
         return Optional.ofNullable(ibanValue)
                 .filter(value -> !value.isBlank())
@@ -128,7 +126,7 @@ public class IbanDeletionRequestsService {
                 .collect(Collectors.collectingAndThen(
                         Collectors.toList(),
                         requests -> {
-                            log.info("Found {} IBAN deletion requests for ciCode: {}", requests.size(), ciCode);
+                            log.info("Found {} IBAN deletion requests for ciCode: {}, iban: {}", requests.size(), sanitizedCiCodeForLogs, maskedIbanForLogs);
                             return IbanDeletionRequests.builder()
                                     .requests(requests)
                                     .build();
@@ -138,7 +136,10 @@ public class IbanDeletionRequestsService {
 
     public void cancelIbanDeletionRequest(String ciCode, String id) {
 
-        log.info("Canceling IBAN deletion request with ID: {} for ciCode: {}", id, ciCode);
+        String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
+        String sanitizedIdForLogs = Utility.sanitizeLogParam(id);
+
+        log.info("Canceling IBAN deletion request with ID: {} for ciCode: {}", sanitizedIdForLogs,  sanitizedCiCodeForLogs);
 
         ibanDeletionRequestsRepository.findById(id)
                 .filter(request -> request.getStatus() == IbanDeletionRequestStatus.PENDING)
@@ -149,9 +150,9 @@ public class IbanDeletionRequestsService {
                 })
                 .map(ibanDeletionRequestsRepository::save)
                 .ifPresentOrElse(
-                        savedRequest -> log.info("IBAN deletion request with ID: {} successfully canceled for ciCode: {}", id, ciCode),
+                        savedRequest -> log.info("IBAN deletion request with ID: {} successfully canceled for ciCode: {}", sanitizedIdForLogs, sanitizedCiCodeForLogs),
                         () -> {
-                            log.error("IBAN deletion request with ID: {} not found or not cancellable for ciCode: {}", id, ciCode);
+                            log.error("IBAN deletion request with ID: {} not found or not cancellable for ciCode: {}", sanitizedIdForLogs, sanitizedCiCodeForLogs);
                             throw new AppException(AppError.INTERNAL_SERVER_ERROR);
                         }
                 );

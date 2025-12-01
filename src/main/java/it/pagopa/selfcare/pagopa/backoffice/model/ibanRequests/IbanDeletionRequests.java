@@ -1,4 +1,4 @@
-package it.pagopa.selfcare.pagopa.backoffice.model.iban;
+package it.pagopa.selfcare.pagopa.backoffice.model.ibanRequests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;

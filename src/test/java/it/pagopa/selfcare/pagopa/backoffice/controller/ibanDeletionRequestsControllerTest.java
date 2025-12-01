@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDeletionRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.ibanRequests.IbanDeletionRequest;
 import it.pagopa.selfcare.pagopa.backoffice.service.IbanDeletionRequestsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

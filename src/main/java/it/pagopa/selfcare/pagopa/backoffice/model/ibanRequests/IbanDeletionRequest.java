@@ -1,4 +1,4 @@
-package it.pagopa.selfcare.pagopa.backoffice.model.iban;
+package it.pagopa.selfcare.pagopa.backoffice.model.ibanRequests;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,9 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 
 @Data
 @Builder
