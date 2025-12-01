@@ -18,6 +18,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class IbanDeletionRequest {
 
+    @Schema(description = "Unique identifier of the deletion request")
+    @JsonProperty("id")
+    private String id;
+
+    @Schema(description = "Creditor institution code")
+    @JsonProperty("ciCode")
+    private String ciCode;
+
     @Schema(
             description = "IBAN identification value",
             example = "IT0000000000001000000123456",
@@ -34,7 +42,10 @@ public class IbanDeletionRequest {
     )
     @JsonProperty("scheduledExecutionDate")
     @NotNull(message = "Scheduled execution date is required")
-    @Future(message = "Scheduled execution date must be in the future")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private String scheduledExecutionDate;
+
+    @Schema(description = "Current status of the deletion request")
+    @JsonProperty("status")
+    private String status;
 }

@@ -24,11 +24,9 @@ public class IbanDeletionRequestEntity {
     @Id
     @Field(targetType = FieldType.STRING)
     private String id;
-    @CreatedDate
-    private Instant requestedAt;
-    @LastModifiedDate
-    private Instant updatedAt;
-    private Instant scheduledExecutionDate;
+    private String requestedAt;
+    private String updatedAt;
+    private String scheduledExecutionDate;
     @Builder.Default
     private IbanDeletionRequestStatus status = IbanDeletionRequestStatus.PENDING;
     private String creditorInstitutionCode;

@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class IbanDeletionRequestResponse {
+public class IbanDeletionRequests {
 
     @Schema(description = "List of IBAN deletion requests", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("requests")

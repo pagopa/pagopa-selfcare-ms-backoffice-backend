@@ -4,7 +4,8 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationC
 import it.pagopa.selfcare.pagopa.backoffice.entity.IbanDeletionRequestEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Iban;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDeletionRequestResponse;
+import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDeletionRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanDeletionRequests;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
 import it.pagopa.selfcare.pagopa.backoffice.repository.IbanDeletionRequestsRepository;
 import it.pagopa.selfcare.pagopa.backoffice.util.IbanDeletionRequestStatus;
@@ -16,8 +17,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,10 +43,8 @@ class IbanDeletionRequestsServiceTest {
 
     @Test
     void createIbanDeletionRequest_shouldCreateSuccessfully() {
-
-        LocalDate scheduledDate = LocalDate.now().plusDays(7);
-        Instant expectedInstant = scheduledDate.atStartOfDay(ZoneOffset.UTC).toInstant();
-
+        String scheduledDate = "2030-12-12";
+        LocalDateTime expectedScheduledDate = LocalDate.parse(scheduledDate).atStartOfDay();
         Iban iban = Iban.builder()
                 .iban(IBAN_VALUE)
                 .active(true)
@@ -58,15 +59,16 @@ class IbanDeletionRequestsServiceTest {
 
         IbanDeletionRequestEntity savedEntity = IbanDeletionRequestEntity.builder()
                 .id("task-123")
+                .creditorInstitutionCode(CI_CODE)
                 .ibanValue(IBAN_VALUE)
-                .scheduledExecutionDate(expectedInstant)
+                .scheduledExecutionDate(scheduledDate)
                 .status(IbanDeletionRequestStatus.PENDING)
                 .build();
 
         when(ibanDeletionRequestsRepository.save(any(IbanDeletionRequestEntity.class)))
                 .thenReturn(savedEntity);
 
-        IbanDeletionRequestResponse response = service.createIbanDeletionRequest(
+        IbanDeletionRequest response = service.createIbanDeletionRequest(
                 CI_CODE, IBAN_VALUE, scheduledDate
         );
 
@@ -84,14 +86,14 @@ class IbanDeletionRequestsServiceTest {
         IbanDeletionRequestEntity capturedEntity = entityCaptor.getValue();
         assertNotNull(capturedEntity.getId());
         assertEquals(IBAN_VALUE, capturedEntity.getIbanValue());
-        assertEquals(expectedInstant, capturedEntity.getScheduledExecutionDate());
+        assertEquals(expectedScheduledDate.toString(), capturedEntity.getScheduledExecutionDate());
         assertEquals(IbanDeletionRequestStatus.PENDING, capturedEntity.getStatus());
     }
 
     @Test
     void createIbanDeletionRequest_shouldThrowException_whenIbanNotFound() {
 
-        LocalDate scheduledDate = LocalDate.now().plusDays(7);
+        String scheduledDate = "2030-12-12";
 
         Iban differentIban = Iban.builder()
                 .iban("IT99X9999999999999999999999")
@@ -116,7 +118,7 @@ class IbanDeletionRequestsServiceTest {
     @Test
     void createIbanDeletionRequest_shouldThrowException_whenIbanListIsEmpty() {
 
-        LocalDate scheduledDate = LocalDate.now().plusDays(7);
+        String scheduledDate = "2030-12-12";
 
         Ibans ibans = Ibans.builder()
                 .ibanList(List.of())
@@ -136,8 +138,8 @@ class IbanDeletionRequestsServiceTest {
     @Test
     void createIbanDeletionRequest_shouldSetMidnightUTC() {
 
-        LocalDate scheduledDate = LocalDate.of(2025, 12, 15);
-        Instant expectedInstant = scheduledDate.atStartOfDay(ZoneOffset.UTC).toInstant();
+        String scheduledDate = "2030-12-12";
+        LocalDateTime expectdScheduledDate = LocalDate.parse(scheduledDate).atStartOfDay();
 
         Iban iban = Iban.builder()
                 .iban(IBAN_VALUE)
@@ -154,7 +156,7 @@ class IbanDeletionRequestsServiceTest {
         IbanDeletionRequestEntity savedEntity = IbanDeletionRequestEntity.builder()
                 .id("task-123")
                 .ibanValue(IBAN_VALUE)
-                .scheduledExecutionDate(expectedInstant)
+                .scheduledExecutionDate(scheduledDate)
                 .status(IbanDeletionRequestStatus.PENDING)
                 .build();
 
@@ -168,48 +170,113 @@ class IbanDeletionRequestsServiceTest {
 
         IbanDeletionRequestEntity capturedEntity = entityCaptor.getValue();
 
-        assertEquals("2025-12-15T00:00:00Z", capturedEntity.getScheduledExecutionDate().toString());
+        assertEquals(expectdScheduledDate.toString(), capturedEntity.getScheduledExecutionDate());
     }
 
     @Test
     void getIbanDeletionRequest_shouldReturnRequestSuccessfully() {
 
-        Instant scheduledInstant = LocalDate.now().plusDays(5)
-                .atStartOfDay(ZoneOffset.UTC).toInstant();
+        LocalDate today = LocalDate.now();
+        String scheduledDate = today.plusDays(7).atStartOfDay(ZoneOffset.UTC).toString();
 
         IbanDeletionRequestEntity entity = IbanDeletionRequestEntity.builder()
                 .id("req-001")
+                .creditorInstitutionCode(CI_CODE)
                 .ibanValue(IBAN_VALUE)
-                .scheduledExecutionDate(scheduledInstant)
+                .scheduledExecutionDate(scheduledDate)
                 .status(IbanDeletionRequestStatus.PENDING)
                 .build();
 
         when(ibanDeletionRequestsRepository.findByIbanValue(IBAN_VALUE))
-                .thenReturn(entity);
+                .thenReturn(Optional.of(entity));
 
-        IbanDeletionRequestResponse response = service.getIbanDeletionRequest(CI_CODE, IBAN_VALUE);
+        IbanDeletionRequests response = service.getIbanDeletionRequests(CI_CODE, IBAN_VALUE);
 
         assertNotNull(response);
-        assertEquals("req-001", response.getId());
-        assertEquals(CI_CODE, response.getCiCode());
-        assertEquals(IBAN_VALUE, response.getIbanValue());
-        assertEquals(LocalDate.ofInstant(scheduledInstant, ZoneOffset.UTC),
-                response.getScheduledExecutionDate());
-        assertEquals("PENDING", response.getStatus());
+        assertNotNull(response.getRequests());
+        assertEquals(1, response.getRequests().size());
+
+        IbanDeletionRequest ibanDeletionRequest = response.getRequests().get(0);
+        assertEquals("req-001", ibanDeletionRequest.getId());
+        assertEquals(CI_CODE, ibanDeletionRequest.getCiCode());
+        assertEquals(IBAN_VALUE, ibanDeletionRequest.getIbanValue());
+        assertEquals(scheduledDate,
+                ibanDeletionRequest.getScheduledExecutionDate());
+        assertEquals("PENDING", ibanDeletionRequest.getStatus());
 
         verify(ibanDeletionRequestsRepository).findByIbanValue(IBAN_VALUE);
     }
 
     @Test
-    void getIbanDeletionRequest_shouldThrowException_whenNotFound() {
+    void getIbanDeletionRequests_shouldReturnMultipleRequests_whenIbanValueIsNull() {
+
+        Instant scheduledInstant1 = LocalDate.now().plusDays(5)
+                .atStartOfDay(ZoneOffset.UTC).toInstant();
+        Instant scheduledInstant2 = LocalDate.now().plusDays(10)
+                .atStartOfDay(ZoneOffset.UTC).toInstant();
+
+        IbanDeletionRequestEntity entity1 = IbanDeletionRequestEntity.builder()
+                .id("req-001")
+                .creditorInstitutionCode(CI_CODE)
+                .ibanValue(IBAN_VALUE)
+                .scheduledExecutionDate(scheduledInstant1.toString())
+                .status(IbanDeletionRequestStatus.PENDING)
+                .build();
+
+        IbanDeletionRequestEntity entity2 = IbanDeletionRequestEntity.builder()
+                .id("req-002")
+                .creditorInstitutionCode(CI_CODE)
+                .ibanValue("IT99X9999999999999999999999")
+                .scheduledExecutionDate(scheduledInstant2.toString())
+                .status(IbanDeletionRequestStatus.PENDING)
+                .build();
+
+        when(ibanDeletionRequestsRepository.findByCreditorInstitutionCodeAndStatus(CI_CODE, IbanDeletionRequestStatus.PENDING))
+                .thenReturn(List.of(entity1, entity2));
+
+        IbanDeletionRequests response = service.getIbanDeletionRequests(CI_CODE, null);
+
+        assertNotNull(response);
+        assertNotNull(response.getRequests());
+        assertEquals(2, response.getRequests().size());
+
+        IbanDeletionRequest request1 = response.getRequests().get(0);
+        assertEquals("req-001", request1.getId());
+        assertEquals(IBAN_VALUE, request1.getIbanValue());
+
+        IbanDeletionRequest request2 = response.getRequests().get(1);
+        assertEquals("req-002", request2.getId());
+        assertEquals("IT99X9999999999999999999999", request2.getIbanValue());
+
+        verify(ibanDeletionRequestsRepository).findByCreditorInstitutionCodeAndStatus(CI_CODE, IbanDeletionRequestStatus.PENDING);
+    }
+
+    @Test
+    void getIbanDeletionRequests_shouldReturnEmptyList_whenNoRequestsFound() {
+
+        when(ibanDeletionRequestsRepository.findByCreditorInstitutionCodeAndStatus(CI_CODE, IbanDeletionRequestStatus.PENDING))
+                .thenReturn(List.of());
+
+        IbanDeletionRequests response = service.getIbanDeletionRequests(CI_CODE, null);
+
+        assertNotNull(response);
+        assertNotNull(response.getRequests());
+        assertEquals(0, response.getRequests().size());
+
+        verify(ibanDeletionRequestsRepository).findByCreditorInstitutionCodeAndStatus(CI_CODE, IbanDeletionRequestStatus.PENDING);
+    }
+    @Test
+    void getIbanDeletionRequest_shouldReturnEmptyList_whenNotFound() {
 
         when(ibanDeletionRequestsRepository.findByIbanValue(IBAN_VALUE))
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
 
-        assertThrows(AppException.class,
-                () -> service.getIbanDeletionRequest(CI_CODE, IBAN_VALUE));
+        IbanDeletionRequests result = service.getIbanDeletionRequests(CI_CODE, IBAN_VALUE);
 
+        assertNotNull(result);
+        assertTrue(result.getRequests().isEmpty());
         verify(ibanDeletionRequestsRepository).findByIbanValue(IBAN_VALUE);
+        verify(ibanDeletionRequestsRepository, never()).findByCreditorInstitutionCodeAndStatus(any(), any());
     }
 
     @Test
@@ -218,7 +285,7 @@ class IbanDeletionRequestsServiceTest {
         IbanDeletionRequestEntity entity = IbanDeletionRequestEntity.builder()
                 .id("req-002")
                 .ibanValue(IBAN_VALUE)
-                .scheduledExecutionDate(Instant.now())
+                .scheduledExecutionDate(Instant.now().toString())
                 .status(IbanDeletionRequestStatus.PENDING)
                 .build();
 
@@ -240,7 +307,7 @@ class IbanDeletionRequestsServiceTest {
         IbanDeletionRequestEntity entity = IbanDeletionRequestEntity.builder()
                 .id("req-003")
                 .ibanValue(IBAN_VALUE)
-                .scheduledExecutionDate(Instant.now())
+                .scheduledExecutionDate(Instant.now().toString())
                 .status(IbanDeletionRequestStatus.COMPLETED)
                 .build();
 
@@ -252,56 +319,4 @@ class IbanDeletionRequestsServiceTest {
 
         verify(ibanDeletionRequestsRepository, never()).save(any());
     }
-
-    @Test
-    void updateIbanDeletionRequestSchedule_shouldUpdateSuccessfully() {
-
-        LocalDate newDate = LocalDate.now().plusDays(10);
-        Instant newInstant = newDate.atStartOfDay(ZoneOffset.UTC).toInstant();
-
-        IbanDeletionRequestEntity entity = IbanDeletionRequestEntity.builder()
-                .id("req-004")
-                .ibanValue(IBAN_VALUE)
-                .scheduledExecutionDate(Instant.now())
-                .status(IbanDeletionRequestStatus.PENDING)
-                .build();
-
-        when(ibanDeletionRequestsRepository.findById("req-004"))
-                .thenReturn(java.util.Optional.of(entity));
-
-        when(ibanDeletionRequestsRepository.save(any(IbanDeletionRequestEntity.class)))
-                .thenReturn(entity);
-
-        IbanDeletionRequestResponse response =
-                service.updateIbanDeletionRequestSchedule(CI_CODE, "req-004", newDate);
-
-        assertNotNull(response);
-        assertEquals(CI_CODE, response.getCiCode());
-        assertEquals(IBAN_VALUE, response.getIbanValue());
-        assertEquals(newDate, response.getScheduledExecutionDate());
-        assertEquals("PENDING", response.getStatus());
-        assertEquals(newInstant, entity.getScheduledExecutionDate());
-
-        verify(ibanDeletionRequestsRepository).save(entity);
-    }
-
-    @Test
-    void updateIbanDeletionRequestSchedule_shouldThrowException_whenNotPending() {
-
-        IbanDeletionRequestEntity entity = IbanDeletionRequestEntity.builder()
-                .id("req-005")
-                .ibanValue(IBAN_VALUE)
-                .scheduledExecutionDate(Instant.now())
-                .status(IbanDeletionRequestStatus.CANCELED)
-                .build();
-
-        when(ibanDeletionRequestsRepository.findById("req-005"))
-                .thenReturn(java.util.Optional.of(entity));
-
-        assertThrows(AppException.class,
-                () -> service.updateIbanDeletionRequestSchedule(CI_CODE, "req-005", LocalDate.now()));
-
-        verify(ibanDeletionRequestsRepository, never()).save(any());
-    }
-
 }

@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import java.time.LocalDate;
-
 import static it.pagopa.selfcare.pagopa.backoffice.model.institutions.ProductRole.ADMIN;
 
 @Slf4j
@@ -42,11 +40,11 @@ public class IbanDeletionRequestsController {
     )
     @OpenApiTableMetadata
     @JwtSecurity(paramName = "ciCode", allowedProductRole = ADMIN)
-    public IbanDeletionRequestResponse getIbanDeletionRequest(
+    public IbanDeletionRequests getIbanDeletionRequest(
             @Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
-            @Parameter(description = "Filter by IBAN value") @RequestParam(value = "ibanValue", required = true) String ibanValue) {
+            @Parameter(description = "Filter by IBAN value") @RequestParam(value = "ibanValue", required = false) String ibanValue) {
 
-        return ibanDeletionRequestsService.getIbanDeletionRequest(ciCode, ibanValue);
+        return ibanDeletionRequestsService.getIbanDeletionRequests(ciCode, ibanValue);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -58,11 +56,11 @@ public class IbanDeletionRequestsController {
     )
     @OpenApiTableMetadata
     @JwtSecurity(paramName = "ciCode", allowedProductRole = ADMIN)
-    public IbanDeletionRequestResponse createIbanDeletionRequest(
+    public IbanDeletionRequest createIbanDeletionRequest(
             @Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
             @Valid @RequestBody IbanDeletionRequest request) {
 
-        return ibanDeletionRequestsService.createIbanDeletionRequest(ciCode, request.getIbanValue(), LocalDate.parse(request.getScheduledExecutionDate()));
+        return ibanDeletionRequestsService.createIbanDeletionRequest(ciCode, request.getIbanValue(), request.getScheduledExecutionDate());
     }
 
     @DeleteMapping(value = "/{id}")
@@ -79,22 +77,5 @@ public class IbanDeletionRequestsController {
             @Parameter(description = "Deletion request ID") @PathVariable("id") String id) {
 
         ibanDeletionRequestsService.cancelIbanDeletionRequest(ciCode, id);
-    }
-
-    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(
-            summary = "Update the scheduled execution date of an IBAN deletion request",
-            description = "Updates the scheduled execution date for a pending IBAN deletion request.",
-            security = {@SecurityRequirement(name = "JWT")}
-    )
-    @OpenApiTableMetadata
-    @JwtSecurity(paramName = "ciCode", allowedProductRole = ADMIN)
-    public IbanDeletionRequestResponse updateIbanDeletionRequestSchedule(
-            @Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
-            @Parameter(description = "Deletion request ID") @PathVariable("id") String id,
-            @Valid @RequestBody IbanDeletionRequestUpdateRequest request) {
-
-        return ibanDeletionRequestsService.updateIbanDeletionRequestSchedule(ciCode, id, request.getScheduledExecutionDate());
     }
 }
