@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import it.pagopa.selfcare.pagopa.backoffice.model.ibanRequests.IbanDeletionRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.ibanrequests.IbanDeletionRequest;
 import it.pagopa.selfcare.pagopa.backoffice.service.IbanDeletionRequestsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,7 +58,7 @@ class IbanDeletionRequestsControllerTest {
         IbanDeletionRequest mockResponse = IbanDeletionRequest.builder()
                 .ciCode(CI_CODE)
                 .ibanValue(IBAN_VALUE)
-                .scheduledExecutionDate(scheduledDate.toString())
+                .scheduledExecutionDate(scheduledDate)
                 .status("PENDING")
                 .build();
 
@@ -97,9 +97,9 @@ class IbanDeletionRequestsControllerTest {
         assertEquals("PENDING", response.getStatus());
 
         verify(ibanDeletionRequestsService).createIbanDeletionRequest(
-                eq(CI_CODE),
-                eq(IBAN_VALUE),
-                eq(scheduledDate.toString())
+                CI_CODE,
+                IBAN_VALUE,
+                scheduledDate
         );
     }
 

@@ -4,8 +4,8 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationC
 import it.pagopa.selfcare.pagopa.backoffice.entity.IbanDeletionRequestEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
-import it.pagopa.selfcare.pagopa.backoffice.model.ibanRequests.IbanDeletionRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.ibanRequests.IbanDeletionRequests;
+import it.pagopa.selfcare.pagopa.backoffice.model.ibanrequests.IbanDeletionRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.ibanrequests.IbanDeletionRequests;
 import it.pagopa.selfcare.pagopa.backoffice.repository.IbanDeletionRequestsRepository;
 import it.pagopa.selfcare.pagopa.backoffice.util.IbanDeletionRequestStatus;
 import it.pagopa.selfcare.pagopa.backoffice.util.StringUtils;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
