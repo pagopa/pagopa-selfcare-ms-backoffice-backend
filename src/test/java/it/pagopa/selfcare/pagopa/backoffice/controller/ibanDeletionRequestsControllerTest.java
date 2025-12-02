@@ -4,9 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -14,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import it.pagopa.selfcare.pagopa.backoffice.model.ibanrequests.IbanDeletionRequest;
+import it.pagopa.selfcare.pagopa.backoffice.model.ibanrequests.IbanDeletionRequests;
 import it.pagopa.selfcare.pagopa.backoffice.service.IbanDeletionRequestsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -104,7 +107,7 @@ class IbanDeletionRequestsControllerTest {
     }
 
     @Test
-    void requestCreditorInstitutionIbanDeletion_shouldReturn400_whenibanValueIsMissing() throws Exception {
+    void requestCreditorInstitutionIbanDeletion_shouldReturn400_whenIbanValueIsMissing() throws Exception {
 
         String requestBody = """
             {
@@ -145,5 +148,144 @@ class IbanDeletionRequestsControllerTest {
                                 .content(requestBody)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getIbanDeletionRequests_shouldReturnAllRequests_whenIbanValueIsNotProvided() throws Exception {
+
+        IbanDeletionRequest request1 = IbanDeletionRequest.builder()
+                .id("req-001")
+                .ciCode(ciCode)
+                .ibanValue("IT0000000000001000000123456")
+                .scheduledExecutionDate("2025-12-15")
+                .status("PENDING")
+                .build();
+
+        IbanDeletionRequest request2 = IbanDeletionRequest.builder()
+                .id("req-002")
+                .ciCode(ciCode)
+                .ibanValue("IT0000000000001000000999999")
+                .scheduledExecutionDate("2025-12-20")
+                .status("PENDING")
+                .build();
+
+        IbanDeletionRequests mockResponse = IbanDeletionRequests.builder()
+                .requests(List.of(request1, request2))
+                .build();
+
+        when(ibanDeletionRequestsService.getIbanDeletionRequests(eq(ciCode), eq(null)))
+                .thenReturn(mockResponse);
+
+        MvcResult mvcResult = mvc.perform(
+                        get("/creditor-institutions/{ci-code}/iban-deletion-requests", ciCode)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.requests").isArray())
+                .andExpect(jsonPath("$.requests.length()").value(2))
+                .andExpect(jsonPath("$.requests[0].id").value("req-001"))
+                .andExpect(jsonPath("$.requests[1].id").value("req-002"))
+                .andReturn();
+
+        IbanDeletionRequests response = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                IbanDeletionRequests.class
+        );
+
+        assertNotNull(response);
+        assertNotNull(response.getRequests());
+        assertEquals(2, response.getRequests().size());
+
+        verify(ibanDeletionRequestsService).getIbanDeletionRequests(ciCode, null);
+    }
+
+    @Test
+    void getIbanDeletionRequests_shouldReturnFilteredRequests_whenIbanValueIsProvided() throws Exception {
+
+        IbanDeletionRequest request = IbanDeletionRequest.builder()
+                .id("req-001")
+                .ciCode(ciCode)
+                .ibanValue(ibanValue)
+                .scheduledExecutionDate("2025-12-15")
+                .status("PENDING")
+                .build();
+
+        IbanDeletionRequests mockResponse = IbanDeletionRequests.builder()
+                .requests(List.of(request))
+                .build();
+
+        when(ibanDeletionRequestsService.getIbanDeletionRequests(eq(ciCode), eq(ibanValue)))
+                .thenReturn(mockResponse);
+
+        MvcResult mvcResult = mvc.perform(
+                        get("/creditor-institutions/{ci-code}/iban-deletion-requests", ciCode)
+                                .param("ibanValue", ibanValue)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.requests").isArray())
+                .andExpect(jsonPath("$.requests.length()").value(1))
+                .andExpect(jsonPath("$.requests[0].id").value("req-001"))
+                .andExpect(jsonPath("$.requests[0].ibanValue").value(ibanValue))
+                .andReturn();
+
+        IbanDeletionRequests response = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                IbanDeletionRequests.class
+        );
+
+        assertNotNull(response);
+        assertNotNull(response.getRequests());
+        assertEquals(1, response.getRequests().size());
+        assertEquals(ibanValue, response.getRequests().get(0).getIbanValue());
+
+        verify(ibanDeletionRequestsService).getIbanDeletionRequests(ciCode, ibanValue);
+    }
+
+    @Test
+    void getIbanDeletionRequests_shouldReturnEmptyList_whenNoRequestsFound() throws Exception {
+
+        IbanDeletionRequests mockResponse = IbanDeletionRequests.builder()
+                .requests(List.of())
+                .build();
+
+        when(ibanDeletionRequestsService.getIbanDeletionRequests(eq(ciCode), eq(null)))
+                .thenReturn(mockResponse);
+
+        MvcResult mvcResult = mvc.perform(
+                        get("/creditor-institutions/{ci-code}/iban-deletion-requests", ciCode)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.requests").isArray())
+                .andExpect(jsonPath("$.requests.length()").value(0))
+                .andReturn();
+
+        IbanDeletionRequests response = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                IbanDeletionRequests.class
+        );
+
+        assertNotNull(response);
+        assertNotNull(response.getRequests());
+        assertEquals(0, response.getRequests().size());
+
+        verify(ibanDeletionRequestsService).getIbanDeletionRequests(ciCode, null);
+    }
+
+    @Test
+    void cancelIbanDeletionRequest_shouldReturn204() throws Exception {
+
+        String requestId = "req-123";
+
+        doNothing().when(ibanDeletionRequestsService)
+                .cancelIbanDeletionRequest(eq(ciCode), eq(requestId));
+
+        mvc.perform(
+                        delete("/creditor-institutions/{ci-code}/iban-deletion-requests/{id}", ciCode, requestId)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        verify(ibanDeletionRequestsService).cancelIbanDeletionRequest(ciCode, requestId);
     }
 }

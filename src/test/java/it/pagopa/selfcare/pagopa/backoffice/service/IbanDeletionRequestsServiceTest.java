@@ -2,6 +2,7 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.IbanDeletionRequestEntity;
+import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Iban;
 import it.pagopa.selfcare.pagopa.backoffice.model.ibanrequests.IbanDeletionRequest;
@@ -173,6 +174,77 @@ class IbanDeletionRequestsServiceTest {
     }
 
     @Test
+    void createIbanDeletionRequest_shouldThrowException_whenDateIsInPast() {
+
+        String pastDate = LocalDate.now().minusDays(1).toString();
+
+        AppException exception = assertThrows(AppException.class, () ->
+                service.createIbanDeletionRequest(ciCode, ibanValue, pastDate)
+        );
+
+        assertEquals(AppError.BAD_REQUEST.getTitle(), exception.getTitle());
+        assertEquals("Invalid scheduledExecutionDate", exception.getMessage());
+        verify(ibanDeletionRequestsRepository, never()).save(any());
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionIbans(any(), any());
+    }
+
+    @Test
+    void createIbanDeletionRequest_shouldThrowException_whenDateIsToday() {
+
+        String today = LocalDate.now().toString();
+
+        AppException exception = assertThrows(AppException.class, () ->
+                service.createIbanDeletionRequest(ciCode, ibanValue, today)
+        );
+
+        assertEquals(AppError.BAD_REQUEST.getTitle(), exception.getTitle() );
+        assertEquals("Invalid scheduledExecutionDate", exception.getMessage());
+        verify(ibanDeletionRequestsRepository, never()).save(any());
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionIbans(any(), any());
+    }
+
+    @Test
+    void createIbanDeletionRequest_shouldThrowException_whenDateFormatIsInvalid() {
+
+        String invalidDate = "invalid-date-format";
+
+        assertThrows(Exception.class, () ->
+                service.createIbanDeletionRequest(ciCode, ibanValue, invalidDate)
+        );
+
+        verify(ibanDeletionRequestsRepository, never()).save(any());
+        verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionIbans(any(), any());
+    }
+
+    @Test
+    void createIbanDeletionRequest_shouldThrowException_whenRepositorySaveFails() {
+
+        String scheduledDate = "2030-12-12";
+
+        Iban iban = Iban.builder()
+                .iban(ibanValue)
+                .active(true)
+                .build();
+
+        Ibans ibans = Ibans.builder()
+                .ibanList(List.of(iban))
+                .build();
+
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionIbans(ciCode, null))
+                .thenReturn(ibans);
+
+        when(ibanDeletionRequestsRepository.save(any(IbanDeletionRequestEntity.class)))
+                .thenThrow(new RuntimeException("Database error"));
+
+        assertThrows(RuntimeException.class, () ->
+                service.createIbanDeletionRequest(ciCode, ibanValue, scheduledDate)
+        );
+
+        verify(apiConfigSelfcareIntegrationClient).getCreditorInstitutionIbans(ciCode, null);
+        verify(ibanDeletionRequestsRepository).save(any(IbanDeletionRequestEntity.class));
+    }
+
+    @Test
     void getIbanDeletionRequest_shouldReturnRequestSuccessfully() {
 
         LocalDate today = LocalDate.now();
@@ -207,7 +279,7 @@ class IbanDeletionRequestsServiceTest {
     }
 
     @Test
-    void getIbanDeletionRequests_shouldReturnMultipleRequests_whenibanValueIsNull() {
+    void getIbanDeletionRequests_shouldReturnMultipleRequests_whenIbanValueIsNull() {
 
         Instant scheduledInstant1 = LocalDate.now().plusDays(5)
                 .atStartOfDay(ZoneOffset.UTC).toInstant();
@@ -234,6 +306,50 @@ class IbanDeletionRequestsServiceTest {
                 .thenReturn(List.of(entity1, entity2));
 
         IbanDeletionRequests response = service.getIbanDeletionRequests(ciCode, null);
+
+        assertNotNull(response);
+        assertNotNull(response.getRequests());
+        assertEquals(2, response.getRequests().size());
+
+        IbanDeletionRequest request1 = response.getRequests().get(0);
+        assertEquals("req-001", request1.getId());
+        assertEquals(ibanValue, request1.getIbanValue());
+
+        IbanDeletionRequest request2 = response.getRequests().get(1);
+        assertEquals("req-002", request2.getId());
+        assertEquals("IT99X9999999999999999999999", request2.getIbanValue());
+
+        verify(ibanDeletionRequestsRepository).findByCreditorInstitutionCodeAndStatus(ciCode, IbanDeletionRequestStatus.PENDING);
+    }
+
+    @Test
+    void getIbanDeletionRequests_shouldReturnMultipleRequests_whenIbanValueIsBlank() {
+
+        Instant scheduledInstant1 = LocalDate.now().plusDays(5)
+                .atStartOfDay(ZoneOffset.UTC).toInstant();
+        Instant scheduledInstant2 = LocalDate.now().plusDays(10)
+                .atStartOfDay(ZoneOffset.UTC).toInstant();
+
+        IbanDeletionRequestEntity entity1 = IbanDeletionRequestEntity.builder()
+                .id("req-001")
+                .creditorInstitutionCode(ciCode)
+                .ibanValue(ibanValue)
+                .scheduledExecutionDate(scheduledInstant1.toString())
+                .status(IbanDeletionRequestStatus.PENDING)
+                .build();
+
+        IbanDeletionRequestEntity entity2 = IbanDeletionRequestEntity.builder()
+                .id("req-002")
+                .creditorInstitutionCode(ciCode)
+                .ibanValue("IT99X9999999999999999999999")
+                .scheduledExecutionDate(scheduledInstant2.toString())
+                .status(IbanDeletionRequestStatus.PENDING)
+                .build();
+
+        when(ibanDeletionRequestsRepository.findByCreditorInstitutionCodeAndStatus(ciCode, IbanDeletionRequestStatus.PENDING))
+                .thenReturn(List.of(entity1, entity2));
+
+        IbanDeletionRequests response = service.getIbanDeletionRequests(ciCode, "");
 
         assertNotNull(response);
         assertNotNull(response.getRequests());
