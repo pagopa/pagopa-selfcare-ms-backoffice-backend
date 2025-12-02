@@ -96,7 +96,7 @@ class IbanDeletionRequestsServiceTest {
     @Test
     void createIbanDeletionRequest_shouldThrowException_whenFoundPendingRequest() {
         String scheduledDate = "2030-12-12";
-        String expectedScheduledDate = LocalDate.parse(scheduledDate).atStartOfDay(ZoneOffset.UTC).toInstant().toString();
+
         Iban iban = Iban.builder()
                 .iban(ibanValue)
                 .active(true)

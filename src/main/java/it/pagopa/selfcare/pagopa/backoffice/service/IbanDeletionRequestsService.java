@@ -37,7 +37,7 @@ public class IbanDeletionRequestsService {
 
     public IbanDeletionRequest createIbanDeletionRequest(String ciCode, String ibanValue, String scheduledExecutionDate) {
 
-        final String maskedIbanForLogs = StringUtils.obfuscateKeepingLast4(ibanValue);
+        final String maskedIbanForLogs = Utility.sanitizeLogParam(StringUtils.obfuscateKeepingLast4(ibanValue));
         final String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
         final String sanitizedScheduledExecutionDateForLogs = Utility.sanitizeLogParam(scheduledExecutionDate);
 
@@ -115,8 +115,8 @@ public class IbanDeletionRequestsService {
 
     public IbanDeletionRequests getIbanDeletionRequests(String ciCode, String ibanValue) {
 
-        String maskedIbanForLogs = StringUtils.obfuscateKeepingLast4(ibanValue);
-        String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
+        final String maskedIbanForLogs = Utility.sanitizeLogParam(StringUtils.obfuscateKeepingLast4(ibanValue));
+        final String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
 
         log.info("Retrieving IBAN deletion requests for ciCode: {}, ibanValue: {}", sanitizedCiCodeForLogs, maskedIbanForLogs);
 
@@ -147,8 +147,8 @@ public class IbanDeletionRequestsService {
 
     public void cancelIbanDeletionRequest(String ciCode, String id) {
 
-        String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
-        String sanitizedIdForLogs = Utility.sanitizeLogParam(id);
+        final String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
+        final String sanitizedIdForLogs = Utility.sanitizeLogParam(id);
 
         log.info("Canceling IBAN deletion request with ID: {} for ciCode: {}", sanitizedIdForLogs,  sanitizedCiCodeForLogs);
 
