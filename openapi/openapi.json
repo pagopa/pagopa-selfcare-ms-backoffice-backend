@@ -4,7 +4,7 @@
     "description" : "Microservice to manage PagoPA Backoffice",
     "termsOfService" : "https://www.pagopa.gov.it/",
     "title" : "SelfCare Backoffice",
-    "version" : "2.38.16-1-CHK-4636-add-deletion-request"
+    "version" : "2.38.16-2-CHK-4636-add-deletion-request"
   },
   "servers" : [ {
     "url" : "http://localhost:8080"
@@ -6134,7 +6134,15 @@
           "description" : "Filter by IBAN value",
           "in" : "query",
           "name" : "ibanValue",
-          "required" : false,
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Status",
+          "in" : "query",
+          "name" : "status",
+          "required" : true,
           "schema" : {
             "type" : "string"
           }
