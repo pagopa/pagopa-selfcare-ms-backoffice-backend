@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface IbanDeletionRequestsRepository extends MongoRepository<IbanDeletionRequestEntity, String>  {
 
-    Optional<IbanDeletionRequestEntity> findByIbanValue(String ibanValue);
+    Optional<IbanDeletionRequestEntity> findByCreditorInstitutionCodeAndStatusAndIbanValue(String creditorInstitutionCode, String status,String ibanValue);
+    Optional<IbanDeletionRequestEntity> findByCreditorInstitutionCodeAndIbanValue(String CreditorInstitutionCode, String ibanValue);
     List<IbanDeletionRequestEntity> findByCreditorInstitutionCodeAndStatus(String ciCode, IbanDeletionRequestStatus status);
 }

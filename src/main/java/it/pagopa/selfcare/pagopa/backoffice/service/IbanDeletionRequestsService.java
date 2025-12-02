@@ -37,11 +37,12 @@ public class IbanDeletionRequestsService {
 
     public IbanDeletionRequest createIbanDeletionRequest(String ciCode, String ibanValue, String scheduledExecutionDate) {
 
-        String maskedIbanForLogs = Utility.sanitizeLogParam(StringUtils.obfuscateKeepingLast4(ibanValue));
-        String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
-        String sanitizedScheduledExecutionDateForLogs = Utility.sanitizeLogParam(scheduledExecutionDate);
-        Instant now = Instant.now();
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        final String maskedIbanForLogs = StringUtils.obfuscateKeepingLast4(ibanValue);
+        final String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
+        final String sanitizedScheduledExecutionDateForLogs = Utility.sanitizeLogParam(scheduledExecutionDate);
+
+        final Instant now = Instant.now();
+        final LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         return Optional.of(scheduledExecutionDate)
                 .map(LocalDate::parse)
@@ -52,22 +53,33 @@ public class IbanDeletionRequestsService {
                     throw new AppException(AppError.BAD_REQUEST, "Invalid scheduledExecutionDate");
                 })
                 .map(validScheduledExecutionDate -> {
+                    ibanDeletionRequestsRepository.findByCreditorInstitutionCodeAndStatusAndIbanValue(
+                            ciCode,
+                            IbanDeletionRequestStatus.PENDING.toString(),
+                            ibanValue
+                    ).ifPresent(
+                            request -> {
+                                log.error("Pending deletion request already exists for ciCode: {} and IBAN: {}",
+                                        sanitizedCiCodeForLogs, maskedIbanForLogs);
+                                throw new AppException(AppError.CONFLICT, "Pending deletion request already exists for this IBAN");
+                            }
+                    );
+                    return validScheduledExecutionDate;
+                })
+                .map(validScheduledExecutionDate -> {
                     log.info("Creating IBAN deletion request for ciCode: {}, ibanValue: {}, scheduled date: {}",
                             sanitizedCiCodeForLogs, maskedIbanForLogs, sanitizedScheduledExecutionDateForLogs);
-
                     apiConfigSelfcareIntegrationClient.getCreditorInstitutionIbans(ciCode, null)
                             .getIbanList()
                             .stream()
                             .filter(iban -> iban.getIban().equals(ibanValue))
                             .findFirst()
-                            .ifPresentOrElse(
-                                    iban -> log.debug("IBAN {} validated successfully for ciCode: {}", maskedIbanForLogs, sanitizedCiCodeForLogs),
-                                    () -> {
-                                        log.error("IBAN {} not found for ciCode: {}", maskedIbanForLogs, sanitizedCiCodeForLogs);
-                                        throw new AppException(AppError.BAD_GATEWAY, "Invalid Iban");
-                                    }
-                            );
+                            .orElseThrow(() -> {
+                                log.error("IBAN {} not found for ciCode: {}", maskedIbanForLogs, sanitizedCiCodeForLogs);
+                                return new AppException(AppError.BAD_GATEWAY, "Invalid Iban");
+                            });
 
+                    log.debug("IBAN {} validated successfully for ciCode: {}", maskedIbanForLogs, sanitizedCiCodeForLogs);
                     return validScheduledExecutionDate;
                 })
                 .map(validScheduledExecutionDate -> IbanDeletionRequestEntity.builder()
@@ -103,14 +115,14 @@ public class IbanDeletionRequestsService {
 
     public IbanDeletionRequests getIbanDeletionRequests(String ciCode, String ibanValue) {
 
-        String maskedIbanForLogs = Utility.sanitizeLogParam(StringUtils.obfuscateKeepingLast4(ibanValue));
+        String maskedIbanForLogs = StringUtils.obfuscateKeepingLast4(ibanValue);
         String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
 
         log.info("Retrieving IBAN deletion requests for ciCode: {}, ibanValue: {}", sanitizedCiCodeForLogs, maskedIbanForLogs);
 
         return Optional.ofNullable(ibanValue)
                 .filter(value -> !value.isBlank())
-                .map(value -> ibanDeletionRequestsRepository.findByIbanValue(value)
+                .map(value -> ibanDeletionRequestsRepository.findByCreditorInstitutionCodeAndIbanValue(ciCode, value)
                         .map(List::of)
                         .orElse(List.of()))
                 .orElseGet(() -> ibanDeletionRequestsRepository.findByCreditorInstitutionCodeAndStatus(ciCode, IbanDeletionRequestStatus.PENDING))
