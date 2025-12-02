@@ -41,8 +41,8 @@ class IbanDeletionRequestsControllerTest {
         objectMapper.registerModule(new JavaTimeModule());
     }
 
-    private final String CI_CODE = "77777777777";
-    private final String IBAN_VALUE = "IT0000000000001000000123456";
+    private final String ciCode = "77777777777";
+    private final String ibanValue = "IT0000000000001000000123456";
 
     @MockBean
     private IbanDeletionRequestsService ibanDeletionRequestsService;
@@ -56,14 +56,14 @@ class IbanDeletionRequestsControllerTest {
         String scheduledDate = LocalDate.of(2025, 12, 15).toString();
 
         IbanDeletionRequest mockResponse = IbanDeletionRequest.builder()
-                .ciCode(CI_CODE)
-                .ibanValue(IBAN_VALUE)
+                .ciCode(ciCode)
+                .ibanValue(ibanValue)
                 .scheduledExecutionDate(scheduledDate)
                 .status("PENDING")
                 .build();
 
         when(ibanDeletionRequestsService.createIbanDeletionRequest(
-                eq(CI_CODE), eq(IBAN_VALUE), any(String.class)))
+                eq(ciCode), eq(ibanValue), any(String.class)))
                 .thenReturn(mockResponse);
 
         String requestBody = String.format("""
@@ -71,17 +71,17 @@ class IbanDeletionRequestsControllerTest {
                 "ibanValue": "%s",
                 "scheduledExecutionDate": "%s"
             }
-            """, IBAN_VALUE, scheduledDate);
+            """, ibanValue, scheduledDate);
 
         MvcResult mvcResult = mvc.perform(
-                        post("/creditor-institutions/{ci-code}/iban-deletion-requests", CI_CODE)
+                        post("/creditor-institutions/{ci-code}/iban-deletion-requests", ciCode)
                                 .content(requestBody)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.ciCode").value(CI_CODE))
-                .andExpect(jsonPath("$.ibanValue").value(IBAN_VALUE))
-                .andExpect(jsonPath("$.scheduledExecutionDate").value(scheduledDate.toString()))
+                .andExpect(jsonPath("$.ciCode").value(ciCode))
+                .andExpect(jsonPath("$.ibanValue").value(ibanValue))
+                .andExpect(jsonPath("$.scheduledExecutionDate").value(scheduledDate))
                 .andExpect(jsonPath("$.status").value("PENDING"))
                 .andReturn();
 
@@ -91,20 +91,20 @@ class IbanDeletionRequestsControllerTest {
         );
 
         assertNotNull(response);
-        assertEquals(CI_CODE, response.getCiCode());
-        assertEquals(IBAN_VALUE, response.getIbanValue());
+        assertEquals(ciCode, response.getciCode());
+        assertEquals(ibanValue, response.getibanValue());
         assertEquals(scheduledDate, response.getScheduledExecutionDate());
         assertEquals("PENDING", response.getStatus());
 
         verify(ibanDeletionRequestsService).createIbanDeletionRequest(
-                CI_CODE,
-                IBAN_VALUE,
+                ciCode,
+                ibanValue,
                 scheduledDate
         );
     }
 
     @Test
-    void requestCreditorInstitutionIbanDeletion_shouldReturn400_whenIbanValueIsMissing() throws Exception {
+    void requestCreditorInstitutionIbanDeletion_shouldReturn400_whenibanValueIsMissing() throws Exception {
 
         String requestBody = """
             {
@@ -113,7 +113,7 @@ class IbanDeletionRequestsControllerTest {
             """;
 
         mvc.perform(
-                        post("/creditor-institutions/{ci-code}/iban-deletion-requests", CI_CODE)
+                        post("/creditor-institutions/{ci-code}/iban-deletion-requests", ciCode)
                                 .content(requestBody)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -126,10 +126,10 @@ class IbanDeletionRequestsControllerTest {
             {
                 "ibanValue": "%s"
             }
-            """, IBAN_VALUE);
+            """, ibanValue);
 
         mvc.perform(
-                        post("/creditor-institutions/{ci-code}/iban-deletion-requests", CI_CODE)
+                        post("/creditor-institutions/{ci-code}/iban-deletion-requests", ciCode)
                                 .content(requestBody)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -141,7 +141,7 @@ class IbanDeletionRequestsControllerTest {
         String requestBody = "{}";
 
         mvc.perform(
-                        post("/creditor-institutions/{ci-code}/iban-deletion-requests", CI_CODE)
+                        post("/creditor-institutions/{ci-code}/iban-deletion-requests", ciCode)
                                 .content(requestBody)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
