@@ -72,8 +72,8 @@ class IbanDeletionRequestsServiceTest {
         );
 
         assertNotNull(response);
-        assertEquals(ciCode, response.getciCode());
-        assertEquals(ibanValue, response.getibanValue());
+        assertEquals(ciCode, response.getCiCode());
+        assertEquals(ibanValue, response.getIbanValue());
         assertEquals(scheduledDate, response.getScheduledExecutionDate());
         assertEquals("PENDING", response.getStatus());
 
@@ -84,7 +84,7 @@ class IbanDeletionRequestsServiceTest {
 
         IbanDeletionRequestEntity capturedEntity = entityCaptor.getValue();
         assertNotNull(capturedEntity.getId());
-        assertEquals(ibanValue, capturedEntity.getibanValue());
+        assertEquals(ibanValue, capturedEntity.getIbanValue());
         assertEquals(expectedScheduledDate, capturedEntity.getScheduledExecutionDate());
         assertEquals(IbanDeletionRequestStatus.PENDING, capturedEntity.getStatus());
     }
@@ -186,7 +186,7 @@ class IbanDeletionRequestsServiceTest {
                 .status(IbanDeletionRequestStatus.PENDING)
                 .build();
 
-        when(ibanDeletionRequestsRepository.findByibanValue(ibanValue))
+        when(ibanDeletionRequestsRepository.findByIbanValue(ibanValue))
                 .thenReturn(Optional.of(entity));
 
         IbanDeletionRequests response = service.getIbanDeletionRequests(ciCode, ibanValue);
@@ -197,13 +197,13 @@ class IbanDeletionRequestsServiceTest {
 
         IbanDeletionRequest ibanDeletionRequest = response.getRequests().get(0);
         assertEquals("req-001", ibanDeletionRequest.getId());
-        assertEquals(ciCode, ibanDeletionRequest.getciCode());
-        assertEquals(ibanValue, ibanDeletionRequest.getibanValue());
+        assertEquals(ciCode, ibanDeletionRequest.getCiCode());
+        assertEquals(ibanValue, ibanDeletionRequest.getIbanValue());
         assertEquals(scheduledDate,
                 ibanDeletionRequest.getScheduledExecutionDate());
         assertEquals("PENDING", ibanDeletionRequest.getStatus());
 
-        verify(ibanDeletionRequestsRepository).findByibanValue(ibanValue);
+        verify(ibanDeletionRequestsRepository).findByIbanValue(ibanValue);
     }
 
     @Test
@@ -241,11 +241,11 @@ class IbanDeletionRequestsServiceTest {
 
         IbanDeletionRequest request1 = response.getRequests().get(0);
         assertEquals("req-001", request1.getId());
-        assertEquals(ibanValue, request1.getibanValue());
+        assertEquals(ibanValue, request1.getIbanValue());
 
         IbanDeletionRequest request2 = response.getRequests().get(1);
         assertEquals("req-002", request2.getId());
-        assertEquals("IT99X9999999999999999999999", request2.getibanValue());
+        assertEquals("IT99X9999999999999999999999", request2.getIbanValue());
 
         verify(ibanDeletionRequestsRepository).findByCreditorInstitutionCodeAndStatus(ciCode, IbanDeletionRequestStatus.PENDING);
     }
@@ -267,14 +267,14 @@ class IbanDeletionRequestsServiceTest {
     @Test
     void getIbanDeletionRequest_shouldReturnEmptyList_whenNotFound() {
 
-        when(ibanDeletionRequestsRepository.findByibanValue(ibanValue))
+        when(ibanDeletionRequestsRepository.findByIbanValue(ibanValue))
                 .thenReturn(Optional.empty());
 
         IbanDeletionRequests result = service.getIbanDeletionRequests(ciCode, ibanValue);
 
         assertNotNull(result);
         assertTrue(result.getRequests().isEmpty());
-        verify(ibanDeletionRequestsRepository).findByibanValue(ibanValue);
+        verify(ibanDeletionRequestsRepository).findByIbanValue(ibanValue);
         verify(ibanDeletionRequestsRepository, never()).findByCreditorInstitutionCodeAndStatus(any(), any());
     }
 

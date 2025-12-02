@@ -91,8 +91,8 @@ class IbanDeletionRequestsControllerTest {
         );
 
         assertNotNull(response);
-        assertEquals(ciCode, response.getciCode());
-        assertEquals(ibanValue, response.getibanValue());
+        assertEquals(ciCode, response.getCiCode());
+        assertEquals(ibanValue, response.getIbanValue());
         assertEquals(scheduledDate, response.getScheduledExecutionDate());
         assertEquals("PENDING", response.getStatus());
 
