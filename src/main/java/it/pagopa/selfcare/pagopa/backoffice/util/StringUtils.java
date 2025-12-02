@@ -43,7 +43,11 @@ public class StringUtils {
     public static String obfuscateKeepingLast4(String value) {
         return Optional.ofNullable(value)
                 .filter(v -> v.length() > 4)
-                .map(v -> "****" + v.substring(v.length() - 4))
+                .map(v -> {
+                    String last4 = v.substring(v.length() - 4)
+                        .replaceAll("[\\r\\n]", "");
+                    return "****" + last4;
+                })
                 .orElse("****");
     }
 }
