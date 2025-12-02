@@ -43,9 +43,10 @@ public class IbanDeletionRequestsController {
     @JwtSecurity(paramName = "ciCode", allowedProductRole = ADMIN)
     public IbanDeletionRequests getIbanDeletionRequest(
             @Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
-            @Parameter(description = "Filter by IBAN value") @RequestParam(value = "ibanValue", required = false) String ibanValue) {
+            @Parameter(description = "Filter by IBAN value") @RequestParam(value = "ibanValue", required = true) String ibanValue,
+            @Parameter(description = "Status") @RequestParam(value = "status", required = true) String status) {
 
-        return ibanDeletionRequestsService.getIbanDeletionRequests(ciCode, ibanValue);
+        return ibanDeletionRequestsService.getIbanDeletionRequests(ciCode, ibanValue, status);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)

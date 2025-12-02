@@ -20,7 +20,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -113,36 +113,47 @@ public class IbanDeletionRequestsService {
                 });
     }
 
-    public IbanDeletionRequests getIbanDeletionRequests(String ciCode, String ibanValue) {
+    public IbanDeletionRequests getIbanDeletionRequests(String ciCode, String ibanValue, String status) {
 
-        final String maskedIbanForLogs = Utility.sanitizeLogParam(StringUtils.obfuscateKeepingLast4(ibanValue));
-        final String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
+        String maskedIbanForLogs = Optional.ofNullable(ibanValue)
+            .map(v -> Utility.sanitizeLogParam(StringUtils.obfuscateKeepingLast4(v)))
+            .orElse("null");
+        String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
+        String sanitizedStatusForLogs = Utility.sanitizeLogParam(status);
 
-        log.info("Retrieving IBAN deletion requests for ciCode: {}, ibanValue: {}", sanitizedCiCodeForLogs, maskedIbanForLogs);
+        log.info("Retrieving IBAN deletion requests for ciCode: {}, ibanValue: {}, status: {}",
+            sanitizedCiCodeForLogs, maskedIbanForLogs, sanitizedStatusForLogs);
 
-        return Optional.ofNullable(ibanValue)
-                .filter(value -> !value.isBlank())
-                .map(value -> ibanDeletionRequestsRepository.findByCreditorInstitutionCodeAndIbanValue(ciCode, value)
-                        .map(List::of)
-                        .orElse(List.of()))
-                .orElseGet(() -> ibanDeletionRequestsRepository.findByCreditorInstitutionCodeAndStatus(ciCode, IbanDeletionRequestStatus.PENDING))
-                .stream()
-                .map(entity -> IbanDeletionRequest.builder()
-                        .id(entity.getId())
-                        .ciCode(entity.getCreditorInstitutionCode())
-                        .ibanValue(entity.getIbanValue())
-                        .scheduledExecutionDate(entity.getScheduledExecutionDate())
-                        .status(entity.getStatus().name())
-                        .build())
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toList(),
-                        requests -> {
-                            log.info("Found {} IBAN deletion requests for ciCode: {}, iban: {}", requests.size(), sanitizedCiCodeForLogs, maskedIbanForLogs);
-                            return IbanDeletionRequests.builder()
-                                    .requests(requests)
-                                    .build();
-                        }
-                ));
+        boolean allParametersPresent = Stream.of(
+                Optional.of(ciCode).filter(c -> !c.isBlank()),
+                Optional.ofNullable(ibanValue).filter(v -> !v.isBlank()),
+                Optional.of(status).filter(s -> !s.isBlank())
+            ).allMatch(Optional::isPresent);
+
+        return allParametersPresent
+            ? ibanDeletionRequestsRepository.findByCreditorInstitutionCodeAndStatusAndIbanValue(
+                ciCode,
+                IbanDeletionRequestStatus.valueOf(status).toString(),
+                ibanValue)
+            .map(entity -> IbanDeletionRequest.builder()
+                .id(entity.getId())
+                .ciCode(entity.getCreditorInstitutionCode())
+                .ibanValue(entity.getIbanValue())
+                .scheduledExecutionDate(entity.getScheduledExecutionDate())
+                .status(entity.getStatus().name())
+                .build())
+            .map(List::of)
+            .map(list -> {
+                log.info("Found {} IBAN deletion request(s) for ciCode: {}, iban: {}, status: {}",
+                    list.size(), sanitizedCiCodeForLogs, maskedIbanForLogs, sanitizedStatusForLogs);
+                return IbanDeletionRequests.builder().requests(list).build();
+            })
+            .orElseGet(() -> {
+                log.info("No IBAN deletion request found for ciCode: {}, iban: {}, status: {}",
+                    sanitizedCiCodeForLogs, maskedIbanForLogs, sanitizedStatusForLogs);
+                return IbanDeletionRequests.builder().requests(List.of()).build();
+            })
+            : IbanDeletionRequests.builder().requests(List.of()).build();
     }
 
     public void cancelIbanDeletionRequest(String ciCode, String id) {
