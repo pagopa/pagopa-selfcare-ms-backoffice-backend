@@ -173,7 +173,7 @@ class IbanDeletionRequestsControllerTest {
                 .requests(List.of(request1, request2))
                 .build();
 
-        when(ibanDeletionRequestsService.getIbanDeletionRequests(eq(ciCode), eq(null)))
+        when(ibanDeletionRequestsService.getIbanDeletionRequests(eq(ciCode),null))
                 .thenReturn(mockResponse);
 
         MvcResult mvcResult = mvc.perform(
@@ -214,7 +214,7 @@ class IbanDeletionRequestsControllerTest {
                 .requests(List.of(request))
                 .build();
 
-        when(ibanDeletionRequestsService.getIbanDeletionRequests(eq(ciCode), eq(ibanValue)))
+        when(ibanDeletionRequestsService.getIbanDeletionRequests(ciCode, ibanValue))
                 .thenReturn(mockResponse);
 
         MvcResult mvcResult = mvc.perform(
@@ -249,7 +249,7 @@ class IbanDeletionRequestsControllerTest {
                 .requests(List.of())
                 .build();
 
-        when(ibanDeletionRequestsService.getIbanDeletionRequests(eq(ciCode), eq(null)))
+        when(ibanDeletionRequestsService.getIbanDeletionRequests(eq(ciCode), null))
                 .thenReturn(mockResponse);
 
         MvcResult mvcResult = mvc.perform(
@@ -279,7 +279,7 @@ class IbanDeletionRequestsControllerTest {
         String requestId = "req-123";
 
         doNothing().when(ibanDeletionRequestsService)
-                .cancelIbanDeletionRequest(eq(ciCode), eq(requestId));
+                .cancelIbanDeletionRequest(eq(ciCode), requestId);
 
         mvc.perform(
                         delete("/creditor-institutions/{ci-code}/iban-deletion-requests/{id}", ciCode, requestId)
