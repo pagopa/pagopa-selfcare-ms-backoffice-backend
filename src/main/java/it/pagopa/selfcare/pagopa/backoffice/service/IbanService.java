@@ -22,16 +22,17 @@ public class IbanService {
 
     private final ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
-    private final ExternalApiClient externalApiClient;
-
     private final ModelMapper modelMapper;
 
+    private final AsyncNotificationService asyncNotificationService;
+
     @Autowired
-    public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, ExternalApiClient externalApiClient, ModelMapper modelMapper) {
+    public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
+                       ModelMapper modelMapper, AsyncNotificationService asyncNotificationService) {
         this.apiConfigClient = apiConfigClient;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
-        this.externalApiClient = externalApiClient;
         this.modelMapper = modelMapper;
+        this.asyncNotificationService = asyncNotificationService;
     }
 
 
@@ -42,6 +43,7 @@ public class IbanService {
     public Iban createIban(String ciCode, IbanCreate requestDto) {
         IbanCreateApiconfig body = modelMapper.map(requestDto, IbanCreateApiconfig.class);
         IbanCreateApiconfig dto = apiConfigClient.createCreditorInstitutionIbans(ciCode, body);
+        asyncNotificationService.notifyIbanOperation(ciCode, null);
         return modelMapper.map(dto, Iban.class);
     }
 

@@ -29,7 +29,7 @@ class IbanServiceTest {
   private static final String CI_CODE = "11111";
   private static final String IBAN = "GB33BUKB20201555555556";
 
-  @MockBean private ExternalApiClient externalApiClient;
+  @MockBean private AsyncNotificationService asyncNotificationService;
 
   @MockBean private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 

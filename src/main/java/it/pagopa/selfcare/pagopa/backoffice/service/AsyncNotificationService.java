@@ -12,8 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.BUNDLE_DELETE_BODY;
-import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.BUNDLE_DELETE_SUBJECT;
+import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.*;
 
 @Service
 public class AsyncNotificationService {
@@ -43,7 +42,7 @@ public class AsyncNotificationService {
             String bundleName,
             String pspName
     ) {
-        Context bodyContext = buildEmailHtmlBodyContext(bundleName, pspName);
+        Context bodyContext = buildBundleEmailHtmlBodyContext(bundleName, pspName);
         ciTaxCodes.parallelStream().forEach(
                 ciTaxCode -> {
                     EmailMessageDetail messageDetail = EmailMessageDetail.builder()
@@ -59,7 +58,21 @@ public class AsyncNotificationService {
         );
     }
 
-    private Context buildEmailHtmlBodyContext(String bundleName, String pspName) {
+    @Async
+    public void notifyIbanOperation(String ciTaxCode, String ciName){
+        Context bodyContext = buildIbanCreatedEmailHtmlBodyContext(ciName);
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(ciTaxCode)
+                .subject(IBAN_CREATE_SUBJECT)
+                .textBody(String.format(IBAN_CREATE_BODY, ciName, getEnvParam()))
+                .htmlBodyFileName("createIbanNotificationEmail.html")
+                .htmlBodyContext(bodyContext)
+                .destinationUserType(SelfcareProductUser.ADMIN)
+                .build();
+        this.awsSesClient.sendEmail(messageDetail);
+    }
+
+    private Context buildBundleEmailHtmlBodyContext(String bundleName, String pspName) {
         // Thymeleaf Context
         Context context = new Context();
 
@@ -70,6 +83,18 @@ public class AsyncNotificationService {
         properties.put("pspName", pspName);
 
         context.setVariables(properties);
+        return context;
+    }
+
+    private Context buildIbanCreatedEmailHtmlBodyContext(String ciName) {
+        // Thymeleaf Context
+        Context context = new Context();
+
+        // Properties to show up in Template after stored in Context
+        Map<String, Object> properties = new HashMap<>();
+
+        context.setVariables(properties);
+
         return context;
     }
 

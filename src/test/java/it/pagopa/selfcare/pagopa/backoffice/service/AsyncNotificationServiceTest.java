@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 @SpringBootTest(classes = AsyncNotificationService.class)
 class AsyncNotificationServiceTest {
 
-    private static final String PSP_CODE = "pspCode";
+    private static final String CI_NAME = "ciName";
     private static final String CI_TAX_CODE = "ciTaxCode";
     private static final String CI_TAX_CODE_2 = "ciTaxCode2";
     private static final String PSP_NAME = "pspName";
@@ -39,5 +39,13 @@ class AsyncNotificationServiceTest {
                 sut.notifyDeletePSPBundleAsync(Set.of(CI_TAX_CODE, CI_TAX_CODE_2), BUNDLE_NAME, PSP_NAME));
 
         verify(awsSesClient, times(2)).sendEmail(any());
+    }
+
+    @Test
+    void notifyIbanOperation(){
+        assertDoesNotThrow(() ->
+                sut.notifyIbanOperation(CI_TAX_CODE, CI_NAME));
+
+        verify(awsSesClient, times(1)).sendEmail(any());
     }
 }
