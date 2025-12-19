@@ -43,7 +43,12 @@ public class IbanService {
     public Iban createIban(String ciCode, IbanCreate requestDto) {
         IbanCreateApiconfig body = modelMapper.map(requestDto, IbanCreateApiconfig.class);
         IbanCreateApiconfig dto = apiConfigClient.createCreditorInstitutionIbans(ciCode, body);
-        asyncNotificationService.notifyIbanCreation(ciCode);
+        try {
+            log.info("Sending IBAN creation request notification email");
+            asyncNotificationService.notifyIbanCreation(ciCode);
+        } catch (Exception e){
+            log.error("Could not send IBAN creation request notification email");
+        }
         return modelMapper.map(dto, Iban.class);
     }
 
@@ -65,7 +70,12 @@ public class IbanService {
         }
         // update IBAN values
         IbanCreateApiconfig updatedDto = apiConfigClient.updateCreditorInstitutionIbans(ciCode, ibanValue, modelMapper.map(dto, IbanCreateApiconfig.class));
-        asyncNotificationService.notifyIbanUpdate(ciCode, ibanValue);
+        try {
+            log.info("Sending IBAN update request notification email");
+            asyncNotificationService.notifyIbanUpdate(ciCode, ibanValue);
+        } catch (Exception e){
+            log.error("Could not send IBAN update request notification email");
+        }
         return modelMapper.map(updatedDto, Iban.class);
     }
 

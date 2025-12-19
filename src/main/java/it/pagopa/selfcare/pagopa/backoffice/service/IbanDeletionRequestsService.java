@@ -109,13 +109,13 @@ public class IbanDeletionRequestsService {
                             .build();
                 })
                 .map(ibanDeletionRequest -> {
-                    log.info("Sending deletion request notification email for request with ID: {} for ciCode: {}, IBAN: {}",
+                    log.info("Sending IBAN deletion request notification email for request with ID: {} for ciCode: {}, IBAN: {}",
                             ibanDeletionRequest.getId(), sanitizedCiCodeForLogs, maskedIbanForLogs);
                     try {
                         asyncNotificationService.notifyIbanDeletion(ibanDeletionRequest.getCiCode(),
                                 ibanDeletionRequest.getIbanValue(), ibanDeletionRequest.getScheduledExecutionDate());
                     } catch (Exception e) {
-                        log.error("Could not sent deletion request notification email for request with ID: {} for ciCode: {}, IBAN: {}",
+                        log.error("Could not send IBAN deletion request notification email for request with ID: {} for ciCode: {}, IBAN: {}",
                                 ibanDeletionRequest.getId(), sanitizedCiCodeForLogs, maskedIbanForLogs, e);
                     }
                     return ibanDeletionRequest;
