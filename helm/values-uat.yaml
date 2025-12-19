@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.38.16-2-CHK-4702-add-email-notification-on-iban-operation" #improve
+    tag: "2.38.16-3-CHK-4702-add-email-notification-on-iban-operation" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
