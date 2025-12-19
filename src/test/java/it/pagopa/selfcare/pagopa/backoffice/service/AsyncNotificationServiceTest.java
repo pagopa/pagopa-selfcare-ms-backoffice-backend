@@ -21,6 +21,7 @@ class AsyncNotificationServiceTest {
     private static final String CI_TAX_CODE = "ciTaxCode";
     private static final String CI_TAX_CODE_2 = "ciTaxCode2";
     private static final String PSP_NAME = "pspName";
+    private static final String IBAN = "iban";
     public static final String BUNDLE_NAME = "bundleName";
 
     @MockBean
@@ -44,11 +45,21 @@ class AsyncNotificationServiceTest {
     }
 
     @Test
-    void notifyIbanOperation(){
+    void notifyIbanCreationTest(){
         when(institutionsClient.getInstitutionData(anyString())).thenReturn(new InstitutionUploadData());
 
         assertDoesNotThrow(() ->
-                sut.notifyIbanOperation(CI_TAX_CODE));
+                sut.notifyIbanCreation(CI_TAX_CODE));
+
+        verify(awsSesClient, times(1)).sendEmail(any());
+    }
+
+    @Test
+    void notifyIbanUpdateTest(){
+        when(institutionsClient.getInstitutionData(anyString())).thenReturn(new InstitutionUploadData());
+
+        assertDoesNotThrow(() ->
+                sut.notifyIbanUpdate(CI_TAX_CODE, IBAN));
 
         verify(awsSesClient, times(1)).sendEmail(any());
     }

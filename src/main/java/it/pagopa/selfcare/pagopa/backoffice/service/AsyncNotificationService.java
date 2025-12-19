@@ -63,7 +63,7 @@ public class AsyncNotificationService {
     }
 
     @Async
-    public void notifyIbanOperation(String ciTaxCode){
+    public void notifyIbanCreation(String ciTaxCode){
         InstitutionUploadData institutionUploadData = institutionsClient.getInstitutionData(ciTaxCode);
         Context bodyContext = buildHtmlBodyContext(
                 List.of(
@@ -74,6 +74,25 @@ public class AsyncNotificationService {
                 .subject(IBAN_CREATE_SUBJECT)
                 .textBody(String.format(IBAN_CREATE_BODY, institutionUploadData.getFullName(), getEnvParam()))
                 .htmlBodyFileName("createIbanNotificationEmail.html")
+                .htmlBodyContext(bodyContext)
+                .destinationUserType(SelfcareProductUser.ADMIN)
+                .build();
+        this.awsSesClient.sendEmail(messageDetail);
+    }
+
+    @Async
+    public void notifyIbanUpdate(String ciTaxCode, String iban){
+        InstitutionUploadData institutionUploadData = institutionsClient.getInstitutionData(ciTaxCode);
+        Context bodyContext = buildHtmlBodyContext(
+                List.of(
+                        Pair.of("environment", getEnvParam()),
+                        Pair.of("ciName", institutionUploadData.getFullName()),
+                        Pair.of("iban", iban)));
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(ciTaxCode)
+                .subject(IBAN_UPDATE_SUBJECT)
+                .textBody(String.format(IBAN_UPDATE_BODY, institutionUploadData.getFullName(), iban, getEnvParam()))
+                .htmlBodyFileName("updateIbanNotificationEmail.html")
                 .htmlBodyContext(bodyContext)
                 .destinationUserType(SelfcareProductUser.ADMIN)
                 .build();

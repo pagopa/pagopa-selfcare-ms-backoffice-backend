@@ -43,7 +43,7 @@ public class IbanService {
     public Iban createIban(String ciCode, IbanCreate requestDto) {
         IbanCreateApiconfig body = modelMapper.map(requestDto, IbanCreateApiconfig.class);
         IbanCreateApiconfig dto = apiConfigClient.createCreditorInstitutionIbans(ciCode, body);
-        asyncNotificationService.notifyIbanOperation(ciCode);
+        asyncNotificationService.notifyIbanCreation(ciCode);
         return modelMapper.map(dto, Iban.class);
     }
 
@@ -65,6 +65,7 @@ public class IbanService {
         }
         // update IBAN values
         IbanCreateApiconfig updatedDto = apiConfigClient.updateCreditorInstitutionIbans(ciCode, ibanValue, modelMapper.map(dto, IbanCreateApiconfig.class));
+        asyncNotificationService.notifyIbanUpdate(ciCode, ibanValue);
         return modelMapper.map(updatedDto, Iban.class);
     }
 
