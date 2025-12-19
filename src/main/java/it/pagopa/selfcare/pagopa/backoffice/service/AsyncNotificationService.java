@@ -3,14 +3,13 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.*;
 
@@ -60,7 +59,7 @@ public class AsyncNotificationService {
 
     @Async
     public void notifyIbanOperation(String ciTaxCode, String ciName){
-        Context bodyContext = buildIbanCreatedEmailHtmlBodyContext(ciName);
+        Context bodyContext = buildHtmlBodyContext(List.of(Pair.of("environment", getEnvParam()), Pair.of("ciName", ciName)));
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
                 .subject(IBAN_CREATE_SUBJECT)
@@ -86,12 +85,13 @@ public class AsyncNotificationService {
         return context;
     }
 
-    private Context buildIbanCreatedEmailHtmlBodyContext(String ciName) {
+    private Context buildHtmlBodyContext(List<Pair<String, String>> textProperties) {
         // Thymeleaf Context
         Context context = new Context();
 
         // Properties to show up in Template after stored in Context
         Map<String, Object> properties = new HashMap<>();
+        textProperties.forEach(p -> properties.put(p.getKey(), p.getValue()));
 
         context.setVariables(properties);
 
