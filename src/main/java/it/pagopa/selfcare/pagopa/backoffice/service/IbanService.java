@@ -9,9 +9,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static it.pagopa.selfcare.pagopa.backoffice.util.IbanOperationsCsvUtil.convertOperationsToCsv;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Slf4j
@@ -25,6 +26,8 @@ public class IbanService {
     private final ExternalApiClient externalApiClient;
 
     private final ModelMapper modelMapper;
+
+    private static final int MAX_IBAN_PER_FILE = 100;
 
     @Autowired
     public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, ExternalApiClient externalApiClient, ModelMapper modelMapper) {
@@ -70,4 +73,18 @@ public class IbanService {
         apiConfigClient.deleteCreditorInstitutionIbans(ciCode, ibanValue);
     }
 
+    public void processBulkIbanOperations(String ciCode, List<IbanOperation> operations) {
+
+        log.info("Processing bulk IBAN operations for ciCode: {}, total operations: {}", ciCode, operations.size());
+
+        apiConfigClient.createCreditorInstitutionIbansBulk(convertOperationsToCsv(ciCode, operations));
+
+        operations.stream()
+                .collect(Collectors.groupingBy(
+                        IbanOperation::getType,
+                        Collectors.counting()))
+                .forEach((operation, count) ->
+                        log.info("Operation {}: {} IBANs", operation, count));
+        log.info("Bulk IBAN operations completed successfully for CI: {}", ciCode);
+    }
 }
