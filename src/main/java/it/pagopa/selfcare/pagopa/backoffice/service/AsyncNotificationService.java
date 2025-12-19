@@ -1,8 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
+import it.pagopa.selfcare.pagopa.backoffice.client.InstitutionsClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
+import it.pagopa.selfcare.pagopa.backoffice.model.notices.InstitutionUploadData;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -18,13 +20,16 @@ public class AsyncNotificationService {
 
     private final String environment;
     private final AwsSesClient awsSesClient;
+    private final InstitutionsClient institutionsClient;
 
     public AsyncNotificationService(
             @Value("${info.properties.environment}") String environment,
-            AwsSesClient awsSesClient
+            AwsSesClient awsSesClient,
+            InstitutionsClient institutionsClient
     ) {
         this.environment = environment;
         this.awsSesClient = awsSesClient;
+        this.institutionsClient = institutionsClient;
     }
 
     /**
@@ -58,12 +63,16 @@ public class AsyncNotificationService {
     }
 
     @Async
-    public void notifyIbanOperation(String ciTaxCode, String ciName){
-        Context bodyContext = buildHtmlBodyContext(List.of(Pair.of("environment", getEnvParam()), Pair.of("ciName", ciName)));
+    public void notifyIbanOperation(String ciTaxCode){
+        InstitutionUploadData institutionUploadData = institutionsClient.getInstitutionData(ciTaxCode);
+        Context bodyContext = buildHtmlBodyContext(
+                List.of(
+                        Pair.of("environment", getEnvParam()),
+                        Pair.of("ciName", institutionUploadData.getFullName())));
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
                 .subject(IBAN_CREATE_SUBJECT)
-                .textBody(String.format(IBAN_CREATE_BODY, ciName, getEnvParam()))
+                .textBody(String.format(IBAN_CREATE_BODY, institutionUploadData.getFullName(), getEnvParam()))
                 .htmlBodyFileName("createIbanNotificationEmail.html")
                 .htmlBodyContext(bodyContext)
                 .destinationUserType(SelfcareProductUser.ADMIN)
