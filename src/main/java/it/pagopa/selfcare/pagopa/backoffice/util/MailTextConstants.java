@@ -28,6 +28,8 @@ public class MailTextConstants {
     public static final String IBAN_CREATE_BODY = "Ciao, %n%n%n %s ha creato un nuovo IBAN ed è in attesa di revisione. %n%n%n Puoi revisionarlo qui ( https://selfcare%s.platform.pagopa.it/ui/iban ).%n%n%nA presto,%n%nPiattaforma pagoPa";
     public static final String IBAN_UPDATE_SUBJECT = "Dettaglio IBAN modificato";
     public static final String IBAN_UPDATE_BODY = "Ciao,%n%n%n l'Ente Creditore %s ha effettuato una modifica sui dettagli dell'IBAN %s. %n%n%n Puoi consultarlo qui ( https://selfcare%s.platform.pagopa.it/ui/iban ).%n%n%nA presto,%n%nPiattaforma pagoPa";
+    public static final String IBAN_DELETE_SUBJECT = "Eliminazione IBAN programmata";
+    public static final String IBAN_DELETE_BODY = "Ciao,%n%n%n l'Ente Creditore %s ha programmato l'eliminazione di un IBAN configurato sulla piattaforma. %n%n%n L'IBAN %s verrà eliminato a partire dal %s e, da quella data, non sarà più possibile accettare versamenti. %n%n%n Puoi verificare i dettagli della configurazione qui ( https://selfcare%s.platform.pagopa.it/ui/iban ).%n%n%nA presto,%n%nPiattaforma pagoPa";
 
     // cron-job notification
     public static final String BUNDLE_EXPIRE_SUBJECT = "Pacchetto commissionale in scadenza";

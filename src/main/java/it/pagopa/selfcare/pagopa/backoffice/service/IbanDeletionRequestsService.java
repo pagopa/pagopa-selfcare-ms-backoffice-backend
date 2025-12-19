@@ -28,11 +28,13 @@ public class IbanDeletionRequestsService {
 
     private final IbanDeletionRequestsRepository ibanDeletionRequestsRepository;
     private final ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
+    private final AsyncNotificationService asyncNotificationService;
 
     @Autowired
-    public IbanDeletionRequestsService(IbanDeletionRequestsRepository ibanDeletionRequestsRepository, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient) {
+    public IbanDeletionRequestsService(IbanDeletionRequestsRepository ibanDeletionRequestsRepository, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, AsyncNotificationService asyncNotificationService) {
         this.ibanDeletionRequestsRepository = ibanDeletionRequestsRepository;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
+        this.asyncNotificationService = asyncNotificationService;
     }
 
     public IbanDeletionRequest createIbanDeletionRequest(String ciCode, String ibanValue, String scheduledExecutionDate) {
@@ -105,6 +107,18 @@ public class IbanDeletionRequestsService {
                             .scheduledExecutionDate(savedEntity.getScheduledExecutionDate())
                             .status(savedEntity.getStatus().name())
                             .build();
+                })
+                .map(ibanDeletionRequest -> {
+                    log.info("Sending deletion request notification email for request with ID: {} for ciCode: {}, IBAN: {}",
+                            ibanDeletionRequest.getId(), sanitizedCiCodeForLogs, maskedIbanForLogs);
+                    try {
+                        asyncNotificationService.notifyIbanDeletion(ibanDeletionRequest.getCiCode(),
+                                ibanDeletionRequest.getIbanValue(), ibanDeletionRequest.getScheduledExecutionDate());
+                    } catch (Exception e) {
+                        log.error("Could not sent deletion request notification email for request with ID: {} for ciCode: {}, IBAN: {}",
+                                ibanDeletionRequest.getId(), sanitizedCiCodeForLogs, maskedIbanForLogs, e);
+                    }
+                    return ibanDeletionRequest;
                 })
                 .orElseThrow(() -> {
                     log.error("Failed to create IBAN deletion request for ciCode: {}, IBAN: {}",
