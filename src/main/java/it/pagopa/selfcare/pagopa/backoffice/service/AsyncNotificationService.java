@@ -119,6 +119,25 @@ public class AsyncNotificationService {
         this.awsSesClient.sendEmail(messageDetail);
     }
 
+    @Async
+    public void notifyIbanRestore(String ciTaxCode, String iban){
+        InstitutionUploadData institutionUploadData = institutionsClient.getInstitutionData(ciTaxCode);
+        Context bodyContext = buildHtmlBodyContext(
+                List.of(
+                        Pair.of("environment", getEnvParam()),
+                        Pair.of("ciName", institutionUploadData.getFullName()),
+                        Pair.of("iban", iban)));
+        EmailMessageDetail messageDetail = EmailMessageDetail.builder()
+                .institutionTaxCode(ciTaxCode)
+                .subject(IBAN_RESTORE_SUBJECT)
+                .textBody(String.format(IBAN_RESTORE_BODY, institutionUploadData.getFullName(), iban, getEnvParam()))
+                .htmlBodyFileName("restoreDisabledIbanNotificationEmail.html")
+                .htmlBodyContext(bodyContext)
+                .destinationUserType(SelfcareProductUser.ADMIN)
+                .build();
+        this.awsSesClient.sendEmail(messageDetail);
+    }
+
     private Context buildBundleEmailHtmlBodyContext(String bundleName, String pspName) {
         // Thymeleaf Context
         Context context = new Context();

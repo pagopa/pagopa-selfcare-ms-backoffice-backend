@@ -185,6 +185,18 @@ public class IbanDeletionRequestsService {
                     return request;
                 })
                 .map(ibanDeletionRequestsRepository::save)
+                .map(request -> {
+                    final String maskedIbanForLogs = Utility.sanitizeLogParam(request.getIbanValue());
+                    log.info("Sending IBAN restore request notification email for request with ID: {} for ciCode: {}, IBAN: {}",
+                            request.getId(), sanitizedCiCodeForLogs, maskedIbanForLogs);
+                    try {
+                        asyncNotificationService.notifyIbanRestore(ciCode, request.getIbanValue());
+                    } catch (Exception e) {
+                        log.error("Could not send IBAN restore request notification email for request with ID: {} for ciCode: {}, IBAN: {}",
+                                request.getId(), sanitizedCiCodeForLogs, maskedIbanForLogs, e);
+                    }
+                    return request;
+                })
                 .ifPresentOrElse(
                         savedRequest -> log.info("IBAN deletion request with ID: {} successfully canceled for ciCode: {}", sanitizedIdForLogs, sanitizedCiCodeForLogs),
                         () -> {
