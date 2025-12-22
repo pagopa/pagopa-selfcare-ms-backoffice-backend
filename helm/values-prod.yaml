@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.38.16-3-CHK-4636-add-deletion-request" #improve
+    tag: "2.38.16-4-CHK-4636-add-deletion-request" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
