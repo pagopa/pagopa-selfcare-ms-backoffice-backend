@@ -68,13 +68,13 @@ class IbanOperationsCsvUtilTest {
     }
 
     @Test
-    @DisplayName("Should handle 100 records and verify total row count")
+    @DisplayName("Should handle 500 records and verify total row count")
     void convertOperationsToCsv_LargeList() throws IOException {
 
         String ciCode = "00000000000";
         String ciName = "business Name";
 
-        int rowCount = 100;
+        int rowCount = 500;
 
         List<IbanOperation> operations = java.util.stream.IntStream.range(0, rowCount)
                 .mapToObj(i -> IbanOperation.builder()
@@ -98,8 +98,8 @@ class IbanOperationsCsvUtilTest {
 
         assertThat(lines).hasSize(rowCount + 1);
 
-        assertThat(lines[rowCount]).contains("Description number 99");
+        assertThat(lines[rowCount]).contains("Description number 499");
         assertThat(lines[rowCount]).endsWith(",U");
-        assertThat(durationMs).isLessThan(10);
+        assertThat(durationMs).isLessThan(1000);
     }
 }

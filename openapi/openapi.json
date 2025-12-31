@@ -4,7 +4,7 @@
     "description" : "Microservice to manage PagoPA Backoffice",
     "termsOfService" : "https://www.pagopa.gov.it/",
     "title" : "SelfCare Backoffice",
-    "version" : "2.38.16"
+    "version" : "2.38.16-1-CHK-4674-massive-iban"
   },
   "servers" : [ {
     "url" : "http://localhost:8080"
@@ -13074,7 +13074,7 @@
         "type" : "object",
         "properties" : {
           "operations" : {
-            "maxItems" : 100,
+            "maxItems" : 500,
             "minItems" : 1,
             "type" : "array",
             "items" : {
