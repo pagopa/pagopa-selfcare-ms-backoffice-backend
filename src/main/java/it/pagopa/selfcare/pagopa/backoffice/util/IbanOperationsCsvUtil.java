@@ -55,7 +55,7 @@ public class IbanOperationsCsvUtil {
    private static String operationToCsvRow(IbanOperation operation, String ciCode, String ciName) {
         String apiConfigOperation = mapOperationType(String.valueOf(operation.getType()));
 
-        String row = Stream.of(
+        return Stream.of(
                         ciCode,
                         ciName,
                         Optional.ofNullable(operation.getDescription()).orElse(""),
@@ -65,7 +65,6 @@ public class IbanOperationsCsvUtil {
                 )
                 .map(IbanOperationsCsvUtil::escapeCsvField)
                 .collect(Collectors.joining(","));
-        return row;
    }
 
    private static String mapOperationType(String operation) {

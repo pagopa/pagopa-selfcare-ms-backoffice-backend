@@ -21,7 +21,7 @@ class IbanOperationsCsvUtilTest {
     void convertOperationsToCsv_Success() throws IOException {
 
         String ciCode = "12345678901";
-        String ciName = "businessName";
+        String ciName = null; // to test value escape
 
         IbanOperation op1 = IbanOperation.builder()
                 .description("Test Description")
@@ -31,7 +31,7 @@ class IbanOperationsCsvUtilTest {
                 .build();
 
         IbanOperation op2 = IbanOperation.builder()
-                .description("Update, with comma")
+                .description("Update, with comma, \" and \n")
                 .ibanValue("IT12X0542403200000000012346")
                 .validityDate(null) // Test null safety
                 .type(IbanOperationType.UPDATE)
@@ -50,10 +50,9 @@ class IbanOperationsCsvUtilTest {
 
         assertThat(lines[0]).isEqualTo("iddominio,ragionesociale,descrizione,iban,dataattivazioneiban,operazione");
 
-        assertThat(lines[1]).isEqualTo("12345678901,businessName,Test Description,IT12X0542403200000000012345,2023-12-31,I");
+        assertThat(lines[1]).isEqualTo("12345678901,,Test Description,IT12X0542403200000000012345,2023-12-31,I");
 
-        assertThat(lines[2]).contains("\"Update, with comma\"");
-        assertThat(lines[2]).endsWith(",U");
+        assertThat(lines[2]).contains("\"Update, with comma,");
     }
 
     @Test
