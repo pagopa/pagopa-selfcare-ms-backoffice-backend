@@ -27,6 +27,8 @@ public class IbanOperationsCsvUtil {
      * @return MultipartFile containing CSV data
      */
     public static MultipartFile convertOperationsToCsv(String ciCode, String ciName, List<IbanOperation> operations) {
+        String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
+
         String header = "iddominio,ragionesociale,descrizione,iban,dataattivazioneiban,operazione\n";
 
         String csvContent = operations.stream()
@@ -35,8 +37,7 @@ public class IbanOperationsCsvUtil {
 
         byte[] csvBytes = csvContent.getBytes(StandardCharsets.UTF_8);
 
-        log.info("Generated CSV content for CI {}: {} rows", ciCode, operations.size());
-        log.debug("CSV content:\n{}", csvContent);
+        log.info("Generated CSV content for CI {}: {} rows", sanitizedCiCodeForLogs, operations.size());
 
         return new InMemoryMultipartFile(
                 "file",

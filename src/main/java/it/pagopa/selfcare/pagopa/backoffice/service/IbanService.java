@@ -5,6 +5,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationC
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.*;
+import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,9 +79,11 @@ public class IbanService {
 
     public void processBulkIbanOperations(String ciCode, List<IbanOperation> operations) {
 
-        log.info("Processing bulk IBAN operations for ciCode: {}, total operations: {}", ciCode, operations.size());
+        final String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
 
-        log.debug("Retrieve CI business name for: {}", ciCode);
+        log.info("Processing bulk IBAN operations for ciCode: {}, total operations: {}", sanitizedCiCodeForLogs, operations.size());
+
+        log.debug("Retrieve CI business name for: {}", sanitizedCiCodeForLogs);
         CreditorInstitutionDetails creditorInstitutionDetails = apiConfigClient.getCreditorInstitutionDetails(ciCode);
         String ciName = creditorInstitutionDetails.getBusinessName();
 
@@ -88,7 +91,7 @@ public class IbanService {
         MultipartFile csvData = convertOperationsToCsv(ciCode, ciName, operations);
 
         log.debug("Calling API to create bulk IBANs for CI: {} with CSV data of {} bytes",
-                ciCode, csvData.getSize());
+                sanitizedCiCodeForLogs, csvData.getSize());
         apiConfigClient.createCreditorInstitutionIbansBulk(csvData);
 
         operations.stream()
