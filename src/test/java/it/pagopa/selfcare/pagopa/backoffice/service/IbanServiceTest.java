@@ -13,15 +13,19 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.Iban;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreate;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreateApiconfig;
-import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitution;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
+import it.pagopa.selfcare.pagopa.backoffice.model.iban.*;
+
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest(classes = {IbanService.class, MappingsConfiguration.class})
 class IbanServiceTest {
@@ -77,4 +81,35 @@ class IbanServiceTest {
 
     verify(apiConfigClient).deleteCreditorInstitutionIbans(CI_CODE, IBAN);
   }
+
+    @Test
+    void processBulkIbanOperations() throws Exception {
+        // Arrange
+        String ciCode = CI_CODE;
+        List<IbanOperation> operations = List.of(
+                IbanOperation.builder()
+                        .type(IbanOperationType.CREATE)
+                        .ibanValue("IT60X0542811101000000123456")
+                        .description("Test IBAN 1")
+                        .validityDate(LocalDate.now().toString())
+                        .build(),
+                IbanOperation.builder()
+                        .type(IbanOperationType.UPDATE)
+                        .ibanValue("IT60X0542811101000000654321")
+                        .description("Test IBAN 2")
+                        .validityDate(LocalDate.now().toString())
+                        .build()
+        );
+
+        CreditorInstitutionDetails ciDetails = new CreditorInstitutionDetails();
+        ciDetails.setBusinessName("Test CI Business Name");
+
+        when(apiConfigClient.getCreditorInstitutionDetails(ciCode))
+                .thenReturn(ciDetails);
+
+        assertDoesNotThrow(() -> sut.processBulkIbanOperations(ciCode, operations));
+
+        verify(apiConfigClient).getCreditorInstitutionDetails(ciCode);
+        verify(apiConfigClient).createCreditorInstitutionIbansBulk(any(MultipartFile.class));
+    }
 }
