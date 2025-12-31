@@ -26,11 +26,11 @@ public class IbanOperationsCsvUtil {
      * @param operations List of IBAN operations
      * @return MultipartFile containing CSV data
      */
-    public static MultipartFile convertOperationsToCsv(String ciCode, List<IbanOperation> operations) {
+    public static MultipartFile convertOperationsToCsv(String ciCode, String ciName, List<IbanOperation> operations) {
         String header = "iddominio,ragionesociale,descrizione,iban,dataattivazioneiban,operazione\n";
 
         String csvContent = operations.stream()
-                .map( o -> operationToCsvRow(o, ciCode))
+                .map( o -> operationToCsvRow(o, ciCode, ciName))
                 .collect(Collectors.joining("\n", header, ""));
 
         byte[] csvBytes = csvContent.getBytes(StandardCharsets.UTF_8);
@@ -51,12 +51,12 @@ public class IbanOperationsCsvUtil {
      * @param operation IBAN operation
      * @return csv row as string
      */
-   private static String operationToCsvRow(IbanOperation operation, String ciCode) {
+   private static String operationToCsvRow(IbanOperation operation, String ciCode, String ciName) {
         String apiConfigOperation = mapOperationType(String.valueOf(operation.getType()));
 
         String row = Stream.of(
                         ciCode,
-                        ciCode,
+                        ciName,
                         Optional.ofNullable(operation.getDescription()).orElse(""),
                         operation.getIbanValue(),
                         Optional.ofNullable(operation.getValidityDate()).orElse(""),

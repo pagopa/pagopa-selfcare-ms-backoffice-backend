@@ -3,12 +3,15 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,7 +80,16 @@ public class IbanService {
 
         log.info("Processing bulk IBAN operations for ciCode: {}, total operations: {}", ciCode, operations.size());
 
-        apiConfigClient.createCreditorInstitutionIbansBulk(convertOperationsToCsv(ciCode, operations));
+        log.debug("Retrieve CI business name for: {}", ciCode);
+        CreditorInstitutionDetails creditorInstitutionDetails = apiConfigClient.getCreditorInstitutionDetails(ciCode);
+        String ciName = creditorInstitutionDetails.getBusinessName();
+
+        log.debug("Convert {} operations to CSV format", operations.size());
+        MultipartFile csvData = convertOperationsToCsv(ciCode, ciName, operations);
+
+        log.debug("Calling API to create bulk IBANs for CI: {} with CSV data of {} bytes",
+                ciCode, csvData.getSize());
+        apiConfigClient.createCreditorInstitutionIbansBulk(csvData);
 
         operations.stream()
                 .collect(Collectors.groupingBy(

@@ -21,6 +21,8 @@ class IbanOperationsCsvUtilTest {
     void convertOperationsToCsv_Success() throws IOException {
 
         String ciCode = "12345678901";
+        String ciName = "businessName";
+
         IbanOperation op1 = IbanOperation.builder()
                 .description("Test Description")
                 .ibanValue("IT12X0542403200000000012345")
@@ -37,7 +39,7 @@ class IbanOperationsCsvUtilTest {
 
         List<IbanOperation> operations = Arrays.asList(op1, op2);
 
-        MultipartFile result = IbanOperationsCsvUtil.convertOperationsToCsv(ciCode, operations);
+        MultipartFile result = IbanOperationsCsvUtil.convertOperationsToCsv(ciCode, ciName, operations);
 
         assertThat(result).isNotNull();
         assertThat(result.getContentType()).isEqualTo("text/csv");
@@ -48,7 +50,7 @@ class IbanOperationsCsvUtilTest {
 
         assertThat(lines[0]).isEqualTo("iddominio,ragionesociale,descrizione,iban,dataattivazioneiban,operazione");
 
-        assertThat(lines[1]).isEqualTo("12345678901,12345678901,Test Description,IT12X0542403200000000012345,2023-12-31,I");
+        assertThat(lines[1]).isEqualTo("12345678901,businessName,Test Description,IT12X0542403200000000012345,2023-12-31,I");
 
         assertThat(lines[2]).contains("\"Update, with comma\"");
         assertThat(lines[2]).endsWith(",U");
@@ -59,7 +61,7 @@ class IbanOperationsCsvUtilTest {
     void convertOperationsToCsv_EmptyList() throws IOException {
 
         List<IbanOperation> operations = Collections.emptyList();
-        MultipartFile result = IbanOperationsCsvUtil.convertOperationsToCsv("999", operations);
+        MultipartFile result = IbanOperationsCsvUtil.convertOperationsToCsv("999", "", operations);
 
         String content = new String(result.getBytes(), StandardCharsets.UTF_8);
         assertThat(content.trim()).isEqualTo("iddominio,ragionesociale,descrizione,iban,dataattivazioneiban,operazione");
@@ -70,6 +72,8 @@ class IbanOperationsCsvUtilTest {
     void convertOperationsToCsv_LargeList() throws IOException {
 
         String ciCode = "00000000000";
+        String ciName = "business Name";
+
         int rowCount = 100;
 
         List<IbanOperation> operations = java.util.stream.IntStream.range(0, rowCount)
@@ -82,7 +86,7 @@ class IbanOperationsCsvUtilTest {
                 .toList();
 
         long startTime = System.currentTimeMillis();
-        MultipartFile result = IbanOperationsCsvUtil.convertOperationsToCsv(ciCode, operations);
+        MultipartFile result = IbanOperationsCsvUtil.convertOperationsToCsv(ciCode, ciName, operations);
         long endTime = System.currentTimeMillis();
 
         long durationMs = (endTime - startTime);

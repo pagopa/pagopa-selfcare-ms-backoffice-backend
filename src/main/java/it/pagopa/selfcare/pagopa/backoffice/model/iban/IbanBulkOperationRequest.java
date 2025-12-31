@@ -21,7 +21,7 @@ public class IbanBulkOperationRequest {
     @JsonProperty("operations")
     @NotNull(message = "Operations list cannot be null")
     @NotEmpty(message = "Operations list cannot be empty")
-    @Size(min = 1, max = 100, message = "At least 1 and maximum 100 operations allowed per request")
+    @Size(min = 1, max = 500, message = "At least 1 and maximum 500 operations allowed per request")
     @Valid
     private List<IbanOperation> operations;
 }
