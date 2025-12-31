@@ -21,7 +21,7 @@ class IbanOperationsCsvUtilTest {
     void convertOperationsToCsv_Success() throws IOException {
 
         String ciCode = "12345678901";
-        String ciName = null; // to test value escape
+        String ciName = null;
 
         IbanOperation op1 = IbanOperation.builder()
                 .description("Test Description")
@@ -33,11 +33,18 @@ class IbanOperationsCsvUtilTest {
         IbanOperation op2 = IbanOperation.builder()
                 .description("Update, with comma, \" and \n")
                 .ibanValue("IT12X0542403200000000012346")
-                .validityDate(null) // Test null safety
+                .validityDate(null)
                 .type(IbanOperationType.UPDATE)
                 .build();
 
-        List<IbanOperation> operations = Arrays.asList(op1, op2);
+        IbanOperation op3 = IbanOperation.builder()
+                .description("DELETE")
+                .ibanValue("IT12X0542403200000000012346")
+                .validityDate(null)
+                .type(IbanOperationType.UPDATE)
+                .build();
+
+        List<IbanOperation> operations = Arrays.asList(op1, op2, op3);
 
         MultipartFile result = IbanOperationsCsvUtil.convertOperationsToCsv(ciCode, ciName, operations);
 
