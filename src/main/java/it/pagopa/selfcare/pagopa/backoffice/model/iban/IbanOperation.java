@@ -29,8 +29,4 @@ public class IbanOperation {
     @NotNull(message = "validityDate value is required")
     private String validityDate;
 
-    @JsonProperty("creditorInstitutionCode")
-    @NotNull(message = "Creditor institution code is required")
-    private String creditorInstitutionCode;
-
 }

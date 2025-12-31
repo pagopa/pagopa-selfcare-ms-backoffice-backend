@@ -22,7 +22,6 @@ class IbanOperationsCsvUtilTest {
 
         String ciCode = "12345678901";
         IbanOperation op1 = IbanOperation.builder()
-                .creditorInstitutionCode(ciCode)
                 .description("Test Description")
                 .ibanValue("IT12X0542403200000000012345")
                 .validityDate("2023-12-31")
@@ -30,7 +29,6 @@ class IbanOperationsCsvUtilTest {
                 .build();
 
         IbanOperation op2 = IbanOperation.builder()
-                .creditorInstitutionCode(ciCode)
                 .description("Update, with comma")
                 .ibanValue("IT12X0542403200000000012346")
                 .validityDate(null) // Test null safety
@@ -76,7 +74,6 @@ class IbanOperationsCsvUtilTest {
 
         List<IbanOperation> operations = java.util.stream.IntStream.range(0, rowCount)
                 .mapToObj(i -> IbanOperation.builder()
-                        .creditorInstitutionCode(ciCode)
                         .description("Description number " + i)
                         .ibanValue("IT00X" + String.format("%022d", i))
                         .validityDate("2025-01-01")

@@ -13131,12 +13131,9 @@
         "description" : "The labels array associated with the IBAN"
       },
       "IbanOperation" : {
-        "required" : [ "creditorInstitutionCode", "ibanValue", "operation", "validityDate" ],
+        "required" : [ "ibanValue", "operation", "validityDate" ],
         "type" : "object",
         "properties" : {
-          "creditorInstitutionCode" : {
-            "type" : "string"
-          },
           "description" : {
             "type" : "string"
           },

@@ -30,7 +30,7 @@ public class IbanOperationsCsvUtil {
         String header = "iddominio,ragionesociale,descrizione,iban,dataattivazioneiban,operazione\n";
 
         String csvContent = operations.stream()
-                .map(IbanOperationsCsvUtil::operationToCsvRow)
+                .map( o -> operationToCsvRow(o, ciCode))
                 .collect(Collectors.joining("\n", header, ""));
 
         byte[] csvBytes = csvContent.getBytes(StandardCharsets.UTF_8);
@@ -51,12 +51,12 @@ public class IbanOperationsCsvUtil {
      * @param operation IBAN operation
      * @return csv row as string
      */
-   private static String operationToCsvRow(IbanOperation operation) {
+   private static String operationToCsvRow(IbanOperation operation, String ciCode) {
         String apiConfigOperation = mapOperationType(String.valueOf(operation.getType()));
 
         String row = Stream.of(
-                        operation.getCreditorInstitutionCode(),
-                        operation.getCreditorInstitutionCode(),
+                        ciCode,
+                        ciCode,
                         Optional.ofNullable(operation.getDescription()).orElse(""),
                         operation.getIbanValue(),
                         Optional.ofNullable(operation.getValidityDate()).orElse(""),
