@@ -65,7 +65,6 @@ public class IbanOperationsCsvUtil {
                 )
                 .map(IbanOperationsCsvUtil::escapeCsvField)
                 .collect(Collectors.joining(","));
-        log.debug("CSV row: {}", row);
         return row;
    }
 

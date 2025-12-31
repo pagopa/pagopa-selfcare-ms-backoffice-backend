@@ -100,6 +100,6 @@ public class IbanService {
                         Collectors.counting()))
                 .forEach((operation, count) ->
                         log.info("Operation {}: {} IBANs", operation, count));
-        log.info("Bulk IBAN operations completed successfully for CI: {}", ciCode);
+        log.info("Bulk IBAN operations completed successfully for CI: {}", sanitizedCiCodeForLogs);
     }
 }
