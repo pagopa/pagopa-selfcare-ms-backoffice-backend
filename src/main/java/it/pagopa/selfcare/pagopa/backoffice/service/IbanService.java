@@ -83,9 +83,9 @@ public class IbanService {
         final String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
 
 
-        MDC.put("Properties.audit", "true");
+        MDC.put("audit", "true");
         log.info("Processing bulk IBAN operations for ciCode: {}, total operations: {}", sanitizedCiCodeForLogs, operations.size());
-        MDC.remove("pProperties.audit");
+        MDC.remove("audit");
 
         log.debug("Retrieve CI business name for: {}", sanitizedCiCodeForLogs);
         CreditorInstitutionDetails creditorInstitutionDetails = apiConfigClient.getCreditorInstitutionDetails(ciCode);
