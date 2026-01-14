@@ -8,6 +8,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.iban.*;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -81,7 +82,10 @@ public class IbanService {
 
         final String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
 
+
+        MDC.put("Properties.audit", "true");
         log.info("Processing bulk IBAN operations for ciCode: {}, total operations: {}", sanitizedCiCodeForLogs, operations.size());
+        MDC.remove("pProperties.audit");
 
         log.debug("Retrieve CI business name for: {}", sanitizedCiCodeForLogs);
         CreditorInstitutionDetails creditorInstitutionDetails = apiConfigClient.getCreditorInstitutionDetails(ciCode);
