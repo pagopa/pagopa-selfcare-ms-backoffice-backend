@@ -1,10 +1,10 @@
 {
-  "openapi" : "3.0.1",
-  "info" : {
-    "description" : "Microservice to manage PagoPA Backoffice",
-    "termsOfService" : "https://www.pagopa.gov.it/",
-    "title" : "SelfCare Backoffice",
-    "version" : "2.38.16-1-CHK-4674-massive-iban"
+  "openapi": "3.0.1",
+  "info": {
+    "description": "Microservice to manage PagoPA Backoffice",
+    "termsOfService": "https://www.pagopa.gov.it/",
+    "title": "SelfCare Backoffice",
+    "version": "2.39.0"
   },
   "servers" : [ {
     "url" : "http://localhost:8080"
@@ -6129,6 +6129,391 @@
           "required" : true,
           "schema" : {
             "type" : "string"
+    "/creditor-institutions/{ci-code}/iban-deletion-requests": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\nRetrieves all IBAN deletion requests for the creditor institution, optionally filtered by IBAN value.",
+        "operationId": "getIbanDeletionRequest",
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by IBAN value",
+            "in": "query",
+            "name": "ibanValue",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Status",
+            "in": "query",
+            "name": "status",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IbanDeletionRequests"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Get IBAN deletion requests",
+        "tags": [
+          "IbanDeletionRequest"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\nCreates a scheduled deletion request for the specified IBAN to be executed at the provided date.",
+        "operationId": "createIbanDeletionRequest",
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IbanDeletionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IbanDeletionRequest"
+                }
+              }
+            },
+            "description": "Created",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Request deletion of a specific IBAN owned by creditor institution",
+        "tags": [
+          "IbanDeletionRequest"
+        ]
+      }
+    },
+    "/creditor-institutions/{ci-code}/iban-deletion-requests/{id}": {
+      "delete": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\nCancels a pending IBAN deletion request by setting its status to CANCELED.",
+        "operationId": "cancelIbanDeletionRequest",
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Deletion request ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Cancel an IBAN deletion request",
+        "tags": [
+          "IbanDeletionRequest"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/creditor-institutions/{ci-code}/ibans": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "getCreditorInstitutionIbans",
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Label to be used as search filter for associated IBANs",
+            "in": "query",
+            "name": "labelName",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         }, {
           "description" : "Label to be used as search filter for associated IBANs",
@@ -13099,6 +13484,58 @@
           "iban" : {
             "type" : "string",
             "description" : "the iban code"
+      "IbanDeletionRequest": {
+        "required": [
+          "ibanValue",
+          "scheduledExecutionDate"
+        ],
+        "type": "object",
+        "properties": {
+          "ciCode": {
+            "type": "string",
+            "description": "Creditor institution code"
+          },
+          "ibanValue": {
+            "type": "string",
+            "description": "IBAN identification value",
+            "example": "IT0000000000001000000123456"
+          },
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the deletion request"
+          },
+          "scheduledExecutionDate": {
+            "type": "string",
+            "description": "Scheduled date for IBAN deletion execution",
+            "example": "2025-12-31"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current status of the deletion request"
+          }
+        },
+        "description": "List of IBAN deletion requests"
+      },
+      "IbanDeletionRequests": {
+        "required": [
+          "requests"
+        ],
+        "type": "object",
+        "properties": {
+          "requests": {
+            "type": "array",
+            "description": "List of IBAN deletion requests",
+            "items": {
+              "$ref": "#/components/schemas/IbanDeletionRequest"
+            }
+          }
+        }
+      },
+      "IbanLabel": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
           },
           "is_active" : {
             "type" : "boolean",
