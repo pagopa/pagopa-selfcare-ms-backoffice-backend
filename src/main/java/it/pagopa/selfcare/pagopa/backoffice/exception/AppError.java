@@ -16,6 +16,7 @@ public enum AppError {
     FORBIDDEN(HttpStatus.FORBIDDEN, "Forbidden", "This method is forbidden"),
     RESPONSE_NOT_READABLE(HttpStatus.BAD_GATEWAY, "Response Not Readable", "The response body is not readable"),
     BAD_GATEWAY(HttpStatus.BAD_GATEWAY, "Error with external dependency", "%s"),
+    CONFLICT(HttpStatus.CONFLICT, "Conflict", "%s"),
 
     OUR_RESPONSE_NOT_VALID(HttpStatus.INTERNAL_SERVER_ERROR, "Response is not compliance with our Openapi", "%s"),
     DEPENDENCY_RESPONSE_NOT_VALID(HttpStatus.BAD_GATEWAY, "Dependency Response is not valid", "dependency %s: %s"),
