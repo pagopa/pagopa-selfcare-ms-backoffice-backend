@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
-import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Iban;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreate;

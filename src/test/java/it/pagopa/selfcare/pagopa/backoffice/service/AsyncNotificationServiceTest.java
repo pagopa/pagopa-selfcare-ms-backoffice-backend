@@ -2,16 +2,20 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.InstitutionsClient;
+import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.notices.InstitutionUploadData;
 import it.pagopa.selfcare.pagopa.backoffice.scheduler.function.BundleAllPages;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Set;
 
+import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -48,40 +52,64 @@ class AsyncNotificationServiceTest {
     @Test
     void notifyIbanCreationTest(){
         when(institutionsClient.getInstitutionData(anyString())).thenReturn(new InstitutionUploadData());
+        ArgumentCaptor<EmailMessageDetail> emailCaptor = ArgumentCaptor.forClass(EmailMessageDetail.class);
 
         assertDoesNotThrow(() ->
                 sut.notifyIbanCreation(CI_TAX_CODE));
 
-        verify(awsSesClient, times(1)).sendEmail(any());
+        verify(awsSesClient, times(1)).sendEmail(emailCaptor.capture());
+
+        EmailMessageDetail messageDetail = emailCaptor.getValue();
+
+        assertEquals(CI_TAX_CODE, messageDetail.getInstitutionTaxCode());
+        assertEquals(IBAN_CREATE_SUBJECT, messageDetail.getSubject());
     }
 
     @Test
     void notifyIbanUpdateTest(){
         when(institutionsClient.getInstitutionData(anyString())).thenReturn(new InstitutionUploadData());
+        ArgumentCaptor<EmailMessageDetail> emailCaptor = ArgumentCaptor.forClass(EmailMessageDetail.class);
 
         assertDoesNotThrow(() ->
                 sut.notifyIbanUpdate(CI_TAX_CODE, IBAN));
 
-        verify(awsSesClient, times(1)).sendEmail(any());
+
+        verify(awsSesClient, times(1)).sendEmail(emailCaptor.capture());
+
+        EmailMessageDetail messageDetail = emailCaptor.getValue();
+
+        assertEquals(CI_TAX_CODE, messageDetail.getInstitutionTaxCode());
+        assertEquals(IBAN_UPDATE_SUBJECT, messageDetail.getSubject());
     }
 
     @Test
     void notifyIbanDeletionTest(){
         when(institutionsClient.getInstitutionData(anyString())).thenReturn(new InstitutionUploadData());
+        ArgumentCaptor<EmailMessageDetail> emailCaptor = ArgumentCaptor.forClass(EmailMessageDetail.class);
 
         assertDoesNotThrow(() ->
                 sut.notifyIbanDeletion(CI_TAX_CODE, IBAN, DELETE_DATE));
 
-        verify(awsSesClient, times(1)).sendEmail(any());
+        verify(awsSesClient, times(1)).sendEmail(emailCaptor.capture());
+
+        EmailMessageDetail messageDetail = emailCaptor.getValue();
+
+        assertEquals(CI_TAX_CODE, messageDetail.getInstitutionTaxCode());
+        assertEquals(IBAN_DELETE_SUBJECT, messageDetail.getSubject());
     }
 
     @Test
     void notifyIbanRestoreTest(){
         when(institutionsClient.getInstitutionData(anyString())).thenReturn(new InstitutionUploadData());
+        ArgumentCaptor<EmailMessageDetail> emailCaptor = ArgumentCaptor.forClass(EmailMessageDetail.class);
 
         assertDoesNotThrow(() ->
                 sut.notifyIbanRestore(CI_TAX_CODE, IBAN));
 
-        verify(awsSesClient, times(1)).sendEmail(any());
+        verify(awsSesClient, times(1)).sendEmail(emailCaptor.capture());
+        EmailMessageDetail messageDetail = emailCaptor.getValue();
+
+        assertEquals(CI_TAX_CODE, messageDetail.getInstitutionTaxCode());
+        assertEquals(IBAN_RESTORE_SUBJECT, messageDetail.getSubject());
     }
 }

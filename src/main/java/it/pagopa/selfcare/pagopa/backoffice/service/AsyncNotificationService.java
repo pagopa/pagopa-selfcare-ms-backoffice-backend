@@ -17,6 +17,9 @@ import static it.pagopa.selfcare.pagopa.backoffice.util.MailTextConstants.*;
 
 @Service
 public class AsyncNotificationService {
+    private static final String IBAN = "iban";
+    private static final String CI_NAME = "ciName";
+    private static final String ENVIRONMENT = "environment";
 
     private final String environment;
     private final AwsSesClient awsSesClient;
@@ -67,8 +70,8 @@ public class AsyncNotificationService {
         InstitutionUploadData institutionUploadData = institutionsClient.getInstitutionData(ciTaxCode);
         Context bodyContext = buildHtmlBodyContext(
                 List.of(
-                        Pair.of("environment", getEnvParam()),
-                        Pair.of("ciName", institutionUploadData.getFullName())));
+                        Pair.of(ENVIRONMENT, getEnvParam()),
+                        Pair.of(CI_NAME, institutionUploadData.getFullName())));
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
                 .subject(IBAN_CREATE_SUBJECT)
@@ -85,9 +88,9 @@ public class AsyncNotificationService {
         InstitutionUploadData institutionUploadData = institutionsClient.getInstitutionData(ciTaxCode);
         Context bodyContext = buildHtmlBodyContext(
                 List.of(
-                        Pair.of("environment", getEnvParam()),
-                        Pair.of("ciName", institutionUploadData.getFullName()),
-                        Pair.of("iban", iban)));
+                        Pair.of(ENVIRONMENT, getEnvParam()),
+                        Pair.of(CI_NAME, institutionUploadData.getFullName()),
+                        Pair.of(IBAN, iban)));
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
                 .subject(IBAN_UPDATE_SUBJECT)
@@ -104,9 +107,9 @@ public class AsyncNotificationService {
         InstitutionUploadData institutionUploadData = institutionsClient.getInstitutionData(ciTaxCode);
         Context bodyContext = buildHtmlBodyContext(
                 List.of(
-                        Pair.of("environment", getEnvParam()),
-                        Pair.of("ciName", institutionUploadData.getFullName()),
-                        Pair.of("iban", iban),
+                        Pair.of(ENVIRONMENT, getEnvParam()),
+                        Pair.of(CI_NAME, institutionUploadData.getFullName()),
+                        Pair.of(IBAN, iban),
                         Pair.of("deleteDate", deleteDate)));
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
@@ -124,9 +127,9 @@ public class AsyncNotificationService {
         InstitutionUploadData institutionUploadData = institutionsClient.getInstitutionData(ciTaxCode);
         Context bodyContext = buildHtmlBodyContext(
                 List.of(
-                        Pair.of("environment", getEnvParam()),
-                        Pair.of("ciName", institutionUploadData.getFullName()),
-                        Pair.of("iban", iban)));
+                        Pair.of(ENVIRONMENT, getEnvParam()),
+                        Pair.of(CI_NAME, institutionUploadData.getFullName()),
+                        Pair.of(IBAN, iban)));
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
                 .subject(IBAN_RESTORE_SUBJECT)
