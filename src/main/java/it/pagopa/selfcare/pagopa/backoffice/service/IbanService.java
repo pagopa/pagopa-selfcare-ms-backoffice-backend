@@ -22,16 +22,17 @@ public class IbanService {
 
     private final ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
-    private final ExternalApiClient externalApiClient;
-
     private final ModelMapper modelMapper;
 
+    private final AsyncNotificationService asyncNotificationService;
+
     @Autowired
-    public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, ExternalApiClient externalApiClient, ModelMapper modelMapper) {
+    public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
+                       ModelMapper modelMapper, AsyncNotificationService asyncNotificationService) {
         this.apiConfigClient = apiConfigClient;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
-        this.externalApiClient = externalApiClient;
         this.modelMapper = modelMapper;
+        this.asyncNotificationService = asyncNotificationService;
     }
 
 
@@ -42,6 +43,12 @@ public class IbanService {
     public Iban createIban(String ciCode, IbanCreate requestDto) {
         IbanCreateApiconfig body = modelMapper.map(requestDto, IbanCreateApiconfig.class);
         IbanCreateApiconfig dto = apiConfigClient.createCreditorInstitutionIbans(ciCode, body);
+        try {
+            log.info("Sending IBAN creation request notification email");
+            asyncNotificationService.notifyIbanCreation(ciCode);
+        } catch (Exception e){
+            log.error("Could not send IBAN creation request notification email");
+        }
         return modelMapper.map(dto, Iban.class);
     }
 
@@ -63,6 +70,12 @@ public class IbanService {
         }
         // update IBAN values
         IbanCreateApiconfig updatedDto = apiConfigClient.updateCreditorInstitutionIbans(ciCode, ibanValue, modelMapper.map(dto, IbanCreateApiconfig.class));
+        try {
+            log.info("Sending IBAN update request notification email");
+            asyncNotificationService.notifyIbanUpdate(ciCode, ibanValue);
+        } catch (Exception e){
+            log.error("Could not send IBAN update request notification email");
+        }
         return modelMapper.map(updatedDto, Iban.class);
     }
 

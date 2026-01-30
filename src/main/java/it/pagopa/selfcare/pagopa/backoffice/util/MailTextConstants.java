@@ -24,6 +24,14 @@ public class MailTextConstants {
     public static final String BUNDLE_DELETE_SUBSCRIPTION_BODY = "Ciao, %n%n%n sei stato rimosso dal pacchetto %s.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
     public static final String BUNDLE_DELETE_OFFER_SUBJECT = "Offerta di adesione eliminata";
     public static final String BUNDLE_DELETE_OFFER_BODY = "Ciao %n%n%n l'offerta di adesione al pacchetto %s è stata eliminata.%n%n%n Se riscontri dei problemi, puoi richiedere maggiori dettagli utilizzando il canale di assistenza ( https://selfcare.pagopa.it/assistenza ).%n%n%nA presto,%n%nPagamenti pagoPa";
+    public static final String IBAN_CREATE_SUBJECT = "Nuovo IBAN da revisionare";
+    public static final String IBAN_CREATE_BODY = "Ciao, %n%n%n %s ha creato un nuovo IBAN ed è in attesa di revisione. %n%n%n Puoi revisionarlo qui ( https://selfcare%s.platform.pagopa.it/ui/iban ).%n%n%nA presto,%n%nPiattaforma pagoPa";
+    public static final String IBAN_UPDATE_SUBJECT = "Dettaglio IBAN modificato";
+    public static final String IBAN_UPDATE_BODY = "Ciao,%n%n%n l'Ente Creditore %s ha effettuato una modifica sui dettagli dell'IBAN %s. %n%n%n Puoi consultarlo qui ( https://selfcare%s.platform.pagopa.it/ui/iban ).%n%n%nA presto,%n%nPiattaforma pagoPa";
+    public static final String IBAN_DELETE_SUBJECT = "Eliminazione IBAN programmata";
+    public static final String IBAN_DELETE_BODY = "Ciao,%n%n%n l'Ente Creditore %s ha programmato l'eliminazione di un IBAN configurato sulla piattaforma. %n%n%n L'IBAN %s verrà eliminato a partire dal %s e, da quella data, non sarà più possibile accettare versamenti. %n%n%n Puoi verificare i dettagli della configurazione qui ( https://selfcare%s.platform.pagopa.it/ui/iban ).%n%n%nA presto,%n%nPiattaforma pagoPa";
+    public static final String IBAN_RESTORE_SUBJECT = "Ripristino IBAN disattivato";
+    public static final String IBAN_RESTORE_BODY = "Ciao,%n%n%n l'Ente Creditore %s ha ripristinato un IBAN %s precedentemente disattivato.%n%n%n L'IBAN potrà essere utilizzato per gli accrediti, salvo ulteriori modifiche.%n%n%n Puoi verificare la configurazione aggiornata qui ( https://selfcare%s.platform.pagopa.it/ui/iban ).%n%n%nA presto,%n%nPiattaforma pagoPa";
 
     // cron-job notification
     public static final String BUNDLE_EXPIRE_SUBJECT = "Pacchetto commissionale in scadenza";
