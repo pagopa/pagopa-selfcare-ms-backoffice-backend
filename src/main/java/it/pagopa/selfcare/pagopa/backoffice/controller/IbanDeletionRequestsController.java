@@ -2,10 +2,16 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.ibanrequests.IbanDeletionRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.ibanrequests.IbanDeletionRequests;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.CIBrokerDelegationPage;
 import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.service.IbanDeletionRequestsService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
@@ -40,6 +46,13 @@ public class IbanDeletionRequestsController {
             security = {@SecurityRequirement(name = "JWT")}
     )
     @OpenApiTableMetadata
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = IbanDeletionRequests.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @JwtSecurity(paramName = "ciCode", allowedProductRole = ADMIN)
     public IbanDeletionRequests getIbanDeletionRequest(
             @Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
@@ -57,6 +70,12 @@ public class IbanDeletionRequestsController {
             security = {@SecurityRequirement(name = "JWT")}
     )
     @OpenApiTableMetadata
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = IbanDeletionRequest.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @JwtSecurity(paramName = "ciCode", allowedProductRole = ADMIN)
     public IbanDeletionRequest createIbanDeletionRequest(
             @Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
@@ -73,6 +92,13 @@ public class IbanDeletionRequestsController {
             security = {@SecurityRequirement(name = "JWT")}
     )
     @OpenApiTableMetadata
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No content"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
     @JwtSecurity(paramName = "ciCode", allowedProductRole = ADMIN)
     public void cancelIbanDeletionRequest(
             @Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
