@@ -161,7 +161,7 @@ public class InstitutionController {
     public @Valid ServiceConsentResponse saveServiceConsent(
             @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId,
             @Parameter(description = "Service's unique internal identifier") @PathVariable("service-id") String serviceId,
-            @RequestBody @NotNull ServiceConsentRequest serviceConsentRequest
+            @Valid @RequestBody @NotNull ServiceConsentRequest serviceConsentRequest
     ) {
         return new ServiceConsentResponse(serviceConsentRequest.getConsent(), OffsetDateTime.now()); //TODO: add implementation
     }
