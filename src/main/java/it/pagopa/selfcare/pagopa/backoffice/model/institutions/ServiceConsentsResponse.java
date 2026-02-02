@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
@@ -17,5 +18,6 @@ public class ServiceConsentsResponse {
     @Schema(description = "List of services with expressed consent")
     @JsonProperty("services")
     @NotNull
+    @Size(min = 1)
     private List<ServiceConsentInfo> services;
 }

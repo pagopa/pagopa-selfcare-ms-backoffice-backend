@@ -14491,6 +14491,8 @@
         "type" : "object",
         "properties" : {
           "services" : {
+            "maxItems" : 2147483647,
+            "minItems" : 1,
             "type" : "array",
             "description" : "List of services with expressed consent",
             "items" : {
