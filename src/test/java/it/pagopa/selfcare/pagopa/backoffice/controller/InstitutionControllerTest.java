@@ -13,7 +13,10 @@ import it.pagopa.selfcare.pagopa.backoffice.model.institutions.InstitutionApiKey
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.InstitutionApiKeys;
 import it.pagopa.selfcare.pagopa.backoffice.service.ApiManagementService;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+
+import it.pagopa.selfcare.pagopa.backoffice.service.InstitutionServicesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,9 @@ class InstitutionControllerTest {
 
     @MockBean
     private ApiManagementService apiManagementService;
+
+    @MockBean
+    private InstitutionServicesService servicesService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -132,13 +138,16 @@ class InstitutionControllerTest {
     @Test
     void saveServiceConsent_shouldReturn200WithResponse() throws Exception {
         ServiceConsent consent = ServiceConsent.OPT_OUT;
-        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS);
 
         String requestBody = String.format("""
             {
                 "consent": "%s"
             }
             """, consent.name());
+
+        when(servicesService.saveServiceConsent(any(), any(), anyString()))
+                .thenReturn(new ServiceConsentResponse(consent, now));
 
         MvcResult mvcResult = mvc.perform(put("/institutions/{institution-id}/services/{service-id}/consent",
                         INSTITUTION_ID, ServiceId.RTP.name())
@@ -154,7 +163,7 @@ class InstitutionControllerTest {
 
         assertNotNull(response);
         assertEquals(consent, response.getConsent());
-        assertTrue(now.isBefore(response.getDate()));
+        assertTrue(now.isEqual(response.getDate()));
     }
 
     @Test
