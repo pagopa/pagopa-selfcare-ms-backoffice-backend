@@ -40,7 +40,7 @@ public class InstitutionServicesService {
         }
 
         switch (serviceId) {
-            case RTP -> {
+            case RTP:
                 InstitutionRTPServiceEntity entity = InstitutionRTPServiceEntity.builder()
                         .id(institution.getId())
                         .institutionTaxCode(institution.getTaxCode())
@@ -51,8 +51,10 @@ public class InstitutionServicesService {
                 rtpServiceRepository.save(entity);
                 response = new ServiceConsentResponse(serviceConsentRequest.getConsent(),
                         entity.getConsentDate().atZone(ZoneId.of("Europe/Rome")).toOffsetDateTime());
-            }
-            case UNKNOWN, default -> throw new AppException(AppError.SERVICE_NOT_FOUND);
+                break;
+            case UNKNOWN:
+            default:
+                throw new AppException(AppError.SERVICE_NOT_FOUND);
         }
 
         return response;
