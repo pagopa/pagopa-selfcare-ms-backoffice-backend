@@ -12,6 +12,7 @@ import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.service.ApiManagementService;
+import it.pagopa.selfcare.pagopa.backoffice.service.InstitutionServicesService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +36,12 @@ import java.util.List;
 public class InstitutionController {
 
     private final ApiManagementService apiManagementService;
+    private final InstitutionServicesService servicesService;
 
     @Autowired
-    public InstitutionController(ApiManagementService apiManagementService) {
+    public InstitutionController(ApiManagementService apiManagementService, InstitutionServicesService servicesService) {
         this.apiManagementService = apiManagementService;
+        this.servicesService = servicesService;
     }
 
     @GetMapping("")
@@ -163,7 +166,7 @@ public class InstitutionController {
             @Parameter(description = "Service's unique internal identifier") @PathVariable("service-id") String serviceId,
             @Valid @RequestBody @NotNull ServiceConsentRequest serviceConsentRequest
     ) {
-        return new ServiceConsentResponse(serviceConsentRequest.getConsent(), OffsetDateTime.now()); //TODO: add implementation
+        return servicesService.saveServiceConsent(serviceConsentRequest, ServiceId.valueOf(serviceId), institutionId);
     }
 
     @GetMapping("/{institution-id}/services/consents")
