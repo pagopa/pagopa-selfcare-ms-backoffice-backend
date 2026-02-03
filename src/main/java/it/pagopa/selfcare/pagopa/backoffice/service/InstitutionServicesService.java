@@ -28,7 +28,9 @@ public class InstitutionServicesService {
         this.externalApiClient = externalApiClient;
     }
 
-    public ServiceConsentResponse saveServiceConsent(ServiceConsentRequest serviceConsentRequest, ServiceId serviceId, String institutionId){
+    public ServiceConsentResponse saveServiceConsent(ServiceConsentRequest serviceConsentRequest,
+                                                     ServiceId serviceId,
+                                                     String institutionId){
         Institution institution = externalApiClient.getInstitution(institutionId);
         ServiceConsentResponse response;
 
@@ -37,7 +39,7 @@ public class InstitutionServicesService {
             throw new AppException(AppError.INSTITUTION_NOT_FOUND);
         }
 
-        switch (serviceId){
+        switch (serviceId) {
             case RTP:
                 InstitutionRTPServiceEntity entity = InstitutionRTPServiceEntity.builder()
                         .id(institution.getId())
@@ -50,7 +52,9 @@ public class InstitutionServicesService {
                 response = new ServiceConsentResponse(serviceConsentRequest.getConsent(),
                         entity.getConsentDate().atZone(ZoneId.of("Europe/Rome")).toOffsetDateTime());
                 break;
-            default: throw new AppException(AppError.SERVICE_NOT_FOUND);
+            case UNKNOWN:
+            default:
+                throw new AppException(AppError.SERVICE_NOT_FOUND);
         }
 
         return response;

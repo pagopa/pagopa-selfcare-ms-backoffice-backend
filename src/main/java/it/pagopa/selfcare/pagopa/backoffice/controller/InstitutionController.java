@@ -166,7 +166,7 @@ public class InstitutionController {
             @Parameter(description = "Service's unique internal identifier") @PathVariable("service-id") String serviceId,
             @Valid @RequestBody @NotNull ServiceConsentRequest serviceConsentRequest
     ) {
-        return servicesService.saveServiceConsent(serviceConsentRequest, ServiceId.valueOf(serviceId), institutionId);
+        return servicesService.saveServiceConsent(serviceConsentRequest, ServiceId.fromString(serviceId), institutionId);
     }
 
     @GetMapping("/{institution-id}/services/consents")
