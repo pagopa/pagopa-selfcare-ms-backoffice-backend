@@ -108,8 +108,6 @@ class InstitutionServicesServiceTest {
         Institution institution = new Institution();
         institution.setId(INSTITUTION_ID);
 
-        when(externalApiClient.getInstitution(INSTITUTION_ID)).thenReturn(institution);
-
         ServiceConsentRequest request = new ServiceConsentRequest();
 
         // 2. Act & Assert

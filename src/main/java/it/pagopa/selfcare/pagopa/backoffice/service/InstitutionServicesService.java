@@ -31,16 +31,16 @@ public class InstitutionServicesService {
     public ServiceConsentResponse saveServiceConsent(ServiceConsentRequest serviceConsentRequest,
                                                      ServiceId serviceId,
                                                      String institutionId){
-        Institution institution = externalApiClient.getInstitution(institutionId);
         ServiceConsentResponse response;
-
-        if(institution == null)
-        {
-            throw new AppException(AppError.INSTITUTION_NOT_FOUND);
-        }
 
         switch (serviceId) {
             case RTP:
+                Institution institution = externalApiClient.getInstitution(institutionId);
+
+                if(institution == null)
+                {
+                    throw new AppException(AppError.INSTITUTION_NOT_FOUND);
+                }
                 InstitutionRTPServiceEntity entity = InstitutionRTPServiceEntity.builder()
                         .id(institution.getId())
                         .institutionTaxCode(institution.getTaxCode())
