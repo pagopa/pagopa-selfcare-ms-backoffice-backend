@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 @Service
 public class InstitutionServicesService {
@@ -46,7 +47,8 @@ public class InstitutionServicesService {
                         .consentDate(Instant.now())
                         .build();
                 rtpServiceRepository.save(entity);
-                response = new ServiceConsentResponse(serviceConsentRequest.getConsent(), OffsetDateTime.from(entity.getConsentDate()));
+                response = new ServiceConsentResponse(serviceConsentRequest.getConsent(),
+                        entity.getConsentDate().atZone(ZoneId.of("Europe/Rome")).toOffsetDateTime());
                 break;
             default: throw new AppException(AppError.SERVICE_NOT_FOUND);
         }
