@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.40.0-1-CHK-4709-add-api-definition" #improve
+    tag: "2.40.0-2-CHK-4710-add-api-implementation" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
