@@ -107,12 +107,13 @@ class InstitutionServicesServiceTest {
         // 1. Arrange
         Institution institution = new Institution();
         institution.setId(INSTITUTION_ID);
+        ServiceId invalid = ServiceId.fromString("INVALID");
 
         ServiceConsentRequest request = new ServiceConsentRequest();
 
         // 2. Act & Assert
         AppException exception = assertThrows(AppException.class, () ->
-                sut.saveServiceConsent(request, ServiceId.fromString("INVALID"), INSTITUTION_ID)
+                sut.saveServiceConsent(request, invalid, INSTITUTION_ID)
         );
 
         assertEquals(AppError.SERVICE_NOT_FOUND.httpStatus, exception.getHttpStatus());
