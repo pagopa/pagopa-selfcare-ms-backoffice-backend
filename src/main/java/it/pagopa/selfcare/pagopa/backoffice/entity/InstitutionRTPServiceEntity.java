@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Data
 @Builder
@@ -19,6 +19,6 @@ public class InstitutionRTPServiceEntity {
     private String id;
     private String institutionTaxCode;
     private String consent;
-    private OffsetDateTime consentDate;
+    private Instant consentDate;
     private String name;
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 
 @Service
@@ -42,10 +43,10 @@ public class InstitutionServicesService {
                         .institutionTaxCode(institution.getTaxCode())
                         .consent(serviceConsentRequest.getConsent().toString())
                         .name(institution.getDescription())
-                        .consentDate(OffsetDateTime.now())
+                        .consentDate(Instant.now())
                         .build();
                 rtpServiceRepository.save(entity);
-                response = new ServiceConsentResponse(serviceConsentRequest.getConsent(), entity.getConsentDate());
+                response = new ServiceConsentResponse(serviceConsentRequest.getConsent(), OffsetDateTime.from(entity.getConsentDate()));
                 break;
             default: throw new AppException(AppError.SERVICE_NOT_FOUND);
         }
