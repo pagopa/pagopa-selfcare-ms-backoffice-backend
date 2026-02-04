@@ -15,8 +15,8 @@
         "default" : "/backoffice/v1"
       },
       "host" : {
-        "enum" : [ "api.dev.platform.pagopa.it", "api.uat.platform.pagopa.it", "api.platform.pagopa.it" ],
-        "default" : "api.dev.platform.pagopa.it"
+        "default" : "api.dev.platform.pagopa.it",
+        "enum" : [ "api.dev.platform.pagopa.it", "api.uat.platform.pagopa.it", "api.platform.pagopa.it" ]
       }
     }
   } ],
@@ -5710,8 +5710,8 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "CODE", "NAME" ],
-            "default" : "NAME"
+            "default" : "NAME",
+            "enum" : [ "CODE", "NAME" ]
           }
         }, {
           "description" : "Sorting method for paginated result",
@@ -5720,8 +5720,8 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "ASC", "DESC" ],
-            "default" : "DESC"
+            "default" : "DESC",
+            "enum" : [ "ASC", "DESC" ]
           }
         }, {
           "description" : "Number of elements on one page",
@@ -8583,6 +8583,17 @@
               }
             }
           },
+          "403" : {
+            "description" : "Forbidden",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
           "404" : {
             "content" : {
               "application/json" : {
@@ -8724,6 +8735,17 @@
           },
           "401" : {
             "description" : "Unauthorized",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Forbidden",
             "headers" : {
               "X-Request-Id" : {
                 "description" : "This header identifies the call",
