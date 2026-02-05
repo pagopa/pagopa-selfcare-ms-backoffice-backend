@@ -81,10 +81,7 @@ public class IbanService {
 
         final String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
 
-
-        try (var audit = AuditScope.enable()) {
-            log.info("Processing bulk IBAN operations for ciCode: {}, total operations: {}", sanitizedCiCodeForLogs, operations.size());
-        }
+        log.info("Processing bulk IBAN operations for ciCode: {}, total operations: {}", sanitizedCiCodeForLogs, operations.size());
 
         log.debug("Retrieve CI business name for: {}", sanitizedCiCodeForLogs);
         CreditorInstitutionDetails creditorInstitutionDetails = apiConfigClient.getCreditorInstitutionDetails(ciCode);
@@ -103,6 +100,10 @@ public class IbanService {
                         Collectors.counting()))
                 .forEach((operation, count) ->
                         log.info("Operation {}: {} IBANs", operation, count));
-        log.info("Bulk IBAN operations completed successfully for CI: {}", sanitizedCiCodeForLogs);
+
+        try (var audit = AuditScope.enable()) {
+            log.info("Bulk IBAN operations completed successfully for CI: {}, operations: {}",
+                    sanitizedCiCodeForLogs, operations);
+        }
     }
 }
