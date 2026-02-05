@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import it.pagopa.selfcare.pagopa.backoffice.audit.AuditScope;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
@@ -83,9 +84,9 @@ public class IbanService {
         final String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
 
 
-        MDC.put("audit", "true");
-        log.info("Processing bulk IBAN operations for ciCode: {}, total operations: {}", sanitizedCiCodeForLogs, operations.size());
-        MDC.remove("audit");
+        try (var audit = AuditScope.enable()) {
+            log.info("Processing bulk IBAN operations for ciCode: {}, total operations: {}", sanitizedCiCodeForLogs, operations.size());
+        }
 
         log.debug("Retrieve CI business name for: {}", sanitizedCiCodeForLogs);
         CreditorInstitutionDetails creditorInstitutionDetails = apiConfigClient.getCreditorInstitutionDetails(ciCode);
