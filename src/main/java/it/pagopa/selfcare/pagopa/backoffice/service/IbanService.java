@@ -33,8 +33,6 @@ public class IbanService {
 
     private final ModelMapper modelMapper;
 
-    private static final int MAX_IBAN_PER_FILE = 100;
-
     @Autowired
     public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, ExternalApiClient externalApiClient, ModelMapper modelMapper) {
         this.apiConfigClient = apiConfigClient;
