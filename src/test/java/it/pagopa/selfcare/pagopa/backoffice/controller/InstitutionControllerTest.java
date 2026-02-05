@@ -184,7 +184,7 @@ class InstitutionControllerTest {
     void getServiceConsents_shouldReturn200WithResponse() throws Exception {
         ServiceId service = ServiceId.RTP;
         ServiceConsent consent = ServiceConsent.OPT_OUT;
-        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS);
 
         MvcResult mvcResult = mvc.perform(get("/institutions/{institution-id}/services/consents",
                         INSTITUTION_ID)

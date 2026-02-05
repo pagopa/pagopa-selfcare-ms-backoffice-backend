@@ -43,6 +43,7 @@ class InstitutionServicesServiceTest {
     private static final String INSTITUTION_ID = "inst-123";
     private static final String TAX_CODE = "TAX_CODE_XYZ";
     private static final String DESCRIPTION = "Test Bank";
+    private static final String ORIGIN = "IPA";
 
     @Test
     void saveServiceConsent_RTP_Success() {
@@ -51,6 +52,7 @@ class InstitutionServicesServiceTest {
         institution.setId(INSTITUTION_ID);
         institution.setTaxCode(TAX_CODE);
         institution.setDescription(DESCRIPTION);
+        institution.setOrigin(ORIGIN);
 
         ServiceConsentRequest request = new ServiceConsentRequest(ServiceConsent.OPT_IN);
 
@@ -97,6 +99,26 @@ class InstitutionServicesServiceTest {
         );
 
         assertEquals(AppError.INSTITUTION_NOT_FOUND.httpStatus, exception.getHttpStatus());
+
+        // Ensure we didn't try to save anything
+        verifyNoInteractions(rtpServiceRepository);
+    }
+
+    @Test
+    void saveServiceConsent_InstitutionForbiddenOrigin_ThrowsException() {
+        Institution institution = new Institution();
+        institution.setOrigin("INVALID");
+        // 1. Arrange
+        when(externalApiClient.getInstitution(any())).thenReturn(institution);
+
+        ServiceConsentRequest request = new ServiceConsentRequest();
+
+        // 2. Act & Assert
+        AppException exception = assertThrows(AppException.class, () ->
+                sut.saveServiceConsent(request, ServiceId.RTP, INSTITUTION_ID)
+        );
+
+        assertEquals(AppError.FORBIDDEN.httpStatus, exception.getHttpStatus());
 
         // Ensure we didn't try to save anything
         verifyNoInteractions(rtpServiceRepository);

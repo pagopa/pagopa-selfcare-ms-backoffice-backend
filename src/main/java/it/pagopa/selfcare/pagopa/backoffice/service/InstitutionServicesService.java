@@ -20,6 +20,7 @@ import java.time.ZoneId;
 public class InstitutionServicesService {
     private final MongoRepository<InstitutionRTPServiceEntity, String> rtpServiceRepository;
     private final ExternalApiClient externalApiClient;
+    private static final String ORIGIN_IPA = "IPA";
 
     @Autowired
     public InstitutionServicesService(MongoRepository<InstitutionRTPServiceEntity, String> rtpServiceRepository,
@@ -41,6 +42,10 @@ public class InstitutionServicesService {
                 {
                     throw new AppException(AppError.INSTITUTION_NOT_FOUND);
                 }
+                if(!institution.getOrigin().equals(ORIGIN_IPA)){
+                    throw new AppException(AppError.FORBIDDEN);
+                }
+
                 InstitutionRTPServiceEntity entity = InstitutionRTPServiceEntity.builder()
                         .id(institution.getId())
                         .institutionTaxCode(institution.getTaxCode())
