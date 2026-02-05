@@ -3,8 +3,8 @@ package it.pagopa.selfcare.pagopa.backoffice.audit;
 import org.slf4j.MDC;
 
 public final class AuditScope implements AutoCloseable {
-    private static final String MDC_KEY = "audit";
-    private static final String MDC_VALUE = "true";
+    private static final String MDC_AUDIT_KEY = "audit";
+    private static final String MDC_AUDIT_VALUE = "true";
 
     private static final ThreadLocal<State> STATE =
             ThreadLocal.withInitial(State::new);
@@ -21,7 +21,7 @@ public final class AuditScope implements AutoCloseable {
         State state = STATE.get();
 
         if (state.depth++ == 0) {
-            MDC.put(MDC_KEY, MDC_VALUE);
+            MDC.put(MDC_AUDIT_KEY, MDC_AUDIT_VALUE);
             return new AuditScope(state, true);
         }
 
@@ -30,8 +30,11 @@ public final class AuditScope implements AutoCloseable {
 
     @Override
     public void close() {
-        if (--state.depth == 0 && isOwner) {
-            MDC.remove(MDC_KEY);
+        if (--state.depth == 0) {
+            if (isOwner) {
+                MDC.remove(MDC_AUDIT_KEY);
+            }
+            STATE.remove();
         }
     }
 
