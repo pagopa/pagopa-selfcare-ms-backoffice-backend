@@ -102,8 +102,9 @@ public class IbanService {
                         log.info("Operation {}: {} IBANs", operation, count));
 
         try (var audit = AuditScope.enable()) {
+            String sanitizedOperations = Utility.sanitizeLogParam(operations.toString());
             log.info("Bulk IBAN operations completed successfully for CI: {}, operations: {}",
-                    sanitizedCiCodeForLogs, operations);
+                    sanitizedCiCodeForLogs, sanitizedOperations);
         }
     }
 }
