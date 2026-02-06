@@ -71,6 +71,9 @@ public class InstitutionServicesService {
         if (institution == null) {
             throw new AppException(AppError.INSTITUTION_NOT_FOUND);
         }
+        if (!institution.getOrigin().equals(ORIGIN_IPA)){
+            throw new AppException(AppError.FORBIDDEN);
+        }
 
         // RTP
         InstitutionRTPServiceEntity rtpService = rtpServiceRepository.findById(institution.getId())
