@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
@@ -195,6 +194,6 @@ public class InstitutionController {
     public @Valid ServiceConsentsResponse getServiceConsents(
             @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId
     ) {
-        return new ServiceConsentsResponse(List.of(new ServiceConsentInfo(ServiceId.RTP, ServiceConsent.OPT_OUT, OffsetDateTime.now()))); //TODO: add implementation
+        return servicesService.getServiceConsents(institutionId);
     }
 }
