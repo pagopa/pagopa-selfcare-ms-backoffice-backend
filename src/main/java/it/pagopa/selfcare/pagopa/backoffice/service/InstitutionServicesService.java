@@ -7,7 +7,6 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
@@ -16,12 +15,12 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
 
-@Slf4j
 @Service
 public class InstitutionServicesService {
     private final MongoRepository<InstitutionRTPServiceEntity, String> rtpServiceRepository;
     private final ExternalApiClient externalApiClient;
     private final InstitutionServicesConfig servicesConfig;
+    private static final String ORIGIN_IPA = "IPA";
 
     @Autowired
     public InstitutionServicesService(MongoRepository<InstitutionRTPServiceEntity, String> rtpServiceRepository,
@@ -44,6 +43,10 @@ public class InstitutionServicesService {
                 {
                     throw new AppException(AppError.INSTITUTION_NOT_FOUND);
                 }
+                if(!institution.getOrigin().equals(ORIGIN_IPA)){
+                    throw new AppException(AppError.FORBIDDEN);
+                }
+
                 InstitutionRTPServiceEntity entity = InstitutionRTPServiceEntity.builder()
                         .id(institution.getId())
                         .institutionTaxCode(institution.getTaxCode())
