@@ -151,6 +151,7 @@ class InstitutionServicesServiceTest {
         // 1. Arrange
         Institution institution = new Institution();
         institution.setId(INSTITUTION_ID);
+        institution.setOrigin(ORIGIN);
 
         Instant time = Instant.now();
 
@@ -196,6 +197,7 @@ class InstitutionServicesServiceTest {
         // 1. Arrange
         Institution institution = new Institution();
         institution.setId(INSTITUTION_ID);
+        institution.setOrigin(ORIGIN);
 
         when(externalApiClient.getInstitution(INSTITUTION_ID)).thenReturn(institution);
         when(rtpServiceRepository.findById(INSTITUTION_ID)).thenReturn(Optional.empty());
