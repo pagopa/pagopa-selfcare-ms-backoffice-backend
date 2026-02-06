@@ -15,6 +15,7 @@ import it.pagopa.selfcare.pagopa.backoffice.service.ApiManagementService;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.List;
 
 import it.pagopa.selfcare.pagopa.backoffice.service.InstitutionServicesService;
 import org.junit.jupiter.api.BeforeEach;
@@ -184,7 +185,10 @@ class InstitutionControllerTest {
     void getServiceConsents_shouldReturn200WithResponse() throws Exception {
         ServiceId service = ServiceId.RTP;
         ServiceConsent consent = ServiceConsent.OPT_OUT;
-        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS);
+
+        ServiceConsentInfo rtpServiceInfo = new ServiceConsentInfo(service, consent, now);
+        when(servicesService.getServiceConsents(any())).thenReturn(new ServiceConsentsResponse(List.of(rtpServiceInfo)));
 
         MvcResult mvcResult = mvc.perform(get("/institutions/{institution-id}/services/consents",
                         INSTITUTION_ID)
@@ -201,7 +205,7 @@ class InstitutionControllerTest {
         assertFalse(response.getServices().isEmpty());
         assertEquals(service, response.getServices().get(0).getServiceId());
         assertEquals(consent, response.getServices().get(0).getServiceConsent());
-        assertTrue(now.isBefore(response.getServices().get(0).getConsentDate()));
+        assertTrue(now.isEqual(response.getServices().get(0).getConsentDate()));
     }
 
     private InstitutionApiKeysResource buildInstitutionApiKeysResource() {
