@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
+import it.pagopa.selfcare.pagopa.backoffice.audit.AuditLogger;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
@@ -38,6 +39,8 @@ class IbanServiceTest {
   @MockBean private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
   @MockBean private ApiConfigClient apiConfigClient;
+
+  @MockBean private AuditLogger auditLogger;
 
   @Autowired private IbanService sut;
 

@@ -1,6 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
-import it.pagopa.selfcare.pagopa.backoffice.audit.AuditScope;
+import it.pagopa.selfcare.pagopa.backoffice.audit.AuditLogger;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
@@ -9,13 +9,13 @@ import it.pagopa.selfcare.pagopa.backoffice.model.iban.*;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.util.IbanOperationsCsvUtil.convertOperationsToCsv;
@@ -33,12 +33,15 @@ public class IbanService {
 
     private final ModelMapper modelMapper;
 
+    private final AuditLogger auditLogger;
+
     @Autowired
-    public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, ExternalApiClient externalApiClient, ModelMapper modelMapper) {
+    public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, ExternalApiClient externalApiClient, ModelMapper modelMapper, AuditLogger auditLogger) {
         this.apiConfigClient = apiConfigClient;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
         this.externalApiClient = externalApiClient;
         this.modelMapper = modelMapper;
+        this.auditLogger = auditLogger;
     }
 
 
@@ -94,17 +97,26 @@ public class IbanService {
                 sanitizedCiCodeForLogs, csvData.getSize());
         apiConfigClient.createCreditorInstitutionIbansBulk(csvData);
 
-        operations.stream()
+        auditLogger.info(log,
+                "Bulk IBAN operations completed successfully for CI: {}, total: {}, operationsByType: {}",
+                sanitizedCiCodeForLogs,
+                operations.size(),
+                formatOperationsByType(operations));
+    }
+
+    private String formatOperationsByType(List<IbanOperation> operations) {
+        Map<IbanOperationType, List<String>> grouped = operations.stream()
                 .collect(Collectors.groupingBy(
                         IbanOperation::getType,
-                        Collectors.counting()))
-                .forEach((operation, count) ->
-                        log.info("Operation {}: {} IBANs", operation, count));
+                        Collectors.mapping(
+                                op -> Utility.sanitizeLogParam(op.getIbanValue()),
+                                Collectors.toList()
+                        )
+                ));
 
-        try (var audit = AuditScope.enable()) {
-            String sanitizedOperations = Utility.sanitizeLogParam(operations.toString());
-            log.info("Bulk IBAN operations completed successfully for CI: {}, operations: {}",
-                    sanitizedCiCodeForLogs, sanitizedOperations);
-        }
+        return grouped.entrySet().stream()
+                .map(e -> e.getKey() + "=[" + String.join(", ", e.getValue()) + "]")
+                .collect(Collectors.joining(", ", "{", "}"));
     }
+
 }
