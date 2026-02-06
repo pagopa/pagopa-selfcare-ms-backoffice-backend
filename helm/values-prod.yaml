@@ -109,7 +109,7 @@ microservice-chart:
     CLIENT_RETRY_MAX_ATTEMPTS: '3'
     CLIENT_RETRY_MAX_DELAY: '2000'
     JAVA_TOOL_OPTIONS: '-Xms768m -Xmx1024m'
-    SERVICE_DEFAULT_CONSENT_RTP: 'OPT_IN'
+    INSTITUTION_SERVICES_DEFAULT_CONSENTS_RTP: 'OPT_IN'
   envSecret:
     AWS_ACCESS_KEY_ID: pagopa-p-aws-access-key-id
     AWS_SECRET_ACCESS_KEY: pagopa-p-aws-secret-access-key
