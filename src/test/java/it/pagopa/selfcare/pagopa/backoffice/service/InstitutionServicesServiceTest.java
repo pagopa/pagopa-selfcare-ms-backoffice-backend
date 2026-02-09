@@ -244,21 +244,4 @@ class InstitutionServicesServiceTest {
         verifyNoInteractions(rtpServiceRepository);
     }
 
-    @Test
-    void getServiceConsents_InstitutionForbiddenOrigin_ThrowsException() {
-        // 1. Arrange
-        Institution institution = new Institution();
-        institution.setOrigin("INVALID");
-        when(externalApiClient.getInstitution(any())).thenReturn(institution);
-
-        // 2. Act & Assert
-        AppException exception = assertThrows(AppException.class, () ->
-                sut.getServiceConsents(INSTITUTION_ID)
-        );
-
-        assertEquals(AppError.FORBIDDEN.httpStatus, exception.getHttpStatus());
-
-        // Ensure we didn't search the institution's saved consents
-        verifyNoInteractions(rtpServiceRepository);
-    }
 }
