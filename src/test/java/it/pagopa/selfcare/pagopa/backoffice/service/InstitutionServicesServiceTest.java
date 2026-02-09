@@ -1,13 +1,11 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
+import it.pagopa.selfcare.pagopa.backoffice.config.InstitutionServicesConfig;
 import it.pagopa.selfcare.pagopa.backoffice.entity.InstitutionRTPServiceEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.ServiceConsent;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.ServiceConsentRequest;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.ServiceConsentResponse;
-import it.pagopa.selfcare.pagopa.backoffice.model.institutions.ServiceId;
+import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
 import it.pagopa.selfcare.pagopa.backoffice.repository.InstitutionRTPServiceRepository;
 import org.junit.jupiter.api.Test;
@@ -18,8 +16,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.OffsetDateTime;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,6 +34,9 @@ class InstitutionServicesServiceTest {
 
     @Mock
     private InstitutionRTPServiceRepository rtpServiceRepository;
+
+    @Mock
+    private InstitutionServicesConfig defaultServicesConfig;
 
     @InjectMocks
     private InstitutionServicesService sut;
@@ -141,4 +145,103 @@ class InstitutionServicesServiceTest {
         assertEquals(AppError.SERVICE_NOT_FOUND.httpStatus, exception.getHttpStatus());
         verifyNoInteractions(rtpServiceRepository);
     }
+
+    @Test
+    void getServiceConsents_RTPServiceFound_Success() {
+        // 1. Arrange
+        Institution institution = new Institution();
+        institution.setId(INSTITUTION_ID);
+        institution.setOrigin(ORIGIN);
+
+        Instant time = Instant.now();
+
+        InstitutionRTPServiceEntity rtpService = InstitutionRTPServiceEntity.builder()
+                .id(INSTITUTION_ID)
+                .consent("OPT_OUT")
+                .consentDate(time)
+                .institutionTaxCode(TAX_CODE)
+                .name(DESCRIPTION)
+                .build();
+
+        when(externalApiClient.getInstitution(INSTITUTION_ID)).thenReturn(institution);
+        when(rtpServiceRepository.findById(INSTITUTION_ID)).thenReturn(Optional.of(rtpService));
+        when(defaultServicesConfig.getDefaultConsents()).thenReturn(Map.of(ServiceId.RTP, ServiceConsent.OPT_IN));
+
+        // 2. Act
+        ServiceConsentsResponse response = sut.getServiceConsents(INSTITUTION_ID);
+
+        // 3. Assert
+
+        // Verify repository interaction
+        verify(rtpServiceRepository, times(1)).findById(INSTITUTION_ID);
+
+        // Verify response services list size
+        assertEquals(1, response.getServices().size());
+        ServiceConsentInfo responseConsent = response.getServices().get(0);
+
+        // Verify RTP service info
+        assertEquals(ServiceId.RTP, responseConsent.getServiceId());
+        assertEquals(ServiceConsent.OPT_OUT, responseConsent.getServiceConsent());
+
+        // We verify that the response time is exactly the Entity time converted to Rome
+        OffsetDateTime expectedRomeTime = time
+                .atZone(ZoneId.of("Europe/Rome"))
+                .toOffsetDateTime();
+
+        assertEquals(expectedRomeTime, responseConsent.getConsentDate(),
+                "The response date must be the entity date converted to Rome timezone");
+    }
+
+    @Test
+    void getServiceConsents_RTPServiceNotFound_Success() {
+        // 1. Arrange
+        Institution institution = new Institution();
+        institution.setId(INSTITUTION_ID);
+        institution.setOrigin(ORIGIN);
+
+        when(externalApiClient.getInstitution(INSTITUTION_ID)).thenReturn(institution);
+        when(rtpServiceRepository.findById(INSTITUTION_ID)).thenReturn(Optional.empty());
+        when(defaultServicesConfig.getDefaultConsents()).thenReturn(Map.of(ServiceId.RTP, ServiceConsent.OPT_IN));
+
+        // 2. Act
+        ServiceConsentsResponse response = sut.getServiceConsents(INSTITUTION_ID);
+
+        // 3. Assert
+
+        // Verify repository interaction
+        verify(rtpServiceRepository, times(1)).findById(INSTITUTION_ID);
+
+        // Verify response services list size
+        assertEquals(1, response.getServices().size());
+        ServiceConsentInfo responseConsent = response.getServices().get(0);
+
+        // Verify RTP service info
+        assertEquals(ServiceId.RTP, responseConsent.getServiceId());
+        assertEquals(ServiceConsent.OPT_IN, responseConsent.getServiceConsent());
+
+        // We verify that the response time is exactly the Unix epoch time converted to Rome
+        OffsetDateTime expectedRomeTime = Instant.EPOCH
+                .atZone(ZoneId.of("Europe/Rome"))
+                .toOffsetDateTime();
+
+        assertEquals(expectedRomeTime, responseConsent.getConsentDate(),
+                "The response date must be the Unix epoch converted to Rome timezone");
+    }
+
+    @Test
+    void getServiceConsents_InstitutionNotFound_ThrowsException() {
+        // 1. Arrange
+        when(externalApiClient.getInstitution(any())).thenReturn(null);
+
+        // 2. Act & Assert
+        AppException exception = assertThrows(AppException.class, () ->
+                sut.getServiceConsents(INSTITUTION_ID)
+        );
+
+        assertEquals(AppError.INSTITUTION_NOT_FOUND.httpStatus, exception.getHttpStatus());
+
+        // Ensure we didn't search the institution's saved consents
+        verifyNoInteractions(rtpServiceRepository);
+    }
+
 }
