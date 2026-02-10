@@ -104,8 +104,7 @@ class IbanOperationsCsvUtilTest {
 
         assertThat(lines).hasSize(rowCount + 1);
 
-        assertThat(lines[rowCount]).contains("Description number 499");
-        assertThat(lines[rowCount]).endsWith(",U");
+        assertThat(lines[rowCount]).contains("Description number 499").endsWith(",U");
         assertThat(durationMs).isLessThan(1000);
     }
 }

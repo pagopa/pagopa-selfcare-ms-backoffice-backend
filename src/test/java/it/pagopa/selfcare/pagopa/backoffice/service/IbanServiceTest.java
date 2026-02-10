@@ -14,7 +14,6 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
-import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitution;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.*;
 
@@ -86,7 +85,7 @@ class IbanServiceTest {
   }
 
     @Test
-    void processBulkIbanOperations() throws Exception {
+    void processBulkIbanOperations() {
         // Arrange
         String ciCode = CI_CODE;
         List<IbanOperation> operations = List.of(

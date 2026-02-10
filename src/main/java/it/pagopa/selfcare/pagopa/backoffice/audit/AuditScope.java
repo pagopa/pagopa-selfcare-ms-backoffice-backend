@@ -6,19 +6,19 @@ public final class AuditScope implements AutoCloseable {
     private static final String MDC_AUDIT_KEY = "audit";
     private static final String MDC_AUDIT_VALUE = "true";
 
-    private static final ThreadLocal<State> STATE =
-            ThreadLocal.withInitial(State::new);
+    private static final ThreadLocal<AuditState> AUDIT_STATE =
+            ThreadLocal.withInitial(AuditState::new);
 
-    private final State state;
+    private final AuditState state;
     private final boolean isOwner;
 
-    private AuditScope(State state, boolean isOwner) {
+    private AuditScope(AuditState state, boolean isOwner) {
         this.state = state;
         this.isOwner = isOwner;
     }
 
     public static AuditScope enable() {
-        State state = STATE.get();
+        AuditState state = AUDIT_STATE.get();
 
         if (state.depth++ == 0) {
             MDC.put(MDC_AUDIT_KEY, MDC_AUDIT_VALUE);
@@ -34,11 +34,11 @@ public final class AuditScope implements AutoCloseable {
             if (isOwner) {
                 MDC.remove(MDC_AUDIT_KEY);
             }
-            STATE.remove();
+            AUDIT_STATE.remove();
         }
     }
 
-    private static final class State {
+    private static final class AuditState {
         int depth = 0;
     }
 }
