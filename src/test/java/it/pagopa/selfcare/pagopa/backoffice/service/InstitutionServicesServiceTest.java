@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import it.pagopa.selfcare.pagopa.backoffice.audit.AuditLogger;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.InstitutionServicesConfig;
 import it.pagopa.selfcare.pagopa.backoffice.entity.InstitutionRTPServiceEntity;
@@ -37,6 +38,9 @@ class InstitutionServicesServiceTest {
 
     @Mock
     private InstitutionServicesConfig defaultServicesConfig;
+
+    @Mock
+    private AuditLogger auditLogger;
 
     @InjectMocks
     private InstitutionServicesService sut;
