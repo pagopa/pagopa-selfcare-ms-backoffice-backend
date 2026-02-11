@@ -64,7 +64,7 @@ public class InstitutionServicesService {
                         .build();
                 rtpServiceRepository.save(entity);
                 auditLogger.info(log,
-                        "event=CONSENT_UPDATE outcome=SUCCESS institutionId={} serviceId={} userId={} institutionTaxCode={} consent={}",
+                        "event=CONSENT_UPDATE institutionId={} serviceId={} userId={} institutionTaxCode={} consent={}",
                         institutionId,
                         serviceId,
                         Utility.extractUserIdFromAuth(SecurityContextHolder.getContext().getAuthentication()),
