@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.39.0" #improve
+    tag: "2.43.0" #improve
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -107,6 +107,7 @@ microservice-chart:
     EXTRACTION_IBANS_EXPORTAGAINAFTERHOURS: '0'
     CLIENT_RETRY_MAX_ATTEMPTS: '3'
     CLIENT_RETRY_MAX_DELAY: '2000'
+    INSTITUTION_SERVICES_DEFAULT_CONSENTS_RTP: 'OPT_IN'
   envSecret:
     AWS_ACCESS_KEY_ID: pagopa-u-aws-access-key-id
     AWS_SECRET_ACCESS_KEY: pagopa-u-aws-secret-access-key

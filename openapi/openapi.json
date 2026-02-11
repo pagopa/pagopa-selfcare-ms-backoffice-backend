@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.39.0"
+    "version": "2.43.0"
   },
   "servers": [
     {
@@ -17,12 +17,12 @@
           "default": "/backoffice/v1"
         },
         "host": {
-          "default": "api.dev.platform.pagopa.it",
           "enum": [
             "api.dev.platform.pagopa.it",
             "api.uat.platform.pagopa.it",
             "api.platform.pagopa.it"
-          ]
+          ],
+          "default": "api.dev.platform.pagopa.it"
         }
       }
     }
@@ -6236,11 +6236,11 @@
             "required": false,
             "schema": {
               "type": "string",
-              "default": "NAME",
               "enum": [
                 "CODE",
                 "NAME"
-              ]
+              ],
+              "default": "NAME"
             }
           },
           {
@@ -6250,11 +6250,11 @@
             "required": false,
             "schema": {
               "type": "string",
-              "default": "DESC",
               "enum": [
                 "ASC",
                 "DESC"
-              ]
+              ],
+              "default": "DESC"
             }
           },
           {
@@ -7169,6 +7169,155 @@
           }
         ],
         "summary": "Create an IBAN owned by creditor institution",
+        "tags": [
+          "Ibans"
+        ]
+      }
+    },
+    "/creditor-institutions/{ci-code}/ibans/bulk": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "bulkIbanOperations",
+        "parameters": [
+          {
+            "description": "Creditor institution code",
+            "in": "path",
+            "name": "ci-code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IbanBulkOperationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created - Bulk operations completed successfully",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request - Invalid data format, missing required fields",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Unauthorized - Authentication credentials missing or invalid",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Forbidden - User does not have permission to perform this operation",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not Found - Creditor institution code not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Conflict - Creditor institution already associated with IBAN",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Bulk IBAN operations (create, update, delete). Operations are atomic: all or nothing",
         "tags": [
           "Ibans"
         ]
@@ -9048,7 +9197,8 @@
                 "BO_EXT_EC",
                 "BO_EXT_PSP",
                 "PRINT_NOTICE",
-                "ACA"
+                "ACA",
+                "MBD"
               ]
             }
           }
@@ -9311,6 +9461,311 @@
           }
         }
       ]
+    },
+    "/institutions/{institution-id}/services/consents": {
+      "get": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "getServiceConsents",
+        "parameters": [
+          {
+            "description": "Institution's unique internal identifier",
+            "in": "path",
+            "name": "institution-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceConsentsResponse"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Internal server error",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Retrieves a list of all services with expressed consent",
+        "tags": [
+          "Institutions"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/institutions/{institution-id}/services/{service-id}/consent": {
+      "parameters": [
+        {
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "in": "header",
+          "name": "X-Request-Id",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "put": {
+        "description": "Internal | External | Synchronous | Authorization | Authentication | TPS | Idempotency | Stateless | Read/Write Intense | Cacheable\n-|-|-|-|-|-|-|-|-|-\nY | N | Y | JWT | JWT | 1.0/sec | Y | Y |  | N\n",
+        "operationId": "saveServiceConsent",
+        "parameters": [
+          {
+            "description": "Institution's unique internal identifier",
+            "in": "path",
+            "name": "institution-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Service's unique internal identifier",
+            "in": "path",
+            "name": "service-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceConsentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceConsentResponse"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Not found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            },
+            "description": "Internal server error",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Saves the expressed consent for the service",
+        "tags": [
+          "Institutions"
+        ]
+      }
     },
     "/maintenance/message": {
       "get": {
@@ -14517,6 +14972,22 @@
           }
         }
       },
+      "IbanBulkOperationRequest": {
+        "required": [
+          "operations"
+        ],
+        "type": "object",
+        "properties": {
+          "operations": {
+            "maxItems": 500,
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IbanOperation"
+            }
+          }
+        }
+      },
       "IbanCreate": {
         "required": [
           "due_date",
@@ -14615,6 +15086,33 @@
           }
         },
         "description": "The labels array associated with the IBAN"
+      },
+      "IbanOperation": {
+        "required": [
+          "ibanValue",
+          "operation",
+          "validityDate"
+        ],
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "ibanValue": {
+            "type": "string"
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "CREATE",
+              "UPDATE",
+              "DELETE"
+            ]
+          },
+          "validityDate": {
+            "type": "string"
+          }
+        }
       },
       "Ibans": {
         "required": [
@@ -15535,6 +16033,98 @@
         "properties": {
           "embedUrl": {
             "type": "string"
+          }
+        }
+      },
+      "ServiceConsentInfo": {
+        "required": [
+          "consent",
+          "consentDate",
+          "serviceId"
+        ],
+        "type": "object",
+        "properties": {
+          "consent": {
+            "type": "string",
+            "description": "The expressed consent",
+            "example": "OPT_OUT",
+            "enum": [
+              "OPT_IN",
+              "OPT_OUT"
+            ]
+          },
+          "consentDate": {
+            "type": "string",
+            "description": "The date when consent have been expressed",
+            "format": "date-time",
+            "example": "2024-04-01T13:00:00+02:00"
+          },
+          "serviceId": {
+            "type": "string",
+            "description": "The service's unique internal identifier",
+            "example": "RTP",
+            "enum": [
+              "RTP"
+            ]
+          }
+        },
+        "description": "List of services with expressed consent"
+      },
+      "ServiceConsentRequest": {
+        "required": [
+          "consent"
+        ],
+        "type": "object",
+        "properties": {
+          "consent": {
+            "type": "string",
+            "description": "The expressed consent",
+            "example": "OPT_OUT",
+            "enum": [
+              "OPT_IN",
+              "OPT_OUT"
+            ]
+          }
+        }
+      },
+      "ServiceConsentResponse": {
+        "required": [
+          "consent",
+          "date"
+        ],
+        "type": "object",
+        "properties": {
+          "consent": {
+            "type": "string",
+            "description": "The expressed consent",
+            "example": "OPT_OUT",
+            "enum": [
+              "OPT_IN",
+              "OPT_OUT"
+            ]
+          },
+          "date": {
+            "type": "string",
+            "description": "The date when consent have been expressed",
+            "format": "date-time",
+            "example": "2024-04-01T13:00:00+02:00"
+          }
+        }
+      },
+      "ServiceConsentsResponse": {
+        "required": [
+          "services"
+        ],
+        "type": "object",
+        "properties": {
+          "services": {
+            "maxItems": 2147483647,
+            "minItems": 1,
+            "type": "array",
+            "description": "List of services with expressed consent",
+            "items": {
+              "$ref": "#/components/schemas/ServiceConsentInfo"
+            }
           }
         }
       },

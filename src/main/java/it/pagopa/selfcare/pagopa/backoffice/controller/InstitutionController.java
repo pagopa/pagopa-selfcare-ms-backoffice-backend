@@ -2,26 +2,27 @@ package it.pagopa.selfcare.pagopa.backoffice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
 import it.pagopa.selfcare.pagopa.backoffice.service.ApiManagementService;
+import it.pagopa.selfcare.pagopa.backoffice.service.InstitutionServicesService;
 import it.pagopa.selfcare.pagopa.backoffice.util.OpenApiTableMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -34,10 +35,12 @@ import java.util.List;
 public class InstitutionController {
 
     private final ApiManagementService apiManagementService;
+    private final InstitutionServicesService servicesService;
 
     @Autowired
-    public InstitutionController(ApiManagementService apiManagementService) {
+    public InstitutionController(ApiManagementService apiManagementService, InstitutionServicesService servicesService) {
         this.apiManagementService = apiManagementService;
+        this.servicesService = servicesService;
     }
 
     @GetMapping("")
@@ -134,5 +137,63 @@ public class InstitutionController {
             @Parameter(description = "Institution's subscription id") @PathVariable("subscription-id") String subscriptionId
     ) {
         this.apiManagementService.regenerateSecondaryKey(institutionId, subscriptionId);
+    }
+
+    @PutMapping("/{institution-id}/services/{service-id}/consent")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Saves the expressed consent for the service", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    @JwtSecurity(paramName = "institutionId", checkParamAsUserId = true, allowedProductRole = ProductRole.ADMIN)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ServiceConsentResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemJson.class)))
+    })
+    public @Valid ServiceConsentResponse saveServiceConsent(
+            @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId,
+            @Parameter(description = "Service's unique internal identifier") @PathVariable("service-id") String serviceId,
+            @Valid @RequestBody @NotNull ServiceConsentRequest serviceConsentRequest
+    ) {
+        return servicesService.saveServiceConsent(serviceConsentRequest, ServiceId.fromString(serviceId), institutionId);
+    }
+
+    @GetMapping("/{institution-id}/services/consents")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Retrieves a list of all services with expressed consent", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    @JwtSecurity(paramName = "institutionId", checkParamAsUserId = true)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ServiceConsentsResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "404", description = "Not found",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemJson.class)))
+    })
+    public @Valid ServiceConsentsResponse getServiceConsents(
+            @Parameter(description = "Institution's unique internal identifier") @PathVariable("institution-id") @NotBlank String institutionId
+    ) {
+        return servicesService.getServiceConsents(institutionId);
     }
 }
