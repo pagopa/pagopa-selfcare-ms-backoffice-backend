@@ -154,6 +154,7 @@ public class CreditorInstitutionMapperImpl implements CreditorInstitutionMapper 
             creditorInstitutionDetails.setCreditorInstitutionCode(dto.getCreditorInstitutionCode());
             creditorInstitutionDetails.setEnabled(dto.getEnabled());
             creditorInstitutionDetails.setBusinessName(dto.getBusinessName());
+            creditorInstitutionDetails.setCbillCode(dto.getCbillCode());
             creditorInstitutionDetails.setAddress(fromDto(dto.getAddress()));
             creditorInstitutionDetails.setPspPayment(dto.getPspPayment());
             creditorInstitutionDetails.setReportingFtp(dto.getReportingFtp());

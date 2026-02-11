@@ -371,6 +371,20 @@ class CreditorInstitutionServiceTest {
     }
 
     @Test
+    void updateCreditorInstitution_shouldPreserveCbillCode() throws IOException {
+        when(apiConfigClient.updateCreditorInstitutionDetails(anyString(), any(CreditorInstitutionDetails.class)))
+                .thenAnswer(invocation -> invocation.getArgument(1));
+
+        UpdateCreditorInstitutionDto dto = TestUtil.fileToObject("request/post_creditor_institution.json", UpdateCreditorInstitutionDto.class);
+        assertEquals("COXYZ", dto.getCbillCode(), "Test fixture should have cbillCode");
+
+        CreditorInstitutionDetailsResource result = service.updateCreditorInstitutionDetails(CI_TAX_CODE, dto);
+
+        assertNotNull(result);
+        assertEquals("COXYZ", result.getCbillCode(), "cbillCode must be preserved through the update mapper");
+    }
+
+    @Test
     void updateCreditorInstitution_ko() throws IOException {
         FeignException feignException = mock(FeignException.InternalServerError.class);
         when(apiConfigClient.updateCreditorInstitutionDetails(anyString(), any(CreditorInstitutionDetails.class))).thenThrow(feignException);
