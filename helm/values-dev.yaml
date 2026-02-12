@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.43.1-1-PIDM-1487-fix-empty-cbill"
+    tag: "2.43.2"
     pullPolicy: Always
   livenessProbe:
     httpGet:

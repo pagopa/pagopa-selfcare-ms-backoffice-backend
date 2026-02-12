@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import it.pagopa.selfcare.pagopa.backoffice.audit.AuditLogger;
 import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.InstitutionServicesConfig;
 import it.pagopa.selfcare.pagopa.backoffice.entity.InstitutionRTPServiceEntity;
@@ -7,8 +8,11 @@ import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.*;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.client.Institution;
+import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -16,18 +20,22 @@ import java.time.ZoneId;
 import java.util.List;
 
 @Service
+@Slf4j
 public class InstitutionServicesService {
     private final MongoRepository<InstitutionRTPServiceEntity, String> rtpServiceRepository;
     private final ExternalApiClient externalApiClient;
     private final InstitutionServicesConfig servicesConfig;
+    private final AuditLogger auditLogger;
     private static final String ORIGIN_IPA = "IPA";
 
     @Autowired
     public InstitutionServicesService(MongoRepository<InstitutionRTPServiceEntity, String> rtpServiceRepository,
-                                      ExternalApiClient externalApiClient, InstitutionServicesConfig servicesConfig){
+                                      ExternalApiClient externalApiClient, InstitutionServicesConfig servicesConfig,
+                                      AuditLogger auditLogger){
         this.rtpServiceRepository = rtpServiceRepository;
         this.externalApiClient = externalApiClient;
         this.servicesConfig = servicesConfig;
+        this.auditLogger = auditLogger;
     }
 
     public ServiceConsentResponse saveServiceConsent(ServiceConsentRequest serviceConsentRequest,
@@ -55,6 +63,13 @@ public class InstitutionServicesService {
                         .consentDate(Instant.now())
                         .build();
                 rtpServiceRepository.save(entity);
+                auditLogger.info(log,
+                        "event=CONSENT_UPDATE institutionId={} serviceId={} userId={} institutionTaxCode={} consent={}",
+                        institutionId,
+                        serviceId,
+                        Utility.extractUserIdFromAuth(SecurityContextHolder.getContext().getAuthentication()),
+                        institution.getTaxCode(),
+                        serviceConsentRequest.getConsent());
                 response = new ServiceConsentResponse(serviceConsentRequest.getConsent(),
                         entity.getConsentDate().atZone(ZoneId.of("Europe/Rome")).toOffsetDateTime());
                 break;
