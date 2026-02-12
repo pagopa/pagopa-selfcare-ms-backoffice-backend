@@ -2,6 +2,14 @@ name: Create Dashboard
 
 # Controls when the workflow will run
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'openapi/**'
+      - '.github/workflows/create_dashboard.yaml'
+      - '.opex/**'
+
   workflow_dispatch:
 
 permissions:
@@ -14,6 +22,12 @@ jobs:
   dashboard:
     # The type of runner that the job will run on
     runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        environment: [prod]
+    environment:
+      name: ${{ matrix.environment }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout
@@ -26,12 +40,12 @@ jobs:
       # from https://github.com/pagopa/opex-dashboard-azure-action/
       - uses: pagopa/opex-dashboard-azure-action@ece3bc2b133be74cabb50aec14cdb9b8051b886f # v1.1.2
         with:
-          environment: prod
+          environment: ${{ matrix.environment }}
           api-name:
-          config: .opex/env/prod/config.yaml
-          client-id: ${{ secrets.PROD_CLIENT_ID }}
-          tenant-id: ${{ secrets.PROD_TENANT_ID }}
-          subscription-id: ${{ secrets.PROD_SUBSCRIPTION_ID }}
+          config: .opex/env/${{ matrix.environment }}/config.yaml
+          client-id: ${{ secrets.CLIENT_ID }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
           # from https://github.com/pagopa/opex-dashboard-azure-action/pkgs/container/opex-dashboard-azure-action
           docker-version: sha256:e4245954566cd3470e1b5527d33bb58ca132ce7493eac01be9e808fd25a11c8d
 
