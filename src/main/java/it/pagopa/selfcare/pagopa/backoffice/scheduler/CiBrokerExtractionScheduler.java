@@ -180,6 +180,8 @@ public class CiBrokerExtractionScheduler {
                 .version(String.valueOf(ci.getStationVersion()))
                 .broadcast(ci.getBroadcast())
                 .pspPayment(ci.getPspPayment())
+                .aca(ci.getAca())
+                .standIn(ci.getStandIn())
                 .build();
     }
 
