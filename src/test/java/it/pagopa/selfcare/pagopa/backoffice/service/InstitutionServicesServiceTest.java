@@ -153,11 +153,7 @@ class InstitutionServicesServiceTest {
     @Test
     void getServiceConsents_RTPServiceFound_Success() {
         // 1. Arrange
-        Institution institution = new Institution();
-        institution.setId(INSTITUTION_ID);
-        institution.setOrigin(ORIGIN);
-
-        Instant time = Instant.now();
+       Instant time = Instant.now();
 
         InstitutionRTPServiceEntity rtpService = InstitutionRTPServiceEntity.builder()
                 .id(INSTITUTION_ID)
@@ -167,7 +163,6 @@ class InstitutionServicesServiceTest {
                 .name(DESCRIPTION)
                 .build();
 
-        when(externalApiClient.getInstitution(INSTITUTION_ID)).thenReturn(institution);
         when(rtpServiceRepository.findById(INSTITUTION_ID)).thenReturn(Optional.of(rtpService));
         when(defaultServicesConfig.getDefaultConsents()).thenReturn(Map.of(ServiceId.RTP, ServiceConsent.OPT_IN));
 
@@ -199,11 +194,6 @@ class InstitutionServicesServiceTest {
     @Test
     void getServiceConsents_RTPServiceNotFound_Success() {
         // 1. Arrange
-        Institution institution = new Institution();
-        institution.setId(INSTITUTION_ID);
-        institution.setOrigin(ORIGIN);
-
-        when(externalApiClient.getInstitution(INSTITUTION_ID)).thenReturn(institution);
         when(rtpServiceRepository.findById(INSTITUTION_ID)).thenReturn(Optional.empty());
         when(defaultServicesConfig.getDefaultConsents()).thenReturn(Map.of(ServiceId.RTP, ServiceConsent.OPT_IN));
 
@@ -230,22 +220,6 @@ class InstitutionServicesServiceTest {
 
         assertEquals(expectedRomeTime, responseConsent.getConsentDate(),
                 "The response date must be the Unix epoch converted to Rome timezone");
-    }
-
-    @Test
-    void getServiceConsents_InstitutionNotFound_ThrowsException() {
-        // 1. Arrange
-        when(externalApiClient.getInstitution(any())).thenReturn(null);
-
-        // 2. Act & Assert
-        AppException exception = assertThrows(AppException.class, () ->
-                sut.getServiceConsents(INSTITUTION_ID)
-        );
-
-        assertEquals(AppError.INSTITUTION_NOT_FOUND.httpStatus, exception.getHttpStatus());
-
-        // Ensure we didn't search the institution's saved consents
-        verifyNoInteractions(rtpServiceRepository);
     }
 
 }
