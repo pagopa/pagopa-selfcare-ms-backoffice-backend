@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.pagopa.backoffice.model.iban;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.pagopa.selfcare.pagopa.backoffice.util.ValidityDateRequiredForCreate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ValidityDateRequiredForCreate
 public class IbanOperation {
 
     @JsonProperty("operation")
@@ -26,7 +28,6 @@ public class IbanOperation {
     private String description;
 
     @JsonProperty("validityDate")
-    @NotNull(message = "validityDate value is required")
     private String validityDate;
 
 }

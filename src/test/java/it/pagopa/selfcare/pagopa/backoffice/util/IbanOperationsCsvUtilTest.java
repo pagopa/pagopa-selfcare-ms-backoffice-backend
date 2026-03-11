@@ -83,12 +83,16 @@ class IbanOperationsCsvUtilTest {
         int rowCount = 500;
 
         List<IbanOperation> operations = java.util.stream.IntStream.range(0, rowCount)
-                .mapToObj(i -> IbanOperation.builder()
+                .mapToObj(i -> {
+                    IbanOperationType type = i % 2 == 0 ? IbanOperationType.CREATE : IbanOperationType.UPDATE;
+
+                    return   IbanOperation.builder()
                         .description("Description number " + i)
                         .ibanValue("IT00X" + String.format("%022d", i))
-                        .validityDate("2025-01-01")
-                        .type(i % 2 == 0 ? IbanOperationType.CREATE :IbanOperationType.UPDATE)
-                        .build())
+                        .validityDate(type == IbanOperationType.CREATE ? "2025-01-01" : null)
+                        .type(type)
+                        .build();
+                })
                 .toList();
 
         long startTime = System.currentTimeMillis();
