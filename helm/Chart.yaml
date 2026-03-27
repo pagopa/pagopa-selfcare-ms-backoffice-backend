@@ -2,8 +2,8 @@ apiVersion: v2
 name: pagopa-selfcare-ms-backoffice
 description: Microservice that manage api keys for pagopa product from selfcare
 type: application
-version: 0.516.0
-appVersion: "2.43.5-1-CHK-4702-add-email-notification-on-iban-operation"
+version: 0.517.0
+appVersion: "2.43.5-2-CHK-4702-add-email-notification-on-iban-operation"
 dependencies:
   - name: microservice-chart
     version: 7.5.0
