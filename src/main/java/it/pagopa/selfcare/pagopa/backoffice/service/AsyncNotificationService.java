@@ -115,7 +115,7 @@ public class AsyncNotificationService {
                 .institutionTaxCode(ciTaxCode)
                 .subject(IBAN_DELETE_SUBJECT)
                 .textBody(String.format(IBAN_DELETE_BODY, institutionUploadData.getFullName(), iban, deleteDate, getEnvParam()))
-                .htmlBodyFileName("updateIbanNotificationEmail.html")
+                .htmlBodyFileName("deleteIbanNotificationEmail.html")
                 .htmlBodyContext(bodyContext)
                 .destinationUserType(SelfcareProductUser.ADMIN)
                 .build();
