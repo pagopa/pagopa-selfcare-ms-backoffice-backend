@@ -35,5 +35,7 @@ public class BrokerInstitutionEntity {
     private String endpointMU;
     private Integer primitiveVersion;
     private Boolean ciStatus;
+    private Boolean aca;
+    private Boolean standIn;
 
 }

@@ -73,6 +73,9 @@ public enum AppError {
     BROKER_IBAN_EXPORT_SCHEDULER_SETUP_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error in brokerIbansExport cron setup", "%s"),
     BROKER_IBAN_EXPORT_SCHEDULER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error during brokerIbansExport cron execution", "%s"),
 
+    SERVICE_NOT_FOUND(HttpStatus.NOT_FOUND, "Service Not Found",
+            "Requested service has not been found"),
+
     UNKNOWN(null, null, null);
 
     public final HttpStatus httpStatus;

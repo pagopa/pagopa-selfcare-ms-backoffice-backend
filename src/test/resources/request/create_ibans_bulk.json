@@ -1,0 +1,3004 @@
+{
+  "operations":[
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 1 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 1 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 1 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 2 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 2 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 2 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 3 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 3 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 3 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 4 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 4 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 4 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 5 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 5 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 5 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 6 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 6 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 6 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 7 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 7 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 7 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 8 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 8 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 8 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 9 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 9 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 9 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 10 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 10 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 10 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 11 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 11 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 11 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 12 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 12 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 12 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 13 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 13 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 13 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 14 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 14 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 14 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 15 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 15 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 15 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 16 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 16 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 16 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 17 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 17 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 17 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 18 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 18 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 18 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 19 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 19 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 19 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 20 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 20 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 20 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 21 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 21 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 21 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 22 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 22 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 22 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 23 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 23 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 23 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 24 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 24 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 24 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 25 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 25 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 25 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 26 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 26 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 26 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 27 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 27 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 27 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 28 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 28 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 28 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 29 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 29 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 29 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 30 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 30 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 30 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 31 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 31 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 31 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 32 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 32 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 32 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 33 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 33 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 33 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 34 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 34 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 34 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 35 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 35 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 35 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 36 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 36 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 36 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 37 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 37 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 37 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 38 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 38 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 38 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 39 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 39 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 39 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 40 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 40 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 40 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 41 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 41 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 41 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 42 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 42 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 42 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 43 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 43 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 43 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 44 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 44 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 44 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 45 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 45 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 45 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 46 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 46 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 46 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 47 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 47 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 47 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 48 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 48 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 48 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 49 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 49 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 49 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 50 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 50 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 50 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 51 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 51 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 51 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 52 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 52 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 52 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 53 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 53 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 53 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 54 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 54 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 54 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 55 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 55 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 55 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 56 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 56 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 56 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 57 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 57 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 57 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 58 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 58 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 58 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 59 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 59 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 59 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 60 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 60 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 60 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 61 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 61 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 61 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 62 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 62 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 62 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 63 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 63 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 63 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 64 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 64 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 64 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 65 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 65 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 65 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 66 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 66 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 66 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 67 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 67 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 67 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 68 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 68 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 68 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 69 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 69 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 69 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 70 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 70 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 70 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 71 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 71 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 71 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 72 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 72 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 72 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 73 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 73 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 73 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 74 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 74 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 74 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 75 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 75 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 75 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 76 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 76 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 76 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 77 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 77 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 77 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 78 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 78 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 78 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 79 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 79 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 79 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 80 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 80 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 80 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 81 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 81 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 81 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 82 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 82 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 82 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 83 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 83 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 83 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 84 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 84 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 84 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 85 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 85 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 85 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 86 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 86 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 86 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 87 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 87 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 87 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 88 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 88 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 88 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 89 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 89 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 89 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 90 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 90 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 90 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 91 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 91 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 91 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 92 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 92 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 92 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 93 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 93 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 93 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 94 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 94 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 94 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 95 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 95 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 95 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 96 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 96 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 96 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 97 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 97 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 97 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 98 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 98 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 98 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 99 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 99 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 99 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 100 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 100 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 100 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 101 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 101 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 101 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 102 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 102 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 102 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 103 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 103 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 103 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 104 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 104 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 104 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 105 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 105 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 105 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 106 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 106 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 106 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 107 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 107 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 107 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 108 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 108 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 108 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 109 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 109 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 109 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 110 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 110 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 110 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 111 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 111 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 111 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 112 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 112 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 112 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 113 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 113 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 113 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 114 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 114 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 114 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 115 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 115 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 115 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 116 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 116 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 116 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 117 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 117 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 117 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 118 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 118 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 118 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 119 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 119 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 119 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 120 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 120 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 120 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 121 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 121 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 121 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 122 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 122 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 122 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 123 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 123 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 123 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 124 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 124 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 124 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 125 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 125 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 125 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 126 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 126 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 126 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 127 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 127 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 127 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 128 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 128 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 128 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 129 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 129 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 129 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 130 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 130 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 130 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 131 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 131 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 131 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 132 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 132 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 132 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 133 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 133 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 133 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 134 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 134 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 134 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 135 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 135 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 135 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 136 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 136 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 136 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 137 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 137 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 137 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 138 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 138 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 138 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 139 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 139 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 139 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 140 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 140 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 140 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 141 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 141 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 141 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 142 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 142 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 142 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 143 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 143 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 143 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 144 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 144 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 144 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 145 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 145 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 145 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 146 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 146 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 146 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 147 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 147 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 147 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 148 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 148 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 148 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 149 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 149 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 149 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 150 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 150 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 150 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 151 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 151 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 151 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 152 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 152 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 152 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 153 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 153 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 153 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 154 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 154 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 154 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 155 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 155 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 155 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 156 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 156 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 156 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 157 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 157 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 157 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 158 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 158 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 158 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 159 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 159 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 159 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 160 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 160 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 160 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 161 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 161 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 161 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 162 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 162 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 162 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 163 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 163 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 163 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 164 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 164 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 164 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 165 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 165 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 165 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 166 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 166 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"DELETE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 166 - Op: DELETE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"CREATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 167 - Op: CREATE",
+      "validityDate":"2026-01-01"
+    },
+    {
+      "operation":"UPDATE",
+      "ibanValue":"IT16500210005679528391",
+      "description":"Ciclo 167 - Op: UPDATE",
+      "validityDate":"2026-01-01"
+    }
+  ]
+}
