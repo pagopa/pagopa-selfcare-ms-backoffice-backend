@@ -72,7 +72,6 @@ Running docker with local target will generate/overwrite a local .env file cloni
 ```
 ```
 
-
 ### Spring Profiles
 
 - **local**: to develop locally.
