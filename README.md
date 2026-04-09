@@ -65,6 +65,7 @@ see documentation [here](docker/README.md)
 
 If you have access to azure dev, you can use `./infra/sops.sh` script to decrypt `./infra/env/dev/encrypted_env` to
 create a valid env file.
+
 _You need to have sops installed._
 
 Running docker with local target will generate/overwrite a local .env file cloning the `./docker/.env.local` file
