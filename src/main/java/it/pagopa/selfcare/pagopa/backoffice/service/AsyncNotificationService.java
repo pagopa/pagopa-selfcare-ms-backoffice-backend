@@ -1,10 +1,10 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.AwsSesClient;
-import it.pagopa.selfcare.pagopa.backoffice.client.InstitutionsClient;
+import it.pagopa.selfcare.pagopa.backoffice.model.creditorinstituions.client.CreditorInstitutionInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.email.EmailMessageDetail;
 import it.pagopa.selfcare.pagopa.backoffice.model.institutions.SelfcareProductUser;
-import it.pagopa.selfcare.pagopa.backoffice.model.notices.InstitutionUploadData;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -23,16 +23,16 @@ public class AsyncNotificationService {
 
     private final String environment;
     private final AwsSesClient awsSesClient;
-    private final InstitutionsClient institutionsClient;
+    private final ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
     public AsyncNotificationService(
             @Value("${info.properties.environment}") String environment,
             AwsSesClient awsSesClient,
-            InstitutionsClient institutionsClient
+            ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient
     ) {
         this.environment = environment;
         this.awsSesClient = awsSesClient;
-        this.institutionsClient = institutionsClient;
+        this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
     }
 
     /**
@@ -66,16 +66,16 @@ public class AsyncNotificationService {
     }
 
     @Async
-    public void notifyIbanCreation(String ciTaxCode){
-        InstitutionUploadData institutionUploadData = institutionsClient.getInstitutionData(ciTaxCode);
+    public void notifyIbanCreation(String ciTaxCode) {
+        String ciName = getCiName(ciTaxCode);
         Context bodyContext = buildHtmlBodyContext(
                 List.of(
                         Pair.of(ENVIRONMENT, getEnvParam()),
-                        Pair.of(CI_NAME, institutionUploadData.getFullName())));
+                        Pair.of(CI_NAME, ciName)));
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
                 .subject(IBAN_CREATE_SUBJECT)
-                .textBody(String.format(IBAN_CREATE_BODY, institutionUploadData.getFullName(), getEnvParam()))
+                .textBody(String.format(IBAN_CREATE_BODY, ciName, getEnvParam()))
                 .htmlBodyFileName("createIbanNotificationEmail.html")
                 .htmlBodyContext(bodyContext)
                 .destinationUserType(SelfcareProductUser.ADMIN)
@@ -84,17 +84,17 @@ public class AsyncNotificationService {
     }
 
     @Async
-    public void notifyIbanUpdate(String ciTaxCode, String iban){
-        InstitutionUploadData institutionUploadData = institutionsClient.getInstitutionData(ciTaxCode);
+    public void notifyIbanUpdate(String ciTaxCode, String iban) {
+        String ciName = getCiName(ciTaxCode);
         Context bodyContext = buildHtmlBodyContext(
                 List.of(
                         Pair.of(ENVIRONMENT, getEnvParam()),
-                        Pair.of(CI_NAME, institutionUploadData.getFullName()),
+                        Pair.of(CI_NAME, ciName),
                         Pair.of(IBAN, iban)));
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
                 .subject(IBAN_UPDATE_SUBJECT)
-                .textBody(String.format(IBAN_UPDATE_BODY, institutionUploadData.getFullName(), iban, getEnvParam()))
+                .textBody(String.format(IBAN_UPDATE_BODY, ciName, iban, getEnvParam()))
                 .htmlBodyFileName("updateIbanNotificationEmail.html")
                 .htmlBodyContext(bodyContext)
                 .destinationUserType(SelfcareProductUser.ADMIN)
@@ -103,18 +103,18 @@ public class AsyncNotificationService {
     }
 
     @Async
-    public void notifyIbanDeletion(String ciTaxCode, String iban, String deleteDate){
-        InstitutionUploadData institutionUploadData = institutionsClient.getInstitutionData(ciTaxCode);
+    public void notifyIbanDeletion(String ciTaxCode, String iban, String deleteDate) {
+        String ciName = getCiName(ciTaxCode);
         Context bodyContext = buildHtmlBodyContext(
                 List.of(
                         Pair.of(ENVIRONMENT, getEnvParam()),
-                        Pair.of(CI_NAME, institutionUploadData.getFullName()),
+                        Pair.of(CI_NAME, ciName),
                         Pair.of(IBAN, iban),
                         Pair.of("deleteDate", deleteDate)));
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
                 .subject(IBAN_DELETE_SUBJECT)
-                .textBody(String.format(IBAN_DELETE_BODY, institutionUploadData.getFullName(), iban, deleteDate, getEnvParam()))
+                .textBody(String.format(IBAN_DELETE_BODY, ciName, iban, deleteDate, getEnvParam()))
                 .htmlBodyFileName("deleteIbanNotificationEmail.html")
                 .htmlBodyContext(bodyContext)
                 .destinationUserType(SelfcareProductUser.ADMIN)
@@ -123,22 +123,31 @@ public class AsyncNotificationService {
     }
 
     @Async
-    public void notifyIbanRestore(String ciTaxCode, String iban){
-        InstitutionUploadData institutionUploadData = institutionsClient.getInstitutionData(ciTaxCode);
+    public void notifyIbanRestore(String ciTaxCode, String iban) {
+        String ciName = getCiName(ciTaxCode);
         Context bodyContext = buildHtmlBodyContext(
                 List.of(
                         Pair.of(ENVIRONMENT, getEnvParam()),
-                        Pair.of(CI_NAME, institutionUploadData.getFullName()),
+                        Pair.of(CI_NAME, ciName),
                         Pair.of(IBAN, iban)));
         EmailMessageDetail messageDetail = EmailMessageDetail.builder()
                 .institutionTaxCode(ciTaxCode)
                 .subject(IBAN_RESTORE_SUBJECT)
-                .textBody(String.format(IBAN_RESTORE_BODY, institutionUploadData.getFullName(), iban, getEnvParam()))
+                .textBody(String.format(IBAN_RESTORE_BODY, ciName, iban, getEnvParam()))
                 .htmlBodyFileName("restoreDisabledIbanNotificationEmail.html")
                 .htmlBodyContext(bodyContext)
                 .destinationUserType(SelfcareProductUser.ADMIN)
                 .build();
         this.awsSesClient.sendEmail(messageDetail);
+    }
+
+    private String getCiName(String ciTaxCode) {
+        return apiConfigSelfcareIntegrationClient.getCreditorInstitutionInfo(List.of(ciTaxCode))
+                .stream()
+                .filter(info -> ciTaxCode.equals(info.getCiTaxCode()))
+                .map(CreditorInstitutionInfo::getBusinessName)
+                .findFirst()
+                .orElse(ciTaxCode);
     }
 
     private Context buildBundleEmailHtmlBodyContext(String bundleName, String pspName) {
@@ -150,7 +159,6 @@ public class AsyncNotificationService {
         properties.put("bundleName", bundleName);
         properties.put("environment", getEnvParam());
         properties.put("pspName", pspName);
-
         context.setVariables(properties);
         return context;
     }
@@ -162,9 +170,7 @@ public class AsyncNotificationService {
         // Properties to show up in Template after stored in Context
         Map<String, Object> properties = new HashMap<>();
         textProperties.forEach(p -> properties.put(p.getKey(), p.getValue()));
-
         context.setVariables(properties);
-
         return context;
     }
 
