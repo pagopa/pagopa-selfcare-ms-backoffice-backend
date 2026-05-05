@@ -61,7 +61,7 @@ class PaymentsReceiptsControllerTest {
     }
 
     @Test
-    void getPaymentsReceiptsOK() throws Exception {
+    void getPaymentsReceiptsDetailOK() throws Exception {
         String url = "/payments-receipts/{organization-tax-code}/detail/{iuv}";
         when(service.getPaymentReceiptDetail(ORGANIZATION_TAX_CODE, IUV)).thenReturn(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -69,5 +69,33 @@ class PaymentsReceiptsControllerTest {
         mvc.perform(get(url, ORGANIZATION_TAX_CODE, IUV)
                 ).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_XML_VALUE + ";charset=UTF-8"));
+    }
+
+    @Test
+    void getCIEPaymentsReceiptsWithDefaultParamsOK() throws Exception {
+        String url = "/payments-receipts/cie/{organization-tax-code}";
+        when(service.getCIEPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, null, null, null, null)).thenReturn(
+                new PaymentsResult<>()
+        );
+        mvc.perform(get(url, ORGANIZATION_TAX_CODE)
+                ).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    void getCIEPaymentsReceiptsWithCustomParamsOK() throws Exception {
+        String url = "/payments-receipts/cie/{organization-tax-code}";
+        when(service.getCIEPaymentsReceipts(ORGANIZATION_TAX_CODE, 5, 25, DEBTOR_TAX_CODE, FROM_DATE, TO_DATE, IUV)).thenReturn(
+                new PaymentsResult<>()
+        );
+        mvc.perform(get(url, ORGANIZATION_TAX_CODE)
+                        .param("page", String.valueOf(5))
+                        .param("limit", String.valueOf(25))
+                        .param("debtorTaxCode", DEBTOR_TAX_CODE)
+                        .param("fromDate", FROM_DATE)
+                        .param("toDate", TO_DATE)
+                        .param("debtorOrIuv", IUV)
+                ).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 }

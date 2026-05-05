@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class PaymentsReceiptsService {
 
-    public static final String PAGOPA_SERVICE_CODE = "47";
+    private static final String PAGOPA_SERVICE_CODE = "47";
+    private static final String CIE_SERVICE_CODE = "99";
     private final GpdClient gpdClient;
 
     @Autowired
@@ -55,5 +56,29 @@ public class PaymentsReceiptsService {
             String iuv
     ) {
         return this.gpdClient.getPaymentReceiptDetail(organizationTaxCode, iuv);
+    }
+
+    /**
+     * Return the organization's CIE receipts list
+     *
+     * @param organizationTaxCode Organization tax code
+     * @param page                Page number
+     * @param limit               Maximum elements for page
+     * @param debtorTaxCode       Debtor tax code
+     * @param fromDate            Filter date (after this date)
+     * @param toDate              Filter date (before this date)
+     * @param debtorOrIuv         Dynamic filter by debtor tax code or iuv
+     * @return paged list of the organization's receipts
+     */
+    public PaymentsResult<ReceiptModelResponse> getCIEPaymentsReceipts(
+            String organizationTaxCode,
+            Integer page,
+            Integer limit,
+            String debtorTaxCode,
+            String fromDate,
+            String toDate,
+            String debtorOrIuv
+    ) {
+        return this.gpdClient.getPaymentsReceipts(organizationTaxCode, page, limit, debtorTaxCode, CIE_SERVICE_CODE, fromDate, toDate, debtorOrIuv);
     }
 }
