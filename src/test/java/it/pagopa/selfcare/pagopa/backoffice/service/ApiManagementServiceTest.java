@@ -494,9 +494,10 @@ class ApiManagementServiceTest {
         assertNotNull(captorValue.getOwner());
         assertEquals(INSTITUTION_TAX_CODE, captorValue.getOwner().getId());
         assertNotNull(captorValue.getAuthorizedEntities());
-        assertEquals(2, captorValue.getAuthorizedEntities().size());
+        assertEquals(3, captorValue.getAuthorizedEntities().size());
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> INSTITUTION_TAX_CODE.equals(elem.getValue())));
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> TAX_CODE_2.equals(elem.getValue())));
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> CI_TAX_CODE.equals(elem.getValue())));
         assertNotNull(captorValue.getOtherMetadata());
         assertEquals(1, captorValue.getOtherMetadata().size());
         assertEquals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY, captorValue.getOtherMetadata().get(0).getShortKey());
@@ -613,9 +614,10 @@ class ApiManagementServiceTest {
         Authorization captorValue = authorizationCaptor.getValue();
         assertNotNull(captorValue);
         assertNotNull(captorValue.getAuthorizedEntities());
-        assertEquals(2, captorValue.getAuthorizedEntities().size());
+        assertEquals(3, captorValue.getAuthorizedEntities().size());
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> INSTITUTION_TAX_CODE.equals(elem.getValue())));
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> TAX_CODE_2.equals(elem.getValue())));
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> CI_TAX_CODE.equals(elem.getValue())));
         assertNotNull(captorValue.getOtherMetadata());
         assertEquals(1, captorValue.getOtherMetadata().size());
         assertEquals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY, captorValue.getOtherMetadata().get(0).getShortKey());
@@ -797,9 +799,10 @@ class ApiManagementServiceTest {
         Authorization captorValue = authorizationCaptor.getValue();
         assertNotNull(captorValue);
         assertNotNull(captorValue.getAuthorizedEntities());
-        assertEquals(2, captorValue.getAuthorizedEntities().size());
+        assertEquals(3, captorValue.getAuthorizedEntities().size());
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> INSTITUTION_TAX_CODE.equals(elem.getValue())));
         assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> TAX_CODE_2.equals(elem.getValue())));
+        assertTrue(captorValue.getAuthorizedEntities().stream().anyMatch(elem -> CI_TAX_CODE.equals(elem.getValue())));
         assertNotNull(captorValue.getOtherMetadata());
         assertEquals(1, captorValue.getOtherMetadata().size());
         assertEquals(AUTHORIZER_SEGREGATION_CODES_METADATA_SHORT_KEY, captorValue.getOtherMetadata().get(0).getShortKey());
