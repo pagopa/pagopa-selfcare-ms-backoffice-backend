@@ -450,9 +450,11 @@ public class ApiManagementService {
 
         // PIDM-1847
         // Add entities from api-config
-        ciSegregationCodes.getCiStationCodes().forEach(elem ->
-                authorizedEntities.add(getAuthorizationEntity(subscription, elem.getInstitutionName(), elem.getCiTaxCode()))
-        );
+        if(ciSegregationCodes.getCiStationCodes() != null && !ciSegregationCodes.getCiStationCodes().isEmpty()){
+            ciSegregationCodes.getCiStationCodes().forEach(elem ->
+                    authorizedEntities.add(getAuthorizationEntity(subscription, elem.getInstitutionName(), elem.getCiTaxCode()))
+            );
+        }
         // Add entities from Area Riservata
         List<DelegationExternal> delegationResponse = this.externalApiClient
                 .getBrokerDelegation(null, institution.getId(), "prod-pagopa", "FULL", null)
