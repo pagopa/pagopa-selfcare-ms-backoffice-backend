@@ -472,7 +472,7 @@ public class ApiManagementService {
         Set<String> seen = new HashSet<>();
         return authorizedEntities.stream()
                 .filter(obj -> seen.add(obj.getValue()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private AuthorizationEntity getAuthorizationEntity(
