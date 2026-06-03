@@ -467,7 +467,6 @@ public class ApiManagementService {
                     .filter(Objects::nonNull)
                     .toList());
         }
-
         // Remove duplicates based on tax code uniqueness
         Set<String> seen = new HashSet<>();
         return authorizedEntities.stream()
