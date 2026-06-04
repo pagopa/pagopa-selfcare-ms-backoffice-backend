@@ -42,10 +42,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.pagopa.backoffice.model.institutions.RoleType.fromSelfcareRole;
 import static it.pagopa.selfcare.pagopa.backoffice.util.Utility.sanitizeLogParam;
@@ -302,7 +300,7 @@ public class ApiManagementService {
                     String prefixId = apiKey.getId().split("-")[0] + "-";
                     Subscription subscription = Subscription.fromPrefix(prefixId);
 
-                    List<AuthorizationEntity> authorizationEntities = getAuthorizationEntities(institution, subscription);
+                    List<AuthorizationEntity> authorizationEntities = getAuthorizationEntities(institution, subscription, ciSegregationCodes);
                     AuthorizationConfig authorizationConfig = new AuthorizationConfig(authorizationEntities, authorizationMetadata);
 
                     updateAuthorizerConfig(institutionId, subscription, authorizationConfig, true, apiKey.getPrimaryKey());
@@ -442,13 +440,22 @@ public class ApiManagementService {
 
     private List<AuthorizationEntity> getAuthorizationEntities(
             InstitutionResponse institution,
-            Subscription subscription
+            Subscription subscription,
+            CIStationSegregationCodesList ciSegregationCodes
     ) {
         List<AuthorizationEntity> authorizedEntities = new ArrayList<>();
-       if (!InstitutionType.PT.equals(institution.getInstitutionType())) {
-           authorizedEntities.add(getAuthorizationEntity(subscription, institution.getDescription(), institution.getTaxCode()));
-       }
+        if (!InstitutionType.PT.equals(institution.getInstitutionType())) {
+            authorizedEntities.add(getAuthorizationEntity(subscription, institution.getDescription(), institution.getTaxCode()));
+        }
 
+        // PIDM-1847
+        // Add entities from api-config
+        if(ciSegregationCodes.getCiStationCodes() != null && !ciSegregationCodes.getCiStationCodes().isEmpty()){
+            ciSegregationCodes.getCiStationCodes().forEach(elem ->
+                    authorizedEntities.add(getAuthorizationEntity(subscription, elem.getInstitutionName(), elem.getCiTaxCode()))
+            );
+        }
+        // Add entities from Area Riservata
         List<DelegationExternal> delegationResponse = this.externalApiClient
                 .getBrokerDelegation(null, institution.getId(), "prod-pagopa", "FULL", null)
                 .parallelStream()
@@ -460,8 +467,11 @@ public class ApiManagementService {
                     .filter(Objects::nonNull)
                     .toList());
         }
-
-        return authorizedEntities;
+        // Remove duplicates based on tax code uniqueness
+        Set<String> seen = new HashSet<>();
+        return authorizedEntities.stream()
+                .filter(obj -> seen.add(obj.getValue()))
+                .toList();
     }
 
     private AuthorizationEntity getAuthorizationEntity(
@@ -562,13 +572,14 @@ public class ApiManagementService {
         List<AuthorizationEntity> authorizationEntities = new ArrayList<>();
 
         if (subscription.isAuthDelegationConfigRequired()) {
-            authorizationEntities = getAuthorizationEntities(institution, subscription);
-
+            CIStationSegregationCodesList ciSegregationCodes = new CIStationSegregationCodesList();
             if (RoleType.CI.equals(subscription.getAllowedInstitutionType())) {
-                CIStationSegregationCodesList ciSegregationCodes = this.apiConfigSelfcareIntegrationClient
+                ciSegregationCodes = this.apiConfigSelfcareIntegrationClient
                         .getCreditorInstitutionsSegregationCodeAssociatedToBroker(institution.getTaxCode());
                 authorizationMetadata = buildAuthorizationMetadata(ciSegregationCodes);
             }
+
+            authorizationEntities.addAll(getAuthorizationEntities(institution, subscription, ciSegregationCodes));
         }
         if (subscription.equals(Subscription.BO_EXT_EC) || subscription.equals(Subscription.BO_EXT_PSP) || subscription.equals(Subscription.QI_FDR_KPI)) {
             authorizationEntities.add(
