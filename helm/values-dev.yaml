@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.44.1-1-PIDM-1847-fix-authorizer-delegations"
+    tag: "2.44.2"
     pullPolicy: Always
   livenessProbe:
     httpGet:

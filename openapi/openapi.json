@@ -4,7 +4,7 @@
     "description": "Microservice to manage PagoPA Backoffice",
     "termsOfService": "https://www.pagopa.gov.it/",
     "title": "SelfCare Backoffice",
-    "version": "2.44.1-1-PIDM-1847-fix-authorizer-delegations"
+    "version": "2.44.2"
   },
   "servers": [
     {
