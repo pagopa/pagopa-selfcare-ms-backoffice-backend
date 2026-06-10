@@ -12,7 +12,6 @@ import it.pagopa.selfcare.pagopa.backoffice.TestUtil;
 import it.pagopa.selfcare.pagopa.backoffice.audit.AuditLogger;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
-import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.*;
@@ -33,7 +32,7 @@ class IbanServiceTest {
   private static final String CI_CODE = "11111";
   private static final String IBAN = "GB33BUKB20201555555556";
 
-  @MockBean private ExternalApiClient externalApiClient;
+  @MockBean private AsyncNotificationService asyncNotificationService;
 
   @MockBean private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 

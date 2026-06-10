@@ -38,6 +38,9 @@ class IbanDeletionRequestsServiceTest {
     @MockBean
     private ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
+    @MockBean
+    private AsyncNotificationService asyncNotificationService;
+
     @Autowired
     private IbanDeletionRequestsService service;
 

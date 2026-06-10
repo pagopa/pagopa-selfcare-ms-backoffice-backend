@@ -3,7 +3,6 @@ package it.pagopa.selfcare.pagopa.backoffice.service;
 import it.pagopa.selfcare.pagopa.backoffice.audit.AuditLogger;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
-import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.*;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
@@ -29,18 +28,19 @@ public class IbanService {
 
     private final ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
-    private final ExternalApiClient externalApiClient;
-
     private final ModelMapper modelMapper;
+
+    private final AsyncNotificationService asyncNotificationService;
 
     private final AuditLogger auditLogger;
 
     @Autowired
-    public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, ExternalApiClient externalApiClient, ModelMapper modelMapper, AuditLogger auditLogger) {
+    public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
+                       ModelMapper modelMapper, AsyncNotificationService asyncNotificationService, AuditLogger auditLogger) {
         this.apiConfigClient = apiConfigClient;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
-        this.externalApiClient = externalApiClient;
         this.modelMapper = modelMapper;
+        this.asyncNotificationService = asyncNotificationService;
         this.auditLogger = auditLogger;
     }
 
@@ -52,6 +52,12 @@ public class IbanService {
     public Iban createIban(String ciCode, IbanCreate requestDto) {
         IbanCreateApiconfig body = modelMapper.map(requestDto, IbanCreateApiconfig.class);
         IbanCreateApiconfig dto = apiConfigClient.createCreditorInstitutionIbans(ciCode, body);
+        try {
+            log.info("Sending IBAN creation request notification email");
+            asyncNotificationService.notifyIbanCreation(ciCode);
+        } catch (Exception e){
+            log.error("Could not send IBAN creation request notification email");
+        }
         return modelMapper.map(dto, Iban.class);
     }
 
@@ -73,6 +79,12 @@ public class IbanService {
         }
         // update IBAN values
         IbanCreateApiconfig updatedDto = apiConfigClient.updateCreditorInstitutionIbans(ciCode, ibanValue, modelMapper.map(dto, IbanCreateApiconfig.class));
+        try {
+            log.info("Sending IBAN update request notification email");
+            asyncNotificationService.notifyIbanUpdate(ciCode, ibanValue);
+        } catch (Exception e){
+            log.error("Could not send IBAN update request notification email");
+        }
         return modelMapper.map(updatedDto, Iban.class);
     }
 

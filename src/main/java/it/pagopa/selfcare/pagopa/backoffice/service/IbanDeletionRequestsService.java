@@ -28,11 +28,13 @@ public class IbanDeletionRequestsService {
 
     private final IbanDeletionRequestsRepository ibanDeletionRequestsRepository;
     private final ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
+    private final AsyncNotificationService asyncNotificationService;
 
     @Autowired
-    public IbanDeletionRequestsService(IbanDeletionRequestsRepository ibanDeletionRequestsRepository, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient) {
+    public IbanDeletionRequestsService(IbanDeletionRequestsRepository ibanDeletionRequestsRepository, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, AsyncNotificationService asyncNotificationService) {
         this.ibanDeletionRequestsRepository = ibanDeletionRequestsRepository;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
+        this.asyncNotificationService = asyncNotificationService;
     }
 
     public IbanDeletionRequest createIbanDeletionRequest(String ciCode, String ibanValue, String scheduledExecutionDate) {
@@ -106,6 +108,18 @@ public class IbanDeletionRequestsService {
                             .status(savedEntity.getStatus().name())
                             .build();
                 })
+                .map(ibanDeletionRequest -> {
+                    log.info("Sending IBAN deletion request notification email for request with ID: {} for ciCode: {}, IBAN: {}",
+                            ibanDeletionRequest.getId(), sanitizedCiCodeForLogs, maskedIbanForLogs);
+                    try {
+                        asyncNotificationService.notifyIbanDeletion(ibanDeletionRequest.getCiCode(),
+                                ibanDeletionRequest.getIbanValue(), ibanDeletionRequest.getScheduledExecutionDate());
+                    } catch (Exception e) {
+                        log.error("Could not send IBAN deletion request notification email for request with ID: {} for ciCode: {}, IBAN: {}",
+                                ibanDeletionRequest.getId(), sanitizedCiCodeForLogs, maskedIbanForLogs, e);
+                    }
+                    return ibanDeletionRequest;
+                })
                 .orElseThrow(() -> {
                     log.error("Failed to create IBAN deletion request for ciCode: {}, IBAN: {}",
                             sanitizedCiCodeForLogs, maskedIbanForLogs);
@@ -171,6 +185,18 @@ public class IbanDeletionRequestsService {
                     return request;
                 })
                 .map(ibanDeletionRequestsRepository::save)
+                .map(request -> {
+                    final String maskedIbanForLogs = Utility.sanitizeLogParam(request.getIbanValue());
+                    log.info("Sending IBAN restore request notification email for request with ID: {} for ciCode: {}, IBAN: {}",
+                            request.getId(), sanitizedCiCodeForLogs, maskedIbanForLogs);
+                    try {
+                        asyncNotificationService.notifyIbanRestore(ciCode, request.getIbanValue());
+                    } catch (Exception e) {
+                        log.error("Could not send IBAN restore request notification email for request with ID: {} for ciCode: {}, IBAN: {}",
+                                request.getId(), sanitizedCiCodeForLogs, maskedIbanForLogs, e);
+                    }
+                    return request;
+                })
                 .ifPresentOrElse(
                         savedRequest -> log.info("IBAN deletion request with ID: {} successfully canceled for ciCode: {}", sanitizedIdForLogs, sanitizedCiCodeForLogs),
                         () -> {
