@@ -35,13 +35,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -304,6 +299,12 @@ public interface ApiConfigClient {
             @PathVariable("creditorinstitutioncode") String creditorinstitutioncode,
             @PathVariable("ibanValue") String ibanValue
     );
+
+    @PostMapping(value = "/creditorinstitutions/ibans/csv",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Valid
+    void createCreditorInstitutionIbansBulk(@RequestPart("file") MultipartFile file);
 
     @GetMapping(value = "/brokers", produces = MediaType.APPLICATION_JSON_VALUE)
     @RequestLine("getBrokersEC")

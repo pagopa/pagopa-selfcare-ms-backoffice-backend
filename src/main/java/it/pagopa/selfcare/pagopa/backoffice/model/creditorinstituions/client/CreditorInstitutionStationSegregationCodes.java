@@ -31,4 +31,8 @@ public class CreditorInstitutionStationSegregationCodes {
     @JsonProperty("segregation_code_list")
     @Schema(description = "List of segregation code used by the creditor institution in a broker station", requiredMode = Schema.RequiredMode.REQUIRED)
     private List<String> segregationCodes;
+
+    @JsonProperty("institution_name")
+    @Schema(example = "Comune di Brescia", description = "The name of the creditor institution", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String institutionName;
 }

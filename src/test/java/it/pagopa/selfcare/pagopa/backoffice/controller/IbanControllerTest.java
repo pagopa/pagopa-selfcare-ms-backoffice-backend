@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -94,4 +95,14 @@ class IbanControllerTest {
     mvc.perform(delete("/creditor-institutions/{ci-code}/ibans/{iban-value}", CI_CODE, IBAN))
         .andExpect(status().isOk());
   }
+
+    @Test
+    void bulkIbanOperations() throws Exception {
+        doNothing().when(ibanService).processBulkIbanOperations(any(), any());
+        mvc.perform(
+            post("/creditor-institutions/{ci-code}/ibans/bulk", CI_CODE)
+                .content(TestUtil.readJsonFromFile("request/create_ibans_bulk.json"))
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated());
+    }
 }

@@ -1,17 +1,23 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import it.pagopa.selfcare.pagopa.backoffice.audit.AuditLogger;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
-import it.pagopa.selfcare.pagopa.backoffice.client.ExternalApiClient;
+import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.CreditorInstitutionDetails;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.*;
+import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import static it.pagopa.selfcare.pagopa.backoffice.util.IbanOperationsCsvUtil.convertOperationsToCsv;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Slf4j
@@ -22,16 +28,20 @@ public class IbanService {
 
     private final ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
 
-    private final ExternalApiClient externalApiClient;
-
     private final ModelMapper modelMapper;
 
+    private final AsyncNotificationService asyncNotificationService;
+
+    private final AuditLogger auditLogger;
+
     @Autowired
-    public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, ExternalApiClient externalApiClient, ModelMapper modelMapper) {
+    public IbanService(ApiConfigClient apiConfigClient, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient,
+                       ModelMapper modelMapper, AsyncNotificationService asyncNotificationService, AuditLogger auditLogger) {
         this.apiConfigClient = apiConfigClient;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
-        this.externalApiClient = externalApiClient;
         this.modelMapper = modelMapper;
+        this.asyncNotificationService = asyncNotificationService;
+        this.auditLogger = auditLogger;
     }
 
 
@@ -42,6 +52,12 @@ public class IbanService {
     public Iban createIban(String ciCode, IbanCreate requestDto) {
         IbanCreateApiconfig body = modelMapper.map(requestDto, IbanCreateApiconfig.class);
         IbanCreateApiconfig dto = apiConfigClient.createCreditorInstitutionIbans(ciCode, body);
+        try {
+            log.info("Sending IBAN creation request notification email");
+            asyncNotificationService.notifyIbanCreation(ciCode);
+        } catch (Exception e){
+            log.error("Could not send IBAN creation request notification email");
+        }
         return modelMapper.map(dto, Iban.class);
     }
 
@@ -63,11 +79,56 @@ public class IbanService {
         }
         // update IBAN values
         IbanCreateApiconfig updatedDto = apiConfigClient.updateCreditorInstitutionIbans(ciCode, ibanValue, modelMapper.map(dto, IbanCreateApiconfig.class));
+        try {
+            log.info("Sending IBAN update request notification email");
+            asyncNotificationService.notifyIbanUpdate(ciCode, ibanValue);
+        } catch (Exception e){
+            log.error("Could not send IBAN update request notification email");
+        }
         return modelMapper.map(updatedDto, Iban.class);
     }
 
     public void deleteIban(String ciCode, String ibanValue) {
         apiConfigClient.deleteCreditorInstitutionIbans(ciCode, ibanValue);
+    }
+
+    public void processBulkIbanOperations(String ciCode, List<IbanOperation> operations) {
+
+        final String sanitizedCiCodeForLogs = Utility.sanitizeLogParam(ciCode);
+
+        log.info("Processing bulk IBAN operations for ciCode: {}, total operations: {}", sanitizedCiCodeForLogs, operations.size());
+
+        log.debug("Retrieve CI business name for: {}", sanitizedCiCodeForLogs);
+        CreditorInstitutionDetails creditorInstitutionDetails = apiConfigClient.getCreditorInstitutionDetails(ciCode);
+        String ciName = creditorInstitutionDetails.getBusinessName();
+
+        log.debug("Convert {} operations to CSV format", operations.size());
+        MultipartFile csvData = convertOperationsToCsv(ciCode, ciName, operations);
+
+        log.debug("Calling API to create bulk IBANs for CI: {} with CSV data of {} bytes",
+                sanitizedCiCodeForLogs, csvData.getSize());
+        apiConfigClient.createCreditorInstitutionIbansBulk(csvData);
+
+        auditLogger.info(log,
+                "Bulk IBAN operations completed successfully for CI: {}, total: {}, operationsByType: {}",
+                sanitizedCiCodeForLogs,
+                operations.size(),
+                formatOperationsByType(operations));
+    }
+
+    private String formatOperationsByType(List<IbanOperation> operations) {
+        Map<IbanOperationType, List<String>> grouped = operations.stream()
+                .collect(Collectors.groupingBy(
+                        IbanOperation::getType,
+                        Collectors.mapping(
+                                op -> Utility.sanitizeLogParam(op.getIbanValue()),
+                                Collectors.toList()
+                        )
+                ));
+
+        return grouped.entrySet().stream()
+                .map(e -> e.getKey() + "=[" + String.join(", ", e.getValue()) + "]")
+                .collect(Collectors.joining(", ", "{", "}"));
     }
 
 }

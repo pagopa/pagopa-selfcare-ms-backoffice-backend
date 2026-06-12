@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Iban;
+import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanBulkOperationRequest;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.IbanCreate;
 import it.pagopa.selfcare.pagopa.backoffice.model.iban.Ibans;
 import it.pagopa.selfcare.pagopa.backoffice.security.JwtSecurity;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import static it.pagopa.selfcare.pagopa.backoffice.model.institutions.ProductRole.ADMIN;
@@ -87,4 +89,22 @@ public class IbanController {
         ibanService.deleteIban(ciCode, ibanValue);
     }
 
+    @PostMapping(value = "/bulk", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created - Bulk operations completed successfully"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Invalid data format, missing required fields", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Authentication credentials missing or invalid", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden - User does not have permission to perform this operation", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "404", description = "Not Found - Creditor institution code not found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+            @ApiResponse(responseCode = "409", description = "Conflict - Creditor institution already associated with IBAN", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+    })
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Bulk IBAN operations (create, update, delete). Operations are atomic: all or nothing", security = {@SecurityRequirement(name = "JWT")})
+    @OpenApiTableMetadata
+    @JwtSecurity(paramName = "ciCode", allowedProductRole = ADMIN)
+    public void bulkIbanOperations(
+            @Parameter(description = "Creditor institution code") @PathVariable("ci-code") String ciCode,
+            @RequestBody @Valid IbanBulkOperationRequest request) {
+        ibanService.processBulkIbanOperations(ciCode, request.getOperations());
+    }
 }

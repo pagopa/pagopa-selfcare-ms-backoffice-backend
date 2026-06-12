@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Eliminazione IBAN programmata</title>
+</head>
+
+<body>
+<img width="100" height="30"
+     src="https://raw.githubusercontent.com/pagopa/pagopa-selfcare-ms-backoffice-backend/main/src/main/resources/templates/logo-pagopa.png">
+<h1> Eliminazione IBAN programmata </h1>
+<p>
+    Ciao,
+</p>
+<br/>
+<p>
+    l'Ente Creditore <span th:text="${ciName}" th:remove="tag"></span> ha programmato l'eliminazione di un IBAN configurato sulla piattaforma.
+</p>
+<br/>
+<p>
+    L'IBAN <span th:text="${iban}" th:remove="tag"></span> verrà eliminato a partire dal <span th:text="${deleteDate}" th:remove="tag"></span> e, da quella data, non sarà più possibile accettare versamenti.
+</p>
+<br/>
+<p>
+    Puoi verificare i dettagli della configurazione qui <a
+        href="@{https://selfcare{env}.platform.pagopa.it/ui/iban(env=${environment})}">
+    <span th:if="${environment == ''}">https://selfcare.platform.pagopa.it/ui/iban</span>
+    <span th:if="${environment == '.uat'}">https://selfcare.uat.platform.pagopa.it/ui/iban</span>
+    <span th:if="${environment == '.dev'}">https://selfcare.dev.platform.pagopa.it/ui/iban</span>
+</a>
+</p>
+<br/>
+<p>
+    A presto,
+</p>
+<p>
+    Piattaforma pagoPA
+</p>
+<hr style="color:grey">
+<p style="color:grey">
+    Ricevi questo messaggio perchè hai un utenza attiva su Piattaforma pagoPA.
+</p>
+</body>
+</html>
