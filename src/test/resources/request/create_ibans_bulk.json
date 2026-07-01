@@ -9,8 +9,7 @@
     {
       "operation": "UPDATE",
       "ibanValue": "IT16500210005679528391",
-      "description": "Ciclo 1 - Op: UPDATE",
-      "validityDate": null
+      "description": "Ciclo 1 - Op: UPDATE"
     },
     {
       "operation": "DELETE",
