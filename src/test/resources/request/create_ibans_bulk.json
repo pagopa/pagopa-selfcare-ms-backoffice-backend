@@ -15,8 +15,7 @@
     {
       "operation": "DELETE",
       "ibanValue": "IT16500210005679528391",
-      "description": "Ciclo 1 - Op: DELETE",
-      "validityDate": null
+      "description": "Ciclo 1 - Op: DELETE"
     },
     {
       "operation": "CREATE",
