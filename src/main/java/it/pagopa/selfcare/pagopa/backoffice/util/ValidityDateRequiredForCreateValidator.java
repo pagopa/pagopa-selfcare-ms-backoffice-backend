@@ -19,7 +19,7 @@ public class ValidityDateRequiredForCreateValidator
         boolean hasValidityDate = value.getValidityDate() != null && !value.getValidityDate().isBlank();
 
         if (isCreate && !hasValidityDate) {
-            buildConstraintViolation(context, "validityDate required for CREATE");
+            buildConstraintViolation(context, "validityDate is required for CREATE");
             return false;
         }
 
