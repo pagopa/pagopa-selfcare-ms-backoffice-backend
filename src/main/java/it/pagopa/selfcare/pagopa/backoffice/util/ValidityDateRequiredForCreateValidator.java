@@ -24,7 +24,7 @@ public class ValidityDateRequiredForCreateValidator
         }
 
         if (!isCreate && hasValidityDate) {
-            buildConstraintViolation(context, "validityDate not allow for UPDATE or DELETE");
+            buildConstraintViolation(context, "validityDate is not allowed for UPDATE or DELETE");
             return false;
         }
 
