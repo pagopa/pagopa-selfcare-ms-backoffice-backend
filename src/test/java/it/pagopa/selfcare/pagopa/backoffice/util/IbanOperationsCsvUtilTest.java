@@ -86,7 +86,7 @@ class IbanOperationsCsvUtilTest {
                 .mapToObj(i -> {
                     IbanOperationType type = i % 2 == 0 ? IbanOperationType.CREATE : IbanOperationType.UPDATE;
 
-                    return   IbanOperation.builder()
+                    return IbanOperation.builder()
                         .description("Description number " + i)
                         .ibanValue("IT00X" + String.format("%022d", i))
                         .validityDate(type == IbanOperationType.CREATE ? "2025-01-01" : null)
