@@ -98,7 +98,6 @@ class IbanServiceTest {
                         .type(IbanOperationType.UPDATE)
                         .ibanValue("IT60X0542811101000000654321")
                         .description("Test IBAN 2")
-                        .validityDate(LocalDate.now().toString())
                         .build()
         );
 
