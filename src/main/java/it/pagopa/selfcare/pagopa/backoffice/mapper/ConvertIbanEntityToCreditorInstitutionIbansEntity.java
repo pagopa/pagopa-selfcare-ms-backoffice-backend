@@ -15,7 +15,7 @@ public class ConvertIbanEntityToCreditorInstitutionIbansEntity implements Conver
         IbanEntity model = context.getSource();
 
         return CreditorInstitutionIbansEntity.builder()
-                .id(model.getIban())
+                .id(model.getIban().concat(model.getCiFiscalCode()))
                 .iban(model.getIban())
                 .label(model.getLabel())
                 .ciName(model.getCiName())
