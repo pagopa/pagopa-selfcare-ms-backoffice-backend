@@ -72,7 +72,7 @@ class ValidityDateRequiredForCreateValidatorTest {
 
         assertThat(result).isFalse();
         verify(context).disableDefaultConstraintViolation();
-        verify(context).buildConstraintViolationWithTemplate("validityDate required for CREATE");
+        verify(context).buildConstraintViolationWithTemplate("validityDate is required for CREATE");
         verify(violationBuilder).addPropertyNode("validityDate");
         verify(nodeBuilder).addConstraintViolation();
     }
@@ -106,7 +106,7 @@ class ValidityDateRequiredForCreateValidatorTest {
 
         assertThat(result).isFalse();
         verify(context).disableDefaultConstraintViolation();
-        verify(context).buildConstraintViolationWithTemplate("validityDate not allow for UPDATE or DELETE");
+        verify(context).buildConstraintViolationWithTemplate("validityDate is not allowed for UPDATE or DELETE");
         verify(violationBuilder).addPropertyNode("validityDate");
         verify(nodeBuilder).addConstraintViolation();
     }
