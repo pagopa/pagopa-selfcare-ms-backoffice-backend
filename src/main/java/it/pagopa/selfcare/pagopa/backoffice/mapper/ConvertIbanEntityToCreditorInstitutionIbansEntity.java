@@ -5,6 +5,8 @@ import it.pagopa.selfcare.pagopa.backoffice.entity.IbanEntity;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 
+import java.time.Instant;
+
 /**
  * Converter class that specify how to convert a {@link IbanEntity} instance to a {@link CreditorInstitutionIbansEntity} instance
  */
@@ -15,7 +17,7 @@ public class ConvertIbanEntityToCreditorInstitutionIbansEntity implements Conver
         IbanEntity model = context.getSource();
 
         return CreditorInstitutionIbansEntity.builder()
-                .id(model.getIban())
+                .id(model.getIban().concat(model.getCiFiscalCode()))
                 .iban(model.getIban())
                 .label(model.getLabel())
                 .ciName(model.getCiName())
@@ -23,6 +25,7 @@ public class ConvertIbanEntityToCreditorInstitutionIbansEntity implements Conver
                 .validityDate(model.getValidityDate())
                 .description(model.getDescription())
                 .ciFiscalCode(model.getCiFiscalCode())
+                .createdAt(Instant.now())
                 .build();
     }
 }

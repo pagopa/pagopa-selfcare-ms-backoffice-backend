@@ -129,7 +129,8 @@ public class IbanByBrokerExtractionScheduler {
         }
 
         // clean files older than N days
-        this.brokerIbansRepository.deleteAllByCreatedAtBefore(Instant.now().minus(this.olderThanDays, ChronoUnit.DAYS));
+        cleanUpDeprecatedIbans();
+
         try {
             if (failedBrokers.isEmpty()) {
                 updateMDCForEndExecution();
@@ -252,6 +253,12 @@ public class IbanByBrokerExtractionScheduler {
 
         log.info("[Export IBANs] - Retrieve of IBANs completed successfully! Extracted [{}] IBANs in [{}] ms.", brokerIbanEntities.size(), Utility.getTimelapse(startTime));
         return brokerIbanEntities;
+    }
+
+    private void cleanUpDeprecatedIbans() {
+        Instant dateBefore = Instant.now().minus(this.olderThanDays, ChronoUnit.DAYS);
+        this.brokerIbansRepository.deleteAllByCreatedAtBefore(dateBefore);
+        this.creditorInstitutionsIbansRepository.deleteAllByCreatedAtBefore(dateBefore);
     }
 
     private final PaginatedSearchWithListParam<IbansList> getIbansByBrokerCallback = (int limit, int page, List<String> codes) ->
