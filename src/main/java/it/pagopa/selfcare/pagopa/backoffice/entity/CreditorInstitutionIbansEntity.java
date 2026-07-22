@@ -22,7 +22,6 @@ public class CreditorInstitutionIbansEntity extends IbanEntity {
     private String id;
 
     @CreatedDate
-    @Indexed
     private Instant createdAt;
 
 }
