@@ -26,6 +26,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.data.domain.PageRequest;
@@ -293,11 +294,11 @@ public class IbanByBrokerExtractionScheduler {
 
 
     public void deleteDeprecatedCIIbans(Instant dateBefore) {
-         Pageable page = PageRequest.of(0, deleteCiIbanBatchSize);
+         Pageable page = PageRequest.of(0, this.deleteCiIbanBatchSize);
          List<CreditorInstitutionIbansEntity> batch;
 
         do {
-            batch = creditorInstitutionsIbansRepository.findByCreatedAtBeforeOrNull(dateBefore, page);
+            batch = this.creditorInstitutionsIbansRepository.findByCreatedAtBeforeOrNull(dateBefore, page);
 
             if (!batch.isEmpty()) {
                 List<String> ids = batch.stream()
@@ -306,7 +307,7 @@ public class IbanByBrokerExtractionScheduler {
 
                 deleteWithRetry(ids);
 
-                sleep(deleteCiIbanPauseMs);
+                sleep(this.deleteCiIbanPauseMs);
             }
         } while (!batch.isEmpty());
     }
@@ -315,13 +316,14 @@ public class IbanByBrokerExtractionScheduler {
         int attempt = 0;
         while (true) {
             try {
-                creditorInstitutionsIbansRepository.deleteAllByIdIn(ids);
+                this.creditorInstitutionsIbansRepository.deleteAllByIdIn(ids);
+                log.debug("Deleted {} ibans", ids.size());
                 return;
-            } catch (MongoCommandException | UncategorizedMongoDbException ex) {
-                if (isThrottling(ex) && attempt < deleteCiIbanMaxRetries) {
+            } catch (MongoCommandException | UncategorizedMongoDbException | DataIntegrityViolationException ex) {
+                if (isThrottling(ex) && attempt < this.deleteCiIbanMaxRetries) {
                     attempt++;
                     long backoff = (long) Math.pow(2, attempt) * 200; // 400,800,1600...
-                    log.warn("RU throttling, retry {}/{} after {}ms", attempt, deleteCiIbanMaxRetries, backoff);
+                    log.warn("RU throttling, retry {}/{} after {}ms", attempt, this.deleteCiIbanMaxRetries, backoff);
                     sleep(backoff);
                 } else {
                     throw ex;
