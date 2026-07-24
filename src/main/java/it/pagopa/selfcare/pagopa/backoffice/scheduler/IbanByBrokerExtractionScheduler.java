@@ -305,20 +305,22 @@ public class IbanByBrokerExtractionScheduler {
                         .map(CreditorInstitutionIbansEntity::getId)
                         .toList();
 
-                deleteWithRetry(ids);
+                if (!deleteWithRetry(ids)) {
+                    break;
+                }
 
                 sleep(this.deleteCiIbanPauseMs);
             }
         } while (!batch.isEmpty());
     }
 
-    private void deleteWithRetry(List<String> ids) {
+    private boolean deleteWithRetry(List<String> ids) {
         int attempt = 0;
         while (true) {
             try {
                 this.creditorInstitutionsIbansRepository.deleteAllByIdIn(ids);
                 log.debug("Deleted {} ibans", ids.size());
-                return;
+                return true;
             } catch (MongoCommandException | UncategorizedMongoDbException | DataIntegrityViolationException ex) {
                 if (isThrottling(ex) && attempt < this.deleteCiIbanMaxRetries) {
                     attempt++;
@@ -328,7 +330,7 @@ public class IbanByBrokerExtractionScheduler {
                 } else {
                     log.error("[Export IBANs] - An error occurred while deleting Creditor Institutions' IBANs with ids [{}]",
                             ids, ex);
-                    return;
+                    return false;
                 }
             }
         }
