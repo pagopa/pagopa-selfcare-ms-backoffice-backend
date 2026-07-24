@@ -78,8 +78,7 @@ jobs:
           project_key: ${{env.PROJECT_KEY}}
           coverage_exclusions: "**/config/*,**/*Mock*,**/model/**,**/entity/*,**/exception/**"
           cpd_exclusions: "**/model/**,**/entity/*"
-          java_version: 17
-
+          java_version: 21
 #  image:
 #    name: Build and Push Docker Image
 #    runs-on: ubuntu-latest

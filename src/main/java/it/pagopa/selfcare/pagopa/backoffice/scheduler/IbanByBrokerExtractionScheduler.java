@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.scheduler;
 
+import com.mongodb.MongoCommandException;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
@@ -25,8 +26,12 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.UncategorizedMongoDbException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,6 +79,10 @@ public class IbanByBrokerExtractionScheduler {
 
     private final boolean avoidExportPagoPABroker;
 
+    private final Integer deleteCiIbanBatchSize;
+    private final long deleteCiIbanPauseMs;
+    private final Integer deleteCiIbanMaxRetries;
+
     @Autowired
     public IbanByBrokerExtractionScheduler(
             ApiConfigClient apiConfigClient,
@@ -86,7 +95,10 @@ public class IbanByBrokerExtractionScheduler {
             @Value("${extraction.ibans.getCIByBroker.pageLimit}") Integer getCIByBrokerPageLimit,
             @Value("${extraction.ibans.clean.olderThanDays}") Integer olderThanDays,
             @Value("${extraction.ibans.exportAgainAfterHours}") Integer exportAgainAfterHours,
-            @Value("${extraction.ibans.avoidExportPagoPABroker}") boolean avoidExportPagoPABroker
+            @Value("${extraction.ibans.avoidExportPagoPABroker}") boolean avoidExportPagoPABroker,
+            @Value("${extraction.ibans.clean.deleteCiIbanBatchSize}") Integer deleteCiIbanBatchSize,
+            @Value("${extraction.ibans.clean.deleteCiIbanPauseMs}") long deleteCiIbanPauseMs,
+            @Value("${extraction.ibans.clean.deleteCiIbanMaxRetries}") Integer deleteCiIbanMaxRetries
     ) {
         this.apiConfigClient = apiConfigClient;
         this.apiConfigSCIntClient = apiConfigSCIntClient;
@@ -99,6 +111,9 @@ public class IbanByBrokerExtractionScheduler {
         this.olderThanDays = olderThanDays;
         this.exportAgainAfterHours = exportAgainAfterHours;
         this.avoidExportPagoPABroker = avoidExportPagoPABroker;
+        this.deleteCiIbanBatchSize = deleteCiIbanBatchSize;
+        this.deleteCiIbanPauseMs = deleteCiIbanPauseMs;
+        this.deleteCiIbanMaxRetries = deleteCiIbanMaxRetries;
     }
 
     @Scheduled(cron = "${cron.job.schedule.expression.iban-export}")
@@ -258,7 +273,7 @@ public class IbanByBrokerExtractionScheduler {
     private void cleanUpDeprecatedIbans() {
         Instant dateBefore = Instant.now().minus(this.olderThanDays, ChronoUnit.DAYS);
         this.brokerIbansRepository.deleteAllByCreatedAtBefore(dateBefore);
-        this.creditorInstitutionsIbansRepository.deleteAllByCreatedAtBefore(dateBefore);
+        this.deleteDeprecatedCIIbans(dateBefore);
     }
 
     private final PaginatedSearchWithListParam<IbansList> getIbansByBrokerCallback = (int limit, int page, List<String> codes) ->
@@ -276,4 +291,62 @@ public class IbanByBrokerExtractionScheduler {
         CreditorInstitutionsView response = this.apiConfigClient.getCreditorInstitutionsAssociatedToBrokerStations(limit, page, null, code, null, true, null, null, null, null);
         return (int) Math.floor((double) response.getPageInfo().getTotalItems() / this.getCIByBrokerPageLimit);
     };
+
+
+    public void deleteDeprecatedCIIbans(Instant dateBefore) {
+         Pageable page = PageRequest.of(0, this.deleteCiIbanBatchSize);
+         List<CreditorInstitutionIbansEntity> batch;
+
+        do {
+            batch = this.creditorInstitutionsIbansRepository.findByCreatedAtBeforeOrNull(dateBefore, page);
+
+            if (!batch.isEmpty()) {
+                List<String> ids = batch.stream()
+                        .map(CreditorInstitutionIbansEntity::getId)
+                        .toList();
+
+                if (!deleteWithRetry(ids)) {
+                    break;
+                }
+
+                sleep(this.deleteCiIbanPauseMs);
+            }
+        } while (!batch.isEmpty());
+    }
+
+    private boolean deleteWithRetry(List<String> ids) {
+        int attempt = 0;
+        while (true) {
+            try {
+                this.creditorInstitutionsIbansRepository.deleteAllByIdIn(ids);
+                log.debug("Deleted {} ibans", ids.size());
+                return true;
+            } catch (MongoCommandException | UncategorizedMongoDbException | DataIntegrityViolationException ex) {
+                if (isThrottling(ex) && attempt < this.deleteCiIbanMaxRetries) {
+                    attempt++;
+                    long backoff = (long) Math.pow(2, attempt) * 200; // 400,800,1600...
+                    log.warn("RU throttling, retry {}/{} after {}ms", attempt, this.deleteCiIbanMaxRetries, backoff);
+                    sleep(backoff);
+                } else {
+                    log.error("[Export IBANs] - An error occurred while deleting Creditor Institutions' IBANs with ids [{}]",
+                            ids, ex);
+                    return false;
+                }
+            }
+        }
+    }
+
+    private boolean isThrottling(Exception ex) {
+        String msg = ex.getMessage();
+        return msg != null && (msg.contains("16500") || msg.contains("TooManyRequests")
+                || msg.contains("RequestRateTooLarge"));
+    }
+
+    private void sleep(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }
