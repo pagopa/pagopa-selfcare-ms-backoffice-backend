@@ -153,8 +153,7 @@ class IbanByBrokerExtractionSchedulerTest {
         mockGetIbans(totalCIsPerBroker, totalIbansPerCI, brokerECMockMerged, false);
 
         when(creditorInstitutionsIbansRepository.findByCreatedAtBeforeOrNull(any(), any())).thenReturn(
-                List.of(CreditorInstitutionIbansEntity.builder().id("ciIbanId1").build()),
-                new ArrayList<>()
+                List.of(CreditorInstitutionIbansEntity.builder().id("ciIbanId1").build())
         );
         doThrow(new DataIntegrityViolationException("16500")).when(creditorInstitutionsIbansRepository).deleteAllByIdIn(any());
 
@@ -163,7 +162,7 @@ class IbanByBrokerExtractionSchedulerTest {
 
         // execute assertions
         verify(brokerIbansRepository, times(brokerAnalyzed.size())).save(any(BrokerIbansEntity.class));
-        verify(creditorInstitutionsIbansRepository, times(2)).findByCreatedAtBeforeOrNull(any(), any());
+        verify(creditorInstitutionsIbansRepository, times(1)).findByCreatedAtBeforeOrNull(any(), any());
         verify(creditorInstitutionsIbansRepository, times(3)).deleteAllByIdIn(any());
     }
 
