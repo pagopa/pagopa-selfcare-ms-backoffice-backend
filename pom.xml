@@ -30,6 +30,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-cloud.version>2021.0.9</spring-cloud.version>
         <spring-security.version>5.7.7</spring-security.version>
+        <mockito.version>5.12.0</mockito.version>
+        <byte-buddy.version>1.14.19</byte-buddy.version>
     </properties>
 
 
@@ -263,6 +265,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+            <version>1.18.30</version>
         </dependency>
 
         <dependency>
@@ -348,7 +351,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.7</version>
+                <version>0.8.12</version>
                 <configuration>
                     <excludes>
                     </excludes>
