@@ -326,7 +326,9 @@ public class IbanByBrokerExtractionScheduler {
                     log.warn("RU throttling, retry {}/{} after {}ms", attempt, this.deleteCiIbanMaxRetries, backoff);
                     sleep(backoff);
                 } else {
-                    throw ex;
+                    log.error("[Export IBANs] - An error occurred while deleting Creditor Institutions' IBANs with ids [{}]",
+                            ids, ex);
+                    return;
                 }
             }
         }

@@ -4,6 +4,7 @@ import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigClient;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.config.MappingsConfiguration;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerIbansEntity;
+import it.pagopa.selfcare.pagopa.backoffice.entity.CreditorInstitutionIbansEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.PageInfo;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.broker.Broker;
@@ -23,6 +24,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -39,10 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = {IbanByBrokerExtractionScheduler.class, AllPages.class, MappingsConfiguration.class})
 class IbanByBrokerExtractionSchedulerTest {
@@ -106,11 +105,66 @@ class IbanByBrokerExtractionSchedulerTest {
         }
         mockGetIbans(totalCIsPerBroker, totalIbansPerCI, brokerECMockMerged, false);
 
+        when(creditorInstitutionsIbansRepository.findByCreatedAtBeforeOrNull(any(), any())).thenReturn(
+                List.of(CreditorInstitutionIbansEntity.builder().id("ciIbanId1").build()),
+                List.of(CreditorInstitutionIbansEntity.builder().id("ciIbanId2").build()),
+                new ArrayList<>()
+        );
+
         // executing main logic
         scheduler.extract();
 
         // execute assertions
         verify(brokerIbansRepository, times(brokerAnalyzed.size())).save(any(BrokerIbansEntity.class));
+        verify(creditorInstitutionsIbansRepository, times(3)).findByCreatedAtBeforeOrNull(any(), any());
+        verify(creditorInstitutionsIbansRepository, times(2)).deleteAllByIdIn(any());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "7,8,6,true",
+    })
+    void extract_ok_delete_ci_ko(
+            Integer totalBrokers,
+            int totalCIsPerBroker,
+            int totalIbansPerCI,
+            String excludePagoPA
+    ) {
+
+        // setting runtime variables
+        int startId = 2;
+        int endId = 4;
+        Set<String> brokerCodesToBeExcluded = getBrokerCodesToBeExcluded(startId, endId);
+
+        // mocking injected parameters
+        boolean excludePagoPABroker = Boolean.parseBoolean(excludePagoPA);
+        setParameterValues(excludePagoPABroker);
+
+        // mocking DAO methods
+        when(brokerIbansRepository.findProjectedByCreatedAtGreaterThen(any(Instant.class))).thenReturn(brokerCodesToBeExcluded);
+
+        // mocking API client responses
+        Set<String> brokerECMockMerged = mockGetBrokersEC(totalBrokers);
+        Set<String> brokerAnalyzed = new HashSet<>(Set.copyOf(brokerECMockMerged));
+        brokerAnalyzed.removeAll(brokerCodesToBeExcluded);
+        if (excludePagoPABroker) {
+            brokerAnalyzed.remove(Constants.PAGOPA_BROKER_CODE);
+        }
+        mockGetIbans(totalCIsPerBroker, totalIbansPerCI, brokerECMockMerged, false);
+
+        when(creditorInstitutionsIbansRepository.findByCreatedAtBeforeOrNull(any(), any())).thenReturn(
+                List.of(CreditorInstitutionIbansEntity.builder().id("ciIbanId1").build()),
+                new ArrayList<>()
+        );
+        doThrow(new DataIntegrityViolationException("16500")).when(creditorInstitutionsIbansRepository).deleteAllByIdIn(any());
+
+        // executing main logic
+        scheduler.extract();
+
+        // execute assertions
+        verify(brokerIbansRepository, times(brokerAnalyzed.size())).save(any(BrokerIbansEntity.class));
+        verify(creditorInstitutionsIbansRepository, times(2)).findByCreatedAtBeforeOrNull(any(), any());
+        verify(creditorInstitutionsIbansRepository, times(3)).deleteAllByIdIn(any());
     }
 
     @ParameterizedTest
