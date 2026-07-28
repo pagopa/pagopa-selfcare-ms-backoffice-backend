@@ -8,16 +8,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {PaymentsReceiptsService.class})
 class PaymentsReceiptsServiceTest {
-    public static final String ORGANIZATION_TAX_CODE = "organizationTaxCode";
-    public static final String DEBTOR_TAX_CODE = "debtor tax code";
-    public static final String FROM_DATE = "01/01/2020";
-    public static final String TO_DATE = "05/05/2025";
-    public static final String SERVICE_CODE = "47";
-    public static final String IUV = "IUV";
+    private static final String ORGANIZATION_TAX_CODE = "organizationTaxCode";
+    private static final String DEBTOR_TAX_CODE = "debtor tax code";
+    private static final String FROM_DATE = "01/01/2020";
+    private static final String TO_DATE = "05/05/2025";
+    private static final String PAGOPA_SERVICE_CODE = "47";
+    private static final String CIE_SERVICE_CODE = "99";
+
+    private static final String IUV = "IUV";
 
     @MockBean
     private GpdClient client;
@@ -25,10 +28,11 @@ class PaymentsReceiptsServiceTest {
     private PaymentsReceiptsService service;
     @Test
     void getPaymentsReceipts() {
-        when(client.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, DEBTOR_TAX_CODE, SERVICE_CODE, FROM_DATE, TO_DATE, IUV)).thenReturn(
+        when(client.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, DEBTOR_TAX_CODE, PAGOPA_SERVICE_CODE, FROM_DATE, TO_DATE, IUV)).thenReturn(
                 new PaymentsResult<>());
         assertDoesNotThrow(
                 () -> service.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, DEBTOR_TAX_CODE, FROM_DATE, TO_DATE, IUV));
+        verify(client).getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, DEBTOR_TAX_CODE, PAGOPA_SERVICE_CODE, FROM_DATE, TO_DATE, IUV);
     }
     @Test
     void getPaymentReceiptDetail() {
@@ -36,5 +40,14 @@ class PaymentsReceiptsServiceTest {
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         assertDoesNotThrow(
                 () -> service.getPaymentReceiptDetail(ORGANIZATION_TAX_CODE, IUV));
+        verify(client).getPaymentReceiptDetail(ORGANIZATION_TAX_CODE, IUV);
+    }
+    @Test
+    void getCIEPaymentsReceipts() {
+        when(client.getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, DEBTOR_TAX_CODE, CIE_SERVICE_CODE, FROM_DATE, TO_DATE, IUV)).thenReturn(
+                new PaymentsResult<>());
+        assertDoesNotThrow(
+                () -> service.getCIEPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, DEBTOR_TAX_CODE, FROM_DATE, TO_DATE, IUV));
+        verify(client).getPaymentsReceipts(ORGANIZATION_TAX_CODE, 0, 50, DEBTOR_TAX_CODE, CIE_SERVICE_CODE, FROM_DATE, TO_DATE, IUV);
     }
 }
