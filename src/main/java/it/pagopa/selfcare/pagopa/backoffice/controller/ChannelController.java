@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import it.pagopa.selfcare.pagopa.backoffice.entity.ChannelDetailsWrapperResource;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntities;
 import it.pagopa.selfcare.pagopa.backoffice.model.ProblemJson;
 import it.pagopa.selfcare.pagopa.backoffice.model.channels.*;
@@ -200,8 +201,9 @@ public class ChannelController {
     })
     @OpenApiTableMetadata
     @JwtSecurity(paramName = "brokerPspCode", checkParamInsideBody = true)
-    public WrapperEntities<ChannelDetails> createWrapperChannelDetails(@RequestBody @Valid WrapperChannelDetailsDto wrapperChannelDetailsDto) {
-        return this.channelService.createChannelToBeValidated(wrapperChannelDetailsDto);
+    public ChannelDetailsWrapperResource createWrapperChannelDetails(@RequestBody @Valid WrapperChannelDetailsDto wrapperChannelDetailsDto) {
+        var wrapper = this.channelService.createChannelToBeValidated(wrapperChannelDetailsDto);
+        return ChannelDetailsWrapperResource.toResource(wrapper);
     }
 
     @PutMapping(value = "/wrapper/{channel-code}", consumes = MediaType.APPLICATION_JSON_VALUE)
