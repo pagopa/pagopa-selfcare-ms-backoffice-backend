@@ -9,6 +9,7 @@ import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,6 +53,11 @@ public class IbanService {
     public Iban createIban(String ciCode, IbanCreate requestDto) {
         IbanCreateApiconfig body = modelMapper.map(requestDto, IbanCreateApiconfig.class);
         IbanCreateApiconfig dto = apiConfigClient.createCreditorInstitutionIbans(ciCode, body);
+        auditLogger.info(log,
+                "event=IBAN_CREATE institutionTaxCode={} IBAN={} userId={}",
+                Utility.sanitizeLogParam(ciCode),
+                Utility.sanitizeLogParam(requestDto.getIban()),
+                Utility.extractUserIdFromAuth(SecurityContextHolder.getContext().getAuthentication()));
         try {
             log.info("Sending IBAN creation request notification email");
             asyncNotificationService.notifyIbanCreation(ciCode);
@@ -79,6 +85,11 @@ public class IbanService {
         }
         // update IBAN values
         IbanCreateApiconfig updatedDto = apiConfigClient.updateCreditorInstitutionIbans(ciCode, ibanValue, modelMapper.map(dto, IbanCreateApiconfig.class));
+        auditLogger.info(log,
+                "event=IBAN_UPDATE institutionTaxCode={} IBAN={} userId={}",
+                Utility.sanitizeLogParam(ciCode),
+                Utility.sanitizeLogParam(ibanValue),
+                Utility.extractUserIdFromAuth(SecurityContextHolder.getContext().getAuthentication()));
         try {
             log.info("Sending IBAN update request notification email");
             asyncNotificationService.notifyIbanUpdate(ciCode, ibanValue);
@@ -90,6 +101,11 @@ public class IbanService {
 
     public void deleteIban(String ciCode, String ibanValue) {
         apiConfigClient.deleteCreditorInstitutionIbans(ciCode, ibanValue);
+        auditLogger.info(log,
+                "event=IBAN_DELETE institutionTaxCode={} IBAN={} userId={}",
+                Utility.sanitizeLogParam(ciCode),
+                Utility.sanitizeLogParam(ibanValue),
+                Utility.extractUserIdFromAuth(SecurityContextHolder.getContext().getAuthentication()));
     }
 
     public void processBulkIbanOperations(String ciCode, List<IbanOperation> operations) {

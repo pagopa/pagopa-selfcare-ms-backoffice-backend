@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import it.pagopa.selfcare.pagopa.backoffice.audit.AuditLogger;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.IbanDeletionRequestEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
@@ -12,6 +13,7 @@ import it.pagopa.selfcare.pagopa.backoffice.util.StringUtils;
 import it.pagopa.selfcare.pagopa.backoffice.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -29,12 +31,15 @@ public class IbanDeletionRequestsService {
     private final IbanDeletionRequestsRepository ibanDeletionRequestsRepository;
     private final ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient;
     private final AsyncNotificationService asyncNotificationService;
+    private final AuditLogger auditLogger;
+
 
     @Autowired
-    public IbanDeletionRequestsService(IbanDeletionRequestsRepository ibanDeletionRequestsRepository, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, AsyncNotificationService asyncNotificationService) {
+    public IbanDeletionRequestsService(IbanDeletionRequestsRepository ibanDeletionRequestsRepository, ApiConfigSelfcareIntegrationClient apiConfigSelfcareIntegrationClient, AsyncNotificationService asyncNotificationService, AuditLogger auditLogger) {
         this.ibanDeletionRequestsRepository = ibanDeletionRequestsRepository;
         this.apiConfigSelfcareIntegrationClient = apiConfigSelfcareIntegrationClient;
         this.asyncNotificationService = asyncNotificationService;
+        this.auditLogger = auditLogger;
     }
 
     public IbanDeletionRequest createIbanDeletionRequest(String ciCode, String ibanValue, String scheduledExecutionDate) {
@@ -98,6 +103,12 @@ public class IbanDeletionRequestsService {
                     return ibanDeletionRequestsRepository.save(entity);
                 })
                 .map(savedEntity -> {
+                    auditLogger.info(log,
+                            "event=IBAN_SCHEDULED_DELETION_CREATE institutionTaxCode={} IBAN={} userId={} scheduledExecutionDate={}",
+                            Utility.sanitizeLogParam(ciCode),
+                            Utility.sanitizeLogParam(ibanValue),
+                            Utility.extractUserIdFromAuth(SecurityContextHolder.getContext().getAuthentication()),
+                            savedEntity.getScheduledExecutionDate());
                     log.info("IBAN deletion request created successfully with ID: {} for ciCode: {}, IBAN: {}",
                             savedEntity.getId(), sanitizedCiCodeForLogs, maskedIbanForLogs);
                     return IbanDeletionRequest.builder()
@@ -186,6 +197,11 @@ public class IbanDeletionRequestsService {
                 })
                 .map(ibanDeletionRequestsRepository::save)
                 .map(request -> {
+                    auditLogger.info(log,
+                            "event=IBAN_SCHEDULED_DELETION_CANCEL institutionTaxCode={} IBAN={} userId={}",
+                            Utility.sanitizeLogParam(ciCode),
+                            Utility.sanitizeLogParam(request.getIbanValue()),
+                            Utility.extractUserIdFromAuth(SecurityContextHolder.getContext().getAuthentication()));
                     final String maskedIbanForLogs = Utility.sanitizeLogParam(request.getIbanValue());
                     log.info("Sending IBAN restore request notification email for request with ID: {} for ciCode: {}, IBAN: {}",
                             request.getId(), sanitizedCiCodeForLogs, maskedIbanForLogs);
