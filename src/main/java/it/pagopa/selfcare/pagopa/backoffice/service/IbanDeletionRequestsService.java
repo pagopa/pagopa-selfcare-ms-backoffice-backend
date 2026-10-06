@@ -105,7 +105,7 @@ public class IbanDeletionRequestsService {
                 .map(savedEntity -> {
                     auditLogger.info(log,
                             "event=IBAN_SCHEDULED_DELETION_CREATE institutionTaxCode={} IBAN={} userId={} scheduledExecutionDate={}",
-                            Utility.sanitizeLogParam(ciCode),
+                            sanitizedCiCodeForLogs,
                             Utility.sanitizeLogParam(ibanValue),
                             Utility.extractUserIdFromAuth(SecurityContextHolder.getContext().getAuthentication()),
                             savedEntity.getScheduledExecutionDate());
@@ -199,7 +199,7 @@ public class IbanDeletionRequestsService {
                 .map(request -> {
                     auditLogger.info(log,
                             "event=IBAN_SCHEDULED_DELETION_CANCEL institutionTaxCode={} IBAN={} userId={}",
-                            Utility.sanitizeLogParam(ciCode),
+                            sanitizedCiCodeForLogs,
                             Utility.sanitizeLogParam(request.getIbanValue()),
                             Utility.extractUserIdFromAuth(SecurityContextHolder.getContext().getAuthentication()));
                     final String maskedIbanForLogs = Utility.sanitizeLogParam(request.getIbanValue());
