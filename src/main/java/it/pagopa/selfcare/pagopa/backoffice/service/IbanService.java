@@ -47,7 +47,12 @@ public class IbanService {
 
 
     public Ibans getIban(String ciCode, String labelName) {
-        return apiConfigSelfcareIntegrationClient.getCreditorInstitutionIbans(ciCode, labelName);
+        Ibans ibans = apiConfigSelfcareIntegrationClient.getCreditorInstitutionIbans(ciCode, labelName);
+        auditLogger.info(log,
+                "event=IBAN_LIST institutionTaxCode={} userId={}",
+                Utility.sanitizeLogParam(ciCode),
+                Utility.extractUserIdFromAuth(SecurityContextHolder.getContext().getAuthentication()));
+        return ibans;
     }
 
     public Iban createIban(String ciCode, IbanCreate requestDto) {
