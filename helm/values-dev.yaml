@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
-    tag: "2.44.5"
+    tag: "2.44.5-1-CHK-5030-add-iban-audit-log"
     pullPolicy: Always
   livenessProbe:
     httpGet:
