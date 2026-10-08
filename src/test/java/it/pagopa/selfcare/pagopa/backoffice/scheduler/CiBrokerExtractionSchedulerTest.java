@@ -2,7 +2,6 @@ package it.pagopa.selfcare.pagopa.backoffice.scheduler;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionEntity;
-import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionsEntity;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStation;
 import it.pagopa.selfcare.pagopa.backoffice.entity.WrapperEntityStations;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
@@ -26,7 +25,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,7 +62,7 @@ class CiBrokerExtractionSchedulerTest {
     private WrapperStationsRepository wrapperStationsRepository;
 
     @Captor
-    ArgumentCaptor<BrokerInstitutionsEntity> captor;
+    ArgumentCaptor<List<BrokerInstitutionEntity>> institutionsCaptor;
 
     @Autowired
     private CiBrokerExtractionScheduler scheduler;
@@ -75,9 +73,6 @@ class CiBrokerExtractionSchedulerTest {
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsAssociatedToBroker(anyInt(), anyInt(), eq(true), anyString()))
                 .thenReturn(buildBrokerCreditorInstitutionDetails(STATION_CODE_1))
                 .thenReturn(buildBrokerCreditorInstitutionDetails(STATION_CODE_2));
-        when(brokerInstitutionsRepository.findByBrokerCode(anyString()))
-                .thenReturn(buildBrokerInstitutionsEntity(BROKER_CODE))
-                .thenReturn(buildBrokerInstitutionsEntity(BROKER_CODE_2));
         when(wrapperStationsRepository.findByIdAndType(STATION_CODE_1, WrapperType.STATION))
                 .thenReturn(buildOptionalWrapperEntityStations())
                 .thenReturn(Optional.empty())
@@ -93,9 +88,9 @@ class CiBrokerExtractionSchedulerTest {
 
         assertDoesNotThrow(() -> scheduler.extractCI());
 
-        verify(brokerInstitutionsRepository, times(2)).delete(any());
-        verify(brokerInstitutionsRepository, times(2)).save(any());
-        verify(brokerInstitutionsRepository, times(2)).updateBrokerInstitutionsList(anyString(), anyList());
+        verify(brokerInstitutionsRepository, never()).delete(any());
+        verify(brokerInstitutionsRepository, never()).save(any());
+        verify(brokerInstitutionsRepository, times(2)).replaceBrokerInstitutionsList(anyString(), anyList());
         verify(brokerInstitutionsRepository).deleteAllByCreatedAtBefore(any());
     }
 
@@ -105,9 +100,6 @@ class CiBrokerExtractionSchedulerTest {
         when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsAssociatedToBroker(anyInt(), anyInt(), eq(true), anyString()))
                 .thenReturn(buildBrokerCreditorInstitutionDetails(STATION_CODE_1))
                 .thenReturn(buildBrokerCreditorInstitutionDetails(STATION_CODE_2));
-        when(brokerInstitutionsRepository.findByBrokerCode(anyString()))
-                .thenReturn(buildBrokerInstitutionsEntity(BROKER_CODE))
-                .thenReturn(buildBrokerInstitutionsEntity(BROKER_CODE_2));
         when(wrapperStationsRepository.findByIdAndType(STATION_CODE_1, WrapperType.STATION))
                 .thenReturn(buildOptionalWrapperEntityStations())
                 .thenReturn(Optional.empty())
@@ -121,17 +113,51 @@ class CiBrokerExtractionSchedulerTest {
                 .thenReturn(buildOptionalWrapperEntityStations())
                 .thenReturn(buildOptionalWrapperEntityStations());
         doThrow(RuntimeException.class)
-                .when(brokerInstitutionsRepository).updateBrokerInstitutionsList(eq(BROKER_CODE_2), anyList());
+                .when(brokerInstitutionsRepository).replaceBrokerInstitutionsList(eq(BROKER_CODE_2), anyList());
 
         AppException e = assertThrows(AppException.class, () -> scheduler.extractCI());
 
         assertNotNull(e);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getHttpStatus());
 
-        verify(brokerInstitutionsRepository, times(2)).delete(any());
-        verify(brokerInstitutionsRepository, times(2)).save(any());
-        verify(brokerInstitutionsRepository, times(2)).updateBrokerInstitutionsList(anyString(), anyList());
+        verify(brokerInstitutionsRepository, never()).delete(any());
+        verify(brokerInstitutionsRepository, never()).save(any());
+        verify(brokerInstitutionsRepository, times(2)).replaceBrokerInstitutionsList(anyString(), anyList());
         verify(brokerInstitutionsRepository).deleteAllByCreatedAtBefore(any());
+    }
+
+    @Test
+    void extractCiKeepsOldDocumentWhenRetrieveFails() {
+        when(allPages.getAllBrokers()).thenReturn(Set.of(BROKER_CODE));
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsAssociatedToBroker(anyInt(), anyInt(), eq(true), anyString()))
+                .thenReturn(buildBrokerCreditorInstitutionDetails(STATION_CODE_1))
+                .thenThrow(RuntimeException.class);
+        when(wrapperStationsRepository.findByIdAndType(anyString(), eq(WrapperType.STATION)))
+                .thenReturn(buildOptionalWrapperEntityStations());
+
+        assertThrows(AppException.class, () -> scheduler.extractCI());
+
+        verify(brokerInstitutionsRepository, never()).delete(any());
+        verify(brokerInstitutionsRepository, never()).save(any());
+        verify(brokerInstitutionsRepository, never()).replaceBrokerInstitutionsList(anyString(), anyList());
+    }
+
+    @Test
+    void extractCiSaveAllInstitutionsWithNullableFields() {
+        BrokerCreditorInstitutionDetails response = buildBrokerCreditorInstitutionDetails(STATION_CODE_1);
+        response.getCreditorInstitutions().forEach(ci -> ci.setStationEnabled(null));
+        when(allPages.getAllBrokers()).thenReturn(Set.of(BROKER_CODE));
+        when(apiConfigSelfcareIntegrationClient.getCreditorInstitutionsAssociatedToBroker(anyInt(), anyInt(), eq(true), anyString()))
+                .thenReturn(response);
+        when(wrapperStationsRepository.findByIdAndType(anyString(), eq(WrapperType.STATION)))
+                .thenReturn(Optional.of(new WrapperEntityStations()));
+
+        assertDoesNotThrow(() -> scheduler.extractCI());
+
+        verify(brokerInstitutionsRepository).replaceBrokerInstitutionsList(eq(BROKER_CODE), institutionsCaptor.capture());
+        List<BrokerInstitutionEntity> institutions = institutionsCaptor.getValue();
+        assertEquals(5, institutions.size());
+        institutions.forEach(institution -> assertEquals("DISABLED", institution.getStationState()));
     }
 
     @Test
@@ -142,7 +168,7 @@ class CiBrokerExtractionSchedulerTest {
 
         verify(brokerInstitutionsRepository,never()).delete(any());
         verify(brokerInstitutionsRepository, never()).save(any());
-        verify(brokerInstitutionsRepository, never()).updateBrokerInstitutionsList(anyString(), anyList());
+        verify(brokerInstitutionsRepository, never()).replaceBrokerInstitutionsList(anyString(), anyList());
         verify(brokerInstitutionsRepository, never()).deleteAllByCreatedAtBefore(any());
         verify(wrapperStationsRepository, never()).findByIdAndType(anyString(), any());
         verify(apiConfigSelfcareIntegrationClient, never()).getCreditorInstitutionsAssociatedToBroker(anyInt(), anyInt(), eq(true), anyString());
@@ -196,20 +222,5 @@ class CiBrokerExtractionSchedulerTest {
                 .broadcast(true)
                 .pspPayment(false)
                 .build();
-    }
-
-    private Optional<BrokerInstitutionsEntity> buildBrokerInstitutionsEntity(String brokerCode) {
-        return Optional.of(
-                BrokerInstitutionsEntity.builder()
-                        .id(UUID.randomUUID().toString())
-                        .brokerCode(brokerCode)
-                        .institutions(List.of(BrokerInstitutionEntity.builder()
-                                .taxCode("99999")
-                                .version("2")
-                                .segregationCode("9999_01")
-                                .stationState("true")
-                                .build()))
-                        .build()
-        );
     }
 }

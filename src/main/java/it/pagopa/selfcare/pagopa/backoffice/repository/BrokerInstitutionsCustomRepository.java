@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface BrokerInstitutionsCustomRepository {
 
-    void updateBrokerInstitutionsList(String brokerCode, List<BrokerInstitutionEntity> institutions);
+    void replaceBrokerInstitutionsList(String brokerCode, List<BrokerInstitutionEntity> institutions);
 }

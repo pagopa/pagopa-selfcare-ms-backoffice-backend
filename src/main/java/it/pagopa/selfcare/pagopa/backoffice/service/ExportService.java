@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -203,6 +204,7 @@ public class ExportService {
      * @return The list of lists after mapping and ensuring no null values.
      */
     private List<List<String>> mapInstitutionToCsv(List<BrokerInstitutionEntity> institutions) {
+        if (institutions == null) institutions = Collections.emptyList();
         return institutions.stream()
                 .map(elem -> Arrays.asList(
                         deNull(elem.getCompanyName()),
