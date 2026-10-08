@@ -76,6 +76,15 @@ class ExportServiceTest {
     }
 
     @Test
+    void exportCreditorInstitutionToCsvWithNullInstitutions() {
+        BrokerInstitutionsEntity entity = BrokerInstitutionsEntity.builder().brokerCode("02438750586").build();
+        when(brokerInstitutionsRepository.findByBrokerCode("02438750586")).thenReturn(Optional.of(entity));
+
+        byte[] result = assertDoesNotThrow(() -> exportService.exportCreditorInstitutionToCsv("02438750586"));
+        assertNotNull(result);
+    }
+
+    @Test
     void exportCreditorInstitutionToCsv_ko() throws IOException {
         String brokerCode = "02438750586";
         when(brokerIbansRepository.findByBrokerCode(brokerCode)).thenReturn(Optional.empty());
