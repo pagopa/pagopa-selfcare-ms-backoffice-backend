@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.pagopa.backoffice.service;
 
+import it.pagopa.selfcare.pagopa.backoffice.audit.AuditLogger;
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.IbanDeletionRequestEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
@@ -40,6 +41,9 @@ class IbanDeletionRequestsServiceTest {
 
     @MockBean
     private AsyncNotificationService asyncNotificationService;
+
+    @MockBean
+    private AuditLogger auditLogger;
 
     @Autowired
     private IbanDeletionRequestsService service;
