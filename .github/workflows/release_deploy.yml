@@ -110,8 +110,6 @@ jobs:
           github_token: ${{ secrets.BOT_TOKEN_GITHUB }}
           beta: ${{ inputs.beta }}
           skip_ci: true
-          prerelease: ${{ needs.setup.outputs.environment != 'prod' }}
-          only_tag: ${{ needs.setup.outputs.environment == 'dev' }}
 
   image:
     needs: [ setup, release ]
