@@ -2,7 +2,6 @@ package it.pagopa.selfcare.pagopa.backoffice.scheduler;
 
 import it.pagopa.selfcare.pagopa.backoffice.client.ApiConfigSelfcareIntegrationClient;
 import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionEntity;
-import it.pagopa.selfcare.pagopa.backoffice.entity.BrokerInstitutionsEntity;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppError;
 import it.pagopa.selfcare.pagopa.backoffice.exception.AppException;
 import it.pagopa.selfcare.pagopa.backoffice.model.connector.creditorinstitution.BrokerCreditorInstitutionDetails;
@@ -29,6 +28,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
@@ -126,34 +126,27 @@ public class CiBrokerExtractionScheduler {
         Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
         int numberOfPages = this.getCreditorInstitutionsAssociatedToBrokerPages.search(1, 0, brokerCode);
 
-        log.debug("[Export-CI] - Delete old document");
-        this.brokerInstitutionsRepository.findByBrokerCode(brokerCode).ifPresent(this.brokerInstitutionsRepository::delete);
-        log.debug("[Export-CI] - Create new document for broker {}", brokerCode);
-        this.brokerInstitutionsRepository.save(BrokerInstitutionsEntity.builder().brokerCode(brokerCode).build());
-
-        // create parallel calls
-        log.debug("[Export-CI] - Retrieve new data for the broker {} and updates its document", brokerCode);
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+        log.debug("[Export-CI] - Retrieve new data for the broker {}", brokerCode);
+        List<BrokerInstitutionEntity> institutions = CompletableFuture.supplyAsync(() -> {
             if (mdcContextMap != null) {
                 MDC.setContextMap(mdcContextMap);
             }
-            IntStream.rangeClosed(0, numberOfPages)
+            return IntStream.rangeClosed(0, numberOfPages)
                     .parallel()
                     .mapToObj(page -> this.getCreditorInstitutionsAssociatedToBroker.search(this.getCIByBrokerPageLimit, page, brokerCode))
-                    .map(response -> response.getCreditorInstitutions().parallelStream()
-                            .map(this::convertCreditorInstitutionDetailToBrokerInstitutionEntity)
-                            .toList())
-                    .forEach(institutions -> this.brokerInstitutionsRepository.updateBrokerInstitutionsList(brokerCode, institutions));
-        });
-        futures.add(future);
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+                    .flatMap(response -> response.getCreditorInstitutions().stream())
+                    .map(this::convertCreditorInstitutionDetailToBrokerInstitutionEntity)
+                    .toList();
+        }).join();
+
+        log.debug("[Export-CI] - Replace document for broker {} with {} institutions", brokerCode, institutions.size());
+        this.brokerInstitutionsRepository.replaceBrokerInstitutionsList(brokerCode, institutions);
     }
 
     private BrokerInstitutionEntity convertCreditorInstitutionDetailToBrokerInstitutionEntity(CreditorInstitutionDetail ci) {
         Instant activationDate = null;
         var wrapper = this.wrapperStationsRepository.findByIdAndType(ci.getStationCode(), WrapperType.STATION);
-        if (wrapper.isPresent() && wrapper.get().getEntities() != null && wrapper.get().getEntities().get(0) != null) {
+        if (wrapper.isPresent() && wrapper.get().getEntities() != null && !wrapper.get().getEntities().isEmpty() && wrapper.get().getEntities().get(0) != null) {
             StationDetails station = (wrapper.get().getEntities().get(0)).getEntity();
             activationDate = station.getActivationDate();
         }
@@ -161,7 +154,7 @@ public class CiBrokerExtractionScheduler {
         return BrokerInstitutionEntity.builder()
                 .companyName(ci.getBusinessName())
                 .taxCode(ci.getCreditorInstitutionCode())
-                .intermediated(!ci.getBrokerCode().equals(ci.getCreditorInstitutionCode()))
+                .intermediated(!Objects.equals(ci.getBrokerCode(), ci.getCreditorInstitutionCode()))
                 .brokerCompanyName(ci.getBrokerBusinessName())
                 .brokerTaxCode(ci.getBrokerCode())
                 .model(3)
@@ -170,7 +163,7 @@ public class CiBrokerExtractionScheduler {
                 .applicationCode(ci.getApplicationCode())
                 .cbillCode(ci.getCbillCode())
                 .stationId(ci.getStationCode())
-                .stationState(ci.getStationEnabled() ? "ENABLED" : "DISABLED")
+                .stationState(Boolean.TRUE.equals(ci.getStationEnabled()) ? "ENABLED" : "DISABLED")
                 .endpointRT(ci.getEndpointRT())
                 .endpointRedirect(ci.getEndpointRedirect())
                 .endpointMU(ci.getEndpointMU())
