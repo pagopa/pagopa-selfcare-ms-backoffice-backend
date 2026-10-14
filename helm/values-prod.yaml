@@ -69,9 +69,8 @@ microservice-chart:
     cooldownPeriod: 300 # seconds
     triggers:
       - type: cpu
+        metricType: Utilization # Allowed types are 'Utilization' or 'AverageValue'
         metadata:
-          # Required
-          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
           value: "70"
   envConfig:
     WEBSITE_SITE_NAME: 'pagopaselfcaremsbackofficebackend'
