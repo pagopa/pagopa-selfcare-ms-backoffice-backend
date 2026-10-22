@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Update;
 
+import java.time.Instant;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -22,17 +23,19 @@ public class BrokerInstitutionsCustomRepositoryImpl implements BrokerInstitution
     }
 
     /**
-     * Updates the BrokerInstitutionsEntity with the specified broker code by adding the provided list of institutions to the
-     * institutions list.
+     * Atomically replaces the institutions list of the BrokerInstitutionsEntity with the specified broker code and refreshes
+     * its creation date. If no document exists for the broker, a new one is created.
      *
-     * @param brokerCode  the broker tax code
-     * @param institutions the list creditor institutions
+     * @param brokerCode   the broker tax code
+     * @param institutions the full list of creditor institutions associated to the broker
      */
     @Override
-    public void updateBrokerInstitutionsList(String brokerCode, List<BrokerInstitutionEntity> institutions) {
-        this.mongoTemplate.updateFirst(
+    public void replaceBrokerInstitutionsList(String brokerCode, List<BrokerInstitutionEntity> institutions) {
+        this.mongoTemplate.upsert(
                 query(where("brokerCode").is(brokerCode)),
-                new Update().push("institutions").each(institutions),
+                new Update()
+                        .set("institutions", institutions)
+                        .set("createdAt", Instant.now()),
                 BrokerInstitutionsEntity.class
         );
     }
