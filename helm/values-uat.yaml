@@ -95,6 +95,7 @@ microservice-chart:
     AWS_QUICKSIGHT_SESSION_TAG_KEY: 'institution_id'
     OTEL_SERVICE_NAME: "pagopa-selfcare-backoffice-backend"
     CRONJOB_SCHEDULE_ENABLED: 'true'
+    CRONJOB_MANUAL_TRIGGER_ENABLED: 'true'
     CRONJOB_SCHEDULE_TAXONOMYEXPORT: "0 0 7 * * *"
     CRONJOB_SCHEDULE_IBANEXPORT: "0 0 1 * * *"
     CRONJOB_SCHEDULE_CIEXPORT: "0 0 3 * * *"
