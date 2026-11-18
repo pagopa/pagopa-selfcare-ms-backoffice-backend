@@ -71,6 +71,7 @@ microservice-chart:
         metadata:
           value: "70"
   envConfig:
+    JAVA_TOOL_OPTIONS: "-XX:-UseBASE64Intrinsics"
     WEBSITE_SITE_NAME: 'pagopaselfcaremsbackofficebackend'
     EXTERNAL_API_SERVICE_URL: https://api.dev.selfcare.pagopa.it
     PAGOPA_APIM_SERVICE_URL: https://api.dev.platform.pagopa.it
@@ -160,7 +161,7 @@ microservice-chart:
     image:
       repository: ghcr.io/pagopa/pagopa-selfcare-ms-backoffice-backend
       tag: 2.14.1-1-hotfix-timout-feign
-    envConfig: {}
+    envConfig: {JAVA_TOOL_OPTIONS: "-XX:-UseBASE64Intrinsics"}
     envSecret: {}
   azure:
     workloadIdentityClientId: <workload-identity-client-id-set-automatically-by-gha>
