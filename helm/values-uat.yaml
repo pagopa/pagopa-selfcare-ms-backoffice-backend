@@ -71,7 +71,7 @@ microservice-chart:
         metadata:
           value: "70"
   envConfig:
-    JAVA_TOOL_OPTIONS: "-XX:-UseBASE64Intrinsics -XX:UseAVX=2"
+    JAVA_TOOL_OPTIONS: "-XX:-UseBASE64Intrinsics"
     WEBSITE_SITE_NAME: 'pagopaselfcaremsbackofficebackend'
     PAGOPA_BACKOFFICE_LOG_LEVEL: 'INFO'
     EXTERNAL_API_SERVICE_URL: https://api.selfcare.pagopa.it
