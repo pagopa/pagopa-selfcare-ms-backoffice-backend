@@ -24,3 +24,5 @@ COPY --chown=spring:spring  --from=builder spring-boot-loader/ ./
 COPY --chown=spring:spring  --from=builder application/ ./
 
 EXPOSE 8080
+
+ENV JAVA_TOOL_OPTIONS="-XX:-UseBASE64Intrinsics -XX:UseAVX=2"
